@@ -107,21 +107,14 @@ thresholds = {
 }
 
 
-class DBotScore(Enum):
-    NONE = 0
-    GOOD = 1
-    SUSPICIOUS = 2
-    BAD = 3
-
-
-class IndicatorType(Enum):
+class IndicatorType:
     IP = 'ip'
     HASH = 'hash'
     DOMAIN = 'domain'
     URL = 'url'
 
 
-class OutputPath(Enum):
+class OutputPath:
     IP = 'IP(val.Address && val.Address == obj.Address)'
     URL = 'URL(val.Data && val.Data == obj.Data)'
     DOMAIN = 'Domain(val.Name && val.Name == obj.Name)'
@@ -1512,10 +1505,15 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
-class DBotScoreEntry:
+class DBotScore:
+    NONE = 0
+    GOOD = 1
+    SUSPICIOUS = 2
+    BAD = 3
+
     CONTEXT_PATH = 'DBotScore'
 
-    def __init__(self, indicator, indicator_type: IndicatorType, vendor, score: DBotScore):
+    def __init__(self, indicator, indicator_type: IndicatorType, vendor, score):
         self.indicator = indicator
         self.indicator_type = indicator_type,
         self.vendor = vendor
@@ -1530,11 +1528,11 @@ class DBotScoreEntry:
         }
 
 
-class IPIndicator:
+class IP:
     CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
     def __init__(self, vendor, ip, asn, hostname, geo_latitude, geo_longitude, geo_country, geo_description,
-                 detection_engines, positive_engines, dbot_score: DBotScore, malicious_description):
+                 detection_engines, positive_engines, dbot_score=None, malicious_description=None):
         self.ip = ip
         self.asn = asn
         self.hostname = hostname
@@ -1544,7 +1542,7 @@ class IPIndicator:
         self.geo_description = geo_description
         self.detection_engines = detection_engines
         self.positive_engines = positive_engines
-        self.dbot_score = DBotScoreEntry(self.ip, IndicatorType.IP, vendor, dbot_score)
+        self.dbot_score = DBotScore(self.ip, IndicatorType.IP, vendor, dbot_score)
 
         if dbot_score == DBotScore.BAD:
             self.malicious = True
@@ -1604,7 +1602,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None, ip_indicato
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
     raw response from the 3rd party service (originally Contents)
 
-    :type ip_indicators: ``IPIndicator list``
+    :type ip_indicators: ``IP list``
     :param ip_indicators:
 
     :return: None
@@ -1629,10 +1627,10 @@ def return_outputs(readable_output, outputs=None, raw_response=None, ip_indicato
         if "EntryContext" not in return_entry:
             return_entry["EntryContext"] = {}
 
-        return_entry["EntryContext"][IPIndicator.CONTEXT_PATH] = ip_indicators
+        return_entry["EntryContext"][IP.CONTEXT_PATH] = ip_indicators
         dbot_scores = map(lambda ip : ip.dbot_score, ip_indicators)
 
-        return_entry['EntryContext'][DBotScoreEntry.CONTEXT_PATH].extend(dbot_scores)
+        return_entry['EntryContext'][DBotScore.CONTEXT_PATH].extend(dbot_scores)
 
     demisto.results(return_entry)
 

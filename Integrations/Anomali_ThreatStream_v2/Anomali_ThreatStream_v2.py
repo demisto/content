@@ -387,6 +387,7 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
         Checks the reputation of given ip from ThreatStream and
         returns the indicator with highest severity score.
     """
+
     params = build_params(value=ip, type="ip", status=status, limit=0)
     indicator = search_indicator_by_params(params, ip)
     threshold = threshold or DEFAULT_THRESHOLD
@@ -394,14 +395,44 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     ip_context = get_ip_context(indicator, threshold)
     threat_ip_context = get_threat_generic_context(indicator)
 
-    ec = {
-        'DBotScore': dbot_context,
-        'IP(val.Address == obj.Address)': ip_context,
-        'ThreatStream.IP(val.Address == obj.Address)': threat_ip_context
+    indicator = {
+        'value': '8.8.8.8',
+        'type': 'ip',
+        'asn': 'asn1',
+        'country': 'US',
+        'latitude': 1000,
+        'longitude': 1000,
+        'confidence': 80,
+        'org': 'Demisto',
+        'status': 'active',
+        'meta': {
+            'severity': 'high'
+        }
     }
-    human_readable = tableToMarkdown(F"IP reputation for: {ip}", threat_ip_context)
+    indicator_severity = indicator['meta']['severity']
+    dbot_score = {
+        'high': DBotScore.BAD,
+        'medium': DBotScore.SUSPICIOUS,
+        'low': DBotScore.GOOD
+    }[indicator_severity]
 
-    return_outputs(human_readable, ec, indicator)
+    ip_context = IP(
+        ip=ip,
+        asn=indicator.get('asn'),
+        geo_country=indicator.get('country'),
+        geo_latitude=indicator.get('latitude'),
+        geo_longitude=indicator.get('longitude'),
+        dbot_score=dbot_score
+    )
+    command_result = CommandResult(
+        vendor='ThreatStream',
+        object_name='Analysis',
+        uniq_field='value',
+        output=indicator,
+        indicators=ip_context
+    )
+
+    return command_result
 
 
 def get_domain_reputation(domain, threshold=None, status="active,inactive"):
@@ -424,6 +455,51 @@ def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     human_readable = tableToMarkdown(F"Domain reputation for: {domain}", threat_domain_context)
 
     return_outputs(human_readable, ec, indicator)
+
+    indicator = {
+        'value': 'demisto.com',
+        'ip': '8.8.8.8',
+        'type': 'domain',
+        'created_ts': '2019-01-01T00:00:00',
+        'modified_ts': '2019-01-01T00:00:00',
+        'confidence': 80,
+        'org': 'Demisto',
+        'status': 'active',
+        'meta': {
+            'severity': 'low',
+            'registrant_name': 'Demisto',
+            'registrant_email': 'info@demisto.com',
+            'registrant_phone': '050-0000111'
+        }
+    }
+    indicator_severity = indicator['meta']['severity']
+    dbot_score = {
+        'high': DBotScore.BAD,
+        'medium': DBotScore.SUSPICIOUS,
+        'low': DBotScore.GOOD
+    }[indicator_severity]
+
+    domain_indicator = Domain(
+        name=indicator.get('value'),
+        ip=indicator.get('ip'),
+        whois=Whois(
+            registrant=Registrant(
+                email=indicator.get('meta').get('registrant_email'),
+                name=indicator.get('meta').get('registrant_name'),
+                phone=indicator.get('meta').get('registrant_phone')
+            )
+        ),
+        dbot_score=dbot_score,
+        original_indicator=indicator
+    )
+    command_result = CommandResult(
+        vendor='ThreatStream',
+        object_name='Analysis',
+        uniq_field='value',
+        output=domain_indicator
+    )
+
+    return command_result
 
 
 def get_file_reputation(file, threshold=None, status="active,inactive"):
@@ -804,7 +880,7 @@ def main():
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'ip':
-            get_ip_reputation(**args)
+            demisto.results(get_ip_reputation(**args))
         elif demisto.command() == 'domain':
             get_domain_reputation(**args)
         elif demisto.command() == 'file':
@@ -847,6 +923,20 @@ def main():
             return_error("The server is not reachable.")
         else:
             return_error(e)
+
+
+class CommandResult:
+    def __init__(self):
+        self.output = None
+        self.dbot_score = None
+        self.readable_output = ''
+        self.raw_response = None
+
+    def add_output(self, output):
+        self.output = output
+
+    def set_readable_output(self, markdown):
+        self.readable_output = markdown
 
 
 # python2 uses __builtin__ python3 uses builtins
