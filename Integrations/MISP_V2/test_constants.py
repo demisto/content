@@ -6,7 +6,7 @@ full_response_before_filtering = [
                     "Galaxy": [],
                     "ShadowAttribute": [],
                     "category": "Payload installation",
-                    "comment": "",
+                    "comment": "mock",
                     "deleted": False,
                     "disable_correlation": False,
                     "distribution": "5",
@@ -19,13 +19,13 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "md5",
                     "uuid": "57174536-95fc-474a-bb9f-46dc950d210f",
-                    "value": "mocked_hash"
+                    "value": "mock"
                 },
                 {
                     "Galaxy": [],
                     "ShadowAttribute": [],
                     "category": "Payload installation",
-                    "comment": "- Xchecked via VT: mocked_hash",
+                    "comment": "mock",
                     "deleted": False,
                     "disable_correlation": False,
                     "distribution": "5",
@@ -38,13 +38,12 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "sha256",
                     "uuid": "57174f19-f06c-4809-92b3-476d02de0b81",
-                    "value": "ce98e9d9900609c45c948d34153c03b490bc2067e7a742048f60ed53fe95529d"
-                },
+                    "value": "mock"},
                 {
                     "Galaxy": [],
                     "ShadowAttribute": [],
                     "category": "Payload installation",
-                    "comment": "- Xchecked via VT: mocked_hash",
+                    "comment": "mock",
                     "deleted": False,
                     "disable_correlation": False,
                     "distribution": "5",
@@ -57,13 +56,12 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "sha1",
                     "uuid": "57174f19-c3d8-43f0-96bb-43e402de0b81",
-                    "value": "fb93796afa470d87deb316823d3cd6e8d8b18596"
-                },
+                    "value": "mock"},
                 {
                     "Galaxy": [],
                     "ShadowAttribute": [],
                     "category": "External analysis",
-                    "comment": "",
+                    "comment": "mock",
                     "deleted": False,
                     "disable_correlation": False,
                     "distribution": "5",
@@ -76,14 +74,12 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "link",
                     "uuid": "57174f1a-a47c-458d-9900-451e02de0b81",
-                    "value": "https://www.virustotal.com/file/ce98e9d9900609c45c948d34153c03b490bc"
-                             "2067e7a742048f60ed53fe95529d/analysis/1461016885/"
-                },
+                    "value": "mock"},
                 {
                     "Galaxy": [],
                     "ShadowAttribute": [],
                     "category": "Network activity",
-                    "comment": "Compromised wp installation",
+                    "comment": "mock",
                     "deleted": False,
                     "disable_correlation": False,
                     "distribution": "5",
@@ -96,13 +92,13 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "hostname",
                     "uuid": "57176bf7-4e28-4e60-88d4-4dea950d210f",
-                    "value": "kentamplin.net"
+                    "value": "mock"
                 },
                 {
                     "Galaxy": [],
                     "ShadowAttribute": [],
                     "category": "Network activity",
-                    "comment": "Compromised WP installation (fixed)",
+                    "comment": "mock",
                     "deleted": False,
                     "disable_correlation": False,
                     "distribution": "5",
@@ -115,13 +111,13 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "url",
                     "uuid": "57176c2a-2280-4f00-9208-42c1950d210f",
-                    "value": "kentamplin.net/wordpress/wp-includes/oops.php"
+                    "value": "mock"
                 },
                 {
                     "Galaxy": [],
                     "ShadowAttribute": [],
                     "category": "Network activity",
-                    "comment": "Compromised wp installation",
+                    "comment": "mock",
                     "deleted": False,
                     "disable_correlation": False,
                     "distribution": "5",
@@ -134,13 +130,13 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "ip-dst",
                     "uuid": "57176c68-3b48-47d1-a549-4f20950d210f",
-                    "value": "mocked_ip"
+                    "value": "mock"
                 },
                 {
                     "Galaxy": [],
                     "ShadowAttribute": [],
                     "category": "Network activity",
-                    "comment": "",
+                    "comment": "mock",
                     "deleted": False,
                     "disable_correlation": False,
                     "distribution": "5",
@@ -153,14 +149,13 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "url",
                     "uuid": "57176ca8-4fd8-4eac-a432-4fdb950d210f",
-                    "value": "http://mocked_ip/wordpress/wp-includes/oops.php?id=2886098\u0026"
-                             "cname=mh6SlMrX8b\u0026arch=0\u0026srv=0\u0026ver=6.1"
+                    "value": "mock"
                 },
                 {
                     "Galaxy": [],
                     "ShadowAttribute": [],
                     "category": "Other",
-                    "comment": "Ransom text",
+                    "comment": "mock",
                     "deleted": False,
                     "disable_correlation": False,
                     "distribution": "5",
@@ -173,20 +168,13 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "comment",
                     "uuid": "57176d27-f044-4038-9604-49da950d210f",
-                    "value": "YourID: 2886098\r\n    PC: HOME\r\n    USER: user\r\n    *********\r\n  "
-                             "  Hey\r\n\r\n    Your files are now encrypted. I have the "
-                             "key to decrypt them back. I will give you a decrypter if you pay me. "
-                             "Email me at: mocked_mail or mocked_mail2\r\n\r\n    If you don’t get a "
-                             "reply or if both emails die, then contact me using a guaranteed, foolproof\r\n   "
-                             " Bitmessage: download it form here https://github.com/mailchuck/PyBitmessage"
-                             "/releases/download/v0.5.8/Bitmessage-\r\n    0.5.8.exe\r\n\r\n    Run it, click "
-                             "New Identity and then send me a message at mocked_text\r\n\r\n    Cheers"
+                    "value": "mock"
                 },
                 {
                     "Galaxy": [],
                     "ShadowAttribute": [],
                     "category": "Other",
-                    "comment": "",
+                    "comment": "mock",
                     "deleted": False,
                     "disable_correlation": False,
                     "distribution": "5",
@@ -199,7 +187,7 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "comment",
                     "uuid": "57176d6e-a4e8-4c08-bd9c-41d9950d210f",
-                    "value": "ID was seen to be same among the different infections..."
+                    "value": "mock"
                 }
             ],
             "Galaxy": [],
