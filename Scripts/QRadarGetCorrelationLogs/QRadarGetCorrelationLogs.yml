@@ -39,7 +39,7 @@ args:
   predefined:
   - "True"
   - "False"
-  description: Determines whether the CRE name is null by default or not. (Default: True)
+  description: ״Determines whether the CRE name is null by default or not. (Default: True)״
   defaultValue: "True"
 outputs:
 - contextPath: QRadar
