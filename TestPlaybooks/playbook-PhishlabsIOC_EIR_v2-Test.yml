@@ -1,6 +1,6 @@
-id: PhishlabsIOC_EIR-Test
+id: PhishlabsIOC_EIR_v2-Test
 version: -1
-name: PhishlabsIOC_EIR-Test
+name: PhishlabsIOC_EIR_v2-Test
 starttaskid: "0"
 tasks:
   "0":
@@ -70,7 +70,7 @@ tasks:
       version: -1
       name: Get incident by ID command
       description: Returns a single Incident based on the given ID.
-      script: '|||phishlabs-ioc-eir-get-incident-by-id'
+      script: '|||phishlabs-ioc-eir-v2-get-incident-by-id'
       type: regular
       iscommand: true
       brand: ""
@@ -176,7 +176,7 @@ tasks:
       name: Get incidents command
       description: Get EIR incidents from PhishLabs-IOC EIR service (dafault limit
         50 incidents)
-      script: '|||phishlabs-ioc-eir-get-incidents'
+      script: '|||phishlabs-ioc-eir-v2-get-incidents'
       type: regular
       iscommand: true
       brand: ""
@@ -357,7 +357,7 @@ tasks:
       add_to_context:
         simple: "true"
       brand_name:
-        simple: PhishLabs IOC EIR
+        simple: PhishLabs IOC EIR v2
       error_msg_in_incident: {}
       expect_data: {}
       instance_name: {}

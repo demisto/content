@@ -1,9 +1,9 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: PhishLabs IOC EIR
+  id: PhishLabs IOC EIR v2
   version: -1
 configuration:
-- defaultvalue: https://caseapi.phishlabs.com
+- defaultvalue: https://ioc.phishlabs.com
   display: Server URL (e.g. https://example.net)
   name: url
   required: true
@@ -35,8 +35,8 @@ configuration:
   required: false
   type: 8
 description: Get live feeds of IOC data from PhishLabs.
-display: PhishLabs IOC EIR
-name: PhishLabs IOC EIR
+display: PhishLabs IOC EIR v2
+name: PhishLabs IOC EIR v2
 script:
   commands:
   - arguments:
@@ -120,7 +120,7 @@ script:
     deprecated: false
     description: Returns EIR incidents from PhishLabs-IOC EIR service. The default number of incidents returned is 25.
     execution: false
-    name: phishlabs-ioc-eir-get-incidents
+    name: phishlabs-ioc-eir-v2-get-incidents
     outputs:
     - contextPath: PhishLabsIOC.EIR.CaseType
       description: Incident reason type.
@@ -252,7 +252,7 @@ script:
     deprecated: false
     description: Returns a single Incident based on the given ID.
     execution: false
-    name: phishlabs-ioc-eir-get-incident-by-id
+    name: phishlabs-ioc-eir-v2-get-incident-by-id
     outputs:
     - contextPath: PhishLabsIOC.EIR.CaseType
       description: Incident reason type.
@@ -383,4 +383,4 @@ script:
   subtype: python3
   type: python
 tests:
-- PhishlabsIOC_EIR-Test
+- PhishlabsIOC_EIR_v2-Test
