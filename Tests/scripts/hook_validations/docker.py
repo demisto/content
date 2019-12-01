@@ -244,7 +244,9 @@ class DockerImageValidator(object):
         """
         if docker_image:
             try:
-                image = re.findall(r'(demisto\/.+):', docker_image, re.IGNORECASE)[0]
+                image = re.findall(r'(demisto\/.+)', docker_image, re.IGNORECASE)[0]
+                if ':' in image:
+                    image = image.split(':')[0]
             except IndexError:
                 print_error('The docker image: {} is not of format - demisto/image_name'
                             .format(docker_image))
