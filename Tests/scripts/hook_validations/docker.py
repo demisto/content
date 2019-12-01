@@ -246,17 +246,18 @@ class DockerImageValidator(object):
             try:
                 image = re.findall(r'(demisto\/.+)', docker_image, re.IGNORECASE)[0]
                 if ':' in image:
-                    image = image.split(':')[0]
+                    image_split = image.split(':')
+                    image = image_split[0]
+                    tag = image_split[1]
+                else:
+                    print_error('The docker image in your integration/script does not have a tag, please attach the '
+                                'latest tag')
+                    tag = ''
             except IndexError:
                 print_error('The docker image: {} is not of format - demisto/image_name'
                             .format(docker_image))
                 image = ''
-            try:
-                tag = re.findall(r':(.+)', docker_image, re.IGNORECASE)[0]
-            except IndexError:
-                print_error('The docker image in your integration/script does not have a tag, please attach the '
-                            'latest tag')
-                tag = ''
+
             return image, tag
         else:
             # If the yml file has no docker image we provide the default one 'demisto/python:1.3-alpine'
