@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Digital Shadows",
+            "playbookID": "Digital Shadows - Test"
+        },
+        {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Test",
             "instance_names": "ms_azure_compute_dev"
@@ -352,7 +356,8 @@
             "playbookID": "ReadPDFFile-Test"
         },
         {
-            "playbookID": "ReadPDFFileV2-Test"
+            "playbookID": "ReadPDFFileV2-Test",
+            "timeout": 1000
         },
         {
             "playbookID": "JSONtoCSV-Test"
@@ -1969,6 +1974,10 @@
             "playbookID": "Elasticsearch_v2_test-v6"
         },
         {
+            "integrations": "IronDefense",
+            "playbookID": "IronDefenseTest"
+        },
+        {
             "integrations": "PolySwarm",
             "playbookID": "PolySwarm-Test"
         },
@@ -2003,7 +2012,6 @@
         "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
-        "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
         "search_endpoints_by_hash_-_tie_-_test": "Issue #18350",
@@ -2043,6 +2051,7 @@
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
+        "IronDefense": "Test depends on making requests to a non-public API",
         "Attivo Botsink": "no instance, not going to get it",
         "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
@@ -2063,8 +2072,6 @@
         "_comment": "~~~ INSTANCE ISSUES ~~~",
         "Check Point": "Issue 18643",
         "McAfee Active Response": "Issue 20320",
-        "McAfee NSM": "Issue 20336",
-        "Elasticsearch v2": "Issue 20334",
         "RSA Archer": "Issue 20335",
         "LogRhythmRest": "Issue 19870",
         "Fidelis Elevate Network": "Issue 20263",
@@ -2074,7 +2081,6 @@
         "CrowdstrikeFalcon": "Issue 19833",
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
-        "Lastline": "Issue 19855",
         "vmray": "Issue 18752",
         "Anomali ThreatStream v2": "Issue 18561",
         "Anomali ThreatStream": "Issue 19182",
@@ -2095,7 +2101,6 @@
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
-        "XFE": "License expired",
         "Salesforce": "Issue 15901",
         "Zscaler": "Issue 17784",
         "RedCanary": "License expired",
@@ -2123,6 +2128,7 @@
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
         "AWS - Athena - Beta": "Issue 19834",
+        "Lastline": "issue 20323", 
         "VirusTotal - Private API": "reached api alloted quota.",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
@@ -2133,7 +2139,7 @@
         "SlackV2"
     ],
     "unmockable_integrations": {
-        "Google Key Management Service": "The API requires an SSL secure connection to work",
+        "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
