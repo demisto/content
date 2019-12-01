@@ -747,7 +747,7 @@ def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     ipv6addr = args.get('ipv6addr')
     infoblox_object_type = 'record:rpz:ptr'
     if all([not name, not ipv4addr, not ipv6addr]):
-        raise DemistoException('To run this command either \'name\', \'ipv4addr\' or \'ipv6addr\' should be given')
+        raise DemistoException('To run this command either \'name\', \'ipv4addr\' or \'ipv6addr\' should be given.')
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, ptrdname=ptrdname, ipv4addr=ipv4addr,
                                                         ipv6addr=ipv6addr)
