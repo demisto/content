@@ -1,6 +1,4 @@
-import pytest
 from Infoblox import Client
-from CommonServerPython import DemistoException
 import demistomock as demisto
 
 BASE_URL = 'https://example.com/v1/'
