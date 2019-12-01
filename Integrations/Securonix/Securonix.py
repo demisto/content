@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, Tuple, Optional, MutableMapping
+from typing import Dict, Tuple, Optional, MutableMapping, List
 
 import urllib3
 
@@ -17,53 +17,6 @@ def get_now():
         datetime: time right now
     """
     return datetime.now()
-
-
-def get_fetch_times(last_fetch):
-    """ Get list of every hour since last_fetch. last is now.
-    Args:
-        last_fetch (datetime or str): last_fetch time
-
-    Returns:
-        List[str]: list of str represents every hour since last_fetch
-    """
-    now = get_now()
-    times = list()
-    time_format = "%Y-%m-%dT%H:%M:%SZ"
-    if isinstance(last_fetch, str):
-        times.append(last_fetch)
-        last_fetch = datetime.strptime(last_fetch, time_format)
-    elif isinstance(last_fetch, datetime):
-        times.append(last_fetch.strftime(time_format))
-    while now - last_fetch > timedelta(minutes=59):
-        last_fetch += timedelta(minutes=59)
-        times.append(last_fetch.strftime(time_format))
-    times.append(now.strftime(time_format))
-    return times
-
-
-def convert_unix_to_date(timestamp):
-    """Convert unix timestamp to datetime in iso format.
-
-    Args:
-        timestamp: the date in unix to convert.
-
-    Returns:
-        converted date.
-    """
-    return datetime.fromtimestamp(int(timestamp) / 1000).isoformat()
-
-
-def convert_date_to_unix(date):
-    """Convert datetime in iso format to unix timestamp.
-
-    Args:
-        date: the date in ISO to convert.
-
-    Returns:
-        unix timestamp.
-    """
-    return datetime.datetime(date).strftime('%s')  # type: ignore
 
 
 def camel_case_to_readable(text: str) -> str:
@@ -99,6 +52,29 @@ def parse_data_arr(data_arr):
     outputs = {k.replace(' ', ''): v for k, v in readable.copy().items()}
 
     return readable, outputs
+
+
+def incident_priority_to_dbot_score(priority_str: str):
+    """Converts an priority string to DBot score representation
+        alert severity. Can be one of:
+        Low    ->  1
+        Medium ->  2
+        High   ->  3
+
+    Args:
+        priority_str: String representation of proirity.
+
+    Returns:
+        Dbot representation of severity
+    """
+    priority = priority_str.lower()
+    if priority == 'low':
+        return 1
+    if priority == 'medium':
+        return 2
+    if priority == 'high':
+        return 3
+    return 0
 
 
 class Client(BaseClient):
@@ -302,13 +278,13 @@ class Client(BaseClient):
                                            params=params)
         return violation_data
 
-    def list_incidents_request(self, from_epoch: str, to_epoch: str, range_type: str) -> Dict:
+    def list_incidents_request(self, from_epoch: str, to_epoch: str, incident_types: str) -> Dict:
         """List all incidents by sending a GET request.
 
         Args:
             from_epoch: from time in epoch
             to_epoch: to time in epoch
-            range_type: incident types
+            incident_types: incident types
 
         Returns:
             Response from API.
@@ -317,7 +293,7 @@ class Client(BaseClient):
             'type': 'list',
             'from': from_epoch,
             'to': to_epoch,
-            'rangeType': range_type
+            'rangeType': incident_types
         }
         incidents = self.http_request('GET', '/incident/get', headers={'token': self._token}, params=params)
         return incidents.get('result').get('data')
@@ -760,13 +736,14 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs.
     """
+    timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
     from_, _ = parse_date_range(args.get('from'), utc=True)
-    from_epoch = date_to_timestamp(from_)
+    from_epoch = date_to_timestamp(from_, date_format=timestamp_format)
     to_ = args.get('to') if 'to_' in args else get_now()
-    to_epoch = date_to_timestamp(to_)
-    range_type = argToList(args.get('range_type')) if 'range_type' in args else ['updated', 'opened', 'closed']
-
-    incidents = client.list_incidents_request(from_epoch, to_epoch, range_type)
+    to_epoch = date_to_timestamp(to_, date_format=timestamp_format)
+    incident_types = argToList(args.get('incident_types')) if 'incident_types' in args else\
+        ['updated', 'opened', 'closed']
+    incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types)
 
     total_incidents = incidents.get('totalIncidents')
     if not total_incidents or float(total_incidents) <= 0.0:
@@ -1045,117 +1022,50 @@ def add_entity_to_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, watchlist
 
 
-# def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status,
-#                     limit='50', integration_context=None):
-#     """Fetch incidents from Securonix to Demisto.
-#
-#     Args:
-#         client:
-#         last_run:
-#         first_fetch_time:
-#         event_type_filter:
-#         threat_type:
-#         threat_status:
-#         limit:
-#         integration_context:
-#
-#     Returns:
-#         Incidents.
-#     """
-#     incidents: list = []
-#     end_query_time = ''
-#     # check if there're incidents saved in context
-#     if integration_context:
-#         remained_incidents = integration_context.get("incidents")
-#         # return incidents if exists in context.
-#         if remained_incidents:
-#             return last_run, remained_incidents[:limit], remained_incidents[limit:]
-#     # Get the last fetch time, if exists
-#     start_query_time = last_run.get("last_fetch")
-#     # Handle first time fetch, fetch incidents retroactively
-#     if not start_query_time:
-#         start_query_time, _ = parse_date_range(first_fetch_time, date_format='1', utc=True)
-#     fetch_times = get_fetch_times(start_query_time)
-#     for i in range(len(fetch_times) - 1):
-#         start_query_time = fetch_times[i]
-#         end_query_time = fetch_times[i + 1]
-#         raw_events = client.get_events(interval=start_query_time + "/" + end_query_time,
-#                                        event_type_filter=event_type_filter,
-#                                        threat_status=threat_status, threat_type=threat_type)
-#
-#         message_delivered = raw_events.get("messagesDelivered", [])
-#         for raw_event in message_delivered:
-#             raw_event["type"] = "messages delivered"
-#             event_guid = raw_event.get("GUID", "")
-#             incident = {
-#                 "name": "Proofpoint - Message Delivered - {}".format(event_guid),
-#                 "rawJSON": json.dumps(raw_event),
-#                 "occurred": raw_event["messageTime"]
-#             }
-#             incidents.append(incident)
-#
-#         message_blocked = raw_events.get("messagesBlocked", [])
-#         for raw_event in message_blocked:
-#             raw_event["type"] = "messages blocked"
-#             event_guid = raw_event.get("GUID", "")
-#             incident = {
-#                 "name": "Proofpoint - Message Blocked - {}".format(event_guid),
-#                 "rawJSON": json.dumps(raw_event),
-#                 "occured": raw_event["messageTime"],
-#             }
-#             incidents.append(incident)
-#
-#         clicks_permitted = raw_events.get("clicksPermitted", [])
-#         for raw_event in clicks_permitted:
-#             raw_event["type"] = "clicks permitted"
-#             event_guid = raw_event.get("GUID", "")
-#             incident = {
-#                 "name": "Proofpoint - Click Permitted - {}".format(event_guid),
-#                 "rawJSON": json.dumps(raw_event),
-#                 "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
-#                     "threatTime"]
-#             }
-#             incidents.append(incident)
-#
-#         clicks_blocked = raw_events.get("clicksBlocked", [])
-#         for raw_event in clicks_blocked:
-#             raw_event["type"] = "clicks blocked"
-#             event_guid = raw_event.get("GUID", "")
-#             incident = {
-#                 "name": "Proofpoint - Click Blocked - {}".format(event_guid),
-#                 "rawJSON": json.dumps(raw_event),
-#                 "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
-#                     "threatTime"]
-#             }
-#             incidents.append(incident)
-#
-#     # Cut the milliseconds from last fetch if exists
-#     end_query_time = end_query_time[:-5] + 'Z' if end_query_time[-5] == '.' else end_query_time
-#     next_run = {"last_fetch": end_query_time}
-#     return next_run, incidents[:limit], incidents[limit:]
-#
-#
-# def fetch_incident_command():
-#     """
-#     Demisto Incidents
-#     """
-#     # How many time before the first fetch to retrieve incidents
-#     fetch_time = params.get('fetch_time', '60 minutes')
-#     fetch_limit = 50
-#     integration_context = demisto.getIntegrationContext()
-#     next_run, incidents, remained_incidents = fetch_incidents(  # type: ignore
-#         client=client,
-#         last_run=demisto.getLastRun(),
-#         first_fetch_time=fetch_time,
-#         limit=fetch_limit,
-#         integration_context=integration_context
-#     )
-#     # Save last_run, incidents, remained incidents into integration
-#     demisto.setLastRun(next_run)
-#     demisto.incidents(incidents)
-#     # preserve context dict
-#     integration_context['incidents'] = remained_incidents
-#     demisto.setIntegrationContext(integration_context)
+def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: str,
+                    last_run: Dict) -> Tuple[List, Dict]:
+    """Uses to fetch incidents into Demisto
+    Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
+
+    Args:
+        client: Client object with request
+        fetch_time: From when to fetch if first time, e.g. `3 days`
+        incident_types: Incident statuses to fetch, can be: all, open, closed
+        last_run: Last fetch object.
+
+    Returns:
+        incidents, new last_run
+    """
+    timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
+    # Get incidents from API
+    if not last_run:  # if first time running
+        new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
+    else:
+        new_last_run = last_run
+
+    demisto_incidents: List = list()
+    from_epoch = date_to_timestamp(new_last_run.get('time'), date_format=timestamp_format)
+    to_epoch = date_to_timestamp(get_now(), date_format=timestamp_format)
+
+    securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types)
+    incidents_items = securonix_incidents.get('incidentItems')
+    demisto.info(f'111111 {incidents_items}')
+    if securonix_incidents:
+        last_incident_id = last_run.get('incidentId', '0')
+        # Creates incident entry
+        demisto_incidents = [{
+            'name': f"Securonix Incident: {incident.get('incidentId')}",
+            'occurred': timestamp_to_datestring(incident.get('lastUpdateDate')),
+            'severity': incident_priority_to_dbot_score(incident.get('priority')),
+            'rawJSON': json.dumps(incident)
+        } for incident in incidents_items if incident.get('incidentId') > last_incident_id]
+        # New incidents fetched
+        if demisto_incidents:
+            last_incident_timestamp = demisto_incidents[-1].get('occurred')
+            last_incident_id = securonix_incidents[-1].get('id')
+            new_last_run = {'time': last_incident_timestamp, 'id': last_incident_id}
+    # Return results
+    return demisto_incidents, new_last_run
 
 
 def main():
@@ -1178,7 +1088,6 @@ def main():
                         verify=verify, proxies=proxies)
         commands = {
             'test-module': test_module,
-            # 'fetch-incidents': fetch_incident_command,
             'securonix-list-workflows': list_workflows,
             'securonix-get-default-assignee-for-workflow': get_default_assignee_for_workflow,
             'securonix-list-possible-threat-actions': list_possible_threat_actions,
@@ -1201,9 +1110,16 @@ def main():
             'securonix-check-entity-in-watchlist': check_entity_in_watchlist,
             'securonix-add-entity-to-watchlist': add_entity_to_watchlist
         }
-        if command in commands:
+        if command == 'fetch-incidents':
+            fetch_time = params.get('fetch_time')
+            incident_types = argToList(params.get('incident_types')) if 'incident_types' in params else \
+                ['updated', 'opened', 'closed']
+            incidents, last_run = fetch_incidents(client, fetch_time, incident_types,
+                                                  last_run=demisto.getLastRun())  # type: ignore
+            demisto.incidents(incidents)
+            demisto.setLastRun(last_run)
+        elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))  # type: ignore
-
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 

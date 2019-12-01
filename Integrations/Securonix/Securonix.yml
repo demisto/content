@@ -37,10 +37,6 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- display: Fetch incidents
-  name: is_fetch
-  required: false
-  type: 8
 - display: Incident type
   name: incidentType
   required: false
@@ -149,7 +145,7 @@ script:
     - default: false
       description: 'Incident range. can be 1 or more from: updated,opened,closed'
       isArray: false
-      name: range_type
+      name: incident_types
       required: false
       secret: false
     deprecated: false
