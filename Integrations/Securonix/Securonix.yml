@@ -119,10 +119,54 @@ script:
     description: List resource groups.
     execution: false
     name: securonix-list-resource-groups
+    outputs:
+    - contextPath: Securonix.ResourceGroups.Name
+      description: Resource group name.
+      type: String
+    - contextPath: Securonix.ResourceGroups.Type
+      description: Resource group type.
+      type: String
   - deprecated: false
     description: List users.
     execution: false
     name: securonix-list-users
+    outputs:
+    - contextPath: Securonix.Users.LastName
+      description: User last name.
+      type: String
+    - contextPath: Securonix.Users.SkipEncryption
+      description: Whether to skip the user encryption.
+      type: String
+    - contextPath: Securonix.Users.Riskscore
+      description: User risk score.
+      type: String
+    - contextPath: Securonix.Users.EmployeeId
+      description: User Emplyee ID.
+      type: String
+    - contextPath: Securonix.Users.Masked
+      description: Whether the user is masked.
+      type: String
+    - contextPath: Securonix.Users.Division
+      description: User division.
+      type: String
+    - contextPath: Securonix.Users.Criticality
+      description: User criticality.
+      type: String
+    - contextPath: Securonix.Users.Status
+      description: User status.
+      type: String
+    - contextPath: Securonix.Users.Department
+      description: User department.
+      type: String
+    - contextPath: Securonix.Users.Title
+      description: User title.
+      type: String
+    - contextPath: Securonix.Users.FirstName
+      description: User first name.
+      type: String
+    - contextPath: Securonix.Users.Email
+      description: User email.
+      type: String
   - arguments:
     - default: false
       description: Start range in format MM/dd/yyyy HH:mm:ss.
@@ -194,6 +238,53 @@ script:
     description: List incidents.
     execution: false
     name: securonix-list-incidents
+    outputs:
+    - contextPath: Securonix.Incidents.ViolatorId
+      description: Incident Violator ID.
+      type: String
+    - contextPath: Securonix.Incidents.Entity
+      description: Incident entity.
+      type: String
+    - contextPath: Securonix.Incidents.Riskscore
+      description: Incident risk score.
+      type: Number
+    - contextPath: Securonix.Incidents.Priority
+      description: Incident priority.
+      type: String
+    - contextPath: Securonix.Incidents.Reason
+      description: Reason for the incident. Usually includes policy name and/or possible
+        threat name.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentStatus
+      description: Incident status.
+      type: String
+    - contextPath: Securonix.Incidents.WorkflowName
+      description: Incident workflow name.
+      type: String
+    - contextPath: Securonix.Incidents.Watchlisted
+      description: Whether the incident is in a watchlist.
+      type: Boolean
+    - contextPath: Securonix.Incidents.IncidentType
+      description: Incident type.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentId
+      description: Incident ID.
+      type: String
+    - contextPath: Securonix.Incidents.LastUpdateDate
+      description: Last update date of the incident in epoch.
+      type: Number
+    - contextPath: Securonix.Incidents.Url
+      description: URL that links to the incident on Securonix.
+      type: String
+    - contextPath: Securonix.Incidents.ViolatorText
+      description: Incident violator text.
+      type: String
+    - contextPath: Securonix.Incidents.AssignedUser
+      description: Assigned user to the incident.
+      type: String
+    - contextPath: Securonix.Incidents.IsWhitelisted
+      description: Whether the incident is whitelisted.
+      type: Boolean
   - arguments:
     - default: false
       description: Incident ID.
