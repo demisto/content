@@ -1770,7 +1770,7 @@ def fetch_incidents():
 
 def threat_to_incident(threat):
     incident = {}
-    incident['name'] = 'Sentinel One Threat: ' + threat.get('classification')
+    incident['name'] = 'Sentinel One Threat: ' + str(threat.get('classification', 'Not classified'))
     incident['occurred'] = threat.get('createdDate')
     incident['rawJSON'] = json.dumps(threat)
     return incident

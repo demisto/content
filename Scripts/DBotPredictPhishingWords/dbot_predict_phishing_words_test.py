@@ -56,17 +56,39 @@ def test_predict_phishing_words(mocker):
                                                                  'PositiveWords': ['word1'],
                                                                  'NegativeWords': ['word2']},
                  create=True)
+
     TOKENIZATION_RESULT = {'originalText': 'word1 word2 word3',
                            'tokenizedText': "word1 word2 word3",
                            'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
                            }
 
-    res = predict_phishing_words("modelName", "list", "subject", "body")
+    res = predict_phishing_words("modelName", "list", "subject", "body", 0, 0, 0, 10, True)
     correct_res = {'OriginalText': 'word1 word2 word3',
                    'Probability': 0.7, 'NegativeWords': ['word2'],
                    'TextTokensHighlighted': '<b>word1</b> word2 word3',
                    'PositiveWords': ['word1'], 'Label': 'Valid'}
     assert res['Contents'] == correct_res
+
+
+def test_predict_phishing_words_low_threshold(mocker):
+    global TOKENIZATION_RESULT
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10})
+    mocker.patch('demisto_ml.decode_model', return_value="Model", create=True)
+    mocker.patch('demisto_ml.filter_model_words', return_value=("text", 2), create=True)
+    mocker.patch('demisto_ml.explain_model_words', return_value={"Label": 'Valid',
+                                                                 'Probability': 0.7,
+                                                                 'PositiveWords': ['word1'],
+                                                                 'NegativeWords': ['word2']},
+                 create=True)
+    TOKENIZATION_RESULT = {'originalText': 'word1 word2 word3',
+                           'tokenizedText': "word1 word2 word3",
+                           'hashedTokenizedText': '23423 432432 12321',
+                           'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
+                           'wordsToHashedTokens': {'word1': ['23423'], 'word2': ['432432'], 'word3': ['12321']},
+                           }
+    with pytest.raises(SystemExit):
+        predict_phishing_words("modelName", "list", "subject", "body", 0, 0.8, 0, 10, True)
 
 
 def test_predict_phishing_words_no_words(mocker):
@@ -83,7 +105,10 @@ def test_predict_phishing_words_no_words(mocker):
                            'wordsToHashedTokens': {'word1': ['23423'], 'word2': ['432432'], 'word3': ['12321']},
                            }
     with pytest.raises(SystemExit):
-        predict_phishing_words("modelName", "list", "subject", "body")
+        predict_phishing_words("modelName", "list", "subject", "body", 0, 0, 0, 10, True)
+    mocker.patch('demisto_ml.filter_model_words', return_value=("", 10), create=True)
+    with pytest.raises(SystemExit):
+        predict_phishing_words("modelName", "list", "subject", "body", 20, 0, 0, 10, True)
 
 
 def test_predict_phishing_words_hashed(mocker):
@@ -103,7 +128,7 @@ def test_predict_phishing_words_hashed(mocker):
                            'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
                            'wordsToHashedTokens': {'word1': ['23423'], 'word2': ['432432'], 'word3': ['12321']},
                            }
-    res = predict_phishing_words("modelName", "list", "subject", "body")
+    res = predict_phishing_words("modelName", "list", "subject", "body", 0, 0, 0, 10, True)
     assert res['Contents'] == {'OriginalText': 'word1 word2 word3',
                                'Probability': 0.7, 'NegativeWords': ['word2'],
                                'TextTokensHighlighted': '<b>word1</b> word2 word3',
@@ -129,7 +154,7 @@ def test_predict_phishing_words_tokenization_by_character(mocker):
                                                                  'Probability': 0.7,
                                                                  'PositiveWords': positive_tokens,
                                                                  'NegativeWords': negative_tokens}, create=True)
-    res = predict_phishing_words("modelName", "list", "subject", "body")
+    res = predict_phishing_words("modelName", "list", "subject", "body", 0, 0, 0, 10, True)
     correct_highlighted = ' '.join(
         bold(w) if any(pos_token in w for pos_token in positive_tokens) else w for w in original_text.split())
     assert res['Contents'] == {'OriginalText': original_text,
@@ -169,7 +194,7 @@ def test_predict_phishing_words_tokenization_by_character_hashed(mocker):
                                                                  'Probability': 0.7,
                                                                  'PositiveWords': positive_tokens,
                                                                  'NegativeWords': negative_tokens}, create=True)
-    res = predict_phishing_words("modelName", "list", "subject", "body")
+    res = predict_phishing_words("modelName", "list", "subject", "body", 0, 0, 0, 10, True)
     correct_highlighted = ' '.join(
         bold(w) if any(unhash_token(pos_token) in w for pos_token in positive_tokens) else w for w in original_text.split())
     assert res['Contents'] == {'OriginalText': original_text,
