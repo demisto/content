@@ -382,6 +382,12 @@ def test_module():
     demisto.results('ok')
 
 
+def ips_reputation_command(ip, threshold=None, status="active,inactive"):
+    ips = argToList(ip, ',')
+    for single_ip in ips:
+        get_ip_reputation(single_ip, threshold, status)
+
+
 def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     """
         Checks the reputation of given ip from ThreatStream and
@@ -404,6 +410,15 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     return_outputs(human_readable, ec, indicator)
 
 
+def domains_reputation_command(domain, threshold=None, status="active,inactive"):
+    """
+        Wrapper function for get_url_reputation.
+    """
+    domains = argToList(domain, ',')
+    for single_domain in domains:
+        get_domain_reputation(single_domain, threshold, status)
+
+
 def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     """
         Checks the reputation of given domain from ThreatStream and
@@ -424,6 +439,15 @@ def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     human_readable = tableToMarkdown(F"Domain reputation for: {domain}", threat_domain_context)
 
     return_outputs(human_readable, ec, indicator)
+
+
+def files_reputation_command(file, threshold=None, status="active,inactive"):
+    """
+        Wrapper function for get_url_reputation.
+    """
+    files = argToList(file, ',')
+    for single_file in files:
+        get_file_reputation(single_file, threshold, status)
 
 
 def get_file_reputation(file, threshold=None, status="active,inactive"):
@@ -450,6 +474,15 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
     human_readable = tableToMarkdown(F"MD5 reputation for: {file}", threat_file_context)
 
     return_outputs(human_readable, ec, indicator)
+
+
+def urls_reputation_command(url, threshold=None, status="active,inactive"):
+    """
+        Wrapper function for get_url_reputation.
+    """
+    urls = argToList(url, ',')
+    for single_url in urls:
+        get_url_reputation(single_url, threshold, status)
 
 
 def get_url_reputation(url, threshold=None, status="active,inactive"):
@@ -522,17 +555,29 @@ def get_passive_dns(value, type="ip", limit=50):
 
 
 def import_ioc_with_approval(import_type, import_value, confidence="50", classification="Private",
-                             threat_type="exploit", severity="low"):
+                             threat_type="exploit", severity="low", ip_mapping=False, domain_mapping=False,
+                             url_mapping=False, email_mapping=False, md5_mapping=False):
     """
         Imports indicators data to ThreatStream.
         The data can be imported using one of three import_types: data-text (plain-text),
         file-id of uploaded file to war room or URL.
     """
+    ip_mapping = demisto.args().get('ip_mapping', 'no') == 'yes'
+    domain_mapping = demisto.args().get('domain_mapping', 'no') == 'yes'
+    url_mapping = demisto.args().get('url_mapping', 'no') == 'yes'
+    email_mapping = demisto.args().get('email_mapping', 'no') == 'yes'
+    md5_mapping = demisto.args().get('md5_mapping', 'no') == 'yes'
+
     files = None
     uploaded_file = None
     data = {
         'confidence': confidence,
         'classification': classification,
+        'ip_mapping': ip_mapping,
+        'domain_mapping': domain_mapping,
+        'url_mapping': url_mapping,
+        'email_mapping': email_mapping,
+        'md5_mapping': md5_mapping,
         'threat_type': threat_type,
         'severity': severity
     }
@@ -546,10 +591,15 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
 
         uploaded_file = open(file_info['path'], 'rb')
         files = {'file': (file_info['name'], uploaded_file)}
+        params = build_params()
     else:
-        data[import_type] = import_value
+        if import_value == 'url':
+            params = build_params(url=import_value)
+        else:
+            params = build_params(datatext=import_value)
+
     # in case import_type is not file-id, http_requests will receive None as files
-    res = http_request("POST", "v1/intelligence/import/", params=CREDENTIALS, data=data, files=files)
+    res = http_request("GET", "v1/intelligence/import/", params=params, data=data, files=files)
     # closing the opened file if exist
     if uploaded_file:
         uploaded_file.close()
@@ -804,13 +854,13 @@ def main():
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'ip':
-            get_ip_reputation(**args)
+            ips_reputation_command(**args)
         elif demisto.command() == 'domain':
-            get_domain_reputation(**args)
+            domains_reputation_command(**args)
         elif demisto.command() == 'file':
-            get_file_reputation(**args)
+            files_reputation_command(**args)
         elif demisto.command() == 'url':
-            get_url_reputation(**args)
+            urls_reputation_command(**args)
         elif demisto.command() == 'threatstream-email-reputation':
             get_email_reputation(**args)
         elif demisto.command() == 'threatstream-get-passive-dns':
