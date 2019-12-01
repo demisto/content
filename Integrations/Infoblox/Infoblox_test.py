@@ -29,14 +29,20 @@ client = Client('https://example.com/v1/')
 
 
 class TestZonesOperations:
+    def test_bla(self):
+        assert True
+
     def test_create_response_policy_zone_command(self, mocker, requests_mock):
         from Infoblox import create_response_policy_zone_command
-        mocker.patch.object(demisto, 'credentials')
+        mocker.patch.object(demisto, 'params', return_value={})
         # list
         requests_mock.post(
             f'{BASE_URL}zone_rp{REQUEST_PARAM_ZONE}',
             json=POST_ZONE_RESPONSE)
-        human_readable, context, raw_response = create_response_policy_zone_command(client)
+        args = {
+            "FQDN": "test.com", "rpz_policy": "GIVEN", "rpz_severity": "WARNING", "substitute_name": "", "rpz_type": ""
+        }
+        human_readable, context, raw_response = create_response_policy_zone_command(client, args)
         assert human_readable == "### Infoblox Integration - Response Policy Zone: test.com has been created\n" \
                                  "|Disable|FQDN|Reference ID|Rpz Policy|Rpz Severity|Rpz Type|View|\n" \
                                  "|---|---|---|---|---|---|---|\n" \
@@ -62,5 +68,3 @@ class TestZonesOperations:
                 'rpz_type': 'LOCAL',
                 'view': 'default'
             }}
-
-
