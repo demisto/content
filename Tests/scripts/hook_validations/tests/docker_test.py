@@ -105,6 +105,7 @@ def test_clear_non_numbered_tags(input_tags, output_tags):
     assert sorted(output_tags) == sorted(DockerImageValidator.clear_non_numbered_tags(input_tags))
 
 
+# disable-secrets-detection-start
 def test_parse_docker_image():
     from Tests.scripts.hook_validations.docker import DockerImageValidator
     assert 'demisto/python', '1.3-alpine' == DockerImageValidator.parse_docker_image('demisto/python:1.3-alpine')
@@ -112,6 +113,7 @@ def test_parse_docker_image():
     assert 'demisto/python', '' == DockerImageValidator.parse_docker_image('demisto/python/1.2.3.4')
     assert ('', '') == DockerImageValidator.parse_docker_image('blah/blah')
     assert ('', '1.2.3.4') == DockerImageValidator.parse_docker_image('blah/blah:1.2.3.4')
+# disable-secrets-detection-end
 
 
 def test_is_docker_image_latest_tag():
