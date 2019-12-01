@@ -2,464 +2,670 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 ''' IMPORTS '''
-from typing import Dict, Tuple, Union, Optional, List, Any, AnyStr
-import urllib3
+
+import json
+import requests
+from typing import Callable
+
 # Disable insecure warnings
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
-"""GLOBALS/PARAMS
-Attributes:
-    INTEGRATION_NAME:
-        Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
+''' TYPES '''
 
-    INTEGRATION_COMMAND_NAME:
-        Command names should be written in all lower-case letters,
-        and each word separated with a hyphen, for example: msgraph-user.
-
-    INTEGRATION_CONTEXT_NAME:
-        Context output names should be written in camel case, for example: MSGraphUser.
-"""
-INTEGRATION_NAME = 'PhishLabs IOC - EIR'
-INTEGRATION_COMMAND_NAME = 'phishlabs-ioc-eir'
-INTEGRATION_CONTEXT_NAME = 'PhishLabsIOC'
+Response = requests.models.Response
 
 
-class Client(BaseClient):
-    def test_module(self) -> Dict:
-        """Performs basic GET request to check if the API is reachable and authentication is successful.
+''' GLOBALS/PARAMS '''
 
-        Returns:
-            Response json
-        """
-        return self.get_incidents(limit=2)
+USERNAME: str = demisto.params().get('credentials', {}).get('identifier')
+PASSWORD: str = demisto.params().get('credentials', {}).get('password')
+SERVER: str = (demisto.params().get('url')[:-1]
+               if (demisto.params().get('url') and demisto.params().get('url').endswith('/'))
+               else demisto.params().get('url'))
+USE_SSL: bool = not demisto.params().get('insecure', False)
+BASE_URL: str = str(SERVER) + '/api/v1/'
+HEADERS: dict = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+}
+NONE_DATE: str = '0001-01-01T00:00:00Z'
 
-    def get_incidents(self, status: Optional[str] = None, created_after: Optional[str] = None,
-                      created_before: Optional[str] = None, closed_before: Optional[str] = None,
-                      closed_after: Optional[str] = None, sort: Optional[str] = None, direction: Optional[str] = None,
-                      limit: Union[str, int] = 25, offset: Union[str, int] = 0) -> Dict:
-        """
-        Query the specified kwargs with default parameters if not defined
-        Args:
-            status: open,closed
-            created_after: Timestamp is in RFC3339 format
-            created_before: Timestamp is in RFC3339 format
-            closed_before: Timestamp is in RFC3339 format
-            closed_after: Timestamp is in RFC3339 format
-            sort: created_at,closed_at
-            direction: asc,desc
-            limit: Limit amounts of incidents (0-50, default 50)
-            offset: Offset from last incident
-
-        Returns:
-            Raw response json as dictionary
-        """
-        suffix = "/incidents/EIR"
-        params = {
-            'status': status,
-            'created_after': created_after,
-            'created_before': created_before,
-            'closed_before': closed_before,
-            'closed_after': closed_after,
-            'sort': sort,
-            'direction': direction,
-            'limit': limit,
-            'offset': offset
-        }
-        return self._http_request('GET',
-                                  url_suffix=suffix,
-                                  params=assign_params(**params))
-
-    def get_incident_by_id(self, incident_id: str) -> Dict:
-        """Query incident by ID
-
-        Args:
-            incident_id: ID of incident
-
-        Returns:
-            Response JSON as dictionary
-        """
-        suffix = f"/incidents/EIR/{incident_id}"
-        return self._http_request('GET',
-                                  url_suffix=suffix)
+FETCH_TIME: str = demisto.params().get('fetch_time', '').strip()
+FETCH_LIMIT: str = demisto.params().get('fetch_limit', '10')
+RAISE_EXCEPTION_ON_ERROR: bool = False
 
 
 ''' HELPER FUNCTIONS '''
 
 
 @logger
-def indicator_ec(indicator: Dict, type_ec: AnyStr) -> Dict:
-    """indicator convert to ec format
-    Get an indicator from raw response and concert to demisto entry context format
-
-    Args:
-        indicator: raw response dictionary
-        type_ec: type of entry context
-
-    Returns:
-         indicator entry context
+def http_request(method: str, path: str, params: dict = None, data: dict = None) -> dict:
     """
-    ec: Dict = {}
-    if type_ec == 'url-phishlabs':
-        ec = {
-            'URL': indicator.get('url'),
-            'Malicious': indicator.get('malicious'),
-            'MaliciousDomain': indicator.get('maliciousDomain'),
-        }
-    elif type_ec == 'attach-phishlabs':
-        ec = {
-            'fileName': indicator.get('fileName'),
-            'MimeType': indicator.get('mimeType'),
-            'MD5': indicator.get('md5'),
-            'SHA256': indicator.get('sha256'),
-            'Malicious': indicator.get('malicious')
-        }
-    elif type_ec == 'email-ec':
-        ec = {
-            'To': indicator.get('emailReportedBy'),
-            'From': indicator.get('sender'),
-            'Body/HTML': indicator.get('emailBody')
-        }
+    Sends an HTTP request using the provided arguments
+    :param method: HTTP method
+    :param path: URL path
+    :param params: URL query params
+    :param data: Request body
+    :return: JSON response
+    """
+    params: dict = params if params is not None else {}
+    data: dict = data if data is not None else {}
 
-    return ec
+    try:
+        res: Response = requests.request(
+            method,
+            BASE_URL + path,
+            auth=(USERNAME, PASSWORD),
+            verify=USE_SSL,
+            params=params,
+            data=json.dumps(data),
+            headers=HEADERS)
+    except requests.exceptions.SSLError:
+        ssl_error = 'Could not connect to PhishLabs IOC Feed: Could not verify certificate.'
+        if RAISE_EXCEPTION_ON_ERROR:
+            raise Exception(ssl_error)
+        return return_error(ssl_error)
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
+            requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
+        connection_error = 'Could not connect to PhishLabs IOC Feed: {}'.format(str(e))
+        if RAISE_EXCEPTION_ON_ERROR:
+            raise Exception(connection_error)
+        return return_error(connection_error)
+
+    if res.status_code < 200 or res.status_code > 300:
+        status: int = res.status_code
+        message: str = res.reason
+        try:
+            error_json: dict = res.json()
+            message = error_json.get('error', '')
+        except Exception:
+            pass
+        error_message: str = ('Error in API call to PhishLabs IOC API, status code: {}'.format(status))
+        if status == 401:
+            error_message = 'Could not connect to PhishLabs IOC Feed: Wrong credentials'
+        if message:
+            error_message += ', reason:' + message
+        if RAISE_EXCEPTION_ON_ERROR:
+            raise Exception(error_message)
+        else:
+            return return_error(error_message)
+    try:
+        return res.json()
+    except Exception:
+        error_message = 'Failed parsing the response from PhishLabs IOC API: {}'.format(res.content)
+        if RAISE_EXCEPTION_ON_ERROR:
+            raise Exception(error_message)
+        else:
+            return return_error(error_message)
 
 
 @logger
-def indicator_dbot_ec(indicator: Dict, type_ec: AnyStr) -> Tuple[Dict, Dict]:
-    """Indicator convert to ec and dbotscore ec
-    Get an indicator from raw response and concert to demisto entry context format and demisto dbotscore entry context
-    format.
-
-    Args:
-        indicator: raw response dictionary
-        type_ec: type of entry context
-
-    Returns:
-        dbotscore entry context, indicator entry context
+def populate_context(dbot_scores: list, domain_entries: list, file_entries: list,
+                     url_entries: list, email_entries: list = None) -> dict:
     """
-    dbotscore: Dict = {}
-    ec: Dict = {}
-    if type_ec == 'url-ec':
-        ec = {
-            'Data': indicator.get('url'),
-            'Malicious': {
-                'Vendor': INTEGRATION_NAME,
-                'Description': indicator.get('malicious')
-            }
-        }
-        dbotscore = {
-            'Indicator': indicator.get('url'),
-            'Type': 'URL',
-            'Vendor': INTEGRATION_NAME,
-            'Score': dbotscores.get('High') if indicator.get('malicious') == 'true' else dbotscores.get('Low')
-        }
-    elif type_ec == 'file-ec':
-        ec = {
-            'Name': indicator.get('fileName'),
-            'SHA256': indicator.get('sha256'),
-            'MD5': indicator.get('md5'),
-            'Malicious': {
-                'Vendor': INTEGRATION_NAME,
-                'Description': indicator.get('malicious')
-            }
-        }
-        dbotscore = {
-            'Indicator': indicator.get('fileName'),
-            'Type': 'File',
-            'Vendor': INTEGRATION_NAME,
-            'Score': dbotscores.get('High') if indicator.get('malicious') == 'true' else dbotscores.get('Low')
-        }
-
-    return dbotscore, ec
+    Populate the context object with entries as tuples -
+    the first element contains global objects and the second contains PhishLabs objects
+    :param dbot_scores: Indicator DBotScore
+    :param domain_entries: Domain indicators
+    :param file_entries: File indicators
+    :param url_entries: URL indicators
+    :param email_entries: Email indicators
+    :return: The context object
+    """
+    context: dict = {}
+    if url_entries:
+        context[outputPaths['url']] = createContext(list(map(lambda u: u[0], url_entries)))
+        context['PhishLabs.URL(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda u: u[1], url_entries)),
+                                                                              removeNull=True)
+    if domain_entries:
+        context[outputPaths['domain']] = createContext(list(map(lambda d: d[0], domain_entries)))
+        context['PhishLabs.Domain(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda d: d[1],
+                                                                                          domain_entries)),
+                                                                                 removeNull=True)
+    if file_entries:
+        context[outputPaths['file']] = createContext(list(map(lambda f: f[0], file_entries)))
+        context['PhishLabs.File(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda f: f[1], file_entries)),
+                                                                               removeNull=True)
+    if email_entries:
+        context['Email'] = createContext(list(map(lambda e: e[0], email_entries)))
+        context['PhishLabs.Email(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda e: e[1],
+                                                                                         email_entries)),
+                                                                                removeNull=True)
+    if dbot_scores:
+        context[outputPaths['dbotscore']] = dbot_scores
+    return context
 
 
 @logger
-def indicators_to_list_ec(indicators: List, type_ec: AnyStr) -> Union[Tuple[List, List], List]:
-    """Unpack list of indicators to demisto ec format
-    Convert list of indicators from raw response to demisto entry context format lists
-
-    Args:
-        indicators: lit of indicators from raw response
-        type_ec: type of indicators
-    Returns:
-         List of indicators entry context and if not integration context also dbotscore
+def get_file_properties(indicator: dict) -> tuple:
     """
-    dbots: List = []
-    ecs: List = []
-    if type_ec in ['url-ec', 'file-ec']:
-        for indicator in indicators:
-            dbotscore, ec = indicator_dbot_ec(indicator, type_ec)
-            ecs.append(ec)
-            dbots.append(dbotscore)
-        return ecs, dbots
+    Extract the file properties from the indicator attributes.
+    Example:
+    Indicator: {
+            "attributes": [
+                {
+                    "createdAt": "2019-05-14T13:03:45Z",
+                    "id": "xyz",
+                    "name": "md5",
+                    "value": "c8092abd8d581750c0530fa1fc8d8318" # guardrails-disable-line
+                },
+                {
+                    "createdAt": "2019-05-14T13:03:45Z",
+                    "id": "abc",
+                    "name": "filetype",
+                    "value": "application/zip"
+                },
+                {
+                    "createdAt": "2019-05-14T13:03:45Z",
+                    "id": "qwe",
+                    "name": "name",
+                    "value": "Baycc.zip"
+                }
+            ],
+            "createdAt": "2019-05-14T13:03:45Z",
+            "falsePositive": false,
+            "id": "def",
+            "type": "Attachment",
+            "updatedAt": "0001-01-01T00:00:00Z",
+            "value": "c8092abd8d581750c0530fa1fc8d8318" # guardrails-disable-line
+        }
+    Return values: c8092abd8d581750c0530fa1fc8d8318, Baycc.zip, application/zip
+    :param indicator: The file indicator
+    :return: File MD5, name and type
+    """
+    file_name_attribute: list = list(filter(lambda a: a.get('name') == 'name', indicator.get('attributes', [])))
+    file_name: str = file_name_attribute[0].get('value') if file_name_attribute else ''
+    file_type_attribute: list = list(filter(lambda a: a.get('name') == 'filetype', indicator.get('attributes', [])))
+    file_type: str = file_type_attribute[0].get('value') if file_type_attribute else ''
+    file_md5_attribute: list = list(filter(lambda a: a.get('name') == 'md5', indicator.get('attributes', [])))
+    file_md5: str = file_md5_attribute[0].get('value') if file_md5_attribute else ''
+
+    return file_md5, file_name, file_type
+
+
+@logger
+def get_email_properties(indicator: dict) -> tuple:
+    """
+    Extract the email properties from the indicator attributes.
+    Example:
+    Indicator:
+    {
+    "attributes":
+    [
+        {
+            "createdAt": "2019-05-13T16:54:18Z",
+            "id": "abc",
+            "name": "email-body",
+            "value": "\r\n\r\n-----Original Message-----\r\nFrom: A \r\nSent:
+            Monday, May 13, 2019 12:22 PM\r\nTo:
+        },
+        {
+            "createdAt": "2019-05-13T16:54:18Z",
+            "id": "def",
+            "name": "from",
+            "value": "someuser@contoso.com"
+        },
+        {
+            "createdAt": "2019-05-13T16:54:18Z",
+            "id": "cf3182ca-92ec-43b6-8aaa-429802a99fe5",
+            "name": "to",
+            "value": "example@gmail.com"
+        }
+    ],
+    "createdAt": "2019-05-13T16:54:18Z",
+    "falsePositive": false,
+    "id": "ghi",
+    "type": "E-mail",
+    "updatedAt": "0001-01-01T00:00:00Z",
+    "value": "FW: Task"
+    }
+    Return values:
+    :param indicator: The email indicator
+    :return: Email body, To and From
+    """
+    email_to_attribute: list = list(filter(lambda a: a.get('name') == 'to', indicator.get('attributes', [])))
+    email_to: str = email_to_attribute[0].get('value') if email_to_attribute else ''
+    email_from_attribute: list = list(filter(lambda a: a.get('name') == 'from', indicator.get('attributes', [])))
+    email_from: str = email_from_attribute[0].get('value') if email_from_attribute else ''
+    email_body_attribute: list = list(filter(lambda a: a.get('name') == 'email-body', indicator.get('attributes', [])))
+    email_body: str = email_body_attribute[0].get('value') if email_body_attribute else ''
+
+    return email_body, email_to, email_from
+
+
+@logger
+def create_domain_context(indicator: dict, classification: str) -> dict:
+    """
+    Create a domain context object
+    :param indicator: The domain indicator
+    :param classification: The indicator classification
+    :return: The domain context object
+    """
+    domain_object = {
+        'Name': indicator.get('value')
+    }
+
+    if classification == 'Malicious':
+        domain_object['Malicious'] = {
+            'Vendor': 'PhishLabs',
+            'Description': 'Domain in PhishLabs feed'
+        }
+
+    return domain_object
+
+
+@logger
+def create_url_context(indicator: dict, classification: str) -> dict:
+    """
+    Create a URL context object
+    :param indicator: The URL indicator
+    :param classification: The indicator classification
+    :return: The URL context object
+    """
+
+    url_object: dict = {
+        'Data': indicator.get('value')
+    }
+
+    if classification == 'Malicious':
+        url_object['Malicious'] = {
+            'Vendor': 'PhishLabs',
+            'Description': 'URL in PhishLabs feed'
+        }
+
+    return url_object
+
+
+@logger
+def create_phishlabs_object(indicator: dict) -> dict:
+    """
+    Create the context object for the PhishLabs path
+    :param indicator: The indicator
+    :return: The context object
+    """
+    return {
+        'ID': indicator.get('id'),
+        'CreatedAt': indicator.get('createdAt'),
+        'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', NONE_DATE) != NONE_DATE else '',
+        'Attribute': [{
+            'Name': a.get('name'),
+            'Type': a.get('type'),
+            'Value': a.get('value'),
+            'CreatedAt': a.get('createdAt')
+        } for a in indicator.get('attributes', [])]
+    }
+
+
+@logger
+def create_indicator_content(indicator: dict) -> dict:
+    """
+    Create content for the human readable object
+    :param indicator: The indicator
+    :return: The object to return to the War Room
+    """
+    return {
+        'ID': indicator.get('id'),
+        'Indicator': indicator.get('value'),
+        'Type': indicator.get('type'),
+        'CreatedAt': indicator.get('createdAt'),
+        'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', NONE_DATE) != NONE_DATE else '',
+        'FalsePositive': indicator.get('falsePositive')
+    }
+
+
+''' COMMANDS'''
+
+
+def test_module():
+    """
+    Performs basic get request to get item samples
+    """
+    get_global_feed_request(limit='1')
+    demisto.results('ok')
+
+
+def get_global_feed_command():
+    """
+    Gets the global feed data using the provided arguments
+    """
+    indicator_headers: list = ['Indicator', 'Type', 'CreatedAt', 'UpdatedAt', 'FalsePositive']
+    contents: list = []
+    url_entries: list = []
+    domain_entries: list = []
+    file_entries: list = []
+    dbot_scores: list = []
+    context: dict = {}
+
+    since: str = demisto.args().get('since')
+    limit: str = demisto.args().get('limit')
+    indicator: list = argToList(demisto.args().get('indicator_type', []))
+    remove_protocol: str = demisto.args().get('remove_protocol')
+    remove_query: str = demisto.args().get('remove_query')
+    false_positive: str = demisto.args().get('false_positive')
+
+    feed: dict = get_global_feed_request(since, limit, indicator, remove_protocol, remove_query, false_positive)
+    results: list = feed.get('data', []) if feed else []
+
+    if results:
+        if not isinstance(results, list):
+            results = [results]
+        for result in results:
+            contents.append(create_indicator_content(result))
+            indicator_false_positive = result.get('falsePositive', False)
+            indicator_type: str = result.get('type')
+            phishlabs_object: dict = create_phishlabs_object(result)
+
+            dbot_score: dict = {
+                'Indicator': result.get('value'),
+                'Vendor': 'PhishLabs',
+                'Score': 3 if not indicator_false_positive else 1
+            }
+
+            if indicator_type == 'URL':
+                context_object = create_url_context(result, 'Malicious' if not indicator_false_positive else 'Good')
+                phishlabs_object['Data'] = result.get('value')
+                dbot_score['type'] = 'url'
+                url_entries.append((context_object, phishlabs_object))
+
+            elif indicator_type == 'Domain':
+                context_object = create_domain_context(result, 'Malicious' if not indicator_false_positive else 'Good')
+                phishlabs_object['Name'] = result.get('value')
+                dbot_score['type'] = 'domain'
+                domain_entries.append((context_object, phishlabs_object))
+
+            elif indicator_type == 'Attachment':
+                file_md5, file_name, file_type = get_file_properties(result)
+
+                context_object = {
+                    'Name': file_name,
+                    'Type': file_type,
+                    'MD5': file_md5
+                }
+
+                phishlabs_object['Name'] = file_name
+                phishlabs_object['Type'] = file_type
+                phishlabs_object['MD5'] = file_md5
+
+                file_entries.append((context_object, phishlabs_object))
+                dbot_score['type'] = 'file'
+
+            dbot_scores.append(dbot_score)
+
+        context = populate_context(dbot_scores, domain_entries, file_entries, url_entries)
+        human_readable: str = tableToMarkdown('PhishLabs Global Feed', contents, headers=indicator_headers,
+                                              removeNull=True, headerTransform=pascalToSpace)
     else:
-        for indicator in indicators:
-            ec = indicator_ec(indicator, type_ec)
-            ecs.append(ec)
-        return ecs
+        human_readable = 'No indicators found'
+
+    return_outputs(human_readable, context, feed)
 
 
 @logger
-def raw_response_to_context(incidents: Union[List, Any]) -> Tuple[List, List, List, List, List]:
+def get_global_feed_request(since: str = None, limit: str = None, indicator: list = None,
+                            remove_protocol: str = None, remove_query: str = None, false_positive: str = None) -> dict:
     """
-    Convert incidents list from raw response to demisto entry context list format
-    Args:
-        incidents: Incidents list
-
-    Returns:
-        Entry contexts of phishLabs, emails, files, urls, dbotScores
+    Sends a request to PhishLabs global feed with the provided arguments
+    :param since: Data updated within this duration of time from now
+    :param limit: Limit the number of rows to return
+    :param indicator: Indicator type filter
+    :param remove_protocol: Removes the protocol part from indicators when the rule can be applied.
+    :param remove_query: Removes the query string part from indicators when the rules can be applied.
+    :param false_positive: Filter by indicators that are false positives.
+    :return: Global feed indicators
     """
-    phishlabs_ec: List = []
-    email_ec: List = []
-    file_ec: List = []
-    url_ec: List = []
-    dbots_ec: List = []
-    for incident in incidents:
-        sc_incident: Dict = incident.get('details', {})
-        # Phishlabs entry context
-        phishlabs: Dict = {
-            'CaseType': sc_incident.get('caseType'),
-            'Classification': sc_incident.get('classification'),
-            'SubClassification': sc_incident.get('subClassification'),
-            'Severity': sc_incident.get('severity'),
-            'EmailReportedBy': sc_incident.get('emailReportedBy'),
-            'SubmissionMethod': sc_incident.get('submissionMethod'),
-            'FurtherReviewReason': sc_incident.get('furtherReviewReason'),
-            'ID': incident.get('id'),
-            'Title': incident.get('title'),
-            'Description': incident.get('description'),
-            'Status': incident.get('status'),
-            'Created': incident.get('created'),
-            'Modified': incident.get('modified'),
-            'Closed': incident.get('closed'),
-            'Duration': incident.get('duration'),
-            'Email': {
-                'EmailBody': sc_incident.get('emailBody'),
-                'Sender': sc_incident.get('sender'),
-                'URL': indicators_to_list_ec(sc_incident.get('urls', []), type_ec='url-phishlabs'),
-                'Attachment': indicators_to_list_ec(sc_incident.get('attachments', []), type_ec='attach-phishlabs')
-            }
-        }
-        phishlabs_ec.append(phishlabs)
-        # Email entry context
-        email = indicator_ec(sc_incident, type_ec='email-ec')
-        email_ec.append(email)
-        # Files + dbot entry context
-        files, dbotscores_files = indicators_to_list_ec(sc_incident.get('attachments', []), type_ec='file-ec')
-        file_ec += files
-        dbots_ec += dbotscores_files
-        # Urls + dbot entry context
-        urls, dbotscores_urls = indicators_to_list_ec(sc_incident.get('urls', []), type_ec='url-ec')
-        url_ec += urls
-        dbots_ec += dbotscores_urls
+    path: str = 'globalfeed'
+    params: dict = {}
 
-    return phishlabs_ec, email_ec, file_ec, url_ec, dbots_ec
+    if since:
+        params['since'] = since
+    if limit:
+        params['limit'] = int(limit)
+    if indicator:
+        params['indicator'] = indicator
+    if remove_protocol:
+        params['remove_protocol'] = remove_protocol
+    if remove_query:
+        params['remove_query'] = remove_query
+    if false_positive:
+        params['false_positive'] = false_positive
+
+    response = http_request('GET', path, params)
+
+    return response
 
 
-''' COMMANDS '''
-
-
-@logger
-def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
-    """Performs a basic GET request to check if the API is reachable and authentication is successful.
-
-    Args:
-        client: Client object with request
-        *_: Usually demisto.args()
-
-    Returns:
-        'ok' if test successful.
-
-    Raises:
-        DemistoException: If test failed.
+def get_incident_indicators_command():
     """
-    results = client.test_module()
-    if 'incidents' in results:
-        return None, None, 'ok'
-    raise DemistoException(f'Test module failed, {results}')
-
-
-@logger
-def fetch_incidents_command(
-        client: Client,
-        fetch_time: str,
-        limit: str,
-        last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
-    """Uses to fetch incidents into Demisto
-    Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
-
-    Args:
-        client: Client object with request
-        fetch_time: From when to fetch if first time, e.g. `3 days`
-        limit: limit of incidents in a fetch
-        last_run: Last fetch object occurs.
-
-    Returns:
-        incidents, new last_run
+    Gets the indicators for the specified incident
     """
-    # Init
-    raws: List = []
-    incidents_raw: List = []
-    # Set last run time
-    occurred_format = '%Y-%m-%dT%H:%M:%SZ'
-    if not last_run:
-        datetime_new_last_run, _ = parse_date_range(date_range=fetch_time,
-                                                    date_format=occurred_format)
+    indicator_headers: list = ['Indicator', 'Type', 'CreatedAt', 'UpdatedAt', 'FalsePositive']
+    attribute_headers: list = ['Name', 'Type', 'Value', 'CreatedAt']
+    url_entries: list = []
+    domain_entries: list = []
+    file_entries: list = []
+    email_entries: list = []
+    dbot_scores: list = []
+    context: dict = {}
+
+    incident_id: str = demisto.args()['incident_id']
+    since: str = demisto.args().get('since')
+    limit: str = demisto.args().get('limit')
+    indicator: list = argToList(demisto.args().get('indicator_type', []))
+    classification: str = demisto.args().get('indicators_classification', 'Suspicious')
+    remove_protocol: str = demisto.args().get('remove_protocol')
+    remove_query: str = demisto.args().get('remove_query')
+
+    human_readable: str = '## Indicators for incident ' + incident_id + '\n'
+
+    feed: dict = get_feed_request(since, indicator=indicator, remove_protocol=remove_protocol, remove_query=remove_query)
+    results: list = feed.get('data', []) if feed else []
+
+    if results:
+        if not isinstance(results, list):
+            results = [results]
+        results = list(filter(lambda f: f.get('referenceId', '') == incident_id, results))
+        if results:
+            indicators = results[0].get('indicators', [])
+            if limit:
+                indicators = indicators[:int(limit)]
+            for result in indicators:
+                human_readable += tableToMarkdown('Indicator', create_indicator_content(result),
+                                                  headers=indicator_headers,
+                                                  removeNull=True, headerTransform=pascalToSpace)
+                phishlabs_object = create_phishlabs_object(result)
+
+                if phishlabs_object.get('Attribute'):
+                    human_readable += tableToMarkdown('Attributes', phishlabs_object['Attribute'],
+                                                      headers=attribute_headers,
+                                                      removeNull=True, headerTransform=pascalToSpace)
+                else:
+                    human_readable += 'No attributes for this indicator\n'
+
+                indicator_type: str = result.get('type')
+
+                dbot_score: dict = {
+                    'Indicator': result.get('value'),
+                    'Vendor': 'PhishLabs',
+                    'Score': 3 if classification == 'Malicious' else 2
+                }
+
+                if indicator_type == 'URL':
+                    context_object = create_url_context(result, classification)
+                    phishlabs_object['Data'] = result.get('value')
+                    dbot_score['type'] = 'url'
+                    url_entries.append((context_object, phishlabs_object))
+
+                elif indicator_type == 'Domain':
+                    context_object = create_domain_context(result, classification)
+                    phishlabs_object['Name'] = result.get('value')
+                    dbot_score['type'] = 'domain'
+                    domain_entries.append((context_object, phishlabs_object))
+
+                elif indicator_type == 'Attachment':
+                    file_md5, file_name, file_type = get_file_properties(result)
+
+                    context_object = {
+                        'Name': file_name,
+                        'Type': file_type,
+                        'MD5': file_md5
+                    }
+
+                    phishlabs_object['Name'] = file_name
+                    phishlabs_object['Type'] = file_type
+                    phishlabs_object['MD5'] = file_md5
+
+                    file_entries.append((context_object, phishlabs_object))
+                    dbot_score['type'] = 'file'
+
+                elif indicator_type == 'E-mail':
+                    email_body, email_to, email_from = get_email_properties(result)
+
+                    context_object = {
+                        'To': email_to,
+                        'From': email_from,
+                        'Body': email_body,
+                        'Subject': result.get('value')
+                    }
+
+                    phishlabs_object['To'] = email_to,
+                    phishlabs_object['From'] = email_from,
+                    phishlabs_object['Body'] = email_body
+                    phishlabs_object['Subject'] = result.get('value')
+
+                    email_entries.append((context_object, phishlabs_object))
+
+                if indicator_type != 'E-mail':
+                    # We do not know what we have for an email
+                    dbot_scores.append(dbot_score)
+
+            context = populate_context(dbot_scores, domain_entries, file_entries, url_entries, email_entries)
+        else:
+            human_readable = 'Incident not found'
     else:
-        datetime_new_last_run = last_run
-    # Query incidents by limit and creation time
-    total = 0
-    offset = 50
-    limit_incidents = int(limit)
-    limit_page = min(50, limit_incidents)
-    raw_response = client.get_incidents(created_after=datetime_new_last_run,
-                                        offset=offset,
-                                        limit=limit_page,
-                                        sort='created_at',
-                                        direction='asc')
-    while raw_response.get('metadata', {}).get('count') and total < limit_incidents:
-        raws.append(raw_response)
-        incidents_raw += raw_response.get('incidents', [])
-        total += int(raw_response.get('metadata', {}).get('count'))
-        offset += int(raw_response.get('metadata', {}).get('count'))
-        if total >= limit_incidents:
-            break
-        if limit_incidents - total < 50:
-            limit_page = limit_incidents - total
-        raw_response = client.get_incidents(offset=offset,
-                                            created_after=datetime_new_last_run,
-                                            limit=limit_page,
-                                            sort='created_at',
-                                            direction='asc')
-    # Gather incidents by demisto format
-    new_last_run: Optional[str] = None
-    incidents_report = []
-    if incidents_raw:
-        for incident_raw in incidents_raw:
-            # Creates incident entry
-            occurred = incident_raw.get('created')
-            incidents_report.append({
-                'name': f"{INTEGRATION_NAME}: {incident_raw.get('id')}",
-                'occurred': occurred,
-                'rawJSON': incident_raw
-            })
+        human_readable = 'No incidents found'
 
-        new_last_run = incidents_report[-1].get('occurred')
-    # Return results
-    return incidents_report, {'lastRun': new_last_run}
+    return_outputs(human_readable, context, feed)
 
 
 @logger
-def get_incidents_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Union[List, Dict]]:
-    """Lists all incidents and return outputs in Demisto's context entry
-
-    Args:
-        client: Client object with request
-        kwargs: Usually demisto.args()
-
-    Returns:
-        human readable (markdown format), raw response and entry context
+def get_feed_request(since: str = None, limit: str = None, indicator: list = None,
+                     remove_protocol: str = None, remove_query: str = None,
+                     offset: str = None, sort: bool = False) -> dict:
     """
-    raw_response: Dict = client.get_incidents(**kwargs)  # type: ignore
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - incidents'
-        phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(raw_response.get('incidents'))
-        context_entry: Dict = {
-            outputPaths.get('dbotscore'): dbots_ec,
-            outputPaths.get('file'): files_ec,
-            outputPaths.get('url'): urls_ec,
-            'Email(val.Address && val.Address == obj.Address)': emails_ec,
-            f'{INTEGRATION_CONTEXT_NAME}(val.EIR.ID && val.EIR.ID === obj.EIR.ID && '
-            f'val.EIR.Modified && val.EIR.Modified === obj.EIR.Modified)': {
-                'EIR': phishlabs_ec
-            }
-        }
-        human_readable = tableToMarkdown(name=title,
-                                         t=phishlabs_ec,
-                                         headers=['ID', 'Title', 'Status', 'Created', 'Classification',
-                                                  'SubClassification', 'EmailReportedBy'],
-                                         removeNull=True)
-
-        return human_readable, context_entry, raw_response
-    else:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
-
-
-@logger
-def get_incident_by_id_command(client: Client, incident_id: str) -> Tuple[object, Dict, Dict]:
-    """Lists all events and return outputs in Demisto's context entry
-
-    Args:
-        client: Client object with request
-        incident_id: ID of Incident
-
-    Returns:
-        human readable (markdown format), raw response and entry context
+    Sends a request to PhishLabs user feed with the provided arguments
+    :param since: Data updated within this duration of time from now
+    :param limit: Limit the number of rows to return
+    :param indicator: Indicator type filter
+    :param remove_protocol: Removes the protocol part from indicators when the rule can be applied.
+    :param remove_query: Removes the query string part from indicators when the rules can be applied.
+    :param offset: Number of incidents to skip
+    :param sort: If true, the incidents will be sorted by their creation time in ascending order.
+    :return: User feed
     """
-    raw_response: Dict = client.get_incident_by_id(incident_id)
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - incidents'
-        phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(raw_response.get('incidents'))
-        context_entry: Dict = {
-            outputPaths.get('dbotscore'): dbots_ec,
-            outputPaths.get('file'): files_ec,
-            outputPaths.get('url'): urls_ec,
-            'Email(val.Address && val.Address == obj.Address)': emails_ec,
-            f'{INTEGRATION_CONTEXT_NAME}(val.EIR.ID && val.EIR.ID === obj.EIR.ID && '
-            f'val.EIR.Modified && val.EIR.Modified === obj.EIR.Modified)': {
-                'EIR': phishlabs_ec
+    path: str = 'feed'
+    params: dict = {}
+
+    if since:
+        params['since'] = since
+    if limit:
+        params['limit'] = int(limit)
+    if offset:
+        params['offset'] = int(offset)
+    if indicator:
+        params['indicator'] = indicator
+    if remove_query:
+        params['remove_query'] = remove_query
+    if remove_protocol:
+        params['remove_protocol'] = remove_protocol
+
+    if sort:
+        params['sort'] = 'created_at'
+        params['direction'] = 'asc'
+
+    response = http_request('GET', path, params)
+
+    return response
+
+
+def fetch_incidents():
+    """
+    Fetches incidents from the PhishLabs user feed.
+    :return: Demisto incidents
+    """
+    last_run: dict = demisto.getLastRun()
+    last_fetch: str = last_run.get('time', '') if last_run else ''
+    last_offset: str = last_run.get('offset', '0') if last_run else '0'
+
+    incidents: list = []
+    count: int = 1
+    limit = int(FETCH_LIMIT)
+    feed: dict = get_feed_request(since=FETCH_TIME)
+    last_fetch_time: datetime = (datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ') if last_fetch
+                                 else datetime.strptime(NONE_DATE, '%Y-%m-%dT%H:%M:%SZ'))
+    max_time: datetime = last_fetch_time
+    offset = int(last_offset)
+    results: list = feed.get('data', []) if feed else []
+
+    if results:
+        results = sorted(results, key=lambda r: datetime.strptime(r.get('createdAt', NONE_DATE), '%Y-%m-%dT%H:%M:%SZ'))
+        results = results[offset:]
+        if not isinstance(results, list):
+            results = [results]
+
+        for result in results:
+            if count > limit:
+                break
+            incident_time: datetime = datetime.strptime(result.get('createdAt', NONE_DATE), '%Y-%m-%dT%H:%M:%SZ')
+            if last_fetch_time and incident_time <= last_fetch_time:
+                continue
+
+            incident: dict = {
+                'name': 'PhishLabs IOC Incident ' + result.get('referenceId', ''),
+                'occurred': datetime.strftime(incident_time, '%Y-%m-%dT%H:%M:%SZ'),
+                'rawJSON': json.dumps(result)
             }
-        }
-        human_readable = tableToMarkdown(name=title,
-                                         t=phishlabs_ec,
-                                         headers=['ID', 'Title', 'Status', 'Created', 'Classification',
-                                                  'SubClassification', 'EmailReportedBy'],
-                                         removeNull=True)
+            incidents.append(incident)
+            if max_time < incident_time:
+                max_time = incident_time
+            count += 1
 
-        return human_readable, context_entry, raw_response
-    else:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+        offset += count - 1
+
+    demisto.setLastRun({'time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%SZ'), 'offset': str(offset)})
+    demisto.incidents(incidents)
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+''' MAIN'''
 
 
 def main():
-    params = demisto.params()
-    base_url = urljoin(params.get('url'), 'idapi/v1')
-    verify_ssl = not params.get('insecure', False)
-    proxy = params.get('proxy')
-    client = Client(
-        base_url=base_url,
-        verify=verify_ssl,
-        proxy=proxy,
-        auth=(params.get('credentials', {}).get('identifier'),
-              params.get('credentials', {}).get('password'))
-    )
-    command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
-    commands = {
-        'test-module': test_module_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-incidents': get_incidents_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-incident-by-id': get_incident_by_id_command
+    """
+    Main function
+    """
+    global RAISE_EXCEPTION_ON_ERROR
+    LOG('Command being called is {}'.format(demisto.command()))
+    handle_proxy()
+    command_dict = {
+        'test-module': test_module,
+        'fetch-incidents': fetch_incidents,
+        'phishlab-ioc-eir-global-feed': get_global_feed_command,
+        'phishlab-ioc-eir-get-incident-indicators': get_incident_indicators_command
     }
     try:
-        if command == 'fetch-incidents':
-            incidents, new_last_run = fetch_incidents_command(client,
-                                                              fetch_time=params.get('fetchTime'),
-                                                              last_run=demisto.getLastRun().get('lastRun'),
-                                                              limit=params.get('fetchLimit'))
-            demisto.incidents(incidents)
-            demisto.setLastRun(new_last_run)
-        else:
-            readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
-            return_outputs(readable_output, outputs, raw_response)
-    # Log exceptions
+        command_func: Callable = command_dict[demisto.command()]
+        if demisto.command() == 'fetch-incidents':
+            RAISE_EXCEPTION_ON_ERROR = True
+        command_func()
+
     except Exception as e:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
-        return_error(err_msg, error=e)
+        if RAISE_EXCEPTION_ON_ERROR:
+            LOG(str(e))
+            LOG.print_log()
+            raise
+        else:
+            return_error(str(e))
 
 
-if __name__ == 'builtins':
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
