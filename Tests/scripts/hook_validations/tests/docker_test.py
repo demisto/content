@@ -52,7 +52,7 @@ MOCK_TAG_LIST = [{
 @pytest.mark.parametrize('image', ['python', 'python-deb', 'python3', 'python3-deb'])
 def test_get_docker_image_latest_tag(image):
     from Tests.scripts.hook_validations.docker import DockerImageValidator
-    tag = DockerImageValidator.get_docker_image_latest_tag('demisto/' + image, 'demisto/' + image)
+    tag = DockerImageValidator.get_docker_image_latest_tag('demisto/' + image, '')
     # current latest tag is 2.7.16.2728 or 3.7.2.2728 disable-secrets-detection
     assert int(tag.split('.')[3]) >= 2728
 
