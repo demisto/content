@@ -1017,15 +1017,27 @@ script:
     - contextPath: GmailFilter.ID
       description: Filter ID.
       type: string
+    - contextPath: Gmail.Filter.ID
+      description: Filter ID.
+      type: String
     - contextPath: GmailFilter.Mailbox
       description: Mailbox containing the filter.
       type: string
+    - contextPath: Gmail.Filter.Mailbox
+      description: Mailbox containing the filter.
+      type: String
     - contextPath: GmailFilter.Criteria
       description: Filter Criteria.
       type: Unknown
+    - contextPath: Gmail.Filter.Criteria
+      description: Filter Criteria.
+      type: String
     - contextPath: GmailFilter.Action
       description: Filter Action.
       type: Unknown
+    - contextPath: Gmail.Filter.Action
+      description: Filter Action.
+      type: String
     description: Add a new filter.
   - name: gmail-list-filters
     arguments:
@@ -1041,15 +1053,27 @@ script:
     - contextPath: GmailFilter.ID
       description: Filter ID.
       type: string
+    - contextPath: Gmail.Filter.ID
+      description: Filter ID.
+      type: String
     - contextPath: GmailFilter.Mailbox
       description: Mailbox containing the filter.
       type: string
+    - contextPath: Gmail.Filter.Mailbox
+      description: Mailbox containing the filter.
+      type: String
     - contextPath: GmailFilter.Criteria
       description: Filter Criteria.
       type: Unknown
+    - contextPath: Gmail.Filter.Criteria
+      description: Filter Criteria.
+      type: String
     - contextPath: GmailFilter.Action
       description: Filter Action.
       type: Unknown
+    - contextPath: Gmail.Filter.Action
+      description: Filter Action.
+      type: String
     description: List all filters in a user's mailbox.
   - name: gmail-remove-filter
     arguments:
