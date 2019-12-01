@@ -69,8 +69,8 @@
             "playbookID": "AttackIQ - Test"
         },
         {
-            "integrations": "PhishLabs IOC EIR",
-            "playbookID": "PhishlabsIOC_EIR-Test"
+            "integrations": "PhishLabs IOC EIR v2",
+            "playbookID": "PhishlabsIOC_EIR_v2-Test"
         },
         {
             "playbookID": "Create Phishing Classifier V2 ML Test",

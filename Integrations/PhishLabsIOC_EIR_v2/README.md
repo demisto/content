@@ -1,6 +1,6 @@
 <p>
 Get live feeds of IOC data from PhishLabs.
-This integration was integrated and tested with version 1.0 of PhishLabs IOC EIR
+This integration was integrated and tested with version 1.0 of PhishLabs IOC EIR v2
 </p>
 <h2>Use Cases</h2>
 <ul>
@@ -10,11 +10,11 @@ This integration was integrated and tested with version 1.0 of PhishLabs IOC EIR
 <h2>Fetch Incidents</h2>
 <p>This integration creates incidents regarding EIR (Email incidents report), the configuration allow to configure the\
 of time waiting between fetch incidents.</p>
-<h2>Configure PhishLabs IOC EIR on Demisto</h2>
+<h2>Configure PhishLabs IOC EIR v2 on Demisto</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for PhishLabs IOC EIR.</li>
+  <li>Search for PhishLabs IOC EIR v2.</li>
   <li>
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
     <ul>
@@ -38,15 +38,15 @@ of time waiting between fetch incidents.</p>
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
-  <li>phishlabs-ioc-eir-get-incidents</li>
-  <li>phishlabs-ioc-eir-get-incident-by-id</li>
+  <li>phishlabs-ioc-eir-v2-get-incidents</li>
+  <li>phishlabs-ioc-eir-v2-get-incident-by-id</li>
 </ol>
-<h3>1. phishlabs-ioc-eir-get-incidents</h3>
+<h3>1. phishlabs-ioc-eir-v2-get-incidents</h3>
 <hr>
 <p>Get EIR incidents from PhishLabs-IOC EIR service (dafault limit 25 incidents)</p>
 <h5>Base Command</h5>
 <p>
-  <code>phishlabs-ioc-eir-get-incidents</code>
+  <code>phishlabs-ioc-eir-v2-get-incidents</code>
 </p>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -339,7 +339,7 @@ Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)</td>
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!phishlabs-ioc-eir-get-incidents limit=3</code>
+  <code>!phishlabs-ioc-eir-v2-get-incidents limit=3</code>
 </p>
 <h5>Context Example</h5>
 <pre>
@@ -457,12 +457,12 @@ Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)</td>
  -->
 </p>
 
-<h3>2. phishlabs-ioc-eir-get-incident-by-id</h3>
+<h3>2. phishlabs-ioc-eir-v2-get-incident-by-id</h3>
 <hr>
 <p>Returns a single Incident based on the given ID.</p>
 <h5>Base Command</h5>
 <p>
-  <code>phishlabs-ioc-eir-get-incident-by-id</code>
+  <code>phishlabs-ioc-eir-v2-get-incident-by-id</code>
 </p>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -709,7 +709,7 @@ Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)</td>
 </table>
 <h5>Command Example</h5>
 <p>
-  <code>!phishlabs-ioc-eir-get-incident-by-id incident_id=INC0671150</code>
+  <code>!phishlabs-ioc-eir-v2-get-incident-by-id incident_id=INC0671150</code>
 </p>
 <h5>Context Example</h5>
 <pre>
