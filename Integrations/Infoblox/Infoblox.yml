@@ -17,12 +17,12 @@ configuration:
   defaultvalue: ""
   type: 9
   required: false
-- display: Trust any certificate (insecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "true"
   type: 8
   required: false
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
@@ -715,6 +715,6 @@ script:
       description: Rule reference ID (this can be retrieved by running the 'infoblox-search-rule'
         command)
     description: Delete a rule
-  dockerimage: demisto/python3:3.7.3.221
+  dockerimage: demisto/python3:3.7.5.4002
   runonce: false
   subtype: python3
