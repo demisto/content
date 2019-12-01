@@ -933,7 +933,7 @@ def list_watchlists(client: Client, *_) -> Tuple[str, Dict, Dict]:
         raise Exception(f'Failed to list watchlists.')
 
     human_readable = f'Watchlists: {", ".join(watchlists)}.'
-    entry_context = {f'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': watchlists}
+    entry_context = {f'Securonix.WatchlistsNames': watchlists}
     return human_readable, entry_context, watchlists
 
 
@@ -954,7 +954,7 @@ def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     if not watchlist_events:
         raise Exception(f'Watchlist does not contain items.\n'
                         f'Make sure the watchlist is not empty and that the watchlist name is correct.')
-    fields_to_drop = ['decay', 'tenantid', 'tenantname', 'watchlistname']
+    fields_to_drop = ['decayflag', 'tenantid', 'tenantname', 'watchlistname', 'type']
     watchlist_readable, watchlist_events_outputs = parse_data_arr(watchlist_events, fields_to_drop=fields_to_drop)
     watchlist_outputs = {
         'Watchlistname': watchlist_name,
