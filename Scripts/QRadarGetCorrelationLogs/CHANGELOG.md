@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Added support for different CRE name default values.
+Added support for different CRE name default values.
