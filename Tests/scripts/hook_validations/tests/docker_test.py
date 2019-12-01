@@ -111,8 +111,7 @@ def test_parse_docker_image():
     assert 'demisto/python', '1.3-alpine' == DockerImageValidator.parse_docker_image('demisto/python:1.3-alpine')
     assert 'demisto/slack', '1.2.3.4' == DockerImageValidator.parse_docker_image('demisto/slack:1.2.3.4')
     assert 'demisto/python', '' == DockerImageValidator.parse_docker_image('demisto/python/1.2.3.4')
-    assert ('', '') == DockerImageValidator.parse_docker_image('blah/blah')
-    assert ('', '1.2.3.4') == DockerImageValidator.parse_docker_image('blah/blah:1.2.3.4')
+    assert ('', '') == DockerImageValidator.parse_docker_image('blah/blah:1.2.3.4')
 # disable-secrets-detection-end
 
 

@@ -243,8 +243,12 @@ class DockerImageValidator(object):
             The name and the tag of the docker image
         """
         if docker_image:
+            tag = ''
+            image = ''
             try:
-                image = re.findall(r'(demisto\/.+)', docker_image, re.IGNORECASE)[0]
+                image_regex = re.findall(r'(demisto\/.+)', docker_image, re.IGNORECASE)
+                if image_regex:
+                    image = image_regex[0]
                 if ':' in image:
                     image_split = image.split(':')
                     image = image_split[0]
@@ -252,11 +256,9 @@ class DockerImageValidator(object):
                 else:
                     print_error('The docker image in your integration/script does not have a tag, please attach the '
                                 'latest tag')
-                    tag = ''
             except IndexError:
                 print_error('The docker image: {} is not of format - demisto/image_name'
                             .format(docker_image))
-                image = ''
 
             return image, tag
         else:
