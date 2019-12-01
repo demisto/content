@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- add search indicators for ip, domain, file and url
 
 ## [19.11.0] - 2019-11-12
 Added descriptions to the ***autofocus-tag-details*** command.
