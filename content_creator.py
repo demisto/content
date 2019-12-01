@@ -1,3 +1,4 @@
+import fileinput
 import os
 import sys
 import json
@@ -12,7 +13,6 @@ from Tests.scripts.constants import INTEGRATIONS_DIR, MISC_DIR, PLAYBOOKS_DIR, R
     BETA_INTEGRATIONS_DIR, INDICATOR_FIELDS_DIR, INCIDENT_TYPES_DIR, TEST_PLAYBOOKS_DIR
 from Tests.test_utils import print_error
 from package_creator import DIR_TO_PREFIX, merge_script_package_to_yml, write_yaml_with_docker
-from CommonServerPython import CONTENT_RELEASE_VERSION
 import CommonServerPython
 
 CONTENT_DIRS = [
@@ -148,22 +148,23 @@ def copy_test_files(bundle_test):
             shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
-def update_content_version(content_version):
-    """ Update the content version in commonServerPython
-
-    Args:
-        content_version: String
-    """
-    if content_version == CommonServerPython.CONTENT_RELEASE_VERSION:
-        pass
-    else:
-        CommonServerPython.CONTENT_RELEASE_VERSION = content_version
+def update_content_version(key, new_value):
+    f = open('./CommonServerPython.py', 'r')
+    lines = f.readlines()
+    f.close()
+    for i, line in enumerate(lines):
+        if line.split('=')[0].strip(' \n') == key:
+            lines[i] = f'{key} = "{new_value}"\n'
+            print(lines[i])
+    f = open('./CommonServerPython.py', "w")
+    f.write(''.join(lines))
+    f.close()
 
 
 def main(circle_artifacts, content_version):
 
     # update content_version in commonServerPython
-    update_content_version(content_version)
+    update_content_version('CONTENT_RELEASE_VERSION', content_version)
     print('Starting to create content artifact...')
     print('creating dir for bundles...')
     for bundle_dir in [BUNDLE_POST, BUNDLE_TEST]:
