@@ -109,6 +109,8 @@ The command section tells Demisto what arguments are required for your command a
     arguments:
     - name: command-argument
       required: true
+      default: false
+      isArray: false
       description: This is a description for the argument
     outputs:
     - contextPath: Example.Sample.Name
@@ -127,6 +129,8 @@ An explanation of these fields is as follows:
 | **name** | The name of the command |
 | **arguments: name** | The name of the argument |
 | **arguments: required** | Boolean for if the argument is required |
+| **arguments: default** | Boolean for if the argument is the one chosen when argument values are passed to a command without specifying the command argument's name. Note that only one command argument can be set as the default per command |
+| **arguments: isArray** | Boolean for if the argument accepts a CSV list of input values |
 | **arguments: description** | A description of the argument |
 | **outputs: contextPath** | The dot notation representation of the context |
 | **outputs: description** | Description of the context item |
