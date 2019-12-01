@@ -310,26 +310,26 @@ RAW_RESPONSE_TO_CONTEXT = [
 class TestHelperFunctions:
     @pytest.mark.parametrize(argnames='type_ec, test_inputs, test_outputs', argvalues=INDICATORS_EC)
     def test_indicator_ec(self, type_ec, test_inputs, test_outputs):
-        from PhishLabsIOC_EIR import indicator_ec
+        from PhishLabsIOC_EIR_v2 import indicator_ec
         result = indicator_ec(indicator=test_inputs,
                               type_ec=type_ec)
         assert result == test_outputs
 
     @pytest.mark.parametrize(argnames='type_ec, test_inputs, test_outputs', argvalues=INDICATORS_DBOT_EC)
     def test_indicator_dbot_ec(self, type_ec, test_inputs, test_outputs):
-        from PhishLabsIOC_EIR import indicator_dbot_ec
+        from PhishLabsIOC_EIR_v2 import indicator_dbot_ec
         result = indicator_dbot_ec(indicator=test_inputs,
                                    type_ec=type_ec)
         assert result == test_outputs
 
     @pytest.mark.parametrize(argnames='type_ec, test_inputs, test_outputs', argvalues=INDICATORS_TO_LIST_EC)
     def test_indicators_to_list_ec(self, type_ec, test_inputs, test_outputs):
-        from PhishLabsIOC_EIR import indicators_to_list_ec
+        from PhishLabsIOC_EIR_v2 import indicators_to_list_ec
         result = indicators_to_list_ec(indicators=test_inputs,
                                        type_ec=type_ec)
         assert result == test_outputs
 
     def test_raw_response_to_context(self):
-        from PhishLabsIOC_EIR import raw_response_to_context
+        from PhishLabsIOC_EIR_v2 import raw_response_to_context
         result = raw_response_to_context(incidents=RAW_RESPONSE_TO_CONTEXT[0])
         assert result == RAW_RESPONSE_TO_CONTEXT[1]

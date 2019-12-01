@@ -21,7 +21,7 @@ Attributes:
     INTEGRATION_CONTEXT_NAME:
         Context output names should be written in camel case, for example: MSGraphUser.
 """
-INTEGRATION_NAME = 'PhishLabs IOC - EIR'
+INTEGRATION_NAME = 'PhishLabs IOC - EIR v2'
 INTEGRATION_COMMAND_NAME = 'phishlabs-ioc-eir'
 INTEGRATION_CONTEXT_NAME = 'PhishLabsIOC'
 
