@@ -1,4 +1,4 @@
-import fileinput
+
 import os
 import sys
 import json
@@ -13,7 +13,7 @@ from Tests.scripts.constants import INTEGRATIONS_DIR, MISC_DIR, PLAYBOOKS_DIR, R
     BETA_INTEGRATIONS_DIR, INDICATOR_FIELDS_DIR, INCIDENT_TYPES_DIR, TEST_PLAYBOOKS_DIR
 from Tests.test_utils import print_error
 from package_creator import DIR_TO_PREFIX, merge_script_package_to_yml, write_yaml_with_docker
-import CommonServerPython
+
 
 CONTENT_DIRS = [
     BETA_INTEGRATIONS_DIR,
