@@ -894,7 +894,7 @@ def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     incident = client.create_incident_request(policy_name, resource_group, entity_type, entity_name, action_name,
                                               resource_name, workflow, comment, employee_id, criticality)
     demisto.log(str(incident))
-    incident_info = incident.get('result')  # TODO - check that really works - status OK is lying - not visible in UI
+    incident_info = incident.get('result')  # TODO check that really works. status OK is lying. not visible in UI, NO ID
     if not incident_info:
         raise Exception('Failed to create the incident. something is missing...')
     return f'Incident was created successfully.', {}, incident_info
