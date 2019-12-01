@@ -1,5 +1,6 @@
-import demistomock
 from collections import defaultdict
+
+import demistomock
 
 
 def get_args():
@@ -38,3 +39,14 @@ def test_word_tokenize():
     assert "EMAIL_PATTERN NUMBER_PATTERN go URL_PATTERN bla bla" == entry['Contents']['tokenizedText']
     assert "2074773130 1320446219 5863419 1810208405 193487380 193487380" == entry['Contents'][
         'hashedTokenizedText']
+
+
+def test_word_tokenize_words_to_tokens():
+    words = ["let\'s", "gonna", "ain't", "we'll", "shouldn't"]
+    words_to_tokens = {w: tokenize_text(w)[0].split() for w in words}
+    tokenized_text, _, original_words_to_tokens, _ = tokenize_text(' '.join(words_to_tokens))
+    for w, tokens_list in words_to_tokens.items():
+        if w not in original_words_to_tokens:
+            continue
+        tokens_list_output = original_words_to_tokens[w]
+        assert all(t in tokens_list_output for t in tokens_list) and all(t in tokens_list for t in tokens_list_output)
