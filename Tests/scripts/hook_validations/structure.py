@@ -279,6 +279,7 @@ class StructureValidator(object):
             if not self.is_valid_rn_structure(rn):
                 print_error('File {} is not formatted according to release notes standards.\n'
                             'Fix according to {}'.format(rn_path, rn_standard))
+                self._is_valid = False
 
     def is_id_not_modified(self, change_string=None):
         """Check if the ID of the file has been changed.
