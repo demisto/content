@@ -515,7 +515,7 @@ def roles_to_entry(title, response):
             'Kind': role_data['kind'],
             'OrgUnitId': role_data.get('orgUnitId', ''),
         })
-    headers = ['ID', 'AssignedTo', 'RoleAssignmentId',
+    headers = ['ID', 'RoleAssignmentId',
                'ScopeType', 'Kind', 'OrgUnitId']
 
     return {
