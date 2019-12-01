@@ -17,8 +17,7 @@ package_500_error = {
     'md5_mapping': 'no'
 }
 
-expected_output_500 = (
-    {
+expected_output_500 = {
         'Contents': {
             'data': {
                 'classification': 'Private',
@@ -50,7 +49,7 @@ expected_output_500 = (
                          "is: {'datatext': 'www.demisto.com', 'username': None, "
                          "'api_key': None}",
         'Type': 1
-    },)
+    }
 
 
 def test_ioc_approval_500_error(mocker):
@@ -62,4 +61,5 @@ def test_ioc_approval_500_error(mocker):
     main()
     results = demisto.results.call_args[0]
 
-    assert results == expected_output_500
+    assert results[0]['Contents']['data'] == expected_output_500['Contents']['data']
+    assert 'datatext' in results[0]['Contents']['import_session_id']
