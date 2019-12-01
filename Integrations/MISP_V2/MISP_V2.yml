@@ -19,7 +19,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Select which event's attribute data fields will be saved to context. Leave empty to select all attributes.
+- display: Select which attribute data fields of the event will be saved to context. Leave empty to select all attributes.
   name: context_select
   options:
   - Category
