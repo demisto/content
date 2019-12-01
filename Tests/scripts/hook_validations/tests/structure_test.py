@@ -126,3 +126,37 @@ def test_playbook_file_with_invalid_id():
     validator = StructureValidator(file_path="./Tests/setup/playbook-invalid-id-test.yml")
     assert not validator.is_file_id_without_slashes(), \
         "Didn't find a slash in the ID even though it contains a slash."
+
+
+single_line_good_rn = 'Some rn.'
+single_line_bad_rn_1 = '  - Some rn.'
+single_line_bad_rn_2 = 'Some rn'
+single_line_list_good_rn = 'List rn.\n' \
+                           '  - item #1.\n' \
+                           '\t- item #2.'
+single_line_list_bad_rn_1 = 'List rn.\n' \
+                            '  -item #1.\n' \
+                            '\t- item #2.'
+single_line_list_bad_rn_2 = 'List rn.\n' \
+                            '  item #1.\n' \
+                            '\t- item #2.'
+multi_line_good_rn = '  - comment 1.\n' \
+                     '\t- comment 2..'
+multi_line_bad_rn_1 = ' - comment 1\n' \
+                      '  - comment 2.'
+multi_line_bad_rn_2 = 'comment 1.\n' \
+                      'comment 2.'
+rn_structure_test_package = [(single_line_good_rn, True),
+                             (single_line_bad_rn_1, False),
+                             (single_line_bad_rn_2, False),
+                             (single_line_list_good_rn, True),
+                             (single_line_list_bad_rn_1, False),
+                             (single_line_list_bad_rn_2, False),
+                             (multi_line_good_rn, True),
+                             (multi_line_bad_rn_1, False),
+                             (multi_line_bad_rn_2, False)]
+
+
+@pytest.mark.parametrize('rn, expected_result', rn_structure_test_package)
+def test_rn_structure(rn, expected_result):
+    assert StructureValidator.is_valid_rn_structure(rn) == expected_result

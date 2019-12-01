@@ -228,11 +228,40 @@ class StructureValidator(object):
         return re.match(BETA_INTEGRATION_REGEX, self.file_path, re.IGNORECASE) or \
             re.match(BETA_INTEGRATION_YML_REGEX, self.file_path, re.IGNORECASE)
 
+    @staticmethod
+    def is_valid_rn_structure(rn):
+        # regex meaning: dont start with any of the characters in the first []
+        #                start with a letter or number
+        #                end with '.'
+        one_line_rn_regex = r'[^\r\n\t\f\v\ \_\-][a-zA-Z0-9].*\.$'
+
+        # regex meaning: start with tab, then '-' then space
+        #                end with '.'
+        multi_line_rn_regex = r'(\t| {2,4})+(\- .*\.$|\- ?$)'
+
+        rn_comments = rn.split('\n')
+        if len(rn_comments) == 1:
+            if not (rn == '-' or re.match(one_line_rn_regex, rn)):
+                return False
+
+        else:
+            # if it's one line comment with list
+            if re.match(one_line_rn_regex, rn_comments[0]):
+                rn_comments = rn_comments[1:]
+
+            for comment in rn_comments:
+                if not re.match(multi_line_rn_regex, comment):
+                    return False
+
+        return True
+
     def validate_file_release_notes(self):
         """Validate that the file has proper release notes when modified.
 
         This function updates the class attribute self._is_valid instead of passing it back and forth.
         """
+        rn_standard = 'https://github.com/demisto/content/blob/master/docs/release_notes/README.md'
+
         if self.is_renamed:
             print_warning("You might need RN please make sure to check that.")
             return
@@ -245,6 +274,11 @@ class StructureValidator(object):
             if rn is None:
                 print_error('File {} is missing releaseNotes, Please add it under {}'.format(self.file_path, rn_path))
                 self._is_valid = False
+
+            # check if file structure matches the convention
+            if not self.is_valid_rn_structure(rn):
+                print_error('File {} is not formatted according to release notes standards.\n'
+                            'Fix according to {}'.format(rn_path, rn_standard))
 
     def is_id_not_modified(self, change_string=None):
         """Check if the ID of the file has been changed.
