@@ -155,7 +155,6 @@ def update_content_version(key, new_value):
     for i, line in enumerate(lines):
         if line.split('=')[0].strip(' \n') == key:
             lines[i] = f'{key} = "{new_value}"\n'
-            print(lines[i])
     f = open('./CommonServerPython.py', "w")
     f.write(''.join(lines))
     f.close()
