@@ -27,14 +27,18 @@ USE_SSL = not demisto.params().get('insecure', False)
 
 def jira_req(method, resource_url, body='', link=False):
     url = resource_url if link else (BASE_URL + resource_url)
-    result = requests.request(
-        method=method,
-        url=url,
-        data=body,
-        headers=HEADERS,
-        verify=USE_SSL,
-        auth=get_auth(),
-    )
+    try:
+        result = requests.request(
+            method=method,
+            url=url,
+            data=body,
+            headers=HEADERS,
+            verify=USE_SSL,
+            auth=get_auth(),
+        )
+    except ValueError:
+        raise ValueError("Could not deserialize privateKey")
+
     if not result.ok:
         demisto.debug(result.text)
         try:
@@ -113,13 +117,17 @@ def run_query(query, start_at='', max_results=None):
         "maxResults": max_results,
     }
 
-    result = requests.get(
-        url=url,
-        headers=HEADERS,
-        verify=USE_SSL,
-        params=query_params,
-        auth=get_auth(),
-    )
+    try:
+        result = requests.get(
+            url=url,
+            headers=HEADERS,
+            verify=USE_SSL,
+            params=query_params,
+            auth=get_auth(),
+        )
+    except ValueError:
+        raise ValueError("Could not deserialize privateKey")
+
     try:
         rj = result.json()
         if rj.get('issues'):
