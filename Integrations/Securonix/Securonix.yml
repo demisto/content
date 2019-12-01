@@ -296,6 +296,53 @@ script:
     description: Get incident details.
     execution: false
     name: securonix-get-incident
+    outputs:
+    - contextPath: Securonix.Incidents.ViolatorId
+      description: Incident Violator ID.
+      type: String
+    - contextPath: Securonix.Incidents.Entity
+      description: Incident entity.
+      type: String
+    - contextPath: Securonix.Incidents.Riskscore
+      description: Incident risk score.
+      type: Number
+    - contextPath: Securonix.Incidents.Priority
+      description: Incident priority.
+      type: String
+    - contextPath: Securonix.Incidents.Reason
+      description: Reason for the incident. Usually includes policy name and/or possible
+        threat name.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentStatus
+      description: Incident status.
+      type: String
+    - contextPath: Securonix.Incidents.WorkflowName
+      description: Incident workflow name.
+      type: String
+    - contextPath: Securonix.Incidents.Watchlisted
+      description: Whether the incident is in a watchlist.
+      type: Boolean
+    - contextPath: Securonix.Incidents.IncidentType
+      description: Incident type.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentId
+      description: Incident ID.
+      type: String
+    - contextPath: Securonix.Incidents.LastUpdateDate
+      description: Last update date of the incident in epoch.
+      type: Number
+    - contextPath: Securonix.Incidents.Url
+      description: URL that links to the incident on Securonix.
+      type: String
+    - contextPath: Securonix.Incidents.ViolatorText
+      description: Incident violator text.
+      type: String
+    - contextPath: Securonix.Incidents.AssignedUser
+      description: Assigned user to the incident.
+      type: String
+    - contextPath: Securonix.Incidents.IsWhitelisted
+      description: Whether the incident is whitelisted.
+      type: Boolean
   - arguments:
     - default: false
       description: Incident ID.
@@ -307,6 +354,13 @@ script:
     description: Get incident status.
     execution: false
     name: securonix-get-incident-status
+    outputs:
+    - contextPath: Securonix.Incidents.IncidentStatus
+      description: Incident status.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentId
+      description: Incident ID.
+      type: String
   - arguments:
     - default: false
       description: Incident ID.
@@ -318,6 +372,13 @@ script:
     description: Get incident workflow.
     execution: false
     name: securonix-get-incident-workflow
+    outputs:
+    - contextPath: Securonix.Incidents.WorkflowName
+      description: Incident workflow name.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentId
+      description: Incident ID.
+      type: String
   - arguments:
     - default: false
       description: Incident ID.
@@ -329,6 +390,13 @@ script:
     description: List available actions for an incident.
     execution: false
     name: securonix-get-incident-available-actions
+    outputs:
+    - contextPath: Securonix.Incidents.AvailableActions
+      description: Incident available actions.
+      type: String
+    - contextPath: Securonix.Incidents.IncidentId
+      description: Incident ID.
+      type: String
   - arguments:
     - default: false
       description: Incident ID.
