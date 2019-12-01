@@ -27,7 +27,8 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-script: '-'
+script:
+  script: '-'
   type: python
   commands:
   - name: infoblox-get-ip
@@ -417,9 +418,6 @@ script: '-'
     description: Create 'Substitute (NAPTR Record) Rule'.
   - name: infoblox-create-ptr-substitute-record-rule
     arguments:
-    - name: name
-      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
-        format.
     - name: rp_zone
       required: true
       description: The zone to assign the rule.
@@ -429,6 +427,9 @@ script: '-'
       required: true
       description: The domain name of the RPZ Substitute (PTR Record) Rule object
         in FQDN format.
+    - name: name
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
+        format.
     - name: ipv4addr
       description: The IPv4 Address of the substitute rule.
     - name: ipv6addr

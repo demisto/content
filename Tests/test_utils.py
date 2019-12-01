@@ -113,6 +113,7 @@ def filter_packagify_changes(modified_files, added_files, removed_files, tag='ma
     for file_path in added_files:
         if file_path.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
             with open(file_path) as f:
+                print(file_path)
                 details = yaml.safe_load(f.read())
 
             uniq_identifier = '_'.join([
