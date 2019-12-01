@@ -1,6 +1,6 @@
-id: PhishLabsIOC TestPlaybook
+id: PhishLabsIOC EIR TestPlaybook
 version: -1
-name: PhishLabsIOC TestPlaybook
+name: PhishLabsIOC EIR TestPlaybook
 starttaskid: "0"
 tasks:
   "0":
@@ -70,10 +70,10 @@ tasks:
       version: -1
       name: Global Feed - URL
       description: Gets the global IOC feed from PhishLabs
-      script: PhishLabs IOC|||phishlabs-global-feed
+      script: PhishLabs IOC|||phishlabs-ioc-eir-global-feed
       type: regular
       iscommand: true
-      brand: PhishLabs IOC
+      brand: PhishLabs IOC EIR
     nexttasks:
       '#none#':
       - "3"
@@ -146,10 +146,10 @@ tasks:
       version: -1
       name: Global Feed - Domain
       description: Gets the global IOC feed from PhishLabs
-      script: PhishLabs IOC|||phishlabs-global-feed
+      script: PhishLabs IOC EIR|||phishlabs-ioc-eir-global-feed
       type: regular
       iscommand: true
-      brand: PhishLabs IOC
+      brand: PhishLabs IOC EIR
     nexttasks:
       '#none#':
       - "5"
@@ -222,10 +222,10 @@ tasks:
       version: -1
       name: Global Feed - Attachment
       description: Gets the global IOC feed from PhishLabs
-      script: PhishLabs IOC|||phishlabs-global-feed
+      script: PhishLabs IOC EIR|||phishlabs-ioc-eir-global-feed
       type: regular
       iscommand: true
-      brand: PhishLabs IOC
+      brand: PhishLabs IOC EIR
     nexttasks:
       '#none#':
       - "7"
@@ -332,10 +332,10 @@ tasks:
       version: -1
       name: Get incident indicators
       description: Gets indicators from a speicifed PhishLabs incident.
-      script: PhishLabs IOC|||phishlabs-get-incident-indicators
+      script: PhishLabs IOC EIR|||phishlabs-ioc-eir-get-incident-indicators
       type: regular
       iscommand: true
-      brand: PhishLabs IOC
+      brand: PhishLabs IOC EIR
     nexttasks:
       '#none#':
       - "10"
@@ -448,7 +448,7 @@ tasks:
       id: c2ca0e75-3665-4e05-83ff-b11704efba59
       version: -1
       name: Populate indicators
-      description: Populate indicators by the PhishLabs IOC  global feed.
+      description: Populate indicators by the PhishLabs IOC EIR  global feed.
       scriptName: PhishLabsPopulateIndicators
       type: regular
       iscommand: false
@@ -566,7 +566,7 @@ tasks:
     scriptarguments:
       add_to_context: {}
       brand_name:
-        simple: PhishLabs IOC
+        simple: PhishLabs IOC EIR
       error_msg_in_incident: {}
       expect_data: {}
       instance_name: {}
