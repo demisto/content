@@ -2322,7 +2322,7 @@ if 'requests' in sys.modules:
                     try:
                         # Try to parse json error response
                         error_entry = res.json()
-                        err_msg += '\n{}'.format(error_entry)
+                        err_msg += '\n{}'.format(json.dumps(error_entry))
                         raise DemistoException(err_msg)
                     except ValueError as exception:
                         raise DemistoException(err_msg, exception)

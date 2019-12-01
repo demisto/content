@@ -1,5 +1,8 @@
 ## [Unreleased]
--
+
+
+## [19.11.1] - 2019-11-26
+You can now parse single-object STIX 2 files.
 
 ## [19.8.2] - 2019-08-22
   - Add indicators: CVE and Registry Key.
