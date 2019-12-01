@@ -18,40 +18,39 @@ package_500_error = {
 }
 
 expected_output_500 = (
-        {
-            'Contents': {
-                'data': {
-                    'classification': 'Private',
-                    'confidence': '50',
-                    'domain_mapping': False,
-                    'email_mapping': False,
-                    'ip_mapping': True,
-                    'md5_mapping': False,
-                    'severity': 'low',
-                    'threat_type': 'exploit',
-                    'url_mapping': False
-                },
-                'import_session_id': {
-                    'api_key': None,
-                    'datatext': 'www.demisto.com',
-                    'username': None
-                },
-                'success': True
+    {
+        'Contents': {
+            'data': {
+                'classification': 'Private',
+                'confidence': '50',
+                'domain_mapping': False,
+                'email_mapping': False,
+                'ip_mapping': True,
+                'md5_mapping': False,
+                'severity': 'low',
+                'threat_type': 'exploit',
+                'url_mapping': False
             },
-            'ContentsFormat': 'json',
-            'EntryContext': {
-                'ThreatStream.Import.ImportID': {
-                    'api_key': None,
-                    'datatext': 'www.demisto.com',
-                    'username': None
-                }
+            'import_session_id': {
+                'api_key': None,
+                'datatext': 'www.demisto.com',
+                'username': None
             },
-            'HumanReadable': 'The data was imported successfully. The ID of imported job '
-                             "is: {'datatext': 'www.demisto.com', 'username': None, "
-                             "'api_key': None}",
-            'Type': 1
+            'success': True
         },
-    )
+        'ContentsFormat': 'json',
+        'EntryContext': {
+            'ThreatStream.Import.ImportID': {
+                'api_key': None,
+                'datatext': 'www.demisto.com',
+                'username': None
+            }
+        },
+        'HumanReadable': 'The data was imported successfully. The ID of imported job '
+                         "is: {'datatext': 'www.demisto.com', 'username': None, "
+                         "'api_key': None}",
+        'Type': 1
+    },)
 
 
 def test_ioc_approval_500_error(mocker):
