@@ -74,25 +74,33 @@ def get_attachments(build_url, env_results_file_name):
 
 
 def get_fields():
-    print('Extracting failed_tests')
-    with open('./Tests/failed_tests.txt', 'r') as failed_tests_file:
-        failed_tests = failed_tests_file.readlines()
-        failed_tests = [line.strip('\n') for line in failed_tests]
+    failed_tests = []
+    if os.path.isfile('./Tests/failed_tests.txt'):
+        print('Extracting failed_tests')
+        with open('./Tests/failed_tests.txt', 'r') as failed_tests_file:
+            failed_tests = failed_tests_file.readlines()
+            failed_tests = [line.strip('\n') for line in failed_tests]
 
-    print('Extracting failed_unittests')
-    with open('./Tests/failed_unittests.txt', 'r') as failed_unittests_file:
-        failed_unittests = failed_unittests_file.readlines()
-        failed_unittests = [line.strip('\n') for line in failed_unittests]
+    failed_unittests = []
+    if os.path.isfile('./Tests/failed_unittests.txt'):
+        print('Extracting failed_unittests')
+        with open('./Tests/failed_unittests.txt', 'r') as failed_unittests_file:
+            failed_unittests = failed_unittests_file.readlines()
+            failed_unittests = [line.strip('\n') for line in failed_unittests]
 
-    print('Extracting skipped_tests')
-    with open('./Tests/skipped_tests.txt', 'r') as skipped_tests_file:
-        skipped_tests = skipped_tests_file.readlines()
-        skipped_tests = [line.strip('\n') for line in skipped_tests]
+    skipped_tests = []
+    if os.path.isfile('./Tests/skipped_tests.txt'):
+        print('Extracting skipped_tests')
+        with open('./Tests/skipped_tests.txt', 'r') as skipped_tests_file:
+            skipped_tests = skipped_tests_file.readlines()
+            skipped_tests = [line.strip('\n') for line in skipped_tests]
 
-    print('Extracting skipped_integrations')
-    with open('./Tests/skipped_integrations.txt', 'r') as skipped_integrations_file:
-        skipped_integrations = skipped_integrations_file.readlines()
-        skipped_integrations = [line.strip('\n') for line in skipped_integrations]
+    skipped_integrations = []
+    if os.path.isfile('./Tests/skipped_integrations.txt'):
+        print('Extracting skipped_integrations')
+        with open('./Tests/skipped_integrations.txt', 'r') as skipped_integrations_file:
+            skipped_integrations = skipped_integrations_file.readlines()
+            skipped_integrations = [line.strip('\n') for line in skipped_integrations]
 
     content_team_fields = []
     content_fields = []
