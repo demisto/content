@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.1] - 2019-11-26
 Added the ***cb-binary-download*** command, which replaces the deprecated ***cb-binary-get*** command.
 
 ## [19.11.0] - 2019-11-12
