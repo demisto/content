@@ -17,7 +17,7 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
+  required: true
   type: 8
 - display: Use system proxy settings
   name: proxy
@@ -373,8 +373,8 @@ script:
     execution: false
     name: securonix-get-incident-workflow
     outputs:
-    - contextPath: Securonix.Incidents.WorkflowName
-      description: Incident workflow name.
+    - contextPath: Securonix.Incidents.Workflow
+      description: Incident workflow.
       type: String
     - contextPath: Securonix.Incidents.IncidentId
       description: Incident ID.
@@ -390,13 +390,6 @@ script:
     description: List available actions for an incident.
     execution: false
     name: securonix-get-incident-available-actions
-    outputs:
-    - contextPath: Securonix.Incidents.AvailableActions
-      description: Incident available actions.
-      type: String
-    - contextPath: Securonix.Incidents.IncidentId
-      description: Incident ID.
-      type: String
   - arguments:
     - default: false
       description: Incident ID.
@@ -518,6 +511,10 @@ script:
     description: List watchlists.
     execution: false
     name: securonix-list-watchlists
+    outputs:
+    - contextPath: Securonix.WatchlistsNames
+      description: Watchlist names.
+      type: String
   - arguments:
     - default: false
       description: Watchlist name.
@@ -529,6 +526,61 @@ script:
     description: Get a watchlist.
     execution: false
     name: securonix-get-watchlist
+    outputs:
+    - contextPath: Securonix.Watchlists.TenantId
+      description: Watchlist tenant ID.
+      type: String
+    - contextPath: Securonix.Watchlists.Tenantname
+      description: Watchlist tenant name.
+      type: String
+    - contextPath: Securonix.Watchlists.Type
+      description: Watchlist type.
+      type: String
+    - contextPath: Securonix.Watchlists.Watchlistname
+      description: Watchlist name.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.ExpiryDate
+      description: Expiry date of the entity in the watchlist in epoch.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.U_Workemail
+      description: Work eamil of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.U_Fullname
+      description: Full name of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.Reason
+      description: Reason for the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.U_Lanid
+      description: Lan ID of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.U_Lastname
+      description: Last name of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.EntityName
+      description: Entity name of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.U_Title
+      description: Title of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.U_Firstname
+      description: First name of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.U_Employeeid
+      description: Employee Id of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.U_Masked
+      description: Whether the entity in the watchlist is masked.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.U_Division
+      description: Division of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.U_Departmant
+      description: Departmant of the entity in the watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.Events.U_Status
+      description: Status of the entity in the watchlist.
+      type: String
   - arguments:
     - default: false
       description: Watchlist name.
@@ -551,6 +603,13 @@ script:
     description: Check if entity is in a watchlist.
     execution: false
     name: securonix-check-entity-in-watchlist
+    outputs:
+    - contextPath: Securonix.EntityInWatchlist.Watchlistnames
+      description: Watchlists names.
+      type: String
+    - contextPath: Securonix.EntityInWatchlist.EntityID
+      description: Entity ID.
+      type: String
   - arguments:
     - default: false
       description: Watchlist name.
