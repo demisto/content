@@ -739,10 +739,10 @@ def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     Returns:
         Outputs
     """
-    name = args.get('name')
     rp_zone = args.get('rp_zone')
     comment = args.get('comment')
     ptrdname = args.get('ptrdname')
+    name = args.get('name')
     ipv4addr = args.get('ipv4addr')
     ipv6addr = args.get('ipv6addr')
     infoblox_object_type = 'record:rpz:ptr'
