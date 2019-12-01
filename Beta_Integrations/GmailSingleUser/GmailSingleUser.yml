@@ -1,4 +1,4 @@
-category: Authentication
+category: Messaging
 beta: true
 commonfields:
   id: Gmail Single User
