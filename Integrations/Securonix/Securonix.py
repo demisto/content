@@ -31,10 +31,11 @@ def camel_case_to_readable(text: str) -> str:
     return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
 
 
-def parse_data_arr(data_arr):
+def parse_data_arr(data_arr, fields_to_drop: Optional[List] = []):
     """Parse data as received from Microsoft Graph API into Demisto's conventions
     Args:
-        data_arr: a dictionary containing the group data
+        data_arr: a dictionary containing the data
+        fields_to_drop: Fields to drop from the array of the data
     Returns:
         A Camel Cased dictionary with the relevant fields.
         readable: for the human readable
@@ -43,12 +44,12 @@ def parse_data_arr(data_arr):
     if isinstance(data_arr, list):
         readable_arr, outputs_arr = [], []
         for data in data_arr:
-            readable = {camel_case_to_readable(i): j for i, j in data.items()}
+            readable = {camel_case_to_readable(i): j for i, j in data.items() if i not in fields_to_drop}
             readable_arr.append(readable)
             outputs_arr.append({k.replace(' ', ''): v for k, v in readable.copy().items()})
         return readable_arr, outputs_arr
 
-    readable = {camel_case_to_readable(i): j for i, j in data_arr.items()}
+    readable = {camel_case_to_readable(i): j for i, j in data_arr.items() if i not in fields_to_drop}
     outputs = {k.replace(' ', ''): v for k, v in readable.copy().items()}
 
     return readable, outputs
@@ -551,7 +552,7 @@ def list_workflows(client: Client, *_) -> Tuple[str, Dict, Dict]:
     workflows = client.list_workflows_request()
     workflows_readable, workflows_outputs = parse_data_arr(workflows)
     human_readable = tableToMarkdown(name="Available workflows:", t=workflows_readable,
-                                     headers=['Workflow', 'Type Name', 'Value'],
+                                     headers=['Workflow', 'Type', 'Value'],
                                      removeNull=True)
     entry_context = {f'Securonix.Workflows(val.Workflow == obj.Workflow)': workflows_outputs}
     return human_readable, entry_context, workflows
@@ -748,6 +749,7 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     total_incidents = incidents.get('totalIncidents')
     if not total_incidents or float(total_incidents) <= 0.0:
         return 'No incidents where found in this time frame.', {}, incidents
+
     incidents_items = incidents.get('incidentItems')
     incidents_readable, incidents_outputs = parse_data_arr(incidents_items)
     headers = ['Incident Id', 'Incident Status', 'Incident Type', 'Priority', 'Reason']
@@ -793,8 +795,12 @@ def get_incident_status(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     incident_id = str(args.get('incident_id'))
     incident = client.get_incident_status_request(incident_id)
     incident_status = incident.get('status')
-
-    return f'Incident {incident_id} status is {incident_status}.', {}, incident
+    incident_outputs = {
+        'IncidentID': incident_id,
+        'IncidentStatus': incident_status
+    }
+    entry_context = {f'Securonix.Incidents(val.IncidentId === obj.IncidentId)': incident_outputs}
+    return f'Incident {incident_id} status is {incident_status}.', entry_context, incident
 
 
 def get_incident_workflow(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -811,8 +817,12 @@ def get_incident_workflow(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
     incident = client.get_incident_workflow_request(incident_id)
     incident_workflow = incident.get('workflow')
-
-    return f'Incident {incident_id} workflow is {incident_workflow}.', {}, incident
+    incident_outputs = {
+        'IncidentID': incident_id,
+        'WorkflowName': incident_workflow
+    }
+    entry_context = {f'Securonix.Incidents(val.IncidentId === obj.IncidentId)': incident_outputs}
+    return f'Incident {incident_id} workflow is {incident_workflow}.', entry_context, incident
 
 
 def get_incident_available_actions(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -832,7 +842,12 @@ def get_incident_available_actions(client: Client, args: Dict) -> Tuple[str, Dic
         return f'Incident {incident_id} does not have any available actions.', {}, incident
 
     incident_actions = incident.get('actions')  # TODO - incident which is not closed
-    return f'Incident {incident_id} available actions: {incident_actions}.', {}, incident
+    incident_outputs = {
+        'IncidentID': incident_id,
+        'AvailableActions': incident_actions
+    }
+    entry_context = {f'Securonix.Incidents(val.IncidentId === obj.IncidentId)': incident_outputs}
+    return f'Incident {incident_id} available actions: {incident_actions}.', entry_context, incident
 
 
 def perform_action_on_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -938,13 +953,18 @@ def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     if not watchlist_events:
         raise Exception(f'Watchlist does not contain items.\n'
                         f'Make sure the watchlist is not empty and that the watchlist name is correct.')
-    watchlist_readable, watchlist_events_outputs = parse_data_arr(watchlist_events)
+    fields_to_drop = ['decay', 'tenantid', 'tenantname', 'watchlistname']
+    watchlist_readable, watchlist_events_outputs = parse_data_arr(watchlist_events, fields_to_drop=fields_to_drop)
     watchlist_outputs = {
         'Watchlistname': watchlist_name,
+        'Type': watchlist_events[0].get('type'),
+        'TenantID': watchlist_events[0].get('tenantid'),
+        'TenantName': watchlist_events[0].get('tenantname'),
         'Events': watchlist_events_outputs
     }
-    headers = ['Watchlistname', 'Type', 'Entityname', 'U_Fullname', 'U_Workemail', 'Expired']
-    human_readable = tableToMarkdown(name="Watchlist items:", t=watchlist_readable, headers=headers, removeNull=True)
+    headers = ['Entityname', 'U_Fullname', 'U_Workemail', 'Expired']
+    human_readable = tableToMarkdown(name=f"Watchlist {watchlist_name} of type {watchlist_outputs.get('Type')}:",
+                                     t=watchlist_readable, headers=headers, removeNull=True)
     entry_context = {f'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': watchlist_outputs}
     return human_readable, entry_context, watchlist
 
@@ -1010,7 +1030,7 @@ def add_entity_to_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     entity_type = args.get('entity_type')
     entity_id = args.get('entity_id')
     resource_name = args.get('resource_name') if entity_type in ['Resources', 'Activityaccount'] else entity_id
-    expiry_days = args.get('expiry_days')
+    expiry_days = args.get('expiry_days') if 'expiry_days' in args else '30'
 
     watchlist = client.add_entity_to_watchlist_request(watchlist_name, entity_type, entity_id,
                                                        expiry_days, resource_name)
@@ -1076,7 +1096,7 @@ def main():
     username = params.get('username')
     password = params.get('password')
     tenant = params.get("tenant")
-    server_url = f'https://{tenant}.securonix.net/Snypr/ws/'
+    server_url = f'https://{tenant}.securonix.net/Snypr/ws/' # TODO add startswith to be more nice if customer puts all URL
     verify = not params.get('insecure', False)
     proxies = handle_proxy()  # Remove proxy if not set to true in params
 

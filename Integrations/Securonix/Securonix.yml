@@ -387,7 +387,7 @@ script:
       description: Expiry in days.
       isArray: false
       name: expiry_days
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Add an entity to a watchlist.
