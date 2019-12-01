@@ -14,9 +14,9 @@ configuration:
 - display: password
   name: password
   required: true
-  type: 0
+  type: 4
 - display: Trust any certificate (not secure)
-  name: insecure
+  name: unsecure
   required: false
   type: 8
 - display: Use system proxy settings
@@ -50,6 +50,16 @@ script:
     description: List all available workflows.
     execution: false
     name: securonix-list-workflows
+    outputs:
+    - contextPath: Securonix.Workflows.Workflow
+      description: Workflow name.
+      type: String
+    - contextPath: Securonix.Workflows.Type
+      description: Workflow type.
+      type: String
+    - contextPath: Securonix.Workflows.Value
+      description: Workflow value.
+      type: String
   - arguments:
     - default: false
       description: Worflow name.
@@ -61,18 +71,50 @@ script:
     description: Get the default assignee for the specified workflow.
     execution: false
     name: securonix-get-default-assignee-for-workflow
+    outputs:
+    - contextPath: Securonix.Workflows.Workflow
+      description: Workflow name.
+      type: String
+    - contextPath: Securonix.Workflows.Type
+      description: Workflow type.
+      type: String
+    - contextPath: Securonix.Workflows.Value
+      description: Workflow value.
+      type: String
   - deprecated: false
     description: List possible threat actions.
     execution: false
     name: securonix-list-possible-threat-actions
     outputs:
     - contextPath: Securonix.ThreatActions
-      description: Threat actions
+      description: Threat actions.
       type: String
   - deprecated: false
     description: List policies.
     execution: false
     name: securonix-list-policies
+    outputs:
+    - contextPath: Securonix.Policies.CreatedBy
+      description: Creator of the policy.
+      type: String
+    - contextPath: Securonix.Policies.CreatedOn
+      description: Policy created date.
+      type: Date
+    - contextPath: Securonix.Policies.Criticality
+      description: Policy criticality.
+      type: String
+    - contextPath: Securonix.Policies.Description
+      description: Policy description.
+      type: String
+    - contextPath: Securonix.Policies.Hql
+      description: Policy Hibernate Query Language.
+      type: String
+    - contextPath: Securonix.Policies.ID
+      description: Policy ID.
+      type: String
+    - contextPath: Securonix.Policies.Name
+      description: Policy name.
+      type: String
   - deprecated: false
     description: List resource groups.
     execution: false
