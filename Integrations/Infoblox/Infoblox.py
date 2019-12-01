@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, List, AnyStr, Union
+from typing import Dict, Tuple
 import urllib3
 
 # Disable insecure warnings
@@ -302,7 +302,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def parse_demisto_exception(error: DemistoException, field_in_error: str):
+def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text'):
     err_string = error.args[0]
     if 'Error in API call' in err_string:
         infoblox_err = err_string.split('\n')[1]
