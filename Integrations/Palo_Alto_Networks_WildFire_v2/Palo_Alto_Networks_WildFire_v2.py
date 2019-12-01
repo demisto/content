@@ -413,7 +413,7 @@ def wildfire_get_verdict_command():
         dbot_score = create_dbot_score_from_verdict(pretty_verdict)
         ec = {
             "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdict,
-            "DBotScore(val.Indicator == obj.Indicator)": dbot_score
+            "DBotScore": dbot_score
         }
 
         demisto.results({
@@ -468,7 +468,7 @@ def wildfire_get_verdicts_command():
         dbot_score = create_dbot_score_from_verdicts(pretty_verdicts)
         ec = {
             "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdicts,
-            "DBotScore(val.Indicator == obj.Indicator)": dbot_score
+            "DBotScore": dbot_score
         }
 
         demisto.results({

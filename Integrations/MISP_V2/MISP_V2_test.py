@@ -154,3 +154,15 @@ def test_build_misp_complex_filter(mocker):
     expected = {'AND': ['tag1', 'tag2'], 'OR': ['tag3', 'tag4'], 'NOT': ['tag5']}
     actual = build_misp_complex_filter(complex_query_AND_OR_NOT)
     assert actual == expected
+
+
+def test_data_filtering(mocker):
+    mock_misp(mocker)
+    mocker.patch('MISP_V2.DATA_KEYS_TO_SAVE', ['Category', 'EventID', 'UUID'])
+
+    import test_constants
+    from MISP_V2 import build_context
+
+    full_response = test_constants.full_response_before_filtering
+    filtered_response = test_constants.response_after_filtering_category_eventid_uuid
+    assert build_context(full_response) == filtered_response
