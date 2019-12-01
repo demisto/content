@@ -2003,7 +2003,7 @@
         },
         {
             "integrations": "Infoblox",
-            "playbookID": "Tanium v2 - Test"
+            "playbookID": "Infoblox Test"
         }
     ],
     "skipped_tests": {
