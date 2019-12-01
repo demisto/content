@@ -567,7 +567,8 @@ def filters_to_entry(title, mailbox, response):
         'Contents': context,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
-        'EntryContext': {'GmailFilter(val.ID && val.ID == obj.ID)': context}
+        'EntryContext': {'GmailFilter(val.ID && val.ID == obj.ID)': context,
+                         'Gmail.Filter(val.ID && val.ID == obj.ID)': context}
     }
 
 
