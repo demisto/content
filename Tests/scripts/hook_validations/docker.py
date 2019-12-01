@@ -40,8 +40,9 @@ class DockerImageValidator(object):
 
     def is_docker_image_latest_tag(self):
         # If the docker image isn't in the format we expect it to be
-        if not self.docker_image_tag and not self.docker_image_name and not self.docker_image_latest_tag:
+        if not self.docker_image_name or not self.docker_image_latest_tag:
             self.is_latest_tag = False
+            return self.is_latest_tag
         else:
             server_version = LooseVersion(self.from_version)
             # Case of a modified file with version >= 5.0.0
@@ -236,11 +237,17 @@ class DockerImageValidator(object):
         """
         if docker_image:
             try:
-                regex = re.findall(r'(demisto\/.+):(.+)', docker_image, re.IGNORECASE)[0]
-                return regex[0], regex[1]
+                image = re.findall(r'(demisto\/.+)', docker_image, re.IGNORECASE)[0]
             except IndexError:
-                print_error('The docker image is not of format - demisto/image_name:X.X.X.X')
-                return '', ''
+                print_error('The docker image is not of format - demisto/image_name')
+                image = ''
+            try:
+                tag = re.findall(r':(.+)', docker_image, re.IGNORECASE)[0]
+            except IndexError:
+                print_error('The docker image in your integration/script does not have a tag, please attach the '
+                            'latest tag')
+                tag = ''
+            return image, tag
         else:
             # If the yml file has no docker image we provide the default one 'demisto/python:1.3-alpine'
             return 'demisto/python', '1.3-alpine'
