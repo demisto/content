@@ -480,7 +480,7 @@
                 "Demisto REST API"
             ],
             "fromversion": "5.0.0",
-            "timeout": 900
+            "timeout": 1200
         },
         {
             "playbookID": "ParseExcel-test"
@@ -2070,6 +2070,11 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "AlphaSOC Wisdom": "Issue 19235",
+        "DomainTools Iris": "Issue 20433",
+        "Cybereason": "Issue 20430",
+        "SentinelOne V2": "Issue 19361",
+        "ThreatQ v2": "Issue 19468",
         "Check Point": "Issue 18643",
         "McAfee Active Response": "Issue 20320",
         "RSA Archer": "Issue 20335",
