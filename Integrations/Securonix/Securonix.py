@@ -118,26 +118,27 @@ class Client(BaseClient):
         except requests.exceptions.ConnectTimeout as exception:
             err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                       ' is incorrect or that the Server is not accessible from your host.'
-            raise DemistoException(err_msg, exception)
+            raise Exception(f'{err_msg}\n{exception}')
 
         except requests.exceptions.SSLError as exception:
             err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
                       ' the integration configuration.'
-            raise DemistoException(err_msg, exception)
+            raise Exception(f'{err_msg}\n{exception}')
 
         except requests.exceptions.ProxyError as exception:
             err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
                       ' selected, try clearing the checkbox.'
-            raise DemistoException(err_msg, exception)
+            raise Exception(f'{err_msg}\n{exception}')
 
         except requests.exceptions.ConnectionError as exception:
-            # Get originating Exception in Exception chain
             error_class = str(exception.__class__)
             err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-            err_msg = f'\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n ' \
-                      f'Verify that the server URL parameter ' \
-                      f'is correct and that you have access to the server from your host.'
-            raise DemistoException(err_msg, exception)
+            err_msg = f'Error Type: {err_type}\n' \
+                      f'Error Number: [{exception.errno}]\n' \
+                      f'Message: {exception.strerror}\n' \
+                      f'Verify that the tenant parameter is correct' \
+                      f'and that you have access to the server from your host.'
+            raise Exception(f'{err_msg}\n{exception}')
 
         except Exception as exception:
             raise Exception(str(exception))
@@ -1057,7 +1058,6 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
         incidents, new last_run
     """
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
-    # Get incidents from API
     if not last_run:  # if first time running
         new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
@@ -1067,9 +1067,10 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
     from_epoch = date_to_timestamp(new_last_run.get('time'), date_format=timestamp_format)
     to_epoch = date_to_timestamp(get_now(), date_format=timestamp_format)
 
+    # Get incidents from Securonix
     securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types)
+
     incidents_items = securonix_incidents.get('incidentItems')
-    demisto.info(f'111111 {incidents_items}')
     if securonix_incidents:
         last_incident_id = last_run.get('incidentId', '0')
         # Creates incident entry
@@ -1082,8 +1083,9 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
         # New incidents fetched
         if demisto_incidents:
             last_incident_timestamp = demisto_incidents[-1].get('occurred')
-            last_incident_id = securonix_incidents[-1].get('id')
+            last_incident_id = securonix_incidents[-1].get('incidentId')
             new_last_run = {'time': last_incident_timestamp, 'id': last_incident_id}
+
     # Return results
     return demisto_incidents, new_last_run
 
@@ -1093,15 +1095,21 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
+
+    tenant = params.get("tenant")
+    server_url = tenant
+    if not tenant.startswith('http://') and not tenant.startswith('https://'):
+        server_url = f'https://{tenant}'
+    if not tenant.endswith('.securonix.net/Snypr/ws/'):
+        server_url += '.securonix.net/Snypr/ws/'
+
     username = params.get('username')
     password = params.get('password')
-    tenant = params.get("tenant")
-    server_url = f'https://{tenant}.securonix.net/Snypr/ws/' # TODO add startswith to be more nice if customer puts all URL
-    verify = not params.get('insecure', False)
+    verify = not params.get('unsecure', False)
     proxies = handle_proxy()  # Remove proxy if not set to true in params
 
     command = demisto.command()
-    LOG(f'Command being called is {command}')
+    LOG(f'Command being called in Securonix is: {command}')
 
     try:
         client = Client(tenant=tenant, server_url=server_url, username=username, password=password,
