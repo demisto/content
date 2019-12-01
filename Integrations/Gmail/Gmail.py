@@ -100,12 +100,14 @@ def get_http_client_with_proxy():
     if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
         https_proxy = 'https://' + https_proxy
     parsed_proxy = urlparse.urlparse(https_proxy)
+    # disable-secrets-detection-start
     proxy_info = httplib2.ProxyInfo(
         proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
         proxy_host=parsed_proxy.hostname,
         proxy_port=parsed_proxy.port,
         proxy_user=parsed_proxy.username,
         proxy_pass=parsed_proxy.password)
+    # disable-secrets-detection-end
     return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=DISABLE_SSL)
 
 
