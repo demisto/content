@@ -41,6 +41,7 @@ script:
     - name: category
       description: Category
       defaultValue: blacklist
+    description: Add a URL to the proxy filter list
   - name: proxy-filter-del-url
     arguments:
     - name: url
@@ -57,4 +58,4 @@ script:
   longRunning: true
   longRunningPort: true
   subtype: python3
-  fromversion: 5.0.0
+  fromVersion: 5.0.0

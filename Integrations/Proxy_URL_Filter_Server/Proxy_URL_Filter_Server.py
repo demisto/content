@@ -3,8 +3,6 @@ from CommonServerPython import *
 import signal
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-PORT = int(demisto.getParam('longRunningPort'))
-
 
 def proxysg_filter(ctx):
     """
@@ -38,45 +36,73 @@ class RequestHandler(BaseHTTPRequestHandler):
         return
 
 
-if demisto.command() == 'test-module':
-    demisto.results('ok')
-    sys.exit(0)
-
-if demisto.command() == 'proxy-filter-add-url':
+def add_url_command(args):
     ctx = demisto.getIntegrationContext()
-    cat = demisto.getArg('category')
+    cat = args.get('category')
     urls = ctx.setdefault(cat, [])
 
-    urls.append(demisto.getArg('url'))
+    urls.append(args.get('url'))
 
     ctx[cat] = list(set(urls))
     demisto.setIntegrationContext(ctx)
 
-    demisto.results('Done')
-    sys.exit(0)
+    return 'Done'
 
-if demisto.command() == 'proxy-filter-del-url':
+
+def remove_url_command(args):
     ctx = demisto.getIntegrationContext()
-    cat = demisto.getArg('category')
+    cat = args.get('category')
     urls = ctx.setdefault(cat, [])
-    url = demisto.getArg('url')
+    url = args.get('url')
     try:
         urls.remove(url)
     except ValueError:
         return_error(f'{url} not in block list for category {cat}')
-        sys.exit(0)
+        return
 
     ctx[cat] = list(set(urls))
     demisto.setIntegrationContext(ctx)
 
-    demisto.results('Done')
-    sys.exit(0)
+    return 'Done'
 
-if demisto.command() == 'long-running-execution':
+
+def run_long_running(port):
     try:
-        httpd = ThreadingHTTPServer(('0.0.0.0', PORT), RequestHandler)
+        httpd = ThreadingHTTPServer(('0.0.0.0', port), RequestHandler)
         signal.signal(signal.SIGTERM, httpd.shutdown)
         signal.signal(signal.SIGINT, httpd.shutdown)
         httpd.serve_forever()
     except Exception:
         httpd.shutdown()
+        raise
+
+
+def main():
+    try:
+        if demisto.command() == 'test-module':
+            # validate that the port is integer
+            int(demisto.getParam('longRunningPort'))
+
+            demisto.results('ok')
+            return
+
+        if demisto.command() == 'proxy-filter-add-url':
+            result = add_url_command(demisto.args())
+            demisto.results(result)
+            return
+
+        if demisto.command() == 'proxy-filter-del-url':
+            result = remove_url_command(demisto.args())
+            demisto.results(result)
+            return
+
+        if demisto.command() == 'long-running-execution':
+            port = int(demisto.getParam('longRunningPort'))
+            run_long_running(port)
+
+    except Exception as ex:
+        return_error(f'Failed to run {demisto.command()}. Error: {str(ex)}', ex)
+
+
+if __name__ in ("__builtin__", "builtins"):
+    main()

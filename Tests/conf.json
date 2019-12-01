@@ -7,6 +7,10 @@
             "playbookID": "Digital Shadows - Test"
         },
         {
+            "integrations": "Proxy URL Filter Server",
+            "playbookID": "BlueCoatProxySGTest"
+        },
+        {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Test",
             "instance_names": "ms_azure_compute_dev"
