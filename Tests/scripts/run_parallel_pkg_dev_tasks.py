@@ -90,8 +90,8 @@ def main():
         for future in concurrent.futures.as_completed(futures_submit):
             res = future.result()
             handle_run_res(res, fail_pkgs, good_pkgs)
+    create_failed_unittests_file(fail_pkgs)
     if fail_pkgs:
-        create_failed_unittests_file(fail_pkgs)
         print_color("\n******* FAIL PKGS: *******", LOG_COLORS.RED)
         print_color("\n\t{}\n".format("\n\t".join(fail_pkgs)), LOG_COLORS.RED)
     if good_pkgs:
