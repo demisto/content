@@ -1891,8 +1891,8 @@
             "playbookID": "PhishLabsTestPopulateIndicators"
         },
         {
-            "integrations": "PhishLabs IOC",
-            "playbookID": "PhishLabsIOC TestPlaybook",
+            "integrations": "PhishLabs IOC EIR ",
+            "playbookID": "PhishLabsIOC EIR TestPlaybook",
             "fromversion": "4.1.0"
         },
         {

@@ -1,6 +1,6 @@
-id: PhishLabsIOC TestPlaybook
+id: PhishLabsIOC EIR TestPlaybook
 version: -1
-name: PhishLabsIOC TestPlaybook
+name: PhishLabsIOC EIR TestPlaybook
 starttaskid: "0"
 tasks:
   "0":

@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: PhishLabs IOC
+  id: PhishLabs IOC EIR
   version: -1
 configuration:
 - defaultvalue: https://ioc.phishlabs.com
@@ -458,4 +458,4 @@ script:
   script: '-'
   type: python
 tests:
-- PhishLabsIOC TestPlaybook
+- PhishLabsIOC EIR TestPlaybook
