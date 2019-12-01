@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: Proxy URL Filter Server
 display: Proxy URL Filter Server
+fromVersion: 5.0.0
 category: Network Security
 description: Serves a URL filtering list to be fetched by proxies
 configuration:
@@ -23,11 +24,6 @@ configuration:
   defaultvalue: "80"
   type: 0
   required: true
-- display: Incident type
-  name: incidentType
-  defaultvalue: ""
-  type: 13
-  required: false
 script:
   script: ''
   type: python
@@ -58,4 +54,3 @@ script:
   longRunning: true
   longRunningPort: true
   subtype: python3
-  fromVersion: 5.0.0
