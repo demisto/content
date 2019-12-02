@@ -520,7 +520,7 @@ def edl_compare_command():
         md += '#### If these changes are unexpected, check who has permission to write to the external file.\n'
         md += tableToMarkdown('', list(unique_internal), headers=[list_name])
     if len(md) == 0:
-        md = 'Internal list and External file have the same values.'
+        md = 'Internal list and external file have the same values.'
 
     demisto.results({
         'Type': 11 if unique_external or unique_internal else entryTypes['note'],
