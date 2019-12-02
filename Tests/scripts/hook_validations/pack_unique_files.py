@@ -139,10 +139,8 @@ class PackUniqueFilesValidator():
 
     def validate_pack_unique_files(self):
         """Main Execution Method"""
-        if all([self.validate_secrets_file(),
-                self.validate_pack_ignore_file(),
-                self.validate_pack_meta_file(),
-                self.validate_readme_file()]):
-            return True
-
-        return False
+        self.validate_secrets_file()
+        self.validate_pack_ignore_file()
+        self.validate_pack_meta_file()
+        self.validate_readme_file()
+        return self.get_errors()
