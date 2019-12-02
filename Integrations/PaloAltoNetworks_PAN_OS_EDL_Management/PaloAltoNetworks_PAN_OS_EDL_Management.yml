@@ -265,13 +265,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: List from the instance context to update.
+      description: The list from the instance context to update.
       isArray: false
       name: list_name
       required: true
       secret: false
     - default: false
-      description: List items.
+      description: An array of list items.
       isArray: true
       name: list_items
       required: true
@@ -279,7 +279,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Prints the updated remote file to the War Room. Default is "false".
+      description: Whether to print the updated remote file to the War Room. Can ve "true" or "false". Default is "false".
       isArray: false
       name: verbose
       predefined:
@@ -290,7 +290,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: add
-      description: Whether to add to, or remove from the list. Default is "add".
+      description: Whether to add to, or remove from the list. Can be "add" or "remove". Default is "add".
       isArray: false
       name: add_or_remove
       predefined:
@@ -319,7 +319,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Prints the updated internal list to the War Room. Default is "false".
+      description: Whether to add to, or remove from the list. Can be "add" or "remove". Default is "add".
       isArray: false
       name: verbose
       predefined:
@@ -328,7 +328,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates remote file with the contents of an internal list.
+    description: Updates a remote file with the contents of an internal list.
     execution: false
     name: pan-os-edl-update-external-file
   dockerimage: demisto/openssh:1.0.0.305
