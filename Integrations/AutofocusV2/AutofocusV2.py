@@ -901,7 +901,10 @@ def get_indicator_outputs(indicator_type, indicator_response, indicator_value, s
         }
 
     if indicator_type == 'Domain':
-        whois = {'Admin': {}, 'Registrant': {}, 'Registrar': {}}
+        whois = dict()
+        whois['Admin'] = dict()
+        whois['Registrant'] = dict()
+        whois['Registrar'] = dict()
         whois['CreationDate'] = indicator_response['WhoisDomainCreationDate']
         whois['ExpirationDate'] = indicator_response['WhoisDomainExpireDate']
         whois['UpdatedDate'] = indicator_response['WhoisDomainUpdateDate']
