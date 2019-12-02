@@ -19,6 +19,9 @@ SERVER = 'https://autofocus.paloaltonetworks.com'
 USE_SSL = not PARAMS.get('insecure', False)
 # Service base URL
 BASE_URL = SERVER + '/api/v1.0'
+
+VENDOR_NAME = 'Palo Alto AutoFocus'
+
 # Headers to be sent in requests
 HEADERS = {
     'Content-Type': 'application/json'
@@ -226,6 +229,20 @@ SAMPLE_ANALYSIS_COVERAGE_KEYS = {
         'fields': ['url', 'cat']
     }
 }
+
+VERDICTS_TO_DBOTSCORE = {
+    'benign': 1,
+    'malware': 3,
+    'grayware': 2,
+    'phishing': 3,
+    'c2': 3
+}
+
+if PARAMS.get('additional_malicious_verdicts'):
+    verdicts = argToList(PARAMS.get('additional_malicious_verdicts'))
+    for verdict in verdicts:
+        VERDICTS_TO_DBOTSCORE[verdict] = 3
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -774,6 +791,151 @@ def validate_no_multiple_indicators_for_search(arg_list):
     return
 
 
+def search_indicator(indicator_type, indicator_value):
+    headers = HEADERS
+    headers['apiKey'] = API_KEY
+
+    res = requests.request(
+        method='GET',
+        url=f'{BASE_URL}/tic?indicatorType={indicator_type}&indicatorValue={indicator_value}&includeTags=true',
+        verify=USE_SSL,
+        headers=headers
+    )
+
+    try:
+        # Handle error responses gracefully
+        res_json = res.json()
+        res.raise_for_status()
+    # Unexpected errors (where no json object was received)
+    except Exception as err:
+        err_msg = f'{err}'
+        return return_error(err_msg)
+
+    return res_json
+
+
+def parse_indicator_response(res, indicator_type):
+    if not res.get('indicator'):
+        raise Exception('Invalid response for indicator')
+    raw_tags = res.get('tags')
+    res = res['indicator']
+
+    indicator = {}
+    indicator['IndicatorValue'] = res.get('indicatorValue', '')
+    indicator['IndicatorType'] = res.get('indicatorType', '')
+    indicator['LatestPanVerdicts'] = res.get('latestPanVerdicts', '')
+    indicator['WildfireRelatedSampleVerdictCounts'] = res.get('wildfireRelatedSampleVerdictCounts', '')
+    indicator['SeenBy'] = res.get('seenByDataSourceIds', '')
+
+    first_seen = res.get('firstSeenTsGlobal', '')
+    last_seen = res.get('lastSeenTsGlobal', '')
+
+    if first_seen:
+        indicator['FirstSeen'] = timestamp_to_datestring(first_seen)
+    if last_seen:
+        indicator['LastSeen'] = timestamp_to_datestring(last_seen)
+
+    if raw_tags:
+        tags = []
+        for tag in raw_tags:
+            tags.append({
+                'PublicTagName': tag.get('public_tag_name', ''),
+                'TagName': tag.get('tag_name', ''),
+                'CustomerName': tag.get('customer_name', ''),
+                'Source': tag.get('source', ''),
+                'TagDefinitionScopeID': tag.get('tag_definition_scope_id', ''),
+                'TagDefinitionStatusID': tag.get('tag_definition_status_id', ''),
+                'TagClassID': tag.get('tag_class_id', ''),
+                'Count': tag.get('count', ''),
+                'Lasthit': tag.get('lasthit', ''),
+                'Description': tag.get('description', '')})
+        indicator['Tags'] = tags
+
+    if indicator_type == 'Domain':
+        indicator['WhoisAdminCountry'] = res.get('whoisAdminCountry', '')
+        indicator['WhoisAdminEmail'] = res.get('whoisAdminEmail', '')
+        indicator['WhoisAdminName'] = res.get('whoisAdminName', '')
+        indicator['WhoisDomainCreationDate'] = res.get('whoisDomainCreationDate', '')
+        indicator['WhoisDomainExpireDate'] = res.get('whoisDomainExpireDate', '')
+        indicator['WhoisDomainUpdateDate'] = res.get('whoisDomainUpdateDate', '')
+        indicator['WhoisRegistrar'] = res.get('whoisRegistrar', '')
+        indicator['WhoisRegistrarUrl'] = res.get('whoisRegistrarUrl', '')
+        indicator['WhoisRegistrant'] = res.get('whoisRegistrant', '')
+
+    return indicator
+
+
+def calculate_dbot_score(indicator_response, indicator_type):
+    latest_pan_verdicts = indicator_response['indicator']['latestPanVerdicts']
+    if not latest_pan_verdicts:
+        raise Exception('latestPanVerdicts value is empty in indicator response.')
+
+    pan_db = latest_pan_verdicts.get('PAN_DB')
+    wf_sample = latest_pan_verdicts.get('WF_SAMPLE')
+
+    # use WF_SAMPLE value for file indicator and PAN_DB for domain,url and ip indicators
+    if indicator_type == 'File' and wf_sample:
+        return VERDICTS_TO_DBOTSCORE.get(wf_sample.lower(), 0)
+    elif pan_db:
+        return VERDICTS_TO_DBOTSCORE.get(pan_db.lower(), 0)
+    else:
+        score = next(iter(latest_pan_verdicts.values()))
+        return VERDICTS_TO_DBOTSCORE.get(score.lower(), 0)
+
+
+def get_indicator_outputs(indicator_type, indicator_response, indicator_value, score, indicator_context_output):
+    dbot_score = {
+        'Indicator': indicator_value,
+        'Type': indicator_type.lower(),
+        'Vendor': VENDOR_NAME,
+        'Score': score
+    }
+
+    indicator_context = {
+        indicator_context_output: indicator_value
+    }
+
+    if score == 3:
+        indicator_context['Malicious'] = {
+            'Vendor': VENDOR_NAME
+        }
+
+    if indicator_type == 'Domain':
+        whois = dict()
+        whois['Admin'] = dict()
+        whois['Registrant'] = dict()
+        whois['Registrar'] = dict()
+        whois['CreationDate'] = indicator_response['WhoisDomainCreationDate']
+        whois['ExpirationDate'] = indicator_response['WhoisDomainExpireDate']
+        whois['UpdatedDate'] = indicator_response['WhoisDomainUpdateDate']
+        whois['Admin']['Email'] = indicator_response['WhoisAdminEmail']
+        whois['Admin']['Name'] = indicator_response['WhoisAdminName']
+        whois['Registrar']['Name'] = indicator_response['WhoisRegistrar']
+        whois['Registrant']['Name'] = indicator_response['WhoisRegistrant']
+        indicator_context['WHOIS'] = whois
+
+    ec = {f'AutoFocus.{indicator_type}': indicator_response, 'DBotScore': dbot_score, indicator_type: indicator_context}
+    context = createContext(ec, removeNull=True)
+
+    tags = indicator_response.get('Tags')
+    table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {indicator_value}'
+    if tags:
+        indicators_data = indicator_response.copy()
+        del indicators_data['Tags']
+        md = tableToMarkdown(table_name, indicators_data, headerTransform=string_to_table_header)
+        md += tableToMarkdown('Indicator Tags:', tags, headerTransform=string_to_table_header)
+    else:
+        md = tableToMarkdown(table_name, indicator_response, headerTransform=string_to_table_header)
+
+    return demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': indicator_response,
+        'EntryContext': context,
+        'HumanReadable': md
+    })
+
+
 ''' COMMANDS'''
 
 
@@ -983,6 +1145,46 @@ def top_tags_results_command():
     })
 
 
+def search_ip_command(ip):
+    indicator_type = 'IP'
+    ip_list = argToList(ip, ',')
+    for ip_address in ip_list:
+        res = search_indicator('ipv4_address', ip_address)
+        score = calculate_dbot_score(res, indicator_type)
+        res = parse_indicator_response(res, indicator_type)
+        get_indicator_outputs(indicator_type, res, ip_address, score, 'Address')
+
+
+def search_domain_command(domain):
+    indicator_type = 'Domain'
+    domain_list = argToList(domain, ',')
+    for domain in domain_list:
+        res = search_indicator('domain', domain)
+        score = calculate_dbot_score(res, indicator_type)
+        res = parse_indicator_response(res, indicator_type)
+        get_indicator_outputs(indicator_type, res, domain, score, 'Name')
+
+
+def search_url_command(url):
+    indicator_type = 'URL'
+    url_list = argToList(url, ',')
+    for url in url_list:
+        res = search_indicator('url', url)
+        score = calculate_dbot_score(res, indicator_type)
+        res = parse_indicator_response(res, indicator_type)
+        get_indicator_outputs(indicator_type, res, url, score, 'Data')
+
+
+def search_file_command(file):
+    indicator_type = 'File'
+    file_list = argToList(file, ',')
+    for file in file_list:
+        res = search_indicator('sha256', file)
+        score = calculate_dbot_score(res, indicator_type)
+        res = parse_indicator_response(res, indicator_type)
+        get_indicator_outputs(indicator_type, res, file, score, 'SHA256')
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -991,6 +1193,8 @@ try:
     # Remove proxy if not set to true in params
     handle_proxy()
     active_command = demisto.command()
+
+    args = {k: v for (k, v) in demisto.args().items() if v}
     if active_command == 'test-module':
         # This is the call made when pressing the integration test button.
         test_module()
@@ -1013,6 +1217,14 @@ try:
         top_tags_search_command()
     elif active_command == 'autofocus-top-tags-results':
         top_tags_results_command()
+    elif active_command == 'ip':
+        search_ip_command(**args)
+    elif active_command == 'domain':
+        search_domain_command(**args)
+    elif active_command == 'url':
+        search_url_command(**args)
+    elif active_command == 'file':
+        search_file_command(**args)
 
 
 # Log exceptions
