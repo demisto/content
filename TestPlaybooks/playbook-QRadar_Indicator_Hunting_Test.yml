@@ -1,6 +1,7 @@
 id: QRadar Indicator Hunting Test
 version: -1
 name: QRadar Indicator Hunting Test
+fromversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -45,7 +46,7 @@ tasks:
       MD5:
         simple: ababababababa,cdcdcdcdcdcdcdcd
       QradarIPfield:
-        simple: ipsrc,ipdst
+        simple: sourceip,destinationip
       QradarMD5Field:
         simple: md5,md5test
       QradarSHA1Field:
