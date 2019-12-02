@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 import signal
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer  # No error!
 
 
 def proxysg_filter(ctx):
