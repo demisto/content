@@ -2,7 +2,8 @@
   - Add 2 commands:
     - ***panorama-get-url-category-from-cloud***
     - ***panorama-get-url-category-from-host***
-  - Support get, creating and editing custom URL categories objects in PAN-OS 9.x versions, including using categories. 
+  - Added support for get, create and edit custom URL categories objects, including using categories in PAN-OS v9.x and above.
+
 
 ## [19.11.1] - 2019-11-26
   - Added support for a list of *job_id* in the ***panorama-query-logs*** and ***panorama-check-logs-status*** commands.

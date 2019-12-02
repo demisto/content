@@ -1017,26 +1017,26 @@ script:
     name: panorama-get-custom-url-category
     outputs:
     - contextPath: Panorama.CustomURLCategory.Name
-      description: Custom URL category name.
+      description: The category name of the custom URL.
       type: String
     - contextPath: Panorama.CustomURLCategory.Description
-      description: Custom URL category description.
+      description: The category description of the custom URL.
       type: String
     - contextPath: Panorama.CustomURLCategory.Sites
-      description: Custom URL category list of sites.
+      description: The list of sites of the custom URL category.
       type: String
     - contextPath: Panorama.CustomURLCategory.DeviceGroup
-      description: Device group for the Custom URL Category (Panorama instances).
+      description: The device group for the custom URL Category (Panorama instances).
       type: String
     - contextPath: Panorama.CustomURLCategory.Categories
-      description: Custom URL category list of categories.
+      description: The list of categories of the custom URL category.
       type: String
     - contextPath: Panorama.CustomURLCategory.Type
-      description: Custom URL category type.
+      description: The category type of the custom URL.
       type: String
   - arguments:
     - default: false
-      description: Name of the custom URL category to create.
+      description: The name of the custom URL category to create.
       isArray: false
       name: name
       required: true
@@ -1062,7 +1062,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: URL category type. Only from PAN-OS 9.x version
+      description: The category type of the URL. Relevant from PAN-OS v9.x.
       isArray: false
       name: type
       predefined:
@@ -1071,7 +1071,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of categories. Only from PAN-OS 9.x version
+      description: The list of categories. Relevant from PAN-OS v9.x.
       isArray: true
       name: categories
       required: false
@@ -1131,14 +1131,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: CSV list of sites to add to the custom URL category.
+      description: A comma separated list of sites to add to the custom URL category.
       isArray: true
       name: sites
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Add or remove sites/categories. Can be "Add", "Remove".
+      description: Adds or removes sites or categories. Can be "add",or "remove".
       isArray: true
       name: action
       predefined:
@@ -1147,13 +1147,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: CSV list of categories to add to the custom URL category.
+      description: A comma separated list of categories to add to the custom URL category.
       isArray: true
       name: categories
       required: false
       secret: false
     deprecated: false
-    description: Add or remove sites to and from a custom URL category.
+    description: Adds or removes sites to and from a custom URL category.
     execution: false
     name: panorama-edit-custom-url-category
     outputs:

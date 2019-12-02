@@ -1585,7 +1585,7 @@ tasks:
         simple: add
       categories: {}
       name:
-        simple: custom_url_dont_delete_tpb
+        simple: pano_inst_custom_dont_delete
       sites:
         simple: c.com
     separatecontext: false
