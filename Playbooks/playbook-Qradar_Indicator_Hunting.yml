@@ -1,6 +1,7 @@
 id: QRadar Indicator Hunting
 version: -1
 name: QRadar Indicator Hunting
+description: 'The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, Domains or urls. '
 fromversion: 4.5.0
 starttaskid: '0'
 tasks:
