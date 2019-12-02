@@ -36,11 +36,11 @@ def camel_case_to_readable(text: str) -> str:
         return 'EventID'
     if text == 'entitytId':
         return 'EntityID'
-    if text == 'tenantId':
+    if text in ['tenantId', 'tenantid']:
         return 'TenantID'
     if text == 'incidentId':
         return 'IncidentID'
-    if text == 'employeeId':
+    if text in ['employeeId', 'employeeid', 'u_employeeid']:
         return 'EmployeeID'
     if text == 'violatorId':
         return 'ViolatorID'
@@ -65,10 +65,8 @@ def parse_data_arr(data_arr, fields_to_drop: Optional[List] = [], fields_to_incl
         readable_arr, outputs_arr = [], []
         for data in data_arr:
             readable = {camel_case_to_readable(i): j for i, j in data.items() if i not in fields_to_drop}
-            demisto.log(str(readable))
             if fields_to_include:
                 readable = {i: j for i, j in readable.items() if i in fields_to_include}
-                demisto.log(str(readable))
             readable_arr.append(readable)
             outputs_arr.append({k.replace(' ', ''): v for k, v in readable.copy().items()})
         return readable_arr, outputs_arr
@@ -472,7 +470,6 @@ class Client(BaseClient):
             'actionName': 'comment'
         }
         incident = self.http_request('POST', '/incident/actions', headers={'token': self._token}, params=params)
-        demisto.log(str(incident))
         return incident.get('result')
 
     def list_watchlist_request(self):
@@ -719,15 +716,15 @@ def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     activity_events = activity_data.get('events')
     fields_to_include = ['Accountname', 'Agentfilename', 'Categorybehavior', 'Categoryobject', 'Categoryseverity',
                          'Collectionmethod', 'Collectiontimestamp', 'Destinationprocessname', 'Destinationusername',
-                         'Deviceaddress', 'Deviceexternalid', 'Devicehostname', 'Eventid', 'Eventoutcome', 'Eventtime',
-                         'Filepath', 'Ingestionnodeid', 'Jobid', 'Jobstarttime', 'Message', 'Publishedtime',
+                         'Deviceaddress', 'Deviceexternalid', 'Devicehostname', 'EventID', 'Eventoutcome', 'Eventtime',
+                         'Filepath', 'Ingestionnodeid', 'JobID', 'Jobstarttime', 'Message', 'Publishedtime',
                          'Receivedtime', 'Resourcename', 'Rg_category', 'Rg_functionality', 'Rg_id', 'Rg_name',
-                         'Rg_resourcetypeid', 'Rg_vendor', 'Sourcehostname', 'Sourceusername', 'Tenantid', 'Tenantname',
+                         'Rg_resourcetypeid', 'Rg_vendor', 'Sourcehostname', 'Sourceusername', 'TenantID', 'Tenantname',
                          'Timeline']
     activity_readable, activity_outputs = parse_data_arr(activity_events, fields_to_include=fields_to_include)
     headers = ['Eventid', 'Eventtime', 'Message', 'Accountname']
     human_readable = tableToMarkdown(name="Activity data:", t=activity_readable, headers=headers, removeNull=True)
-    entry_context = {f'Securonix.ActivityData(val.Eventid === obj.Eventid)': activity_outputs}
+    entry_context = {f'Securonix.ActivityData(val.EventID === obj.EventID)': activity_outputs}
 
     return human_readable, entry_context, activity_data
 
@@ -759,16 +756,16 @@ def list_violation_data(client: Client, args) -> Tuple[str, Dict, Dict]:
                          'Devicehostname', 'EventID', 'Eventoutcome', 'Eventtime', 'Generationtime', 'Invalid', 'JobID',
                          'Jobstarttime', 'Message', 'Policyname', 'Resourcename', 'Rg_id', 'Rg_name', 'Riskscore',
                          'Riskthreatname', 'Sessionid', 'Sourcehostname', 'Sourcentdomain', 'Sourceuserid',
-                         'Sourceusername', 'Sourceuserprivileges', 'Tenantid', 'Tenantname', 'Timeline',
+                         'Sourceusername', 'Sourceuserprivileges', 'TenantID', 'Tenantname', 'Timeline',
                          'Createdate', 'Criticality', 'Datasourceid', 'Department', 'Division',
-                         'Employeeid', 'Encrypted', 'Firstname', 'Fullname', 'ID', 'LanID', 'Lastname',
+                         'EmployeeID', 'Encrypted', 'Firstname', 'Fullname', 'ID', 'LanID', 'Lastname',
                          'Lastsynctime', 'Masked', 'Mergeuniquecode', 'Riskscore', 'Skipencryption',
                          'Status', 'Timezoneoffset', 'Title', 'Uniquecode', 'UserID', 'Workemail',
                          'Violator']
     violation_readable, violation_outputs = parse_data_arr(violation_events, fields_to_include=fields_to_include)
     headers = ['EventID', 'Eventtime', 'Message', 'Policyname', 'Accountname']
     human_readable = tableToMarkdown(name="Activity data:", t=violation_readable, headers=headers, removeNull=True)
-    entry_context = {f'Securonix.ViolationData(val.Eventid === obj.Eventid)': violation_outputs}
+    entry_context = {f'Securonix.ViolationData(val.Uniquecode === obj.Uniquecode)': violation_outputs}
 
     return human_readable, entry_context, violation_data
 
@@ -937,7 +934,6 @@ def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
     incident = client.create_incident_request(policy_name, resource_group, entity_type, entity_name, action_name,
                                               resource_name, workflow, comment, employee_id, criticality)
-    demisto.log(str(incident))
     incident_info = incident.get('result')  # TODO check that really works. status OK is lying. not visible in UI, NO ID
     if not incident_info:
         raise Exception('Failed to create the incident. something is missing...')
