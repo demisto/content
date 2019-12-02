@@ -2195,7 +2195,7 @@
         "Microsoft Graph User": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "RedLock": "SSL Issues",
         "SafeBreach": "SSL Issues"
     }
