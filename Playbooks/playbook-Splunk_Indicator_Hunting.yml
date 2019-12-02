@@ -1,0 +1,1848 @@
+id: Splunk Indicator Hunting
+version: -1
+name: Splunk Indicator Hunting
+fromversion: 4.5.0
+description: 'The Playbook queries Splunk for indicators such as file hashes, IP addresses,
+  Domains or urls. '
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 6457aa78-5641-44d8-8ad0-18a611975bd1
+    type: start
+    task:
+      id: 6457aa78-5641-44d8-8ad0-18a611975bd1
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '54'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 7e2fe0d4-10da-4ae0-876f-0d94cd2d6d4a
+    type: title
+    task:
+      id: 7e2fe0d4-10da-4ae0-876f-0d94cd2d6d4a
+      version: -1
+      name: Hash Search
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -660,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: f2af2045-67c2-47f1-8e22-3b00a6beaa44
+    type: title
+    task:
+      id: f2af2045-67c2-47f1-8e22-3b00a6beaa44
+      version: -1
+      name: IP Search
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 4313ee1b-e453-49d1-8644-267b2e0dff6c
+    type: title
+    task:
+      id: 4313ee1b-e453-49d1-8644-267b2e0dff6c
+      version: -1
+      name: Domain/Url Search
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 70780084-0b31-4b12-866f-125352d4ddf2
+    type: condition
+    task:
+      id: 70780084-0b31-4b12-866f-125352d4ddf2
+      version: -1
+      name: Is there an IP to search?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '48'
+      'yes':
+      - '49'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IPAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: 45687543-bac0-47cd-858d-19e2268ed132
+    type: condition
+    task:
+      id: 45687543-bac0-47cd-858d-19e2268ed132
+      version: -1
+      name: Is there a hash to search?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '26'
+      - '27'
+      - '38'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MD5
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA1
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -660,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '9':
+    id: '9'
+    taskid: 0c440cf7-d657-4778-830b-6a85b01e8370
+    type: condition
+    task:
+      id: 0c440cf7-d657-4778-830b-6a85b01e8370
+      version: -1
+      name: Is there an Domain/Url to search?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '15'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.URLDomain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '10':
+    id: '10'
+    taskid: 305767c1-6dc1-40fb-8338-eb8550d03b1b
+    type: title
+    task:
+      id: 305767c1-6dc1-40fb-8338-eb8550d03b1b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '11':
+    id: '11'
+    taskid: 9df75b15-7824-4677-87e1-9b5ecd172f44
+    type: condition
+    task:
+      id: 9df75b15-7824-4677-87e1-9b5ecd172f44
+      version: -1
+      name: Was there a custom domain/url field?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '74'
+      'yes':
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.URLDomainField
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2640,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: 668b7d58-a94c-4870-8d6f-d3b50460bd91
+    type: regular
+    task:
+      id: 668b7d58-a94c-4870-8d6f-d3b50460bd91
+      version: -1
+      name: Set DomainUrl to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: DomainURL
+      value:
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2640,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '16':
+    id: '16'
+    taskid: e583940f-03b6-46e7-8486-c42831be3b4e
+    type: regular
+    task:
+      id: e583940f-03b6-46e7-8486-c42831be3b4e
+      version: -1
+      name: Set DomainUrlFields to Array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+      - '57'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: DomainURLFields
+      value:
+        complex:
+          root: inputs.URLDomainField
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 1365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '20':
+    id: '20'
+    taskid: e4917145-e635-45b2-8637-eab516179d3e
+    type: regular
+    task:
+      id: e4917145-e635-45b2-8637-eab516179d3e
+      version: -1
+      name: Set MD5 to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: File.MD5
+      value:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '21':
+    id: '21'
+    taskid: 8d394926-0f4e-4d5d-8d0c-7f31d935a6c3
+    type: condition
+    task:
+      id: 8d394926-0f4e-4d5d-8d0c-7f31d935a6c3
+      version: -1
+      name: Was there a custom MD5 field?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '69'
+      'yes':
+      - '77'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SplunkMD5Field
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '22':
+    id: '22'
+    taskid: a9d31dda-dd5a-49ad-8a4e-f9b118462a46
+    type: condition
+    task:
+      id: a9d31dda-dd5a-49ad-8a4e-f9b118462a46
+      version: -1
+      name: Is there an MD5 to search
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1900,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '25':
+    id: '25'
+    taskid: 232fed4f-2cff-4b50-816f-5e42d7b7b9d1
+    type: title
+    task:
+      id: 232fed4f-2cff-4b50-816f-5e42d7b7b9d1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -660,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '26':
+    id: '26'
+    taskid: 1c2153e0-2bc6-49a2-8f45-ba28d73448c9
+    type: title
+    task:
+      id: 1c2153e0-2bc6-49a2-8f45-ba28d73448c9
+      version: -1
+      name: MD5 Search
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1900,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '27':
+    id: '27'
+    taskid: 0250c0d6-4e4e-4117-8549-1bd58942ed23
+    type: title
+    task:
+      id: 0250c0d6-4e4e-4117-8549-1bd58942ed23
+      version: -1
+      name: SHA1 Search
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1500,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '29':
+    id: '29'
+    taskid: 219caccb-356b-4f28-8598-3a2b208c75c1
+    type: condition
+    task:
+      id: 219caccb-356b-4f28-8598-3a2b208c75c1
+      version: -1
+      name: Is there an SHA1 to search
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1500,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '30':
+    id: '30'
+    taskid: 763ac864-d770-43ba-876b-446ccc1c61d8
+    type: regular
+    task:
+      id: 763ac864-d770-43ba-876b-446ccc1c61d8
+      version: -1
+      name: Set SHA1 to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: File.SHA1
+      value:
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1070,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '31':
+    id: '31'
+    taskid: 15b68e09-d066-4d44-8ff4-8e3f9e91f215
+    type: condition
+    task:
+      id: 15b68e09-d066-4d44-8ff4-8e3f9e91f215
+      version: -1
+      name: Was there a custom SHA1 field?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '71'
+      'yes':
+      - '44'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SplunkSHA1Field
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1070,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '38':
+    id: '38'
+    taskid: 8a45b1af-5241-4850-8b6d-61bcf2762957
+    type: title
+    task:
+      id: 8a45b1af-5241-4850-8b6d-61bcf2762957
+      version: -1
+      name: SHA256 Search
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '39'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '39':
+    id: '39'
+    taskid: 30cf6a20-efcf-48d0-80d5-31523a3e284e
+    type: condition
+    task:
+      id: 30cf6a20-efcf-48d0-80d5-31523a3e284e
+      version: -1
+      name: Is there an SHA256 to search
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '40'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '40':
+    id: '40'
+    taskid: 3bf58284-60cf-4386-8c20-0ec858cff115
+    type: regular
+    task:
+      id: 3bf58284-60cf-4386-8c20-0ec858cff115
+      version: -1
+      name: Set SHA256 to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '41'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: File.SHA256
+      value:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '41':
+    id: '41'
+    taskid: 4619958a-880f-4406-86e8-45a9f7155fb0
+    type: condition
+    task:
+      id: 4619958a-880f-4406-86e8-45a9f7155fb0
+      version: -1
+      name: Was there a custom SHA256 field?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '72'
+      'yes':
+      - '45'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SplunkSHA256Field
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '44':
+    id: '44'
+    taskid: 2b5cc5f5-53f0-40ad-82f6-932638f8ae0a
+    type: regular
+    task:
+      id: 2b5cc5f5-53f0-40ad-82f6-932638f8ae0a
+      version: -1
+      name: Set SHA1Fields to Array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '78'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: SHA1Fields
+      value:
+        complex:
+          root: inputs.SplunkSHA1Field
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '45':
+    id: '45'
+    taskid: 9f4a9009-17bb-4ff0-8ede-52a74ea2db19
+    type: regular
+    task:
+      id: 9f4a9009-17bb-4ff0-8ede-52a74ea2db19
+      version: -1
+      name: Set SHA256Fields to Array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '79'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: SHA256Fields
+      value:
+        complex:
+          root: inputs.SplunkSHA256Field
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '48':
+    id: '48'
+    taskid: cc1ceab4-fe3c-486c-8cf8-367b46b765ac
+    type: title
+    task:
+      id: cc1ceab4-fe3c-486c-8cf8-367b46b765ac
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '49':
+    id: '49'
+    taskid: 6c488296-9fc4-4424-8c23-af498d09d685
+    type: regular
+    task:
+      id: 6c488296-9fc4-4424-8c23-af498d09d685
+      version: -1
+      name: Set IP to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '50'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: IP
+      value:
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '50':
+    id: '50'
+    taskid: c8f395df-f676-4d66-858d-037fec1bd956
+    type: condition
+    task:
+      id: c8f395df-f676-4d66-858d-037fec1bd956
+      version: -1
+      name: Was there a custom IP field?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '80'
+      'yes':
+      - '51'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SplunkIPField
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '51':
+    id: '51'
+    taskid: e5eb6a18-a083-4e6e-8737-5026d4904673
+    type: regular
+    task:
+      id: e5eb6a18-a083-4e6e-8737-5026d4904673
+      version: -1
+      name: Set IPFields to Array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '64'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: IPFields
+      value:
+        complex:
+          root: inputs.SplunkIPField
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '54':
+    id: '54'
+    taskid: 3a34151e-f6ba-4406-82aa-137d5968b47d
+    type: condition
+    task:
+      id: 3a34151e-f6ba-4406-82aa-137d5968b47d
+      version: -1
+      name: Is Splunk enabled
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '48'
+      'yes':
+      - '5'
+      - '6'
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: SplunkPy
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '57':
+    id: '57'
+    taskid: 3b6d9024-6f55-4537-88be-bcb2cf9d0ea0
+    type: regular
+    task:
+      id: 3b6d9024-6f55-4537-88be-bcb2cf9d0ea0
+      version: -1
+      name: Splunk search with custom fields
+      description: Searches Splunk for events.
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      earliest_time:
+        simple: ${inputs.earliest_time}
+      event_limit:
+        simple: ${inputs.event_limit}
+      latest_time:
+        simple: ${inputs.latest_time}
+      query:
+        complex:
+          root: .
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=function(val){var fields = Array.isArray(val.DomainURLFields)
+                    ? val.DomainURLFields : [val.DomainURLFields]; var domainurls
+                    = Array.isArray(val.DomainURL) ? val.DomainURL : [val.DomainURL];
+                    return fields.map(field => domainurls.map(domainurl => field +
+                    " *" + domainurl + "*" ).join('' OR ''))}(val)'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2460,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '64':
+    id: '64'
+    taskid: a6bb0469-b769-451f-8ef0-a77c3025fc79
+    type: regular
+    task:
+      id: a6bb0469-b769-451f-8ef0-a77c3025fc79
+      version: -1
+      name: Splunk search with custom fields
+      description: Searches Splunk for events.
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '48'
+    scriptarguments:
+      earliest_time:
+        simple: ${inputs.earliest_time}
+      event_limit:
+        simple: ${inputs.event_limit}
+      latest_time:
+        simple: ${inputs.latest_time}
+      query:
+        complex:
+          root: .
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=function(val){var fields = Array.isArray(val.IPFields)
+                    ? val.IPFields : [val.IPFields]; var ips = Array.isArray(val.IP)
+                    ? val.IP : [val.IP]; return fields.map(field => ips.map(ip =>
+                    field +"="+ ip).join('' OR ''))}(val)'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '69':
+    id: '69'
+    taskid: c6adb992-2d10-4e82-8e05-11626da73672
+    type: regular
+    task:
+      id: c6adb992-2d10-4e82-8e05-11626da73672
+      version: -1
+      name: Splunk search without custom fields
+      description: Searches Splunk for events.
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      earliest_time:
+        simple: ${inputs.earliest_time}
+      event_limit:
+        simple: ${inputs.event_limit}
+      latest_time:
+        simple: ${inputs.latest_time}
+      query:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2590,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '71':
+    id: '71'
+    taskid: 12cf4d67-5c79-4cad-8847-96e765be4c53
+    type: regular
+    task:
+      id: 12cf4d67-5c79-4cad-8847-96e765be4c53
+      version: -1
+      name: Splunk search without custom fields
+      description: Searches Splunk for events.
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      earliest_time:
+        simple: ${inputs.earliest_time}
+      event_limit:
+        simple: ${inputs.event_limit}
+      latest_time:
+        simple: ${inputs.latest_time}
+      query:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1280,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '72':
+    id: '72'
+    taskid: 479a0dba-6d39-481c-84c3-9192804379aa
+    type: regular
+    task:
+      id: 479a0dba-6d39-481c-84c3-9192804379aa
+      version: -1
+      name: Splunk search without custom fields
+      description: Searches Splunk for events.
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      earliest_time:
+        simple: ${inputs.earliest_time}
+      event_limit:
+        simple: ${inputs.event_limit}
+      latest_time:
+        simple: ${inputs.latest_time}
+      query:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '74':
+    id: '74'
+    taskid: 62e78a1c-7391-4c37-8bd8-aa8153856445
+    type: regular
+    task:
+      id: 62e78a1c-7391-4c37-8bd8-aa8153856445
+      version: -1
+      name: Splunk search without custom fields
+      description: Searches Splunk for events.
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      earliest_time:
+        simple: ${inputs.earliest_time}
+      event_limit:
+        simple: ${inputs.event_limit}
+      latest_time:
+        simple: ${inputs.latest_time}
+      query:
+        complex:
+          root: DomainURL
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: '*$1*'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2870,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '76':
+    id: '76'
+    taskid: f103c031-9fc2-4dee-816b-3b017c68481b
+    type: regular
+    task:
+      id: f103c031-9fc2-4dee-816b-3b017c68481b
+      version: -1
+      name: Splunk search with custom fields
+      description: Searches Splunk for events.
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      earliest_time:
+        simple: ${inputs.earliest_time}
+      event_limit:
+        simple: ${inputs.event_limit}
+      latest_time:
+        simple: ${inputs.latest_time}
+      query:
+        complex:
+          root: .
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=function(val){var fields = Array.isArray(val.MD5Fields)
+                    ? val.MD5Fields : [val.MD5Fields]; var md5s = Array.isArray(val.File.MD5)
+                    ? val.File.MD5 : [val.File.MD5]; return fields.map(field => md5s.map(md5
+                    => field +"="+ md5).join('' OR ''))}(val)'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' '
+              suffix:
+                value:
+                  simple: ' | table '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' '
+              suffix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2190,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '77':
+    id: '77'
+    taskid: 4fbd9c40-473c-4f89-81d4-3682cbf207cb
+    type: regular
+    task:
+      id: 4fbd9c40-473c-4f89-81d4-3682cbf207cb
+      version: -1
+      name: Set MD5Fields to Array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '76'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: MD5Fields
+      value:
+        complex:
+          root: inputs.SplunkMD5Field
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2190,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '78':
+    id: '78'
+    taskid: f9bd286b-60f3-407d-858d-82bfe3d1b17b
+    type: regular
+    task:
+      id: f9bd286b-60f3-407d-858d-82bfe3d1b17b
+      version: -1
+      name: Splunk search with custom fields
+      description: Searches Splunk for events.
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      earliest_time:
+        simple: ${inputs.earliest_time}
+      event_limit:
+        simple: ${inputs.event_limit}
+      latest_time:
+        simple: ${inputs.latest_time}
+      query:
+        complex:
+          root: .
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=function(val){var fields = Array.isArray(val.SHA1Fields)
+                    ? val.SHA1Fields : [val.SHA1Fields]; var sha1s = Array.isArray(val.File.SHA1)
+                    ? val.File.SHA1 : [val.File.SHA1]; return fields.map(field =>
+                    sha1s.map(sha1 => field +"="+ sha1).join('' OR ''))}(val)'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '79':
+    id: '79'
+    taskid: 1ce7b0f9-17c2-432d-8509-d73312057aa2
+    type: regular
+    task:
+      id: 1ce7b0f9-17c2-432d-8509-d73312057aa2
+      version: -1
+      name: Splunk search with custom fields
+      description: Searches Splunk for events.
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      earliest_time:
+        simple: ${inputs.earliest_time}
+      event_limit:
+        simple: ${inputs.event_limit}
+      latest_time:
+        simple: ${inputs.latest_time}
+      query:
+        complex:
+          root: .
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=function(val){var fields = Array.isArray(val.SHA256Fields)
+                    ? val.SHA256Fields : [val.SHA256Fields]; var sha256s = Array.isArray(val.File.SHA256)
+                    ? val.File.SHA256 : [val.File.SHA256]; return fields.map(field
+                    => sha256s.map(sha256 => field +"="+ sha256).join('' OR ''))}(val)'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '80':
+    id: '80'
+    taskid: a0f17ffd-291b-469d-8bd7-0a4112fa537e
+    type: regular
+    task:
+      id: a0f17ffd-291b-469d-8bd7-0a4112fa537e
+      version: -1
+      name: Splunk search without custom fields
+      description: Searches Splunk for events.
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '48'
+    scriptarguments:
+      earliest_time:
+        simple: ${inputs.earliest_time}
+      event_limit:
+        simple: ${inputs.event_limit}
+      latest_time:
+        simple: ${inputs.latest_time}
+      query:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2355,
+        "width": 5840,
+        "x": -2590,
+        "y": -290
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value: {}
+  required: false
+  description: MD5 hash file or an array of hashes to search.
+- key: SplunkMD5Field
+  value: {}
+  required: false
+  description: MD5 field to search in Splunk. If non are specified the search will
+    use quick filter.
+- key: SHA1
+  value: {}
+  required: false
+  description: SHA1 hash file or an array of hashes to search.
+- key: SplunkSHA1Field
+  value: {}
+  required: false
+  description: SHA1 field to search in Splunk. If non are specified the search will
+    use quick filter.
+- key: SHA256
+  value: {}
+  required: false
+  description: SHA256 hash file or an array of hashes to search.
+- key: SplunkSHA256Field
+  value: {}
+  required: false
+  description: SHA256 field to search in Splunk. If non are specified the search will
+    use quick filter.
+- key: IPAddress
+  value: {}
+  required: false
+  description: |
+    Source or destination IP to search. Can be a single address or an array of addresses.
+- key: SplunkIPField
+  value: {}
+  required: false
+  description: IP field to search in Splunk. If non are specified the search will
+    use sourceip or destinationip (combined).
+- key: URLDomain
+  value: {}
+  required: false
+  description: |
+    Domain or Url can be single or an array of domain/urls to search. By default the LIKE clause is used.
+- key: URLDomainField
+  value: {}
+  required: false
+  description: URL/Domain field to search in Splunk. If non are specified the search
+    will use quick filter. Only one field can be used in this parameter.
+- key: SelectFields
+  value:
+    simple: '*'
+  required: true
+  description: The fields to be used in the select. Use comma delimited field names
+    as they appear in Splunk. * is an acceptable value but not recommended as it creates
+    a very large ouput.
+- key: earliest_time
+  value:
+    simple: -1d
+  required: false
+  description: |-
+    Earliest time to search.
+    Examples:
+    -7d
+    -24h
+
+    More examples
+    https://docs.splunk.com/Documentation/Splunk/8.0.0/Search/Specifytimemodifiersinyoursearch
+
+
+    For more examples view
+    https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
+
+    Its recommended to set a limit for the time frame.
+- key: latest_time
+  value: {}
+  required: false
+  description: |-
+    Latest time to search.
+    Examples:
+    -6d
+    -23h
+
+    More examples
+    https://docs.splunk.com/Documentation/Splunk/8.0.0/Search/Specifytimemodifiersinyoursearch
+
+
+    For more examples view
+    https://docs.splunk.com/Documentation/Splunk/8.0.0/SearchReference/SearchTimeModifiers
+
+    Its recommended to set a limit for the time frame.
+- key: event_limit
+  value: {}
+  required: false
+  description: Limit number of events returned by query.
+outputs: []
+tests:
+- Splunk Indicator Hunting Test
