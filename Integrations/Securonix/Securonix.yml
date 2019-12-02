@@ -140,7 +140,7 @@ script:
     - contextPath: Securonix.Users.Riskscore
       description: User risk score.
       type: String
-    - contextPath: Securonix.Users.EmployeeId
+    - contextPath: Securonix.Users.EmployeeID
       description: User Emplyee ID.
       type: String
     - contextPath: Securonix.Users.Masked
@@ -239,7 +239,7 @@ script:
     execution: false
     name: securonix-list-incidents
     outputs:
-    - contextPath: Securonix.Incidents.ViolatorId
+    - contextPath: Securonix.Incidents.ViolatorID
       description: Incident Violator ID.
       type: String
     - contextPath: Securonix.Incidents.Entity
@@ -267,7 +267,7 @@ script:
     - contextPath: Securonix.Incidents.IncidentType
       description: Incident type.
       type: String
-    - contextPath: Securonix.Incidents.IncidentId
+    - contextPath: Securonix.Incidents.IncidentID
       description: Incident ID.
       type: String
     - contextPath: Securonix.Incidents.LastUpdateDate
@@ -297,7 +297,7 @@ script:
     execution: false
     name: securonix-get-incident
     outputs:
-    - contextPath: Securonix.Incidents.ViolatorId
+    - contextPath: Securonix.Incidents.ViolatorID
       description: Incident Violator ID.
       type: String
     - contextPath: Securonix.Incidents.Entity
@@ -325,7 +325,7 @@ script:
     - contextPath: Securonix.Incidents.IncidentType
       description: Incident type.
       type: String
-    - contextPath: Securonix.Incidents.IncidentId
+    - contextPath: Securonix.Incidents.IncidentID
       description: Incident ID.
       type: String
     - contextPath: Securonix.Incidents.LastUpdateDate
@@ -358,7 +358,7 @@ script:
     - contextPath: Securonix.Incidents.IncidentStatus
       description: Incident status.
       type: String
-    - contextPath: Securonix.Incidents.IncidentId
+    - contextPath: Securonix.Incidents.IncidentID
       description: Incident ID.
       type: String
   - arguments:
@@ -527,7 +527,7 @@ script:
     execution: false
     name: securonix-get-watchlist
     outputs:
-    - contextPath: Securonix.Watchlists.TenantId
+    - contextPath: Securonix.Watchlists.TenantID
       description: Watchlist tenant ID.
       type: String
     - contextPath: Securonix.Watchlists.Tenantname
@@ -551,7 +551,7 @@ script:
     - contextPath: Securonix.Watchlists.Events.Reason
       description: Reason for the entity in the watchlist.
       type: String
-    - contextPath: Securonix.Watchlists.Events.Lanid
+    - contextPath: Securonix.Watchlists.Events.LanID
       description: Lan ID of the entity in the watchlist.
       type: String
     - contextPath: Securonix.Watchlists.Events.Lastname
@@ -566,7 +566,7 @@ script:
     - contextPath: Securonix.Watchlists.Events.Firstname
       description: First name of the entity in the watchlist.
       type: String
-    - contextPath: Securonix.Watchlists.Events.Employeeid
+    - contextPath: Securonix.Watchlists.Events.EmployeeID
       description: Employee Id of the entity in the watchlist.
       type: String
     - contextPath: Securonix.Watchlists.Events.Masked
