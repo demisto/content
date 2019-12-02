@@ -148,14 +148,14 @@ def copy_test_files(bundle_test):
             shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
-def update_content_version(key, new_value):
-    f = open(os.path.normpath(os.path.join(os.path.dirname(__file__), 'CommonServerPython.py')), 'r')
+def update_content_version(circle_artifacts, key, new_value):
+    f = open(os.path.normpath(os.path.join(circle_artifacts, '..', 'content/CommonServerPython.py')), 'r')
     lines = f.readlines()
     f.close()
     for i, line in enumerate(lines):
         if line.split('=')[0].strip(' \n') == key:
             lines[i] = f'{key} = "{new_value}"\n'
-    f = open(os.path.normpath(os.path.join(os.path.dirname(__file__), 'CommonServerPython.py')), "w")
+    f = open(os.path.normpath(os.path.join(circle_artifacts, '..', 'content/CommonServerPython.py')), "w")
     f.write(''.join(lines))
     f.close()
 
@@ -163,7 +163,7 @@ def update_content_version(key, new_value):
 def main(circle_artifacts, content_version):
 
     # update content_version in commonServerPython
-    update_content_version('CONTENT_RELEASE_VERSION', content_version)
+    update_content_version(circle_artifacts, 'CONTENT_RELEASE_VERSION', content_version)
     print('Starting to create content artifact...')
     print('creating dir for bundles...')
     for bundle_dir in [BUNDLE_POST, BUNDLE_TEST]:
