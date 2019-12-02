@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cd2287e1-6e8c-4161-82de-e71999d5b8fb
+    taskid: bdf24cf0-515e-4d2d-8ad3-d841d65b8017
     type: start
     task:
-      id: cd2287e1-6e8c-4161-82de-e71999d5b8fb
+      id: bdf24cf0-515e-4d2d-8ad3-d841d65b8017
       version: -1
       name: ""
       iscommand: false
@@ -21,16 +21,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -13,
-          "y": -413
+          "x": 910,
+          "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 7b57b8c7-31c7-4cbb-8f35-2b10241afd18
+    taskid: 6bad06e4-975e-46f0-8d2c-ffe873025f58
     type: regular
     task:
-      id: 7b57b8c7-31c7-4cbb-8f35-2b10241afd18
+      id: 6bad06e4-975e-46f0-8d2c-ffe873025f58
       version: -1
       name: netwitness-msearch
       description: Search for pattern matches in many sessions or packets
@@ -57,18 +60,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 386,
-          "y": -61
+          "x": 50,
+          "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 561e87db-d1a1-4857-81d7-13d5b463fdfb
+    taskid: 8a2b7b6f-aa7c-4303-8395-cd84f3454f29
     type: regular
     task:
-      id: 561e87db-d1a1-4857-81d7-13d5b463fdfb
+      id: 8a2b7b6f-aa7c-4303-8395-cd84f3454f29
       version: -1
-      name: netwitness-query
+      name: netwitness-query-standard
       description: Performs a query against the meta database
       script: RSA NetWitness Packets and Logs|||netwitness-query
       type: regular
@@ -94,16 +100,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -13,
-          "y": -61
+          "x": 480,
+          "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 42145249-59e9-48f0-84f2-95240b1e372b
+    taskid: 3043e05e-ead5-49c6-866b-263adc3b8b17
     type: regular
     task:
-      id: 42145249-59e9-48f0-84f2-95240b1e372b
+      id: 3043e05e-ead5-49c6-866b-263adc3b8b17
       version: -1
       name: nw-sdk-values
       description: Performs a value count query and returns the matching values for
@@ -138,16 +147,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -425,
-          "y": -61
+          "x": 910,
+          "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: 2637abfb-14c4-4c3c-8f91-51db23201ca2
+    taskid: 5d0c6722-ce3c-4aa2-8a8f-346541bc5658
     type: regular
     task:
-      id: 2637abfb-14c4-4c3c-8f91-51db23201ca2
+      id: 5d0c6722-ce3c-4aa2-8a8f-346541bc5658
       version: -1
       name: Verify Context
       description: |-
@@ -170,16 +182,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 386,
-          "y": 136
+          "x": 50,
+          "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: a0acdda4-0083-4d9a-8df6-e68208a17063
+    taskid: 69837a16-595c-44f6-8782-93220ee4e598
     type: regular
     task:
-      id: a0acdda4-0083-4d9a-8df6-e68208a17063
+      id: 69837a16-595c-44f6-8782-93220ee4e598
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -193,6 +208,7 @@ tasks:
       - "2"
       - "7"
       - "14"
+      - "16"
     scriptarguments:
       all:
         simple: "yes"
@@ -201,16 +217,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -13,
-          "y": -238
+          "x": 910,
+          "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: a0dddaef-c5b8-4235-80be-6a04fb25fb11
+    taskid: b949bbb5-1ee0-4b3f-8730-b8ff546fe89d
     type: regular
     task:
-      id: a0dddaef-c5b8-4235-80be-6a04fb25fb11
+      id: b949bbb5-1ee0-4b3f-8730-b8ff546fe89d
       version: -1
       name: Verify Context
       description: |-
@@ -233,16 +252,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -13,
-          "y": 136
+          "x": 480,
+          "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: dabf07d8-5115-4895-8bd2-9f4ac1b9a966
+    taskid: c2af2459-39ce-47db-8868-04d5b3d76236
     type: regular
     task:
-      id: dabf07d8-5115-4895-8bd2-9f4ac1b9a966
+      id: c2af2459-39ce-47db-8868-04d5b3d76236
       version: -1
       name: Verify Context
       description: |-
@@ -265,16 +287,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -425,
-          "y": 136
+          "x": 910,
+          "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: d029b7dc-0432-4828-87d7-fe89ebcadac7
+    taskid: 5a84e5b2-9d39-4ef2-8862-5911446af4fd
     type: regular
     task:
-      id: d029b7dc-0432-4828-87d7-fe89ebcadac7
+      id: 5a84e5b2-9d39-4ef2-8862-5911446af4fd
       version: -1
       name: nw-sdk-content
       description: Returns the packet content for a session
@@ -299,23 +324,26 @@ tasks:
       renderFlags: {}
       renderType: {}
       session:
-        simple: "1"
+        simple: "1231420"
       subdirFileTypes: {}
       where: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -868,
-          "y": -61
+          "x": 1340,
+          "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: ec45e125-7497-449d-87e7-6d2c3000a4b0
+    taskid: e76b7da3-c629-4954-8548-e7dbefd3be7a
     type: regular
     task:
-      id: ec45e125-7497-449d-87e7-6d2c3000a4b0
+      id: e76b7da3-c629-4954-8548-e7dbefd3be7a
       version: -1
       name: Verify Context
       description: |-
@@ -338,22 +366,104 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -868,
-          "y": 136
+          "x": 1340,
+          "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 867d2922-85ea-41b5-80e9-21227da0f8a5
+    type: regular
+    task:
+      id: 867d2922-85ea-41b5-80e9-21227da0f8a5
+      version: -1
+      name: netwitness-query-where-and-group-by
+      description: Performs a query against the meta database
+      script: RSA NetWitness Packets and Logs|||netwitness-query
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      concentratorIP: {}
+      concentratorPort: {}
+      flags: {}
+      id1: {}
+      id2: {}
+      lastHours:
+        simple: "48"
+      lastMinutes: {}
+      query:
+        simple: select alias.host where alias.host contains 'skimresources' group
+          by alias.host
+      size:
+        simple: "100"
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 9285deed-0147-46ce-86a8-6d80b9908d96
+    type: regular
+    task:
+      id: 9285deed-0147-46ce-86a8-6d80b9908d96
+      version: -1
+      name: netwitness-query-group-by-only
+      description: Performs a query against the meta database
+      script: RSA NetWitness Packets and Logs|||netwitness-query
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Packets and Logs
+    scriptarguments:
+      concentratorIP: {}
+      concentratorPort: {}
+      flags: {}
+      id1: {}
+      id2: {}
+      lastHours:
+        simple: "48"
+      lastMinutes: {}
+      query:
+        simple: select alias.host group by alias.host
+      size:
+        simple: "100"
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 644,
-        "width": 1634,
-        "x": -868,
-        "y": -413
+        "height": 590,
+        "width": 2100,
+        "x": 50,
+        "y": 50
       }
     }
   }
 inputs: []
 outputs: []
-fromversion: "3.5.0"

@@ -47,7 +47,7 @@ tasks:
       limit:
         simple: "1"
       query:
-        simple: 384868fafe3ef9190a8a5e59c5c195c3
+        simple: "body:384868fafe3ef9190a8a5e59c5c195c3"
       target-mailbox: {}
     separatecontext: false
     view: |-
@@ -252,7 +252,7 @@ tasks:
       limit:
         simple: "1"
       query:
-        simple: 384868fafe3ef9190a8a5e59c5c195c3
+        simple: "body:384868fafe3ef9190a8a5e59c5c195c3"
       target-mailbox: {}
     separatecontext: false
     view: |-
@@ -380,7 +380,7 @@ tasks:
       limit:
         simple: "1"
       query:
-        simple: 384868fafe3ef9190a8a5e59c5c195c3
+        simple: "body:384868fafe3ef9190a8a5e59c5c195c3"
       target-mailbox: {}
     separatecontext: false
     view: |-

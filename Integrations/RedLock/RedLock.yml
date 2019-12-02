@@ -1,0 +1,488 @@
+commonfields:
+  id: RedLock
+  version: -1
+name: RedLock
+display: Prisma Cloud (RedLock)
+category: Network Security
+description: Cloud threat defense
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: https://api.redlock.io/
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Customer name
+  name: customer
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: unsecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch only incidents matching this rule name
+  name: ruleName
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch only incidents with this severity
+  name: policySeverity
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: redlock-search-alerts
+    arguments:
+    - name: time-range-date-from
+      description: Start time for search in the following string format -  MM/DD/YYYY
+    - name: time-range-date-to
+      description: End time for search in the following format -  MM/DD/YYYY
+    - name: time-range-value
+      description: The amount of units to go back in time
+    - name: time-range-unit
+      auto: PREDEFINED
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      description: The search unit. login and epoch are only available if timeRangeValue
+        is not provided.
+    - name: policy-name
+      auto: PREDEFINED
+      predefined:
+      - IAM password policy does not have a symbol
+      - IAM password policy does not expire in 90 days
+      - IAM password policy does not have a lowercase character
+      - IAM password policy does not have a minimum of 14 characters
+      - IAM password policy allows password reuse
+      - Default Security Group does not restrict all traffic
+      - IAM password policy does not have password expiration period
+      - IAM password policy does not exist
+      - Access keys are not rotated for 90 days
+      - Security Groups allow internet traffic from internet to RDP port (3389)
+      - Internet connectivity via tcp over insecure port
+      - IAM policy allow full administrative privileges
+      - Primitive IAM roles should not be used
+      - Internet exposed instances
+      - IAM user has both Console access and Access Keys
+      - S3 buckets are accessible to public
+      - Access logging not enabled on all CloudTrail buckets
+      - CloudTrail trail is not integrated with CloudWatch Log
+      - Security Groups allow internet traffic to SSH port (22)
+      - CloudTrail logs are not encrypted using Customer Master Keys (CMKs)
+      - Excessive login failures
+      - VPC endpoints were not used for consuming S3 storage from within the VPC
+      - Access logging not enabled on S3 buckets
+      - S3 buckets do not have server side encryption
+      - Account hijacking attempts
+      - Security groups allow internet traffic
+      - VPC subnets should not allow automatic public IP assignment
+      - VPC Flow Logs not enabled
+      - MFA not enabled for IAM users
+      - Inactive users for more than 30 days
+      description: The policy name
+    - name: policy-label
+      description: The policy label
+    - name: policy-compliance-standard
+      description: The policy compliance standard
+    - name: cloud-account
+      description: The cloud account
+    - name: cloud-region
+      description: The cloud region
+    - name: alert-rule-name
+      description: The alert rule name
+    - name: resource-id
+      description: The resource ID
+    - name: resource-name
+      description: The resource name
+    - name: resource-type
+      description: The resource type
+    - name: alert-status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - resolved
+      - dismissed
+      description: The alert status
+      defaultValue: open
+    - name: alert-id
+      description: The alert ID
+    - name: cloud-type
+      auto: PREDEFINED
+      predefined:
+      - aws
+      - azure
+      - gcp
+      description: The cloud type
+    - name: risk-grade
+      auto: PREDEFINED
+      predefined:
+      - A
+      - B
+      - C
+      - F
+      description: The risk grade
+    - name: policy-type
+      auto: PREDEFINED
+      predefined:
+      - anomaly
+      - audit_event
+      - config
+      - network
+      description: The policy type
+    - name: policy-severity
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      description: The policy severity
+    outputs:
+    - contextPath: Redlock.Alert.ID
+      description: ID of returned alert
+      type: string
+    - contextPath: Redlock.Alert.Status
+      description: Status of returned alert
+      type: string
+    - contextPath: Redlock.Alert.AlertTime
+      description: Time of alert
+      type: string
+    - contextPath: Redlock.Alert.Policy.ID
+      description: The policy ID
+      type: string
+    - contextPath: Redlock.Alert.Policy.Name
+      description: The policy name
+      type: string
+    - contextPath: Redlock.Alert.Policy.Type
+      description: The policy type
+      type: string
+    - contextPath: Redlock.Alert.Policy.Severity
+      description: The policy severity
+      type: string
+    - contextPath: Redlock.Alert.Policy.Remediable
+      description: Whether or not the policy is remediable
+      type: boolean
+    - contextPath: Redlock.Alert.RiskDetail.Rating
+      description: The risk rating
+      type: string
+    - contextPath: Redlock.Alert.RiskDetail.Score
+      description: The risk score
+      type: string
+    - contextPath: Redlock.Metadata.CountOfAlerts
+      description: The number of alerts found
+      type: number
+    description: Search alerts on the RedLock platform
+  - name: redlock-get-alert-details
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: The alert ID
+    - name: detailed
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Allows for retrieving entire / trimmed alert model
+      defaultValue: "true"
+    outputs:
+    - contextPath: Redlock.Alert.ID
+      description: The alert ID
+      type: string
+    - contextPath: Redlock.Alert.Status
+      description: The alert status
+      type: string
+    - contextPath: Redlock.Alert.AlertTime
+      description: The time of the alert
+      type: date
+    - contextPath: Redlock.Alert.Policy.ID
+      description: The policy ID
+      type: string
+    - contextPath: Redlock.Alert.Policy.Name
+      description: The policy name
+      type: string
+    - contextPath: Redlock.Alert.Policy.Type
+      description: The type of policy
+      type: string
+    - contextPath: Redlock.Alert.Policy.Severity
+      description: The policy severity
+      type: string
+    - contextPath: Redlock.Alert.Policy.Remediable
+      description: Whether or not the policy is remediable
+      type: boolean
+    - contextPath: Redlock.Alert.RiskDetail.Rating
+      description: The risk rating
+      type: string
+    - contextPath: Redlock.Alert.RiskDetail.Score
+      description: The risk score
+      type: string
+    description: Gets the details of an alert based on alert ID
+  - name: redlock-dismiss-alerts
+    arguments:
+    - name: alert-id
+      description: comma separated list of string IDs to be dismissed
+    - name: dismissal-note
+      required: true
+      description: Reason for dismissal
+    - name: time-range-date-from
+      description: Start time for search in the following string format -  MM/DD/YYYY
+    - name: time-range-date-to
+      description: End time for search in the following format -  MM/DD/YYYY
+    - name: time-range-value
+      description: The amount of units to go back in time
+    - name: time-range-unit
+      auto: PREDEFINED
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      description: The search unit
+    - name: policy-name
+      auto: PREDEFINED
+      predefined:
+      - IAM password policy does not have a symbol
+      - IAM password policy does not expire in 90 days
+      - IAM password policy does not have a lowercase character
+      - IAM password policy does not have a minimum of 14 characters
+      - IAM password policy allows password reuse
+      - Default Security Group does not restrict all traffic
+      - IAM password policy does not have password expiration period
+      - IAM password policy does not exist
+      - Access keys are not rotated for 90 days
+      - Security Groups allow internet traffic from internet to RDP port (3389)
+      - Internet connectivity via tcp over insecure port
+      - IAM policy allow full administrative privileges
+      - Primitive IAM roles should not be used
+      - Internet exposed instances
+      - IAM user has both Console access and Access Keys
+      - S3 buckets are accessible to public
+      - Access logging not enabled on all CloudTrail buckets
+      - CloudTrail trail is not integrated with CloudWatch Log
+      - Security Groups allow internet traffic to SSH port (22)
+      - CloudTrail logs are not encrypted using Customer Master Keys (CMKs)
+      - Excessive login failures
+      - VPC endpoints were not used for consuming S3 storage from within the VPC
+      - Access logging not enabled on S3 buckets
+      - S3 buckets do not have server side encryption
+      - Account hijacking attempts
+      - Security groups allow internet traffic
+      - VPC subnets should not allow automatic public IP assignment
+      - VPC Flow Logs not enabled
+      - MFA not enabled for IAM users
+      - Inactive users for more than 30 days
+      description: The policy name
+    - name: policy-label
+      description: The policy label
+    - name: policy-compliance-standard
+      description: The policy compliance standard
+    - name: cloud-account
+      description: The cloud account
+    - name: cloud-region
+      description: The cloud region
+    - name: alert-rule-name
+      description: The alert rule name
+    - name: resource-id
+      description: The resource ID
+    - name: resource-name
+      description: The resource name
+    - name: resource-type
+      description: The resource type
+    - name: alert-status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - resolved
+      - dismissed
+      description: The alert status
+    - name: cloud-type
+      auto: PREDEFINED
+      predefined:
+      - aws
+      - azure
+      - gcp
+      description: The cloud type
+    - name: risk-grade
+      auto: PREDEFINED
+      predefined:
+      - A
+      - B
+      - C
+      - F
+      description: The risk grade
+    - name: policy-type
+      auto: PREDEFINED
+      predefined:
+      - anomaly
+      - audit_event
+      - config
+      - network
+      description: The policy type
+    - name: policy-severity
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      description: The policy severity
+    - name: policy-id
+      description: comma separated string of policy IDs
+    outputs:
+    - contextPath: Redlock.DismissedAlert.ID
+      description: The IDs of the dismissed alerts
+      type: string
+    description: Dismiss the alerts matching the given filter. Must provide either
+      policy IDs or alert IDs.
+    execution: true
+  - name: redlock-reopen-alerts
+    arguments:
+    - name: alert-id
+      description: The IDs of alerts to reopen
+    - name: time-range-date-from
+      description: Start time for search in the following string format -  MM/DD/YYYY
+    - name: time-range-date-to
+      description: End time for search in the following format -  MM/DD/YYYY
+    - name: time-range-value
+      description: The amount of units to go back in time
+    - name: time-range-unit
+      auto: PREDEFINED
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      description: The search unit
+    - name: policy-name
+      auto: PREDEFINED
+      predefined:
+      - IAM password policy does not have a symbol
+      - IAM password policy does not expire in 90 days
+      - IAM password policy does not have a lowercase character
+      - IAM password policy does not have a minimum of 14 characters
+      - IAM password policy allows password reuse
+      - Default Security Group does not restrict all traffic
+      - IAM password policy does not have password expiration period
+      - IAM password policy does not exist
+      - Access keys are not rotated for 90 days
+      - Security Groups allow internet traffic from internet to RDP port (3389)
+      - Internet connectivity via tcp over insecure port
+      - IAM policy allow full administrative privileges
+      - Primitive IAM roles should not be used
+      - Internet exposed instances
+      - IAM user has both Console access and Access Keys
+      - S3 buckets are accessible to public
+      - Access logging not enabled on all CloudTrail buckets
+      - CloudTrail trail is not integrated with CloudWatch Log
+      - Security Groups allow internet traffic to SSH port (22)
+      - CloudTrail logs are not encrypted using Customer Master Keys (CMKs)
+      - Excessive login failures
+      - VPC endpoints were not used for consuming S3 storage from within the VPC
+      - Access logging not enabled on S3 buckets
+      - S3 buckets do not have server side encryption
+      - Account hijacking attempts
+      - Security groups allow internet traffic
+      - VPC subnets should not allow automatic public IP assignment
+      - VPC Flow Logs not enabled
+      - MFA not enabled for IAM users
+      - Inactive users for more than 30 days
+      description: The policy name
+    - name: policy-label
+      description: The policy label
+    - name: policy-compliance-standard
+      description: The policy compliance standard
+    - name: cloud-account
+      description: The cloud account
+    - name: cloud-region
+      description: The cloud region
+    - name: alert-rule-name
+      description: The alert rule name
+    - name: resource-id
+      description: The resource ID
+    - name: resource-name
+      description: The resource name
+    - name: resource-type
+      description: The resource type
+    - name: alert-status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - resolved
+      - dismissed
+      description: The alert status
+    - name: cloud-type
+      auto: PREDEFINED
+      predefined:
+      - aws
+      - azure
+      - gcp
+      description: The cloud type
+    - name: risk-grade
+      auto: PREDEFINED
+      predefined:
+      - A
+      - B
+      - C
+      - F
+      description: The risk grade
+    - name: policy-type
+      auto: PREDEFINED
+      predefined:
+      - anomaly
+      - audit_event
+      - config
+      - network
+      description: The policy type
+    - name: policy-severity
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+      description: The policy severity
+    outputs:
+    - contextPath: Redlock.ReopenedAlert.ID
+      description: IDs of the re-opened alerts
+      type: string
+    description: Re-open the alerts matching the given filter.  Must provide either
+      policy IDs or alert IDs.
+    execution: true
+  - name: redlock-list-alert-filters
+    arguments: []
+    description: List the acceptable filters and values for alerts
+  isfetch: true
+  runonce: false

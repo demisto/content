@@ -2,8 +2,8 @@ id: PAN-OS Commit Configuration
 version: -1
 name: PAN-OS Commit Configuration
 fromversion: 4.0.0
-description: "Commit PAN-OS Panorama or Firewall Configuration.\nIf specified as Panorama,
-  will also push the Policies to the specified Device Group in the instance "
+description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama,
+  it also pushes the Policies to the specified Device Group in the instance.
 starttaskid: "0"
 tasks:
   "0":
@@ -89,12 +89,12 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: e112b079-f6be-4f2e-86b3-ced990700352
+    taskid: 589c547f-febf-4966-8f03-92b3510be974
     type: regular
     task:
-      id: e112b079-f6be-4f2e-86b3-ced990700352
+      id: 589c547f-febf-4966-8f03-92b3510be974
       version: -1
-      name: panorama-commit
+      name: Commit to Panorama
       description: Commit Palo Alto Firewall or Panorama
       script: '|||panorama-commit'
       type: regular
@@ -169,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 890
+          "x": 150,
+          "y": 1075
         }
       }
     note: false
@@ -192,8 +192,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 990,
-          "y": 2850
+          "x": 1210,
+          "y": 4100
         }
       }
     note: false
@@ -201,12 +201,12 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 2ff73215-8971-475b-860e-6920fe227658
+    taskid: 358f0fa5-163a-4c92-8f77-7f743207c155
     type: regular
     task:
-      id: 2ff73215-8971-475b-860e-6920fe227658
+      id: 358f0fa5-163a-4c92-8f77-7f743207c155
       version: -1
-      name: panorama-push-to-device-group
+      name: Push rules to the Panorama device group
       description: Push rules from Palo Alto Panorama to the Palo Alto configured
         device group.
       script: '|||panorama-push-to-device-group'
@@ -216,12 +216,14 @@ tasks:
     nexttasks:
       '#none#':
       - "11"
+    scriptarguments:
+      device-group: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 1930
+          "x": -60,
+          "y": 2430
         }
       }
     note: false
@@ -282,8 +284,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 430,
-          "y": 2380
+          "x": -190,
+          "y": 3050
         }
       }
     note: false
@@ -291,12 +293,12 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: bd75273e-c3cd-4503-8737-856299908727
+    taskid: 7872718f-5cce-4129-804c-a6307ee51c62
     type: regular
     task:
-      id: bd75273e-c3cd-4503-8737-856299908727
+      id: 7872718f-5cce-4129-804c-a6307ee51c62
       version: -1
-      name: panorama-commit-status
+      name: Check Panorama commit status
       description: Get commit status
       script: '|||panorama-commit-status'
       type: regular
@@ -314,8 +316,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 1170
+          "x": 150,
+          "y": 1420
         }
       }
     note: false
@@ -323,12 +325,12 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: e96b6162-cac9-4c18-8e54-58abf62d0039
+    taskid: 3d04bc47-7374-43a7-88d3-07eb59e141c3
     type: regular
     task:
-      id: e96b6162-cac9-4c18-8e54-58abf62d0039
+      id: 3d04bc47-7374-43a7-88d3-07eb59e141c3
       version: -1
-      name: panorama-push-status
+      name: Check Panorama push status
       description: Get push status
       script: '|||panorama-push-status'
       type: regular
@@ -346,8 +348,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 2610
+          "x": -190,
+          "y": 3230
         }
       }
     note: false
@@ -355,13 +357,13 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 7fff9e78-fd85-43fe-8331-6a50191e5ffe
+    taskid: 9af18cb1-8e90-40a7-88aa-30ee4ef8a796
     type: condition
     task:
-      id: 7fff9e78-fd85-43fe-8331-6a50191e5ffe
+      id: 9af18cb1-8e90-40a7-88aa-30ee4ef8a796
       version: -1
       name: Filter JobID
-      description: Filter JobID to validate only new push configuration JobIDs
+      description: Filter JobID to validate only new push configuration JobIDs.
       type: condition
       iscommand: false
       brand: ""
@@ -382,8 +384,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 580
+          "x": 270,
+          "y": 590
         }
       }
     note: false
@@ -397,7 +399,7 @@ tasks:
       id: 3123d9ad-2650-478e-8746-3401631faa14
       version: -1
       name: Filter JobID
-      description: Filter JobID to validate only new push configuration JobIDs
+      description: Filter JobID to validate only new push configuration JobIDs.
       type: condition
       iscommand: false
       brand: ""
@@ -418,8 +420,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 2130
+          "x": -60,
+          "y": 2740
         }
       }
     note: false
@@ -427,13 +429,13 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 3455c1b3-c086-41b3-8b46-14f9c1c2599c
+    taskid: b319325d-4649-4d0a-85b6-ca86878fe32f
     type: regular
     task:
-      id: 3455c1b3-c086-41b3-8b46-14f9c1c2599c
+      id: b319325d-4649-4d0a-85b6-ca86878fe32f
       version: -1
-      name: fetch instance info
-      description: Run any command supported in the API
+      name: Fetch instance info
+      description: Run any command supported in the API.
       script: Panorama|||panorama
       type: regular
       iscommand: true
@@ -472,8 +474,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 1450
+          "x": 150,
+          "y": 1710
         }
       }
     note: false
@@ -481,13 +483,13 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: f69ce08e-815b-4196-855b-08d458d5da0b
+    taskid: bca42b7d-262b-46d2-8ac7-d7674e346173
     type: condition
     task:
-      id: f69ce08e-815b-4196-855b-08d458d5da0b
+      id: bca42b7d-262b-46d2-8ac7-d7674e346173
       version: -1
-      name: decide if the instance type is panorama or firewall
-      description: "Automatically detects the type of the product"
+      name: Identify the instance type
+      description: Automatically detects the product (Panorama/Firewall).
       type: condition
       iscommand: false
       brand: ""
@@ -521,8 +523,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 580,
-          "y": 1670
+          "x": 150,
+          "y": 2070
         }
       }
     note: false
@@ -530,15 +532,24 @@ tasks:
     ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "10_3_yes": 0.82,
+      "10_5_#default#": 0.1,
+      "11_5_#default#": 0.1,
+      "13_5_Firewall": 0.1,
+      "13_6_Panorama": 0.73,
+      "1_5_#default#": 0.17
+    },
     "paper": {
       "dimensions": {
-        "height": 3165,
-        "width": 1100,
-        "x": 270,
+        "height": 4415,
+        "width": 1780,
+        "x": -190,
         "y": -250
       }
     }
   }
 inputs: []
 outputs: []
+tests:
+  - No Tests

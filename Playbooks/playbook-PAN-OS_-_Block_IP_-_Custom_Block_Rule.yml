@@ -1,0 +1,476 @@
+id: PAN-OS - Block IP - Custom Block Rule
+version: -1
+name: PAN-OS - Block IP - Custom Block Rule
+description: |-
+  This playbook blocks IP addresses using Custom Block Rules in Palo Alto Networks Panorama or Firewall.
+  The playbook receives malicious IP addresses as inputs, creates a custom bi-directional rule to block them, and commits the configuration.
+starttaskid: "0"
+fromversion: 4.0.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 49a9b9d3-a97b-4473-8119-70300c0c01ed
+    type: start
+    task:
+      id: 49a9b9d3-a97b-4473-8119-70300c0c01ed
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 957428b9-9a0c-4ae3-8917-83ae0a83de43
+    type: condition
+    task:
+      id: 957428b9-9a0c-4ae3-8917-83ae0a83de43
+      version: -1
+      name: Palo Alto Networks PAN-OS enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: ab705923-4389-4dd6-875a-a506594ecd3a
+    type: regular
+    task:
+      id: ab705923-4389-4dd6-875a-a506594ecd3a
+      version: -1
+      name: Panorama - Create custom block rule
+      description: Creates a custom block policy rule in Panorama.
+      script: '|||panorama-custom-block-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      device-group: {}
+      direction: {}
+      log_forwarding:
+        complex:
+          root: inputs.LogForwarding
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.LogForwarding
+                iscontext: true
+      object_type:
+        simple: ip
+      object_value:
+        complex:
+          root: inputs.IP
+      pre_post:
+        simple: pre-rulebase
+      rulename:
+        simple: Demisto - ${incident.id}
+      target: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: da771405-12fa-4cf0-8e22-1ecfd2393812
+    type: title
+    task:
+      id: da771405-12fa-4cf0-8e22-1ecfd2393812
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 5ff56401-a29c-41a7-8eac-9843d50337c2
+    type: condition
+    task:
+      id: 5ff56401-a29c-41a7-8eac-9843d50337c2
+      version: -1
+      name: Is there an IP to block?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 487327fa-0151-4546-8cd2-e8d0bc710b29
+    type: regular
+    task:
+      id: 487327fa-0151-4546-8cd2-e8d0bc710b29
+      version: -1
+      name: PAN-OS - Create address object
+      description: Creates an address object
+      script: '|||panorama-create-address'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      description: {}
+      device-group: {}
+      fqdn: {}
+      ip_netmask:
+        simple: 255.255.255.255
+      ip_range: {}
+      name:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 9d6211c7-b4b6-44c5-8c2f-a37c977fa8ed
+    type: playbook
+    task:
+      id: 9d6211c7-b4b6-44c5-8c2f-a37c977fa8ed
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: e5e66a23-4540-41c9-8a59-f163ea1305e8
+    type: playbook
+    task:
+      id: e5e66a23-4540-41c9-8a59-f163ea1305e8
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 4d41a27f-1818-4f90-8bba-39b3881a4af3
+    type: condition
+    task:
+      id: 4d41a27f-1818-4f90-8bba-39b3881a4af3
+      version: -1
+      name: AutoCommit defined?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCommit
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 5df6d93f-8c45-4a3b-840f-cd0a24cc7ae6
+    type: regular
+    task:
+      id: 5df6d93f-8c45-4a3b-840f-cd0a24cc7ae6
+      version: -1
+      name: Commit PAN-OS Instance manually
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: a208b4df-bc52-4e61-823f-fa5f79954086
+    type: regular
+    task:
+      id: a208b4df-bc52-4e61-823f-fa5f79954086
+      version: -1
+      name: Panorama - Create custom block rule
+      description: Creates a custom block policy rule in Panorama.
+      script: '|||panorama-custom-block-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      device-group: {}
+      direction: {}
+      log_forwarding:
+        complex:
+          root: inputs.LogForwarding
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.LogForwarding
+                iscontext: true
+      object_type:
+        simple: ip
+      object_value:
+        complex:
+          root: inputs.IP
+      pre_post:
+        simple: pre-rulebase
+      rulename:
+        simple: Demisto - ${incident.id}
+      target: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: a1caf43e-5771-4591-8b0f-1653b0fd201a
+    type: regular
+    task:
+      id: a1caf43e-5771-4591-8b0f-1653b0fd201a
+      version: -1
+      name: Commit PAN-OS Instance manually
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_4_#default#": 0.15,
+      "5_4_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1415,
+        "width": 1150,
+        "x": 60,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: LogForwarding
+  value: {}
+  required: false
+  description: Panorama log forwarding object name
+- key: IP
+  value:
+    complex:
+      root: IP
+      filters:
+      - - operator: isExists
+          left:
+            value:
+              simple: IP.Malicious
+            iscontext: true
+      accessor: Address
+      transformers:
+      - operator: uniq
+  required: false
+  description: IP address to block
+- key: AutoCommit
+  value:
+    simple: "No"
+  required: false
+  description: |-
+    This input establishes whether to commit the configuration automatically.
+    Yes - Commit automatically.
+    No - Commit manually.
+outputs: []
+tests:
+  - PAN-OS - Block IP - Custom Block Rule Test

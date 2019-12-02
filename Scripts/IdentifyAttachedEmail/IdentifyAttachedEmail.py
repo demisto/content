@@ -59,9 +59,9 @@ def main():
     for e in entries:
         id = is_entry_email(e)
         if id:
-            # we use setContext so server can detect the additional context path used beyond the condition values
-            demisto.setContext('reportedemailentryid', id)
-            demisto.results('yes')
+            # leave the following comment as server used it to detect the additional context path used beyond the condition values
+            # demisto.setContext('reportedemailentryid', id)
+            return_outputs('yes', {'reportedemailentryid': id}, 'yes')
             return
     demisto.results('no')
 

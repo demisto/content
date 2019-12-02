@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3b41388c-170d-48cf-87a0-2e3070bd34bd
+    taskid: ea94375c-ed28-4a08-8e09-a918887d3e1b
     type: start
     task:
-      id: 3b41388c-170d-48cf-87a0-2e3070bd34bd
+      id: ea94375c-ed28-4a08-8e09-a918887d3e1b
       version: -1
       name: ""
       iscommand: false
@@ -24,12 +24,15 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 81a5c492-589a-45bd-81e7-b58510de078f
+    taskid: 165d2366-dea7-42f4-8c18-eb249d911424
     type: regular
     task:
-      id: 81a5c492-589a-45bd-81e7-b58510de078f
+      id: 165d2366-dea7-42f4-8c18-eb249d911424
       version: -1
       name: Start Clean
       scriptName: DeleteContext
@@ -51,12 +54,15 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 24e9f4e9-0e14-4bc5-819b-b3db6cc52ff1
+    taskid: c7333553-9e6a-46ce-8af7-48fc71444e2e
     type: regular
     task:
-      id: 24e9f4e9-0e14-4bc5-819b-b3db6cc52ff1
+      id: c7333553-9e6a-46ce-8af7-48fc71444e2e
       version: -1
       name: 'check non existing IP: 8.8.8.8'
       script: iDefense|||ip
@@ -77,12 +83,15 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: d3bf1ace-103d-449c-8d52-2a55641551b7
+    taskid: e6c006b0-fd8d-449e-8932-7606a97aa316
     type: regular
     task:
-      id: d3bf1ace-103d-449c-8d52-2a55641551b7
+      id: e6c006b0-fd8d-449e-8932-7606a97aa316
       version: -1
       name: 'check suspicious IP: 106.184.5.30'
       script: iDefense|||ip
@@ -103,12 +112,15 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 7c8ad660-ae37-433d-81f3-cf95b715296b
+    taskid: 83acdf2f-e883-44fe-8e98-47dcd52f5375
     type: regular
     task:
-      id: 7c8ad660-ae37-433d-81f3-cf95b715296b
+      id: 83acdf2f-e883-44fe-8e98-47dcd52f5375
       version: -1
       name: 'check good domain: pgeeucpt.uk'
       script: iDefense|||domain
@@ -125,16 +137,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: f5c0fa3c-7fc5-457e-899a-9ede3fa1e61e
+    taskid: 41a7e367-090e-48ab-89f8-e4f57dc7990c
     type: regular
     task:
-      id: f5c0fa3c-7fc5-457e-899a-9ede3fa1e61e
+      id: 41a7e367-090e-48ab-89f8-e4f57dc7990c
       version: -1
       name: 'check suspisious domain: txffn.org'
       script: iDefense|||domain
@@ -151,16 +166,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: ea5de69c-2d1e-4701-86ab-ab7b390765af
+    taskid: d0909c13-1b9f-484d-8251-a996e7a57d7a
     type: regular
     task:
-      id: ea5de69c-2d1e-4701-86ab-ab7b390765af
+      id: d0909c13-1b9f-484d-8251-a996e7a57d7a
       version: -1
       name: Clean context
       scriptName: DeleteContext
@@ -178,16 +196,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 62cefb95-9e7a-4dee-8579-a353e8289b2a
+    taskid: 9bab3516-0b4a-47b1-8675-73bc68d56f75
     type: regular
     task:
-      id: 62cefb95-9e7a-4dee-8579-a353e8289b2a
+      id: 9bab3516-0b4a-47b1-8675-73bc68d56f75
       version: -1
       name: Clean context
       scriptName: DeleteContext
@@ -205,18 +226,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 50,
           "y": 1770
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: 7d511860-a59b-4dbe-8763-9ebac1bdfaef
+    taskid: 43333527-1360-4b59-8ca2-b83b6f6bded0
     type: regular
     task:
-      id: 7d511860-a59b-4dbe-8763-9ebac1bdfaef
+      id: 43333527-1360-4b59-8ca2-b83b6f6bded0
       version: -1
-      name: 'check suspicious URL: upper-int.ru'
+      name: 'check suspicious URL: http://upper-int.ru'
       script: iDefense|||url
       type: regular
       iscommand: true
@@ -225,24 +249,33 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
       url:
-        simple: upper-int.ru
+        simple: http://upper-int.ru
+      wait: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 50,
           "y": 1945
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: 375f9b09-2d61-4f8a-809f-09f946d418c0
+    taskid: 5ac8acc2-a4bb-4517-80ec-21d54b34ce2c
     type: regular
     task:
-      id: 375f9b09-2d61-4f8a-809f-09f946d418c0
+      id: 5ac8acc2-a4bb-4517-80ec-21d54b34ce2c
       version: -1
-      name: 'Check non existing URL: www.walla.com'
+      name: 'Check non existing URL: http://www.walla.com'
       script: iDefense|||url
       type: regular
       iscommand: true
@@ -251,30 +284,37 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
       url:
-        simple: www.walla.com
+        simple: http://www.walla.com
+      wait: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 50,
           "y": 2120
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: ed3692e7-122b-4202-8ee1-02a90061fee0
+    taskid: bc8463e0-86e3-467c-8fd6-e28b0d499cd4
     type: condition
     task:
-      id: ed3692e7-122b-4202-8ee1-02a90061fee0
+      id: bc8463e0-86e3-467c-8fd6-e28b0d499cd4
       version: -1
       name: Validate URL
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "31"
       "yes":
       - "18"
     scriptarguments:
@@ -287,13 +327,13 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: string.contains
+                - - operator: containsString
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -302,7 +342,7 @@ tasks:
                       value:
                         simple: upper-int.ru
                     ignorecase: true
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Type
@@ -314,16 +354,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
+          "x": 50,
           "y": 2295
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: 789e1704-808a-4083-802d-f224057c002f
+    taskid: 2ccd0d74-25ca-4fae-8012-abf064de40e4
     type: regular
     task:
-      id: 789e1704-808a-4083-802d-f224057c002f
+      id: 2ccd0d74-25ca-4fae-8012-abf064de40e4
       version: -1
       name: Search threat by UUID
       script: iDefense|||uuid
@@ -340,16 +383,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 2820
+          "x": 50,
+          "y": 2645
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: 3f3fa127-00fb-4253-8632-4717f7be39cd
+    taskid: aa884c5a-021c-40c5-832a-d6700e8739bf
     type: regular
     task:
-      id: 3f3fa127-00fb-4253-8632-4717f7be39cd
+      id: aa884c5a-021c-40c5-832a-d6700e8739bf
       version: -1
       name: Clean context
       scriptName: DeleteContext
@@ -367,37 +413,38 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 2645
+          "x": 50,
+          "y": 2470
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "29":
     id: "29"
-    taskid: 30d4c854-c012-45e8-860b-31a7f2d550d2
+    taskid: c485934b-9217-4152-88d1-e974faabc009
     type: condition
     task:
-      id: 30d4c854-c012-45e8-860b-31a7f2d550d2
+      id: c485934b-9217-4152-88d1-e974faabc009
       version: -1
       name: Validate IP
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "31"
       "yes":
       - "8"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Type
@@ -405,7 +452,7 @@ tasks:
                     right:
                       value:
                         simple: ip
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Score
@@ -413,7 +460,7 @@ tasks:
                     right:
                       value:
                         simple: "2"
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -429,59 +476,34 @@ tasks:
           "y": 720
         }
       }
-  "31":
-    id: "31"
-    taskid: 5bd683c1-076f-42dc-8a40-821bf1fe7f59
-    type: regular
-    task:
-      id: 5bd683c1-076f-42dc-8a40-821bf1fe7f59
-      version: -1
-      name: Error - failing the Test Playbook
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      expectedValue:
-        simple: blablabla
-      fields: {}
-      path:
-        simple: FailTheTest
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 3170
-        }
-      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "32":
     id: "32"
-    taskid: 5b5af9e9-fb82-4b11-8504-a2918daa6c3d
+    taskid: b38c5027-f3ae-408e-86f2-fcf601838295
     type: condition
     task:
-      id: 5b5af9e9-fb82-4b11-8504-a2918daa6c3d
+      id: b38c5027-f3ae-408e-86f2-fcf601838295
       version: -1
       name: Validate Domains (1)
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "31"
       "yes":
       - "33"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Type
@@ -489,7 +511,7 @@ tasks:
                     right:
                       value:
                         simple: domain
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -497,7 +519,7 @@ tasks:
                     right:
                       value:
                         simple: txffn.org
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Score
@@ -509,37 +531,38 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "33":
     id: "33"
-    taskid: aaa27b72-1b9c-4203-8d83-e25f957e84ee
+    taskid: f0e59b46-8175-49c6-87c6-403d7e65c622
     type: condition
     task:
-      id: aaa27b72-1b9c-4203-8d83-e25f957e84ee
+      id: f0e59b46-8175-49c6-87c6-403d7e65c622
       version: -1
       name: Validate Domains (2)
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "31"
       "yes":
       - "9"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Type
@@ -547,7 +570,7 @@ tasks:
                     right:
                       value:
                         simple: domain
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -555,7 +578,7 @@ tasks:
                     right:
                       value:
                         simple: pgeeucpt.uk
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Score
@@ -567,37 +590,38 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 1595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "34":
     id: "34"
-    taskid: 36e7e8c6-5f48-4846-83ad-b6c8176c860f
+    taskid: a4992466-d33f-46e8-8b59-86e525926ed5
     type: condition
     task:
-      id: 36e7e8c6-5f48-4846-83ad-b6c8176c860f
+      id: a4992466-d33f-46e8-8b59-86e525926ed5
       version: -1
       name: Validate UUID
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "31"
       "yes":
       - "36"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Type
@@ -605,7 +629,7 @@ tasks:
                     right:
                       value:
                         simple: domain
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -613,7 +637,7 @@ tasks:
                     right:
                       value:
                         simple: yahoolive.us
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: DBotScore.Score
@@ -622,13 +646,13 @@ tasks:
                       value:
                         simple: "2"
             iscontext: true
-      - - operator: general.isExists
+      - - operator: isExists
           left:
             value:
               complex:
                 root: Domain
                 filters:
-                - - operator: string.isEqual
+                - - operator: isEqualString
                     left:
                       value:
                         simple: Domain.Name
@@ -640,40 +664,42 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 2995
+          "x": 50,
+          "y": 2820
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "36":
     id: "36"
-    taskid: 700dc3e2-425d-422b-8546-acec35d36a05
-    type: regular
+    taskid: 805547e8-25f4-4f9f-8bb7-ba6f83b2570d
+    type: title
     task:
-      id: 700dc3e2-425d-422b-8546-acec35d36a05
+      id: 805547e8-25f4-4f9f-8bb7-ba6f83b2570d
       version: -1
       name: Done
-      scriptName: Print
-      type: regular
+      type: title
       iscommand: false
       brand: ""
-    scriptarguments:
-      value:
-        simple: Done
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 593,
-          "y": 3206
+          "x": 50,
+          "y": 2995
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3251,
-        "width": 923,
+        "height": 3010,
+        "width": 380,
         "x": 50,
         "y": 50
       }

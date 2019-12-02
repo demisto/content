@@ -1,6 +1,6 @@
 {
   "ContentsFormat": "json",
-  "HumanReadable": "### nullbytes.csv\n|CSV list|\n|---|\n|name|\n| age\\ndave|\n| 31\\nzach|\n| \\0\\nReggie|\n| 40\\nMol\\0ly|\n| twenty-one\\n\\0|\n|12\\nCatherine|\n|\\0|\n",
+  "HumanReadable": "### nullbytes.csv\n|CSV list|\n|---|\n| name |\n|  age\\ndave |\n|  31\\nzach |\n|  \\0\\nReggie |\n|  40\\nMol\\0ly |\n|  twenty-one\\n\\0 |\n| 12\\nCatherine |\n| \\0 |\n",
   "EntryContext": {
     "ParseCSV.ParsedCSV": [
       "name",

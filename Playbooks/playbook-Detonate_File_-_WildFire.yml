@@ -36,10 +36,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: ea5344ac-b7ac-47ea-8703-30b93a2bba43
+    taskid: d89662d0-dedb-49ff-8cba-4855a985cc38
     type: playbook
     task:
-      id: ea5344ac-b7ac-47ea-8703-30b93a2bba43
+      id: d89662d0-dedb-49ff-8cba-4855a985cc38
       version: -1
       name: GenericPolling
       description: |-
@@ -85,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -123,7 +123,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -146,7 +146,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -347,10 +347,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 10704220-2fa8-487b-8908-003505fad127
+    taskid: 78a1b352-6088-4d7d-892e-d4658f8f2ff5
     type: regular
     task:
-      id: 10704220-2fa8-487b-8908-003505fad127
+      id: 78a1b352-6088-4d7d-892e-d4658f8f2ff5
       version: -1
       name: WildFire Upload File
       description: Uploads a file to WildFire for analysis.
@@ -360,7 +360,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "13"
     scriptarguments:
       upload:
         complex:
@@ -405,12 +405,59 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "13":
+    id: "13"
+    taskid: e6f7bf0f-0b19-47aa-83e8-403a1ed89560
+    type: condition
+    task:
+      id: e6f7bf0f-0b19-47aa-83e8-403a1ed89560
+      version: -1
+      name: Was upload finished successfully?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: WildFire
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: WildFire.Report.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Pending
+                accessor: Report.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1610,
         "width": 717.5,
         "x": 50,
         "y": 50

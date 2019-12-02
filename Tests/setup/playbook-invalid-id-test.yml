@@ -1,0 +1,983 @@
+id: access_/investigation_-_generic
+version: -1
+name: Access Investigation - Generic
+fromversion: 3.6.0
+description: |-
+  This playbook investigates an access incident by gathering user and IP information.
+
+  The playbook then interacts with the user that triggered the incident to confirm whether or not they initiated the access action.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9191bc70-1a40-4150-83d9-66731d89243f
+    type: start
+    task:
+      id: 9191bc70-1a40-4150-83d9-66731d89243f
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    taskid: c4b25dd8-ef84-429f-8edc-a162b3dbf000
+    type: playbook
+    task:
+      id: c4b25dd8-ef84-429f-8edc-a162b3dbf000
+      version: -1
+      name: Account Enrichment - Generic
+      description: Enrich Accounts using one or more integrations
+      playbookName: Account Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: general.uniq
+    reputationcalc: 0
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 485
+        }
+      }
+  "4":
+    id: "4"
+    taskid: e0ffa563-92e4-428b-81ed-c0fe3eeeb2f7
+    type: title
+    task:
+      id: e0ffa563-92e4-428b-81ed-c0fe3eeeb2f7
+      version: -1
+      name: Interact with the user
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1010
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 343205d4-9062-4954-8d57-ac3ab134d5f6
+    type: title
+    task:
+      id: 343205d4-9062-4954-8d57-ac3ab134d5f6
+      version: -1
+      name: Enrich indicators
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+      - "9"
+      - "10"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    taskid: faf6fad5-f040-47b2-8802-73c06b1ef6d2
+    type: title
+    task:
+      id: faf6fad5-f040-47b2-8802-73c06b1ef6d2
+      version: -1
+      name: Enrich source IP
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 675
+        }
+      }
+  "9":
+    id: "9"
+    taskid: f4690b1b-98cd-4309-82be-53e760d502ee
+    type: title
+    task:
+      id: f4690b1b-98cd-4309-82be-53e760d502ee
+      version: -1
+      name: Enrich destination IP
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 675
+        }
+      }
+  "10":
+    id: "10"
+    taskid: f68c6b42-4b24-426c-81e0-417984626f2a
+    type: title
+    task:
+      id: f68c6b42-4b24-426c-81e0-417984626f2a
+      version: -1
+      name: Enrich source user
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 7b6dfef6-28ec-4daf-8b44-e0d813674886
+    type: condition
+    task:
+      id: 7b6dfef6-28ec-4daf-8b44-e0d813674886
+      version: -1
+      name: Does the source user account have an email address?
+      description: Verify that the source user account has an associated email address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "13"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: Account
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: Account.Username
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.Username
+                      iscontext: true
+                    ignorecase: true
+                accessor: Email.Address
+                transformers:
+                - operator: general.uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1155
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 7a5f3223-0418-418a-8872-ca221ab74c5a
+    type: title
+    task:
+      id: 7a5f3223-0418-418a-8872-ca221ab74c5a
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2505
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 0e9d5518-3755-4d4b-8254-631b021ad18a
+    type: regular
+    task:
+      id: 0e9d5518-3755-4d4b-8254-631b021ad18a
+      version: -1
+      name: Request user to confirm account activity
+      description: Send an email to the source user email address to confirm whether
+        they recognize the suspicious activity.
+      scriptName: EmailAskUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      additionalOptions: {}
+      attachIds: {}
+      bcc: {}
+      bodyType: {}
+      cc:
+        complex:
+          root: ManagerEmailAddress
+      email:
+        complex:
+          root: Account
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: Account.Username
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Username
+                iscontext: true
+              ignorecase: true
+          accessor: Email.Address
+          transformers:
+          - operator: general.uniq
+      message:
+        simple: "Hi ${incident.srcuser},\n\nWe identified unexpected activity on your
+          account. \n\nStarting on ${incident.occurred}, there were suspicious log-in
+          attempts from the ${incident.src} IP address.\n\nPlease confirm whether
+          or not you recognize this activity.\nReply \"Yes\" to confirm this activity.
+          \nReply \"No\" otherwise.\n\nRegards,\nYour friendly security team."
+      option1:
+        simple: "yes"
+      option2:
+        simple: "no"
+      persistent: {}
+      replyAddress: {}
+      replyEntriesTag: {}
+      retries: {}
+      roles: {}
+      subject:
+        simple: Unexpected account activity
+      task:
+        simple: AccessQ1
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1330
+        }
+      }
+  "14":
+    id: "14"
+    taskid: cf2e6c57-c2cb-41cb-822d-eb13f2658fee
+    type: condition
+    task:
+      id: cf2e6c57-c2cb-41cb-822d-eb13f2658fee
+      version: -1
+      name: Get user response
+      description: Use the user response (yes or no) to direct the playbook.
+      tags:
+      - AccessQ1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "22"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1505
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 10c28bdf-caae-47d7-8c1b-c5a7198b2349
+    type: condition
+    task:
+      id: 10c28bdf-caae-47d7-8c1b-c5a7198b2349
+      version: -1
+      name: Was the manager's ID returned?
+      description: Verify that the manager ID (DN) of the source user account was
+        returned in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "19"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Manager
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+  "19":
+    id: "19"
+    taskid: 6ba49d12-a2e7-40bb-85d2-2a7849adc774
+    type: regular
+    task:
+      id: 6ba49d12-a2e7-40bb-85d2-2a7849adc774
+      version: -1
+      name: Get manager's info
+      description: Retrieve the AD account information for the manager of the source
+        user account.
+      scriptName: ADGetUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      attributes: {}
+      customFieldData: {}
+      customFieldType: {}
+      dn:
+        complex:
+          root: Account
+          accessor: Manager
+          transformers:
+          - operator: general.uniq
+      email: {}
+      extend-context:
+        simple: ManagerEmailAddress=mail
+      headers: {}
+      limit: {}
+      name: {}
+      nestedSearch: {}
+      userAccountControlOut: {}
+      username: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 835
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 160c3d44-9b6f-4207-8df9-69f7c6ac3eb7
+    type: playbook
+    task:
+      id: 160c3d44-9b6f-4207-8df9-69f7c6ac3eb7
+      version: -1
+      name: IP Enrichment - Generic
+      description: ""
+      playbookName: IP Enrichment - Generic
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.DstIP
+      InternalRange: {}
+      ResolveIP:
+        simple: "True"
+    reputationcalc: 0
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 835
+        }
+      }
+  "21":
+    id: "21"
+    taskid: 74b00019-68dc-4e52-8b6e-8eb97721b8cb
+    type: playbook
+    task:
+      id: 74b00019-68dc-4e52-8b6e-8eb97721b8cb
+      version: -1
+      name: IP Enrichment - Generic
+      description: ""
+      playbookName: IP Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.SrcIP
+      InternalRange: {}
+      ResolveIP:
+        simple: "True"
+    reputationcalc: 0
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 835
+        }
+      }
+  "22":
+    id: "22"
+    taskid: e0dc594d-6a63-47e7-85d1-cadb733f3544
+    type: title
+    task:
+      id: e0dc594d-6a63-47e7-85d1-cadb733f3544
+      version: -1
+      name: User confirmed account activity
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2015
+        }
+      }
+  "23":
+    id: "23"
+    taskid: d78f9aeb-aaab-47c1-8359-4518d529c00a
+    type: title
+    task:
+      id: d78f9aeb-aaab-47c1-8359-4518d529c00a
+      version: -1
+      name: User denied account activity
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1680
+        }
+      }
+  "24":
+    id: "24"
+    taskid: 7201e19f-4202-41ec-8b24-246679d7621f
+    type: regular
+    task:
+      id: 7201e19f-4202-41ec-8b24-246679d7621f
+      version: -1
+      name: Set severity to low
+      description: Set the incident severity to low.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      addLabels: {}
+      app: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      daysbetweenreportcreation: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      duration: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      labels: {}
+      malwarefamily: {}
+      mdtest: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity:
+        simple: low
+      signature: {}
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2175
+        }
+      }
+  "25":
+    id: "25"
+    taskid: eb5afea3-4cbc-4ec6-82f5-d9b80ac4ed1b
+    type: regular
+    task:
+      id: eb5afea3-4cbc-4ec6-82f5-d9b80ac4ed1b
+      version: -1
+      name: Close Investigation
+      description: Close the investigation.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason:
+        simple: 'User is the source of the suspicious activity '
+      id: {}
+      importantfield: {}
+      test2: {}
+      timefield1: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2350
+        }
+      }
+  "26":
+    id: "26"
+    taskid: 38e9a862-18da-401c-88e7-9ed6e2b0e9a4
+    type: regular
+    task:
+      id: 38e9a862-18da-401c-88e7-9ed6e2b0e9a4
+      version: -1
+      name: Set severity to high
+      description: Set the incident severity to high.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      addLabels: {}
+      app: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      daysbetweenreportcreation: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      duration: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      labels: {}
+      malwarefamily: {}
+      mdtest: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity:
+        simple: high
+      signature: {}
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1825
+        }
+      }
+  "27":
+    id: "27"
+    taskid: b914ceed-2615-4c1b-8d64-74b2a8da5cd0
+    type: regular
+    task:
+      id: b914ceed-2615-4c1b-8d64-74b2a8da5cd0
+      version: -1
+      name: Assign to analyst
+      description: |
+        Assign the incident to an analyst based on the analyst’s organizational role.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      assignBy: {}
+      email: {}
+      roles:
+        complex:
+          root: inputs.Role
+      username: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 2000
+        }
+      }
+  "28":
+    id: "28"
+    taskid: 8ae1ca42-1f1d-4ae7-883e-814705b8aae2
+    type: regular
+    task:
+      id: 8ae1ca42-1f1d-4ae7-883e-814705b8aae2
+      version: -1
+      name: Manually remediate  the incident
+      description: "Review the incident to determine if the account activity is malicious.\n\nIf
+        malicious, consider the following:\n* Quarantine the account/ endpoint \n*
+        Revoke the account password\n* Query the account/ IPs logs in the SIEM\n*
+        Block the external IPs in the firewall/ proxy\n* Check the account's privileges
+        and change if needed"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 2175
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2520,
+        "width": 1352.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: SrcIP
+  value:
+    complex:
+      root: incident
+      accessor: src
+  required: false
+  description: The source IP address from which the incident originated.
+- key: DstIP
+  value:
+    complex:
+      root: incident
+      accessor: dest
+  required: false
+  description: The target IP address that was accessed.
+- key: Username
+  value:
+    complex:
+      root: incident
+      accessor: srcuser
+  required: false
+  description: The username of the account that was used to access the DstIP.
+- key: Role
+  value:
+    simple: Administrator
+  required: true
+  description: The default role to assign the incident to.
+outputs:
+- contextPath: Account.Email.Address
+  description: The email address object associated with the Account
+  type: string
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor
+  type: unknown
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name)
+  type: string
+- contextPath: Account.Username
+  description: The Account username
+  type: string
+- contextPath: Account.Email
+  description: The email address associated with the Account
+- contextPath: Account.Type
+  description: Type of the Account entity
+  type: string
+- contextPath: Account.Groups
+  description: The groups the Account is part of
+- contextPath: Account
+  description: Account object
+  type: unknown
+- contextPath: Account.DisplayName
+  description: The Account display name
+  type: string
+- contextPath: Account.Manager
+  description: The Account's manager
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator value
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator's type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The indicator's vendor
+  type: string
+- contextPath: DBotScore.Score
+  description: The indicator's score
+  type: number
+- contextPath: IP
+  description: The IP objects
+  type: unknown
+- contextPath: Endpoint
+  description: The Endpoint's object
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname to enrich
+  type: string
+- contextPath: Endpoint.OS
+  description: Endpoint OS
+  type: string
+- contextPath: Endpoint.IP
+  description: List of endpoint IP addresses
+- contextPath: Endpoint.MAC
+  description: List of endpoint MAC addresses
+- contextPath: Endpoint.Domain
+  description: Endpoint domain name
+  type: string
+tests:
+  - No test

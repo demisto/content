@@ -8,7 +8,7 @@ TESSERACT_EXE = 'tesseract'
 
 
 def list_languages() -> List[str]:
-    lang_out = subprocess.check_output([TESSERACT_EXE, '--list-langs'], text=True)
+    lang_out = subprocess.check_output([TESSERACT_EXE, '--list-langs'], universal_newlines=True)
     if not lang_out:  # something went wrong
         raise ValueError('No output from --list-langs')
     lines = lang_out.splitlines()

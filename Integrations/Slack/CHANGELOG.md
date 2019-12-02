@@ -1,4 +1,17 @@
 ## [Unreleased]
+
+
+## [19.11.1] - 2019-11-26
+Added Slack API rate limit call handling.
+Added an optional parameter to specify a proxy URL to use with the Slack API. 
+
+## [19.10.1] - 2019-10-15
+Added support for changing the display name and icon for the Demisto bot in Slack.
+
+## [19.10.0] - 2019-10-03
+Added support for sending blocks (graphical attachments) in messages. For more information see the integration documentation.
+
+## [19.9.1] - 2019-09-18
 Direct message - support multiline JSON in incident creation
 
 

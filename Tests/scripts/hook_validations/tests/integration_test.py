@@ -14,7 +14,7 @@ def test_removed_docker_image_on_existing_integration():
         }
     }
 
-    assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
+    assert not validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
 
 
 def test_updated_docker_image_on_existing_integration():
@@ -676,6 +676,62 @@ def test_is_default_arguments_ok():
         "The integration validator found an invalid command arg while it is valid"
 
 
+def test_is_isarray_arguments_valid():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "email",
+                    "arguments": [
+                        {
+                            "name": "email",
+                            "required": True,
+                            "default": True,
+                            "isArray": True
+                        },
+                        {
+                            "name": "verbose"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_isarray_arguments() is True, \
+        "The integration validator found an invalid command arg configuration while it is valid"
+
+
+def test_is_isarray_arguments_invalid():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "file",
+                    "arguments": [
+                        {
+                            "name": "file",
+                            "required": True,
+                            "default": True,
+                            "isArray": False
+                        },
+                        {
+                            "name": "verbose"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_isarray_arguments() is False, \
+        "The integration validator did not find invalid arg configuration (needed to be isArray)"
+
+
 def test_is_outputs_for_reputations_commands_valid():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.current_integration = {
@@ -942,3 +998,127 @@ def test_changed_beta_integration_without_beta_field():
     assert validator.is_valid_beta_integration() is False, \
         "The Beta validator approved the integration" \
         "but it should have fail it because it is missing 'beta' field with the value true"
+
+
+def test_proxy_sanity_check():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly()
+
+
+def test_proxy_wrong_type():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 9,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly() is False
+
+
+def test_proxy_wrong_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 8,
+                "display": "bla",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly() is False
+
+
+def test_proxy_wrong_required():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": True
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly() is False
+
+
+def test_insecure_wrong_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "insecure",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_insecure_configured_correctly() is False
+
+
+def test_unsecure_wrong_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "unsecure",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_insecure_configured_correctly() is False
+
+
+def test_unsecure_correct_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "unsecure",
+                "type": 8,
+                "display": "Trust any certificate (not secure)",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_insecure_configured_correctly()
+
+
+def test_is_valid_category():
+    validator_siem = IntegrationValidator("temp_file", check_git=False)
+    validator_siem.current_integration = {"category": "Analytics & SIEMM"}
+
+    assert validator_siem.is_valid_category() is False
+
+    validator_endpoint = IntegrationValidator("temp_file", check_git=False)
+    validator_endpoint.current_integration = {"category": "Endpoint"}
+
+    assert validator_endpoint.is_valid_category()

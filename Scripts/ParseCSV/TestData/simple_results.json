@@ -1,6 +1,6 @@
 {
   "ContentsFormat": "json",
-  "HumanReadable": "### simple.csv\n|count|sourceIP|\n|---|---|\n|0|1.1.1.1|\n|1|2.2.2.2|\n|2|3.3.3.3|\n",
+  "HumanReadable": "### simple.csv\n|count|sourceIP|\n|---|---|\n| 0 | 1.1.1.1 |\n| 1 | 2.2.2.2 |\n| 2 | 3.3.3.3 |\n",
   "EntryContext": {
     "ParseCSV.ParsedCSV": [
       {

@@ -22,9 +22,8 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
   type: 8
   required: false
 script:
@@ -158,7 +157,7 @@ script:
                             'show_ags','show_op','show_status','show_last'],
         'pcScanLaunch': ['scan_title','option_id','option_title','ip','asset_group_ids','asset_groups','runtime_http_header',
                         'exclude_ip_per_scan','default_scanner','scanners_in_ag','target_from','tag_include_selector',
-                        'tag_exclude_selector','tag_set_by','tag_set_include','tag_set_exclude','use_ip_nt_range_tags','ip_network_id'],
+                        'tag_exclude_selector','tag_set_by','tag_set_include','tag_set_exclude','use_ip_nt_range_tags','ip_network_id', 'iscanner_name'],
         'reportFetch': ['id'],
         'vmScanList': ['scan_ref', 'state', 'processed', 'type',
                         'target', 'user_login', 'launched_after_datetime',
@@ -166,7 +165,7 @@ script:
                         'show_status', 'show_last'],
         'vmScanLaunch': ['scan_title','option_id','option_title','ip','asset_group_ids','asset_groups','runtime_http_header',
                         'exclude_ip_per_scan','default_scanner','scanners_in_ag','target_from','tag_include_selector',
-                        'tag_exclude_selector','tag_set_by','tag_set_include','tag_set_exclude','use_ip_nt_range_tags','ip_network_id'],
+                        'tag_exclude_selector','tag_set_by','tag_set_include','tag_set_exclude','use_ip_nt_range_tags','ip_network_id', 'iscanner_name'],
         'vmScanAction': ['action','scan_ref'],
         'vmScanFetch': ['scan_ref','ips','mode'],
         'scapScanList': ['scan_ref', 'state', 'processed', 'type',
@@ -347,7 +346,7 @@ script:
                 ],
             'scan': [
                     {to: 'ID', from: 'ID'},
-                    {to: 'Reference', from: 'REF'},
+                    {to: 'Reference', from: 'REFERENCE'},
                     {to: 'Title', from: 'TITLE'},
                     {to: 'Type', from: 'TYPE'},
                     {to: 'LaunchDatetime', from: 'LAUNCH_DATETIME'},
@@ -1245,6 +1244,10 @@ script:
         used in the “Qualys-Scan:” header that will be set for many CGI and web application
         fingerprinting checks. Some discovery and web server fingerprinting checks
         will not use this header.
+    - name: iscanner_name
+      description: Specifies the name of the Scanner Appliance for the map, when the
+        map target has private use internal IPs. Using Express Lite, Internal Scanning
+        must be enabled in your account.
     description: ' launch vulnerability scans in the user’s account.'
   - name: qualys-vm-scan-action
     arguments:
@@ -1262,7 +1265,8 @@ script:
       description: 'The scan reference for a vulnerability scan. This will have the
         format: scan/nnnnnnnnnn.nnnnn'
     outputs:
-    - description: Report.ID
+    - contextPath: Qualys.Report.ID
+      description: Report ID
     description: allows users to take actions on vulnerability scans in their account,
       like cancel, pause, resume, delete and fetch completed scan results
     execution: true
@@ -1457,6 +1461,10 @@ script:
         used in the “Qualys-Scan:” header that will be set for many CGI and web application
         fingerprinting checks. Some discovery and web server fingerprinting checks
         will not use this header.
+    - name: iscanner_name
+      description: Specifies the name of the Scanner Appliance for the map, when the
+        map target has private use internal IPs. Using Express Lite, Internal Scanning
+        must be enabled in your account.
     outputs:
     - contextPath: Qualys.Scan.ID
       description: Scan ID

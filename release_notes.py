@@ -33,6 +33,7 @@ LAYOUT_TYPE_TO_NAME = {
     "close": "Close",
     "quickView": "Quick View",
     "indicatorsDetails": "Indicator Details",
+    "mobile": "Mobile",
 }
 
 RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,
@@ -69,7 +70,7 @@ def release_notes_item(header, body):
     return '- __{}__\n{}\n'.format(header, add_dot(body))
 
 
-class Content:
+class Content(object):  # pylint: disable=useless-object-inheritance
     __metaclass__ = abc.ABCMeta
 
     def __init__(self):
@@ -317,7 +318,6 @@ class WidgetContent(Content):
 
 
 class IncidentFieldContent(Content):
-
     def __init__(self):
         super(IncidentFieldContent, self).__init__()
         self.show_secondary_header = False
@@ -329,12 +329,16 @@ class IncidentFieldContent(Content):
         return "Incident Fields"
 
     def added_release_notes(self, file_path, data):
-        release_note = super(IncidentFieldContent, self).added_release_notes(file_path, data)
+        if data.get('description'):
+            return release_notes_item(data['name'], data['description'])
+
+        # using the 'modified' function instead of 'added' function to handle ignored RN
+        release_note = super(IncidentFieldContent, self).modified_release_notes(file_path, data)
 
         if release_note:
-            return add_dot(release_note) + "\n"
+            return release_notes_item(data['name'], release_note)
 
-        # error
+        # error or ignored release_note
         return release_note
 
     def modified_release_notes(self, file_path, data):
@@ -531,6 +535,10 @@ def get_release_notes_draft(github_token, asset_id):
     :param asset_id: content build's asset id.
     :return: draft text (or empty string on error).
     """
+    if github_token is None:
+        print_warning('unable to download draft without github token.')
+        return ''
+
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -549,7 +557,11 @@ def get_release_notes_draft(github_token, asset_id):
     drafts = [release for release in res.json() if release.get('draft', False)]
     if drafts:
         if len(drafts) == 1:
-            return re.sub(r'Release Notes for version .* \((\d{5,})\)', asset_id, drafts[0]['body'])
+            draft_body = drafts[0]['body']
+            raw_asset = re.findall(r'Release Notes for version .* \((\d{5,}|xxxxx)\)', draft_body, re.IGNORECASE)
+            if raw_asset:
+                draft_body = draft_body.replace(raw_asset[0], asset_id)
+            return draft_body
 
         print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
 
@@ -590,7 +602,7 @@ def main():
     arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
     arg_parser.add_argument('asset_id', help='Asset ID')
     arg_parser.add_argument('server_version', help='Server version')
-    arg_parser.add_argument('github_token', help='Github token')
+    arg_parser.add_argument('--github-token', help='Github token')
     args = arg_parser.parse_args()
 
     tag = get_last_release_version()
