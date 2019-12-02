@@ -1,0 +1,220 @@
+type: map
+mapping:
+  commonfields:
+    type: map
+    required: true
+    mapping:
+      id:
+        type: str
+        required: true
+      version:
+        type: int
+        required: true
+      sortvalues:
+        type: seq
+        sequence:
+        - include: sortvalue_schema
+  name:
+    type: str
+    required: true
+  display:
+      type: str
+      required: true
+  deprecated:
+    type: bool
+  beta:
+    type: bool
+  category:
+    type: str
+    enum: [
+    'Analytics & SIEM', 'Utilities', 'Messaging', 'Endpoint', 'Network Security',
+    'Vulnerability Management', 'Case Management',
+    'Forensics & Malware Analysis', 'IT Services', 'Data Enrichment & Threat Intelligence',
+     'Authentication', 'Database', 'Deception', 'Email Gateway']
+    required: true
+  fromversion:
+    type: str
+  toversion:
+    type: str
+  image:
+    type: str
+  description:
+    type: str
+    required: true
+  detaileddescription:
+    type: str
+  configuration:
+    type: seq
+    required: true
+    sequence:
+    - include: configuration_schema
+  script:
+    type: map
+    required: true
+    mapping:
+      script:
+        type: str
+        required: true
+      type:
+        type: str
+        enum: ['javascript', 'python', 'powershell']
+        required: true
+      dockerimage:
+        type: str
+      dockerimage45:
+        type: str
+      alt_dockerimages:
+        type: seq
+        sequence:
+        - type: str
+      isfetch:
+        type: bool
+      longRunning:
+        type: bool
+      longRunningPort:
+        type: bool
+      commands:
+        type: seq
+        sequence:
+        - include: command_schema
+      runonce:
+        type: bool
+      subtype:
+        type: str
+        enum: ['python2', 'python3']
+  system:
+    type: bool
+  hidden:
+    type: bool
+  versionedfields:
+    type: any
+  defaultEnabled:
+    type: bool
+  tests:
+    type: seq
+    sequence:
+    - type: str
+  scriptNotVisible:
+    type: bool
+
+schema;commonfields_schema:
+
+schema;sortvalue_schema:
+
+# integration->configuration
+schema;configuration_schema:
+  type: map
+  required: true
+  mapping:
+    display:
+      type: str
+      required: true
+    defaultvalue:
+      type: any
+    name:
+      type: str
+      required: true
+    type:
+      type: int
+      required: true
+    required:
+      type: bool
+    hidden:
+      type: bool
+    options:
+      type: seq
+      sequence:
+      - type: str
+
+# integration->script->command
+schema;command_schema:
+  type: map
+  mapping:
+    name:
+      type: str
+      required: true
+    execution:
+      type: bool
+    description:
+      type: str
+      required: true
+    deprecated:
+      type: bool
+    system:
+      type: bool
+    arguments:
+      type: seq
+      sequence:
+        - include: argument_schema
+    outputs:
+      type: seq
+      sequence:
+      - include: output_schema
+    important:
+      type: seq
+      sequence:
+      - include: important_schema
+    timeout:
+      type: int
+
+# int
+schema;argument_schema:
+  type: map
+  mapping:
+    name:
+      type: str
+      required: true
+    required:
+      type: bool
+    default:
+      type: bool
+    description:
+      type: str
+      required: true
+    auto:
+      type: str
+      enum: ['PREDEFINED']
+    predefined:
+      type: seq
+      sequence:
+      - type: str
+    isArray:
+      type: bool
+    defaultValue:
+      type: any
+    secret:
+      type: bool
+    deprecated:
+      type: bool
+
+
+# integration->script->command->outputs
+schema;output_schema:
+  type: map
+  mapping:
+    contentPath:
+      type: str
+    contextPath:
+      type: str
+    description:
+      type: str
+      required: true
+    important:
+      type: bool
+    importantDescription:
+      type: str
+    type:
+      type: str
+
+# integration->script->command->important
+schema;important_schema:
+  type: map
+  mapping:
+    contextPath:
+      type: str
+      required: true
+    description:
+      type: str
+      required: true
+    related:
+      type: str

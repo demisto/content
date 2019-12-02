@@ -1,0 +1,65 @@
+type: map
+mapping:
+  id:
+    type: str
+    required: yes
+  version:
+    type: number
+    required: yes
+  fromVersion:
+    type: str
+  toVersion:
+    type: str
+  name:
+    type: str
+    required: yes
+  description:
+    type: str
+    required: yes
+  fromDateLicense:
+    type: str
+  isPredefined:
+    type: bool
+    required: yes
+  fromDate:
+    type: str
+  toDate:
+    type: str
+  period:
+    type: map
+    allowempty: True
+  layout:
+    type: seq
+    sequence:
+      - include: layout_schema
+
+
+
+schema;layout_schema:
+  type: map
+  mapping:
+    id:
+      type: str
+      required: yes
+    forceRange:
+      type: bool
+      required: yes
+    x:
+      type: number
+      required: yes
+    y:
+      type: number
+      required: yes
+    h:
+      type: number
+      required: yes
+    w:
+      type: number
+      required: yes
+    i:
+      type: str
+      required: yes
+    widget:
+      type: map
+      required: yes
+      allowempty: True

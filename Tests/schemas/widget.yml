@@ -1,0 +1,45 @@
+type: map
+mapping:
+  id:
+    type: str
+    required: yes
+  version:
+    type: number
+    required: yes
+  fromVersion:
+    type: str
+  toVersion:
+    type: str
+  name:
+    type: str
+    required: yes
+  description:
+    type: str
+    required: yes
+  dataType:
+    type: str
+  widgetType:
+    type: str
+    required: yes
+  query:
+    type: str
+  isPredefined:
+    type: bool
+    required: yes
+    enum: [true]
+  dateRange:
+    type: map
+    allowempty: True
+  params:
+    type: map
+    allowempty: True
+  size:
+    type: number
+  sort:
+    type: seq
+    sequence:
+      - type: any
+  category:
+    type: str
+  modified:
+    type: str

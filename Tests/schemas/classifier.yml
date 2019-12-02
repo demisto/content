@@ -1,0 +1,33 @@
+type: map
+mapping:
+  id:
+    type: str
+    required: True
+  version:
+    type: number
+    required: True
+  fromVersion:
+    type: str
+  toVersion:
+    type: str
+  brandName:
+    type: str
+    required: True
+  modified:
+    type: str
+  defaultIncidentType:
+    type: str
+  mapping:
+    type: map
+    allowempty: True
+  unclassifiedCases:
+    type: map
+    allowempty: True
+  transformer:
+    type: map
+    allowempty: True
+  keyTypeMap:
+    type: map
+    allowempty: True
+  custom:
+    type: bool
