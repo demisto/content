@@ -17,7 +17,7 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: False
+  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
@@ -542,43 +542,43 @@ script:
     - contextPath: Securonix.Watchlists.Events.ExpiryDate
       description: Expiry date of the entity in the watchlist in epoch.
       type: String
-    - contextPath: Securonix.Watchlists.Events.U_Workemail
+    - contextPath: Securonix.Watchlists.Events.Workemail
       description: Work eamil of the entity in the watchlist.
       type: String
-    - contextPath: Securonix.Watchlists.Events.U_Fullname
+    - contextPath: Securonix.Watchlists.Events.Fullname
       description: Full name of the entity in the watchlist.
       type: String
     - contextPath: Securonix.Watchlists.Events.Reason
       description: Reason for the entity in the watchlist.
       type: String
-    - contextPath: Securonix.Watchlists.Events.U_Lanid
+    - contextPath: Securonix.Watchlists.Events.Lanid
       description: Lan ID of the entity in the watchlist.
       type: String
-    - contextPath: Securonix.Watchlists.Events.U_Lastname
+    - contextPath: Securonix.Watchlists.Events.Lastname
       description: Last name of the entity in the watchlist.
       type: String
     - contextPath: Securonix.Watchlists.Events.EntityName
       description: Entity name of the entity in the watchlist.
       type: String
-    - contextPath: Securonix.Watchlists.Events.U_Title
+    - contextPath: Securonix.Watchlists.Events.Title
       description: Title of the entity in the watchlist.
       type: String
-    - contextPath: Securonix.Watchlists.Events.U_Firstname
+    - contextPath: Securonix.Watchlists.Events.Firstname
       description: First name of the entity in the watchlist.
       type: String
-    - contextPath: Securonix.Watchlists.Events.U_Employeeid
+    - contextPath: Securonix.Watchlists.Events.Employeeid
       description: Employee Id of the entity in the watchlist.
       type: String
-    - contextPath: Securonix.Watchlists.Events.U_Masked
+    - contextPath: Securonix.Watchlists.Events.Masked
       description: Whether the entity in the watchlist is masked.
       type: String
-    - contextPath: Securonix.Watchlists.Events.U_Division
+    - contextPath: Securonix.Watchlists.Events.Division
       description: Division of the entity in the watchlist.
       type: String
-    - contextPath: Securonix.Watchlists.Events.U_Departmant
+    - contextPath: Securonix.Watchlists.Events.Departmant
       description: Departmant of the entity in the watchlist.
       type: String
-    - contextPath: Securonix.Watchlists.Events.U_Status
+    - contextPath: Securonix.Watchlists.Events.Status
       description: Status of the entity in the watchlist.
       type: String
   - arguments:
