@@ -18,8 +18,10 @@ fi
 if [[ -z "${WINDIR}" ]]
     then
         PYTHONPATH="`pwd`:${PYTHONPATH}" python Tests/scripts/validate_files.py -t true
+        PYTHONPATH="`pwd`:${PYTHONPATH}" python Tests/scripts/hook_validations/secrets.py
     else
         python Tests/scripts/validate_files.py
+        python Tests/scripts/hook_validations/secrets.py
 fi
 
 RES=$?

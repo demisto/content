@@ -1648,6 +1648,7 @@ def test_check_for_answers_no_proxy(mocker, requests_mock):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
 
+    mocker.patch.object(Slack, 'add_info_headers')
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
         json={'payload': PAYLOAD_JSON}
@@ -1695,6 +1696,7 @@ def test_check_for_answers_proxy(mocker, requests_mock):
     mocker.patch.object(demisto, 'handleEntitlementForUser')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'add_info_headers')
 
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
@@ -1739,6 +1741,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'add_info_headers')
 
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
@@ -1814,6 +1817,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
     mocker.patch.object(demisto, 'handleEntitlementForUser')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'add_info_headers')
 
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
@@ -1871,6 +1875,7 @@ def test_check_for_answers_no_answer_expires(mocker, requests_mock):
     mocker.patch.object(demisto, 'handleEntitlementForUser')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'add_info_headers')
 
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
@@ -1929,6 +1934,7 @@ def test_check_for_answers_error(mocker, requests_mock):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'error')
+    mocker.patch.object(Slack, 'add_info_headers')
 
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
@@ -1983,6 +1989,7 @@ def test_check_for_answers_handle_entitlement_error(mocker, requests_mock):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'error')
+    mocker.patch.object(Slack, 'add_info_headers')
 
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
