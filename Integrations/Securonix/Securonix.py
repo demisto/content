@@ -26,16 +26,19 @@ def camel_case_to_readable(text: str) -> str:
     Returns:
         A Camel Cased string.
     """
-    if text == 'id':
-        return 'ID'
+    if text == 'incidentId':
+        return 'IncidentID'
+    if text.startswith('U_') or text.startswith('u_'):
+        text = text[2:]
     return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
 
 
-def parse_data_arr(data_arr, fields_to_drop: Optional[List] = []):
+def parse_data_arr(data_arr, fields_to_drop: Optional[List] = [], fields_to_include: Optional[List] = []):
     """Parse data as received from Microsoft Graph API into Demisto's conventions
     Args:
         data_arr: a dictionary containing the data
         fields_to_drop: Fields to drop from the array of the data
+        fields_to_include: Fields to include from the array of the data
     Returns:
         A Camel Cased dictionary with the relevant fields.
         readable: for the human readable
@@ -45,11 +48,15 @@ def parse_data_arr(data_arr, fields_to_drop: Optional[List] = []):
         readable_arr, outputs_arr = [], []
         for data in data_arr:
             readable = {camel_case_to_readable(i): j for i, j in data.items() if i not in fields_to_drop}
+            if fields_to_include:
+                readable = {i: j for i, j in readable.items() if i in fields_to_include}
             readable_arr.append(readable)
             outputs_arr.append({k.replace(' ', ''): v for k, v in readable.copy().items()})
         return readable_arr, outputs_arr
 
     readable = {camel_case_to_readable(i): j for i, j in data_arr.items() if i not in fields_to_drop}
+    if fields_to_include:
+        readable = {i: j for i, j in readable.items() if i in fields_to_include}
     outputs = {k.replace(' ', ''): v for k, v in readable.copy().items()}
 
     return readable, outputs
@@ -691,7 +698,14 @@ def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
                         f'Error from Securonix is: {activity_data.get("errorMessage")}')
 
     activity_events = activity_data.get('events')
-    activity_readable, activity_outputs = parse_data_arr(activity_events)
+    fields_to_include = ['accountname', 'agentfilename', 'categorybehavior', 'categoryobject', 'categoryseverity',
+                         'collectionmethod', 'collectiontimestamp', 'destinationprocessname', 'destinationusername',
+                         'deviceaddress', 'deviceexternalid', 'devicehostname', 'eventid', 'eventoutcome', 'eventtime',
+                         'filepath', 'ingestionnodeid', 'jobid', 'jobstarttime', 'message', 'publishedtime',
+                         'receivedtime', 'resourcename', 'rg_category', 'rg_functionality', 'rg_id', 'rg_name',
+                         'rg_resourcetypeid', 'rg_vendor', 'sourcehostname', 'sourceusername', 'tenantid', 'tenantname',
+                         'timeline']
+    activity_readable, activity_outputs = parse_data_arr(activity_events, fields_to_include=fields_to_include)
     headers = ['Eventid', 'Eventtime', 'Message', 'Accountname']
     human_readable = tableToMarkdown(name="Activity data:", t=activity_readable, headers=headers, removeNull=True)
     entry_context = {f'Securonix.ActivityData(val.Eventid === obj.Eventid)': activity_outputs}
@@ -718,9 +732,69 @@ def list_violation_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     if violation_data.get('error'):
         raise Exception(f'Failed to get violation data in the given time frame.\n'
                         f'Error from Securonix is: {violation_data.get("errorMessage")}')
-
+    fields_to_include = [accountname
+baseeventid
+category
+categorybehavior
+categoryobject
+categoryseverity
+destinationaddress
+destinationntdomain
+destinationuserid
+destinationusername
+deviceaddress
+deviceeventcategory
+deviceexternalid
+devicehostname
+eventid
+eventoutcome
+eventtime
+generationtime
+invalid
+jobid
+jobstarttime
+message
+policyname
+resourcename
+rg_id
+rg_name
+riskscore
+riskthreatname
+sessionid
+sourcehostname
+sourcentdomain
+sourceuserid
+sourceusername
+sourceuserprivileges
+tenantid
+tenantname
+timeline
+u_createdate
+u_criticality
+u_datasourceid
+u_department
+u_division
+u_employeeid
+u_encrypted
+u_firstname
+u_fullname
+u_id
+u_lanid
+u_lastname
+u_lastsynctime
+u_masked
+u_mergeuniquecode
+u_riskscore
+u_skipencryption
+u_status
+u_timezoneoffset
+u_title
+u_uniquecode
+u_userid
+u_workemail
+violator]
     violation_events = violation_data.get('events')
-    violation_readable, violation_outputs = parse_data_arr(violation_events)
+    violation_readable, violation_outputs = parse_data_arr(violation_events, fields_to_include=fields_to_include)
     headers = ['Eventid', 'Eventtime', 'Message', 'Policyname', 'Accountname']
     human_readable = tableToMarkdown(name="Activity data:", t=violation_readable, headers=headers, removeNull=True)
     entry_context = {f'Securonix.ViolationData(val.Eventid === obj.Eventid)': violation_outputs}
@@ -743,8 +817,7 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     from_epoch = date_to_timestamp(from_, date_format=timestamp_format)
     to_ = args.get('to') if 'to_' in args else get_now()
     to_epoch = date_to_timestamp(to_, date_format=timestamp_format)
-    incident_types = argToList(args.get('incident_types')) if 'incident_types' in args else\
-        ['updated', 'opened', 'closed']
+    incident_types = args.get('incident_types') if 'incident_types' in args else 'opened'
     incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types)
 
     total_incidents = incidents.get('totalIncidents')
@@ -963,7 +1036,7 @@ def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
         'TenantName': watchlist_events[0].get('tenantname'),
         'Events': watchlist_events_outputs
     }
-    headers = ['Entityname', 'U_Fullname', 'U_Workemail', 'Expired']
+    headers = ['Entityname', 'Fullname', 'Workemail', 'Expired']
     human_readable = tableToMarkdown(name=f"Watchlist {watchlist_name} of type {watchlist_outputs.get('Type')}:",
                                      t=watchlist_readable, headers=headers, removeNull=True)
     entry_context = {f'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': watchlist_outputs}
@@ -1140,8 +1213,7 @@ def main():
         }
         if command == 'fetch-incidents':
             fetch_time = params.get('fetch_time')
-            incident_types = argToList(params.get('incident_types')) if 'incident_types' in params else \
-                ['updated', 'opened', 'closed']
+            incident_types = params.get('incident_types') if 'incident_types' in params else 'opened'
             incidents, last_run = fetch_incidents(client, fetch_time, incident_types,
                                                   last_run=demisto.getLastRun())  # type: ignore
             demisto.incidents(incidents)
