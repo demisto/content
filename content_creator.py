@@ -149,13 +149,13 @@ def copy_test_files(bundle_test):
 
 
 def update_content_version(key, new_value):
-    f = open('CommonServerPython.py', 'r')
+    f = open(os.path.normpath(os.path.join(__file__, 'CommonServerPython.py')), 'r')
     lines = f.readlines()
     f.close()
     for i, line in enumerate(lines):
         if line.split('=')[0].strip(' \n') == key:
             lines[i] = f'{key} = "{new_value}"\n'
-    f = open('CommonServerPython.py', "w")
+    f = open(os.path.normpath(os.path.join(__file__, 'CommonServerPython.py')), "w")
     f.write(''.join(lines))
     f.close()
 
