@@ -901,7 +901,7 @@ def get_indicator_outputs(indicator_type, indicator_response, indicator_value, s
         }
 
     if indicator_type == 'Domain':
-        whois = dict()
+        whois = dict()  # type: ignore
         whois['Admin'] = dict()
         whois['Registrant'] = dict()
         whois['Registrar'] = dict()
