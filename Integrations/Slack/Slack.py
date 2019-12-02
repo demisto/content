@@ -39,7 +39,7 @@ INCIDENT_NOTIFICATION_CHANNEL = 'incidentNotificationChannel'
 PLAYGROUND_INVESTIGATION_TYPE = 9
 WARNING_ENTRY_TYPE = 11
 ENDPOINT_URL = 'https://oproxy.demisto.ninja/slack-poll'
-POLL_INTERVAL_MINUTES = 2
+POLL_INTERVAL_MINUTES = 1
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 ''' GLOBALS '''
