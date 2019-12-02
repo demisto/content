@@ -50,7 +50,7 @@ def camel_case_to_readable(text: str) -> str:
     return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
 
 
-def parse_data_arr(data_arr, fields_to_drop: Optional[List] = [], fields_to_include: Optional[List] = []):
+def parse_data_arr(data_arr, fields_to_drop=[], fields_to_include=[]):
     """Parse data as received from Microsoft Graph API into Demisto's conventions
     Args:
         data_arr: a dictionary containing the data
@@ -599,7 +599,7 @@ def get_default_assignee_for_workflow(client: Client, args: Dict) -> Tuple[str, 
         'Type': default_assignee.get("type"),
         'Value': default_assignee.get("value"),
     }
-    entry_context = {f'Securonix.Workflows(val.Workflow == obj.Workflow)': workflow_output}
+    entry_context = {f'Securonix.Workflows(val.Workflow === obj.Workflow)': workflow_output}
     human_readable = f'Default assignee for the workflow {workflow} is: {default_assignee.get("value")}.'
     return human_readable, entry_context, default_assignee
 
@@ -688,7 +688,7 @@ def list_users(client: Client, *_) -> Tuple[str, Dict, Dict]:
     users_readable, users_outputs = parse_data_arr(users_arr)
     headers = ['Employee Id', 'First Name', 'Last Name', 'Criticality', 'Title', 'Email']
     human_readable = tableToMarkdown(name="Resource groups:", t=users_readable, headers=headers, removeNull=True)
-    entry_context = {f'Securonix.Users(val.EmployeeId === obj.EmployeeId)': users_outputs}
+    entry_context = {f'Securonix.Users(val.EmployeeID === obj.EmployeeID)': users_outputs}
 
     return human_readable, entry_context, users
 
@@ -785,7 +785,7 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     from_epoch = date_to_timestamp(from_, date_format=timestamp_format)
     to_ = args.get('to') if 'to_' in args else get_now()
     to_epoch = date_to_timestamp(to_, date_format=timestamp_format)
-    incident_types = args.get('incident_types') if 'incident_types' in args else 'opened'
+    incident_types = str(args.get('incident_types')) if 'incident_types' in args else 'opened'
     incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types)
 
     total_incidents = incidents.get('totalIncidents')
@@ -797,7 +797,7 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     headers = ['Incident Id', 'Incident Status', 'Incident Type', 'Priority', 'Reason']
     human_readable = tableToMarkdown(name="Incidents:", t=incidents_readable,
                                      headers=headers, removeNull=True)
-    entry_context = {f'Securonix.Incidents(val.IncidentId === obj.IncidentId)': incidents_outputs}
+    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incidents_outputs}
     return human_readable, entry_context, incidents
 
 
@@ -820,7 +820,7 @@ def get_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise Exception('Incident ID is not in Securonix.')
     incident_readable, incident_outputs = parse_data_arr(incident_items)
     human_readable = tableToMarkdown(name="Incident:", t=incident_readable, removeNull=True)
-    entry_context = {f'Securonix.Incidents(val.IncidentId === obj.IncidentId)': incident_outputs}
+    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
     return human_readable, entry_context, incident
 
 
@@ -841,7 +841,7 @@ def get_incident_status(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         'IncidentID': incident_id,
         'IncidentStatus': incident_status
     }
-    entry_context = {f'Securonix.Incidents(val.IncidentId === obj.IncidentId)': incident_outputs}
+    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
     return f'Incident {incident_id} status is {incident_status}.', entry_context, incident
 
 
@@ -888,7 +888,7 @@ def get_incident_available_actions(client: Client, args: Dict) -> Tuple[str, Dic
         'IncidentID': incident_id,
         'AvailableActions': incident_actions
     }
-    entry_context = {f'Securonix.Incidents(val.IncidentId === obj.IncidentId)': incident_outputs}
+    entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
     return f'Incident {incident_id} available actions: {incident_actions}.', entry_context, incident
 
 
@@ -1110,8 +1110,8 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
     # Get incidents from Securonix
     securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types)
 
-    incidents_items = securonix_incidents.get('incidentItems')
     if securonix_incidents:
+        incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
         last_incident_id = last_run.get('incidentId', '0')
         # Creates incident entry
         demisto_incidents = [{
