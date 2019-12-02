@@ -13,7 +13,7 @@ EXPECTED_LIST_WORKFLOWS = {
         ]
 }
 EXPECTED_DEFAULT_ASSIGNEE = {
-    'Securonix.Workflows(val.Workflow == obj.Workflow)': {
+    'Securonix.Workflows(val.Workflow === obj.Workflow)': {
         'Workflow': 'SOCTeamReview',
         'Type': 'USER',
         'Value': 'admin'
@@ -35,7 +35,7 @@ EXPECTED_LIST_RESOURCE_GROUPS = {
         ]
 }
 EXPECTED_LIST_USERS = {
-    'Securonix.Users(val.EmployeeId === obj.EmployeeId)':
+    'Securonix.Users(val.EmployeeID === obj.EmployeeID)':
         {
             'ApproverEmployeeId': ['1082', '1082'],
             'CostCenterCode': ['ILEGCCC13', 'ILEGCCC13'],
@@ -43,7 +43,7 @@ EXPECTED_LIST_USERS = {
             'Department': ['SAP Administrator', 'Legal Department'],
             'Division': ['Global Technology', 'Legal'],
             'Email': ["momo@demisto.com", "foo@demisto.com"],
-            'EmployeeId': ['1644', '1631'],
+            'EmployeeID': ['1644', '1631'],
             'EmployeeType': ['FT', 'FT'],
             'EnableDate': ['2018-08-15T12:50:11Z', '2018-08-15T12:50:11Z'],
             'FirstName': ['Tan', 'Lauren'],
@@ -64,14 +64,14 @@ EXPECTED_LIST_USERS = {
         }
 }
 EXPECTED_LIST_INCIDENT = {
-    'Securonix.Incidents(val.IncidentId === obj.IncidentId)':
+    'Securonix.Incidents(val.IncidentID === obj.IncidentID)':
         [
             {
                 'ViolatorText': 'Cyndi Converse',
                 'LastUpdateDate': 1566293234026,
-                'ViolatorId': '96',
+                'ViolatorID': '96',
                 'IncidentType': 'RISK MODEL',
-                'IncidentId': '100181',
+                'IncidentID': '100181',
                 'IncidentStatus': 'COMPLETED',
                 'Riskscore': 0.0,
                 'AssignedUser': 'Account Access 02',
@@ -88,13 +88,13 @@ EXPECTED_LIST_INCIDENT = {
         ]
 }
 EXPECTED_GET_INCIDENT = {
-    'Securonix.Incidents(val.IncidentId === obj.IncidentId)': [
+    'Securonix.Incidents(val.IncidentID === obj.IncidentID)': [
         {
             "ViolatorText": "Cyndi Converse",
             "LastUpdateDate": 1566232568502,
-            "ViolatorId": "96",
+            "ViolatorID": "96",
             "IncidentType": "Policy",
-            "IncidentId": "100107",
+            "IncidentID": "100107",
             "IncidentStatus": "COMPLETED",
             "Riskscore": 0.0,
             "AssignedUser": "Admin Admin",
@@ -114,78 +114,51 @@ EXPECTED_GET_INCIDENT = {
     ]
 }
 EXPECTED_LIST_WATCHLISTS = {
-    'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': [
-        'Domain_Admin', 'Privileged_Users', 'Privileged_Accounts', 'Recent_Hires'
-    ]
+    'Securonix.WatchlistsNames':
+        [
+            'Domain_Admin',
+            'Privileged_Users',
+            'Privileged_Accounts',
+            'Recent_Hires'
+        ]
 }
 EXPECTED_GET_WATCHLIST = {
-    'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': {
-        'Watchlistname': 'test',
-        'Events': [
-            {
-                'DirectImport': 'false',
-                'Hour': '0',
-                'Ignored': 'false',
-                'Invalid': 'false',
-                'InvalidEventAction': '0',
-                'Tenantid': '1',
-                'Tenantname': 'Securonix',
-                'U_Id': '-1',
-                'U_Userid': '-1',
-                'Result': {
-                    'entry': [
-                        {
-                            'key': 'reason', 'value': ''
-                        },
-                        {
-                            'key': 'expirydate',
-                            'value': '1540674976881'
-                        },
-                        {
-                            'key': 'u_employeeid',
-                            'value': '1002'
-                        },
-                        {
-                            'key': 'u_department',
-                            'value': 'Mainframe and Midrange Administration'
-                        },
-                        {
-                            'key': 'u_workphone',
-                            'value': '9728351246'
-                        },
-                        {
-                            'key': 'u_division',
-                            'value': 'Global Technology'
-                        },
-                        {
-                            'key': 'confidencefactor',
-                            'value': '0.0'
-                        },
-                        {
-                            'key': 'entityname',
-                            'value': '1002'
-                        },
-                        {
-                            'key': 'u_jobcode',
-                            'value': 'R1'
-                        },
-                        {
-                            'key': 'u_hiredate',
-                            'value': '1249707600000'
-                        },
-                        {
-                            'key': 'type',
-                            'value': 'Users'
-                        },
-                        {
-                            'key': 'u_costcentername',
-                            'value': 'IINFCCC12'
+    'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)':
+        {
+            'Watchlistname': 'test',
+            'Type': None,
+            'TenantID': '1',
+            'TenantName': 'Securonix',
+            'Events':
+                [
+                    {
+                        'DirectImport': 'false',
+                        'Hour': '0',
+                        'Ignored': 'false',
+                        'Invalid': 'false',
+                        'InvalidEventAction': '0',
+                        'Id': '-1',
+                        'Userid': '-1',
+                        'Result': {
+                            'entry':
+                                [
+                                    {'key': 'reason', 'value': ''},
+                                    {'key': 'expirydate', 'value': '1540674976881'},
+                                    {'key': 'u_employeeid', 'value': '1002'},
+                                    {'key': 'u_department', 'value': 'Mainframe and Midrange Administration'},
+                                    {'key': 'u_workphone', 'value': '9728351246'},
+                                    {'key': 'u_division', 'value': 'Global Technology'},
+                                    {'key': 'confidencefactor', 'value': '0.0'},
+                                    {'key': 'entityname', 'value': '1002'},
+                                    {'key': 'u_jobcode', 'value': 'R1'},
+                                    {'key': 'u_hiredate', 'value': '1249707600000'},
+                                    {'key': 'type', 'value': 'Users'},
+                                    {'key': 'u_costcentername', 'value': 'IINFCCC12'}
+                                ]
                         }
-                    ]
-                }
-            }
-        ]
-    }
+                    }
+                ]
+        }
 }
 EXPECTED_ENTITY_IN_WATCHLIST = {
     'Securonix.EntityInWatchlist(val.EntityID === obj.EntityID)': {
