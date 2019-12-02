@@ -685,6 +685,50 @@ script:
     - contextPath: IP.Address
       description: The IP Address.
       type: String
+    - contextPath: AutoFocus.IP.IndicatorValue
+      description: The IP Address.
+      type: String
+    - contextPath: AutoFocus.IP.IndicatorType
+      description: The IP address type.
+      type: String
+    - contextPath: AutoFocus.IP.LatestPanVerdicts
+      description: Latest verdicts from Palo Alto Networks products, can be either
+        PAN_DB or WF_SAMPLE(WildFire).
+      type: Unknown
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: AutoFocus.IP.Tags.PublicTagName
+      description: The public name of the tag. This is used as an ID of the tag.
+      type: String
+    - contextPath: AutoFocus.IP.Tags.TagName
+      description: The simple name of the tag.
+      type: String
+    - contextPath: AutoFocus.IP.Tags.CustomerName
+      description: The organization that created the tag.
+      type: String
+    - contextPath: AutoFocus.IP.Tags.Source
+      description: The organization or individual that discovered the threat that
+        is defined in the tag.
+      type: String
+    - contextPath: AutoFocus.IP.Tags.TagDefinitionScopeID
+      description: The scope ID of the tag.
+      type: Number
+    - contextPath: AutoFocus.IP.Tags.TagDefinitionStatusID
+      description: The definition status ID of the tag.
+      type: Number
+    - contextPath: AutoFocus.IP.Tags.TagClassID
+      description: The classification ID of the tag.
+      type: Number
+    - contextPath: AutoFocus.IP.Tags.Count
+      description: The number of samples that matched this tag.
+      type: Number
+    - contextPath: AutoFocus.IP.Tags.Lasthit
+      description: The date that the tag was last encountered.
+      type: Date
+    - contextPath: AutoFocus.IP.Tags.Description
+      description: Tag description.
+      type: String
   - arguments:
     - default: true
       description: URL to check.
@@ -711,6 +755,50 @@ script:
       type: String
     - contextPath: URL.Data
       description: The URL address.
+      type: String
+    - contextPath: AutoFocus.URL.IndicatorValue
+      description: The URL value.
+      type: String
+    - contextPath: AutoFocus.URL.IndicatorType
+      description: The indicator type.
+      type: String
+    - contextPath: AutoFocus.URL.LatestPanVerdicts
+      description: Latest verdicts from Palo Alto Networks products, can be either
+        PAN_DB or WF_SAMPLE(WildFire).
+      type: Unknown
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: AutoFocus.URL.Tags.PublicTagName
+      description: The public name of the tag. This is used as an ID of the tag.
+      type: String
+    - contextPath: AutoFocus.URL.Tags.TagName
+      description: The simple name of the tag.
+      type: String
+    - contextPath: AutoFocus.URL.Tags.CustomerName
+      description: The organization that created the tag.
+      type: String
+    - contextPath: AutoFocus.URL.Tags.Source
+      description: The organization or individual that discovered the threat that
+        is defined in the tag.
+      type: String
+    - contextPath: AutoFocus.URL.Tags.TagDefinitionScopeID
+      description: The scope ID of the tag.
+      type: Number
+    - contextPath: AutoFocus.URL.Tags.TagDefinitionStatusID
+      description: The definition status ID of the tag.
+      type: Number
+    - contextPath: AutoFocus.URL.Tags.TagClassID
+      description: The classification ID of the tag.
+      type: Number
+    - contextPath: AutoFocus.URL.Tags.Count
+      description: The number of samples that matched this tag.
+      type: Number
+    - contextPath: AutoFocus.URL.Tags.Lasthit
+      description: The date that the tag was last encountered.
+      type: Date
+    - contextPath: AutoFocus.URL.Tags.Description
+      description: Tag description.
       type: String
   - arguments:
     - default: true
@@ -739,6 +827,50 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
       type: String
+    - contextPath: AutoFocus.File.IndicatorValue
+      description: SHA256 of the file.
+      type: String
+    - contextPath: AutoFocus.File.IndicatorType
+      description: The indicator type.
+      type: String
+    - contextPath: AutoFocus.File.LatestPanVerdicts
+      description: Latest verdicts from Palo Alto Networks products, can be either
+        PAN_DB or WF_SAMPLE(WildFire).
+      type: Unknown
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: AutoFocus.File.Tags.PublicTagName
+      description: The public name of the tag. This is used as an ID of the tag.
+      type: String
+    - contextPath: AutoFocus.File.Tags.TagName
+      description: The simple name of the tag.
+      type: String
+    - contextPath: AutoFocus.File.Tags.CustomerName
+      description: The organization that created the tag.
+      type: String
+    - contextPath: AutoFocus.File.Tags.Source
+      description: The organization or individual that discovered the threat that
+        is defined in the tag.
+      type: String
+    - contextPath: AutoFocus.File.Tags.TagDefinitionScopeID
+      description: The scope ID of the tag.
+      type: Number
+    - contextPath: AutoFocus.File.Tags.TagDefinitionStatusID
+      description: The definition status ID of the tag.
+      type: Number
+    - contextPath: AutoFocus.File.Tags.TagClassID
+      description: The classification ID of the tag.
+      type: Number
+    - contextPath: AutoFocus.File.Tags.Count
+      description: The number of samples that matched this tag.
+      type: Number
+    - contextPath: AutoFocus.File.Tags.Lasthit
+      description: The date that the tag was last encountered.
+      type: Date
+    - contextPath: AutoFocus.File.Tags.Description
+      description: Tag description.
+      type: String
   - arguments:
     - default: true
       description: domain to check.
@@ -765,6 +897,77 @@ script:
       type: String
     - contextPath: Domain.Name
       description: The domain name.
+      type: String
+    - contextPath: AutoFocus.Domain.IndicatorValue
+      description: The domain.
+      type: String
+    - contextPath: AutoFocus.Domain.IndicatorType
+      description: The indicator type.
+      type: String
+    - contextPath: AutoFocus.Domain.LatestPanVerdicts
+      description: Latest verdicts from Palo Alto Networks products, can be either
+        PAN_DB or WF_SAMPLE(WildFire).
+      type: Unknown
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: AutoFocus.Domain.Tags.PublicTagName
+      description: The public name of the tag. This is used as an ID of the tag.
+      type: String
+    - contextPath: AutoFocus.Domain.Tags.TagName
+      description: The simple name of the tag.
+      type: String
+    - contextPath: AutoFocus.Domain.Tags.CustomerName
+      description: The organization that created the tag.
+      type: String
+    - contextPath: AutoFocus.Domain.Tags.Source
+      description: The organization or individual that discovered the threat that
+        is defined in the tag.
+      type: String
+    - contextPath: AutoFocus.Domain.Tags.TagDefinitionScopeID
+      description: The scope ID of the tag.
+      type: Number
+    - contextPath: AutoFocus.Domain.Tags.TagDefinitionStatusID
+      description: The definition status ID of the tag.
+      type: Number
+    - contextPath: AutoFocus.Domain.Tags.TagClassID
+      description: The classification ID of the tag.
+      type: Number
+    - contextPath: AutoFocus.Domain.Tags.Count
+      description: The number of samples that matched this tag.
+      type: Number
+    - contextPath: AutoFocus.Domain.Tags.Lasthit
+      description: The date that the tag was last encountered.
+      type: Date
+    - contextPath: AutoFocus.Domain.Tags.Description
+      description: Tag description.
+      type: String
+    - contextPath: AutoFocus.Domain.WhoisAdminCountry
+      description: The country of domain administrator.
+      type: String
+    - contextPath: AutoFocus.Domain.WhoisAdminEmail
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: AutoFocus.Domain.WhoisAdminName
+      description: The name of domain administrator.
+      type: String
+    - contextPath: AutoFocus.Domain.WhoisDomainCreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: AutoFocus.Domain.WhoisDomainExpireDate
+      description: The date that the domain expires.
+      type: Date
+    - contextPath: AutoFocus.Domain.WhoisDomainUpdateDate
+      description: The date that the domain was last updated.
+      type: Date
+    - contextPath: AutoFocus.Domain.WhoisRegistrar
+      description: The name of the registrar.
+      type: String
+    - contextPath: AutoFocus.Domain.WhoisRegistrarUrl
+      description: The email address of the registrar.
+      type: String
+    - contextPath: AutoFocus.Domain.WhoisRegistrant
+      description: The name of the registrant.
       type: String
   dockerimage: demisto/python3:3.7.2.214
   isfetch: false
