@@ -26,8 +26,25 @@ def camel_case_to_readable(text: str) -> str:
     Returns:
         A Camel Cased string.
     """
+    if text == 'id':
+        return 'ID'
+    if text == 'lanId':
+        return 'LanID'
+    if text == 'jobId':
+        return 'JobID'
+    if text == 'eventId':
+        return 'EventID'
+    if text == 'entitytId':
+        return 'EntityID'
+    if text == 'tenantId':
+        return 'TenantID'
     if text == 'incidentId':
         return 'IncidentID'
+    if text == 'employeeId':
+        return 'EmployeeID'
+    if text == 'violatorId':
+        return 'ViolatorID'
+
     if text.startswith('U_') or text.startswith('u_'):
         text = text[2:]
     return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
@@ -48,8 +65,10 @@ def parse_data_arr(data_arr, fields_to_drop: Optional[List] = [], fields_to_incl
         readable_arr, outputs_arr = [], []
         for data in data_arr:
             readable = {camel_case_to_readable(i): j for i, j in data.items() if i not in fields_to_drop}
+            demisto.log(str(readable))
             if fields_to_include:
                 readable = {i: j for i, j in readable.items() if i in fields_to_include}
+                demisto.log(str(readable))
             readable_arr.append(readable)
             outputs_arr.append({k.replace(' ', ''): v for k, v in readable.copy().items()})
         return readable_arr, outputs_arr
@@ -698,13 +717,13 @@ def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
                         f'Error from Securonix is: {activity_data.get("errorMessage")}')
 
     activity_events = activity_data.get('events')
-    fields_to_include = ['accountname', 'agentfilename', 'categorybehavior', 'categoryobject', 'categoryseverity',
-                         'collectionmethod', 'collectiontimestamp', 'destinationprocessname', 'destinationusername',
-                         'deviceaddress', 'deviceexternalid', 'devicehostname', 'eventid', 'eventoutcome', 'eventtime',
-                         'filepath', 'ingestionnodeid', 'jobid', 'jobstarttime', 'message', 'publishedtime',
-                         'receivedtime', 'resourcename', 'rg_category', 'rg_functionality', 'rg_id', 'rg_name',
-                         'rg_resourcetypeid', 'rg_vendor', 'sourcehostname', 'sourceusername', 'tenantid', 'tenantname',
-                         'timeline']
+    fields_to_include = ['Accountname', 'Agentfilename', 'Categorybehavior', 'Categoryobject', 'Categoryseverity',
+                         'Collectionmethod', 'Collectiontimestamp', 'Destinationprocessname', 'Destinationusername',
+                         'Deviceaddress', 'Deviceexternalid', 'Devicehostname', 'Eventid', 'Eventoutcome', 'Eventtime',
+                         'Filepath', 'Ingestionnodeid', 'Jobid', 'Jobstarttime', 'Message', 'Publishedtime',
+                         'Receivedtime', 'Resourcename', 'Rg_category', 'Rg_functionality', 'Rg_id', 'Rg_name',
+                         'Rg_resourcetypeid', 'Rg_vendor', 'Sourcehostname', 'Sourceusername', 'Tenantid', 'Tenantname',
+                         'Timeline']
     activity_readable, activity_outputs = parse_data_arr(activity_events, fields_to_include=fields_to_include)
     headers = ['Eventid', 'Eventtime', 'Message', 'Accountname']
     human_readable = tableToMarkdown(name="Activity data:", t=activity_readable, headers=headers, removeNull=True)
@@ -732,70 +751,22 @@ def list_violation_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     if violation_data.get('error'):
         raise Exception(f'Failed to get violation data in the given time frame.\n'
                         f'Error from Securonix is: {violation_data.get("errorMessage")}')
-    fields_to_include = [accountname
-baseeventid
-category
-categorybehavior
-categoryobject
-categoryseverity
-destinationaddress
-destinationntdomain
-destinationuserid
-destinationusername
-deviceaddress
-deviceeventcategory
-deviceexternalid
-devicehostname
-eventid
-eventoutcome
-eventtime
-generationtime
-invalid
-jobid
-jobstarttime
-message
-policyname
-resourcename
-rg_id
-rg_name
-riskscore
-riskthreatname
-sessionid
-sourcehostname
-sourcentdomain
-sourceuserid
-sourceusername
-sourceuserprivileges
-tenantid
-tenantname
-timeline
-u_createdate
-u_criticality
-u_datasourceid
-u_department
-u_division
-u_employeeid
-u_encrypted
-u_firstname
-u_fullname
-u_id
-u_lanid
-u_lastname
-u_lastsynctime
-u_masked
-u_mergeuniquecode
-u_riskscore
-u_skipencryption
-u_status
-u_timezoneoffset
-u_title
-u_uniquecode
-u_userid
-u_workemail
-violator]
+
     violation_events = violation_data.get('events')
+    fields_to_include = ['Accountname', 'Baseeventid', 'Category', 'Categorybehavior', 'Categoryobject',
+                         'Categoryseverity', 'Destinationaddress', 'Destinationntdomain', 'Destinationuserid',
+                         'Gestinationusername', 'Deviceaddress', 'Deviceeventcategory', 'Deviceexternalid',
+                         'Devicehostname', 'EventID', 'Eventoutcome', 'Eventtime', 'Generationtime', 'Invalid', 'JobID',
+                         'Jobstarttime', 'Message', 'Policyname', 'Resourcename', 'Rg_id', 'Rg_name', 'Riskscore',
+                         'Riskthreatname', 'Sessionid', 'Sourcehostname', 'Sourcentdomain', 'Sourceuserid',
+                         'Sourceusername', 'Sourceuserprivileges', 'Tenantid', 'Tenantname', 'Timeline',
+                         'Createdate', 'Criticality', 'Datasourceid', 'Department', 'Division',
+                         'Employeeid', 'Encrypted', 'Firstname', 'Fullname', 'ID', 'LanID', 'Lastname',
+                         'Lastsynctime', 'Masked', 'Mergeuniquecode', 'Riskscore', 'Skipencryption',
+                         'Status', 'Timezoneoffset', 'Title', 'Uniquecode', 'UserID', 'Workemail',
+                         'Violator']
     violation_readable, violation_outputs = parse_data_arr(violation_events, fields_to_include=fields_to_include)
-    headers = ['Eventid', 'Eventtime', 'Message', 'Policyname', 'Accountname']
+    headers = ['EventID', 'Eventtime', 'Message', 'Policyname', 'Accountname']
     human_readable = tableToMarkdown(name="Activity data:", t=violation_readable, headers=headers, removeNull=True)
     entry_context = {f'Securonix.ViolationData(val.Eventid === obj.Eventid)': violation_outputs}
 
