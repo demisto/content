@@ -2559,6 +2559,12 @@ script:
       required: false
       secret: false
     - default: false
+      name: ip
+      description: Source or destination IP address.
+      isArray: true
+      required: false
+      secret: false
+    - default: false
       description: Source zone.
       isArray: true
       name: zone-src
@@ -2625,7 +2631,7 @@ script:
   - arguments:
     - default: false
       description: Job ID of the query.
-      isArray: false
+      isArray: true
       name: job_id
       required: true
       secret: false
@@ -2643,7 +2649,7 @@ script:
   - arguments:
     - default: false
       description: Job ID of the query.
-      isArray: false
+      isArray: true
       name: job_id
       required: true
       secret: false
