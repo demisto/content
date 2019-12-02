@@ -190,6 +190,109 @@ script:
     description: List activity data ofr a resource group.
     execution: false
     name: securonix-list-activity-data
+    outputs:
+    - contextPath: Securonix.ActivityData.Accountname
+      description: Account name.
+      type: String
+    - contextPath: Securonix.ActivityData.Agentfilename
+      description: Agent file name.
+      type: String
+    - contextPath: Securonix.ActivityData.Categorybehavior
+      description: Category behavior.
+      type: String
+    - contextPath: Securonix.ActivityData.Categoryobject
+      description: Category object.
+      type: String
+    - contextPath: Securonix.ActivityData.Categoryseverity
+      description: Category severity.
+      type: String
+    - contextPath: Securonix.ActivityData.Collectionmethod
+      description: Collection method.
+      type: String
+    - contextPath: Securonix.ActivityData.Collectiontimestamp
+      description: Collection timestamp.
+      type: String
+    - contextPath: Securonix.ActivityData.Destinationprocessname
+      description: Destination process name.
+      type: String
+    - contextPath: Securonix.ActivityData.Destinationusername
+      description: Destination username.
+      type: String
+    - contextPath: Securonix.ActivityData.Deviceaddress
+      description: Device address.
+      type: String
+    - contextPath: Securonix.ActivityData.Deviceexternalid
+      description: Device external ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Devicehostname
+      description: Device hostname.
+      type: String
+    - contextPath: Securonix.ActivityData.EventID
+      description: Event ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Eventoutcome
+      description: Event outcome.
+      type: String
+    - contextPath: Securonix.ActivityData.Eventtime
+      description: Event time.
+      type: String
+    - contextPath: Securonix.ActivityData.Filepath
+      description: File path.
+      type: String
+    - contextPath: Securonix.ActivityData.Ingestionnodeid
+      description: Ingestion node ID.
+      type: String
+    - contextPath: Securonix.ActivityData.JobID
+      description: Job ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Jobstarttime
+      description: Job start time.
+      type: String
+    - contextPath: Securonix.ActivityData.Message
+      description: Message.
+      type: String
+    - contextPath: Securonix.ActivityData.Publishedtime
+      description: Published time.
+      type: String
+    - contextPath: Securonix.ActivityData.Receivedtime
+      description: Received time.
+      type: String
+    - contextPath: Securonix.ActivityData.Resourcename
+      description: Resource name.
+      type: String
+    - contextPath: Securonix.ActivityData.Rg_category
+      description: RG category.
+      type: String
+    - contextPath: Securonix.ActivityData.Rg_functionality
+      description: RG functionality.
+      type: String
+    - contextPath: Securonix.ActivityData.Rg_id
+      description: RG ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Rg_name
+      description: RG name.
+      type: String
+    - contextPath: Securonix.ActivityData.Rg_resourcetypeid
+      description: RG resource type ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Rg_vendor
+      description: RG vendor.
+      type: String
+    - contextPath: Securonix.ActivityData.Sourcehostname
+      description: Source hostname.
+      type: String
+    - contextPath: Securonix.ActivityData.Sourceusername
+      description: Source username.
+      type: String
+    - contextPath: Securonix.ActivityData.TenantID
+      description: Tenant ID.
+      type: String
+    - contextPath: Securonix.ActivityData.Tenantname
+      description: Tenant name.
+      type: String
+    - contextPath: Securonix.ActivityData.Timeline
+      description: Timeline.
+      type: String
   - arguments:
     - default: false
       description: Start range in format MM/dd/yyyy HH:mm:ss.
@@ -214,6 +317,187 @@ script:
     description: List activity data ofr an account name.
     execution: false
     name: securonix-list-violation-data
+    outputs:
+    - contextPath: Securonix.ViolationData.Accountname
+      description: Account name.
+      type: String
+    - contextPath: Securonix.ViolationData.Agentfilename
+      description: Agent file name.
+      type: String
+    - contextPath: Securonix.ViolationData.Baseeventid
+      description: Base event ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Categorybehavior
+      description: Category behavior.
+      type: String
+    - contextPath: Securonix.ViolationData.Category
+      description: Category.
+      type: String
+    - contextPath: Securonix.ViolationData.Categoryobject
+      description: Category object.
+      type: String
+    - contextPath: Securonix.ViolationData.Categoryseverity
+      description: Category severity.
+      type: String
+    - contextPath: Securonix.ViolationData.Destinationaddress
+      description: Destination address.
+      type: String
+    - contextPath: Securonix.ViolationData.Destinationntdomain
+      description: Destination nt domain.
+      type: String
+    - contextPath: Securonix.ViolationData.Destinationuserid
+      description: Destination user ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Gestinationusername
+      description: Gestination username.
+      type: String
+    - contextPath: Securonix.ViolationData.Deviceaddress
+      description: Device address.
+      type: String
+    - contextPath: Securonix.ViolationData.Deviceeventcategory
+      description: Device event category.
+      type: String
+    - contextPath: Securonix.ViolationData.Deviceexternalid
+      description: Device external ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Devicehostname
+      description: Device hostname.
+      type: String
+    - contextPath: Securonix.ViolationData.EventID
+      description: Event ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Eventoutcome
+      description: Event outcome.
+      type: String
+    - contextPath: Securonix.ViolationData.Eventtime
+      description: Event time.
+      type: String
+    - contextPath: Securonix.ViolationData.Generationtime
+      description: Generation time.
+      type: String
+    - contextPath: Securonix.ViolationData.Invalid
+      description: Invalid.
+      type: String
+    - contextPath: Securonix.ViolationData.JobID
+      description: Job ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Jobstarttime
+      description: Job start time.
+      type: String
+    - contextPath: Securonix.ViolationData.Policyname
+      description: Policy name.
+      type: String
+    - contextPath: Securonix.ViolationData.Resourcename
+      description: Resource name.
+      type: String
+    - contextPath: Securonix.ViolationData.Rg_id
+      description: RG ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Rg_name
+      description: RG name.
+      type: String
+    - contextPath: Securonix.ViolationData.Riskscore
+      description: Risk score.
+      type: String
+    - contextPath: Securonix.ViolationData.Riskthreatname
+      description: Risk threat name.
+      type: String
+    - contextPath: Securonix.ViolationData.Sessionid
+      description: Session ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Sourcehostname
+      description: Source hostname.
+      type: String
+    - contextPath: Securonix.ViolationData.Sourcentdomain
+      description: Source nt domain.
+      type: String
+    - contextPath: Securonix.ViolationData.Sourceuserid
+      description: Source user ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Sourceusername
+      description: Source username.
+      type: String
+    - contextPath: Securonix.ViolationData.Sourceuserprivileges
+      description: Source user privileges.
+      type: String
+    - contextPath: Securonix.ViolationData.TenantID
+      description: Tenant ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Tenantname
+      description: Tenant name.
+      type: String
+    - contextPath: Securonix.ViolationData.Timeline
+      description: Timeline.
+      type: String
+    - contextPath: Securonix.ViolationData.Createdate
+      description: Create date.
+      type: String
+    - contextPath: Securonix.ViolationData.Criticality
+      description: Criticality.
+      type: String
+    - contextPath: Securonix.ViolationData.Datasourceid
+      description: Data source ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Department
+      description: Department.
+      type: String
+    - contextPath: Securonix.ViolationData.EmployeeID
+      description: Employee ID.
+      type: String
+    - contextPath: Securonix.ViolationData.Encrypted
+      description: Encrypted.
+      type: String
+    - contextPath: Securonix.ViolationData.Firstname
+      description: Firstname.
+      type: String
+    - contextPath: Securonix.ViolationData.Fullname
+      description: Fullname.
+      type: String
+    - contextPath: Securonix.ViolationData.ID
+      description: ID.
+      type: String
+    - contextPath: Securonix.ViolationData.LanID
+      description: LanID.
+      type: String
+    - contextPath: Securonix.ViolationData.Lastname
+      description: Lastname.
+      type: String
+    - contextPath: Securonix.ViolationData.Lastsynctime
+      description: Last sync time.
+      type: String
+    - contextPath: Securonix.ViolationData.Masked
+      description: Masked.
+      type: String
+    - contextPath: Securonix.ViolationData.Mergeuniquecode
+      description: Merge unique code.
+      type: String
+    - contextPath: Securonix.ViolationData.Riskscore
+      description: Risk score.
+      type: String
+    - contextPath: Securonix.ViolationData.Skipencryption
+      description: Skip encryption.
+      type: String
+    - contextPath: Securonix.ViolationData.Status
+      description: Status.
+      type: String
+    - contextPath: Securonix.ViolationData.Timezoneoffset
+      description: Timezone offset.
+      type: String
+    - contextPath: Securonix.ViolationData.Title
+      description: Title.
+      type: String
+    - contextPath: Securonix.ViolationData.Uniquecode
+      description: Unique code.
+      type: String
+    - contextPath: Securonix.ViolationData.UserID
+      description: Last sync time.
+      type: String
+    - contextPath: Securonix.ViolationData.Workemail
+      description: Work email.
+      type: String
+    - contextPath: Securonix.ViolationData.Violator
+      description: Violator.
+      type: String
   - arguments:
     - default: false
       description: ' from time range (<number> <time unit>, e.g., 1 hour, 30 minutes)'
