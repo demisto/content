@@ -480,7 +480,7 @@
                 "Demisto REST API"
             ],
             "fromversion": "5.0.0",
-            "timeout": 900
+            "timeout": 1200
         },
         {
             "playbookID": "ParseExcel-test"
@@ -2031,7 +2031,6 @@
         "Qualys-Test": "Issue 16486",
         "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
-        "TestSafeBreach": "Issue 15909",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
@@ -2076,6 +2075,10 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "DomainTools Iris": "Issue 20433",
+        "Cybereason": "Issue 20430",
+        "SentinelOne V2": "Issue 19361",
+        "ThreatQ v2": "Issue 19468",
         "Check Point": "Issue 18643",
         "McAfee Active Response": "Issue 20320",
         "RSA Archer": "Issue 20335",
@@ -2186,6 +2189,7 @@
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
-        "RedLock": "SSL Issues"
+        "RedLock": "SSL Issues",
+        "SafeBreach": "SSL Issues"
     }
 }
