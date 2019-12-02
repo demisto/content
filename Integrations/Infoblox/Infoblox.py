@@ -244,7 +244,7 @@ class Client(BaseClient):
             Response JSON
         """
         request_data = {key: val for key, val in kwargs.items() if val is not None}
-        request_params = {'_return_fields+': ','.join(request_data.keys()) + ',disable'}
+        request_params = {'_return_fields+': ','.join(request_data.keys()) + ',disable,name'}
         rule = self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
         rule['result']['type'] = suffix
         return rule
