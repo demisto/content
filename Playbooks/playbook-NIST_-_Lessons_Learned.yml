@@ -346,8 +346,7 @@ inputs:
     on NIST. Specify 'True' to automatically send the communication task, and 'False'  to
     prevent it.
 - key: Email
-  value:
-    simple: mgoldberg@paloaltonetworks.com
+  value: {}
   required: false
   description: Email address to which to send the questions.
 outputs:
