@@ -1,49 +1,52 @@
-id: Qradar Indicator Hunting
+id: QRadar Indicator Hunting
 version: -1
+name: QRadar Indicator Hunting
 fromversion: 4.5.0
-name: Qradar Indicator Hunting
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 9000bfde-a8d9-4551-898c-84d7879b4063
+  '0':
+    id: '0'
+    taskid: aea9933a-c16a-4dba-89d9-c7e68765eac7
     type: start
     task:
-      id: 9000bfde-a8d9-4551-898c-84d7879b4063
-      description: Header
+      id: aea9933a-c16a-4dba-89d9-c7e68765eac7
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "54"
+      - '2'
+      - '5'
+      - '6'
+      - '48'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": -260
+          "x": 760,
+          "y": -230
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 52d7a659-9306-4f65-82f8-d6e56be45937
+  '2':
+    id: '2'
+    taskid: 5f176ea4-b4e3-4d8e-87f9-fde885ddf3ed
     type: title
     task:
-      id: 52d7a659-9306-4f65-82f8-d6e56be45937
+      id: 5f176ea4-b4e3-4d8e-87f9-fde885ddf3ed
       version: -1
       name: Hash Search
-      description: Header
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     separatecontext: false
     view: |-
       {
@@ -55,27 +58,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 3e469e62-4d39-4b7b-85ba-0f4b9b370aa7
+  '3':
+    id: '3'
+    taskid: 6567c88b-2e0b-46a5-8474-7ab6d3a5a87d
     type: playbook
     task:
-      id: 3e469e62-4d39-4b7b-85ba-0f4b9b370aa7
+      id: 6567c88b-2e0b-46a5-8474-7ab6d3a5a87d
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: .
@@ -84,8 +86,11 @@ tasks:
             args:
               dt:
                 value:
-                  simple: .=val.DomainURLFields.map(field => val.DomainURL.map(url
-                    => field + " ILIKE '%" + url + "%'").join(' OR '))
+                  simple: '.=function(val){var fields = Array.isArray(val.DomainURLFields)
+                    ? val.DomainURLFields : [val.DomainURLFields]; var domainurls
+                    = Array.isArray(val.DomainURL) ? val.DomainURL : [val.DomainURL];
+                    return fields.map(field => domainurls.map(domainurl => field +
+                    " ILIKE " + "''%" + domainurl + "%''").join('' OR ''))}(val)'
           - operator: join
             args:
               separator:
@@ -117,37 +122,37 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
         "position": {
-          "x": 2420,
-          "y": 1585
+          "x": 2610,
+          "y": 1650
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 3da3146d-a61b-47a6-800b-f308daef019b
+  '5':
+    id: '5'
+    taskid: 8645077c-e7fb-485b-870d-bf7c7a15c9cd
     type: title
     task:
-      id: 3da3146d-a61b-47a6-800b-f308daef019b
+      id: 8645077c-e7fb-485b-870d-bf7c7a15c9cd
       version: -1
       name: IP Search
-      description: Header
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     separatecontext: false
     view: |-
       {
@@ -159,21 +164,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
-    taskid: a57c5196-5f1c-4b6a-8d26-c2c5de4e225f
+  '6':
+    id: '6'
+    taskid: 700b5562-1050-4ce3-8cf3-60a55dfea1af
     type: title
     task:
-      id: a57c5196-5f1c-4b6a-8d26-c2c5de4e225f
+      id: 700b5562-1050-4ce3-8cf3-60a55dfea1af
       version: -1
       name: Domain/Url Search
-      description: Header
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     separatecontext: false
     view: |-
       {
@@ -185,31 +190,31 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 5e252aef-6567-4d51-81e5-396ae0d2930d
+  '7':
+    id: '7'
+    taskid: d7c2025e-a7e9-4e91-81a5-38cc88b13e96
     type: condition
     task:
-      id: 5e252aef-6567-4d51-81e5-396ae0d2930d
+      id: d7c2025e-a7e9-4e91-81a5-38cc88b13e96
       version: -1
       name: Is there an IP to search?
       description: Is there an IP to search?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "48"
-      "yes":
-      - "49"
+      - '48'
+      'yes':
+      - '49'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.IP Address
+              simple: inputs.IPAddress
             iscontext: true
     view: |-
       {
@@ -221,28 +226,28 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
-    taskid: ce25e183-124e-4100-8777-d999bac2bdcc
+  '8':
+    id: '8'
+    taskid: 31ec21bb-4757-4274-8f2b-f826235d69ae
     type: condition
     task:
-      id: ce25e183-124e-4100-8777-d999bac2bdcc
+      id: 31ec21bb-4757-4274-8f2b-f826235d69ae
       version: -1
       name: Is there a hash to search?
       description: Is there a hash to search?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "25"
-      "yes":
-      - "26"
-      - "27"
-      - "38"
+      - '25'
+      'yes':
+      - '26'
+      - '27'
+      - '38'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -269,26 +274,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: f2058037-f1ce-4fca-8285-afa21f801a69
+  '9':
+    id: '9'
+    taskid: 25450576-5441-4891-8456-b11d4bfc2f02
     type: condition
     task:
-      id: f2058037-f1ce-4fca-8285-afa21f801a69
+      id: 25450576-5441-4891-8456-b11d4bfc2f02
       version: -1
       name: Is there an Domain/Url to search?
       description: Is there an Domain/Url to search?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "15"
+      - '10'
+      'yes':
+      - '15'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -305,18 +310,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "10":
-    id: "10"
-    taskid: e5c6ed0c-a025-4165-838e-6cdf5811cae2
+  '10':
+    id: '10'
+    taskid: 1b66fcca-dde5-463c-89d4-7249c787236b
     type: title
     task:
-      id: e5c6ed0c-a025-4165-838e-6cdf5811cae2
+      id: 1b66fcca-dde5-463c-89d4-7249c787236b
       version: -1
       name: Done
-      description: Header
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
     view: |-
       {
@@ -328,26 +333,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "11":
-    id: "11"
-    taskid: c722f352-d6b6-4542-8d6d-8a1fba19caeb
+  '11':
+    id: '11'
+    taskid: 0550b2c4-af37-4bfa-896a-2e7c7ca40fc9
     type: condition
     task:
-      id: c722f352-d6b6-4542-8d6d-8a1fba19caeb
+      id: 0550b2c4-af37-4bfa-896a-2e7c7ca40fc9
       version: -1
       name: Was there a custom domain/url field?
       description: Was there a custom domain/url field?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "17"
-      "yes":
-      - "16"
+      - '17'
+      'yes':
+      - '16'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -357,32 +362,32 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2750,
-          "y": 855
+          "x": 2810,
+          "y": 910
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "15":
-    id: "15"
-    taskid: 00f8cad5-192a-4523-85fc-4af4e9d4f448
+  '15':
+    id: '15'
+    taskid: dacf8c53-c9f3-4c45-84c6-4a696f95fbd6
     type: regular
     task:
-      id: 00f8cad5-192a-4523-85fc-4af4e9d4f448
+      id: dacf8c53-c9f3-4c45-84c6-4a696f95fbd6
       version: -1
       name: Set DomainUrl to array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: DomainURL
       value:
@@ -398,32 +403,32 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2750,
-          "y": 640
+          "x": 2810,
+          "y": 680
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 563050b5-ccc9-4433-8fd1-b396147de076
+  '16':
+    id: '16'
+    taskid: a7623446-185a-4bca-8d9b-cd1025fc8335
     type: regular
     task:
-      id: 563050b5-ccc9-4433-8fd1-b396147de076
+      id: a7623446-185a-4bca-8d9b-cd1025fc8335
       version: -1
       name: Set DomainUrlFields to Array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: DomainURLFields
       value:
@@ -439,34 +444,33 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2420,
-          "y": 1270
+          "x": 2610,
+          "y": 1300
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 775741ae-2cb3-421d-8722-9a7fd543ad25
+  '17':
+    id: '17'
+    taskid: 7d244ffa-43aa-4227-897b-52b07c6d9aad
     type: playbook
     task:
-      id: 775741ae-2cb3-421d-8722-9a7fd543ad25
+      id: 7d244ffa-43aa-4227-897b-52b07c6d9aad
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: DomainURL
@@ -502,7 +506,9 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
-              suffix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix:
@@ -514,45 +520,43 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
         "position": {
-          "x": 2880,
-          "y": 1585
+          "x": 3140,
+          "y": 1650
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "20":
-    id: "20"
-    taskid: 98a1bc42-e885-47db-822b-ddd38a2cb178
+  '20':
+    id: '20'
+    taskid: 39659131-7ceb-4560-843f-903ffabf552a
     type: regular
     task:
-      id: 98a1bc42-e885-47db-822b-ddd38a2cb178
+      id: 39659131-7ceb-4560-843f-903ffabf552a
       version: -1
       name: Set MD5 to array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
-        complex:
-          root: File
-          accessor: MD5
+        simple: File.MD5
       value:
         complex:
           root: inputs.MD5
@@ -573,26 +577,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "21":
-    id: "21"
-    taskid: 9c027e04-3085-4dd6-89b1-040daffe9806
+  '21':
+    id: '21'
+    taskid: f41c881f-0205-43a5-80bb-c003d916d84a
     type: condition
     task:
-      id: 9c027e04-3085-4dd6-89b1-040daffe9806
+      id: f41c881f-0205-43a5-80bb-c003d916d84a
       version: -1
       name: Was there a custom MD5 field?
       description: Was there a custom MD5 field?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "23"
-      "yes":
-      - "36"
+      - '23'
+      'yes':
+      - '36'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -609,26 +613,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "22":
-    id: "22"
-    taskid: 2937a0ba-277b-4226-853c-2a30e78f8700
+  '22':
+    id: '22'
+    taskid: a28276f3-34db-474a-891f-d116d0437e7b
     type: condition
     task:
-      id: 2937a0ba-277b-4226-853c-2a30e78f8700
+      id: a28276f3-34db-474a-891f-d116d0437e7b
       version: -1
       name: Is there an MD5 to search?
       description: Is there an MD5 to search?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "25"
-      "yes":
-      - "20"
+      - '25'
+      'yes':
+      - '20'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -638,34 +642,33 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1900,
+          "x": -1930,
           "y": 775
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "23":
-    id: "23"
-    taskid: 8aecab1e-2d3b-4e77-8648-f92ef6e0f3ee
+  '23':
+    id: '23'
+    taskid: 835b1cc2-e7ed-4c51-8607-cdd1030b8099
     type: playbook
     task:
-      id: 8aecab1e-2d3b-4e77-8648-f92ef6e0f3ee
+      id: 835b1cc2-e7ed-4c51-8607-cdd1030b8099
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: File
@@ -702,7 +705,9 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
-              suffix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix:
@@ -714,11 +719,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -730,18 +735,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "25":
-    id: "25"
-    taskid: 610530ec-1be8-47fc-869a-7fa86dd1bf3b
+  '25':
+    id: '25'
+    taskid: c2624684-88ff-472f-8d0f-8a02499f9537
     type: title
     task:
-      id: 610530ec-1be8-47fc-869a-7fa86dd1bf3b
+      id: c2624684-88ff-472f-8d0f-8a02499f9537
       version: -1
       name: Done
-      description: Header
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
     view: |-
       {
@@ -753,78 +758,78 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "26":
-    id: "26"
-    taskid: 0a049d92-dd3c-4b58-8a45-172e5f651eb4
+  '26':
+    id: '26'
+    taskid: 653dee3e-6508-4026-8931-8e72e4d83b29
     type: title
     task:
-      id: 0a049d92-dd3c-4b58-8a45-172e5f651eb4
+      id: 653dee3e-6508-4026-8931-8e72e4d83b29
       version: -1
       name: MD5 Search
-      description: Header
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -1900,
+          "x": -1930,
           "y": 640
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "27":
-    id: "27"
-    taskid: 31385eae-186d-4ae2-8ee0-5a0cc48c97b5
+  '27':
+    id: '27'
+    taskid: aa921b17-a73a-4fb4-8386-08ef6c841f07
     type: title
     task:
-      id: 31385eae-186d-4ae2-8ee0-5a0cc48c97b5
+      id: aa921b17-a73a-4fb4-8386-08ef6c841f07
       version: -1
       name: SHA1 Search
-      description: Header
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "29"
+      - '29'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -1490,
+          "x": -1520,
           "y": 640
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "29":
-    id: "29"
-    taskid: 62243ec9-f745-43b5-854b-55033ecd1efe
+  '29':
+    id: '29'
+    taskid: fe49d5d6-b8b9-42a8-831b-2ae938beb69e
     type: condition
     task:
-      id: 62243ec9-f745-43b5-854b-55033ecd1efe
+      id: fe49d5d6-b8b9-42a8-831b-2ae938beb69e
       version: -1
       name: Is there an SHA1 to search?
       description: Is there an SHA1 to search?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "25"
-      "yes":
-      - "30"
+      - '25'
+      'yes':
+      - '30'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -834,36 +839,34 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1490,
+          "x": -1520,
           "y": 775
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "30":
-    id: "30"
-    taskid: d49301d8-9399-45f1-8ffd-0a6459923485
+  '30':
+    id: '30'
+    taskid: 307b8f21-b6d6-4227-8720-d7e3d472cb89
     type: regular
     task:
-      id: d49301d8-9399-45f1-8ffd-0a6459923485
+      id: 307b8f21-b6d6-4227-8720-d7e3d472cb89
       version: -1
       name: Set SHA1 to array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
-        complex:
-          root: File
-          accessor: SHA1
+        simple: File.SHA1
       value:
         complex:
           root: inputs.SHA1
@@ -884,26 +887,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "31":
-    id: "31"
-    taskid: 1ea55777-e562-4f32-862a-27f90ce4bd49
+  '31':
+    id: '31'
+    taskid: 562e237a-ba90-4acd-866d-7c6c3bb27570
     type: condition
     task:
-      id: 1ea55777-e562-4f32-862a-27f90ce4bd49
+      id: 562e237a-ba90-4acd-866d-7c6c3bb27570
       version: -1
       name: Was there a custom SHA1 field?
       description: Was there a custom SHA1 field?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "35"
-      "yes":
-      - "44"
+      - '35'
+      'yes':
+      - '44'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -921,27 +924,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "34":
-    id: "34"
-    taskid: 02e5207e-895d-4329-8c72-1500c02440eb
+  '34':
+    id: '34'
+    taskid: 5e0e679d-1b8a-4063-8951-9916eb0a1941
     type: playbook
     task:
-      id: 02e5207e-895d-4329-8c72-1500c02440eb
+      id: 5e0e679d-1b8a-4063-8951-9916eb0a1941
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: .
@@ -950,8 +952,11 @@ tasks:
             args:
               dt:
                 value:
-                  simple: .=val.SHA1Fields.map(field => val.File.SHA1.map(sha1 =>
-                    field + " = '" + sha1 + "'").join(' OR '))
+                  simple: '.=function(val){var fields = Array.isArray(val.SHA1Fields)
+                    ? val.SHA1Fields : [val.SHA1Fields]; var sha1s = Array.isArray(val.File.SHA1)
+                    ? val.File.SHA1 : [val.File.SHA1]; return fields.map(field =>
+                    sha1s.map(sha1 => field + " = " + "''" + sha1 + "''").join(''
+                    OR ''))}(val)'
           - operator: join
             args:
               separator:
@@ -983,11 +988,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -999,27 +1004,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "35":
-    id: "35"
-    taskid: 0409316c-3d58-4ed8-888a-c0d4897d59e3
+  '35':
+    id: '35'
+    taskid: cadbf1a2-b1a2-425b-8eba-27d3b1bcef19
     type: playbook
     task:
-      id: 0409316c-3d58-4ed8-888a-c0d4897d59e3
+      id: cadbf1a2-b1a2-425b-8eba-27d3b1bcef19
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: File
@@ -1056,7 +1060,9 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
-              suffix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix:
@@ -1068,11 +1074,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -1084,25 +1090,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "36":
-    id: "36"
-    taskid: 4e6f6884-931b-4d2c-8e31-f88fb78bef8a
+  '36':
+    id: '36'
+    taskid: 144625e6-beca-4702-8e43-6535c0c5b231
     type: regular
     task:
-      id: 4e6f6884-931b-4d2c-8e31-f88fb78bef8a
+      id: 144625e6-beca-4702-8e43-6535c0c5b231
       version: -1
       name: Set MD5Fields to Array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: MD5Fields
       value:
@@ -1125,27 +1131,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "37":
-    id: "37"
-    taskid: 2de486d8-1103-4b8d-81ba-8e75d3d117b2
+  '37':
+    id: '37'
+    taskid: 29758432-dd2d-4d9e-89f7-34b7e8bf96c2
     type: playbook
     task:
-      id: 2de486d8-1103-4b8d-81ba-8e75d3d117b2
+      id: 29758432-dd2d-4d9e-89f7-34b7e8bf96c2
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: .
@@ -1154,8 +1159,10 @@ tasks:
             args:
               dt:
                 value:
-                  simple: .=val.MD5Fields.map(field => val.File.MD5.map(md5 => field
-                    + " = '%" + md5 + "%'").join(' OR '))
+                  simple: '.=function(val){var fields = Array.isArray(val.MD5Fields)
+                    ? val.MD5Fields : [val.MD5Fields]; var md5s = Array.isArray(val.File.MD5)
+                    ? val.File.MD5 : [val.File.MD5]; return fields.map(field => md5s.map(md5
+                    => field + " = " + "''" + md5 + "''").join('' OR ''))}(val)'
           - operator: join
             args:
               separator:
@@ -1187,11 +1194,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -1203,21 +1210,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "38":
-    id: "38"
-    taskid: a42535b0-767e-4c85-86a9-1ccfb2f7d375
+  '38':
+    id: '38'
+    taskid: 90df4eba-f8c3-43c2-80fb-60f263e81598
     type: title
     task:
-      id: a42535b0-767e-4c85-86a9-1ccfb2f7d375
+      id: 90df4eba-f8c3-43c2-80fb-60f263e81598
       version: -1
       name: SHA256 Search
-      description: Header
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "39"
+      - '39'
     separatecontext: false
     view: |-
       {
@@ -1229,26 +1236,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "39":
-    id: "39"
-    taskid: 321b0778-d0ab-43b5-895a-882426eadc97
+  '39':
+    id: '39'
+    taskid: 03655b77-c9c5-4dd4-8b1a-38ad2714627d
     type: condition
     task:
-      id: 321b0778-d0ab-43b5-895a-882426eadc97
+      id: 03655b77-c9c5-4dd4-8b1a-38ad2714627d
       version: -1
       name: Is there an SHA256 to search?
       description: Is there an SHA256 to search?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "25"
-      "yes":
-      - "40"
+      - '25'
+      'yes':
+      - '40'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -1265,29 +1272,27 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "40":
-    id: "40"
-    taskid: fb76e611-6986-4f11-8112-ef180751008e
+  '40':
+    id: '40'
+    taskid: a2b7c643-6128-4bfa-8f01-768f821b20bb
     type: regular
     task:
-      id: fb76e611-6986-4f11-8112-ef180751008e
+      id: a2b7c643-6128-4bfa-8f01-768f821b20bb
       version: -1
       name: Set SHA256 to array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "41"
+      - '41'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
-        complex:
-          root: File
-          accessor: SHA256
+        simple: File.SHA256
       value:
         complex:
           root: inputs.SHA256
@@ -1308,26 +1313,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "41":
-    id: "41"
-    taskid: 55af354d-6bfc-4586-8d08-e58b274c58e1
+  '41':
+    id: '41'
+    taskid: 2f33f05e-e17f-47d5-819f-11777b4f047a
     type: condition
     task:
-      id: 55af354d-6bfc-4586-8d08-e58b274c58e1
+      id: 2f33f05e-e17f-47d5-819f-11777b4f047a
       version: -1
       name: Was there a custom SHA256 field?
       description: Was there a custom SHA256 field?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "47"
-      "yes":
-      - "45"
+      - '47'
+      'yes':
+      - '45'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -1345,25 +1350,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "44":
-    id: "44"
-    taskid: 6a39e778-91c4-4f99-88e0-c7acfe998058
+  '44':
+    id: '44'
+    taskid: 733ce312-eca3-42fc-8afd-977a57091e2d
     type: regular
     task:
-      id: 6a39e778-91c4-4f99-88e0-c7acfe998058
+      id: 733ce312-eca3-42fc-8afd-977a57091e2d
       version: -1
       name: Set SHA1Fields to Array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: SHA1Fields
       value:
@@ -1386,30 +1391,30 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "45":
-    id: "45"
-    taskid: 8daa84d6-5b2c-4feb-8c95-c2242b1fd346
+  '45':
+    id: '45'
+    taskid: 14b7f1ba-d6a5-4e39-839f-b431cf45cd7a
     type: regular
     task:
-      id: 8daa84d6-5b2c-4feb-8c95-c2242b1fd346
+      id: 14b7f1ba-d6a5-4e39-839f-b431cf45cd7a
       version: -1
       name: Set SHA256Fields to Array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "46"
+      - '46'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
-        simple: SHA1Fields
+        simple: SHA256Fields
       value:
         complex:
-          root: inputs.QradarSHA1Field
+          root: inputs.QradarSHA256Field
           transformers:
           - operator: split
             args:
@@ -1427,27 +1432,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "46":
-    id: "46"
-    taskid: 1c2e159b-f690-4112-8cda-21dd2fd5d1ca
+  '46':
+    id: '46'
+    taskid: 46de2815-e3c8-46a2-85b0-46b4c01a01c5
     type: playbook
     task:
-      id: 1c2e159b-f690-4112-8cda-21dd2fd5d1ca
+      id: 46de2815-e3c8-46a2-85b0-46b4c01a01c5
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: .
@@ -1456,8 +1460,11 @@ tasks:
             args:
               dt:
                 value:
-                  simple: .=val.SHA256Fields.map(field => val.File.SHA256.map(sha256
-                    => field + " = '" + sha256 + "'").join(' OR '))
+                  simple: '.=function(val){var fields = Array.isArray(val.SHA256Fields)
+                    ? val.SHA256Fields : [val.SHA256Fields]; var sha256s = Array.isArray(val.File.SHA256)
+                    ? val.File.SHA256 : [val.File.SHA256]; return fields.map(field
+                    => sha256s.map(sha256 => field + " = " + "''" + sha256 + "''").join(''
+                    OR ''))}(val)'
           - operator: join
             args:
               separator:
@@ -1489,11 +1496,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -1505,27 +1512,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "47":
-    id: "47"
-    taskid: 817fcd10-49f9-4a26-8468-e3db855c481a
+  '47':
+    id: '47'
+    taskid: de346763-a988-4f62-874f-de0ed2c75bb5
     type: playbook
     task:
-      id: 817fcd10-49f9-4a26-8468-e3db855c481a
+      id: de346763-a988-4f62-874f-de0ed2c75bb5
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: File
@@ -1562,7 +1568,9 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
-              suffix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix:
@@ -1574,11 +1582,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -1590,51 +1598,50 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "48":
-    id: "48"
-    taskid: c8b665ee-39a2-41a9-8d5f-c295d1047199
+  '48':
+    id: '48'
+    taskid: 3656ecda-2522-45dc-8d6a-c8715441cc00
     type: title
     task:
-      id: c8b665ee-39a2-41a9-8d5f-c295d1047199
+      id: 3656ecda-2522-45dc-8d6a-c8715441cc00
       version: -1
       name: Done
-      description: Header
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": 1990
+          "x": 760,
+          "y": 1980
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "49":
-    id: "49"
-    taskid: 5b325cfe-c600-4fd2-8e76-5d316e00cfdc
+  '49':
+    id: '49'
+    taskid: 25341ed4-3633-4d63-868b-d06816ede475
     type: regular
     task:
-      id: 5b325cfe-c600-4fd2-8e76-5d316e00cfdc
+      id: 25341ed4-3633-4d63-868b-d06816ede475
       version: -1
       name: Set IP to array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "50"
+      - '50'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
-        complex:
-          root: IP
+        simple: IP
       value:
         complex:
           root: inputs.IPAddress
@@ -1655,26 +1662,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "50":
-    id: "50"
-    taskid: 60d6500a-9c15-42f3-89a3-5d33b2cdf71d
+  '50':
+    id: '50'
+    taskid: 585bb637-c271-42d8-81c1-54b431d6e1a8
     type: condition
     task:
-      id: 60d6500a-9c15-42f3-89a3-5d33b2cdf71d
+      id: 585bb637-c271-42d8-81c1-54b431d6e1a8
       version: -1
       name: Was there a custom IP field?
       description: Was there a custom IP field?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "53"
-      "yes":
-      - "51"
+      - '53'
+      'yes':
+      - '51'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -1692,25 +1699,25 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "51":
-    id: "51"
-    taskid: e9d044c4-c658-4c63-89ed-d6ed4b8c75c7
+  '51':
+    id: '51'
+    taskid: 91bd5926-698a-45c7-8337-e908f4d8040a
     type: regular
     task:
-      id: e9d044c4-c658-4c63-89ed-d6ed4b8c75c7
+      id: 91bd5926-698a-45c7-8337-e908f4d8040a
       version: -1
-      name: Set SHA256Fields to Array
+      name: Set IPFields to Array
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "52"
+      - '52'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: IPFields
       value:
@@ -1726,34 +1733,33 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1570,
+          "x": 1590,
           "y": 1270
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "52":
-    id: "52"
-    taskid: b00d5cbf-d2d2-46d4-82cb-32de1ca92d19
+  '52':
+    id: '52'
+    taskid: 3d44e29a-37ca-4526-8c85-d4669eb44077
     type: playbook
     task:
-      id: b00d5cbf-d2d2-46d4-82cb-32de1ca92d19
+      id: 3d44e29a-37ca-4526-8c85-d4669eb44077
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "48"
+      - '48'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: .
@@ -1762,8 +1768,10 @@ tasks:
             args:
               dt:
                 value:
-                  simple: .=val.SHA256Fields.map(field => val.File.SHA256.map(sha256
-                    => field + " = '" + sha256 + "'").join(' OR '))
+                  simple: '.=function(val){var fields = Array.isArray(val.IPFields)
+                    ? val.IPFields : [val.IPFields]; var ips = Array.isArray(val.IP)
+                    ? val.IP : [val.IP]; return fields.map(field => ips.map(ip =>
+                    field + " = " + "''" + ip + "''").join('' OR ''))}(val)'
           - operator: join
             args:
               separator:
@@ -1795,43 +1803,42 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
         "position": {
-          "x": 1570,
-          "y": 1575
+          "x": 1590,
+          "y": 1650
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "53":
-    id: "53"
-    taskid: a8a7771d-49e5-4e5a-8a03-9a4454e532e6
+  '53':
+    id: '53'
+    taskid: aa6d8cc3-31b2-4938-850a-0e395c648b5f
     type: playbook
     task:
-      id: a8a7771d-49e5-4e5a-8a03-9a4454e532e6
+      id: aa6d8cc3-31b2-4938-850a-0e395c648b5f
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "48"
+      - '48'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: File
@@ -1868,7 +1875,9 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
-              suffix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix:
@@ -1880,58 +1889,51 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
         "position": {
           "x": 1060,
-          "y": 1575
+          "y": 1650
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "54":
-    id: "54"
-    taskid: 4500bdc0-991c-4acf-8032-1cfc8c8ae36b
+  '55':
+    id: '55'
+    taskid: b2934eaf-1e94-434d-88f4-b3ec9b4fb726
     type: condition
     task:
-      id: 4500bdc0-991c-4acf-8032-1cfc8c8ae36b
+      id: b2934eaf-1e94-434d-88f4-b3ec9b4fb726
       version: -1
       name: Is Qradar enabled?
       description: Is Qradar enabled?
       type: condition
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "48"
-      "yes":
-      - "5"
-      - "6"
-      - "2"
+      brand: ''
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
             value:
-              simple: "1"
+              simple: '1'
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: '1'
     view: |-
       {
         "position": {
-          "x": 780,
-          "y": -60
+          "x": 1670,
+          "y": -385
         }
       }
     note: false
@@ -1942,10 +1944,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2325,
-        "width": 5880,
+        "height": 2450,
+        "width": 6140,
         "x": -2620,
-        "y": -260
+        "y": -385
       }
     }
   }
@@ -1983,7 +1985,8 @@ inputs:
   description: |
     Source or destination IP to search. Can be a single address or an array of addresses.
 - key: QradarIPfield
-  value: {}
+  value:
+    simple: sourceip,destinationip
   required: false
   description: IP field to search in QRadar. If non are specified the search will
     use sourceip or destinationip (combined).
@@ -2014,6 +2017,5 @@ inputs:
     START '2019-09-25 15:51' STOP '2019-09-25 17:51'
     For more examples review IBM's AQL documentation.
 outputs: []
-
 tests:
 - QRadar Indicator Hunting Test
