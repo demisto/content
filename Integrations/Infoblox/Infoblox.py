@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 ''' IMPORTS '''
 from typing import Dict, Tuple
 import urllib3
@@ -399,7 +398,8 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
 
     if new_next_page_id:
         return_outputs('New next page ID was added to context', {
-            f'{INTEGRATION_CONTEXT_NAME}.ListResponsePolicyZoneRules.Pages(val.NextPageID && val.NextPageID === obj.NextPageID)': {
+            f'{INTEGRATION_CONTEXT_NAME}.ListResponsePolicyZoneRules.Pages(val.NextPageID && val.NextPageID === '
+            f'obj.NextPageID)': {
                 'NextPageID': new_next_page_id}}, {'NextPageID': new_next_page_id})
 
     rules_list = raw_response.get('result')
