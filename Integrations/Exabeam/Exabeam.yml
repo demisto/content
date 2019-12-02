@@ -397,35 +397,35 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Watchlist ID.
+      description: The watchlist ID.
       isArray: false
       name: watchlist_id
       required: true
       secret: false
     deprecated: false
-    description: Delete a watchlist.
+    description: Deletes a watchlist.
     execution: false
     name: exabeam-delete-watchlist
   - arguments:
     - default: false
-      description: Asset name.
+      description: The name of the asset.
       isArray: false
       name: asset_name
       required: true
       secret: false
     deprecated: false
-    description: Get asset data.
+    description: Returns asset data.
     execution: false
     name: exabeam-get-asset-data
     outputs:
     - contextPath: Exabeam.Asset.HostName
-      description: Asset hostname.
+      description: The host name of the asset.
       type: String
     - contextPath: Exabeam.Asset.IPAddress
-      description: Asset IP address.
+      description: The IP address of the asset.
       type: String
     - contextPath: Exabeam.Asset.AssetType
-      description: Asset type.
+      description: Thr type of the asset.
       type: String
     - contextPath: Exabeam.Asset.FirstSeen
       description: The date the asset was first seen.
