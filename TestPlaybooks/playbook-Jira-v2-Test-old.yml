@@ -2,7 +2,7 @@ id: Jira-v2-Test
 version: -1
 name: Jira-v2-Test
 starttaskid: "0"
-fromversion: 5.0.0
+toversion: 4.5.9
 tasks:
   "0":
     id: "0"
@@ -605,42 +605,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "26":
-    id: "26"
-    taskid: 6dfdac4d-b9f0-4bf7-855f-9de512952a96
-    type: condition
-    task:
-      id: 6dfdac4d-b9f0-4bf7-855f-9de512952a96
-      version: -1
-      name: check attachment name
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "22"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Ticket.attachment}
-            iscontext: true
-          right:
-            value:
-              simple: testfile.txt
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2645
         }
       }
     note: false
