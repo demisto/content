@@ -61,7 +61,7 @@ def tokenize_text(text):
     doc = nlp(unicode(unicode_text))
     original_text_indices_to_words = map_indices_to_words(unicode_text)
     tokens_list = []
-    original_words_to_tokens = {} # type: ignore
+    original_words_to_tokens = {}  # type: ignore
     for word in doc:
         if word.is_space:
             continue
