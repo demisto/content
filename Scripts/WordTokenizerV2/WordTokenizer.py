@@ -105,7 +105,7 @@ def tokenize_text(text):
 def map_indices_to_words(unicode_text):
     original_text_indices_to_words = {}
     for word in set(unicode_text.split()):
-        for word_occurrence in re.finditer(r'{}'.format(word), unicode_text):
+        for word_occurrence in re.finditer(re.escape(word), unicode_text):
             for i in range(len(word)):
                 original_text_indices_to_words[word_occurrence.start() + i] = word
     return original_text_indices_to_words
