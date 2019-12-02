@@ -21,9 +21,26 @@ from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_versio
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
+''' CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
                          BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, SCRIPT_YML_REGEX,
-                         INTEGRATION_YML_REGEX]
+                         INTEGRATION_YML_REGEX] '''
+
+CHECKED_TYPES_REGEXES = [
+    # Integrations
+    INTEGRATION_REGEX,
+    INTEGRATION_YML_REGEX,
+    BETA_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_YML_REGEX,
+    # Scripts
+    SCRIPT_REGEX,
+    SCRIPT_YML_REGEX,
+    PACKS_SCRIPT_YML_REGEX,
+    # Playbooks
+    PLAYBOOK_REGEX,
+    BETA_PLAYBOOK_REGEX,
+    PACKS_PLAYBOOK_YML_REGEX
+]
 
 # File names
 ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
