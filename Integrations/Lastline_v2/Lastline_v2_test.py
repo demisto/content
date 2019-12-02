@@ -33,3 +33,18 @@ def test_exception_helper():
             f'{INTEGRATION_NAME} Test.exception_helper() failed'
     else:
         assert False, f'{INTEGRATION_NAME} Test.exception_helper() failed'
+
+
+def test_help_upload_and_status():
+    help_upload_and_status(dict(), help_context_entry(f'{INTEGRATION_COMMAND_NAME}-check-status'))
+
+
+def test_help_context_entry():
+    assert help_context_entry('----') is None, f'{INTEGRATION_NAME} Test.help_hash_type_checker(\'----\') isn\'t None'
+    assert help_context_entry('') is None, f'{INTEGRATION_NAME} Test.help_hash_type_checker(\'\') isn\'t None'
+    assert help_context_entry(f'{INTEGRATION_COMMAND_NAME}-check-status') is not None,\
+        f'{INTEGRATION_NAME} Test.help_hash_type_checker(\'{INTEGRATION_COMMAND_NAME}-check-status\') is None'
+
+
+def test_help_get_report_context():
+    help_get_report_context(dict())
