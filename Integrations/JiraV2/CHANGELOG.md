@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+- API token parameter is now encrypted.
+- Improved authentication methods support - Basic, OAuth 1.0 (only from 5.0) 
 
 ## [19.11.1] - 2019-11-26
 Added the _attachmentName_ parameter to the ___jira-issue-upload-file___ command, which sets the attachment name in Jira.
