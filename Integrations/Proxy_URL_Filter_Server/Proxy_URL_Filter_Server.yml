@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Proxy URL Filter Server
 display: Proxy URL Filter Server
-fromVersion: 5.0.0
+fromversion: 5.0.0
 category: Network Security
 description: Serves a URL filtering list to be fetched by proxies
 configuration:
