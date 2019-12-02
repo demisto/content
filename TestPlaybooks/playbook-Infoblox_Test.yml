@@ -1,5 +1,5 @@
 id: Infoblox Test
-version: 35
+version: -1
 name: Infoblox Test
 starttaskid: "0"
 tasks:
@@ -371,6 +371,7 @@ tasks:
       - "13"
       - "14"
       - "18"
+      - "17"
     scriptarguments:
       reference_id:
         simple: ${Infoblox.RulesSearchResults.ReferenceID}
@@ -609,10 +610,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 57c1ba9f-a892-42a6-82bc-10e6c0eb4b67
+    taskid: 93163840-c12a-47f5-89cf-7333a25651b0
     type: regular
     task:
-      id: 57c1ba9f-a892-42a6-82bc-10e6c0eb4b67
+      id: 93163840-c12a-47f5-89cf-7333a25651b0
       version: -1
       name: infoblox-create-ptr-substitute-record-rule
       description: Create 'Substitute (PTR Record) Rule'.
@@ -629,8 +630,7 @@ tasks:
       ipv4addr:
         simple: 0.0.0.0
       ipv6addr: {}
-      name:
-        simple: nightly-test-ptr-sub.infoblow.com
+      name: {}
       ptrdname:
         simple: infoblow.com
       rp_zone:
@@ -640,7 +640,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 1625
+          "y": 1615
         }
       }
     note: false
@@ -846,10 +846,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 3850658d-b2ab-47dd-88a0-ed5f946f7e7e
+    taskid: cfcc6bd9-dfc0-4664-83df-92e39488e04e
     type: regular
     task:
-      id: 3850658d-b2ab-47dd-88a0-ed5f946f7e7e
+      id: cfcc6bd9-dfc0-4664-83df-92e39488e04e
       version: -1
       name: infoblox-delete-rpz-rule
       description: Delete a rule
@@ -859,7 +859,7 @@ tasks:
       brand: Infoblox
     scriptarguments:
       reference_id:
-        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === 'nightly-test-ptr-sub.infoblow.com').ReferenceID}
+        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === '0.0.0.0.in-addr.arpa.infoblow.com').ReferenceID}
     separatecontext: false
     view: |-
       {
@@ -981,10 +981,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: 729afb95-10dc-4be4-8731-8ed3e71da038
+    taskid: a906d8c4-10fb-4b49-84b6-5ac6378a2186
     type: regular
     task:
-      id: 729afb95-10dc-4be4-8731-8ed3e71da038
+      id: a906d8c4-10fb-4b49-84b6-5ac6378a2186
       version: -1
       name: infoblox-delete-rpz-rule
       description: Delete a rule
@@ -994,7 +994,7 @@ tasks:
       brand: Infoblox
     scriptarguments:
       reference_id:
-        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === '4.4.4.4.infoblow.com').ReferenceID}
+        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === '::1.infoblow.com').ReferenceID}
     separatecontext: false
     view: |-
       {
