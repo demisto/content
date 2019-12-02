@@ -3,31 +3,26 @@ commonfields:
   version: 2
 name: ContextToYML
 script: |
-  import yaml
 
   """
   This script parse a Context output into yml formatted file with the context path of each field.
   For example:
   {
       "id":12131,
-      "description":"desc",
-      "summary":"do-not-delete",
-      "created":"2019-03-25T16:13:13.188+0200",
+      ....
       "issuetype":{
           "id":10004,
           "name":"Bug"
       },
       "project":{
           "id":10001,
-          "key":"SOC",
-          "projectTypeKey":"software"
+          ...
       },
       "status":{
           "id":10003,
               "StatusCategory":{
                   "key":"new",
-                  "colorName":"blue-gray",
-                  "name":"To Do"
+                  ....
           }
       }
   }
@@ -75,9 +70,10 @@ script: |
     description: ''
     type: String
   """
-
-  VERBOSE = demisto.getArg('verbose') == 'true'
-  CAMELIZE = demisto.args().get('camelize', 'false') == 'true'
+  import yaml
+  dArgs = demisto.args()
+  VERBOSE = dArgs.get('verbose') == 'true'
+  CAMELIZE = dArgs.get('camelize', 'false') == 'true'
 
 
   def flatten_json(nested_json):
@@ -134,10 +130,10 @@ script: |
 
 
   def main():
-      command_name = demisto.args().get("command_name", '')
-      base_path = demisto.args().get("base_path", '')
-      entry_id = demisto.getArg("json_file_entry_id")
-      json_file_as_text = demisto.getArg("json_file_as_text")
+      command_name = dArgs.get("command_name", '')
+      base_path = dArgs.get("base_path", '')
+      entry_id = dArgs.get("json_file_entry_id")
+      json_file_as_text = dArgs.get("json_file_as_text")
 
       yaml_output = ''
       if json_file_as_text:
@@ -174,6 +170,7 @@ enabled: true
 args:
 - name: command_name
   description: Command name.
+  required: true
 - name: base_path
   description: Base path for context outputs.
 - name: json_file_entry_id
@@ -198,5 +195,5 @@ args:
   defaultValue: "false"
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.7.3.221
+dockerimage: demisto/python3:3.7.4.1150
 runas: DBotWeakRole
