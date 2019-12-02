@@ -1,0 +1,130 @@
+id: Splunk Indicator Hunting Test
+version: -1
+name: Splunk Indicator Hunting Test
+fromversion: 4.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fbdee7b8-76eb-4c1b-8a52-34227516bc62
+    type: start
+    task:
+      id: fbdee7b8-76eb-4c1b-8a52-34227516bc62
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: c3342bc1-af72-4734-886e-546692376d73
+    type: playbook
+    task:
+      id: c3342bc1-af72-4734-886e-546692376d73
+      version: -1
+      name: Splunk Indicator Hunting
+      playbookName: Splunk Indicator Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      IPAddress:
+        simple: 1.1.1.1
+      MD5:
+        simple: xxxxxx8920ba0ddebaf5ea68ff97a93c
+      SHA1:
+        simple: xxxxxx8920ba0ddebaf5ea68ff97a93c,xxxxxx8920ba0ddebaf5ea234987592834759834275
+      SHA256:
+        simple: xxxxxx8920ba0ddebaf5ea68ff97a93c
+      SelectFields:
+        simple: '*'
+      SplunkIPField:
+        simple: ip
+      SplunkMD5Field:
+        simple: Caller_MD5
+      SplunkSHA1Field:
+        simple: Caller_MD5,file_hash
+      SplunkSHA256Field:
+        simple: Caller_MD5,file_hash
+      TimeFrame:
+        simple: daysago=1
+      URLDomain:
+        simple: goo,wall
+      URLDomainField:
+        simple: url,other_url
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: c4ed11c5-ff85-4e72-80db-2f85581a67f6
+    type: regular
+    task:
+      id: c4ed11c5-ff85-4e72-80db-2f85581a67f6
+      version: -1
+      name: Delect Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 405,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
