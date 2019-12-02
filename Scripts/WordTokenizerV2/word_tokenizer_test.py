@@ -42,7 +42,7 @@ def test_word_tokenize():
 
 
 def test_word_tokenize_words_to_tokens():
-    words = ["let\'s", "gonna", "ain't", "we'll", "shouldn't"]
+    words = ["let\'s", "gonna", "ain't", "we'll", "shouldn't", "will\\won't"]
     words_to_tokens = {w: tokenize_text(w)[0].split() for w in words}
     tokenized_text, _, original_words_to_tokens, _ = tokenize_text(' '.join(words_to_tokens))
     for w, tokens_list in words_to_tokens.items():
