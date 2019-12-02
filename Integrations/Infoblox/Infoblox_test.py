@@ -10,6 +10,7 @@ POST_ZONE_RESPONSE = {
         "fqdn": "test.com",
         "rpz_policy": "GIVEN",
         "rpz_severity": "WARNING",
+        "rpz_type": "LOCAL",
         "view": "default"
     }
 }
@@ -21,9 +22,10 @@ GET_USER_LIST = {
     ]
 }
 
-REQUEST_PARAM_ZONE = '?_return_fields%2B=fqdn,rpz_policy,rpz_severity,substitute_name,disable&_return_as_object=1'
+REQUEST_PARAM_ZONE = '?_return_as_object=1&_return_fields%2B=fqdn%2Crpz_policy%2Crpz_severity%2Crpz_type%2C' \
+                     'substitute_name%2Ccomment%2Cdisable'
 
-client = Client('https://example.com/v1/')
+client = Client('https://example.com/v1/', params={'_return_as_object': '1'})
 
 
 class TestZonesOperations:
@@ -33,7 +35,6 @@ class TestZonesOperations:
     def test_create_response_policy_zone_command(self, mocker, requests_mock):
         from Infoblox import create_response_policy_zone_command
         mocker.patch.object(demisto, 'params', return_value={})
-        # list
         requests_mock.post(
             f'{BASE_URL}zone_rp{REQUEST_PARAM_ZONE}',
             json=POST_ZONE_RESPONSE)
@@ -45,7 +46,7 @@ class TestZonesOperations:
                                  "|Disable|FQDN|Reference ID|Rpz Policy|Rpz Severity|Rpz Type|View|\n" \
                                  "|---|---|---|---|---|---|---|\n" \
                                  "| false | test.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default " \
-                                 "| GIVEN | WARNING | LOCAL | default |"
+                                 "| GIVEN | WARNING | LOCAL | default |\n"
         assert context == {
             'Infoblox.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)': {
                 'ReferenceID': 'zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default',
