@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Added support for get, create and edit a custom URL categories objects in PAN-OS 9.x versions, including using categories.
+  - Added support for get, create and edit custom URL categories objects, including using categories in PAN-OS v9.x and above.
 
 
 ## [19.11.1] - 2019-11-26
