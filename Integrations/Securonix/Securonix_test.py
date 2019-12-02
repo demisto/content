@@ -24,11 +24,11 @@ def test_parse_data_arr():
     parsed_readable, parsed_outputs = parse_data_arr(outputs)
 
     expected_readable = {
-        'Employeeid': '123',
+        'EmployeeID': '123',
         'Employeetype': 'user'
     }
     expected_outputs = {
-        'Employeeid': '123',
+        'EmployeeID': '123',
         'Employeetype': 'user'
     }
     assert parsed_readable == expected_readable
@@ -63,5 +63,4 @@ def test_commands(command, args, response, expected_result, mocker):
     client = Client('tenant', 'server_url', 'username', 'password', 'verify', 'proxies')
     mocker.patch.object(client, 'http_request', return_value=response)
     result = command(client, args)
-    # print(result[1])
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
