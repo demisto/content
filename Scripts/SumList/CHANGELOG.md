@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.1] - 2019-11-26
 - Fixed an issue with handling input as comma separated string.
 - Added support to floating numbers.
 
