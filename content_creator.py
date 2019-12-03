@@ -1,5 +1,6 @@
 
 import os
+import re
 import sys
 import json
 import glob
@@ -11,7 +12,7 @@ import yaml
 from Tests.scripts.constants import INTEGRATIONS_DIR, MISC_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, \
     WIDGETS_DIR, SCRIPTS_DIR, INCIDENT_FIELDS_DIR, CLASSIFIERS_DIR, LAYOUTS_DIR, CONNECTIONS_DIR, \
     BETA_INTEGRATIONS_DIR, INDICATOR_FIELDS_DIR, INCIDENT_TYPES_DIR, TEST_PLAYBOOKS_DIR
-from Tests.test_utils import print_error
+from Tests.test_utils import print_error, print_warning
 from package_creator import DIR_TO_PREFIX, merge_script_package_to_yml, write_yaml_with_docker
 
 
@@ -148,22 +149,24 @@ def copy_test_files(bundle_test):
             shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
-def update_content_version(key, new_value):
-    f = open('./Scripts/CommonServerPython/CommonServerPython.py', 'r')
-    lines = f.readlines()
-    f.close()
-    for i, line in enumerate(lines):
-        if line.split('=')[0].strip(' \n') == key:
-            lines[i] = f'{key} = "{new_value}"\n'
-    f = open('./Scripts/CommonServerPython/CommonServerPython.py', "w")
-    f.write(''.join(lines))
-    f.close()
+def update_content_version(content_ver: str):
+    path = './Scripts/CommonServerPython/CommonServerPython.py'
+    regex = r'CONTENT_RELEASE_VERSION = .*'
+    try:
+        with open(path) as f:
+            content = f.read()
+            content = re.sub(regex, f"CONTENT_RELEASE_VERSION = '{content_ver}'", content, re.M)
+        with open(path, 'w+') as f:
+            f.write(content)
+    except Exception as ex:
+        print_warning(f'Could not open CommonServerPython File - {ex}')
 
 
 def main(circle_artifacts, content_version):
 
     # update content_version in commonServerPython
-    update_content_version('CONTENT_RELEASE_VERSION', content_version)
+    update_content_version(content_version)
+    print(content_version)
     print('Starting to create content artifact...')
     print('creating dir for bundles...')
     for bundle_dir in [BUNDLE_POST, BUNDLE_TEST]:
@@ -206,7 +209,6 @@ def main(circle_artifacts, content_version):
 
     shutil.copyfile('release-notes.md', os.path.join(circle_artifacts, 'release-notes.md'))
     print(f'finished create content artifact at {circle_artifacts}')
-    print(content_version)
 
 
 if __name__ == '__main__':
