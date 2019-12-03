@@ -201,7 +201,7 @@ class Client(BaseClient):
         """
 
         suffix = ref_id
-        return self._http_request('POST', suffix)
+        return self._http_request('DELETE', suffix)
 
     def create_rpz_rule(self, rule_type: Optional[str], object_type: Optional[str], name: Optional[str],
                         rp_zone: Optional[str], substitute_name: Optional[str],
