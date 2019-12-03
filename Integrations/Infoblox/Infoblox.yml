@@ -1,41 +1,42 @@
+category: Network Security
 commonfields:
   id: Infoblox
   version: -1
-name: Infoblox
-display: Infoblox
-category: Network Security
-image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAACYVBMVEVHcEwAT4UAT4UAT4YAf/8A//8AT4UAf78AT4UAT4UAT4UAUYcAT4YAT4YAT48AXIsAT4UAT4UAUIUAUIUAT4UAT4UAVaoAW5EAUIYAWYwAT4UAT4UAT4UAUIgAT4YAUoUAUIYAUIUAT4YAVY0AUIUAT4UAUIUAUocAUYUAT4UAT4UAT4UAUIYAT4UAUIUAT4cAUYUAUIUAUIYAUocAT4UAUIUAT4YAUY4AUIUAUIYAT4UAVYgAT4UAT4UAT4YAVYUAT4UAT4UAT4YAT4cAT4UAT4UAUYYAZpkAWIUAT4UAT4gAbZEAT4UAUIYAT4UAUIUAT4cAUYgAT4UAZpkAT4UAT4UAT4UAVaoAUIUAT4UAWIkAT4UAU4kAUIUAUIUAU4gAT4UAT4UAT4UAVYgAUIUAT4YAVYkAUYUAT4UAU4cAUIYAUIUAT4gAUIYAVYsAT4YAUocAUYUAUIYAUYgAT4UAT4UAT4UAT4UAUYUAU4UAUYgAT4UAVY0AUIUAUIUAT4UAT4cAT4oAVY0AUYcAUIcAUIUAUIYAUIcAUYcAUIUAT4UAT4UAUIUAT4UAX58AT4UAUIUAUIYAT4UAUIYAUIgAT4UAT4UAUIUAT4UAUIUAT4YAT4UAUIYAT4YAUYkAT4UAUYYAUIUAT4UAT4YAT4YAT4YAT4cAUokAT4UAT4YAUIUAT4UAT4YAUIUAT4UAUIoAT4YAT4UAT4UAT4UAT4UAUIUAT4UAT4YAT4UAUYYAT4YAUYUAT4UAT4YAT4UAUoUAT4UAT4UAUIYAT4YAUIcAYokAT4UAT4UA65kA0ZYAu5PCXoiOAAAAx3RSTlMA+nO6AgG5BP799i9wShAL9/uVzNrxAw6JFLv08EmWKLyPmhI/x88+ccjz4WjtmU1F76VEoFbXGdKMrh71+K0qoZODIMuzSAoXni0H4HnjfnccQwXDjT0Gi/wa5zSCaSvBsWMPb9EnLMoxe3hHOSG+Ilh/S1BnzvJULjimCayy6UAwG1VPta91UVLNgJvZCNBcRuVsPIbb37BllNjCfTLsbrjukKejYCVtqb/5aqiXI9W0tnad4utdt2HEa1ro5EHWpBOBYg3JeEoS2QAAA5lJREFUGBmtwQN7Y0sABuAvbZKT1Ha3tt2ubdu2vXu517Zt27a+TH/VbXgmaTIz53nyvtDaV1+JdDrxHVvzkD43D5BsyUe6bKxmUP0qJNM2Y/Pxud9bMHd5DsNmlmGa/E8ZsvgumHqikFHzPUhgVTGipBxmun20LUCCw4zZAiPtjPMs4r3MmGvbYGA9E6yD7CwlN0FvPac5CckDlLRBK4dJPAxbDiXvQ+c9H5OZQMwW2lZDJ7eQyQ1vQsR+2j6ARnYnU6nKQ8gdtA1Co6mLqXX1AXBf72GUa6EbGmuotCvTu4tRBcOfQ+sATQ2cqoSBF2go6xiMtNNQA8zkH6GZ0zBU/mLFYEcBtbbCiVtrM6lxEA6NVFOpHk6d9lPpbjjVSKWCvXBoHzUyFyG1vuFzM3Yi3rfUqL5/E5Jzv8spz+chjpdao7VIag9D3kAcLw14szHd7h0MGfVAVkITvj/PI4H1OCNyITlPQ67eDYjTzqirFmy9NDZnwRhsy0sZsw4xzX46kDVRiahHaPNleBD2+wDJSSGZpNK1v8sRstJP2StDFoDsXh+niIBEUOM/hNzLBDWtD/UwTAQkghr/IGgrFURAIqg2WoagzVQQAYmg2nUELaWKCEgEla56EFRMFRGQCCpdQtBlKomARFClA0GecSqJgERQZSOCLlBNBCSCCucQZJVQTQQkggpnEHSFGiIgEQx76nhrDRPch5BiaoiARHCKv6gOgNW/n7LCOoT8e7GUSpNCMkmy5xmEeTJ8tBUh6q+K2XTA34yYPYx5qxK25Q0FNFYEmzXOqJ8RZ2eRi2Z8syDpY8RiNxIsmu+niSOQuR9liCsb0638iga+RJwMhpxCUv1fUGsJ4jSt5ZRGpGBldFKjBPHOznjzmyGkNusHahyFQ1eyqPQZnHqQSv4n4VQVlTovwKGD1Mi89BicaKZWVsstFd35MLSUZoqXwcxLNJQBI699TENzYWDs4mya+hBadYOFjFp9YMlaKuVAw5rYwagb93gA1HYxtefKoeaeyRjfGYTkeZlK6TxofE2bFxHWCibn6oeG+zfatiOmgsn4foHOPEqehu1VJrEXWkOU5EKyhtPkQO9OSjZAdpIJDsOAVcOYccRbSJnvExjZzphuJGigzf8jzBz6gxG3u5HAs4JRrhGYGmthkK9xFaYpu41hWbkwVzbyTsdHb59AMtsyGVTahnRZ9hPJ13cjfQ4V89djSKcm71Ho/A9KDXs8/9v7cAAAAABJRU5ErkJggg==
-description: Integration Template
 configuration:
-- display: Server URL (e.g. https://example.net)
+- defaultvalue: https://example.net
+  display: Server URL (e.g. https://example.net)
   name: url
-  defaultvalue: https://example.net
-  type: 0
   required: true
+  type: 0
 - display: User Name
   name: credentials
-  defaultvalue: ""
+  required: false
   type: 9
-  required: false
-- display: Trust any certificate (not secure)
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: Integration Template
+display: Infoblox
+name: Infoblox
 script:
-  script: '-'
-  type: python
   commands:
-  - name: infoblox-get-ip
-    arguments:
-    - name: ip
-      required: true
+  - arguments:
+    - default: false
       description: Ip to retrieve the info on.
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Get IP info
+    execution: false
+    name: infoblox-get-ip
     outputs:
     - contextPath: Infoblox.IP.ReferenceID
       description: Object Reference ID
@@ -73,29 +74,53 @@ script:
     - contextPath: Infoblox.IP.Usage
       description: '-'
       type: string
-    description: Get IP info
-  - name: infoblox-search-related-objects-by-ip
-    arguments:
-    - name: ip
-      required: true
+  - arguments:
+    - default: false
       description: The IP to search by.
-    - name: max_results
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    - default: false
       description: Maximum results to return.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    deprecated: false
+    description: Serach IP related objects by a given IP.
+    execution: false
+    name: infoblox-search-related-objects-by-ip
     outputs:
     - contextPath: Infoblox.IPRelatedObjects.ReferenceID
       description: Related object reference ID
       type: Unknown
-    description: Serach IP related objects by a given IP.
-  - name: infoblox-list-response-policy-zone-rules
-    arguments:
-    - name: response_policy_zone_name
+  - arguments:
+    - default: false
       description: Respone policy zone name to list the rules (FQDN).
-    - name: page_size
+      isArray: false
+      name: response_policy_zone_name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
       description: Number of results in each page.
-      defaultValue: "50"
-    - name: next_page_id
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
       description: For browse through result pages, use the next page ID that was
         returned from last from this command.
+      isArray: false
+      name: next_page_id
+      required: false
+      secret: false
+    deprecated: false
+    description: List all response policy rules that belongs to the given response
+      policy zone.
+    execution: false
+    name: infoblox-list-response-policy-zone-rules
     outputs:
     - contextPath: Infoblox.ListResponsePolicyZoneRules.List.Name
       description: Rule name.
@@ -119,12 +144,17 @@ script:
       description: Use this to retrieve the next page in your search. The last NextpageID
         corresponds to the last search performed.
       type: string
-    description: List all response policy rules that belongs to the given response
-      policy zone.
-  - name: infoblox-list-response-policy-zones
-    arguments:
-    - name: max_results
+  - arguments:
+    - default: false
       description: Maximum results to return.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    deprecated: false
+    description: List all response policy zones
+    execution: false
+    name: infoblox-list-response-policy-zones
     outputs:
     - contextPath: Infoblox.ResponsePolicyZones.Disable
       description: Is this zone disabled or not.
@@ -147,15 +177,18 @@ script:
     - contextPath: Infoblox.ResponsePolicyZones.View
       description: View definition.
       type: string
-    description: List all response policy zones
-  - name: infoblox-create-response-policy-zone
-    arguments:
-    - name: FQDN
-      required: true
+  - arguments:
+    - default: false
       description: The name of this DNS zone in FQDN format.
-    - name: rpz_policy
+      isArray: false
+      name: FQDN
       required: true
-      auto: PREDEFINED
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The response policy zone override policy.
+      isArray: false
+      name: rpz_policy
       predefined:
       - DISABLED
       - GIVEN
@@ -163,28 +196,44 @@ script:
       - NXDOMAIN
       - PASSTHRU
       - SUBSTITUTE
-      description: The response policy zone override policy.
-    - name: rpz_severity
       required: true
-      auto: PREDEFINED
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: MAJOR
+      description: The severity of this response policy zone.
+      isArray: false
+      name: rpz_severity
       predefined:
       - CRITICAL
       - MAJOR
       - WARNING
       - INFORMATIONAL
-      description: The severity of this response policy zone.
-      defaultValue: MAJOR
-    - name: substitute_name
+      required: true
+      secret: false
+    - default: false
       description: The canonical name of redirect target in substitute policy of response
         policy zone.
-    - name: rpz_type
-      auto: PREDEFINED
+      isArray: false
+      name: substitute_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: LOCAL
+      description: The type of rpz zone.
+      isArray: false
+      name: rpz_type
       predefined:
       - FEED
       - FIREEYE
       - LOCAL
-      description: The type of rpz zone.
-      defaultValue: LOCAL
+      required: false
+      secret: false
+    deprecated: false
+    description: Create response policy zone.
+    execution: false
+    name: infoblox-create-response-policy-zone
     outputs:
     - contextPath: Infoblox.ResponsePolicyZones.Disable
       description: Is this zone disabled or not.
@@ -207,106 +256,109 @@ script:
     - contextPath: Infoblox.ResponsePolicyZones.View
       description: View definition.
       type: string
-    description: Create response policy zone.
-  - name: infoblox-create-rpz-rule
-    arguments:
-    - name: rule_type
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Type of rule to create.
+      isArray: false
+      name: rule_type
       predefined:
       - Passthru
       - Block (No such domain)
       - Block (No data)
       - Substitute (domain name)
-      description: Type of rule to create.
-    - name: object_type
       required: true
-      auto: PREDEFINED
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of object to assign the rule on.
+      isArray: false
+      name: object_type
       predefined:
       - Domain Name
       - IP address
       - Client IP address
-      description: Type of object to assign the rule on.
-    - name: name
       required: true
+      secret: false
+    - default: false
       description: Rule name in a FQDN format.
-    - name: rp_zone
+      isArray: false
+      name: name
       required: true
+      secret: false
+    - default: false
       description: The zone to assign the rule.
-    - name: comment
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
       description: Add a comment for this rule.
-    - name: substitute_name
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
       description: The substitute name to assign (In case of substitute domain only)
-    outputs:
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
-      description: Rule name.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
-      description: Is this rule disabled or not.
-      type: boolean
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
-      description: Comment for this rule.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
-      description: Object type as used in Infoblox.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
-      description: View definition.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
-      description: The zone to which this rule belongs to.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
-      description: Rule reference ID.
-      type: string
+      isArray: false
+      name: substitute_name
+      required: false
+      secret: false
+    deprecated: false
     description: Create response policy rule
-  - name: infoblox-create-a-substitute-record-rule
-    arguments:
-    - name: name
-      required: true
+    execution: false
+    name: infoblox-create-rpz-rule
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
+      type: string
+  - arguments:
+    - default: false
       description: The name for a record in FQDN format.
-    - name: rp_zone
+      isArray: false
+      name: name
       required: true
+      secret: false
+    - default: false
       description: The zone to assign the rule.
-    - name: comment
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
       description: Add a comment for this rule.
-    - name: ipv4addr
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
       description: The IPv4 address of the substitute rule.
-    outputs:
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
-      description: Rule name.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
-      description: Is this rule disabled or not.
-      type: boolean
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
-      description: Comment for this rule.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
-      description: Object type as used in Infoblox.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
-      description: View definition.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
-      description: The zone to which this rule belongs to.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
-      description: Rule reference ID.
-      type: string
+      isArray: false
+      name: ipv4addr
+      required: false
+      secret: false
+    deprecated: false
     description: Create 'Substitute (A Record) Rule'.
-  - name: infoblox-create-aaaa-substitute-record-rule
-    arguments:
-    - name: name
-      required: true
-      description: The name for a record in FQDN format.
-    - name: rp_zone
-      required: true
-      description: The zone to assign the rule.
-    - name: comment
-      description: Add a comment for this rule.
-    - name: ipv6addr
-      description: The IPv6 address of the substitute rule.
+    execution: false
+    name: infoblox-create-a-substitute-record-rule
     outputs:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
       description: Rule name.
@@ -329,24 +381,93 @@ script:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
       description: Rule reference ID.
       type: string
-    description: Create 'Substitute (AAAA Record) Rule'.
-  - name: infoblox-create-mx-substitute-record-rule
-    arguments:
-    - name: name
-      required: true
+  - arguments:
+    - default: false
       description: The name for a record in FQDN format.
-    - name: rp_zone
+      isArray: false
+      name: name
       required: true
+      secret: false
+    - default: false
       description: The zone to assign the rule.
-    - name: comment
-      description: Add a comment for this rule.
-    - name: mail_exchanger
+      isArray: false
+      name: rp_zone
       required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: The IPv6 address of the substitute rule.
+      isArray: false
+      name: ipv6addr
+      required: false
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (AAAA Record) Rule'.
+    execution: false
+    name: infoblox-create-aaaa-substitute-record-rule
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
+      type: string
+  - arguments:
+    - default: false
+      description: The name for a record in FQDN format.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The zone to assign the rule.
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
       description: Mail exchanger name in FQDN format. This value can be in unicode
         format.
-    - name: preference
+      isArray: false
+      name: mail_exchanger
       required: true
+      secret: false
+    - default: false
       description: Preference value, 0 to 65535 (inclusive).
+      isArray: false
+      name: preference
+      required: true
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (MX Record) Rule'.
+    execution: false
+    name: infoblox-create-mx-substitute-record-rule
     outputs:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
       description: Rule name.
@@ -369,30 +490,51 @@ script:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
       description: Rule reference ID.
       type: string
-    description: Create 'Substitute (MX Record) Rule'.
-  - name: infoblox-create-naptr-substitute-record-rule
-    arguments:
-    - name: name
-      required: true
+  - arguments:
+    - default: false
       description: The name for a record in FQDN forma.
-    - name: rp_zone
+      isArray: false
+      name: name
       required: true
+      secret: false
+    - default: false
       description: The zone to assign the rule.
-    - name: comment
-      description: Add a comment for this rule.
-    - name: order
+      isArray: false
+      name: rp_zone
       required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
       description: The order parameter of the Substitute (NAPTR Record) Rule records.
         This parameter specifies the order in which the NAPTR rules are applied when
         multiple rules are present. Valid values are from 0 to 65535 (inclusive).
-    - name: preference
+      isArray: false
+      name: order
       required: true
+      secret: false
+    - default: false
       description: Preference value, 0 to 65535 (inclusive).
-    - name: replacement
+      isArray: false
+      name: preference
       required: true
+      secret: false
+    - default: false
       description: The replacement field of the Substitute (NAPTR Record) Rule object.
         For nonterminal NAPTR records, this field specifies the next domain name to
         look up.
+      isArray: false
+      name: replacement
+      required: true
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (NAPTR Record) Rule'.
+    execution: false
+    name: infoblox-create-naptr-substitute-record-rule
     outputs:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
       description: Rule name.
@@ -415,25 +557,49 @@ script:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
       description: Rule reference ID.
       type: string
-    description: Create 'Substitute (NAPTR Record) Rule'.
-  - name: infoblox-create-ptr-substitute-record-rule
-    arguments:
-    - name: rp_zone
-      required: true
+  - arguments:
+    - default: false
       description: The zone to assign the rule.
-    - name: comment
-      description: Add a comment for this rule.
-    - name: ptrdname
+      isArray: false
+      name: rp_zone
       required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
       description: The domain name of the RPZ Substitute (PTR Record) Rule object
         in FQDN format.
-    - name: name
+      isArray: false
+      name: ptrdname
+      required: true
+      secret: false
+    - default: false
       description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
         format.
-    - name: ipv4addr
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
       description: The IPv4 Address of the substitute rule.
-    - name: ipv6addr
+      isArray: false
+      name: ipv4addr
+      required: false
+      secret: false
+    - default: false
       description: The IPv6 Address of the substitute rule.
+      isArray: false
+      name: ipv6addr
+      required: false
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (PTR Record) Rule'.
+    execution: false
+    name: infoblox-create-ptr-substitute-record-rule
     outputs:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
       description: Rule name.
@@ -456,33 +622,57 @@ script:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
       description: Rule reference ID.
       type: string
-    description: Create 'Substitute (PTR Record) Rule'.
-  - name: infoblox-create-srv-substitute-record-rule
-    arguments:
-    - name: name
-      required: true
+  - arguments:
+    - default: false
       description: The name for a record in FQDN format.
-    - name: rp_zone
+      isArray: false
+      name: name
       required: true
+      secret: false
+    - default: false
       description: The zone to assign the rule.
-    - name: comment
-      description: Add a comment for this rule.
-    - name: port
+      isArray: false
+      name: rp_zone
       required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
       description: The port of the Substitute (SRV Record) Rule. Valid values are
         from 0 to 65535 (inclusive).
-    - name: priority
+      isArray: false
+      name: port
       required: true
+      secret: false
+    - default: false
       description: The priority of the Substitute (SRV Record) Rule. Valid values
         are from 0 to 65535 (inclusive).
-    - name: target
+      isArray: false
+      name: priority
       required: true
+      secret: false
+    - default: false
       description: The target of the Substitute (SRV Record) Rule in FQDN format.
         This value can be in unicode format.
-    - name: weight
+      isArray: false
+      name: target
       required: true
+      secret: false
+    - default: false
       description: The weight of the Substitute (SRV Record) Rule. Valid values are
         from 0 to 65535 (inclusive).
+      isArray: false
+      name: weight
+      required: true
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (SRV Record) Rule'.
+    execution: false
+    name: infoblox-create-srv-substitute-record-rule
     outputs:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
       description: Rule name.
@@ -505,93 +695,87 @@ script:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
       description: Rule reference ID.
       type: string
-    description: Create 'Substitute (SRV Record) Rule'.
-  - name: infoblox-create-txt-substitute-record-rule
-    arguments:
-    - name: name
-      required: true
+  - arguments:
+    - default: false
       description: The name for a record in FQDN format.
-    - name: rp_zone
+      isArray: false
+      name: name
       required: true
+      secret: false
+    - default: false
       description: The zone to assign the rule.
-    - name: comment
-      description: Add a comment for this rule.
-    - name: text
+      isArray: false
+      name: rp_zone
       required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
       description: Text associated with the record. To enter leading, trailing, or
         embedded spaces in the text, add quotes around the text to preserve the spaces.
-    outputs:
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
-      description: Rule name.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
-      description: Is this rule disabled or not.
-      type: boolean
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
-      description: Comment for this rule.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
-      description: Object type as used in Infoblox.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
-      description: View definition.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
-      description: The zone to which this rule belongs to.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
-      description: Rule reference ID.
-      type: string
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    deprecated: false
     description: Create 'Substitute (txt Record) Rule'.
-  - name: infoblox-create-ipv4-substitute-record-rule
-    arguments:
-    - name: name
-      required: true
+    execution: false
+    name: infoblox-create-txt-substitute-record-rule
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
+      type: string
+  - arguments:
+    - default: false
       description: The name for a record in FQDN format.
-    - name: rp_zone
+      isArray: false
+      name: name
       required: true
+      secret: false
+    - default: false
       description: The zone to assign the rule.
-    - name: comment
-      description: Add a comment for this rule.
-    - name: ipv4addr
+      isArray: false
+      name: rp_zone
       required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
       description: The IPv4 Address of the substitute rule.
-    outputs:
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
-      description: Rule name.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
-      description: Is this rule disabled or not.
-      type: boolean
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
-      description: Comment for this rule.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
-      description: Object type as used in Infoblox.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
-      description: View definition.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
-      description: The zone to which this rule belongs to.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
-      description: Rule reference ID.
-      type: string
+      isArray: false
+      name: ipv4addr
+      required: true
+      secret: false
+    deprecated: false
     description: Create 'Substitute (ipv4 Record) Rule'.
-  - name: infoblox-create-ipv6-substitute-record-rule
-    arguments:
-    - name: name
-      required: true
-      description: The name for a record in FQDN format.
-    - name: rp_zone
-      required: true
-      description: The zone to assign the rule.
-    - name: comment
-      description: Add a comment for this rule.
-    - name: ipv6addr
-      required: true
-      description: The IPv6 Address of the substitute rule.
+    execution: false
+    name: infoblox-create-ipv4-substitute-record-rule
     outputs:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
       description: Rule name.
@@ -614,40 +798,70 @@ script:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
       description: Rule reference ID.
       type: string
-    description: Create 'Substitute (ipv6 Record) Rule'.
-  - name: infoblox-enable-rule
-    arguments:
-    - name: reference_id
+  - arguments:
+    - default: false
+      description: The name for a record in FQDN format.
+      isArray: false
+      name: name
       required: true
+      secret: false
+    - default: false
+      description: The zone to assign the rule.
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: The IPv6 Address of the substitute rule.
+      isArray: false
+      name: ipv6addr
+      required: true
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (ipv6 Record) Rule'.
+    execution: false
+    name: infoblox-create-ipv6-substitute-record-rule
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
+      type: string
+  - arguments:
+    - default: false
       description: The rule reference_id ID. (could be exctracted by running the serach
         rules command)
-    outputs:
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
-      description: Is this rule disabled.
-      type: boolean
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
-      description: Rule comment.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
-      description: Rule name.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
-      description: Rule reference ID.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
-      description: Response policy zone to which this rule belongs to.
-      type: string
-    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
-      description: View definition.
-      type: string
+      isArray: false
+      name: reference_id
+      required: true
+      secret: false
+    deprecated: false
     description: Disable a rule by its reference ID (reference ID could be exctracted
       by running the serach rules command)
-  - name: infoblox-disable-rule
-    arguments:
-    - name: reference_id
-      required: true
-      description: The rule reference_id ID. (this could be exctracted by running
-        the 'infoblox-search-rule' command)
+    execution: false
+    name: infoblox-enable-rule
     outputs:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
       description: Is this rule disabled.
@@ -667,14 +881,51 @@ script:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
       description: View definition.
       type: string
+  - arguments:
+    - default: false
+      description: The rule reference_id ID. (this could be exctracted by running
+        the 'infoblox-search-rule' command)
+      isArray: false
+      name: reference_id
+      required: true
+      secret: false
+    deprecated: false
     description: Disable a rule by its reference ID (this could be exctracted by running
       the 'infoblox-search-rule' command)
-  - name: infoblox-get-object-fields
-    arguments:
-    - name: object_type
-      required: true
+    execution: false
+    name: infoblox-disable-rule
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Rule comment.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: Response policy zone to which this rule belongs to.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+  - arguments:
+    - default: false
       description: Infoblox object type (can be retrieved by running the 'infoblox-list-response-policy-zone-rules'
         command).
+      isArray: false
+      name: object_type
+      required: true
+      secret: false
+    deprecated: false
+    description: Use this command the retrieve object field names to be used later
+      in the search rules command.
+    execution: false
+    name: infoblox-get-object-fields
     outputs:
     - contextPath: Infoblox.ObjectFields.ObjectType
       description: Infoblox object type.
@@ -682,21 +933,32 @@ script:
     - contextPath: Infoblox.ObjectFields.SupportedFields
       description: List of supported fields for this object.
       type: string
-    description: Use this command the retrieve object field names to be used later
-      in the search rules command.
-  - name: infoblox-search-rule
-    arguments:
-    - name: object_type
-      required: true
+  - arguments:
+    - default: false
       description: Infoblox object type (can be retrieved by running the 'infoblox-list-response-policy-zone-rules'
         command)
-    - name: rule_name
+      isArray: false
+      name: object_type
       required: true
+      secret: false
+    - default: false
       description: 'Full rule name (usually the rule name followed by its zone. Example:
         name.domain.com)'
-    - name: output_fields
+      isArray: false
+      name: rule_name
+      required: true
+      secret: false
+    - default: false
       description: Fields to include in the return object (supported object fields
         can be retrieved by running the *infoblox-get-object-fields* command)
+      isArray: false
+      name: output_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: Search a specific rule by its name.
+    execution: false
+    name: infoblox-search-rule
     outputs:
     - contextPath: Infoblox.RulesSearchResults.Name
       description: Rule name.
@@ -707,14 +969,35 @@ script:
     - contextPath: Infoblox.RulesSearchResults.View
       description: View definition.
       type: string
-    description: Search a specific rule by its name.
-  - name: infoblox-delete-rpz-rule
-    arguments:
-    - name: reference_id
-      required: true
+  - arguments:
+    - default: false
       description: Rule reference ID (this can be retrieved by running the 'infoblox-search-rule'
         command)
+      isArray: false
+      name: reference_id
+      required: true
+      secret: false
+    deprecated: false
     description: Delete a rule
+    execution: false
+    name: infoblox-delete-rpz-rule
+  - arguments:
+    - default: false
+      description: The rule reference_id ID. (could be exctracted by running the serach
+        rules command)
+      isArray: false
+      name: reference_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a given response policy zone.
+    execution: false
+    name: infoblox-delete-response-policy-zone
   dockerimage: demisto/python3:3.7.5.4002
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
+  script: '-'
   subtype: python3
+  type: python
