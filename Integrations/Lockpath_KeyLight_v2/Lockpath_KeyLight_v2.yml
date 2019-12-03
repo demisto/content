@@ -526,7 +526,7 @@ script:
       secret: false
     deprecated: false
     description: |-
-      The Required option for a field is only enforced through the user interface.
+      Create a new record within the specified component of the Keylight application.
       * The Required option for a field is only enforced through the user interface, not through Demisto.
     execution: false
     name: kl-create-record
@@ -584,7 +584,7 @@ script:
       type: String
     - contextPath: Keylight.Record.Fields
       description: The fields in the record.
-      type: Unknown
+      type: String
     - contextPath: Keylight.Record.ID
       description: The record ID
       type: String
@@ -593,4 +593,3 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3

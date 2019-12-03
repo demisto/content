@@ -27,25 +27,10 @@ FILTER_DICT = {'Contains': '1',
 
 
 class Client(BaseClient):
+    @logger
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
                       auth=None, json_data=None, params=None, data=None, files=None,
                       timeout=10, resp_type='json', ok_codes=None, **kwargs):
-        """
-        Overides _http_request in order to log the http method.
-
-        """
-        if json_data and json_data.get('password'):
-            json_print_data = '***Credentials***'
-        else:
-            json_print_data = json_data
-
-        log = f'KeyLight is attempting {method} request sent to {self._base_url + url_suffix}'
-        if params:
-            log += f' with params:\n{json.dumps(params, indent=4)}'
-        if json_data:
-            log += f'\njson_data:\n{json.dumps(json_print_data, indent=4)}'
-        LOG(log)
-
         res = super()._http_request(method, url_suffix, full_url, headers,
                                     auth, json_data, params, data, files,
                                     timeout, resp_type, ok_codes, **kwargs)
@@ -67,7 +52,7 @@ class Client(BaseClient):
             'password': password
         }
         res = self._http_request('POST', '/SecurityService/Login', resp_type='response', json_data=body)
-        successful = True if res.content == b'true' else False
+        successful = res.content == b'true'
 
         return successful
 
@@ -80,7 +65,7 @@ class Client(BaseClient):
 
     def return_components(self, link: str, params: dict = None) -> None:
         res = self._http_request('GET', link, params=params)
-        if type(res) == dict:
+        if isinstance(res, dict):
             res['ID'] = res.pop('Id')
         else:
             for comp in res:
@@ -101,7 +86,7 @@ class Client(BaseClient):
 
         """
         res = self._http_request('GET', suffix, params=params)
-        if type(res) == dict:
+        if isinstance(res, dict):
             res['ID'] = res.pop('Id')
         else:
             for field in res:
@@ -301,7 +286,7 @@ class Client(BaseClient):
                 self.update_field_integration_context(component_id)
                 fields = demisto.getIntegrationContext().get(str(component_id)).get('fields')
             field_name = fields.get(str(field_key))
-            if type(field_val) == dict and field_val.get('DisplayName'):
+            if isinstance(field_val, dict) and field_val.get('DisplayName'):
                 field_val = field_val.get('DisplayName')
             final_fields[field_name] = field_val
         return final_fields
@@ -450,7 +435,7 @@ def get_filtered_records_command(client: Client, args: dict) -> None:
     ec = {'Keylight.Record(val.ID == obj.ID)': res}
     title = f'Records for component {component_id}'
     if filter_type:
-        title += f' with filter: "{filter_type} {filter_value}" on field {field_name}'
+        title += f' with filter "{filter_type}: {filter_value}" on field "{field_name}"'
     hr = f'# {title}\n'
     for record in res:
         hr += tableToMarkdown(f'Record {record.get("DisplayName", "")} (ID: {record.get("ID", "")}):',
@@ -624,12 +609,13 @@ def fetch_incidents(client: Client, args: dict) -> None:
 
 
 def main():
-    proxy = demisto.params().get('proxy')
-    verify = not demisto.params().get('insecure')
-    address = demisto.params().get('server', '')
-    address = address.rstrip('/') + ":" + demisto.params().get('port', '4443')
-    username = demisto.params().get('credentials', {}).get('identifier', '')
-    password = demisto.params().get('credentials', {}).get('password', '')
+    params = demisto.params()
+    proxy = params.get('proxy')
+    verify = not params.get('insecure')
+    address = params.get('server', '')
+    address = address.rstrip('/') + ":" + params.get('port', '4443')
+    username = params.get('credentials', {}).get('identifier', '')
+    password = params.get('credentials', {}).get('password', '')
     client = Client(address, verify, proxy, headers={'Accept': 'application/json'})
 
     commands = {
@@ -661,15 +647,15 @@ def main():
         logged_in = client.login(username, password)
         if logged_in:
             commands[demisto.command()](client, demisto.args())
-            client.logout()
     except Exception as e:
         LOG.print_log()
-        if logged_in:
-            client.logout()
         if demisto.command() == 'test-module':
             return_error(f'Could not connect to instance. Error: {str(e)}')
         else:
             return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+    finally:
+        if logged_in:
+            client.logout()
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
