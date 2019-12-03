@@ -993,7 +993,7 @@ script:
     description: Delete a given response policy zone.
     execution: false
     name: infoblox-delete-response-policy-zone
-  dockerimage: demisto/python3:3.7.5.4002
+  dockerimage: demisto/python3:3.7.5.4328
   isfetch: false
   longRunning: false
   longRunningPort: false
