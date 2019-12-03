@@ -319,12 +319,12 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text
 ''' COMMANDS '''
 
 
-def test_module_command(client: Client, *_) -> Tuple[str, None, None]:
+def test_module_command(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
     """
     try:
         client.test_module()
-        return 'ok', None, None
+        return 'ok', {}, {}
     except Exception as e:
         raise DemistoException('Test module failed, {}'.format(e))
 
@@ -921,7 +921,7 @@ def main():  # pragma: no cover
     }
     try:
         if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            return_outputs(*commands.get(command)(client, demisto.args()))  # type: ignore
     # Log exceptions
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} - [{e}]'
