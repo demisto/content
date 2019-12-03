@@ -150,6 +150,7 @@ def copy_test_files(bundle_test):
 
 
 def update_content_version(content_ver: str):
+
     path = './Scripts/CommonServerPython/CommonServerPython.py'
     regex = r'CONTENT_RELEASE_VERSION = .*'
     try:
