@@ -16,7 +16,7 @@ configuration:
   required: false
   type: 8
 - display: Additional malicious verdicts
-  name: additional_malicious_verdicts
+  name: mark_as_malicious
   required: false
   type: 0
 description: Use the Palo Alto Networks AutoFocus integration to distinguish the most
