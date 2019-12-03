@@ -238,8 +238,8 @@ VERDICTS_TO_DBOTSCORE = {
     'c2': 3
 }
 
-if PARAMS.get('additional_malicious_verdicts'):
-    verdicts = argToList(PARAMS.get('additional_malicious_verdicts'))
+if PARAMS.get('mark_as_malicious'):
+    verdicts = argToList(PARAMS.get('mark_as_malicious'))
     for verdict in verdicts:
         VERDICTS_TO_DBOTSCORE[verdict] = 3
 
