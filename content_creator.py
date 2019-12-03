@@ -153,10 +153,10 @@ def update_content_version(content_ver: str):
     path = './Scripts/CommonServerPython/CommonServerPython.py'
     regex = r'CONTENT_RELEASE_VERSION = .*'
     try:
-        with open(path) as f:
+        with open(path, 'r+') as f:
             content = f.read()
             content = re.sub(regex, f"CONTENT_RELEASE_VERSION = '{content_ver}'", content, re.M)
-        with open(path, 'w+') as f:
+            f.seek(0)
             f.write(content)
     except Exception as ex:
         print_warning(f'Could not open CommonServerPython File - {ex}')
