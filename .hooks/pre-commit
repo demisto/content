@@ -18,6 +18,7 @@ fi
 
 python3 -m pip install demisto-sdk
 demisto-sdk validate -t true
+demisto-sdk secrets
 
 RES=$?
 
