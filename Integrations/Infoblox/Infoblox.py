@@ -485,7 +485,7 @@ def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     return human_readable, context, raw_response
 
 
-def delete_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str, None, Dict]:
+def delete_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Args:
         client: Client object
@@ -499,7 +499,7 @@ def delete_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     deleted_rule_ref_id = raw_response.get('result', {})
     human_readable = f'{INTEGRATION_NAME} - Response Policy Zone with the following id was deleted: \n ' \
         f'{deleted_rule_ref_id}'
-    return human_readable, None, raw_response
+    return human_readable, {}, raw_response
 
 
 def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
