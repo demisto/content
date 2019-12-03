@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Digital Shadows",
+            "playbookID": "Digital Shadows - Test"
+        },
+        {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Test",
             "instance_names": "ms_azure_compute_dev"
@@ -65,9 +69,14 @@
             "playbookID": "AttackIQ - Test"
         },
         {
+            "integrations": "PhishLabs IOC EIR",
+            "playbookID": "PhishlabsIOC_EIR-Test"
+        },
+        {
             "playbookID": "Create Phishing Classifier V2 ML Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
+
         },
         {
             "integrations": "ZeroFox",
@@ -347,7 +356,8 @@
             "playbookID": "ReadPDFFile-Test"
         },
         {
-            "playbookID": "ReadPDFFileV2-Test"
+            "playbookID": "ReadPDFFileV2-Test",
+            "timeout": 1000
         },
         {
             "playbookID": "JSONtoCSV-Test"
@@ -470,7 +480,7 @@
                 "Demisto REST API"
             ],
             "fromversion": "5.0.0",
-            "timeout": 900
+            "timeout": 1200
         },
         {
             "playbookID": "ParseExcel-test"
@@ -1586,7 +1596,7 @@
                 "Rasterize"
             ],
             "fromversion": "4.5.0",
-            "timeout": 1500
+            "timeout": 1700
         },
         {
             "integrations": "McAfee Active Response",
@@ -1635,7 +1645,15 @@
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
             "integrations": "Image OCR",
-            "timeout": 300
+            "timeout": 300,
+            "fromversion": "4.1.0",
+            "toversion": "4.4.9"
+        },
+        {
+            "playbookID": "Extract Indicators From File - Generic v2 - Test",
+            "integrations": "Image OCR",
+            "timeout": 350,
+            "fromversion": "4.5.0"
         },
         {
             "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
@@ -1825,10 +1843,6 @@
             "playbookID": "GoogleCloudCompute-Test"
         },
         {
-            "playbookID": "FormattingPerformance - Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "AWS - S3",
             "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
         },
@@ -1960,6 +1974,10 @@
             "playbookID": "Elasticsearch_v2_test-v6"
         },
         {
+            "integrations": "IronDefense",
+            "playbookID": "IronDefenseTest"
+        },
+        {
             "integrations": "PolySwarm",
             "playbookID": "PolySwarm-Test"
         },
@@ -1985,6 +2003,7 @@
         }
     ],
     "skipped_tests": {
+        "FormattingPerformance - Test": "Issue 20348",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "Request Debugging - Test": "Issue 20337",
         "LogRhythm-Test-Playbook": "Issue 20331",
@@ -1993,10 +2012,8 @@
         "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
-        "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
-        "CheckpointFW-test": "Issue 18643",
         "search_endpoints_by_hash_-_tie_-_test": "Issue #18350",
         "McAfee-TIE Test": "Issue #18350",
         "TestUptycs": "Issue 19750",
@@ -2008,7 +2025,6 @@
         "Qualys-Test": "Issue 16486",
         "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
-        "TestSafeBreach": "Issue 15909",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
@@ -2034,6 +2050,7 @@
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
+        "IronDefense": "Test depends on making requests to a non-public API",
         "Attivo Botsink": "no instance, not going to get it",
         "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
@@ -2052,11 +2069,12 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "DomainTools Iris": "Issue 20433",
+        "SentinelOne V2": "Issue 19361",
+        "ThreatQ v2": "Issue 19468",
+        "Check Point": "Issue 18643",
         "McAfee Active Response": "Issue 20320",
-        "McAfee NSM": "Issue 20336",
-        "Elasticsearch v2": "Issue 20334",
         "RSA Archer": "Issue 20335",
-        "Cisco ISE": "Issue 20333",
         "LogRhythmRest": "Issue 19870",
         "Fidelis Elevate Network": "Issue 20263",
         "Preempt": "Issue 20268",
@@ -2065,9 +2083,8 @@
         "CrowdstrikeFalcon": "Issue 19833",
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
-        "Lastline": "Issue 19855",
         "vmray": "Issue 18752",
-        "Anomali ThreatStream v2": "Issue 19182",
+        "Anomali ThreatStream v2": "Issue 18561",
         "Anomali ThreatStream": "Issue 19182",
         "SCADAfence CNM": "Issue 18376",
         "Cortex XDR - IR": "Issue #18377",
@@ -2086,7 +2103,6 @@
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
-        "XFE": "License expired",
         "Salesforce": "Issue 15901",
         "Zscaler": "Issue 17784",
         "RedCanary": "License expired",
@@ -2114,6 +2130,7 @@
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
         "AWS - Athena - Beta": "Issue 19834",
+        "Lastline": "issue 20323",
         "VirusTotal - Private API": "reached api alloted quota.",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
@@ -2124,7 +2141,7 @@
         "SlackV2"
     ],
     "unmockable_integrations": {
-        "Google Key Management Service": "The API requires an SSL secure connection to work",
+        "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
@@ -2165,6 +2182,7 @@
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
-        "RedLock": "SSL Issues"
+        "RedLock": "SSL Issues",
+        "SafeBreach": "SSL Issues"
     }
 }

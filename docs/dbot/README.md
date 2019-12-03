@@ -46,21 +46,21 @@ demisto.results({
             }
         },
          "File": {
-            "Data": "STRING, The File Hash",
+            " SHA1/MD5/SHA256": "STRING, The File Hash",
             "Malicious": {
                 "Vendor": "STRING, Vendor reporting the malicious status",
                 "Description": "STRING, Description of the malicious hash"
             }
         },
          "IP": {
-            "Data": "STRING, The IP",
+            "Address": "STRING, The IP",
             "Malicious":{
                 "Vendor": "STRING, Vendor reporting malicious",
                 "Description": "STRING, Description about why IP was determined malicious"
         },
         },
          "Domain": {
-            "Data": "STRING, The Domain",
+            "Name": "STRING, The Domain",
             "Malicious": {
                 "Vendor": "STRING, Vendor reporting the malicious status",
                 "Description": "STRING, Description of the malicious domain"
