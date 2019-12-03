@@ -17,7 +17,8 @@ if [ -e "./venv/bin/activate" -a -z "${VIRTUAL_ENV}" ]; then
 fi
 
 python3 -m pip install demisto-sdk
-demisto-sdk validate -t true
+demisto-sdk validate -t true -g
+demisto-sdk secrets
 
 RES=$?
 
