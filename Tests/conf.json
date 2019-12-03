@@ -2069,6 +2069,7 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "ThreatMiner": "Issue 20469",
         "DomainTools Iris": "Issue 20433",
         "SentinelOne V2": "Issue 19361",
         "ThreatQ v2": "Issue 19468",
