@@ -1,0 +1,48 @@
+{
+  "total": 1,
+  "limit": 10,
+  "count": 1,
+  "skip": 0,
+  "data": [
+    {
+      "platform_url": "https://fp.tools/home/search/forums?forum_ids=ifY5BsXeXQqdTx3fafZbIg",
+      "stats": {
+        "threads": 226,
+        "posts": 1226,
+        "rooms": 11,
+        "users": 114
+      },
+      "description": "0hack (零黑联盟) is a Chinese-language hacker training forum. The forum appears to be affiliated with 非凡安全网, 803389.com.",
+      "tags": [
+        {
+          "name": "Chinese",
+          "id": 31,
+          "parent_tag": 28,
+          "uuid": "e725fc5d-71f9-4403-ab00-ae609f2fd3bd"
+        },
+        {
+          "name": "Cyber Threat",
+          "id": 6,
+          "parent_tag": null,
+          "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+        },
+        {
+          "name": "Hacking",
+          "id": 8,
+          "parent_tag": 6,
+          "uuid": "c88a0cd8-a259-46d7-b8b4-b6e0060f16a0"
+        },
+        {
+          "name": "Language",
+          "id": 28,
+          "parent_tag": null,
+          "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+        }
+      ],
+      "name": "0hack",
+      "legacy_id": null,
+      "id": "ifY5BsXeXQqdTx3fafZbIg",
+      "hostname": "bbs.0hack.com"
+    }
+  ]
+}

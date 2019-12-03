@@ -1,0 +1,8 @@
+{
+  "DBotScore": {
+    "Indicator": ".locked",
+    "Type": "filename",
+    "Vendor": "Flashpoint",
+    "Score": 3
+  }
+}

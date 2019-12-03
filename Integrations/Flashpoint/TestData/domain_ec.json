@@ -1,0 +1,18 @@
+{
+	"Domain(val.Name && val.Name == obj.Name)": {
+		"Name": "subaat.com",
+		"Flashpoint": {
+			"href": ["https://fp.tools/api/v4/indicators/attribute/ua5eL6q5W5CTmYcmAhS0XQ"]
+		},
+		 "Malicious": {
+			"Vendor": "Flashpoint",
+			"Description": "Found in malicious indicators dataset"
+		}
+	},
+	"DBotScore": {
+		"Indicator": "subaat.com",
+		"Type": "domain",
+		"Vendor": "Flashpoint",
+		"Score": 3
+	}
+}

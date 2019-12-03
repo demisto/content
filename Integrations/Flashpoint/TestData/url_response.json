@@ -1,0 +1,27 @@
+[
+  {
+    "Attribute": {
+      "Event": {
+        "RelatedEvent": [],
+        "Tags": [],
+        "attack_ids": [],
+        "fpid": "ANMSOGb7WlW24Hd4WpgfeQ",
+        "href": "https://fp.tools/api/v4/indicators/event/ANMSOGb7WlW24Hd4WpgfeQ",
+        "info": "ANTIFA Page",
+        "reports": [],
+        "timestamp": "1572883071"
+      },
+      "category": "Network activity",
+      "fpid": "Xm6O-wpPXDiJ4rWNyeROZA",
+      "href": "https://fp.tools/api/v4/indicators/attribute/Xm6O-wpPXDiJ4rWNyeROZA",
+      "timestamp": "1572882868",
+      "to_ids": true,
+      "type": "url",
+      "uuid": "5dc049b4-e120-42bc-b3c6-7185c9bb0799",
+      "value": {
+        "comment": "",
+        "url": "http://www.welshantifa.org"
+      }
+    }
+  }
+]

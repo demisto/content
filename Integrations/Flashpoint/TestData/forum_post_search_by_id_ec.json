@@ -1,0 +1,68 @@
+{
+  "flashpoint": {
+    "forum": {
+      "post": {
+        "published_at": "2019-12-10T01:17:00+00:00",
+        "url": "2014/10/22/dsns-na-choli-z-bochkovskim-i-k/?lpage=1&page=580",
+        "platform_url": "https://fp.tools/home/ddw/forums/threads/M3NorvmYVoG6rVFHnP3T9w?id=PDo1xGiKXDebHGc8fZme6g",
+        "forum": {
+          "legacy_id": null,
+          "name": "Ord-UA",
+          "id": "rJnT5ETuWcW9jTCnsobFZQ",
+          "tags": [
+            {
+              "name": "Communities in Conflict",
+              "id": 55,
+              "parent_tag": 17,
+              "uuid": "83a2e5d4-e591-42be-943f-4af7d5de30e4"
+            },
+            {
+              "name": "Language",
+              "id": 28,
+              "parent_tag": null,
+              "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+            },
+            {
+              "name": "Russian",
+              "id": 30,
+              "parent_tag": 28,
+              "uuid": "c3815816-c639-4ea2-9e5c-aec29eee2b1a"
+            },
+            {
+              "name": "Ukrainian",
+              "id": 98,
+              "parent_tag": null,
+              "uuid": "9bf8c176-3b2d-4445-a2f5-6fe92843a4a1"
+            }
+          ],
+          "hostname": "ord-ua.com",
+          "stats": {
+            "posts": 163710,
+            "threads": 13916,
+            "users": 71614,
+            "rooms": 1
+          },
+          "description": "Ukrainian forum with focus on Russian-Ukrainian conflict.",
+          "platform_url": "https://fp.tools/home/search/forums?forum_ids=rJnT5ETuWcW9jTCnsobFZQ"
+        },
+        "room": {
+          "legacy_id": null,
+          "id": "UWUdaSQ7VXCkHq4KDQalpQ",
+          "forum": "/forums/sites/rJnT5ETuWcW9jTCnsobFZQ",
+          "url": "forum",
+          "platform_url": "https://fp.tools/home/search/forums?room_title=\"%D0%A4%D0%BE%D1%80%D1%83%D0%BC\"",
+          "native_id": "forum",
+          "title": "Форум"
+        },
+        "user": {
+          "legacy_id": null,
+          "name": "Дубовик",
+          "id": "0vK-XB2KWaeYqXjXaO9ruA",
+          "url": null,
+          "native_id": "Дубовик",
+          "platform_url": "https://fp.tools/home/search/forums?author_id=0vK-XB2KWaeYqXjXaO9ruA"
+        }
+      }
+    }
+  }
+}

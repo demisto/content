@@ -1,0 +1,20 @@
+{
+  "URL(val.Data && val.Data == obj.Data)": {
+    "Name": "http://www.welshantifa.org",
+    "Flashpoint": {
+      "href": [
+        "https://fp.tools/api/v4/indicators/attribute/Xm6O-wpPXDiJ4rWNyeROZA"
+      ]
+    },
+    "Malicious": {
+      "Vendor": "Flashpoint",
+      "Description": "Found in malicious indicators dataset"
+    }
+  },
+  "DBotScore": {
+    "Indicator": "http://www.welshantifa.org",
+    "Type": "url",
+    "Vendor": "Flashpoint",
+    "Score": 3
+  }
+}
