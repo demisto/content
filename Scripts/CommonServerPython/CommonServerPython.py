@@ -1515,7 +1515,7 @@ class DBotScore:
 
     def __init__(self, indicator, indicator_type: IndicatorType, vendor, score):
         self.indicator = indicator
-        self.indicator_type = indicator_type,
+        self.indicator_type = indicator_type
         self.vendor = vendor
         self.score = score
 
