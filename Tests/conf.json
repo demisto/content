@@ -356,7 +356,8 @@
             "playbookID": "ReadPDFFile-Test"
         },
         {
-            "playbookID": "ReadPDFFileV2-Test"
+            "playbookID": "ReadPDFFileV2-Test",
+            "timeout": 1000
         },
         {
             "playbookID": "JSONtoCSV-Test"
@@ -479,7 +480,7 @@
                 "Demisto REST API"
             ],
             "fromversion": "5.0.0",
-            "timeout": 900
+            "timeout": 1200
         },
         {
             "playbookID": "ParseExcel-test"
@@ -1973,6 +1974,10 @@
             "playbookID": "Elasticsearch_v2_test-v6"
         },
         {
+            "integrations": "IronDefense",
+            "playbookID": "IronDefenseTest"
+        },
+        {
             "integrations": "PolySwarm",
             "playbookID": "PolySwarm-Test"
         },
@@ -2191,6 +2196,7 @@
         "Microsoft Graph User": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "RedLock": "SSL Issues",
+        "SafeBreach": "SSL Issues"
         "Gmail Single User" : "checking"
     }
 }
