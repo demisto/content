@@ -2102,7 +2102,7 @@ script:
     - name: path
       required: true
       description: 'The full path, including file name, to save the resulting memory dump on the endpoint
-      (exmpale - c:\\temp\\dump_file.dmp).'
+      (example - c:\\temp\\dump_file.dmp).'
     - name: compress
       description: An optional parameter to specify whether to compress resulting
         memory dump.
@@ -2680,7 +2680,7 @@ script:
     - name: path
       required: true
       description: 'The full path, including file name, to save the resulting memory dump on the endpoint
-      (exmpale - c:\\temp\\dump_file.dmp).'
+      (example - c:\\temp\\dump_file.dmp).'
     - name: compress
       auto: PREDEFINED
       predefined:
