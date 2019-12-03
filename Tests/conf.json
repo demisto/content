@@ -1289,8 +1289,7 @@
         },
         {
             "integrations": "Qualys",
-            "playbookID": "Qualys-Test",
-            "nightly": true
+            "playbookID": "Qualys-Test"
         },
         {
             "integrations": "Whois",
@@ -2022,7 +2021,6 @@
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Issue 16490",
         "ArcSight Logger test": "Issue 19117",
-        "Qualys-Test": "Issue 16486",
         "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
