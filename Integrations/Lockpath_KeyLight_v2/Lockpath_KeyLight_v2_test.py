@@ -23,6 +23,7 @@ def test_filter_creator():
 def test_update_field_integration_context(mocker, requests_mock):
     # adding new component to context
     from Lockpath_KeyLight_v2 import Client
+    from Lockpath_KeyLight_v2 import INTEGRATION_CONTEXT_SIZE
     client = Client("http://example.com", False, False, headers={'Accept': 'application/json'})
     mocker.patch.object(demisto, 'setIntegrationContext')
     requests_mock.get('http://example.com/ComponentService/GetFieldList', json=[
@@ -59,24 +60,24 @@ def test_update_field_integration_context(mocker, requests_mock):
             "OneToMany": True,
             "MatrixRows": []
         }])
-    for i in range(7):
+    for i in range(INTEGRATION_CONTEXT_SIZE):
         client.update_field_integration_context(str(i))
 
     # check the fields were saved corredctly
     assert demisto.getIntegrationContext().get('1').get('fields') == {'1501': 'Auto-Apply Status',
                                                                       '1511': 'Configuration Findings',
                                                                       '2260': 'AuthenticationTypes'}
-    assert len(demisto.getIntegrationContext()) == 7
-    time.sleep(1)
-    client.update_field_integration_context('7')
+    assert len(demisto.getIntegrationContext()) == INTEGRATION_CONTEXT_SIZE
 
     # Check update was done ok
-    # lenght is still 7
-    assert len(demisto.getIntegrationContext()) == 7
+    # lenght is still INTEGRATION_CONTEXT_SIZE
+    time.sleep(1)
+    client.update_field_integration_context(str(INTEGRATION_CONTEXT_SIZE + 1))
+    assert len(demisto.getIntegrationContext()) == INTEGRATION_CONTEXT_SIZE
     # 0 was removed
     assert demisto.getIntegrationContext().get('0', 'Not found') == 'Not found'
-    # 7 was added
-    assert demisto.getIntegrationContext().get('7', 'Not found') != 'Not found'
+    # INTEGRATION_CONTEXT_SIZE was added
+    assert demisto.getIntegrationContext().get(str(INTEGRATION_CONTEXT_SIZE + 1), 'Not found') != 'Not found'
 
 
 def test_field_output_to_hr_fields(mocker, requests_mock):

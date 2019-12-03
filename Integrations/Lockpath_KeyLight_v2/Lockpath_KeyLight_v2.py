@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from datetime import datetime, timedelta
-from typing import Union
+from typing import Union, Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -22,6 +22,8 @@ FILTER_DICT = {'Contains': '1',
                'Not Between': '12',
                'Is Null': '15',
                'Is Not Null': '16'}
+
+INTEGRATION_CONTEXT_SIZE = 15
 
 '''CLIENT'''
 
@@ -113,18 +115,14 @@ class Client(BaseClient):
                   'recordId': record_id}
         res = self._http_request('GET', suffix, params=params)
         field_names = argToList(field_names)
-        all_fields = self.field_output_to_hr_fields(res.get('FieldValues', []), component_id)
-        if field_names:
-            fields = {k: all_fields[k] for k in field_names if k in all_fields}
-        else:
-            fields = all_fields
+        all_fields = self.field_output_to_hr_fields(res.get('FieldValues', []), component_id, field_names)
         record = {'ID': res.get('Id'),
                   'ComponentID': component_id,
                   'DisplayName': res.get('DisplayName', '')
                   }
         hr = tableToMarkdown(f'Details for record {record.get("DisplayName")}:', record)
-        hr += tableToMarkdown('With the following fields:', fields)
-        record['Fields'] = fields
+        hr += tableToMarkdown('With the following fields:', all_fields)
+        record['Fields'] = all_fields
         ec = {'Keylight.Record(val.ID && val.ID==obj.ID))': record}
 
         return_outputs(hr, ec, res)
@@ -150,19 +148,28 @@ class Client(BaseClient):
                 'pageSize': page_size}
         if filter_type:
             data['filters'] = [create_filter(filter_type, filter_value, filter_field_id)]  # type: ignore
+        else:
+            data['filters'] = []  # type: ignore
         res = self._http_request('POST', suffix, json_data=data)
         for result in res:
             result['ID'] = result.pop('Id')
             result['ComponentID'] = component_id
         return res
 
-    def change_record(self, component_id: str, field_string: str, record_id: Union[str, None] = None) -> None:
-        json_data = {
-            'componentId': component_id,
-            'dynamicRecord': {
-                'FieldValues': self.string_to_FieldValues(field_string, component_id)
+    def change_record(self, component_id: str, field_string: str, record_id: Union[str, None] = None,
+                      record_json: dict = None) -> None:
+        json_data = {}  # type: Dict[str, Union[str, dict]]
+        if field_string:
+            json_data = {
+                'componentId': component_id,
+                'dynamicRecord': {
+                    'FieldValues': self.string_to_FieldValues(field_string, component_id)
+                }
             }
-        }
+        if record_json:
+            json_data = record_json
+        if not json_data:
+            raise ValueError("No record string or record json.")
         suffix = '/ComponentService/CreateRecord'
         if record_id:
             json_data['dynamicRecord']['Id'] = record_id  # type: ignore
@@ -249,7 +256,7 @@ class Client(BaseClient):
         for field in fields:
             field_names[str(field.get('Id'))] = field.get('Name')
         update = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-        if len(field_map) == 7:
+        if len(field_map) == INTEGRATION_CONTEXT_SIZE:
             min_time = update
             min_component = ''
             for component in field_map.keys():
@@ -264,12 +271,13 @@ class Client(BaseClient):
         demisto.setIntegrationContext(field_map)
 
     @logger
-    def field_output_to_hr_fields(self, field_output: dict, component_id: str) -> dict:
+    def field_output_to_hr_fields(self, field_output: dict, component_id: str, returned_fields: list = None) -> dict:
         '''
 
         Args:
             field_output: a dictionary of key,values that is the output of FieldValue field
             component_id: What component the fields are from
+            returned_fields: A list of field names to return. If None - all fields returned
 
         Returns:
         '''
@@ -288,7 +296,8 @@ class Client(BaseClient):
             field_name = fields.get(str(field_key))
             if isinstance(field_val, dict) and field_val.get('DisplayName'):
                 field_val = field_val.get('DisplayName')
-            final_fields[field_name] = field_val
+            if not returned_fields or field_name in returned_fields:
+                final_fields[field_name] = field_val
         return final_fields
 
     @logger
@@ -359,18 +368,6 @@ def create_filter(filter_type: str, filter_value: str, filter_field_id: str) -> 
 '''COMMAND FUNCTIONS'''
 
 
-def get_component_list_command(client: Client, args: dict) -> None:
-    '''
-    Args:
-        client: The client
-        args: Demisto.args()
-
-    Returns:
-        A list of all components.
-    '''
-    client.return_components('/ComponentService/GetComponentList')
-
-
 def get_component_command(client: Client, args: dict) -> None:
     '''
     Args:
@@ -380,22 +377,14 @@ def get_component_command(client: Client, args: dict) -> None:
     Returns:
         A list of all components.
     '''
-    params = {'id': args.get('component_id')}
-    client.return_components('/ComponentService/GetComponent', params)
-
-
-def get_component_by_alias_command(client: Client, args: dict) -> None:
-    '''
-
-    Args:
-        client:
-        args: {alias: ...}
-
-    Returns:
-        Returns the component by its alias
-    '''
-    params = {'alias': args.get('alias')}
-    client.return_components('/ComponentService/GetComponentByAlias', params)
+    if args.get('component_id'):
+        params = {'id': args.get('component_id')}
+        client.return_components('/ComponentService/GetComponent', params)
+    elif args.get('alias'):
+        params = {'alias': args.get('alias')}
+        client.return_components('/ComponentService/GetComponentByAlias', params)
+    else:
+        client.return_components('/ComponentService/GetComponentList')
 
 
 def get_field_list_command(client: Client, args: dict) -> None:
@@ -405,7 +394,8 @@ def get_field_list_command(client: Client, args: dict) -> None:
 
 
 def get_field_command(client: Client, args: dict) -> None:
-    params = {'id': args.get('field_id')}
+    field_id = client.field_id_from_name(args.get('field_name', ''), args.get('component_id', ''))
+    params = {'id': field_id}
     client.return_fields('/ComponentService/GetField', params,
                          f"Keylight field {params.get('id')}:")
 
@@ -416,30 +406,40 @@ def get_record_command(client: Client, args: dict) -> None:
     client.return_records(args.get('component_id', ''), args.get('record_id', ''), args.get('field_names', ''), path)
 
 
-def get_filtered_records_command(client: Client, args: dict) -> None:
+def get_records_command(client: Client, args: dict) -> None:
     page_size = str(min(int(args.get('page_size', '10')), 100))
     component_id = args.get('component_id', '')
     page_index = args.get('page_index', "0")
     filter_type = args.get('filter_type')
     filter_value = args.get('filter_value', '')
     field_name = args.get('filter_field_name', '')
-    filter_field_id = client.field_id_from_name(field_name, component_id)
-    if not filter_field_id:
-        raise ValueError(f'Could not find the field "{field_name}" in component {component_id}.')
+    returned_fields = argToList(args.get('returned_fields', ''))
+    filter_field_id = None
+    if filter_type and filter_value and field_name:
+        filter_field_id = client.field_id_from_name(field_name, component_id)
+        if not filter_field_id:
+            raise ValueError(f'Could not find the field "{field_name}" in component {component_id}.')
     detailed = '/ComponentService/GetDetailRecords' if args.get('detailed', "False") == "True" \
         else '/ComponentService/GetRecords'
     res = client.return_filtered_records(component_id, page_size, page_index, detailed,
                                          filter_type, filter_field_id, filter_value)
     for record in res:
-        record['Fields'] = client.field_output_to_hr_fields(record.pop('FieldValues'), component_id)
+        record['Fields'] = client.field_output_to_hr_fields(record.pop('FieldValues'), component_id, returned_fields)
     ec = {'Keylight.Record(val.ID == obj.ID)': res}
     title = f'Records for component {component_id}'
     if filter_type:
-        title += f' with filter "{filter_type}: {filter_value}" on field "{field_name}"'
-    hr = f'# {title}\n'
+        title += f' \n### with filter "{filter_type}: {filter_value}" on field "{field_name}"'
+    records = []
     for record in res:
-        hr += tableToMarkdown(f'Record {record.get("DisplayName", "")} (ID: {record.get("ID", "")}):',
-                              record.get("Fields"))
+        temp_dict = record.get('Fields')
+        temp_dict['Id'] = record.get("ID")
+        temp_dict['DisplayName'] = record.get('DisplayName')
+        records.append(temp_dict)
+    hr = tableToMarkdown(title, records)
+    # hr = f'# {title}\n'
+    # for record in res:
+    #     hr += tableToMarkdown(f'Record {record.get("DisplayName", "")} (ID: {record.get("ID", "")}):',
+    #                           record.get("Fields"))
     return_outputs(hr, ec, res)
 
 
@@ -448,21 +448,28 @@ def get_record_count_command(client: Client, args: dict) -> None:
     filter_type = args.get('filter_type', '')
     filter_value = args.get('filter_value', '')
     filter_field_name = args.get('filter_field_name', '')
-    filter_field_id = client.field_id_from_name(filter_field_name, component_id)
-    if not filter_field_id:
-        raise ValueError('Could not find the field name.')
     data = {'componentId': component_id}
-    data['filters'] = [create_filter(filter_type, filter_value, filter_field_id)]
+
+    if not filter_type or not filter_value or not filter_field_name:
+        data['filters'] = []
+    else:
+        filter_field_id = client.field_id_from_name(filter_field_name, component_id)
+        if not filter_field_id:
+            raise ValueError('Could not find the field name.')
+        data['filters'] = [create_filter(filter_type, filter_value, filter_field_id)]
     res = client._http_request('POST', '/ComponentService/GetRecordCount', json_data=data)
-    title = f'## There are __**{res}**__ records with filter:' \
-        f' "{filter_type} {filter_value}" on field {filter_field_id} in component {component_id}'
+    title = f'## There are __**{res}**__ records'
+    if filter_type:
+        title += f' with filter: "{filter_type} {filter_value}" on field {filter_field_id}'
+    title += f' in component {component_id}.'
     return_outputs(title)
 
 
 def get_record_attachments_command(client: Client, args: dict) -> None:
-    field_id = args.get('field_id', '')
+    field_name = args.get('field_name', '')
     record_id = args.get('record_id', '')
     component_id = args.get('component_id', '')
+    field_id = client.field_id_from_name(field_name, component_id)
     params = {'componentID': component_id,
               'recordId': record_id,
               'fieldId': field_id
@@ -477,23 +484,24 @@ def get_record_attachments_command(client: Client, args: dict) -> None:
         hr = f'## Field {field_id} in record {record_id} has no attachments.'
         return_outputs(hr)
         return
-    hr = tableToMarkdown(f'Field {field_id} in record {record_id} has the following attachments:', res)
+    hr = tableToMarkdown(f'Field {field_name} in record {record_id} has the following attachments:', res)
     ec = {'Keylight.Attachment(val.FieldID == obj.FieldID && val.DocumentID == obj.DocumentID)': res}
     return_outputs(hr, ec, res)
 
 
 def get_record_attachment_command(client: Client, args: dict) -> None:
-    field_id = args.get('field_id', '')
+    component_id = args.get('component_id', '')
+    field_name = args.get('field_name', '')
     record_id = args.get('record_id', '')
     doc_id = args.get('document_id', '')
-    params = {'componentID': args.get('component_id', ''),
+    field_id = client.field_id_from_name(field_name, component_id)
+    params = {'componentID': component_id,
               'recordId': record_id,
               'fieldId': field_id,
               'documentId': doc_id
               }
     res = client._http_request('GET', '/ComponentService/GetRecordAttachment', params=params)
-    hr = f'## File {res.get("FileName", "")}:\n{res.get("FileData")}'
-    return_outputs(hr)
+    demisto.results(fileResult(res.get("FileName", ""), base64.b64decode(res.get("FileData"))))
 
 
 def delete_record_attachment_command(client: Client, args: dict) -> None:
@@ -552,14 +560,18 @@ def get_lookup_report_column_fields_command(client: Client, args: dict) -> None:
 def create_record_command(client: Client, args: dict) -> None:
     field_string = args.get('record_string', '')
     component_id = args.get('component_id', '')
-    client.change_record(component_id, field_string)
+    record_json = args.get('record_json', '{}').replace("'", '"')
+    record_json = json.loads(record_json)
+    client.change_record(component_id, field_string, record_json=record_json)
 
 
 def update_record_command(client: Client, args: dict) -> None:
     field_string = args.get('record_string', '')
     component_id = args.get('component_id', '')
     record_id = args.get('record_id', '')
-    client.change_record(component_id, field_string, record_id)
+    record_json = args.get('record_json', '{}').replace("'", '"')
+    record_json = json.loads(record_json)
+    client.change_record(component_id, field_string, record_id, record_json)
 
 
 def fetch_incidents(client: Client, args: dict) -> None:
@@ -619,14 +631,12 @@ def main():
     client = Client(address, verify, proxy, headers={'Accept': 'application/json'})
 
     commands = {
-        'kl-get-component-list': get_component_list_command,
         'kl-get-component': get_component_command,
-        'kl-get-component-by-alias': get_component_by_alias_command,
         'kl-get-field-list': get_field_list_command,
         'kl-get-field': get_field_command,
         'kl-get-record-count': get_record_count_command,
         'kl-get-record': get_record_command,
-        'kl-get-filtered-records': get_filtered_records_command,
+        'kl-get-records': get_records_command,
         'kl-delete-record': delete_record_command,
         'kl-create-record': create_record_command,
         'kl-update-record': update_record_command,

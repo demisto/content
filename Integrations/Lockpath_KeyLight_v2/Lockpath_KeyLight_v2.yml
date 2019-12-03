@@ -49,33 +49,22 @@ display: Lockpath KeyLight v2
 name: Lockpath KeyLight v2
 script:
   commands:
-  - deprecated: false
-    description: Returns a complete list of all Keylight components available to the
-      user based on account permissions.
-    execution: false
-    name: kl-get-component-list
-    outputs:
-    - contextPath: Keylight.Component.ID
-      description: The ID of the component.
-      type: String
-    - contextPath: Keylight.Component.Name
-      description: The name of the component.
-      type: String
-    - contextPath: Keylight.Component.ShortName
-      description: The short name of the component.
-      type: String
-    - contextPath: Keylight.Component.SystemName
-      description: The system name of the component.
-      type: String
   - arguments:
     - default: false
       description: The id of the component.
       isArray: false
       name: component_id
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: The alias of the component.
+      isArray: false
+      name: alias
+      required: false
       secret: false
     deprecated: false
-    description: Retrieves a component specified by its ID.
+    description: Retrieves a component specified by its ID or its alias. If no parameters
+      are specified, all componenets will be retrieved.
     execution: false
     name: kl-get-component
     outputs:
@@ -91,30 +80,6 @@ script:
     - contextPath: Keylight.Component.SystemName
       description: The system name of the component.
       type: String
-  - arguments:
-    - default: false
-      description: The name of the component
-      isArray: false
-      name: alias
-      required: true
-      secret: false
-    deprecated: false
-    description: Retrieves a component specified by its Alias.
-    execution: false
-    name: kl-get-component-by-alias
-    outputs:
-    - contextPath: Keylight.Component.ID
-      description: The ID of the component.
-      type: String
-    - contextPath: Keylight.Component.Name
-      description: The name of the component.
-      type: String
-    - contextPath: Keylight.Component.ShortName
-      description: The short name of the component.
-      type: String
-    - contextPath: Keylight.Component.SystemName
-      description: The system name of the component.
-      type: Unknown
   - arguments:
     - default: false
       description: The id of the component.
@@ -147,9 +112,15 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: The ID of the field.
+      description: The ID of the component.
       isArray: false
-      name: field_id
+      name: component_id
+      required: true
+      secret: false
+    - default: false
+      description: The name of the field.
+      isArray: false
+      name: field_name
       required: true
       secret: false
     deprecated: false
@@ -292,12 +263,18 @@ script:
       - 'True'
       required: false
       secret: false
+    - default: false
+      description: A list of specific fields to return. If empty - return all fields.
+      isArray: false
+      name: returned_fields
+      required: false
+      secret: false
     deprecated: false
     description: |-
       Returns the title/default field for a set of records within a chosen component.
       Filters may be applied to return only the records meeting selected criteria.
     execution: false
-    name: kl-get-filtered-records
+    name: kl-get-records
     outputs:
     - contextPath: Keylight.Record.ComponentID
       description: The ID of the component the record is in.
@@ -338,19 +315,19 @@ script:
       - Not Between
       - Is Null
       - Is Not Null
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of the field to apply the filter on.
       isArray: false
       name: filter_field_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: The value to filter by.
       isArray: false
       name: filter_value
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Get the number of records for a specific component and filter.
@@ -370,9 +347,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: The field ID that holds the attachments. Has to be of type "Documents".
+      description: The name of the field that holds the attachments. Has to be of
+        type "Documents".
       isArray: false
-      name: field_id
+      name: field_name
       required: true
       secret: false
     deprecated: false
@@ -409,9 +387,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: The field ID that holds the attachments. Has to be of type "Documents".
+      description: The name of the field that holds the attachments. Has to be of
+        type "Documents".
       isArray: false
-      name: field_id
+      name: field_name
       required: true
       secret: false
     - default: false
@@ -522,7 +501,14 @@ script:
         Assignee;6;1#Task ID;Demisto task#Updated At;2019-11-20T11:40:49.4109934;0 )
       isArray: false
       name: record_string
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: A json in the format that the API requests. The exact format is
+        found in the API documentation.
+      isArray: false
+      name: record_json
+      required: false
       secret: false
     deprecated: false
     description: |-
@@ -567,7 +553,14 @@ script:
         Assignee;6;1#Task ID;Demisto task#Updated At;2019-11-20T11:40:49.4109934;0 )
       isArray: false
       name: record_string
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: A json in the format that the API requests. The exact format is
+        found in the API documentation.
+      isArray: false
+      name: record_json
+      required: false
       secret: false
     deprecated: false
     description: |-
