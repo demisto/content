@@ -1603,6 +1603,8 @@ tasks:
     scriptarguments:
       long: {}
       retries: {}
+      retry-count:
+        simple: "5"
       sampleSize: {}
       submitWait: {}
       threshold: {}
@@ -1707,6 +1709,8 @@ tasks:
         simple: 8.8.8.8
       long: {}
       retries: {}
+      retry-count:
+        simple: "5"
       sampleSize: {}
       threshold: {}
       wait: {}
@@ -1789,6 +1793,8 @@ tasks:
       maxRetries: {}
       md5: {}
       retries: {}
+      retry-count:
+        simple: "5"
       sha256: {}
       threshold: {}
       wait: {}
@@ -1868,6 +1874,8 @@ tasks:
       fullResponse: {}
       long: {}
       retries: {}
+      retry-count:
+        simple: "5"
       sampleSize: {}
       threshold: {}
       wait: {}
