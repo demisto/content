@@ -101,7 +101,8 @@ class Client(BaseClient):
             raise parse_demisto_exception(error, 'text')
 
     def test_module(self) -> Dict:
-        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication
+        is successful.
 
         Returns:
             Response JSON
@@ -137,7 +138,7 @@ class Client(BaseClient):
         return self._http_request('GET', suffix, params=request_params)
 
     def search_related_objects_by_ip(self, ip: Optional[str], max_results: Optional[str]) -> Dict:
-        """Get ip information.
+        """Search ip related objects.
         Args:
             ip: ip to retrieve.
             max_results: maximum number of results
@@ -175,7 +176,7 @@ class Client(BaseClient):
     def create_response_policy_zone(self, fqdn: Optional[str], rpz_policy: Optional[str],
                                     rpz_severity: Optional[str], substitute_name: Optional[str],
                                     rpz_type: Optional[str]) -> Dict:
-        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+        """Creates new response policy zone
         Args:
             fqdn: The name of this DNS zone.
             rpz_policy: The response policy zone override policy.
@@ -191,10 +192,21 @@ class Client(BaseClient):
         suffix = 'zone_rp'
         return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_ZONE)
 
+    def delete_response_policy_zone(self, ref_id: Optional[str]) -> Dict:
+        """Delete new response policy zone
+        Args:
+            ref_id: Zone reference id to delete.
+        Returns:
+            Response JSON
+        """
+
+        suffix = ref_id
+        return self._http_request('POST', suffix)
+
     def create_rpz_rule(self, rule_type: Optional[str], object_type: Optional[str], name: Optional[str],
                         rp_zone: Optional[str], substitute_name: Optional[str],
                         comment: Optional[str] = None) -> Dict:
-        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+        """Creates new response policy zone rule.
         Args:
             rule_type: Type of rule to create.
             object_type: Type of object to assign the rule on.
@@ -222,7 +234,7 @@ class Client(BaseClient):
         return rule
 
     def create_substitute_record_rule(self, suffix: Optional[str], **kwargs: Union[str, int, None]) -> Dict:
-        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+        """Creates new response policy zone substitute rule.
         Args:
             suffix: The infoblox object to be used as a url path.
             kwargs: A dict of arguments to be passed to the rule body. The following may appear:
@@ -252,7 +264,7 @@ class Client(BaseClient):
         return rule
 
     def change_rule_status(self, reference_id: Optional[str], disable: Optional[bool]) -> Dict:
-        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+        """Changes a given rule status.
         Args:
             reference_id: Rule reference ID
             disable: true or false string
@@ -264,7 +276,7 @@ class Client(BaseClient):
         return self._http_request('PUT', suffix, data=json.dumps(request_data), params=REQUEST_PARAM_SEARCH_RULES)
 
     def get_object_fields(self, object_type: Optional[str]) -> Dict:
-        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+        """Retrieve a given object fields.
         Args:
             object_type: Infoblox object type
         Returns:
@@ -276,7 +288,7 @@ class Client(BaseClient):
 
     def search_rule(self, object_type: Optional[str], rule_name: Optional[str],
                     output_fields: Optional[str]) -> Dict:
-        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+        """Search rule by its name
         Args:
             object_type: Infoblox object type
             rule_name: Full rule name
@@ -291,7 +303,7 @@ class Client(BaseClient):
         return self._http_request('GET', suffix, params=request_params)
 
     def delete_rpz_rule(self, reference_id: Optional[str]) -> Dict:
-        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+        """Deletes a rule by its reference id
         Args:
             reference_id: Rule reference ID
         Returns:
@@ -320,17 +332,12 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text
 
 
 def test_module_command(client: Client, *_) -> Tuple[str, Dict, Dict]:
-    """Performs a basic GET request to check if the API is reachable and authentication is successful.
-    """
-    try:
-        client.test_module()
-        return 'ok', {}, {}
-    except Exception as e:
-        raise DemistoException('Test module failed, {}'.format(e))
+    client.test_module()
+    return 'ok', {}, {}
 
 
 def get_ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict, Dict]:
-    """Returns credentials to user without passwords.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -355,7 +362,7 @@ def get_ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict, Dic
 
 
 def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Locks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -384,7 +391,7 @@ def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[st
 
 
 def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -425,7 +432,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
 
 
 def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -452,7 +459,7 @@ def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str,
 
 
 def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -478,8 +485,25 @@ def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     return human_readable, context, raw_response
 
 
+def delete_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str, None, Dict]:
+    """
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    ref_id = args.get('reference_id')
+    raw_response = client.delete_response_policy_zone(ref_id)
+    deleted_rule_ref_id = raw_response.get('result', {})
+    human_readable = f'{INTEGRATION_NAME} - Response Policy Zone with the following id was deleted: \n ' \
+        f'{deleted_rule_ref_id}'
+    return human_readable, None, raw_response
+
+
 def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -507,7 +531,7 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
 
 
 def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -534,7 +558,7 @@ def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple
 
 
 def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -561,7 +585,7 @@ def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tu
 
 
 def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -590,7 +614,7 @@ def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tupl
 
 
 def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -621,7 +645,7 @@ def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> T
 
 
 def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -652,7 +676,7 @@ def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tup
 
 
 def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -683,7 +707,7 @@ def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tup
 
 
 def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -710,7 +734,7 @@ def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tup
 
 
 def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -737,7 +761,7 @@ def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tu
 
 
 def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -764,7 +788,7 @@ def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tu
 
 
 def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -786,7 +810,7 @@ def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -808,7 +832,7 @@ def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def get_object_fields_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -834,7 +858,7 @@ def get_object_fields_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
 
 
 def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -863,7 +887,7 @@ def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def delete_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
+    """
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -903,6 +927,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-list-response-policy-zones': list_response_policy_zones_command,
         f'{INTEGRATION_COMMAND_NAME}-list-response-policy-zone-rules': list_response_policy_zone_rules_command,
         f'{INTEGRATION_COMMAND_NAME}-create-response-policy-zone': create_response_policy_zone_command,
+        f'{INTEGRATION_COMMAND_NAME}-delete-response-policy-zone': delete_response_policy_zone_command,
         f'{INTEGRATION_COMMAND_NAME}-create-rpz-rule': create_rpz_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-create-a-substitute-record-rule': create_a_substitute_record_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-create-aaaa-substitute-record-rule': create_aaaa_substitute_record_rule_command,
@@ -924,7 +949,7 @@ def main():  # pragma: no cover
             return_outputs(*commands[command](client, demisto.args()))
     # Log exceptions
     except Exception as e:
-        err_msg = f'Error in {INTEGRATION_NAME} - [{e}]'
+        err_msg = f'Error in {INTEGRATION_NAME} - {e}'
         return_error(err_msg, error=e)
 
 
