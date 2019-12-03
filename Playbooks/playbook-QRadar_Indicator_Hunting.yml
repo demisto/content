@@ -2024,4 +2024,4 @@ inputs:
     For more examples review IBM's AQL documentation.
 outputs: []
 tests:
- - Qradar Indicator Hunting Test
+- Qradar Indicator Hunting Test
