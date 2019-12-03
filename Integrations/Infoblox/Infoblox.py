@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, Optional, Union
+from typing import Dict, Tuple, Optional, Union, Callable, Any
 import urllib3
 
 # Disable insecure warnings
@@ -896,7 +896,7 @@ def main():  # pragma: no cover
     demisto.info(f'Command being called is {command}')
 
     # Switch case
-    commands = {
+    commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
         'test-module': test_module_command,
         f'{INTEGRATION_COMMAND_NAME}-get-ip': get_ip_command,
         f'{INTEGRATION_COMMAND_NAME}-search-related-objects-by-ip': search_related_objects_by_ip_command,
@@ -921,7 +921,7 @@ def main():  # pragma: no cover
     }
     try:
         if command in commands:
-            return_outputs(*commands.get(command)(client, demisto.args()))  # type: ignore
+            return_outputs(*commands[command](client, demisto.args()))
     # Log exceptions
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} - [{e}]'
