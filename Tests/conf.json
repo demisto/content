@@ -1127,6 +1127,16 @@
             "instance_names": "ms_graph_user_prod"
         },
         {
+            "integrations": "Microsoft Graph Groups",
+            "playbookID": "Microsoft Graph Groups - Test",
+            "instance_names": "ms_graph_groups_dev"
+        },
+        {
+            "integrations": "Microsoft Graph Groups",
+            "playbookID": "Microsoft Graph Groups - Test",
+            "instance_names": "ms_graph_groups_prod"
+        },
+        {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
@@ -2176,9 +2186,12 @@
         "Palo Alto Networks Cortex": "SDK",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
+        "RedLock": "SSL Issues",
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
+        "Microsoft Graph Groups": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "RedLock": "SSL Issues",
         "SafeBreach": "SSL Issues"
