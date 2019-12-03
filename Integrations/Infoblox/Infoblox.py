@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, Union, Optional
+from typing import Dict, Tuple, Optional
 import urllib3
 
 # Disable insecure warnings
@@ -108,7 +108,7 @@ class Client(BaseClient):
         """
         return self.list_response_policy_zones()
 
-    def list_response_policy_zones(self, max_results: Union[str, None] = None) -> Dict:
+    def list_response_policy_zones(self, max_results: Optional[str] = None) -> Dict:
         """List all response policy zones.
         Args:
                 max_results:  maximum number of results
@@ -120,7 +120,7 @@ class Client(BaseClient):
         request_params.update(REQUEST_PARAM_ZONE)
         return self._http_request('GET', suffix, params=request_params)
 
-    def get_ip(self, ip: Union[str, None]) -> Dict:
+    def get_ip(self, ip: Optional[str]) -> Dict:
         """Get ip information.
         Args:
             ip: ip to retrieve.
@@ -136,7 +136,7 @@ class Client(BaseClient):
         request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
         return self._http_request('GET', suffix, params=request_params)
 
-    def search_related_objects_by_ip(self, ip: Union[str, None], max_results: Union[str, None]) -> Dict:
+    def search_related_objects_by_ip(self, ip: Optional[str], max_results: Optional[str]) -> Dict:
         """Get ip information.
         Args:
             ip: ip to retrieve.
@@ -152,8 +152,8 @@ class Client(BaseClient):
         request_params = assign_params(address=ip, _max_results=max_results)
         return self._http_request('GET', suffix, params=request_params)
 
-    def list_response_policy_zone_rules(self, zone: Union[str, None], max_results: Union[str, None],
-                                        next_page_id: Union[str, None]) -> Dict:
+    def list_response_policy_zone_rules(self, zone: Optional[str], max_results: Optional[str],
+                                        next_page_id: Optional[str]) -> Dict:
         """List response policy zones rules by a given zone name.
         Args:
             zone: response policy zone name.
@@ -172,9 +172,9 @@ class Client(BaseClient):
 
         return self._http_request('GET', suffix, params=request_params)
 
-    def create_response_policy_zone(self, fqdn: Union[str, None], rpz_policy: Union[str, None],
-                                    rpz_severity: Union[str, None], substitute_name: Union[str, None],
-                                    rpz_type: Union[str, None]) -> Dict:
+    def create_response_policy_zone(self, fqdn: Optional[str], rpz_policy: Optional[str],
+                                    rpz_severity: Optional[str], substitute_name: Optional[str],
+                                    rpz_type: Optional[str]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             fqdn: The name of this DNS zone.
@@ -191,9 +191,9 @@ class Client(BaseClient):
         suffix = 'zone_rp'
         return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_ZONE)
 
-    def create_rpz_rule(self, rule_type: Union[str, None], object_type: Union[str, None], name: Union[str, None],
-                        rp_zone: Union[str, None], substitute_name: Union[str, None],
-                        comment: Union[str, None] = None) -> Dict:
+    def create_rpz_rule(self, rule_type: Optional[str], object_type: Optional[str], name: Optional[str],
+                        rp_zone: Optional[str], substitute_name: Optional[str],
+                        comment: Optional[str] = None) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             rule_type: Type of rule to create.
@@ -221,7 +221,7 @@ class Client(BaseClient):
         rule['result']['type'] = suffix
         return rule
 
-    def create_substitute_record_rule(self, suffix: Union[str, None], **kwargs: Union[str, None]) -> Dict:
+    def create_substitute_record_rule(self, suffix: Optional[str], **kwargs: Optional[str]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             suffix: The infoblox object to be used as a url path.
@@ -251,7 +251,7 @@ class Client(BaseClient):
         rule['result']['type'] = suffix
         return rule
 
-    def change_rule_status(self, reference_id: Union[str, None], disable: Union[bool, None]) -> Dict:
+    def change_rule_status(self, reference_id: Optional[str], disable: Optional[str]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             reference_id: Rule reference ID
@@ -263,7 +263,7 @@ class Client(BaseClient):
         suffix = reference_id
         return self._http_request('PUT', suffix, data=json.dumps(request_data), params=REQUEST_PARAM_SEARCH_RULES)
 
-    def get_object_fields(self, object_type: Union[str, None]) -> Dict:
+    def get_object_fields(self, object_type: Optional[str]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             object_type: Infoblox object type
@@ -274,8 +274,8 @@ class Client(BaseClient):
         suffix = object_type
         return self._http_request('GET', suffix, params=request_params)
 
-    def search_rule(self, object_type: Union[str, None], rule_name: Union[str, None],
-                    output_fields: Union[str, None]) -> Dict:
+    def search_rule(self, object_type: Optional[str], rule_name: Optional[str],
+                    output_fields: Optional[str]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             object_type: Infoblox object type
@@ -290,7 +290,7 @@ class Client(BaseClient):
         suffix = object_type
         return self._http_request('GET', suffix, params=request_params)
 
-    def delete_rpz_rule(self, reference_id: Union[str, None]) -> Dict:
+    def delete_rpz_rule(self, reference_id: Optional[str]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             reference_id: Rule reference ID
