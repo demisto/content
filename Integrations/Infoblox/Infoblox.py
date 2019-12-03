@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union, Optional
 import urllib3
 
 # Disable insecure warnings
@@ -108,7 +108,7 @@ class Client(BaseClient):
         """
         return self.list_response_policy_zones()
 
-    def list_response_policy_zones(self, max_results: str = None) -> Dict:
+    def list_response_policy_zones(self, max_results: Union[str, None] = None) -> Dict:
         """List all response policy zones.
         Args:
                 max_results:  maximum number of results
@@ -120,7 +120,7 @@ class Client(BaseClient):
         request_params.update(REQUEST_PARAM_ZONE)
         return self._http_request('GET', suffix, params=request_params)
 
-    def get_ip(self, ip: str) -> Dict:
+    def get_ip(self, ip: Union[str, None]) -> Dict:
         """Get ip information.
         Args:
             ip: ip to retrieve.
@@ -136,7 +136,7 @@ class Client(BaseClient):
         request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
         return self._http_request('GET', suffix, params=request_params)
 
-    def search_related_objects_by_ip(self, ip: str, max_results: str) -> Dict:
+    def search_related_objects_by_ip(self, ip: Union[str, None], max_results: Union[str, None]) -> Dict:
         """Get ip information.
         Args:
             ip: ip to retrieve.
@@ -152,7 +152,8 @@ class Client(BaseClient):
         request_params = assign_params(address=ip, _max_results=max_results)
         return self._http_request('GET', suffix, params=request_params)
 
-    def list_response_policy_zone_rules(self, zone: str, max_results: str, next_page_id: str) -> Dict:
+    def list_response_policy_zone_rules(self, zone: Union[str, None], max_results: Union[str, None],
+                                        next_page_id: Union[str, None]) -> Dict:
         """List response policy zones rules by a given zone name.
         Args:
             zone: response policy zone name.
@@ -171,8 +172,9 @@ class Client(BaseClient):
 
         return self._http_request('GET', suffix, params=request_params)
 
-    def create_response_policy_zone(self, fqdn: str, rpz_policy: str, rpz_severity: str, substitute_name: str,
-                                    rpz_type: str) -> Dict:
+    def create_response_policy_zone(self, fqdn: Union[str, None], rpz_policy: Union[str, None],
+                                    rpz_severity: Union[str, None], substitute_name: Union[str, None],
+                                    rpz_type: Union[str, None]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             fqdn: The name of this DNS zone.
@@ -189,8 +191,9 @@ class Client(BaseClient):
         suffix = 'zone_rp'
         return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_ZONE)
 
-    def create_rpz_rule(self, rule_type: str, object_type: str, name: str, rp_zone: str, substitute_name: str,
-                        comment=None) -> Dict:
+    def create_rpz_rule(self, rule_type: Union[str, None], object_type: Union[str, None], name: Union[str, None],
+                        rp_zone: Union[str, None], substitute_name: Union[str, None],
+                        comment: Union[str, None] = None) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             rule_type: Type of rule to create.
@@ -202,7 +205,7 @@ class Client(BaseClient):
         Returns:
             Response JSON
         """
-        canonical = ''
+        canonical: Optional[str] = ''
         if rule_type == 'Passthru':
             canonical = 'rpz-passthru' if object_type == 'Client IP address' else name
         elif rule_type == 'Block (No data)':
@@ -218,7 +221,7 @@ class Client(BaseClient):
         rule['result']['type'] = suffix
         return rule
 
-    def create_substitute_record_rule(self, suffix: str, **kwargs: dict) -> Dict:
+    def create_substitute_record_rule(self, suffix: Union[str, None], **kwargs: Union[str, None]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             suffix: The infoblox object to be used as a url path.
@@ -248,7 +251,7 @@ class Client(BaseClient):
         rule['result']['type'] = suffix
         return rule
 
-    def change_rule_status(self, reference_id: str, disable: bool) -> Dict:
+    def change_rule_status(self, reference_id: Union[str, None], disable: Union[bool, None]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             reference_id: Rule reference ID
@@ -260,7 +263,7 @@ class Client(BaseClient):
         suffix = reference_id
         return self._http_request('PUT', suffix, data=json.dumps(request_data), params=REQUEST_PARAM_SEARCH_RULES)
 
-    def get_object_fields(self, object_type: str) -> Dict:
+    def get_object_fields(self, object_type: Union[str, None]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             object_type: Infoblox object type
@@ -271,7 +274,8 @@ class Client(BaseClient):
         suffix = object_type
         return self._http_request('GET', suffix, params=request_params)
 
-    def search_rule(self, object_type, rule_name, output_fields) -> Dict:
+    def search_rule(self, object_type: Union[str, None], rule_name: Union[str, None],
+                    output_fields: Union[str, None]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             object_type: Infoblox object type
@@ -286,7 +290,7 @@ class Client(BaseClient):
         suffix = object_type
         return self._http_request('GET', suffix, params=request_params)
 
-    def delete_rpz_rule(self, reference_id) -> Dict:
+    def delete_rpz_rule(self, reference_id: Union[str, None]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             reference_id: Rule reference ID
@@ -315,17 +319,17 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text
 ''' COMMANDS '''
 
 
-def test_module_command(client: Client, *_) -> [str]:
+def test_module_command(client: Client, *_) -> Tuple[str, None, None]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
     """
     try:
-        _ = client.test_module()
-        return ['ok']
+        client.test_module()
+        return 'ok', None, None
     except Exception as e:
         raise DemistoException('Test module failed, {}'.format(e))
 
 
-def get_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict, Dict]:
     """Returns credentials to user without passwords.
     Args:
         client: Client object
@@ -464,7 +468,7 @@ def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     if rpz_policy == 'SUBSTITUTE' and not substitute_name:
         raise DemistoException(f'Response policy zone with policy SUBSTITUTE requires a substitute name')
     raw_response = client.create_response_policy_zone(fqdn, rpz_policy, rpz_severity, substitute_name, rpz_type)
-    zone = raw_response.get('result')
+    zone = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
                            zone.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone: {fqdn} has been created'
@@ -492,7 +496,7 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     if rule_type == 'Substitute (domain name)' and not substitute_name:
         raise DemistoException(f'Substitute (domain name) rules requires a substitute name argument')
     raw_response = client.create_rpz_rule(rule_type, object_type, name, rp_zone, comment, substitute_name)
-    rule = raw_response.get('result')
+    rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
@@ -521,7 +525,7 @@ def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple
                                                         comment=comment, ipv4addr=ipv4addr)
     rule = raw_response.get('result')
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items()}
+                           rule.items(), {}}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -548,7 +552,7 @@ def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tu
                                                         comment=comment, ipv6addr=ipv6addr)
     rule = raw_response.get('result')
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items()}
+                           rule.items(), {}}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -577,7 +581,7 @@ def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tupl
                                                         preference=preference)
     rule = raw_response.get('result')
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items()}
+                           rule.items(), {}}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -608,7 +612,7 @@ def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> T
 
     rule = raw_response.get('result')
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items()}
+                           rule.items(), {}}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -639,7 +643,7 @@ def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tup
                                                         ipv6addr=ipv6addr)
     rule = raw_response.get('result')
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items()}
+                           rule.items(), {}}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -670,7 +674,7 @@ def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tup
                                                         weight=weight)
     rule = raw_response.get('result')
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items()}
+                           rule.items(), {}}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -697,7 +701,7 @@ def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tup
                                                         comment=comment, text=text)
     rule = raw_response.get('result')
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items()}
+                           rule.items(), {}}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -724,7 +728,7 @@ def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tu
                                                         comment=comment, ipv4addr=ipv4addr)
     rule = raw_response.get('result')
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items()}
+                           rule.items(), {}}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -751,7 +755,7 @@ def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tu
                                                         comment=comment, ipv6addr=ipv6addr)
     rule = raw_response.get('result')
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items()}
+                           rule.items(), {}}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -773,7 +777,7 @@ def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
     rule = raw_response.get('result')
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items()}
+                           rule.items(), {}}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {fixed_keys_rule_res.get("Name")} has been enabled'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -795,7 +799,7 @@ def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
     rule = raw_response.get('result')
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items()}
+                           rule.items(), {}}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {fixed_keys_rule_res.get("Name")} has been disabled'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -848,7 +852,7 @@ def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     fixed_keys_rule_list = []
     for rule in rule_list:
         fixed_keys_rule = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items()}
+                           rule.items(), {}}
         fixed_keys_rule_list.append(fixed_keys_rule)
     title = f'{INTEGRATION_NAME} - Search result for: {rule_name}: '
     context = {
