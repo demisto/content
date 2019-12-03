@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, Union
 import urllib3
 
 # Disable insecure warnings
@@ -221,7 +221,7 @@ class Client(BaseClient):
         rule['result']['type'] = suffix
         return rule
 
-    def create_substitute_record_rule(self, suffix: Optional[str], **kwargs: Optional[str]) -> Dict:
+    def create_substitute_record_rule(self, suffix: Optional[str], **kwargs: Union[str, int, None]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             suffix: The infoblox object to be used as a url path.
@@ -251,7 +251,7 @@ class Client(BaseClient):
         rule['result']['type'] = suffix
         return rule
 
-    def change_rule_status(self, reference_id: Optional[str], disable: Optional[str]) -> Dict:
+    def change_rule_status(self, reference_id: Optional[str], disable: Optional[bool]) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
             reference_id: Rule reference ID
@@ -523,9 +523,9 @@ def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple
 
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, ipv4addr=ipv4addr)
-    rule = raw_response.get('result')
+    rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items(), {}}
+                           rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -550,9 +550,9 @@ def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tu
 
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, ipv6addr=ipv6addr)
-    rule = raw_response.get('result')
+    rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items(), {}}
+                           rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -573,15 +573,15 @@ def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tupl
     rp_zone = args.get('rp_zone')
     comment = args.get('comment')
     mail_exchanger = args.get('mail_exchanger')
-    preference = int(args.get('preference'))
+    preference = int(args.get('preference', 0))
     infoblox_object_type = 'record:rpz:mx'
 
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, mail_exchanger=mail_exchanger,
                                                         preference=preference)
-    rule = raw_response.get('result')
+    rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items(), {}}
+                           rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -601,8 +601,8 @@ def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> T
     name = args.get('name')
     rp_zone = args.get('rp_zone')
     comment = args.get('comment')
-    order = int(args.get('order'))
-    preference = int(args.get('preference'))
+    order = int(args.get('order', 0))
+    preference = int(args.get('preference', 0))
     replacement = args.get('replacement')
     infoblox_object_type = 'record:rpz:naptr'
 
@@ -610,9 +610,9 @@ def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> T
                                                         comment=comment, order=order, preference=preference,
                                                         replacement=replacement)
 
-    rule = raw_response.get('result')
+    rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items(), {}}
+                           rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -641,9 +641,9 @@ def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, ptrdname=ptrdname, ipv4addr=ipv4addr,
                                                         ipv6addr=ipv6addr)
-    rule = raw_response.get('result')
+    rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items(), {}}
+                           rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -663,18 +663,18 @@ def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     name = args.get('name')
     rp_zone = args.get('rp_zone')
     comment = args.get('comment')
-    port = int(args.get('port'))
-    priority = int(args.get('priority'))
+    port = int(args.get('port', 0))
+    priority = int(args.get('priority', 0))
     target = args.get('target')
-    weight = int(args.get('weight'))
+    weight = int(args.get('weight', 0))
     infoblox_object_type = 'record:rpz:srv'
 
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, port=port, priority=priority, target=target,
                                                         weight=weight)
-    rule = raw_response.get('result')
+    rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items(), {}}
+                           rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -699,9 +699,9 @@ def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tup
 
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, text=text)
-    rule = raw_response.get('result')
+    rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items(), {}}
+                           rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -726,9 +726,9 @@ def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tu
 
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, ipv4addr=ipv4addr)
-    rule = raw_response.get('result')
+    rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items(), {}}
+                           rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -753,9 +753,9 @@ def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tu
 
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
                                                         comment=comment, ipv6addr=ipv6addr)
-    rule = raw_response.get('result')
+    rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items(), {}}
+                           rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -775,9 +775,9 @@ def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     reference_id = args.get('reference_id')
     raw_response = client.change_rule_status(reference_id, disable=False)
 
-    rule = raw_response.get('result')
+    rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items(), {}}
+                           rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {fixed_keys_rule_res.get("Name")} has been enabled'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -797,9 +797,9 @@ def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     reference_id = args.get('reference_id')
     raw_response = client.change_rule_status(reference_id, disable=True)
 
-    rule = raw_response.get('result')
+    rule = raw_response.get('result', {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items(), {}}
+                           rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {fixed_keys_rule_res.get("Name")} has been disabled'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
@@ -819,7 +819,7 @@ def get_object_fields_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     object_type = args.get('object_type')
     raw_response = client.get_object_fields(object_type)
 
-    fields = raw_response.get('result').get('fields')
+    fields = raw_response.get('result', {}).get('fields', {})
     name_list = [field_obj.get('name') for field_obj in fields]
     title = f'{INTEGRATION_NAME} - Object {object_type} supported fields: '
     context_entry = {
@@ -852,7 +852,7 @@ def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     fixed_keys_rule_list = []
     for rule in rule_list:
         fixed_keys_rule = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items(), {}}
+                           rule.items()}
         fixed_keys_rule_list.append(fixed_keys_rule)
     title = f'{INTEGRATION_NAME} - Search result for: {rule_name}: '
     context = {
