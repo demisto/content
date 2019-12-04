@@ -3982,7 +3982,6 @@ def panorama_get_logs_command():
             logs = result['response']['result']['log']['logs']
             if logs['@count'] == '0':
                 human_readable = f'No {log_type} logs matched the query.'
-                query_logs_output['Status'] = 'Completed'
             else:
                 pretty_logs = prettify_logs(logs['entry'])
                 query_logs_output['Logs'] = pretty_logs
