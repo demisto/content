@@ -446,8 +446,12 @@ class FilesValidator(object):
 
     def validate_all_files(self):
         """Validate all files in the repo are in the right format."""
-        for directory in DIR_LIST:
+        for regex in CHECKED_TYPES_REGEXES:
+            splitted_regex = regex.split('.*')
+            directory = splitted_regex[0]
             for root, dirs, files in os.walk(directory):
+                if root not in DIR_LIST:  # Skipping in case we entered a package
+                    continue
                 print_color('Validating {} directory:'.format(directory), LOG_COLORS.GREEN)
                 for file_name in files:
                     file_path = os.path.join(root, file_name)
@@ -460,21 +464,13 @@ class FilesValidator(object):
                     if not structure_validator.is_valid_scheme():
                         self._is_valid = False
 
-        for directory in PACKAGE_SUPPORTING_DIRECTORIES:
-            for root, dirs, files in os.walk(directory):
-                for inner_dir in dirs:
-                    file_path = glob.glob(os.path.join(root, inner_dir, '*.yml'))[0]
-                    print('Validating ' + file_path)
-                    structure_validator = StructureValidator(file_path)
-                    if not structure_validator.is_valid_scheme():
-                        self._is_valid = False
-
-        for directory in PACKS_DIRECTORIES:
-            for root, inner_dir, _ in os.walk(directory):
-                file_path = glob.glob((os.path.join(root, inner_dir, '*', '*.yml')))
-                structure_validator = StructureValidator(file_path)
-                if not structure_validator.is_valid_scheme():
-                    self._is_valid = False
+                if root in PACKAGE_SUPPORTING_DIRECTORIES:
+                    for inner_dir in dirs:
+                        file_path = glob.glob(os.path.join(root, inner_dir, '*.yml'))[0]
+                        print('Validating ' + file_path)
+                        structure_validator = StructureValidator(file_path)
+                        if not structure_validator.is_valid_scheme():
+                            self._is_valid = False
 
     def is_valid_structure(self, branch_name, is_backward_check=True, prev_ver=None):
         """Check if the structure is valid for the case we are in, master - all files, branch - changed files.
