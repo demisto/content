@@ -17,5 +17,3 @@ class TestingVersion:
         finally:
             if os.path.isfile(test_path):
                 os.remove(test_path)
-
-
