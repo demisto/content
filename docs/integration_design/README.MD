@@ -1,16 +1,14 @@
 # Integration Design
 ## Intro
-In this tutorial we'll talk about how to get from an initial need or idea for an integration you want to implement in Demisto, to a design document that'll help you get organized and understand exactly what you need to implement.
+In this tutorial, we'll discuss how to get from an initial need for an integration you want to implement in Demisto, to a design document that will help you become more organized and better understand exactly what it is that you need to implement.
 
 ## Why do I need a design document in the first place?
-You might be thinking "Why do I need to write this document? Why not just start writing?" 
-Well, we believe that writing such a document before starting any code writing will help you better understand your use of this integration, understand what exactly you want to do and what you want to get out of each command or fetch.
+You may be thinking "Why do I need to write a design document? Why not just start writing?". 
+Well, we believe that writing a design document _before_ starting any code writing will help you better understand your use of the integration. Additionally, the design document will assist you to better understand exactly what you want to do and what you want to get out of each command or fetch.
 (We also require this documentation for our review and final inclusion in Demisto, but the former reason is the more important one).
 
-
-
 ## Identify What Type of Integration I'm Building
-You can divide most integrations in Demisto into one of the following categories. We advise you to try to understand in which your integration fits in. Each link is to a short list of use-cases for such integration and examples of existing integrations and commands so that you can have some idea as to how or what to implement:
+You can divide most integrations in Demisto into one of the following categories. We advise you to try and understand which type is most closely similar to your integration. The following links are to a short list of use-cases for each integration type and showcases a few examples of existing integrations and commands so that you can have a better idea as to how best to implement them:
 ## Usecases
 1. [Analytics and SIEM](https://github.com/demisto/content/tree/master/docs/integration_design/usecases/Analytics_SIEM_usecase)
 2. [Authentication](https://github.com/demisto/content/tree/master/docs/integration_design/usecases/Authentication_usecase)
@@ -24,40 +22,47 @@ You can divide most integrations in Demisto into one of the following categories
 10. [Vulnerability Management](https://github.com/demisto/content/tree/master/docs/integration_design/usecases/vulnerability_management_usecase)
 
 
-## Understanding and Documenting the Use Cases
-If your'e on your way to writing an integration for Demisto you probably are already familiar with the product you want to integrate, but it might help to go into the product again to see what actions you want to implemnt, how you think they'll work once in Demisto.
-Write down the use cases for your integration, how you would use it and how you think outher people will use it.
+## Understanding and Documenting the Use-Cases
+If you are on your way towards writing an integration for Demisto, you probably are already familiar with the product you want to integrate with. However, it might help to visit the product again to see which actions you want to implement keeping in mind how you think they'll work once integrated with Demisto.
+
+Write down the use cases for your integration, how you would use it, and how you think other people will use the integration.
 ```Markdown
-# Use Cases:
-- Create, get, edit, close a ticket/issue, add + view comments.
+# Use-Cases:
+- Create, get, edit, close a ticket/issue, add & view comments.
 - Assign a ticket/issue to a specified user.
 - List all tickets, filter by name, date, assignee
 ```
 
 ## Parameters
-In this section write what are the parameters you need in order to create an instance of the product and connect to it. These parameters will be accessible and used in all the integration. 
-We require 2 fields as part of the parameters:
-1. proxy - You probably recoginze this field as "Use system proxy settings". This is a boolean field that handles proxy if True
-2. insecure - (a.k.a. Trust any certificate (not secure)) This field is also boolean and indicates if to use only certified certificates.
+In this section you will write what are the parameters are needed in order to create an instance of the integration and connect to it. These parameters will be accessible and used in all parts of the integration. 
+We require the following two parameters in every integration (if possible).:
 
-When implementing the integration have a look at existing integrations to see how we implement this.
-If your integration implements `Fetches incidents` also add a boolean field called `isFetch`
+| Parameter Name | Display Name | What it does |
+| --- | --- | --- |
+| `proxy` | "Use system proxy settings" | This is a boolean field which handles the system proxy if `True`. |
+| `insecure` | "Trust any certificate (not secure)" | This field is a boolean and verifies connections with a valid certificate.|
 
-Some other comonly used paramteres:
-1. url
-2. apikey
-3. token
-4. crecentials (username + password)
-5. query - Sometimes we want the user to specify the search query for fetch incidents (i.e. Splunkpy)
+When implementing the integration, have a look at existing integrations to see how we implement the aforementioned parameters.
+If your integration implements `Fetches incidents` also add a boolean field called `isFetch`.
+
+Some other comonly used parameters:
+1. `url`
+2. `apikey`
+3. `token`
+4. `crecentials` (username + password)
+5. `query` - Sometimes we need the user to specify the search query for fetch incidents (i.e. SplunkPy)
+
 ## Commands, Arguments & Outputs
 Now let's write down exactly what commands you want to implement. Each command has 3 parts:
-1. Command name
-2. Command arguments
-3. Command outputs
+1. Name
+2. Arguments
+3. Outputs
+
 #### Command Name
-We have a standard for a command's name: `brand-action`
+We have a code standard for a command's name which requires the command to contain the brand (`intsights`) and the action (`get-alert-activities`) for the command name. The standard is: `brand-action`
 For example `intsights-get-alert-activities`
-If your commands checks the maliciousness of an IP/Domain/URL/File name your command simply `ip`\ `domain`\ `url`\ `file`. If this is the case make sure your outputs (which we'll get to in a second) match the [context standards](https://github.com/demisto/content/tree/master/docs/context_standards).
+
+If your commands enriches an IP/Domain/URL/File, your command should be named simply `ip`\ `domain`\ `url`\ `file` repectively. If this is the case, ensure your outputs match the [context standards](https://github.com/demisto/content/tree/master/docs/context_standards).
 
 #### Command argument
 These are the arguments for the command for example `!intsights-get-alert-activities alert-id=`, `!ip ip="8.8.8.8"`
@@ -65,7 +70,7 @@ Argument names must be snake case.
 * Good: `alert-id`.
 * Bad: `alertId`.
 
-#### Command Outputs
+#### Command Outputs {#outputs}
 There are 3 type of outputs from the command:
 1. Human Readable output - This is what will be printed to the war room. It should be in Markdown form.
 2. Raw Json - A JSON of the raw response that was returned from the API. 
@@ -100,7 +105,7 @@ RuleID|InterfaceName|SourceIP|DestIP|Position|
 124|Some Interface|1.1.1.1|2.2.2.2|6|
 
 
-## Additinal Comments
+## Additional Comments
 1. Please  add a link to the REST API documentation to this document both so you could have it handy when needed and so we can have it ready when we review the integration.
 2. Find a logo for this integration to be displayed in Demisto that is under 10 kb.
 3. If caclulating DBot Score stay as close as possible to the vendor’s scoring thresholds and categorization (these are usually documented/can be understood from the UI). Dbot score reputation includes the following scores: 0 – unknown, 1 – good, 2 – suspicious, 3 – bad. Give users a threshold argument in order to let customers override and set another scoring logic.
