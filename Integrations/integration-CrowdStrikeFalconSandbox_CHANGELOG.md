@@ -1,2 +1,2 @@
 ## [Unreleased]
-  - Fixed **crowdstrike-submit-sample** not working in api v2.
+The ***crowdstrike-submit-sample*** now works as expected.
