@@ -166,6 +166,7 @@ class Client(BaseClient):
                     'FieldValues': self.string_to_FieldValues(field_string, component_id)
                 }
             }
+
         if record_json:
             json_data = record_json
         if not json_data:
