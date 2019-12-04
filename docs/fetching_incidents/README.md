@@ -60,11 +60,19 @@ Incidents are created by building an array of incident objects. These object all
 
 ```python
     # convert the events to demisto incident 
+    events = [
+        {
+            'name': 'event_1',
+            'create_time': '2019-10-23T10:11:00Z',
+            'event_id': 100
+        }
+    ]
+    
     incidents = []
     for event in events:
         incident = {
             'name': event['name'],        # name is required field, must be set
-            'occurred': event['create_time'], # occurred is optional date
+            'occurred': event['create_time'], # occurred is optional date - must be string of a format ISO8601
             'rawJSON': json.dumps(event)  # set the original event to rawJSON, this will allow mapping of the event. Don't forget to `json.dumps`
         }
         incident.append(incident)
@@ -76,7 +84,7 @@ When fetching incidents, it's important to include the ```rawJson``` key in the 
 ```python
         incident = {
             'name': event['name'],        # name is required field, must be set
-            'occurred': event['create_time'], # occurred is optional date
+            'occurred': event['create_time'], # occurred is optional date - must be string of a format ISO8601
             'rawJSON': json.dumps(event)  # set the original event to rawJSON, this will allow mapping of the event. Don't forget to `json.dumps`
         }
 ```
@@ -100,3 +108,6 @@ An example of it's usage is below:
     # this command will create incidents in Demisto
     demisto.incidents(incidents)
 ```
+
+## Troubleshooting
+For troubleshooting fetch-incident execute `!integration_instance_name-fetch` in the Playground, it should return the incidents
