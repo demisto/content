@@ -1,11 +1,11 @@
 args:
 - default: false
-  description: the name of the model
+  description: The name of the ML model to export to a file.
   isArray: false
   name: modelName
   required: false
   secret: false
-comment: 'export existing ml model to file '
+comment: 'Exports an existing ML model to a file. '
 commonfields:
   id: ExportMLModel
   version: -1
