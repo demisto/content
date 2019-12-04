@@ -7,7 +7,6 @@ import boto3
 import json
 from datetime import datetime, date
 from botocore.config import Config
-from botocore.parsers import ResponseParserError
 
 
 """GLOBAL VARIABLES"""
@@ -144,7 +143,7 @@ def list_analyzers(args):
     data = []
 
     response = client.list_analyzers()
-    for analyzer in  response['analyzers']:
+    for analyzer in response['analyzers']:
         data.append(analyzer)
     data = json.loads(json.dumps(data, cls=DatetimeEncoder))
 
@@ -190,7 +189,7 @@ def list_findings(args):
     )
 
     kwargs = {
-        'analyzerArn' : args.get('analyzerArn')
+        'analyzerArn': args.get('analyzerArn')
     }
 
     if args.get('maxResults'):
@@ -258,6 +257,43 @@ def get_finding(args):
     return_outputs(human_readable, ec)
 
 
+def start_resource_scan(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+
+    kwargs = {
+        'analyzerArn': args.get('analyzerArn'),
+        'resourceArn': args.get('resourceArn')
+    }
+
+    client.start_resource_scan(**kwargs)
+    return_outputs("Resource scan request sent.")
+
+
+def update_findings(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+
+    ids = args.get('findingIds').split(',')
+
+    kwargs = {
+        'analyzerArn': args.get('analyzerArn'),
+        'ids': ids,
+        'status': args.get('status')
+    }
+
+    client.update_findings(**kwargs)
+    return_outputs("Findings updated")
+
+
 def test_function():
     try:
         client = aws_session()
@@ -267,7 +303,6 @@ def test_function():
 
     except Exception as e:
         return return_error(str(e))
-
 
 
 """EXECUTION BLOCK"""
@@ -285,6 +320,10 @@ try:
         get_analyzed_resource(demisto.args())
     elif demisto.command() == 'aws-access-analyzer-get-finding':
         get_finding(demisto.args())
+    elif demisto.command() == 'aws-access-analyzer-start-resource-scan':
+        start_resource_scan(demisto.args())
+    elif demisto.command() == 'aws-access-analyzer-update-findings':
+        update_findings(demisto.args())
 
 except Exception as e:
     return_error(f"Error has occured in AWS Access Analyzer Integration: {str(e)}")

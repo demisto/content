@@ -65,6 +65,7 @@ script:
     name: aws-access-analyzer-list-analyzers
     outputs:
     - contextPath: AWS.AccessAnalyzer.Analyzers.arn
+      description: List of Analyzers and their details.
       type: Unknown
   - arguments:
     - default: false
@@ -126,6 +127,7 @@ script:
     name: aws-access-analyzer-list-analyzed-resource
     outputs:
     - contextPath: AWS.AccessAnalyzer.Analyzers.Resource
+      description: List of analyzed resources.
       type: Unknown
   - arguments:
     - default: false
@@ -197,6 +199,7 @@ script:
     name: aws-access-analyzer-list-findings
     outputs:
     - contextPath: AWS.AccessAnalyzer.Findings
+      description: Access Analyzer findings.
       type: Unknown
   - arguments:
     - default: false
@@ -243,6 +246,7 @@ script:
     name: aws-access-analyzer-get-analyzed-resource
     outputs:
     - contextPath: AWS.AccessAnalyzer.Analyzers.Resource
+      description: Analyzed resource detail.
       type: Unknown
   - arguments:
     - default: false
@@ -289,7 +293,105 @@ script:
     name: aws-access-analyzer-get-finding
     outputs:
     - contextPath: AWS.AccessAnalyzer.Analyzers.Finding
+      description: Finding details.
       type: Unknown
+  - arguments:
+    - default: false
+      description: The ARN of the analyzer to use to scan the policies applied to
+        the specified resource.
+      isArray: false
+      name: analyzerArn
+      required: true
+      secret: false
+    - default: false
+      description: The ARN of the resource to scan.
+      isArray: false
+      name: resourceArn
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Starts a scan of the policies applied to the specified resource.
+    execution: false
+    name: aws-access-analyzer-start-resource-scan
+  - arguments:
+    - default: false
+      description: The ARN of the analyzer that generated the findings to update.
+      isArray: false
+      name: analyzerArn
+      required: true
+      secret: false
+    - default: false
+      description: The IDs of the findings to update (comma separated).
+      isArray: true
+      name: findingIds
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The ARN of the resource to scan.
+      isArray: false
+      name: status
+      predefined:
+      - ACTIVE
+      - ARCHIVED
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates findings with the new values provided in the request.
+    execution: false
+    name: aws-access-analyzer-update-findings
   dockerimage: asetiawa/reinvent-demo-demisto:4
   isfetch: true
   longRunning: false
