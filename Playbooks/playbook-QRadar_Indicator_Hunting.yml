@@ -37,6 +37,7 @@ tasks:
     type: title
     task:
       id: c65c2d96-ddec-4e30-84d7-64c86ed0d755
+      description: Header
       version: -1
       name: Hash Search
       type: title
