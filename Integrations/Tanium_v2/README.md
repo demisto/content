@@ -3,7 +3,7 @@
 
   This integration was integrated and tested with version 7.3.0 of Tanium server
 </p>
-<h2>Tanium v2 Palaybooks</h2>
+<h2>Tanium v2 Playbooks</h2>
 <ul>
   <li>Tanium - Ask Question</li>
   <li>Tanium - Get Saved Question Result</li>
