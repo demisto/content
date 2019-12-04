@@ -24,9 +24,9 @@ configuration:
   name: conf_name
   required: false
   type: 0
-description: With BlueCat Address Manager for Windows Server, there’s no need to spend
-  time and effort navigating between separate server instances in the Microsoft Management
-  Console (MMC).
+description: With BlueCat Address Manager, there’s no need to spend time and effort
+  navigating between separate server instances in the Microsoft Management Console
+  (MMC).
 display: Bluecat Address Manager
 name: BluecatAddressManager
 script:
