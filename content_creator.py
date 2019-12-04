@@ -1,4 +1,3 @@
-
 import os
 import sys
 import json
@@ -13,7 +12,6 @@ from Tests.scripts.constants import INTEGRATIONS_DIR, MISC_DIR, PLAYBOOKS_DIR, R
     BETA_INTEGRATIONS_DIR, INDICATOR_FIELDS_DIR, INCIDENT_TYPES_DIR, TEST_PLAYBOOKS_DIR
 from Tests.test_utils import print_error
 from package_creator import DIR_TO_PREFIX, merge_script_package_to_yml, write_yaml_with_docker
-
 
 CONTENT_DIRS = [
     BETA_INTEGRATIONS_DIR,
@@ -148,23 +146,9 @@ def copy_test_files(bundle_test):
             shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
-def update_content_version(key, new_value):
-    f = open('./Scripts/CommonServerPython/CommonServerPython.py', 'r')
-    lines = f.readlines()
-    f.close()
-    for i, line in enumerate(lines):
-        if line.split('=')[0].strip(' \n') == key:
-            lines[i] = f'{key} = "{new_value}"\n'
-    f = open('./Scripts/CommonServerPython/CommonServerPython.py', "w")
-    f.write(''.join(lines))
-    f.close()
-
-
-def main(circle_artifacts, content_version):
-
-    # update content_version in commonServerPython
-    update_content_version('CONTENT_RELEASE_VERSION', content_version)
+def main(circle_artifacts):
     print('Starting to create content artifact...')
+
     print('creating dir for bundles...')
     for bundle_dir in [BUNDLE_POST, BUNDLE_TEST]:
         os.mkdir(bundle_dir)
@@ -205,12 +189,12 @@ def main(circle_artifacts, content_version):
     shutil.copyfile("./Tests/id_set.json", os.path.join(circle_artifacts, "id_set.json"))
 
     shutil.copyfile('release-notes.md', os.path.join(circle_artifacts, 'release-notes.md'))
+
     print(f'finished create content artifact at {circle_artifacts}')
-    print(content_version)
 
 
 if __name__ == '__main__':
-    main(*sys.argv[1:])
+    main(sys.argv[1])
     if LONG_FILE_NAMES:
         print_error(f'The following files exceeded to file name length limit of {MAX_FILE_NAME}:\n'
                     f'{json.dumps(LONG_FILE_NAMES, indent=4)}')
