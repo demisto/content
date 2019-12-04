@@ -29,14 +29,14 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: f9ef20ef-131d-40ff-82a8-49e1815e5532
+    taskid: d3404936-2a0b-49ca-86d5-9aea7acd7921
     type: regular
     task:
-      id: f9ef20ef-131d-40ff-82a8-49e1815e5532
+      id: d3404936-2a0b-49ca-86d5-9aea7acd7921
       version: -1
       name: Get component by alias
-      description: Retrieves a component specified by its Alias.
-      script: Lockpath KeyLight v2|||kl-get-component-by-alias
+      description: Retrieves a component specified by its ID.
+      script: Lockpath KeyLight v2|||kl-get-component
       type: regular
       iscommand: true
       brand: Lockpath KeyLight v2
@@ -46,6 +46,7 @@ tasks:
     scriptarguments:
       alias:
         simple: _auditdemisto
+      component_id: {}
     separatecontext: false
     view: |-
       {
@@ -163,21 +164,23 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 7a4e61ca-c23b-40d4-8b26-7ffb072d0e83
+    taskid: f70129c8-9078-41bb-8abb-996895e9eb1b
     type: regular
     task:
-      id: 7a4e61ca-c23b-40d4-8b26-7ffb072d0e83
+      id: f70129c8-9078-41bb-8abb-996895e9eb1b
       version: -1
       name: Get component list
-      description: Returns a complete list of all Keylight components available to
-        the user based on account permissions.
-      script: Lockpath KeyLight v2|||kl-get-component-list
+      description: Retrieves a component specified by its ID.
+      script: Lockpath KeyLight v2|||kl-get-component
       type: regular
       iscommand: true
       brand: Lockpath KeyLight v2
     nexttasks:
       '#none#':
       - "6"
+    scriptarguments:
+      alias: {}
+      component_id: {}
     separatecontext: false
     view: |-
       {
@@ -399,10 +402,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 02ef5839-27aa-49fb-89bb-cc87389bf60b
+    taskid: 092d04cb-9e81-4814-8cd6-3bb3cedec8e7
     type: regular
     task:
-      id: 02ef5839-27aa-49fb-89bb-cc87389bf60b
+      id: 092d04cb-9e81-4814-8cd6-3bb3cedec8e7
       version: -1
       name: Get specific field
       description: Retrieves details for a field specified by its ID.
@@ -414,8 +417,12 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
+      component_id:
+        simple: "10359"
       field_id:
         simple: "9083"
+      field_name:
+        simple: Task ID
       id: {}
     separatecontext: false
     view: |-
@@ -430,12 +437,12 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: c2b4a3c2-f5da-41b0-8c4a-3865c0ec7dbe
+    taskid: fd90a00d-b681-4d96-8349-0c228e3d0853
     type: condition
     task:
-      id: c2b4a3c2-f5da-41b0-8c4a-3865c0ec7dbe
+      id: fd90a00d-b681-4d96-8349-0c228e3d0853
       version: -1
-      name: Verify task name
+      name: Verify field name
       type: condition
       iscommand: false
       brand: ""
@@ -637,16 +644,16 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 890f8f80-8d6c-49c9-8eac-978f4a738d44
+    taskid: 46484c46-f07e-458c-8cc5-44d743a98307
     type: regular
     task:
-      id: 890f8f80-8d6c-49c9-8eac-978f4a738d44
+      id: 46484c46-f07e-458c-8cc5-44d743a98307
       version: -1
       name: Get updated tasks
       description: |-
         Returns the title/default field for a set of records within a chosen component.
         Filters may be applied to return only the records meeting selected criteria.
-      script: Lockpath KeyLight v2|||kl-get-filtered-records
+      script: Lockpath KeyLight v2|||kl-get-records
       type: regular
       iscommand: true
       brand: Lockpath KeyLight v2
@@ -666,6 +673,7 @@ tasks:
         simple: Updated
       page_index: {}
       page_size: {}
+      returned_fields: {}
     separatecontext: false
     view: |-
       {
