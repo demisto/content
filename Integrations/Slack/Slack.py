@@ -713,7 +713,7 @@ def invite_to_mirrored_channel(channel_id: str, users: List[Dict]):
     """
     users_to_invite = []
     for user in users:
-        slack_user = ''
+        slack_user: dict = {}
         # Try to invite by Demisto email
         user_email = user.get('email', '')
         if user_email:
