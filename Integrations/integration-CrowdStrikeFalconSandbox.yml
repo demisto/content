@@ -250,9 +250,9 @@ script:
         var multipart_content = null;
         if (version === 'v2') {
             HEADERS['Content-Type'] = ['application/x-www-form-urlencoded'];
-            multipart_content = {environment_id: environmentId}; // For API v1
+            multipart_content = {environment_id: environmentId}; // For API v2
         } else {
-            multipart_content = {environmentId: environmentId}; // For API v2
+            multipart_content = {environmentId: environmentId}; // For API v1
         }
 
         // submit file
