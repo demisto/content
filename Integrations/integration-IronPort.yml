@@ -23,7 +23,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -197,4 +197,5 @@ script:
         and value must be set to true , for example, entity=us&starts_with=true .
     description: Retrieve email security appliance statistical reports
   runonce: false
-sourcemoduleid: Cisco Email Security Appliance (IronPort)
+tests:
+  - No Tests
