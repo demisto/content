@@ -12,6 +12,7 @@ tasks:
     type: start
     task:
       id: 11fd0d4b-314c-44cd-8e44-838b3841c5dc
+      description: Header
       version: -1
       name: ""
       iscommand: false
@@ -61,6 +62,7 @@ tasks:
     type: playbook
     task:
       id: a21a7c2b-b160-4e23-8e19-a63a380e0ead
+      description: QRadarFullSearch
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
@@ -140,6 +142,7 @@ tasks:
     type: title
     task:
       id: eb5c14ba-4082-4242-89f3-8e0121f48b10
+      description: Header
       version: -1
       name: IP Search
       type: title
@@ -165,6 +168,7 @@ tasks:
     type: title
     task:
       id: 0b3037a1-cfca-41d6-8820-0c3e776a1912
+      description: Header
       version: -1
       name: Domain/Url Search
       type: title
@@ -310,6 +314,7 @@ tasks:
     type: title
     task:
       id: ccc36777-6654-4f47-8b78-2335017fc05b
+      description: Header
       version: -1
       name: Done
       type: title
@@ -450,6 +455,7 @@ tasks:
     type: playbook
     task:
       id: 86da8ddc-7d77-4f10-8771-9b02f16206b6
+      description: QRadarFullSearch
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
@@ -647,6 +653,7 @@ tasks:
     type: playbook
     task:
       id: 4abad967-e668-418c-863b-e853c8b21655
+      description: QRadarFullSearch
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
@@ -732,6 +739,7 @@ tasks:
     type: title
     task:
       id: 2f253420-222c-4f67-82d4-39a1509cca03
+      description: Header
       version: -1
       name: Done
       type: title
@@ -754,6 +762,7 @@ tasks:
     type: title
     task:
       id: dda895b8-450a-49cc-8551-d8cc0bc646ee
+      description: Hedaer
       version: -1
       name: MD5 Search
       type: title
@@ -779,6 +788,7 @@ tasks:
     type: title
     task:
       id: 0adbc131-487a-4d43-8d93-8b981714a1be
+      description: Header
       version: -1
       name: SHA1 Search
       type: title
@@ -918,6 +928,7 @@ tasks:
     type: playbook
     task:
       id: e26f1e72-0978-4268-80d0-8f9e6e48b814
+      description: QRadarFullSearch playbook
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
@@ -997,6 +1008,7 @@ tasks:
     type: playbook
     task:
       id: 97f98a97-3c5c-43b9-8ebe-e7c65f7ba74f
+      description: QRadarFullSearch
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
@@ -1123,6 +1135,7 @@ tasks:
     type: playbook
     task:
       id: 0c279bd3-5a55-4301-80cf-a7d56736837e
+      description: QRadarFullSearch
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
@@ -1201,6 +1214,7 @@ tasks:
     type: title
     task:
       id: 05a453f8-894c-40cc-8819-9e730340b485
+      description: Header
       version: -1
       name: SHA256 Search
       type: title
@@ -1422,6 +1436,7 @@ tasks:
     type: playbook
     task:
       id: 25db2f9b-39c2-418f-817b-472517bc49e7
+      description: QRadarFullSearch
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
@@ -1501,6 +1516,7 @@ tasks:
     type: playbook
     task:
       id: 12b11648-0e61-4045-8bdb-620edf4bae86
+      description: QRadarFullSearch
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
@@ -1586,6 +1602,7 @@ tasks:
     type: title
     task:
       id: fc6a9fb5-82b5-4c69-825d-da8c1b78dcb5
+      description: Header
       version: -1
       name: Done
       type: title
@@ -1727,6 +1744,7 @@ tasks:
     type: playbook
     task:
       id: 21b42713-1a03-41ea-8eaf-728f18488407
+      description: QRadarFullSearch
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
@@ -1805,6 +1823,7 @@ tasks:
     type: playbook
     task:
       id: 0d001bc9-a571-4fc7-8461-57b5b9e66ef8
+      description: QRadarFullSearch
       version: -1
       name: QRadarFullSearch
       playbookName: QRadarFullSearch
