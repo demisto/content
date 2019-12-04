@@ -1195,12 +1195,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets a URL category from URL Filtering.
+    description: Returns a URL category from URL Filtering.
     execution: false
     name: panorama-get-url-category-from-cloud
     outputs:
     - contextPath: Panorama.URLFilter.URL
-      description: URL.
+      description: The URL.
       type: string
     - contextPath: Panorama.URLFilter.Category
       description: URL category.
@@ -1213,12 +1213,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets a URL category from URL Filtering.
+    description: Returns a URL category from URL Filtering.
     execution: false
     name: panorama-get-url-category-from-host
     outputs:
     - contextPath: Panorama.URLFilter.URL
-      description: URL.
+      description: The URL.
       type: string
     - contextPath: Panorama.URLFilter.Category
       description: URL category.
