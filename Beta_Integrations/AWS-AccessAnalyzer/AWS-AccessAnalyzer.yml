@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: AWS - AccessAnalyzer (Beta)
+  id: AWS - AccessAnalyzer
   version: -1
 fromversion: 4.5.0
 configuration:
@@ -58,8 +58,8 @@ configuration:
   required: false
   type: 8
 description: Amazon Web Services IAM Access Analyzer
-display: AWS - AccessAnalyzer (Beta)
-name: AWS - AccessAnalyzer (Beta)
+display: AWS - AccessAnalyzer
+name: AWS - AccessAnalyzer
 script:
   commands:
   - arguments:
