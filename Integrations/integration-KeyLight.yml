@@ -444,3 +444,5 @@ script:
     description: Deletes the specified attachments from the provided document fields
       on a specific record
 fromversion: 3.5.0
+tests:
+  - No test - Deprecated. Use Lockpath Keylight v2
