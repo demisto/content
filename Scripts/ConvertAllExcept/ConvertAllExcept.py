@@ -7,10 +7,7 @@ def main(args):
     convert_to = args.get('convertTo')
     exceptions = argToList(args.get('except'))
 
-    if value in exceptions:
-        return value
-    else:
-        return convert_to
+    return value if value in exceptions else convert_to
 
 
 if __name__ in ('builtins', '__builtin__'):
