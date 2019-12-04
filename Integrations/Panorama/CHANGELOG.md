@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Fixed an issue with a log query without results not updating its status to *Completed*.
   - Add 2 commands:
     - ***panorama-get-url-category-from-cloud***
     - ***panorama-get-url-category-from-host***
