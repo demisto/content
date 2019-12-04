@@ -391,9 +391,6 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     params = build_params(value=ip, type="ip", status=status, limit=0)
     indicator = search_indicator_by_params(params, ip)
     threshold = threshold or DEFAULT_THRESHOLD
-    dbot_context = get_dbot_context(indicator, threshold)
-    ip_context = get_ip_context(indicator, threshold)
-    threat_ip_context = get_threat_generic_context(indicator)
 
     indicator = {
         'value': '8.8.8.8',
@@ -426,8 +423,8 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     )
     command_result = CommandResult(
         vendor='ThreatStream',
-        object_name='Analysis',
-        uniq_field='value',
+        object_name='IP',
+        uniq_field='Address',
         output=indicator,
         indicators=ip_context
     )
@@ -443,18 +440,6 @@ def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     params = build_params(value=domain, type="domain", status=status, limit=0)
     indicator = search_indicator_by_params(params, domain)
     threshold = threshold or DEFAULT_THRESHOLD
-    dbot_context = get_dbot_context(indicator, threshold)
-    domain_context = get_domain_context(indicator, threshold)
-    threat_domain_context = get_threat_generic_context(indicator)
-
-    ec = {
-        'DBotScore': dbot_context,
-        'Domain(val.Name == obj.Name)': domain_context,
-        'ThreatStream.Domain(val.Address == obj.Address)': threat_domain_context
-    }
-    human_readable = tableToMarkdown(F"Domain reputation for: {domain}", threat_domain_context)
-
-    return_outputs(human_readable, ec, indicator)
 
     indicator = {
         'value': 'demisto.com',
