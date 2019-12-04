@@ -55,7 +55,7 @@ jobs:
           command: |
             python ./Tests/scripts/update_id_set.py -r
       - run:
-          name: Infrastucture testing
+          name: Infrastructure testing
           when: always
           command: |
             python -m pytest ./Tests/scripts/hook_validations/tests/ -v
@@ -130,7 +130,7 @@ jobs:
               SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
             fi
       - run:
-          name: Verify Base Branch for Contirbution
+          name: Verify Base Branch for Contribution
           when: always
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
