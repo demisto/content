@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Handled an issue with mismatching user names in mirrored investigations.
 
 ## [19.11.1] - 2019-11-26
 Added Slack API rate limit call handling.
