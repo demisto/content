@@ -200,7 +200,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                python ./Tests/scripts/run_content_installation.py
+                python ./Tests/scripts/isolate_issue.py
                 python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION
 
               else
