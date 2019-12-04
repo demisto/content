@@ -1,15 +1,19 @@
+""" IMPORTS """
+# Std imports
+from datetime import datetime
+
+# 3-rd party imports
+from typing import Dict, Tuple, Union, Optional, List, Any, AnyStr
+import urllib3
+
+# Local imports
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-''' IMPORTS '''
-from typing import Dict, Tuple, Union, Optional, List, Any, AnyStr
-import urllib3
-# Disable insecure warnings
-urllib3.disable_warnings()
-
 """GLOBALS/PARAMS
+
 Attributes:
     INTEGRATION_NAME:
         Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
@@ -25,6 +29,9 @@ INTEGRATION_NAME = 'PhishLabs IOC - DRP'
 INTEGRATION_COMMAND_NAME = 'phishlabs-ioc-drp'
 INTEGRATION_CONTEXT_NAME = 'PhishLabsIOC'
 
+# Disable insecure warnings
+urllib3.disable_warnings()
+
 
 class Client(BaseClient):
     def test_module(self) -> Dict:
@@ -36,8 +43,8 @@ class Client(BaseClient):
         return self.get_cases(max_records=2)
 
     def get_cases(self, status: Optional[str] = None, case_type: Optional[str] = None,
-                  max_records: Union[str, int] = 25, offset: Union[str, int] = 0,
-                  date_field: Optional[str] = None, begin_date: Optional[str] = None,
+                  max_records: Union[str, int] = 20, offset: Union[str, int] = 0,
+                  date_field: str = 'dateModified', begin_date: Optional[str] = None,
                   end_date: Optional[str] = None, query_type: str = '') -> Dict:
         """
         Query the specified kwargs with default parameters if not defined
@@ -56,18 +63,73 @@ class Client(BaseClient):
             Response JSON as dictionary
         """
         suffix: str = f'/cases/{query_type}' if query_type else '/cases'
-        params = {
+        params: Dict = {
             'status': status,
             'type': case_type,
-            'maxRecords': int(max_records),
             'offset': int(offset),
-            'dateField': date_field,
-            'dateBegin': begin_date,
-            'dateEnd': end_date
+            'maxRecords': int(max_records)
         }
-        return self._http_request('GET',
-                                  url_suffix=suffix,
-                                  params=assign_params(**params))
+        raw_response: Dict = self._http_request('GET',
+                                                url_suffix=suffix,
+                                                params=assign_params(**params),
+                                                timeout=20)
+        cases_temp: List = raw_response.get('data', [])
+
+        format_time = "%Y-%m-%dT%H:%M:%SZ"
+        last_time: datetime = None if not cases_temp else datetime.strptime(cases_temp[0].get(date_field), format_time)
+        end_date_obj: datetime = datetime.strptime(end_date, format_time) if end_date else datetime.now()
+        begin_date_obj: Optional[datetime] = datetime.strptime(begin_date, format_time) if begin_date else None
+
+        index = 0
+        while end_date:
+            if end_date_obj < last_time:
+                if len(cases_temp) == index + 1:
+                    params['offset'] += len(cases_temp)
+                    cases_temp = self._http_request('GET',
+                                                    url_suffix=suffix,
+                                                    params=assign_params(**params),
+                                                    timeout=20).get('data', [])
+                    index = 0
+                    if not cases_temp:
+                        break
+                else:
+                    index += 1
+                last_time = datetime.strptime(cases_temp[index].get(date_field), format_time)
+            else:
+                break
+
+        # Move forward to end date but not exceed limit
+        cases: List = []
+        while cases_temp and len(cases) < int(max_records):
+            if begin_date_obj:
+                if last_time > begin_date_obj:
+                    cases.append(cases_temp[index])
+                else:
+                    break
+            else:
+                cases.append(cases_temp[index])
+
+            if len(cases) == max_records:
+                break
+            elif len(cases_temp) == index + 1:
+                params['offset'] += len(cases_temp)
+                cases_temp = self._http_request('GET',
+                                                url_suffix=suffix,
+                                                params=assign_params(**params),
+                                                timeout=20).get('data', [])
+                index = 0
+                if not cases_temp:
+                    break
+            else:
+                index += 1
+            last_time = datetime.strptime(cases_temp[index].get(date_field), format_time)
+
+        raw_response['header']['returnResult'] = len(cases)
+        raw_response['header']['totalResult'] = len(cases)
+        raw_response['header']['queryParams']['maxRecords'] = len(cases)
+        raw_response['data'] = cases
+
+        return raw_response
 
     def get_case_by_id(self, case_id: str) -> Dict:
         """Query incident by ID
@@ -247,11 +309,13 @@ def fetch_incidents_command(
         client: Client,
         fetch_time: str,
         max_records: Union[str, int],
+        date_field: str = 'dateModified',
         last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
     Args:
+        date_field: filter date is by dateCreated / dateClosed / dateModified
         client: Client object with request
         fetch_time: From when to fetch if first time, e.g. `3 days`
         max_records: limit of incidents in a fetch
@@ -260,54 +324,28 @@ def fetch_incidents_command(
     Returns:
         incidents, new last_run
     """
-    # Init
-    raws: List = []
-    cases_raw: List = []
-    # Set last run time
     occurred_format = '%Y-%m-%dT%H:%M:%SZ'
     if not last_run:
         datetime_new_last_run, _ = parse_date_range(date_range=fetch_time,
                                                     date_format=occurred_format)
     else:
         datetime_new_last_run = last_run
-    # Query incidents by limit and creation time
-    total = 0
-    offset = 0
-    max_records = int(max_records)
-    max_records_page = min(200, max_records)
     raw_response = client.get_cases(begin_date=datetime_new_last_run,
-                                    date_field='caseOpen',
-                                    offset=offset,
-                                    max_records=max_records_page)
-    while raw_response.get('header', {}).get('returnResult') and total < max_records:
-        raws.append(raw_response)
-        cases_raw += raw_response.get('data', [])
-        total += int(raw_response.get('header', {}).get('returnResult'))
-        if total >= max_records:
-            break
-        if max_records - total < 200:
-            max_records_page = max_records - total
-        offset += max_records_page
-        raw_response = client.get_cases(begin_date=datetime_new_last_run,
-                                        date_field='caseOpen',
-                                        offset=offset,
-                                        max_records=max_records_page)
-    # Gather incidents by demisto format
-    new_last_run: Optional[str] = None
+                                    date_field=date_field,
+                                    max_records=max_records)
+    cases_raw: List = raw_response.get('data', [])
     cases_report = []
     if cases_raw:
-        for case_raw in cases_raw:
-            # Creates incident entry
-            occurred = case_raw.get('dateCreated')
+        datetime_new_last_run = cases_raw[0].get(date_field)
+        for case in cases_raw:
+            occurred = case.get(date_field)
             cases_report.append({
-                'name': f"{INTEGRATION_NAME}: {case_raw.get('caseId')}",
+                'name': f"{INTEGRATION_NAME}: {case.get('caseId')}",
                 'occurred': occurred,
-                'rawJSON': json.dumps(case_raw)
+                'rawJSON': json.dumps(case)
             })
 
-        new_last_run = cases_report[0].get('occurred')
-    # Return results
-    return cases_report, {"latsRun": new_last_run}
+    return cases_report, datetime_new_last_run
 
 
 @logger
@@ -467,13 +505,14 @@ def main():
             incidents, new_last_run = fetch_incidents_command(client,
                                                               fetch_time=params.get('fetchTime'),
                                                               last_run=demisto.getLastRun().get('lastRun'),
-                                                              max_records=params.get('fetchLimit'))
+                                                              max_records=params.get('fetchLimit'),
+                                                              date_field=params.get('fetchByDate'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         else:
             readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
             return_outputs(readable_output, outputs, raw_response)
-    # Log exceptions
+
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg, error=e)
