@@ -6,7 +6,7 @@
 		"TypeName": "",
 		"id": "Impossible Traveler",
 		"kind": "details",
-		"modified": "2019-11-11T14:04:04.055405772Z",
+		"modified": "2019-11-17T14:58:53.435100789Z",
 		"name": "",
 		"system": false,
 		"tabs": [
@@ -357,10 +357,30 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
+								"fieldId": "previouscountry",
+								"height": 24,
+								"id": "91718fb0-094a-11ea-9384-35aa869eba47",
+								"index": 5,
+								"listId": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "country",
+								"height": 24,
+								"id": "8e1b5fd0-094a-11ea-9384-35aa869eba47",
+								"index": 6,
+								"listId": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
 								"fieldId": "previoussignindatetime",
 								"height": 24,
 								"id": "24686960-0487-11ea-8cae-45b27192ac66",
-								"index": 5,
+								"index": 7,
 								"listId": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
 								"startCol": 0
 							},
@@ -369,7 +389,7 @@
 								"fieldId": "signindatetime",
 								"height": 24,
 								"id": "237779b0-0487-11ea-8cae-45b27192ac66",
-								"index": 6,
+								"index": 8,
 								"startCol": 0
 							},
 							{
@@ -377,7 +397,7 @@
 								"fieldId": "destinationip",
 								"height": 24,
 								"id": "a07c53e0-0487-11ea-8cae-45b27192ac66",
-								"index": 7,
+								"index": 9,
 								"startCol": 0
 							},
 							{
@@ -386,7 +406,7 @@
 								"fieldId": "travelmaplink",
 								"height": 24,
 								"id": "b92f58e0-0489-11ea-b56e-27b3581f8973",
-								"index": 8,
+								"index": 10,
 								"listId": "sl6z3tlmim-0309e3d0-0486-11ea-b103-7ba5e7ae90b3",
 								"startCol": 0
 							}
@@ -543,7 +563,7 @@
 			}
 		],
 		"typeId": "Impossible Traveler",
-		"version": 11
+		"version": 1
 	},
 	"typeId": "Impossible Traveler",
 	"version": -1
