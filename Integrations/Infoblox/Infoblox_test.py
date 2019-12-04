@@ -1,5 +1,8 @@
 from Infoblox import Client
 import demistomock as demisto
+import json
+
+from CommonServerPython import DemistoException
 
 BASE_URL = 'https://example.com/v1/'
 
@@ -15,11 +18,13 @@ POST_NEW_ZONE_RESPONSE = {
     }
 }
 
-POST_NEW_ZONE_ERROR = {
+API_ERROR_OBJ = {
     "Error": "AdmConDataError: None (IBDataConflictError: IB.Data.Conflict:Duplicate object 'test123.com' of type zone exists in the database.)",
     "code": "Client.Ibap.Data.Conflict",
     "text": "Duplicate object 'test123.com' of type zone exists in the database."
 }
+
+SSL_ERROR = "Failed to parse json object from response: b'<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<META HTTP-EQUIV=\"PRAGMA\" CONTENT=\"NO-CACHE\">\r\n<meta name=\"viewport\" content=\"initial-scale=1.0\">\r\n<title>Certificate Error</title>\r\n<style>\r\n  #content {\r\n    border:3px solid#aaa;\r\n    background-color:#fff;\r\n    margin:1.5em;\r\n    padding:1.5em;\r\n    font-family:Tahoma,Helvetica,Arial,sans-serif;\r\n    font-size:1em;\r\n  }\r\n  h1 {\r\n    font-size:1.3em;\r\n    font-weight:bold;\r\n    color:#196390;\r\n  }\r\n  b {\r\n    font-weight:normal;\r\n    color:#196390;\r\n  }\r\n</style>\r\n</head>\r\n<body bgcolor=\"#e7e8e9\">\r\n<div id=\"content\">\r\n<h1>Certificate Error</h1>\r\n<p>There is an issue with the SSL certificate of the server you are trying to contact.</p>\r\n<p><b>Certificate Name:</b> www.infoblox.com </p>\r\n<p><b>IP:</b> 208.50.179.10 </p>\r\n<p><b>Category:</b> any </p>\r\n<p><b>Issuer:</b> www.infoblox.com </p>\r\n<p><b>Status:</b> expired </p>\r\n<p><b>Reason:</b>  </p>\r\n<p><b>User:</b> paloaltonetwork\\sbenyakir </p>\r\n</div>\r\n</body>\r\n</html>\r\n\r\n'"
 
 GET_USER_LIST = {
     'account': [
@@ -36,12 +41,28 @@ client = Client('https://example.com/v1/', params={'_return_as_object': '1'})
 
 class TestHelperFunctions:
 
-    def test_parse_demisto_exception(self, requests_mock, mocker):
+    def test_parse_demisto_exception_unauthorized_error(self):
         from Infoblox import parse_demisto_exception
-        mocker.patch.object(demisto, 'params', return_value={})
-        requests_mock.post(BASE_URL + 'vault/lock?vaultId=111', json=POST_NEW_ZONE_ERROR)
-        with raises(DemistoException, match='Could not lock vault'):
-            lock_vault_command(client, {'vault_id': '111'})
+        json_err = f'Expecting value: line 1 column 1 (char 0)'
+        api_err = 'Error in API call [401] - Authorization Required'
+        parsed_err = parse_demisto_exception(DemistoException(api_err, json_err))
+        assert str(parsed_err) == str(
+            DemistoException("Authorization error, check your credentials."))
+
+    def test_parse_demisto_exception_json_parse_error(self):
+        from Infoblox import parse_demisto_exception
+        json_err = 'Expecting value: line 1 column 1 (char 0)'
+        api_err = f'Failed to parse json object from response: {SSL_ERROR}'
+        parsed_err = parse_demisto_exception(DemistoException(api_err, json_err))
+        assert str(parsed_err) == str(
+            DemistoException("Cannot connect to Infobslox server, check your proxy and connection."))
+
+    def test_parse_demisto_exception_api_error(self):
+        from Infoblox import parse_demisto_exception
+        api_err = f'Error in API call [400] - Bad Request\n {json.dumps(API_ERROR_OBJ)}'
+        parsed_err = parse_demisto_exception(DemistoException(api_err))
+        assert str(parsed_err) == str(
+            DemistoException("Duplicate object 'test123.com' of type zone exists in the database."))
 
 
 class TestZonesOperations:
