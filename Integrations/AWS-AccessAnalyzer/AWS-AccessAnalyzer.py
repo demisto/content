@@ -308,7 +308,6 @@ def test_function():
 """EXECUTION BLOCK"""
 try:
     if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
         result = test_function()
     elif demisto.command() == 'aws-access-analyzer-list-analyzers':
         list_analyzers(demisto.args())
