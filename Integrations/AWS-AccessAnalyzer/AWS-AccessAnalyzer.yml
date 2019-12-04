@@ -178,12 +178,12 @@ script:
       isArray: false
       name: resourceType
       predefined:
-      - AWS::IAM::Role
-      - AWS::KMS::Key
-      - AWS::Lambda::Function
-      - AWS::Lambda::LayerVersion
-      - AWS::S3::Bucket
-      - AWS::SQS::Queue
+      - AWS::IAM::Role # disable-secrets-detection
+      - AWS::KMS::Key # disable-secrets-detection
+      - AWS::Lambda::Function # disable-secrets-detection
+      - AWS::Lambda::LayerVersion # disable-secrets-detection
+      - AWS::S3::Bucket # disable-secrets-detection
+      - AWS::SQS::Queue # disable-secrets-detection
       required: false
       secret: false
     - auto: PREDEFINED
