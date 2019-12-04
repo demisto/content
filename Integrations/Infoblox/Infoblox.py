@@ -318,14 +318,17 @@ class Client(BaseClient):
 
 
 def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text'):
-    err_string = error.args[0]
-    if 'Error in API call' in err_string:
-        infoblox_err = err_string.split('\n')[1]
-        infoblox_json = json.loads(infoblox_err)
-        return DemistoException(infoblox_json.get(field_in_error, 'text'))
+    err_msg = err_string = error.args[0]
+    if '[401]' in err_string:
+        err_msg = 'Authorization error, check your credentials.'
     elif 'Failed to parse json object' in err_string:
-        return DemistoException('Cannot connect to Infoblox server, check your proxy and connection')
-    return error
+        err_msg = 'Cannot connect to Infoblox server, check your proxy and connection.'
+    elif 'Error in API call' in err_string:
+        err_lines = err_string.split('\n')
+        infoblox_err = err_lines[1] if len(err_lines) > 1 else '{}'
+        infoblox_json = json.loads(infoblox_err)
+        err_msg = infoblox_json.get(field_in_error, 'text') if infoblox_json else err_string
+    return DemistoException(err_msg)
 
 
 ''' COMMANDS '''
