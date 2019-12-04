@@ -707,7 +707,7 @@ def check_for_mirrors():
 
 def invite_to_mirrored_channel(channel_id: str, users: List[Dict]):
     """
-    Invite the relevant users and the bot to a mirrored channel
+    Invite the relevant users to a mirrored channel
     :param channel_id: The mirrored channel
     :param users: The users to invite, each a dict of username and email
     """
