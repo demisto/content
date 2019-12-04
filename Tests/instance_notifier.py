@@ -15,7 +15,7 @@ SERVER_URL = "https://{}"
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
-    parser.add_argument('-n', '--nightly', type=str2bool, help='is nightly build?', required=True)
+    parser.add_argument('-n', '--instance_test', type=str2bool, help='is instance test build?', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file', required=True)
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
@@ -124,7 +124,7 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
 
 if __name__ == "__main__":
     options = options_handler()
-    if options.nightly:
+    if options.instance_tests:
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ips = instance_file.readlines()
             instance_ips = [line.strip('\n').split(":") for line in instance_ips]
@@ -135,4 +135,4 @@ if __name__ == "__main__":
 
         slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl)
     else:
-        print_color("Not nightly build, stopping Slack Notifications about instances", LOG_COLORS.RED)
+        print_color("Not instance_tests build, stopping Slack Notifications about instances", LOG_COLORS.RED)

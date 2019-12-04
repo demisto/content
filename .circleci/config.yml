@@ -53,11 +53,23 @@ jobs:
           name: Create ID Set
           when: always
           command: |
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                echo "Skipped Create ID set step"
+                exit 0
+            fi
+
             python ./Tests/scripts/update_id_set.py -r
       - run:
           name: Infrastucture testing
           when: always
           command: |
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                echo "Skipped Infrastructure testing step"
+                exit 0
+            fi
+
             python -m pytest ./Tests/scripts/hook_validations/tests/ -v
             # after moving to all to python3, run the tests by folder
             # python -m pytest ./Tests/scripts/infrastructure_tests/ -v
@@ -74,27 +86,50 @@ jobs:
           name: Validate Files and Yaml
           when: always
           command: |
-              # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
-              ./Tests/scripts/pyflake.sh *.py
-              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                echo "Skipped Validate Files and Yaml step"
+                exit 0
+            fi
 
-              [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
+            # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
+            ./Tests/scripts/pyflake.sh *.py
+            find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
-              python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
+            [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
+
+            python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
       - run:
           name: Secrets
           when: always
           command: |
-              python3 ./Tests/scripts/hook_validations/secrets.py -c true
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                echo "Skipped Secrets step"
+                exit 0
+            fi
+
+            python3 ./Tests/scripts/hook_validations/secrets.py -c true
       - run:
           name: Configure Test Filter
           when: always
           command: |
-              [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-              python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                echo "Skipped Configure Test Filter step"
+                exit 0
+            fi
+
+            [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+            python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
           name: Spell Checks
           command: |
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                echo "Skipped Spell Checks step"
+                exit 0
+            fi
             python ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
       - run:
           name: Build Content Descriptor
@@ -122,13 +157,12 @@ jobs:
           name: Run Unit Testing and Lint
           when: always
           command: |
-            if [ -n "${NIGHTLY}" ] ;
+            if [ -n "${INSTANCE_TESTS}" ] ;
              then
               echo "Skipped Unit Testing step"
-
-             else
-              SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+              exit 0
             fi
+            SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
       - run:
           name: Verify Base Branch for Contirbution
           when: always
@@ -178,7 +212,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                if [ -n "${NIGHTLY}" ] ;
+                if [ -n "${NIGHTLY}" ] || [ -n "${INSTANCE_AND_UNIT_TESTS}" ] ;
                   then
                     export IFRA_ENV_TYPE=Content-Master
 
@@ -216,6 +250,11 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                echo "Skipped Run Tests - Latest GA step"
+                exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto GA"
@@ -231,6 +270,11 @@ jobs:
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
+            fi
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                echo "Skipped Run Tests - One Before GA step"
+                exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -248,6 +292,11 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                echo "Skipped Run Tests - Two Before GA step"
+                exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto two before GA"
@@ -263,6 +312,11 @@ jobs:
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
               exit 0
+            fi
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                echo "Skipped Run Tests - Server Master step"
+                exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -286,6 +340,11 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                echo "Skipped Slack Notifier step"
+                exit 0
+            fi
             ./Tests/scripts/slack_notifier.sh ./env_results.json
           when: always
       - run:
@@ -300,7 +359,15 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            ./Tests/scripts/instance_test.sh
+            if [ -n "${NIGHTLY}" ] ;
+              then
+                echo "Skipping instance tests for nightly build"
+                exit 0
+
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                ./Tests/scripts/instance_test.sh
+            fi
           when: always
       - run:
           name: Destroy Instances
@@ -309,11 +376,14 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
 
-            export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
-            zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
-            rm -f $CIRCLE_ARTIFACTS/server*.log
+                export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
+                zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
+                rm -f $CIRCLE_ARTIFACTS/server*.log
+            fi
           when: always
       - store_artifacts:
           path: artifacts
