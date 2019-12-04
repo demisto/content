@@ -149,9 +149,7 @@ def copy_test_files(bundle_test):
             shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
-def update_content_version(content_ver: str):
-
-    path = './Scripts/CommonServerPython/CommonServerPython.py'
+def update_content_version(content_ver: str, path: str = './Scripts/CommonServerPython/CommonServerPython.py'):
     regex = r'CONTENT_RELEASE_VERSION = .*'
     try:
         with open(path, 'r+') as f:
