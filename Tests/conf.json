@@ -2042,7 +2042,6 @@
         "Get File Sample From Hash - Generic - Test": "Issue 19842",
         "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test": "Issue 19843",
         "get_file_sample_from_path_-_d2_-_test": "Issue 19844",
-        "ssdeepreputationtest": "Issue 19845",
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "Issue 19852",
         "Cofense Triage Test": "Creds only works on demo4",
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
