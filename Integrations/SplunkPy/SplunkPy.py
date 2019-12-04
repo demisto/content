@@ -205,129 +205,77 @@ def request(url, message, **kwargs):
     }
 
 
-service = None
-proxy = demisto.params()['proxy']
-if proxy:
+# COMMANDS
+
+def parse_raw_command():
+    raw = demisto.args()['raw']
+    rawDict = rawToDict(raw)
+    ec = {}
+    ec['Splunk.Raw.Parsed'] = rawDict
+    demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(rawDict), "EntryContext": ec})
+    sys.exit(0)
+
+
+def notable_event_edit_command():
+    if not proxy:
+        os.environ["HTTPS_PROXY"] = ""
+        os.environ["HTTP_PROXY"] = ""
+        os.environ["https_proxy"] = ""
+        os.environ["http_proxy"] = ""
+    baseurl = 'https://' + demisto.params()['host'] + ':' + demisto.params()['port'] + '/'
+    username = demisto.params()['authentication']['identifier']
+    password = demisto.params()['authentication']['password']
+    auth_req = requests.post(baseurl + 'services/auth/login',
+                             data={'username': username, 'password': password, 'output_mode': 'json'}, verify=VERIFY_CERTIFICATE)
+
+    sessionKey = auth_req.json()['sessionKey']
+    eventIDs = None
+    if demisto.get(demisto.args(), 'eventIDs'):
+        eventIDsStr = demisto.args()['eventIDs']
+        eventIDs = eventIDsStr.split(",")
+    status = None
+    if demisto.get(demisto.args(), 'status'):
+        status = int(demisto.args()['status'])
+    response_info = updateNotableEvents(sessionKey=sessionKey, baseurl=baseurl,
+                                        comment=demisto.get(demisto.args(), 'comment'), status=status,
+                                        urgency=demisto.get(demisto.args(), 'urgency'),
+                                        owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs)
+    if 'success' not in response_info or not response_info['success']:
+        demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
+                         'Contents': "Could not update notable "
+                                     "events: " + demisto.args()['eventIDs'] + ' : ' + str(response_info)})
+        sys.exit(0)
+    demisto.results('Splunk ES Notable events: ' + response_info['message'])
+    sys.exit(0)
+
+
+def submit_event_command():
     try:
-        service = client.connect(
-            handler=handler(proxy),
-            host=demisto.params()['host'],
-            port=demisto.params()['port'],
-            app=demisto.params().get('app'),
-            username=demisto.params()['authentication']['identifier'],
-            password=demisto.params()['authentication']['password'],
-            verify=VERIFY_CERTIFICATE)
-    except urllib2.URLError as e:
-        if e.reason.errno == 1 and sys.version_info < (2, 6, 3):  # type: ignore
-            pass
-        else:
-            raise
-else:
-    service = client.connect(
-        host=demisto.params()['host'],
-        port=demisto.params()['port'],
-        app=demisto.params().get('app'),
-        username=demisto.params()['authentication']['identifier'],
-        password=demisto.params()['authentication']['password'],
-        verify=VERIFY_CERTIFICATE)
-
-if service is None:
-    demisto.error("Could not connect to SplunkPy")
+        index = service.indexes[demisto.args()['index']]
+    except KeyError:
+        demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
+                         'Contents': "Found no Splunk index: " + demisto.args()['index']})
+        sys.exit(0)
+    else:
+        data = demisto.args()['data']
+        data_formatted = data.encode('utf8')
+        r = index.submit(data_formatted, sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
+        demisto.results('Event was created in Splunk index: ' + r.name)
     sys.exit(0)
 
-# The command demisto.command() holds the command sent from the user.
-if demisto.command() == 'test-module':
-    # for app in service.apps:
-    #    print app.name
-    if len(service.jobs) >= 0:
-        demisto.results('ok')
+
+def get_indexes_command():
+    indexes = service.indexes
+    indexesNames = []
+    for index in indexes:
+        index_json = {'name': index.name, 'count': index["totalEventCount"]}
+        indexesNames.append(index_json)
+    demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indexesNames),
+                     'HumanReadable': tableToMarkdown("Splunk Indexes names", indexesNames, '')})
     sys.exit(0)
-if demisto.command() == 'splunk-search':
-    t = datetime.utcnow() - timedelta(days=7)
-    time_str = t.strftime(SPLUNK_TIME_FORMAT)
-    kwargs_oneshot = {"earliest_time": time_str}  # type: Dict[str,Any]
-    if demisto.get(demisto.args(), 'earliest_time'):
-        kwargs_oneshot['earliest_time'] = demisto.args()['earliest_time']
-    if demisto.get(demisto.args(), 'latest_time'):
-        kwargs_oneshot['latest_time'] = demisto.args()['latest_time']
-    if demisto.get(demisto.args(), 'event_limit'):
-        kwargs_oneshot['count'] = int(demisto.args()['event_limit'])
-    searchquery_oneshot = demisto.args()['query']
-    searchquery_oneshot = searchquery_oneshot.encode('utf-8')
-    if not searchquery_oneshot.startswith('search') and not searchquery_oneshot.startswith('Search')\
-            and not searchquery_oneshot.startswith('|'):
-        searchquery_oneshot = 'search ' + searchquery_oneshot
-    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
 
-    reader = results.ResultsReader(oneshotsearch_results)
-    res = []
-    dbot_scores = []  # type: List[Dict[str,Any]]
-    for item in reader:
-        if isinstance(item, results.Message):
-            if "Error in" in item.message:
-                raise ValueError(item.message)
-            res.append(convert_to_str(item.message))
 
-        elif isinstance(item, dict):
-            if demisto.get(item, 'host'):
-                dbot_scores.append({'Indicator': item['host'], 'Type': 'hostname',
-                                    'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True})
-            # Normal events are returned as dicts
-            res.append(item)
-    ec = {}
-    ec['Splunk.Result'] = res
-    if len(dbot_scores) > 0:
-        ec['DBotScore'] = dbot_scores
-
-    headers = ""
-    if (res and len(res) > 0):
-        if not isinstance(res[0], dict):
-            headers = "results"
-
-    human_readable = tableToMarkdown("Splunk Search results \n\n Results for query: {}".format(demisto.args()['query']),
-                                     res, headers)
-
-    demisto.results({
-        "Type": 1,
-        "Contents": res,
-        "ContentsFormat": "json",
-        "EntryContext": ec,
-        "HumanReadable": human_readable
-    })
-
-    sys.exit(0)
-if demisto.command() == 'splunk-job-create':
-    searchquery_normal = demisto.args()['query']
-    if not searchquery_normal.startswith('search'):
-        searchquery_normal = 'search ' + searchquery_normal
-    kwargs_normalsearch = {"exec_mode": "normal"}
-    job = service.jobs.create(searchquery_normal, **kwargs_normalsearch)
-
-    ec = {}
-    ec['Splunk.Job'] = job.sid
-    demisto.results({"Type": 1, "ContentsFormat": formats['text'],
-                     "Contents": "Splunk Job created with SID: " + job.sid, "EntryContext": ec})
-    sys.exit(0)
-if demisto.command() == 'splunk-results':
-    jobs = service.jobs
-    found = False
-    res = []
-    for job in jobs:
-        if job.sid == demisto.args()['sid']:
-            rr = results.ResultsReader(job.results())
-            for result in rr:
-                if isinstance(result, results.Message):
-                    demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
-                elif isinstance(result, dict):
-                    # Normal events are returned as dicts
-                    res.append(result)
-            found = True
-    if not found:
-        demisto.results("Found no job for sid: " + demisto.args()['sid'])
-    if found:
-        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
-    sys.exit(0)
-if demisto.command() == 'fetch-incidents':
+def fetch_incidents():
     lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
     search_offset = demisto.getLastRun().get('offset', 0)
 
@@ -373,65 +321,150 @@ if demisto.command() == 'fetch-incidents':
         demisto.setLastRun({'time': lastRun, 'offset': search_offset + FETCH_LIMIT})
     sys.exit(0)
 
-if demisto.command() == 'splunk-get-indexes':
-    indexes = service.indexes
-    indexesNames = []
-    for index in indexes:
-        index_json = {'name': index.name, 'count': index["totalEventCount"]}
-        indexesNames.append(index_json)
-    demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indexesNames),
-                     'HumanReadable': tableToMarkdown("Splunk Indexes names", indexesNames, '')})
+
+def results_command():
+    jobs = service.jobs
+    found = False
+    res = []
+    for job in jobs:
+        if job.sid == demisto.args()['sid']:
+            rr = results.ResultsReader(job.results())
+            for result in rr:
+                if isinstance(result, results.Message):
+                    demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
+                elif isinstance(result, dict):
+                    # Normal events are returned as dicts
+                    res.append(result)
+            found = True
+    if not found:
+        demisto.results("Found no job for sid: " + demisto.args()['sid'])
+    if found:
+        demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
     sys.exit(0)
 
-if demisto.command() == 'splunk-submit-event':
-    try:
-        index = service.indexes[demisto.args()['index']]
-    except KeyError:
-        demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
-                         'Contents': "Found no Splunk index: " + demisto.args()['index']})
-        sys.exit(0)
-    else:
-        data = demisto.args()['data']
-        data_formatted = data.encode('utf8')
-        r = index.submit(data_formatted, sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
-        demisto.results('Event was created in Splunk index: ' + r.name)
-    sys.exit(0)
 
-if demisto.command() == 'splunk-notable-event-edit':
-    if not proxy:
-        os.environ["HTTPS_PROXY"] = ""
-        os.environ["HTTP_PROXY"] = ""
-        os.environ["https_proxy"] = ""
-        os.environ["http_proxy"] = ""
-    baseurl = 'https://' + demisto.params()['host'] + ':' + demisto.params()['port'] + '/'
-    username = demisto.params()['authentication']['identifier']
-    password = demisto.params()['authentication']['password']
-    auth_req = requests.post(baseurl + 'services/auth/login',
-                             data={'username': username, 'password': password, 'output_mode': 'json'}, verify=VERIFY_CERTIFICATE)
+def job_create_command():
+    searchquery_normal = demisto.args()['query']
+    if not searchquery_normal.startswith('search'):
+        searchquery_normal = 'search ' + searchquery_normal
+    kwargs_normalsearch = {"exec_mode": "normal"}
+    job = service.jobs.create(searchquery_normal, **kwargs_normalsearch)
 
-    sessionKey = auth_req.json()['sessionKey']
-    eventIDs = None
-    if demisto.get(demisto.args(), 'eventIDs'):
-        eventIDsStr = demisto.args()['eventIDs']
-        eventIDs = eventIDsStr.split(",")
-    status = None
-    if demisto.get(demisto.args(), 'status'):
-        status = int(demisto.args()['status'])
-    response_info = updateNotableEvents(sessionKey=sessionKey, baseurl=baseurl,
-                                        comment=demisto.get(demisto.args(), 'comment'), status=status,
-                                        urgency=demisto.get(demisto.args(), 'urgency'),
-                                        owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs)
-    if 'success' not in response_info or not response_info['success']:
-        demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
-                         'Contents': "Could not update notable "
-                                     "events: " + demisto.args()['eventIDs'] + ' : ' + str(response_info)})
-        sys.exit(0)
-    demisto.results('Splunk ES Notable events: ' + response_info['message'])
-    sys.exit(0)
-if demisto.command() == 'splunk-parse-raw':
-    raw = demisto.args()['raw']
-    rawDict = rawToDict(raw)
     ec = {}
-    ec['Splunk.Raw.Parsed'] = rawDict
-    demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(rawDict), "EntryContext": ec})
+    ec['Splunk.Job'] = job.sid
+    demisto.results({"Type": 1, "ContentsFormat": formats['text'],
+                     "Contents": "Splunk Job created with SID: " + job.sid, "EntryContext": ec})
     sys.exit(0)
+
+
+def search_command():
+    t = datetime.utcnow() - timedelta(days=7)
+    time_str = t.strftime(SPLUNK_TIME_FORMAT)
+    kwargs_oneshot = {"earliest_time": time_str}  # type: Dict[str,Any]
+    if demisto.get(demisto.args(), 'earliest_time'):
+        kwargs_oneshot['earliest_time'] = demisto.args()['earliest_time']
+    if demisto.get(demisto.args(), 'latest_time'):
+        kwargs_oneshot['latest_time'] = demisto.args()['latest_time']
+    if demisto.get(demisto.args(), 'event_limit'):
+        kwargs_oneshot['count'] = int(demisto.args()['event_limit'])
+    searchquery_oneshot = demisto.args()['query']
+    searchquery_oneshot = searchquery_oneshot.encode('utf-8')
+    if not searchquery_oneshot.startswith('search') and not searchquery_oneshot.startswith('Search') \
+            and not searchquery_oneshot.startswith('|'):
+        searchquery_oneshot = 'search ' + searchquery_oneshot
+    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
+
+    reader = results.ResultsReader(oneshotsearch_results)
+    res = []
+    dbot_scores = []  # type: List[Dict[str,Any]]
+    for item in reader:
+        if isinstance(item, results.Message):
+            if "Error in" in item.message:
+                raise ValueError(item.message)
+            res.append(convert_to_str(item.message))
+
+        elif isinstance(item, dict):
+            if demisto.get(item, 'host'):
+                dbot_scores.append({'Indicator': item['host'], 'Type': 'hostname',
+                                    'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True})
+            # Normal events are returned as dicts
+            res.append(item)
+    ec = {}
+    ec['Splunk.Result'] = res
+    if len(dbot_scores) > 0:
+        ec['DBotScore'] = dbot_scores
+
+    headers = ""
+    if (res and len(res) > 0):
+        if not isinstance(res[0], dict):
+            headers = "results"
+
+    human_readable = tableToMarkdown("Splunk Search results \n\n Results for query: {}".format(demisto.args()['query']),
+                                     res, headers)
+
+    demisto.results({
+        "Type": 1,
+        "Contents": res,
+        "ContentsFormat": "json",
+        "EntryContext": ec,
+        "HumanReadable": human_readable
+    })
+
+    sys.exit(0)
+
+
+def test_module():
+    if len(service.jobs) >= 0:
+        demisto.results('ok')
+    sys.exit(0)
+
+
+service = None
+proxy = demisto.params()['proxy']
+if proxy:
+    try:
+        service = client.connect(
+            handler=handler(proxy),
+            host=demisto.params()['host'],
+            port=demisto.params()['port'],
+            app=demisto.params().get('app'),
+            username=demisto.params()['authentication']['identifier'],
+            password=demisto.params()['authentication']['password'],
+            verify=VERIFY_CERTIFICATE)
+    except urllib2.URLError as e:
+        if e.reason.errno == 1 and sys.version_info < (2, 6, 3):  # type: ignore
+            pass
+        else:
+            raise
+else:
+    service = client.connect(
+        host=demisto.params()['host'],
+        port=demisto.params()['port'],
+        app=demisto.params().get('app'),
+        username=demisto.params()['authentication']['identifier'],
+        password=demisto.params()['authentication']['password'],
+        verify=VERIFY_CERTIFICATE)
+
+if service is None:
+    demisto.error("Could not connect to SplunkPy")
+    sys.exit(0)
+
+# The command demisto.command() holds the command sent from the user.
+if demisto.command() == 'test-module':
+    test_module()
+if demisto.command() == 'splunk-search':
+    search_command()
+if demisto.command() == 'splunk-job-create':
+    job_create_command()
+if demisto.command() == 'splunk-results':
+    results_command()
+if demisto.command() == 'fetch-incidents':
+    fetch_incidents()
+if demisto.command() == 'splunk-get-indexes':
+    get_indexes_command()
+if demisto.command() == 'splunk-submit-event':
+    submit_event_command()
+if demisto.command() == 'splunk-notable-event-edit':
+    notable_event_edit_command()
+if demisto.command() == 'splunk-parse-raw':
+    parse_raw_command()
