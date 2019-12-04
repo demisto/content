@@ -1,5 +1,5 @@
 ## [Unreleased]
-Changed description and integration's category.
+Changed the integration's category and updated the integration description.
 
 ## [19.10.0] - 2019-10-03
   - Added the ***bluecat-am-get-range-by-ip*** command.
