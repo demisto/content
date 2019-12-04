@@ -536,12 +536,8 @@ script:
             start.setDate(start.getDate()-30);
             break;
         case 'Custom':
-            if(!startArg){
-                throw 'start-date argument is missing';
-            }
-
-            if(!endArg){
-                throw 'end-date argument is missing';
+            if(!startArg || !endArg){
+                throw 'If time_frame argument is set to Custom, start-date and end-date argumetns should be specified';
             }
 
             start = new Date(startArg);
