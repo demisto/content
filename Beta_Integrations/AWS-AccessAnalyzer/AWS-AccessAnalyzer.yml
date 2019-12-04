@@ -58,7 +58,7 @@ configuration:
   required: false
   type: 8
 description: Amazon Web Services IAM Access Analyzer
-display: AWS - AccessAnalyzer
+display: AWS - AccessAnalyzer (beta)
 name: AWS - AccessAnalyzer
 script:
   commands:
