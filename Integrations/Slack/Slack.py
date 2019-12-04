@@ -10,7 +10,7 @@ import asyncio
 import concurrent
 import requests
 import ssl
-from typing import Tuple, Optional
+from typing import Tuple, Dict, List, Optional
 
 # disable unsecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -429,10 +429,7 @@ def mirror_investigation():
         conversations = json.loads(integration_context['conversations'])
 
     investigation_id = investigation.get('id')
-    users = investigation.get('users')
-    slack_users = search_slack_users(users)
     send_first_message = False
-    users_to_invite = list(map(lambda u: u.get('id'), slack_users))
     current_mirror = list(filter(lambda m: m['investigation_id'] == investigation_id, mirrors))
     channel_filter: list = []
     if channel_name:
@@ -453,6 +450,15 @@ def mirror_investigation():
             conversation_name = conversation.get('name')
             conversation_id = conversation.get('id')
             conversations.append(conversation)
+
+            # Get the bot ID so we can invite him
+            if integration_context.get('bot_id'):
+                bot_id = integration_context['bot_id']
+            else:
+                bot_id = get_bot_id()
+                set_to_latest_integration_context('bot_id', bot_id)
+
+            invite_users_to_conversation(conversation_id, [bot_id])
 
             send_first_message = True
         else:
@@ -516,16 +522,6 @@ def mirror_investigation():
         }
         send_slack_request_sync(CHANNEL_CLIENT, 'conversations.setTopic', body=body)
     mirror['channel_topic'] = channel_topic
-
-    if mirror_type != 'none':
-        if integration_context.get('bot_id'):
-            bot_id = integration_context['bot_id']
-        else:
-            bot_id = get_bot_id()
-        users_to_invite += [bot_id]
-        invite_users_to_conversation(conversation_id, users_to_invite)
-
-        integration_context['bot_id'] = bot_id
 
     mirrors.append(mirror)
 
@@ -679,7 +675,7 @@ def answer_question(text: str, question: dict, questions: list, email: str = '')
 
 def check_for_mirrors():
     """
-    Checks for newly created mirrors and updates the server accordingly
+    Checks for newly created mirrors and handles the mirroring process
     """
     integration_context = demisto.getIntegrationContext()
     if integration_context.get('mirrors'):
@@ -693,15 +689,50 @@ def check_for_mirrors():
                     mirror_type = mirror['mirror_type']
                     auto_close = mirror['auto_close']
                     direction = mirror['mirror_direction']
+                    channel_id = mirror['channel_id']
                     if isinstance(auto_close, str):
                         auto_close = bool(strtobool(auto_close))
-                    demisto.mirrorInvestigation(investigation_id, '{}:{}'.format(mirror_type, direction), auto_close)
+                    users: List[Dict] = demisto.mirrorInvestigation(investigation_id,
+                                                                    '{}:{}'.format(mirror_type, direction), auto_close)
+                    if mirror_type != 'none':
+                        invite_to_mirrored_channel(channel_id, users)
+
                     mirror['mirrored'] = True
                     mirrors.append(mirror)
                 else:
                     demisto.info('Could not mirror {}'.format(mirror['investigation_id']))
 
                 set_to_latest_integration_context('mirrors', mirrors)
+
+
+def invite_to_mirrored_channel(channel_id: str, users: List[Dict]):
+    """
+    Invite the relevant users and the bot to a mirrored channel
+    :param channel_id: The mirrored channel
+    :param users: The users to invite, each a dict of username and email
+    """
+    users_to_invite = []
+    for user in users:
+        slack_user = ''
+        # Try to invite by Demisto email
+        user_email = user.get('email', '')
+        if user_email:
+            slack_user = get_user_by_name(user_email)
+        if not slack_user:
+            # Try to invite by Demisto user name
+            user_name = user.get('username', '')
+            if user_name:
+                slack_user = get_user_by_name(user_name)
+        if slack_user:
+            users_to_invite.append(slack_user.get('id'))
+        else:
+            demisto.results({
+                'Type': WARNING_ENTRY_TYPE,
+                'Contents': 'User {} not found in Slack'.format(user.get('username')),
+                'ContentsFormat': formats['text']
+            })
+
+    invite_users_to_conversation(channel_id, users_to_invite)
 
 
 def extract_entitlement(entitlement: str, text: str) -> Tuple[str, str, str, str]:
@@ -991,7 +1022,7 @@ async def get_user_by_id_async(client, integration_context, user_id):
         body = {
             'user': user_id
         }
-        user = (await send_slack_request_async(client, 'users.info', body=body)).get('user', {})
+        user = (await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get('user', {})
         users.append(user)
         set_to_latest_integration_context('users', users)
 
