@@ -1,7 +1,7 @@
 args:
 - default: false
   defaultValue: Inbox,Inbox\\FOLDER1,Inbox\\FOLDER2
-  description: The ews folders paths, comma seperated
+  description: A comma-separated list of the EWS folders paths.
   isArray: false
   name: foldersPaths
   required: true
@@ -36,7 +36,7 @@ args:
   name: hashSeed
   required: false
   secret: false
-comment: Get emails from multiple folders of an account at once.
+comment: Get emails from multiple folders of an account all at once.
 commonfields:
   id: GetEWSFolder
   version: -1
