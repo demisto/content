@@ -364,68 +364,68 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (mostly email address).
+      description: User ID or principal ID. This is generally an email address in the format name@company.com.
       isArray: false
       name: user_id
       required: true
       secret: false
     - default: false
       defaultValue: '20'
-      description: The limit of returned mail folder collection.
+      description: The maximum number of mail folder lists to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Get the mail folder collection directly under the root folder.
+    description: Returns the mail folder list directly under the root folder.
     execution: false
     name: msgraph-mail-list-folders
     outputs:
     - contextPath: MSGraphMail.Folders.ChildFolderCount
-      description: The children folder count
+      description: The number of child folders.
       type: Number
     - contextPath: MSGraphMail.Folders.DisplayName
       description: The folder display name.
       type: String
     - contextPath: MSGraphMail.Folders.ID
-      description: The folder ID.
+      description: The target folder ID.
       type: String
     - contextPath: MSGraphMail.Folders.ParentFolderID
       description: The parent folder ID.
       type: String
     - contextPath: MSGraphMail.Folders.TotalItemCount
-      description: The total emails count inside in the folder.
+      description: The total number of email messages in the folder.
       type: Number
     - contextPath: MSGraphMail.Folders.UnreadItemCount
-      description: The unread emails count inside the folder.
+      description: The number of unread emails in the folder.
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID (mostly email address).
+      description: User ID or principal ID. This is generally an email address in the format name@company.com.
       isArray: false
       name: user_id
       required: true
       secret: false
     - default: false
-      description: The parent folder id of searched mail folders.
+      description: The ID of the parent folder.
       isArray: false
       name: parent_folder_id
       required: true
       secret: false
     - default: false
       defaultValue: '20'
-      description: The limit of returned mail folder collection.
+      description: The maximum number of mail folder lists to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Get the folder collection under the specified folder.
+    description: Returns the folder list under the specified folder.
     execution: false
     name: msgraph-mail-list-child-folders
     outputs:
     - contextPath: MSGraphMail.Folders.ChildFolderCount
-      description: The children folder count.
+      description: The number of child folders.
       type: Number
     - contextPath: MSGraphMail.Folders.DisplayName
       description: The folder display name.
@@ -437,14 +437,14 @@ script:
       description: The parent folder ID.
       type: String
     - contextPath: MSGraphMail.Folders.TotalItemCount
-      description: The total emails count inside in the folder.
+      description: The total number of email messages in the folder.
       type: Number
     - contextPath: MSGraphMail.Folders.UnreadItemCount
-      description: The unread emails count inside the folder.
+      description: The number of unread email messages in the folder.
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID (mostly email address).
+      description: User ID or principal ID. This is generally an email address in the format name@company.com.
       isArray: false
       name: user_id
       required: true
@@ -456,18 +456,18 @@ script:
       required: true
       secret: false
     - default: false
-      description: The parent folder id under where to create a new folder.
+      description: The ID of the parent folder under which to create a new folder.
       isArray: false
       name: parent_folder_id
       required: false
       secret: false
     deprecated: false
-    description: Creates a new folder under specified folder.
+    description: Creates a new folder under specified the specified folder (parent).
     execution: false
     name: msgraph-mail-create-folder
     outputs:
     - contextPath: MSGraphMail.Folders.ChildFolderCount
-      description: The children folder count.
+      description: The number of child folders.
       type: Number
     - contextPath: MSGraphMail.Folders.DisplayName
       description: The folder display name.
@@ -479,37 +479,37 @@ script:
       description: The parent folder ID.
       type: String
     - contextPath: MSGraphMail.Folders.TotalItemCount
-      description: The total emails count inside in the folder.
+      description: The total number of email messages in the folder.
       type: Number
     - contextPath: MSGraphMail.Folders.UnreadItemCount
-      description: The unread emails count inside the folder.
+      description: The number of unread email messages in the folder.
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID (mostly email address).
+      description: User ID or principal ID. This is generally an email address in the format name@company.com.
       isArray: false
       name: user_id
       required: true
       secret: false
     - default: false
-      description: The folder id to update
+      description: The ID of the folder to update.
       isArray: false
       name: folder_id
       required: true
       secret: false
     - default: false
-      description: The mail folder's display name.
+      description: The mail folder display name.
       isArray: false
       name: new_display_name
       required: true
       secret: false
     deprecated: false
-    description: Update the properties of folder.
+    description: Updates the properties of the specified folder.
     execution: false
     name: msgraph-mail-update-folder
     outputs:
     - contextPath: MSGraphMail.Folders.ChildFolderCount
-      description: The children folder count.
+      description: The number of child folders.
       type: String
     - contextPath: MSGraphMail.Folders.DisplayName
       description: The folder display name.
@@ -521,26 +521,25 @@ script:
       description: The parent folder ID.
       type: String
     - contextPath: MSGraphMail.Folders.TotalItemCount
-      description: The total emails count inside in the folder.
+      description: The total number of email messages in the folder.
       type: Number
-    - contextPath: MSGraphMail.Folders.UnreadItemCount
-      description: The unread emails count inside the folder.
+    - contextPath: MSGraphMail.Folderincount inside the folder.
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID (mostly email address).
+      description: User ID or principal ID. This is generally an email address in the format name@company.com.
       isArray: false
       name: user_id
       required: true
       secret: false
     - default: false
-      description: Folder ID to delete.
+      description: The ID of the folder to delete.
       isArray: false
       name: folder_id
       required: true
       secret: false
     deprecated: false
-    description: Delete specified mail folder.
+    description: Deletes the specified mail folder.
     execution: false
     name: msgraph-mail-delete-folder
   - arguments:
@@ -551,13 +550,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The destination folder id to move the email.
+      description: The ID of the destination folder.
       isArray: false
       name: destination_folder_id
       required: true
       secret: false
     - default: false
-      description: User ID or principal ID (mostly email address).
+      description: User ID or principal ID. This is generally an email address in the format name@company.com.
       isArray: false
       name: user_id
       required: true
@@ -568,17 +567,17 @@ script:
     name: msgraph-mail-move-email
     outputs:
     - contextPath: MSGraphMail.MovedEmails.DestinationFolderID
-      description: The desctionation folder where the email was movied to.
+      description: The folder to where the email message was moved.
       type: String
     - contextPath: MSGraphMail.MovedEmails.ID
-      description: The new ID of the moved email.
+      description: The new ID of the moved email message.
       type: String
     - contextPath: MSGraphMail.MovedEmails.UserID
       description: The user ID.
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID (mostly email address).
+      description: User ID or principal ID. This is generally an email address in the format name@company.com.
       isArray: false
       name: user_id
       required: true
@@ -590,7 +589,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves email by message ID and uploads it's content as eml file.
+    description: Retrieves an email message by message ID and uploads the content as an EML file.
     execution: false
     name: msgraph-mail-get-email-as-eml
     outputs:
@@ -613,7 +612,7 @@ script:
       description: The SSDeep hash of the file.
       type: String
     - contextPath: File.EntryID
-      description: EntryID of the file
+      description: The EntryID of the file.
       type: String
     - contextPath: File.Info
       description: Information about the file.
