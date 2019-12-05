@@ -1449,7 +1449,7 @@ async def test_handle_dm_create_demisto_user(mocker):
             return 'sup'
 
     @asyncio.coroutine
-    def fake_translate(demisto_user, message):
+    def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
         return "sup"
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
@@ -1470,9 +1470,14 @@ async def test_handle_dm_create_demisto_user(mocker):
     # Assert
     assert Slack.translate_create.call_count == 6
 
-    demisto_user = Slack.translate_create.call_args[0][0]
-    incident_string = Slack.translate_create.call_args[0][1]
+    incident_string = Slack.translate_create.call_args[0][0]
+    user_name = Slack.translate_create.call_args[0][1]
+    user_email = Slack.translate_create.call_args[0][2]
+    demisto_user = Slack.translate_create.call_args[0][3]
+
     assert demisto_user == {'id': 'demisto_id'}
+    assert user_name == 'spengler'
+    assert user_email == 'spengler@ghostbusters.example.com'
     assert incident_string == 'create incident name=abc type=Access'
 
 
@@ -1483,7 +1488,7 @@ async def test_handle_dm_nondemisto_user_shouldnt_create(mocker):
     # Set
 
     @asyncio.coroutine
-    def fake_translate(demisto_user, message):
+    def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
         return "sup"
 
     @asyncio.coroutine
@@ -1520,7 +1525,7 @@ async def test_handle_dm_nondemisto_user_should_create(mocker):
     # Set
 
     @asyncio.coroutine
-    def fake_translate(demisto_user, message):
+    def fake_translate(message: str, user_name: str, user_email: str, demisto_user: dict):
         return "sup"
 
     @asyncio.coroutine
@@ -1545,7 +1550,7 @@ async def test_handle_dm_nondemisto_user_should_create(mocker):
     # Assert
     assert Slack.translate_create.call_count == 1
 
-    demisto_user = Slack.translate_create.call_args[0][0]
+    demisto_user = Slack.translate_create.call_args[0][3]
     assert demisto_user is None
 
 
@@ -1651,8 +1656,8 @@ async def test_handle_dm_create_with_error(mocker):
     # Assert
     assert Slack.translate_create.call_count == 1
 
-    demisto_user = Slack.translate_create.call_args[0][0]
-    incident_string = Slack.translate_create.call_args[0][1]
+    demisto_user = Slack.translate_create.call_args[0][3]
+    incident_string = Slack.translate_create.call_args[0][0]
     calls = slack.WebClient.api_call.call_args_list
     chat_call = [c for c in calls if c[0][0] == 'chat.postMessage']
     message_args = chat_call[0][1]['json']
@@ -1668,7 +1673,7 @@ async def test_translate_create(mocker):
     import Slack
 
     @asyncio.coroutine
-    def this_doesnt_create_incidents(demisto_user, incidents_json):
+    def this_doesnt_create_incidents(incidents_json, user_name, email, demisto_id):
         return {
             'id': 'new_incident',
             'name': 'New Incident'
@@ -1690,18 +1695,24 @@ async def test_translate_create(mocker):
                       ' View it on: https://www.eizelulz.com:8443#/WarRoom/new_incident'
 
     # Arrange
-    json_data = await Slack.translate_create(demisto_user, json_message)
-    wrong_json_data = await Slack.translate_create(demisto_user, wrong_json_message)
-    name_data = await Slack.translate_create(demisto_user, name_message)
-    name_type_data = await Slack.translate_create(demisto_user, name_type_message)
-    type_name_data = await Slack.translate_create(demisto_user, type_name_message)
-    type_data = await Slack.translate_create(demisto_user, type_message)
+    json_data = await Slack.translate_create(json_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                             demisto_user)
+    wrong_json_data = await Slack.translate_create(wrong_json_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                                   demisto_user)
+    name_data = await Slack.translate_create(name_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                             demisto_user)
+    name_type_data = await Slack.translate_create(name_type_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                                  demisto_user)
+    type_name_data = await Slack.translate_create(type_name_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                                  demisto_user)
+    type_data = await Slack.translate_create(type_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                             demisto_user)
 
     create_args = Slack.create_incidents.call_args_list
-    json_args = create_args[0][0][1]
-    name_args = create_args[1][0][1]
-    name_type_args = create_args[2][0][1]
-    type_name_args = create_args[3][0][1]
+    json_args = create_args[0][0][0]
+    name_args = create_args[1][0][0]
+    name_type_args = create_args[2][0][0]
+    type_name_args = create_args[3][0][0]
 
     # Assert
 
@@ -1726,7 +1737,7 @@ async def test_translate_create_newline_json(mocker):
     import Slack
 
     @asyncio.coroutine
-    def this_doesnt_create_incidents(demisto_user, incidents_json):
+    def this_doesnt_create_incidents(incidents_json, user_name, email, demisto_id):
         return {
             'id': 'new_incident',
             'name': 'New Incident'
@@ -1749,10 +1760,11 @@ async def test_translate_create_newline_json(mocker):
                       ' View it on: https://www.eizelulz.com:8443#/WarRoom/new_incident'
 
     # Arrange
-    json_data = await Slack.translate_create(demisto_user, json_message)
+    json_data = await Slack.translate_create(json_message, 'spengler', 'spengler@ghostbusters.example.com',
+                                             demisto_user)
 
     create_args = Slack.create_incidents.call_args
-    json_args = create_args[0][1]
+    json_args = create_args[0][0]
 
     # Assert
 
@@ -1761,6 +1773,54 @@ async def test_translate_create_newline_json(mocker):
     assert json_args == [{"name": "xyz", "details": "1.1.1.1,8.8.8.8"}]
 
     assert json_data == success_message
+
+
+@pytest.mark.asyncio
+async def test_create_incidents_no_labels(mocker):
+    from Slack import create_incidents
+
+    # Set
+    mocker.patch.object(demisto, 'createIncidents', return_value='nice')
+
+    incidents = [{"name": "xyz", "details": "1.1.1.1,8.8.8.8"}]
+
+    incidents_with_labels = [{'name': 'xyz', 'details': '1.1.1.1,8.8.8.8',
+                              'labels': [{'type': 'Reporter', 'value': 'spengler'},
+                                         {'type': 'ReporterEmail', 'value': 'spengler@ghostbusters.example.com'},
+                                         {'type': 'Source', 'value': 'Slack'}]}]
+
+    # Arrange
+    data = await create_incidents(incidents, 'spengler', 'spengler@ghostbusters.example.com', 'demisto_user')
+
+    incident_arg = demisto.createIncidents.call_args[0][0]
+
+    assert incident_arg == incidents_with_labels
+    assert data == 'nice'
+
+
+@pytest.mark.asyncio
+async def test_create_incidents_with_labels(mocker):
+    from Slack import create_incidents
+
+    # Set
+    mocker.patch.object(demisto, 'createIncidents', return_value='nice')
+
+    incidents = [{'name': 'xyz', 'details': '1.1.1.1,8.8.8.8',
+                  'labels': [{'type': 'Reporter', 'value': 'spengler'},
+                             {'type': 'ReporterEmail', 'value': 'spengler@ghostbusters.example.com'}]}]
+
+    incidents_with_labels = [{'name': 'xyz', 'details': '1.1.1.1,8.8.8.8',
+                              'labels': [{'type': 'Reporter', 'value': 'spengler'},
+                                         {'type': 'ReporterEmail', 'value': 'spengler@ghostbusters.example.com'},
+                                         {'type': 'Source', 'value': 'Slack'}]}]
+
+    # Arrange
+    data = await create_incidents(incidents, 'spengler', 'spengler@ghostbusters.example.com', 'demisto_user')
+
+    incident_arg = demisto.createIncidents.call_args[0][0]
+
+    assert incident_arg == incidents_with_labels
+    assert data == 'nice'
 
 
 @pytest.mark.asyncio
