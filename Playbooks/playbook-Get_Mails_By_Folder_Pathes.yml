@@ -1,4 +1,4 @@
-id: d178ab0b-2368-474b-826a-9fdb716eaac8
+id: Get Mails By Folder Pathes
 version: -1
 name: Get Mails By Folder Pathes
 description: 'Get emails from specific folders and pre-process them using EWS. '
