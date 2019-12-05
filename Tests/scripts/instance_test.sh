@@ -3,18 +3,13 @@
 echo "start instance test"
 
 SECRET_CONF_PATH=$(cat secret_conf_path)
-echo "secret conf path: $SECRET_CONF_PATH "
 
 USERNAME=$(cat $SECRET_CONF_PATH | jq '.username')
 PASSWORD=$(cat $SECRET_CONF_PATH | jq '.userPassword')
 
-echo "username: $USERNAME"
-echo "password: $PASSWORD"
-
 # remove quotes from password
 temp="${PASSWORD%\"}"
 temp="${temp#\"}"
-echo "temp: $temp"
 PASSWORD=$temp
 
 # remove quotes from username
