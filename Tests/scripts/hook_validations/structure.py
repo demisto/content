@@ -68,6 +68,7 @@ class StructureValidator(object):
         CLASSIFIER_REGEX: "classifier",
         LAYOUT_REGEX: "layout",
         INCIDENT_FIELD_REGEX: "incidentfield",
+        INDICATOR_FIELDS_REGEX: "incidentfield",
     }
 
     SCHEMAS_PATH = "Tests/schemas/"
@@ -106,7 +107,6 @@ class StructureValidator(object):
         Returns:
             bool. Whether the scheme is valid on self.file_path.
         """
-        print(self.file_path)
         if matching_regex is None:
             for regex in self.SKIPPED_SCHEMAS:
                 if re.match(regex, self.file_path, re.IGNORECASE):
@@ -118,7 +118,6 @@ class StructureValidator(object):
                     matching_regex = regex
                     break
 
-        print(matching_regex)
         if matching_regex not in self.SKIPPED_SCHEMAS or os.path.isfile(self.file_path):
             if matching_regex is not None and self.REGEXES_TO_SCHEMA_DICT.get(matching_regex):
                 c = Core(source_file=self.file_path,
