@@ -156,7 +156,7 @@ jobs:
       - run:
           name: Common Server Documentation
           when: always
-          command:
+          command: |
           if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
             then
               echo "Skipping - instance tests tasks are running only in container number 0"
@@ -166,7 +166,7 @@ jobs:
       - run:
           name: Create Content Artifacts
           when: always
-          command:
+          command: |
           if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
             then
               echo "Skipping - instance tests tasks are running only in container number 0"
