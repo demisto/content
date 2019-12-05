@@ -114,7 +114,7 @@ jobs:
       - run:
           name: Create Content Artifacts
           when: always
-          command: python3 content_creator.py $CIRCLE_ARTIFACTS $CONTENT_VERSION
+          command: python3 content_creator.py $CIRCLE_ARTIFACTS
       - store_artifacts:
           path: artifacts
           destination: artifacts

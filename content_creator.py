@@ -1,4 +1,3 @@
-
 import os
 import re
 import sys
@@ -14,7 +13,6 @@ from Tests.scripts.constants import INTEGRATIONS_DIR, MISC_DIR, PLAYBOOKS_DIR, R
     BETA_INTEGRATIONS_DIR, INDICATOR_FIELDS_DIR, INCIDENT_TYPES_DIR, TEST_PLAYBOOKS_DIR
 from Tests.test_utils import print_error, print_warning, run_command
 from package_creator import DIR_TO_PREFIX, merge_script_package_to_yml, write_yaml_with_docker
-
 
 CONTENT_DIRS = [
     BETA_INTEGRATIONS_DIR,
@@ -149,6 +147,7 @@ def copy_test_files(bundle_test):
             shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
+
 def update_content_version(content_ver: str, path: str = './Scripts/CommonServerPython/CommonServerPython.py'):
     regex = r'CONTENT_RELEASE_VERSION = .*'
     try:
@@ -226,11 +225,12 @@ def main(circle_artifacts, content_version):
     shutil.copyfile("./Tests/id_set.json", os.path.join(circle_artifacts, "id_set.json"))
 
     shutil.copyfile('release-notes.md', os.path.join(circle_artifacts, 'release-notes.md'))
+
     print(f'finished create content artifact at {circle_artifacts}')
 
 
 if __name__ == '__main__':
-    main(*sys.argv[1:])
+    main(sys.argv[1])
     if LONG_FILE_NAMES:
         print_error(f'The following files exceeded to file name length limit of {MAX_FILE_NAME}:\n'
                     f'{json.dumps(LONG_FILE_NAMES, indent=4)}')
