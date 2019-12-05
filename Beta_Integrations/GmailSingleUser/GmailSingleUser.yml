@@ -47,7 +47,7 @@ configuration:
   required: false
   type: 0
 
-description: Gmail API based of OAuth 2.0
+description: Gmail API using OAuth 2.0.
 display: Gmail Single User (Beta)
 name: Gmail Single User
 script:
@@ -66,26 +66,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: Subject for the email to be sent.
+      description: Subject of the email to be sent.
       isArray: false
       name: subject
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of IDs of War Room entries that contain
-        the files that need be attached to the email.
+      description: A comma separated list of IDs of War Room entries that contain
+        files, which need be attached to the email.
       isArray: true
       name: attachIDs
       required: false
       secret: false
     - default: false
-      description: Additional recipient email address (CC).
+      description: The additional recipient email address (CC).
       isArray: true
       name: cc
       required: false
       secret: false
     - default: false
-      description: Additional recipient email address (BCC).
+      description: The additional recipient email address (BCC).
       isArray: true
       name: bcc
       required: false
@@ -97,22 +97,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: Address that needs to be used to reply to the message.
+      description: The email address used to reply to the message.
       isArray: false
       name: replyTo
       required: false
       secret: false
     - default: false
       description: |-
-        A comma-separated list of new names to rename attachments corresponding to the order that they were attached to the email.
-                Examples - To rename first and third file attachNames=new_fileName1,,new_fileName3
-                To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5
+        A comma separated list of new names to rename attachments, which relates to the order that they were attached to the email.
+                For example, rename the first and third file attachNames=new_fileName1,,new_fileName3
+                To rename the second and fifth files, attachNames=,new_fileName2,,,new_fileName5
       isArray: true
       name: attachNames
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of CID images to embed attachments inside
+      description: A comma-separated list of CID images to embed attachments.
         the email.
       isArray: true
       name: attachCIDs
@@ -120,34 +120,34 @@ script:
       secret: false
     - default: false
       description: |-
-        Textual name for an attached file. Multiple files are supported as a
+        The textual name for an attached file. Multiple files are supported as a
                 comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
-                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
       isArray: true
       name: transientFile
       required: false
       secret: false
     - default: false
       description: |-
-        Content for the attached file. Multiple files are supported as a comma-separated
+        The content for the attached file. Multiple files are supported as a comma-separated
                 list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
-                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
       isArray: true
       name: transientFileContent
       required: false
       secret: false
     - default: false
       description: |-
-        CID image for an attached file to include within the email body. Multiple files are
-                supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
-                transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+        The CID image for an attached file to include within the email body. Multiple files are
+                supported as comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt"
+                transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
       isArray: true
       name: transientFileCID
       required: false
       secret: false
     - default: false
-      description: 'A CSV list of additional headers in the format: headerName=headerValue.
-        For example: "headerName1=headerValue1,headerName2=headerValue2".'
+      description: 'A comma separated list of additional headers in the format: headerName=headerValue.
+        For example, "headerName1=headerValue1,headerName2=headerValue2".'
       isArray: true
       name: additionalHeader
       required: false
@@ -163,7 +163,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sends mail using Gmail.
+    description: Sends email using Gmail.
     execution: false
     name: send-mail
     outputs:
