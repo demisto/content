@@ -106,6 +106,8 @@ class StructureValidator(object):
         Returns:
             bool. Whether the scheme is valid on self.file_path.
         """
+        print(matching_regex)
+        print(self.file_path)
         if matching_regex is None:
             for regex in self.SKIPPED_SCHEMAS:
                 if re.match(regex, self.file_path, re.IGNORECASE):
