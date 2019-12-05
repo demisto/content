@@ -18,17 +18,17 @@ INDICATORS_EC = [
     (
         'attach-phishlabs',
         {
-            "fileName": "no-secret.pdf",
+            "fileName": "EECO_RFQ__453100Q.pdf",
             "mimeType": "application/pdf",
-            "md5": "no-secret",
-            "sha256": "no-secret",
+            "md5": "6680e7e593c8286ac51e332d8f72aeec",
+            "sha256": "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
             "malicious": "false"
         },
         {
-            'fileName': "no-secret.pdf",
+            'fileName': "EECO_RFQ__453100Q.pdf",
             'MimeType': "application/pdf",
-            'MD5': "no-secret",
-            'SHA256': "no-secret",
+            'MD5': "6680e7e593c8286ac51e332d8f72aeec",
+            'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
             'Malicious': "false"
         }
     ),
@@ -67,13 +67,13 @@ INDICATORS_DBOT_EC = [
             {
                 'Indicator': "https://google.com/",
                 'Type': 'URL',
-                'Vendor': "PhishLabs IOC - EIR v2",
+                'Vendor': "PhishLabs IOC - EIR",
                 'Score': 1
             },
             {
                 'Data': "https://google.com/",
                 'Malicious': {
-                    'Vendor': "PhishLabs IOC - EIR v2",
+                    'Vendor': "PhishLabs IOC - EIR",
                     'Description': "false"
                 }
             }
@@ -82,25 +82,25 @@ INDICATORS_DBOT_EC = [
     (
         'file-ec',
         {
-            "fileName": "no-secret.pdf",
+            "fileName": "EECO_RFQ__453100Q.pdf",
             "mimeType": "application/pdf",
-            "md5": "no-secret",
-            "sha256": "no-secret",
+            "md5": "6680e7e593c8286ac51e332d8f72aeec",
+            "sha256": "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
             "malicious": "false"
         },
         (
             {
-                'Indicator': "no-secret.pdf",
+                'Indicator': "EECO_RFQ__453100Q.pdf",
                 'Type': 'File',
-                'Vendor': "PhishLabs IOC - EIR v2",
+                'Vendor': "PhishLabs IOC - EIR",
                 'Score': 1
             },
             {
-                'Name': "no-secret.pdf",
-                'SHA256': "no-secret",
-                'MD5': "no-secret",
+                'Name': "EECO_RFQ__453100Q.pdf",
+                'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
+                'MD5': "6680e7e593c8286ac51e332d8f72aeec",
                 'Malicious': {
-                    'Vendor': "PhishLabs IOC - EIR v2",
+                    'Vendor': "PhishLabs IOC - EIR",
                     'Description': "false"
                 }
             }
@@ -134,21 +134,21 @@ INDICATORS_TO_LIST_EC = [
                 {
                     'Data': "https://google.com/u/gI5Qk",
                     'Malicious': {
-                        'Vendor': "PhishLabs IOC - EIR v2",
+                        'Vendor': "PhishLabs IOC - EIR",
                         'Description': "false"
                     }
                 },
                 {
                     'Data': "https://google.com/api/track/v2/5",
                     'Malicious': {
-                        'Vendor': "PhishLabs IOC - EIR v2",
+                        'Vendor': "PhishLabs IOC - EIR",
                         'Description': "false"
                     }
                 },
                 {
                     'Data': "https://google.com/",
                     'Malicious': {
-                        'Vendor': "PhishLabs IOC - EIR v2",
+                        'Vendor': "PhishLabs IOC - EIR",
                         'Description': "false"
                     }
                 }
@@ -157,19 +157,19 @@ INDICATORS_TO_LIST_EC = [
                 {
                     'Indicator': "https://google.com/u/gI5Qk",
                     'Type': 'URL',
-                    'Vendor': "PhishLabs IOC - EIR v2",
+                    'Vendor': "PhishLabs IOC - EIR",
                     'Score': 1
                 },
                 {
                     'Indicator': "https://google.com/api/track/v2/5",
                     'Type': 'URL',
-                    'Vendor': "PhishLabs IOC - EIR v2",
+                    'Vendor': "PhishLabs IOC - EIR",
                     'Score': 1
                 },
                 {
                     'Indicator': "https://google.com/",
                     'Type': 'URL',
-                    'Vendor': "PhishLabs IOC - EIR v2",
+                    'Vendor': "PhishLabs IOC - EIR",
                     'Score': 1
                 }
             ]
@@ -204,10 +204,10 @@ RAW_RESPONSE_TO_CONTEXT = [
                 ],
                 "attachments": [
                     {
-                        "fileName": "no-secret.pdf",
+                        "fileName": "EECO_RFQ__453100Q.pdf",
                         "mimeType": "application/pdf",
-                        "md5": "no-secret",
-                        "sha256": "no-secret",
+                        "md5": "6680e7e593c8286ac51e332d8f72aeec",
+                        "sha256": "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
                         "malicious": "false"
                     }
                 ],
@@ -250,10 +250,10 @@ RAW_RESPONSE_TO_CONTEXT = [
                     ],
                     'Attachment': [
                         {
-                            'fileName': "no-secret.pdf",
+                            'fileName': "EECO_RFQ__453100Q.pdf",
                             'MimeType': "application/pdf",
-                            'MD5': "no-secret",
-                            'SHA256': "no-secret",
+                            'MD5': "6680e7e593c8286ac51e332d8f72aeec",
+                            'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
                             'Malicious': "false"
                         }
                     ]
@@ -269,11 +269,11 @@ RAW_RESPONSE_TO_CONTEXT = [
         ],
         [
             {
-                'Name': "no-secret.pdf",
-                'SHA256': "no-secret",
-                'MD5': "no-secret",
+                'Name': "EECO_RFQ__453100Q.pdf",
+                'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
+                'MD5': "6680e7e593c8286ac51e332d8f72aeec",
                 'Malicious': {
-                    'Vendor': "PhishLabs IOC - EIR v2",
+                    'Vendor': "PhishLabs IOC - EIR",
                     'Description': "false"
                 }
             }
@@ -282,22 +282,22 @@ RAW_RESPONSE_TO_CONTEXT = [
             {
                 'Data': "https://google.com/i5/resp",
                 'Malicious': {
-                    'Vendor': "PhishLabs IOC - EIR v2",
+                    'Vendor': "PhishLabs IOC - EIR",
                     'Description': "false"
                 }
             }
         ],
         [
             {
-                'Indicator': "no-secret.pdf",
+                'Indicator': "EECO_RFQ__453100Q.pdf",
                 'Type': 'File',
-                'Vendor': "PhishLabs IOC - EIR v2",
+                'Vendor': "PhishLabs IOC - EIR",
                 'Score': 1
             },
             {
                 'Indicator': "https://google.com/i5/resp",
                 'Type': "URL",
-                'Vendor': "PhishLabs IOC - EIR v2",
+                'Vendor': "PhishLabs IOC - EIR",
                 'Score': 1
             }
         ]
@@ -310,26 +310,26 @@ RAW_RESPONSE_TO_CONTEXT = [
 class TestHelperFunctions:
     @pytest.mark.parametrize(argnames='type_ec, test_inputs, test_outputs', argvalues=INDICATORS_EC)
     def test_indicator_ec(self, type_ec, test_inputs, test_outputs):
-        from PhishLabsIOC_EIR_v2 import indicator_ec
+        from PhishLabsIOC_EIR import indicator_ec
         result = indicator_ec(indicator=test_inputs,
                               type_ec=type_ec)
         assert result == test_outputs
 
     @pytest.mark.parametrize(argnames='type_ec, test_inputs, test_outputs', argvalues=INDICATORS_DBOT_EC)
     def test_indicator_dbot_ec(self, type_ec, test_inputs, test_outputs):
-        from PhishLabsIOC_EIR_v2 import indicator_dbot_ec
+        from PhishLabsIOC_EIR import indicator_dbot_ec
         result = indicator_dbot_ec(indicator=test_inputs,
                                    type_ec=type_ec)
         assert result == test_outputs
 
     @pytest.mark.parametrize(argnames='type_ec, test_inputs, test_outputs', argvalues=INDICATORS_TO_LIST_EC)
     def test_indicators_to_list_ec(self, type_ec, test_inputs, test_outputs):
-        from PhishLabsIOC_EIR_v2 import indicators_to_list_ec
+        from PhishLabsIOC_EIR import indicators_to_list_ec
         result = indicators_to_list_ec(indicators=test_inputs,
                                        type_ec=type_ec)
         assert result == test_outputs
 
     def test_raw_response_to_context(self):
-        from PhishLabsIOC_EIR_v2 import raw_response_to_context
+        from PhishLabsIOC_EIR import raw_response_to_context
         result = raw_response_to_context(incidents=RAW_RESPONSE_TO_CONTEXT[0])
         assert result == RAW_RESPONSE_TO_CONTEXT[1]
