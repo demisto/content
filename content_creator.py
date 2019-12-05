@@ -12,7 +12,7 @@ import yaml
 from Tests.scripts.constants import INTEGRATIONS_DIR, MISC_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, \
     WIDGETS_DIR, SCRIPTS_DIR, INCIDENT_FIELDS_DIR, CLASSIFIERS_DIR, LAYOUTS_DIR, CONNECTIONS_DIR, \
     BETA_INTEGRATIONS_DIR, INDICATOR_FIELDS_DIR, INCIDENT_TYPES_DIR, TEST_PLAYBOOKS_DIR
-from Tests.test_utils import print_error, print_warning
+from Tests.test_utils import print_error, print_warning, run_command
 from package_creator import DIR_TO_PREFIX, merge_script_package_to_yml, write_yaml_with_docker
 
 
@@ -161,11 +161,30 @@ def update_content_version(content_ver: str, path: str = './Scripts/CommonServer
         print_warning(f'Could not open CommonServerPython File - {ex}')
 
 
+def update_branch(path: str = './Scripts/CommonServerPython/CommonServerPython.py'):
+
+    regex = r'CONTENT_BRANCH_NAME = .*'
+    branches = run_command('git branch')
+    branch_name_reg = re.search(r'\* (.*)', branches)
+    branch_name = branch_name_reg.group(1)
+    try:
+        with open(path, 'r+') as f:
+            content = f.read()
+            content = re.sub(regex, f"CONTENT_BRANCH_NAME = '{branch_name}'", content, re.M)
+            f.seek(0)
+            f.write(content)
+    except Exception as ex:
+        print_warning(f'Could not open CommonServerPython File - {ex}')
+
+    return branch_name
+
+
 def main(circle_artifacts, content_version):
 
     # update content_version in commonServerPython
     update_content_version(content_version)
-    print(content_version)
+    branch_name = update_branch()
+    print(f'Updating CommonServerPython with branch {branch_name} and content version {content_version}')
     print('Starting to create content artifact...')
     print('creating dir for bundles...')
     for bundle_dir in [BUNDLE_POST, BUNDLE_TEST]:
