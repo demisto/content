@@ -1,0 +1,43 @@
+args:
+- default: false
+  description: A list of labels of the test set
+  isArray: false
+  name: yTrue
+  required: true
+  secret: false
+- default: false
+  defaultValue: '0.5'
+  description: minimum precision of all classes, ranges 0-1
+  isArray: false
+  name: targetPrecision
+  required: false
+  secret: false
+- default: false
+  description: A list of dictionaries contain probability predictions for all classes
+  isArray: false
+  name: yPred
+  required: true
+  secret: false
+- default: false
+  defaultValue: '0.0'
+  description: minimum recall of all classes, ranges 0-1
+  isArray: false
+  name: targetRecall
+  required: false
+  secret: false
+comment: Finds a threshold for ML model, and performs an evaluation based on it
+commonfields:
+  id: a15f925c-0dc4-4d6c-8c81-b6123170b7f8
+  version: -1
+enabled: true
+name: SetMLModelThreshold
+script: '-'
+subtype: python3
+system: false
+tags:
+- ml
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.5.4328
+runas: DBotWeakRole
+runonce: false
