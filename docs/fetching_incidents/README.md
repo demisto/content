@@ -109,5 +109,6 @@ demisto.incidents(incidents)
 ```
 
 ## Troubleshooting
-For troubleshooting fetch-incident execute `!integration_instance_name-fetch` in the Playground, it should return the incidents
+For troubleshooting fetch-incident execute `!integration_instance_name-fetch` in the Playground, it should return the incidents <br>
+<img src="https://user-images.githubusercontent.com/7270217/70272523-0f34f300-17b1-11ea-89a0-e4e0e359f614.png" width="480">
 
