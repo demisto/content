@@ -3,7 +3,7 @@ import sys
 import json
 import argparse
 
-import demisto_clinet
+import demisto_client
 from slackclient import SlackClient
 
 from test_integration import __create_integration_instance, __delete_integrations_instances
