@@ -63,6 +63,6 @@ script:
       type: string
     description: Parses a User Agent string
   runonce: false
-subtype: python3
+  subtype: python3
 tests:
 - WhatsMyBrowser-Test
