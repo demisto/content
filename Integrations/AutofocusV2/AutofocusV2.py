@@ -20,7 +20,7 @@ USE_SSL = not PARAMS.get('insecure', False)
 # Service base URL
 BASE_URL = SERVER + '/api/v1.0'
 
-VENDOR_NAME = 'Palo Alto AutoFocus'
+VENDOR_NAME = 'Palo Alto Networks AutoFocus V2'
 
 # Headers to be sent in requests
 HEADERS = {
@@ -249,8 +249,8 @@ if PARAMS.get('mark_as_malicious'):
 def parse_response(resp, err_operation):
     try:
         # Handle error responses gracefully
-        res_json = resp.json()
         resp.raise_for_status()
+        res_json = resp.json()
         return res_json
     # Errors returned from AutoFocus
     except requests.exceptions.HTTPError:
@@ -795,17 +795,24 @@ def search_indicator(indicator_type, indicator_value):
     headers = HEADERS
     headers['apiKey'] = API_KEY
 
+    params = {
+        'indicatorType': indicator_type,
+        'indicatorValue': indicator_value,
+        'includeTags': 'true',
+    }
+
     res = requests.request(
         method='GET',
-        url=f'{BASE_URL}/tic?indicatorType={indicator_type}&indicatorValue={indicator_value}&includeTags=true',
+        url=f'{BASE_URL}/tic',
         verify=USE_SSL,
-        headers=headers
+        headers=headers,
+        params=params
     )
 
     try:
         # Handle error responses gracefully
-        res_json = res.json()
         res.raise_for_status()
+        res_json = res.json()
     # Unexpected errors (where no json object was received)
     except Exception as err:
         err_msg = f'{err}'
@@ -816,7 +823,7 @@ def search_indicator(indicator_type, indicator_value):
 
 def parse_indicator_response(res, indicator_type):
     if not res.get('indicator'):
-        raise Exception('Invalid response for indicator')
+        raise ValueError('Invalid response for indicator')
     raw_tags = res.get('tags')
     res = res['indicator']
 
@@ -883,7 +890,8 @@ def calculate_dbot_score(indicator_response, indicator_type):
         return VERDICTS_TO_DBOTSCORE.get(score.lower(), 0)
 
 
-def get_indicator_outputs(indicator_type, indicator_response, indicator_value, score, indicator_context_output):
+def get_indicator_outputs(indicator_type, indicator_response, indicator_value, score,
+                          indicator_context_output, raw_res):
     dbot_score = {
         'Indicator': indicator_value,
         'Type': indicator_type.lower(),
@@ -914,9 +922,6 @@ def get_indicator_outputs(indicator_type, indicator_response, indicator_value, s
         whois['Registrant']['Name'] = indicator_response['WhoisRegistrant']
         indicator_context['WHOIS'] = whois
 
-    ec = {f'AutoFocus.{indicator_type}': indicator_response, 'DBotScore': dbot_score, indicator_type: indicator_context}
-    context = createContext(ec, removeNull=True)
-
     tags = indicator_response.get('Tags')
     table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {indicator_value}'
     if tags:
@@ -927,13 +932,13 @@ def get_indicator_outputs(indicator_type, indicator_response, indicator_value, s
     else:
         md = tableToMarkdown(table_name, indicator_response, headerTransform=string_to_table_header)
 
-    return demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': indicator_response,
-        'EntryContext': context,
-        'HumanReadable': md
-    })
+    ec = {
+            outputPaths['dbotscore']: dbot_score,
+            outputPaths[indicator_type.lower()]: indicator_context,
+            f'AutoFocus.{indicator_type}(val.IndicatorValue === obj.IndicatorValue)': indicator_response,
+        }
+
+    return_outputs(readable_output=md, outputs=ec, raw_response=raw_res)
 
 
 ''' COMMANDS'''
@@ -1147,42 +1152,42 @@ def top_tags_results_command():
 
 def search_ip_command(ip):
     indicator_type = 'IP'
-    ip_list = argToList(ip, ',')
+    ip_list = argToList(ip)
     for ip_address in ip_list:
-        res = search_indicator('ipv4_address', ip_address)
-        score = calculate_dbot_score(res, indicator_type)
-        res = parse_indicator_response(res, indicator_type)
-        get_indicator_outputs(indicator_type, res, ip_address, score, 'Address')
+        raw_res = search_indicator('ipv4_address', ip_address)
+        score = calculate_dbot_score(raw_res, indicator_type)
+        res = parse_indicator_response(raw_res, indicator_type)
+        get_indicator_outputs(indicator_type, res, ip_address, score, 'Address', raw_res)
 
 
 def search_domain_command(domain):
     indicator_type = 'Domain'
-    domain_list = argToList(domain, ',')
+    domain_list = argToList(domain)
     for domain in domain_list:
-        res = search_indicator('domain', domain)
-        score = calculate_dbot_score(res, indicator_type)
-        res = parse_indicator_response(res, indicator_type)
-        get_indicator_outputs(indicator_type, res, domain, score, 'Name')
+        raw_res = search_indicator('domain', domain)
+        score = calculate_dbot_score(raw_res, indicator_type)
+        res = parse_indicator_response(raw_res, indicator_type)
+        get_indicator_outputs(indicator_type, res, domain, score, 'Name', raw_res)
 
 
 def search_url_command(url):
     indicator_type = 'URL'
-    url_list = argToList(url, ',')
+    url_list = argToList(url)
     for url in url_list:
-        res = search_indicator('url', url)
-        score = calculate_dbot_score(res, indicator_type)
-        res = parse_indicator_response(res, indicator_type)
-        get_indicator_outputs(indicator_type, res, url, score, 'Data')
+        raw_res = search_indicator('url', url)
+        score = calculate_dbot_score(raw_res, indicator_type)
+        res = parse_indicator_response(raw_res, indicator_type)
+        get_indicator_outputs(indicator_type, res, url, score, 'Data', raw_res)
 
 
 def search_file_command(file):
     indicator_type = 'File'
-    file_list = argToList(file, ',')
+    file_list = argToList(file)
     for file in file_list:
-        res = search_indicator('sha256', file)
-        score = calculate_dbot_score(res, indicator_type)
-        res = parse_indicator_response(res, indicator_type)
-        get_indicator_outputs(indicator_type, res, file, score, 'SHA256')
+        raw_res = search_indicator('sha256', file)
+        score = calculate_dbot_score(raw_res, indicator_type)
+        res = parse_indicator_response(raw_res, indicator_type)
+        get_indicator_outputs(indicator_type, res, file, score, 'SHA256', raw_res)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
