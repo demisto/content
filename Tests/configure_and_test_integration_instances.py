@@ -5,7 +5,7 @@ import ast
 import demisto_client
 from Tests.test_integration import __get_integration_config, __test_integration_instance
 from Tests.test_integration import __disable_integrations_instances
-from Tests.test_utils import print_error, print_color, LOG_COLORS
+from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 from Tests.test_content import load_conf_files, collect_integrations, extract_filtered_tests
 from Tests.test_utils import run_command, get_last_release_version, checked_type, get_yaml
 from Tests.scripts.validate_files import FilesValidator
@@ -76,9 +76,9 @@ def configure_integration_instance(integration, client):
     return module_instance
 
 
-def get_new_integrations(git_sha1):
-    '''Return list of integration names that are new since the commit of the git_sha1'''
-    # get changed yaml files (filter only added files)
+def get_new_and_modified_integrations(git_sha1):
+    '''Return 2 lists - list of new integrations and list of modified integrations since the commit of the git_sha1'''
+    # get changed yaml files (filter only added and modified files)
     tag = get_last_release_version()
     file_validator = FilesValidator()
     change_log = run_command('git diff --name-status {}'.format(git_sha1))
@@ -88,13 +88,23 @@ def get_new_integrations(git_sha1):
     added_integration_files = [
         file_path for file_path in added_files if checked_type(file_path, all_integration_regexes)
     ]
-    integrations_names = []
+    modded_integration_files = [
+        file_path for file_path in modified_files if checked_type(file_path, all_integration_regexes)
+    ]
+
+    new_integrations_names = []
     for integration_file_path in added_integration_files:
         integration_yaml = get_yaml(integration_file_path)
         integration_name = integration_yaml.get('name')
         if integration_name:
-            integrations_names.append(integration_name)
-    return integrations_names
+            new_integrations_names.append(integration_name)
+    modded_integrations_names = []
+    for integration_file_path in modded_integration_files:
+        integration_yaml = get_yaml(integration_file_path)
+        integration_name = integration_yaml.get('name')
+        if integration_name:
+            modded_integrations_names.append(integration_name)
+    return new_integrations_names, modded_integrations_names
 
 
 def is_content_updating(server, username, password):
@@ -117,6 +127,23 @@ def is_content_updating(server, username, password):
         return 'request unsuccessful'
     else:
         return response_data
+
+
+def get_content_installation(client):
+    '''Make request for details about the content installed on the demisto instance'''
+    msg = '\nMaking "POST" request to server - "{}" to check installed content.'.format(client.configuration.host)
+    print(msg)
+
+    # make request to installed content details
+    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/content/installed',
+                                                                        method='POST')
+
+    result_object = ast.literal_eval(response_data)
+    if status_code >= 300 or status_code < 200:
+        message = result_object.get('message', '')
+        msg = "Failed to check if installed content details - with status code " + str(status_code) + '\n' + message
+        print_error(msg)
+    return result_object.get('release', ''), result_object.get('assetId', 0)
 
 
 def set_integration_params(integrations, secret_params, instance_names):
@@ -285,11 +312,11 @@ def main():
 
     # get a list of brand new integrations that way we filter them out to only configure instances
     # after updating content
-    new_integrations_names = get_new_integrations(git_sha1)
-    brand_new_integrations = []
-    print_color('New Integrations Since Last Release:\n{}'.format('\n'.join(new_integrations_names)),
-                color=LOG_COLORS.YELLOW)
-    print('')
+    new_integrations_names, modified_integrations_names = get_new_and_modified_integrations(git_sha1)
+    if new_integrations_names:
+        print_warning('New Integrations Since Last Release:\n{}\n'.format('\n'.join(new_integrations_names)))
+    if modified_integrations_names:
+        print_warning('Updated Integrations Since Last Release:\n{}\n'.format('\n'.join(modified_integrations_names)))
 
     # Each test is a dictionary from Tests/conf.json which may contain the following fields
     # "playbookID", "integrations", "instance_names", "timeout", "nightly", "fromversion", "toversion"
@@ -298,6 +325,7 @@ def main():
     # and sometimes an "instance_names" field which is used when there are multiple instances
     # of an integration that we want to configure with different configuration values. Look at
     # [conf.json](../conf.json) for examples
+    brand_new_integrations = []
     for test in tests_for_iteration:
         integrations_conf = test.get('integrations', [])
         instance_names_conf = test.get('instance_names', [])
@@ -310,47 +338,55 @@ def main():
         _, integrations, _ = collect_integrations(integrations_conf, skipped_integration,
                                                   skipped_integrations_conf, nightly_integrations)
 
-        print_color('All Integrations for test "{}":'.format(test.get('playbookID')), color=LOG_COLORS.YELLOW)
-        print_color(integrations, color=LOG_COLORS.YELLOW)
-        print('')
+        integrations_names = [i.get('name') for i in integrations]
+        print_warning('All Integrations for test "{}":'.format(test.get('playbookID')))
+        print_warning(integrations_names)
 
         new_integrations = []
         modified_integrations = []
+        unchanged_integrations = []
+        integration_to_status = {}
 
-        # filter integrations into their respective lists - new or modified. if it's on the skip list, then skip
+        # filter integrations into their respective lists - new, modified or unchanged. if it's on the skip list, then skip
+        # if random tests were chosen then we may be configuring integrations that are neither new or modified.
         for integration in integrations:
             integration_name = integration.get('name', '')
             if integration_name in skipped_integrations_conf.keys():
                 continue
             elif integration_name in new_integrations_names:
                 new_integrations.append(integration)
-            else:
+            elif integration_name in modified_integrations_names:
                 modified_integrations.append(integration)
+                integration_to_status[integration_name] = 'Modified Integration'
+            else:
+                unchanged_integrations.append(integration)
+                integration_to_status[integration_name] = 'Unchanged Integration'
 
-        modified_integrations_names = [integration.get('name') for integration in modified_integrations]
-        print_color('Modified OR Randomly Chosen Integrations:\n{}'.format('\n'.join(modified_integrations_names)),
-                    color=LOG_COLORS.YELLOW)
+        integrations_msg = '\n'.join([f'"{key}" - {val}' for key, val in integration_to_status])
+        print_warning(f'{integrations_msg}\n')
 
-        # set params for new integrations and modified integrations, then add the new ones to brand_new_integrations
-        # list for later use
+        integrations_to_configure = [*modified_integrations, *unchanged_integrations]
+
+        # set params for new integrations and [modified + unchanged] integrations, then add the new ones
+        # to brand_new_integrations list for later use
         ni_params_set = set_integration_params(new_integrations, secret_params, instance_names_conf)
-        mi_params_set = set_integration_params(modified_integrations, secret_params, instance_names_conf)
+        ti_params_set = set_integration_params(integrations_to_configure, secret_params, instance_names_conf)
         if not ni_params_set:
             print_error('failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)))
-        if not mi_params_set:
-            print_error('failed setting parameters for integrations "{}"'.format('\n'.join(modified_integrations)))
-        if not (ni_params_set and mi_params_set):
+        if not ti_params_set:
+            print_error('failed setting parameters for integrations "{}"'.format('\n'.join(integrations_to_configure)))
+        if not (ni_params_set and ti_params_set):
             continue
 
         brand_new_integrations.extend(new_integrations)
 
         module_instances = []
-        for integration in modified_integrations:
+        for integration in integrations_to_configure:
             module_instances.append(configure_integration_instance(integration, client))
         all_module_instances.extend(module_instances)
 
-    # Test all module instances (of modified integrations) pre-updating content
-    print_color('Start of Instance Testing ("Test" button) prior to Content Update:', color=LOG_COLORS.YELLOW)
+    # Test all module instances (of modified + unchanged integrations) pre-updating content
+    print_warning('Start of Instance Testing ("Test" button) prior to Content Update:')
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
@@ -376,10 +412,22 @@ def main():
 
     if updating_content.lower() == 'request unsuccessful':
         # since the request to check if content update installation finished didn't work, can't use that mechanism
-        # to check and just try sleeping for 30 seconds isntead to allow for content update installation to complete
+        # to check and just try sleeping for 30 seconds instead to allow for content update installation to complete
         sleep(30)
     else:
-        print_color('Content Update Successfully Installed!', color=LOG_COLORS.GREEN)
+        # check that the content installation updated
+        # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
+        release, asset_id = get_content_installation(client)
+        with open('content-descriptor.json', 'r') as cd_file:
+            cd_json = json.loads(cd_file.read())
+            cd_release = cd_json.get('release')
+            cd_asset_id = cd_json.get('assetId')
+        if release == cd_release and asset_id == cd_asset_id:
+            print_color('Content Update Successfully Installed!', color=LOG_COLORS.GREEN)
+        else:
+            err_details = f'Attempted to install content with release "{cd_release}" and assetId "{cd_asset_id}" ' \
+                f'but release "{release}" and assetId "{asset_id}" were retrieved from the instance post installation.'
+            print_error(f'Content Update was Unsuccessful:\n{err_details}')
 
     # configure instances for new integrations
     new_integration_module_instances = []
@@ -389,14 +437,14 @@ def main():
 
     # After content upload has completed - test ("Test" button) integration instances
     # Test all module instances (of pre-existing AND new integrations) post-updating content
-    print_color('Start of Instance Testing ("Test" button) after the Content Update:', color=LOG_COLORS.YELLOW)
+    print_warning('Start of Instance Testing ("Test" button) after the Content Update:')
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
         msg = 'Testing ("Test" button) for instance "{}" of integration "{}" .'.format(instance_name,
                                                                                        integration_of_instance)
         print(msg)
-        # If there is a failue, __test_integration_instance will print it
+        # If there is a failure, __test_integration_instance will print it
         __test_integration_instance(client, instance)
 
     __disable_integrations_instances(client, all_module_instances)
