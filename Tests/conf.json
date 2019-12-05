@@ -563,7 +563,8 @@
         },
         {
             "integrations": "Devo",
-            "playbookID": "devo_test_playbook"
+            "playbookID": "devo_test_playbook",
+            "timeout" : 500
         },
         {
             "playbookID": "URL Enrichment - Generic v2 - Test",
