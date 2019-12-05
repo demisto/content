@@ -347,8 +347,8 @@ def main():
         unchanged_integrations = []
         integration_to_status = {}
 
-        # filter integrations into their respective lists - new, modified or unchanged. if it's on the skip list, then skip
-        # if random tests were chosen then we may be configuring integrations that are neither new or modified.
+        # filter integrations into their respective lists - new, modified or unchanged. if it's on the skip list, then
+        # skip if random tests were chosen then we may be configuring integrations that are neither new or modified.
         for integration in integrations:
             integration_name = integration.get('name', '')
             if integration_name in skipped_integrations_conf.keys():
@@ -397,8 +397,8 @@ def main():
         __test_integration_instance(client, instance)
 
     # TODO: need to add support for content packs
-    # Upload current build's content_new.zip to demisto server (aka upload new content)
-    content_zip_path = 'content_new.zip'
+    # Upload content_new.zip + content_test.zip as all_content.zip to demisto server (aka upload new content)
+    content_zip_path = 'all_content.zip'
     cmd_str = 'python Tests/update_content_data.py -u {} -p {} -s {} -up {}'.format(username, password, server,
                                                                                     content_zip_path)
     run_command(cmd_str, is_silenced=False)

@@ -200,9 +200,10 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                unzip -o ./content_test.zip -d ./content_test
-                zip -j ./content_new.zip ./content_test/*
-                rm -r ./content_test
+                # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
+                cp ./content_new.zip ./all_content.zip
+                zip -j ./all_content.zip ./bundle_test/*
+
                 python ./Tests/scripts/run_content_installation.py
                 python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION
 
