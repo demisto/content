@@ -517,7 +517,7 @@
 							"value": null
 						}
 					},
-					"operator": "8e4719e2-42fd-406e-8cfb-a0c1a54c3aa9"
+					"operator": "ConvertAllExcept"
 				}
 			]
 		},
