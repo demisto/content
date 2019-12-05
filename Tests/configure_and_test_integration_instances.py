@@ -362,8 +362,8 @@ def main():
                 unchanged_integrations.append(integration)
                 integration_to_status[integration_name] = 'Unchanged Integration'
 
-        integrations_msg = '\n'.join([f'"{key}" - {val}' for key, val in integration_to_status.items()])
-        print_warning(f'{integrations_msg}\n')
+        integrations_msg = '\n'.join(['"{}" - {}'.format(key, val) for key, val in integration_to_status.items()])
+        print_warning('{}\n'.format(integrations_msg))
 
         integrations_to_configure = [*modified_integrations, *unchanged_integrations]
 
@@ -425,9 +425,10 @@ def main():
         if release == cd_release and asset_id == cd_asset_id:
             print_color('Content Update Successfully Installed!', color=LOG_COLORS.GREEN)
         else:
-            err_details = f'Attempted to install content with release "{cd_release}" and assetId "{cd_asset_id}" ' \
-                f'but release "{release}" and assetId "{asset_id}" were retrieved from the instance post installation.'
-            print_error(f'Content Update was Unsuccessful:\n{err_details}')
+            err_details = 'Attempted to install content with release "{}" and assetId '.format(cd_release) \
+                '"{}" but release "{}" and assetId "{asset_id}" were '.format(cd_asset_id, release, asset_id) \
+                'retrieved from the instance post installation.'
+            print_error('Content Update was Unsuccessful:\n{}'.format(err_details))
 
     # configure instances for new integrations
     new_integration_module_instances = []
