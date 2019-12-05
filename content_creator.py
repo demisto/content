@@ -30,6 +30,12 @@ CONTENT_DIRS = [
     WIDGETS_DIR,
 ]
 
+PACKAGES_TO_SKIP = [
+    'HelloWorld',
+    'HelloWorldSimple',
+    'HelloWorldScript'
+]
+
 # temp folder names
 BUNDLE_POST = 'bundle_post'
 BUNDLE_TEST = 'bundle_test'
@@ -154,7 +160,13 @@ def main(circle_artifacts):
     for package_dir in DIR_TO_PREFIX:
         scanned_packages = glob.glob(os.path.join(package_dir, '*/'))
         for package in scanned_packages:
-            merge_script_package_to_yml(package, package_dir, BUNDLE_POST)
+            if any(package_to_skip in package for package_to_skip in PACKAGES_TO_SKIP):
+                # there are some packages that we don't want to include in the content zip
+                # for example HelloWorld integration
+                merge_script_package_to_yml(package, package_dir, BUNDLE_TEST)
+                print('skipping {}'.format(package))
+            else:
+                merge_script_package_to_yml(package, package_dir, BUNDLE_POST)
 
     for content_dir in CONTENT_DIRS:
         print(f'Copying dir {content_dir} to bundles...')

@@ -76,6 +76,7 @@ thresholds = {
     'vtPositives': 10,
     'vtPositiveUrlsForIP': 30
 }
+# The dictionary below does not represent DBot Scores correctly, and should not be used
 dbotscores = {
     'Critical': 4,
     'High': 3,
@@ -2322,7 +2323,7 @@ if 'requests' in sys.modules:
                     try:
                         # Try to parse json error response
                         error_entry = res.json()
-                        err_msg += '\n{}'.format(error_entry)
+                        err_msg += '\n{}'.format(json.dumps(error_entry))
                         raise DemistoException(err_msg)
                     except ValueError as exception:
                         raise DemistoException(err_msg, exception)
