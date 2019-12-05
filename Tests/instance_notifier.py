@@ -3,7 +3,7 @@ import sys
 import json
 import argparse
 
-import demisto
+import demisto_clinet
 from slackclient import SlackClient
 
 from test_integration import __create_integration_instance, __delete_integrations_instances
@@ -45,7 +45,7 @@ def get_integrations(secret_conf_path):
 
 
 def test_instances(secret_conf_path, server, username, password):
-    c = get_demisto_instance_and_login(server, username, password)
+    c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
     integrations = get_integrations(secret_conf_path)
 
     instance_ids = []

@@ -4,6 +4,7 @@ jobs:
     docker:
       - image: devdemisto/content-build:3.0.0.3368  # disable-secrets-detection
     resource_class: medium+
+    parallelism: 2
     environment:
       CONTENT_VERSION: "19.11.1"
       SERVER_VERSION: "5.0.0"
@@ -53,12 +54,6 @@ jobs:
           name: Create ID Set
           when: always
           command: |
-            if [ -n "${INSTANCE_TESTS}" ] ;
-              then
-                echo "Skipped Create ID set step"
-                exit 0
-            fi
-
             python ./Tests/scripts/update_id_set.py -r
       - run:
           name: Infrastucture testing
@@ -158,9 +153,14 @@ jobs:
           when: always
           command: |
             if [ -n "${INSTANCE_TESTS}" ] ;
-             then
-              echo "Skipped Unit Testing step"
-              exit 0
+              then
+                echo "Skipped Unit Testing step"
+                exit 0
+            fi
+            if [ $CIRCLE_NODE_INDEX -ne 1 ] ;
+              then
+                echo 'skipping, unit tests are running only in container number 1.'
+                exit 0;
             fi
             SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
       - run:
@@ -179,6 +179,11 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'skipping, running only in container number 0.'
+                exit 0;
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 echo "Using AMI - Not downloading artifacts"
@@ -195,6 +200,11 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'skipping, running only in container number 0.'
+                exit 0;
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/download_demisto_conf.sh
@@ -210,9 +220,14 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'skipping, running only in container number 0.'
+                exit 0;
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                if [ -n "${NIGHTLY}" ] || [ -n "${INSTANCE_AND_UNIT_TESTS}" ] ;
+                if [ -n "${NIGHTLY}" ] || [ -n "${INSTANCE_TESTS}" ] ;
                   then
                     export IFRA_ENV_TYPE=Content-Master
 
@@ -232,6 +247,11 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo 'skipping, running only in container number 0.'
+                exit 0;
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 python ./Tests/scripts/run_content_installation.py
@@ -250,7 +270,7 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipped Run Tests - Latest GA step"
                 exit 0
@@ -271,7 +291,7 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipped Run Tests - One Before GA step"
                 exit 0
@@ -292,7 +312,7 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipped Run Tests - Two Before GA step"
                 exit 0
@@ -313,7 +333,7 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipped Run Tests - Server Master step"
                 exit 0
@@ -340,7 +360,7 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] ;
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
                 echo "Skipped Slack Notifier step"
                 exit 0
@@ -363,10 +383,15 @@ jobs:
               then
                 echo "Skipping instance tests for nightly build"
                 exit 0
-
+            fi
             if [ -n "${INSTANCE_TESTS}" ] ;
               then
-                ./Tests/scripts/instance_test.sh
+                if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+                  then
+                    echo 'skipping, running only in container no 0.'
+                  else
+                    ./Tests/scripts/instance_test.sh
+                fi
             fi
           when: always
       - run:
@@ -378,11 +403,16 @@ jobs:
             fi
             if [ -n "${INSTANCE_TESTS}" ] ;
               then
-                python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
+                if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+                  then
+                    echo 'skipping, running only in container no 0.'
+                  else
+                    python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
 
-                export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
-                zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
-                rm -f $CIRCLE_ARTIFACTS/server*.log
+                    export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
+                    zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
+                    rm -f $CIRCLE_ARTIFACTS/server*.log
+                fi
             fi
           when: always
       - store_artifacts:
