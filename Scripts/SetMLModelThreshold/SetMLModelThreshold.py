@@ -50,7 +50,9 @@ def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, thre
                         'Classified Correctly': df["Classified Correctly"].sum(),
                         'Coverage': df["Coverage"].sum(),
                         'Total': df["Total"].sum()}, ignore_index=True)
-    df['Precision'] = df['Precision'].apply(lambda x: )
+    df['Precision'] = df['Precision'].apply(lambda precision: '{:.2f}%'.format(precision*100))
+    df['Recall'] = df['Recall'].apply(lambda recall: '{:.2f}%'.format(recall*100))
+
     explanation = [
         'Precision - Binary precision of the class (TP / TP + FP)',
         'Recall - Binary recall of the class (TP// TP + FN)',

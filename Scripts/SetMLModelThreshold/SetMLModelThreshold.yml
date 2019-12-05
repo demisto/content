@@ -14,14 +14,14 @@ args:
   secret: false
 - default: false
   description: A list of dictionaries contain probability predictions for all classes
-  isArray: false
+  isArray: true
   name: yPred
   required: true
   secret: false
 - default: false
   defaultValue: '0.0'
   description: minimum recall of all classes, ranges 0-1
-  isArray: false
+  isArray: true
   name: targetRecall
   required: false
   secret: false
