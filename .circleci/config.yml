@@ -60,14 +60,9 @@ jobs:
           name: Create ID Set
           when: always
           command: |
-            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-              then
-                echo "Skipping - instance tests tasks are running only in container number 0"
-                exit 0
-            fi
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipped Infrastructure testing step"
+                echo "Skipping - running only in container number 0"
                 exit 0
             fi
             python ./Tests/scripts/update_id_set.py -r
