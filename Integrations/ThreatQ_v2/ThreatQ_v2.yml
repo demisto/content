@@ -2182,6 +2182,18 @@ script:
     - contextPath: ThreatQ.Adversary.CreatedAt
       description: The last update date of the adversary.
       type: date
+  - name: threatq-advanced-search
+    arguments:
+    - name: query
+      required: true
+      description: Search query, e.g. part of URL address
+    - name: limit
+      description: The maximum number of records to retrieve
+      defaultValue: "10"
+    - name: indicator_type
+      required: true
+      description: The indicator type to search (can be either the name or the ID)
+    description: Returns an indicator advanced search results
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false

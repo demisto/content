@@ -1,17 +1,17 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import requests
 import json
 import shutil
-from typing import Dict, Any
+from typing import List, Dict
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES '''
-
 SERVER_URL = demisto.params()['serverUrl'].rstrip('/')
 API_URL = SERVER_URL + '/api'
 CLIENT_ID = demisto.params()['client_id']
@@ -163,7 +163,6 @@ CONTEXT_PATH = {
     'attachment': 'ThreatQ.File(val.ID === obj.ID)'
 }
 
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -203,13 +202,20 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
     api_call_headers = None
     if url_suffix != '/token':
         access_token = get_access_token()
-        api_call_headers = {'Authorization': 'Bearer ' + access_token}
+        api_call_headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + access_token}
 
         if not files:
             params = json.dumps(params)
 
-    response = requests.request(method, API_URL + url_suffix, data=params, headers=api_call_headers,
-                                verify=USE_SSL, files=files, allow_redirects=allow_redirects)
+    response = requests.request(
+        method,
+        API_URL + url_suffix,
+        data=params,
+        headers=api_call_headers,
+        verify=USE_SSL,
+        files=files,
+        allow_redirects=allow_redirects
+    )
 
     if response.status_code >= 400:
         errors_string = get_errors_string_from_bad_request(response, response.status_code)
@@ -294,20 +300,22 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
     url_suffix = '/search?query={0}&limit=1'.format(value)
     res = tq_request('GET', url_suffix)
 
-    data = {}  # type: Dict[str, Any]
+    indicators: List[Dict] = []
     for obj in res.get('data', []):
-        if obj.get('value') == value and obj.get('object') == 'indicator':
+        if obj.get('object') == 'indicator':
             # Search for detailed information about the indicator
             url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(obj.get('id'))
             res = tq_request('GET', url_suffix)
-            data = indicator_data_to_demisto_format(res['data'])
-            break
+            indicators.append(indicator_data_to_demisto_format(res['data']))
 
-    dbot_context = create_dbot_context(value, indicator_type, data.get('TQScore', -1))
-    entry_context = set_indicator_entry_context(indicator_type, data, dbot_context, generic_context)
+    dbot_context = [create_dbot_context(i.get('Value'), indicator_type, i.get('TQScore', -1)) for i in indicators]
+    entry_context = set_indicator_entry_context(indicator_type, indicators, dbot_context, generic_context)
 
-    readable_title = 'Search results for {0} {1}'.format(indicator_type, value)
-    readable = build_readable(readable_title, 'indicator', data)
+    readable = build_readable(
+        readable_title=f'Search results for {indicator_type} {value}',
+        obj_type='indicator',
+        data=indicators
+    )
 
     return_outputs(readable, entry_context, res)
 
@@ -401,7 +409,8 @@ def sources_to_demisto_format(lst):
         return None
     return [{
         'Name': elem.get('name'),
-        'ID': elem.get('pivot', {}).get('id')
+        'ID': elem.get('pivot', {}).get('id'),
+        'TLP': elem.get('tlp_id'),
     } for elem in lst]
 
 
@@ -552,16 +561,28 @@ def add_malicious_data(generic_context, tq_score):
     }
 
 
-def set_indicator_entry_context(indicator_type, raw, dbot, generic):
-    if dbot.get('Score') == 3:
-        add_malicious_data(generic, raw.get('TQScore', -1))
+def set_indicator_entry_context(indicator_type, raws, dbots, generic):
+    if not isinstance(dbots, list):
+        dbots = [dbots]
+    if not isinstance(raws, list):
+        raws = [raws]
 
-    ec = {
-        outputPaths[indicator_type]: generic,
-        'DBotScore': dbot
+    ec: Dict = {
+        outputPaths.get(indicator_type, 'Indicator(val.ID && val.ID == obj.ID)'): [],
+        CONTEXT_PATH['indicator']: [],
+        'DBotScore': []
     }
-    if raw:
-        ec[CONTEXT_PATH['indicator']] = raw
+    for dbot, raw in zip(dbots, raws):
+        if dbot.get('Score') == 3:
+            add_malicious_data(generic, raw.get('TQScore', -1))
+
+        ec[outputPaths[indicator_type]].append(generic)
+        ec['DBotScore'].append(dbot)
+        if raw:
+            ec[CONTEXT_PATH['indicator']].append(raw)
+
+    # backwards compatibility
+    ec['DBotScore'] = ec['DBotScore'][0] if len(ec['DBotScore']) == 1 else ec['DBotScore']
     return ec
 
 
@@ -584,21 +605,45 @@ def build_readable_for_search_by_name(indicator_context, event_context, adversar
 
 def build_readable(readable_title, obj_type, data, metadata=None):
     if isinstance(data, dict):  # One object data
-        readable = tableToMarkdown(readable_title, data, headers=TABLE_HEADERS[obj_type],
-                                   headerTransform=pascalToSpace, removeNull=True, metadata=metadata)
+        readable = tableToMarkdown(
+            name=readable_title,
+            t=data,
+            headers=TABLE_HEADERS[obj_type],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            metadata=metadata
+        )
         if 'Attribute' in data:
-            readable += tableToMarkdown('Attributes', data['Attribute'], headers=TABLE_HEADERS['attributes'],
-                                        removeNull=True, headerTransform=pascalToSpace, metadata=metadata)
+            readable += tableToMarkdown(
+                name='Attributes',
+                t=data['Attribute'],
+                headers=TABLE_HEADERS['attributes'],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+                metadata=metadata
+            )
         if 'Source' in data:
-            readable += tableToMarkdown('Sources', data['Source'], headers=TABLE_HEADERS['sources'],
-                                        removeNull=True, headerTransform=pascalToSpace, metadata=metadata)
+            readable += tableToMarkdown(
+                name='Sources',
+                t=data['Source'],
+                headers=TABLE_HEADERS['sources'],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+                metadata=metadata
+            )
         if 'URL' in data:
             url_in_markdown_format = '[{0}]({1})'.format(data['URL'], data['URL'])
             readable = readable.replace(data['URL'], url_in_markdown_format)
 
     else:  # 'data' is a list of objects
-        readable = tableToMarkdown(readable_title, data, headers=TABLE_HEADERS[obj_type],
-                                   headerTransform=pascalToSpace, removeNull=True, metadata=metadata)
+        readable = tableToMarkdown(
+            name=readable_title,
+            t=data,
+            headers=TABLE_HEADERS[obj_type],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            metadata=metadata
+        )
         for elem in data:
             url_in_markdown_format = '[{0}]({1})'.format(elem['URL'], elem['URL'])
             readable = readable.replace(elem['URL'], url_in_markdown_format)
@@ -615,6 +660,81 @@ def test_module():
     threshold_is_integer = isinstance(threshold, int) or (isinstance(threshold, str) and threshold.isdigit())
     if token and threshold_is_integer and 0 <= int(threshold) <= 10:
         demisto.results('ok')
+
+
+def get_indicator_type_id(indicator_name: str) -> str:
+    indicator_types_res = tq_request(
+        method='GET',
+        url_suffix='/indicator/types',
+        retrieve_entire_response=True
+    )
+    try:
+        indicator_types = indicator_types_res.json().get('data')
+        for indicator in indicator_types:
+            if indicator.get('name', '').lower() == indicator_name.lower():
+                return indicator.get('id')
+
+        raise ValueError(f'Could not find indicator')
+    except ValueError:
+        raise ValueError(f'Could not parse data from ThreatQ [Status code: {indicator_types_res.status_code}]')
+
+
+def advance_search_command():
+    args = demisto.args()
+    limit = args.get('limit')
+    query = args.get('query')
+    indicator_type = args.get('indicator_type')
+    search_body = {
+        "indicators": [
+            [
+                {
+                    'field': 'indicator_type',
+                    'operator': 'is',
+                    'value': indicator_type if indicator_type.isdigit() else get_indicator_type_id(indicator_type)
+                },
+                {
+                    'field': 'indicator_value',
+                    'operator': 'like',
+                    'value': str(query)
+                }
+            ]
+        ]
+    }
+
+    if limit and isinstance(limit, str) and not limit.isdigit():
+        return_error('limit argument must be an integer.')
+
+    res = tq_request(
+        method='POST',
+        url_suffix=f'/search/advanced?limit={limit}',
+        params=search_body,
+        retrieve_entire_response=True
+    )
+    try:
+        search_results = res.json().get('data')
+    except ValueError:
+        raise ValueError(f'Could not parse data from ThreatQ [Status code: {res.status_code}]')
+
+    if not isinstance(search_results, list):
+        search_results = [search_results]
+
+    indicators: List[Dict] = []
+    for obj in search_results:
+        # Search for detailed information about the indicator
+        url_suffix = f"/indicators/{obj.get('id')}?with=attributes,sources,score,type"
+        res = tq_request('GET', url_suffix)
+        indicators.append(indicator_data_to_demisto_format(res.get('data')))
+
+    dbot_context = [create_dbot_context(i.get('Value'), indicator_type, i.get('TQScore', -1)) for i in indicators]
+    entry_context = set_indicator_entry_context(indicator_type.lower(), indicators, dbot_context, {'Data': '{}'})
+
+    readable = build_readable(
+        readable_title=f'Search results for "{query}":',
+        obj_type='indicator',
+        data=indicators
+    )
+
+    return_outputs(readable, entry_context, res)
 
 
 def search_by_name_command():
@@ -669,7 +789,7 @@ def search_by_id_command():
     if obj_type == 'indicator':
         indicator_type = TQ_TO_DEMISTO_INDICATOR_TYPES.get(data['Type'])
         if indicator_type is not None:
-            ec['DBotScore'] = create_dbot_context(data['Value'], indicator_type, data['TQScore'])
+            ec['DBotScore'] = create_dbot_context(data['Value'], indicator_type, data.get('TQScore', -1))
 
     readable_title = 'Search results for {0} with ID {1}'.format(obj_type, obj_id)
     readable = build_readable(readable_title, obj_type, data)
@@ -896,7 +1016,7 @@ def update_score_command():
 
     ec = {CONTEXT_PATH['indicator']: data}
 
-    readable = 'Successfully updated score of indicator with ID {0} to {1}. '\
+    readable = 'Successfully updated score of indicator with ID {0} to {1}. ' \
                'Notice that final score is the maximum between ' \
                'manual and generated scores.'.format(indicator_id, int(data['TQScore']))
 
@@ -1180,6 +1300,8 @@ try:
     handle_proxy()
     if command == 'test-module':
         test_module()
+    elif command == 'threatq-advanced-search':
+        advance_search_command()
     elif command == 'threatq-search-by-name':
         search_by_name_command()
     elif command == 'threatq-search-by-id':
@@ -1245,3 +1367,5 @@ try:
 
 except Exception as ex:
     return_error(str(ex))
+
+# todo: outputs
