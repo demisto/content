@@ -523,7 +523,8 @@ script:
     - contextPath: MSGraphMail.Folders.TotalItemCount
       description: The total number of email messages in the folder.
       type: Number
-    - contextPath: MSGraphMail.Folderincount inside the folder.
+    - contextPath: MSGraphMail.Folders.UnreadItemCount
+      description: The unread emails count inside the folder.
       type: Number
   - arguments:
     - default: false
