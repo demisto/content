@@ -1997,6 +1997,10 @@
         {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA"
         }
     ],
     "skipped_tests": {

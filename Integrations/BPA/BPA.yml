@@ -1,0 +1,82 @@
+category: Authentication
+commonfields:
+  id: BPA
+  version: -1
+configuration:
+  - display: Panorama Server URL (e.g., https://192.168.0.1)
+    name: server
+    required: true
+    type: 0
+  - defaultvalue: '443'
+    display: Panorama Server Port (e.g 443)
+    name: port
+    required: false
+    type: 0
+  - display: Panorama API Key
+    name: key
+    required: true
+    type: 4
+  - display: BPA Token
+    name: token
+    required: true
+    type: 4
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
+description: BPA Integration
+display: BPA
+name: BPA
+script:
+  commands:
+    - deprecated: false
+      description: Get documentaion
+      execution: false
+      name: get-remediation-documentation
+      outputs:
+        - contextPath: PAN-OS-BPA.Documentation
+          description: Gets the documentation of all BPA checks
+          type: string
+    - deprecated: false
+      description: Submits a BPA job.
+      execution: false
+      name: pan-os-bpa-submit-job
+      outputs:
+        - contextPath: PAN-OS-BPA.SubmittedJob.JobID
+          description: Submitted job ID
+          type: string
+    - arguments:
+        - default: false
+          description: The job id to get results from
+          isArray: false
+          name: task_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Returns results of BPA job.
+      execution: false
+      name: pan-os-bpa-get-job-results
+      outputs:
+        - contextPath: PAN-OS-BPA.JobResults.JobID
+          description: Submitted job ID
+          type: string
+        - contextPath: PAN-OS-BPA.JobResults.Status
+          description: Job status
+          type: string
+        - contextPath: PAN-OS-BPA.JobResults.Checks
+          description: List of checks
+          type: Unknown
+  dockerimage: demisto/python3:3.7.5.4328
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+  - Test-BPA
