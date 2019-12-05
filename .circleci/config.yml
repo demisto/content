@@ -157,22 +157,22 @@ jobs:
           name: Common Server Documentation
           when: always
           command: |
-          if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-            then
-              echo "Skipping - instance tests tasks are running only in container number 0"
-              exit 0
-          fi
-          ./Documentation/commonServerDocs.sh
+            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - instance tests tasks are running only in container number 0"
+                exit 0
+            fi
+            ./Documentation/commonServerDocs.sh
       - run:
           name: Create Content Artifacts
           when: always
           command: |
-          if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
-            then
-              echo "Skipping - instance tests tasks are running only in container number 0"
-              exit 0
-          fi
-          python3 content_creator.py $CIRCLE_ARTIFACTS
+            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - instance tests tasks are running only in container number 0"
+                exit 0
+            fi
+            python3 content_creator.py $CIRCLE_ARTIFACTS
       - store_artifacts:
           path: artifacts
           destination: artifacts
