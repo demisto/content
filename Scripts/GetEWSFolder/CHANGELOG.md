@@ -1,2 +1,2 @@
 ## [Unreleased]
-    - add new script: get emails from different folders at once
+    Add a new script that retrieves emails from different folders all at once.

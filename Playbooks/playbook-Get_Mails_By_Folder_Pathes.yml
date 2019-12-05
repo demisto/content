@@ -1,7 +1,7 @@
 id: d178ab0b-2368-474b-826a-9fdb716eaac8
 version: -1
 name: Get Mails By Folder Pathes
-description: 'Get mails from specific folders using EWS, and preprocess them '
+description: 'Get emails from specific folders and pre-process them using EWS. '
 starttaskid: "0"
 fromversion: "4.5.0"
 tasks:
@@ -37,8 +37,8 @@ tasks:
     task:
       id: 9bdfffbb-4627-4356-8a25-fe115d066809
       version: -1
-      name: Get Mails
-      description: 'get mails from specific folders using EWS '
+      name: Get Emails
+      description: 'Retrieves emails from specific folders using EWS '
       scriptName: GetEWSFolder
       type: regular
       iscommand: false
@@ -106,7 +106,7 @@ tasks:
     task:
       id: 20d3dd3f-7529-4bca-8698-b541466bf852
       version: -1
-      name: Preprocess mails
+      name: Preprocess emails
       description: Pre-process text data for the machine learning text classifier.
       scriptName: DBotPreProcessTextData
       type: regular
@@ -179,16 +179,16 @@ inputs:
     value:
       simple: inbox,inbox\TESTATTACH
     required: true
-    description: "list of folder paths at inbox, comma separated. \nFor example: inbox,inbox\\\\folder"
+    description: "A comma-separated List of folder paths from the Inbox. \nFor example: inbox,inbox\\\\folder"
   - key: listName
     value: {}
     required: true
-    description: name of the list where mails will be saved
+    description: Name of the list in which mails will be saved.
   - key: limit
     value:
       simple: "10"
     required: false
-    description: max number of mails to fetch from each folder
+    description: Maximum number of emails to fetch from each folder.
 outputs: []
 tests:
   - Get EWS Folder Test

@@ -1,4 +1,7 @@
 ## [Unreleased]
+Fixed an issue where mirrored investigations contained mismatched user names.
+
+## [19.11.1] - 2019-11-26
 Added Slack API rate limit call handling.
 Added an optional parameter to specify a proxy URL to use with the Slack API. 
 
