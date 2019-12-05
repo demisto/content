@@ -1,2 +1,2 @@
 ## [Unreleased]
-New classifier for Gmail Single User integration.
+Gmail Single User integration now supports the OAuth 2.0 protocol.
