@@ -364,7 +364,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format name@company.com.
+      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
@@ -401,7 +401,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format name@company.com.
+      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
@@ -444,7 +444,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format name@company.com.
+      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
@@ -486,7 +486,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format name@company.com.
+      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
@@ -527,7 +527,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format name@company.com.
+      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
@@ -556,7 +556,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format name@company.com.
+      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
@@ -577,7 +577,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format name@company.com.
+      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
