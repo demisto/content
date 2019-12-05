@@ -10,6 +10,7 @@ control, and powerful analysis tools in an elegant, responsive web interface.
 <li>Collaborate on analysis with others</li>
 <li>Collect meta-information about capture file</li>
 <li>Manage capture files on CloudShark</li>
+</ul>
 <h2>To set up CloudShark to work with Demisto</h2>
 You will need the following before setting up the CloudShark integration on
 Demisto:
