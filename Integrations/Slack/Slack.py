@@ -822,7 +822,8 @@ async def handle_dm(user: dict, text: str, client: slack.WebClient):
     if message.find('incident') != -1 and (message.find('create') != -1
                                            or message.find('open') != -1
                                            or message.find('new') != -1):
-        user_email = user.get('profile', {}).get('email')
+        user_email = user.get('profile', {}).get('email', '')
+        user_name = user.get('name', '')
         if user_email:
             demisto_user = demisto.findUser(email=user_email)
         else:
@@ -832,7 +833,7 @@ async def handle_dm(user: dict, text: str, client: slack.WebClient):
             data = 'You are not allowed to create incidents.'
         else:
             try:
-                data = await translate_create(demisto_user, text)
+                data = await translate_create(text, user_name, user_email, demisto_user)
             except Exception as e:
                 data = 'Failed creating incidents: {}'.format(str(e))
     else:
@@ -856,11 +857,13 @@ async def handle_dm(user: dict, text: str, client: slack.WebClient):
     await send_slack_request_async(client, 'chat.postMessage', body=body)
 
 
-async def translate_create(demisto_user: dict, message: str) -> str:
+async def translate_create(message: str, user_name: str, user_email: str, demisto_user: dict) -> str:
     """
     Processes an incident creation message
-    :param demisto_user: The Demisto user associated with the message (if exists)
     :param message: The creation message
+    :param user_name The name of the user in Slack
+    :param user_email The email of the user in Slack
+    :param demisto_user: The demisto user associated with the request (if exists)
     :return: Creation result
     """
     json_pattern = r'(?<=json=).*'
@@ -870,6 +873,10 @@ async def translate_create(demisto_user: dict, message: str) -> str:
     json_match = re.search(json_pattern, message)
     created_incident = None
     data = ''
+    user_demisto_id = ''
+    if demisto_user:
+        user_demisto_id = demisto_user.get('id', '')
+
     if json_match:
         if re.search(name_pattern, message) or re.search(type_pattern, message):
             data = 'No other properties other than json should be specified.'
@@ -878,7 +885,7 @@ async def translate_create(demisto_user: dict, message: str) -> str:
             incidents = json.loads(incidents_json.replace('“', '"').replace('”', '"'))
             if not isinstance(incidents, list):
                 incidents = [incidents]
-            created_incident = await create_incidents(demisto_user, incidents)
+            created_incident = await create_incidents(incidents, user_name, user_email, user_demisto_id)
 
             if not created_incident:
                 data = 'Failed creating incidents.'
@@ -900,7 +907,7 @@ async def translate_create(demisto_user: dict, message: str) -> str:
             if incident_type:
                 incident['type'] = incident_type
 
-            created_incident = await create_incidents(demisto_user, [incident])
+            created_incident = await create_incidents([incident], user_name, user_email, user_demisto_id)
             if not created_incident:
                 data = 'Failed creating incidents.'
 
@@ -915,15 +922,30 @@ async def translate_create(demisto_user: dict, message: str) -> str:
     return data
 
 
-async def create_incidents(demisto_user: dict, incidents: list) -> dict:
+async def create_incidents(incidents: list, user_name: str, user_email: str, user_demisto_id: str = '') -> dict:
     """
     Creates incidents according to a provided JSON object
-    :param demisto_user: The demisto user associated with the request (if exists)
     :param incidents: The incidents JSON
+    :param user_name The name of the user in Slack
+    :param user_email The email of the user in Slack
+    :param user_demisto_id: The id of demisto user associated with the request (if exists)
     :return: The creation result
     """
-    if demisto_user:
-        data = demisto.createIncidents(incidents, userID=demisto_user['id'])
+
+    for incident in incidents:
+        # Add relevant labels to context
+        labels = incident.get('labels', [])
+        keys = [l.get('type') for l in labels]
+        if 'Reporter' not in keys:
+            labels.append({'type': 'Reporter', 'value': user_name})
+        if 'ReporterEmail' not in keys:
+            labels.append({'type': 'ReporterEmail', 'value': user_email})
+        if 'Source' not in keys:
+            labels.append({'type': 'Source', 'value': 'Slack'})
+        incident['labels'] = labels
+
+    if user_demisto_id:
+        data = demisto.createIncidents(incidents, userID=user_demisto_id)
     else:
         data = demisto.createIncidents(incidents)
 
