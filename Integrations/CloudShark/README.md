@@ -14,9 +14,11 @@ control, and powerful analysis tools in an elegant, responsive web interface.
 <h2>To set up CloudShark to work with Demisto</h2>
 You will need the following before setting up the CloudShark integration on
 Demisto:
+<ul>
 <li><b>CloudShark URL:</b> The URL of the CloudShark instance</li>
 <li><b><a href="https://support.cloudshark.io/api/">API Token</a>:</b> API Token from
 CloudShark with upload, info, download, and delete permissions enabled</li>
+</ul>
 <h2> Configure the CloudShark Integration on Demisto</h2>
 <ol type="1">
   <li>Go to <b>Settings > Integrations > Servers & Services.</b></li>
