@@ -426,9 +426,9 @@ def main():
         if release == cd_release and asset_id == cd_asset_id:
             print_color('Content Update Successfully Installed!', color=LOG_COLORS.GREEN)
         else:
-            err_details = 'Attempted to install content with release "{}" and assetId '.format(cd_release) \
-                '"{}" but release "{}" and assetId "{asset_id}" were '.format(cd_asset_id, release, asset_id) \
-                'retrieved from the instance post installation.'
+            err_details = 'Attempted to install content with release "{}" and assetId '.format(cd_release)
+            err_details += '"{}" but release "{}" and assetId "{}" were '.format(cd_asset_id, release, asset_id)
+            err_details += 'retrieved from the instance post installation.'
             print_error('Content Update was Unsuccessful:\n{}'.format(err_details))
 
     # configure instances for new integrations
