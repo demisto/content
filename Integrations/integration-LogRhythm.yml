@@ -1330,8 +1330,8 @@ script:
     - contextPath: LogRhythm.Alarm.ID
       description: The unique id of the alarm.
       type: number
-    description: Retrieve alarms in a given time period. It can be filtered by the
-      alarm status
+    description: Retrieve alarms in the specified time period. Alerts can be filtered by the
+      alarm status.
   - name: lr-get-hosts-by-entity-id
     arguments:
     - name: entity-id
