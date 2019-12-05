@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Gmail
 display: Gmail
-category: Authentication
+category: Email Gateway
 description: Gmail API and user management (This integration replaces the Gmail functionality
   in the GoogleApps API and G Suite integration).
 configuration:
