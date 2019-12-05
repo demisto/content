@@ -183,7 +183,7 @@ def main(circle_artifacts, content_version):
     # update content_version in commonServerPython
     update_content_version(content_version)
     branch_name = update_branch()
-    print(f'Updating CommonServerPython with branch {branch_name} and content version {content_version}')
+    print(f'Updating CommonServerPython with branch {branch_name} and content version {content_version}.')
     print('Starting to create content artifact...')
     print('creating dir for bundles...')
     for bundle_dir in [BUNDLE_POST, BUNDLE_TEST]:
