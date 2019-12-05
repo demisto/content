@@ -72,6 +72,7 @@ INTEGRATION_YML_REGEX = r'{}/([^\\/]+)/\1.yml$'.format(INTEGRATIONS_DIR)
 INTEGRATION_REGEX = r'{}/(integration-[^\\/]+)\.yml$'.format(INTEGRATIONS_DIR)
 INTEGRATION_README_REGEX = r'{}/([^\\/]+)/README.md$'.format(INTEGRATIONS_DIR)
 
+PACKS_DIR_REGEX = r'^(?:./)?{}/'.format(PACKS_DIR)
 PACKS_INTEGRATION_JS_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2\.js'.format(
     PACKS_DIR, INTEGRATIONS_DIR)
 PACKS_SCRIPT_JS_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2\.js'.format(
@@ -81,6 +82,7 @@ PACKS_INTEGRATION_PY_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2\.py'.format(
 PACKS_INTEGRATION_TEST_PY_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2_test\.py'.format(
     PACKS_DIR, INTEGRATIONS_DIR)
 PACKS_INTEGRATION_YML_REGEX = r'{}/([^/]+)/{}/([^/]+)/([^.]+)\.yml'.format(PACKS_DIR, INTEGRATIONS_DIR)
+PACKS_INTEGRATION_REGEX = r'{}/([^/]+)/{}/([^/]+)\.yml'.format(PACKS_DIR, INTEGRATIONS_DIR)
 PACKS_SCRIPT_YML_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2\.yml'.format(PACKS_DIR, SCRIPTS_DIR)
 PACKS_SCRIPT_PY_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2\.py'.format(PACKS_DIR, SCRIPTS_DIR)
 PACKS_SCRIPT_TEST_PY_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2_test\.py'.format(PACKS_DIR, SCRIPTS_DIR)
@@ -118,6 +120,12 @@ REPUTATION_REGEX = r'{}.*reputation-.*\.json$'.format(MISC_DIR)
 REPORT_REGEX = r'{}.*report-.*\.json$'.format(REPORTS_DIR)
 MISC_REPUTATIONS_REGEX = r'{}.reputations.json$'.format(MISC_DIR)
 
+# Pack Unique Files
+PACKS_WHITELIST_FILE_NAME = '.secrets-ignore'
+PACKS_PACK_IGNORE_FILE_NAME = '.pack-ignore'
+PACKS_PACK_META_FILE_NAME = 'pack-metadata.json'
+PACKS_README_FILE_NAME = 'README.md'
+
 PYTHON_TEST_REGEXES = [
     PACKS_SCRIPT_TEST_PY_REGEX,
     PACKS_INTEGRATION_TEST_PY_REGEX,
@@ -154,14 +162,29 @@ YML_SCRIPT_REGEXES = [
     SCRIPT_YML_REGEX
 ]
 
+YML_PLAYBOOKS_NO_TESTS_REGEXES = [
+    PACKS_PLAYBOOK_YML_REGEX,
+    PLAYBOOK_REGEX,
+]
+
+YML_TEST_PLAYBOOKS_REGEXES = [
+    PACKS_TEST_PLAYBOOKS_REGEX,
+    TEST_PLAYBOOK_REGEX
+]
+
+YML_ALL_PLAYBOOKS_REGEX = sum(
+    [
+        YML_PLAYBOOKS_NO_TESTS_REGEXES,
+        YML_TEST_PLAYBOOKS_REGEXES,
+    ], []
+)
+
 YML_ALL_REGEXES = sum(
     [
         YML_INTEGRATION_REGEXES,
         YML_SCRIPT_REGEXES,
-        [
-            PACKS_PLAYBOOK_YML_REGEX,
-            PLAYBOOK_REGEX
-        ],
+        YML_PLAYBOOKS_NO_TESTS_REGEXES,
+        YML_TEST_PLAYBOOKS_REGEXES
     ], []
 )
 CHECKED_TYPES_REGEXES = [
@@ -183,6 +206,7 @@ CHECKED_TYPES_REGEXES = [
     # Scripts yaml
     SCRIPT_YML_REGEX,
     SCRIPT_REGEX,
+    PACKS_SCRIPT_YML_REGEX,
     # Widgets
     WIDGETS_REGEX,
     PACKS_WIDGETS_REGEX,
@@ -204,7 +228,7 @@ PACKAGE_SUPPORTING_DIRECTORIES = [INTEGRATIONS_DIR, SCRIPTS_DIR, BETA_INTEGRATIO
 
 IGNORED_TYPES_REGEXES = [DESCRIPTION_REGEX, IMAGE_REGEX, PIPFILE_REGEX, SCHEMA_REGEX]
 
-PACKAGE_YML_FILE_REGEX = r'(?:\./)?(?:Integrations|Scripts)/([^\\/]+)/\1.yml'
+PACKAGE_YML_FILE_REGEX = r'(?:\./)?(?:Packs/[^/]+/)?(?:Integrations|Scripts)/([^\\/]+)/\1.yml'
 
 OLD_YML_FORMAT_FILE = [INTEGRATION_REGEX, SCRIPT_REGEX]
 
@@ -248,6 +272,11 @@ CODE_FILES_REGEX = [
 ]
 
 SCRIPTS_REGEX_LIST = [SCRIPT_YML_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX, SCRIPT_PS_REGEX]
+
+# All files that have related yml file
+REQUIRED_YML_FILE_TYPES = [SCRIPT_PY_REGEX, INTEGRATION_PY_REGEX, PACKS_INTEGRATION_PY_REGEX, PACKS_SCRIPT_PY_REGEX,
+                           SCRIPT_JS_REGEX, INTEGRATION_JS_REGEX, PACKS_SCRIPT_JS_REGEX, PACKS_INTEGRATION_JS_REGEX,
+                           PACKS_README_REGEX, INTEGRATION_README_REGEX]
 
 TYPE_TO_EXTENSION = {
     'python': '.py',
@@ -302,3 +331,4 @@ INTEGRATION_CATEGORIES = ['Analytics & SIEM', 'Utilities', 'Messaging', 'Endpoin
                           'Deception', 'Email Gateway']
 
 EXTERNAL_PR_REGEX = r'^pull/(\d+)$'
+REPUTATION_COMMANDS = {'file', 'email', 'domain', 'url', 'ip'}

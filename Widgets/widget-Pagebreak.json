@@ -20,7 +20,7 @@
     }
   },
   "params": {
-    "text": "/pagebreak"
+    "text": "\\pagebreak"
   },
   "size": 0,
   "category": "utility"

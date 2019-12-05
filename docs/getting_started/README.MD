@@ -22,7 +22,7 @@ Optionally, macOS users can install via [homebrew](https://docs.brew.sh/Homebrew
 Docker is an optional, but highly recommended install. If you would like to write [unit tests](../tests/unit-testing) and run them, as we do in our CI process (within docker), we recommend installing docker. See: https://docs.docker.com/install/ for install options.
 
 ## Setting Up a Development Environment
-Clone (Demisto users) or Fork (external contributors) the Demisto Content repository.
+Clone (Demisto users) or [Fork](https://guides.github.com/activities/forking/) (external contributors) the Demisto Content repository.
 ### Install Python virtualenv
 We recommend using [virtualenv](https://github.com/pypa/virtualenv) to create an isolated virtual python development environment. To install virtual env run:
 ```
