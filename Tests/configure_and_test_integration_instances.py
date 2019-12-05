@@ -362,7 +362,7 @@ def main():
                 unchanged_integrations.append(integration)
                 integration_to_status[integration_name] = 'Unchanged Integration'
 
-        integrations_msg = '\n'.join([f'"{key}" - {val}' for key, val in integration_to_status])
+        integrations_msg = '\n'.join([f'"{key}" - {val}' for key, val in integration_to_status.items()])
         print_warning(f'{integrations_msg}\n')
 
         integrations_to_configure = [*modified_integrations, *unchanged_integrations]
