@@ -53,6 +53,7 @@ VERSIONS = {
     '2016': EXCHANGE_2016
 }
 
+
 ATTACHMENT_ID = "attachmentId"
 ATTACHMENT_ORIGINAL_ITEM_ID = 'originalItemId'
 NEW_ITEM_ID = 'newItemId'
