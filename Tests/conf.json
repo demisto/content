@@ -1995,6 +1995,11 @@
             "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         },
         {
+          "integrations": "EWS v2",
+          "playbookID": "Get EWS Folder Test",
+          "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
         }
