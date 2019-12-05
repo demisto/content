@@ -22,7 +22,6 @@ RUN_SH_FILE = '{}/{}'.format(SCRIPT_DIR, RUN_SH_FILE_NAME)
 CONTAINER_SETUP_SCRIPT_NAME = 'pkg_dev_container_setup.sh'
 CONTAINER_SETUP_SCRIPT = '{}/{}'.format(SCRIPT_DIR, CONTAINER_SETUP_SCRIPT_NAME)
 RUN_MYPY_SCRIPT = '{}/run_mypy.sh'.format(SCRIPT_DIR)
-RUN_BANDIT_SCRIPT = '{}/run_bandit.sh'.format(SCRIPT_DIR)
 LOG_VERBOSE = False
 DOCKER_LOGIN_COMPLETED = False
 
