@@ -68,10 +68,10 @@ class IDSetValidator(object):
             bool. Whether the file is represented correctly in the id_set or not.
         """
         is_found = False
-        file_id = obj_data.keys()[0]
+        file_id = list(obj_data.keys())[0]
 
         for checked_instance in obj_set:
-            checked_instance_id = checked_instance.keys()[0]
+            checked_instance_id = list(checked_instance.keys())[0]
             checked_instance_data = checked_instance[checked_instance_id]
             checked_instance_toversion = checked_instance_data.get('toversion', '99.99.99')
             checked_instance_fromversion = checked_instance_data.get('fromversion', '0.0.0')
