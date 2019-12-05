@@ -238,8 +238,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
                 if file_:
                     response = client.api_call(method, files={"file": file_}, data=body)
                 else:
-                    response = client.api_call(method,
-                                               json=body)
+                    response = client.api_call(method, json=body)
             else:
                 response = client.api_call(method, http_verb='GET', params=body)
         except SlackApiError as api_error:
