@@ -1,6 +1,6 @@
 ## [Unreleased]
-Fixed an issue where mirrored investigations contained mismatched user names.
-Added reporter and reporter email as labels to incidents created by direct messages.
+  - Fixed an issue where mirrored investigations contained mismatched user names.
+  - Added reporter and reporter email as labels to incidents that are created by direct messages.
 
 ## [19.11.1] - 2019-11-26
 Added Slack API rate limit call handling.
