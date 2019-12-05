@@ -365,7 +365,8 @@ def main():
         integrations_msg = '\n'.join(['"{}" - {}'.format(key, val) for key, val in integration_to_status.items()])
         print_warning('{}\n'.format(integrations_msg))
 
-        integrations_to_configure = [*modified_integrations, *unchanged_integrations]
+        integrations_to_configure = modified_integrations[:]
+        integrations_to_configure.extend(unchanged_integrations)
 
         # set params for new integrations and [modified + unchanged] integrations, then add the new ones
         # to brand_new_integrations list for later use
