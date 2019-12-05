@@ -933,10 +933,10 @@ def get_indicator_outputs(indicator_type, indicator_response, indicator_value, s
         md = tableToMarkdown(table_name, indicator_response, headerTransform=string_to_table_header)
 
     ec = {
-            outputPaths['dbotscore']: dbot_score,
-            outputPaths[indicator_type.lower()]: indicator_context,
-            f'AutoFocus.{indicator_type}(val.IndicatorValue === obj.IndicatorValue)': indicator_response,
-        }
+        outputPaths['dbotscore']: dbot_score,
+        outputPaths[indicator_type.lower()]: indicator_context,
+        f'AutoFocus.{indicator_type}(val.IndicatorValue === obj.IndicatorValue)': indicator_response,
+    }
 
     return_outputs(readable_output=md, outputs=ec, raw_response=raw_res)
 
