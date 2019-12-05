@@ -15,7 +15,7 @@ SERVER_URL = "https://{}"
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
-    parser.add_argument('-n', '--instance_test', type=str2bool, help='is instance test build?', required=True)
+    parser.add_argument('-n', '--instance_tests', type=str2bool, help='is instance test build?', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file', required=True)
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
@@ -24,16 +24,6 @@ def options_handler():
     options = parser.parse_args()
 
     return options
-
-
-def get_demisto_instance_and_login(server, username, password):
-    c = demisto.DemistoClient(None, server, username, password)
-    res = c.Login()
-    if res.status_code != 200:
-        print_error("Login has failed with status code " + str(res.status_code))
-        sys.exit(1)
-
-    return c
 
 
 def get_integrations(secret_conf_path):

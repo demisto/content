@@ -416,7 +416,7 @@ jobs:
               then
                 if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
                   then
-                    echo 'skipping, running only in container no 0.'
+                    echo "Skipping - instance tests tasks are running only in container number 0"
                   else
                     ./Tests/scripts/instance_test.sh
                 fi
@@ -433,7 +433,7 @@ jobs:
               then
                 if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
                   then
-                    echo 'skipping, running only in container no 0.'
+                    echo "Skipping - instance tests tasks are running only in container number 0"
                   else
                     python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
 
