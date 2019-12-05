@@ -1,3 +1,3 @@
 ## [Unreleased]
 #### New Playbook
-Get mails from EWS by folders any preprocess them
+Get emails from EWS by folders and preprocess them
