@@ -1,5 +1,4 @@
 import re
-import sys
 import json
 import argparse
 
@@ -125,4 +124,4 @@ if __name__ == "__main__":
 
         slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl)
     else:
-        print_color("Not instance_tests build, stopping Slack Notifications about instances", LOG_COLORS.RED)
+        print_color("Not instance tests build, stopping Slack Notifications about instances", LOG_COLORS.RED)
