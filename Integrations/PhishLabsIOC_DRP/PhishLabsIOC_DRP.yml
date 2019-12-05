@@ -26,10 +26,14 @@ configuration:
   required: false
   type: 0
 - defaultvalue: dateModified
-  display: Fetch by date field (dateModified/dateClosed/dateCreated)
+  display: Fetch by date field
   name: fetchByDate
+  options:
+  - dateModified
+  - dateClosed
+  - dateCreated
   required: false
-  type: 0
+  type: 15
 - defaultvalue: '20'
   display: Fetch limit (min 20)
   name: fetchLimit
