@@ -60,9 +60,14 @@ jobs:
           name: Create ID Set
           when: always
           command: |
+            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+              then
+                echo "Skipping - instance tests tasks are running only in container number 0"
+                exit 0
+            fi
             if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipping - running only in container number 0"
+                echo "Skipped Infrastructure testing step"
                 exit 0
             fi
             python ./Tests/scripts/update_id_set.py -r
@@ -183,6 +188,11 @@ jobs:
               then
                 echo "Skipped Unit Testing step"
                 exit 0
+            fi
+            if [ $CIRCLE_NODE_INDEX -ne 1 ] ;
+              then
+                echo 'Skipping - unit tests are running only in container number 1.'
+                exit 0;
             fi
             SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
       - run:
@@ -397,28 +407,44 @@ jobs:
       - run:
           name: Instance Test
           command: |
-            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
+            if [ -n "${NIGHTLY}" ] ;
               then
-                ./Tests/scripts/instance_test.sh
-              else
-                echo "Skipping instance tests"
+                echo "Skipping instance tests for nightly build"
                 exit 0
+            fi
+            if [ -n "${INSTANCE_TESTS}" ] ;
+              then
+                if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+                  then
+                    echo "Skipping - instance tests tasks are running only in container number 0"
+                  else
+                    ./Tests/scripts/instance_test.sh
+                fi
             fi
           when: always
       - run:
           name: Destroy Instances
           command: |
-            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
+            if [ -n "${INSTANCE_TESTS}" ] ;
               then
-                python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
+                if [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+                  then
+                    echo "Skipping - instance tests tasks are running only in container number 0"
+                  else
+                    python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
 
-                export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
-                zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
-                rm -f $CIRCLE_ARTIFACTS/server*.log
-
-              else
-                echo "Skipping instance tests"
-                exit 0
+                    export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
+                    zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
+                    rm -f $CIRCLE_ARTIFACTS/server*.log
+                fi
             fi
           when: always
       - store_artifacts:
