@@ -63,8 +63,8 @@ script:
       secret: false
     - default: true
       defaultValue: '1'
-      description: The number of pages of emails to pull (maximum is 10 emails per
-        page).
+      description: 'The number of pages of emails to pull (maximum is 10 emails per
+        page).'
       isArray: false
       name: pages_to_pull
       required: false
