@@ -1,5 +1,5 @@
 ## [Unreleased]
-   - Fixed ***ua-parse*** command so support *extend-context*
+Added support for *extend-context* in the ***ua-parse*** command.
 
 ## [19.8.0] - 2019-08-06
   - The *Trust any certificate* parameter now works as expected.
