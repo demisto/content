@@ -1793,8 +1793,10 @@ async def test_create_incidents_no_labels(mocker):
     data = await create_incidents(incidents, 'spengler', 'spengler@ghostbusters.example.com', 'demisto_user')
 
     incident_arg = demisto.createIncidents.call_args[0][0]
+    user_arg = demisto.createIncidents.call_args[1]['userID']
 
     assert incident_arg == incidents_with_labels
+    assert user_arg == 'demisto_user'
     assert data == 'nice'
 
 
@@ -1818,8 +1820,10 @@ async def test_create_incidents_with_labels(mocker):
     data = await create_incidents(incidents, 'spengler', 'spengler@ghostbusters.example.com', 'demisto_user')
 
     incident_arg = demisto.createIncidents.call_args[0][0]
+    user_arg = demisto.createIncidents.call_args[1]['userID']
 
     assert incident_arg == incidents_with_labels
+    assert user_arg == 'demisto_user'
     assert data == 'nice'
 
 
@@ -1917,7 +1921,7 @@ def test_check_for_answers_no_proxy(mocker, requests_mock):
     mocker.patch.object(demisto, 'handleEntitlementForUser')
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     mocker.patch.object(Slack, 'add_info_headers')
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
@@ -1930,6 +1934,7 @@ def test_check_for_answers_no_proxy(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }])
@@ -1937,7 +1942,7 @@ def test_check_for_answers_no_proxy(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
 
@@ -1967,7 +1972,7 @@ def test_check_for_answers_proxy(mocker, requests_mock):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(Slack, 'add_info_headers')
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
         json={'payload': PAYLOAD_JSON}
@@ -1979,6 +1984,7 @@ def test_check_for_answers_proxy(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }])
@@ -1986,7 +1992,7 @@ def test_check_for_answers_proxy(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
 
@@ -2012,7 +2018,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(Slack, 'add_info_headers')
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
         [{'json': {}, 'status_code': 200},
@@ -2027,6 +2033,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }, {
@@ -2034,6 +2041,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }, {
@@ -2041,6 +2049,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }])
@@ -2048,7 +2057,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
 
@@ -2068,6 +2077,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:38:25'
     }, {
@@ -2075,9 +2085,52 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:38:25'
     }])
+
+
+def test_get_poll_minutes_no_received():
+    from Slack import get_poll_minutes
+
+    # Set
+    received = None
+    current = datetime.datetime(2019, 9, 26, 18, 38, 25)
+
+    # Arrange
+    minutes = get_poll_minutes(current, received)
+
+    # Assert
+    assert minutes == 1
+
+
+def test_get_poll_minutes_received_in_range():
+    from Slack import get_poll_minutes
+
+    # Set
+    received = '2019-09-26 18:10:25'
+    current = datetime.datetime(2019, 9, 26, 18, 38, 25)
+
+    # Arrange
+    minutes = get_poll_minutes(current, received)
+
+    # Assert
+    assert minutes == 2
+
+
+def test_get_poll_minutes_received_out_of_range():
+    from Slack import get_poll_minutes
+
+    # Set
+    received = '2019-09-26 18:10:25'
+    current = datetime.datetime(2019, 9, 27, 12, 38, 25)
+
+    # Arrange
+    minutes = get_poll_minutes(current, received)
+
+    # Assert
+    assert minutes == 5
 
 
 def test_check_for_answers_no_answer(mocker, requests_mock):
@@ -2088,7 +2141,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(Slack, 'add_info_headers')
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
         json={}
@@ -2100,6 +2153,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }, {
@@ -2107,6 +2161,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }])
@@ -2114,7 +2169,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     # Assert
 
@@ -2126,6 +2181,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:38:25'
     }, {
@@ -2133,6 +2189,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:38:25'
     }])
@@ -2146,7 +2203,7 @@ def test_check_for_answers_no_answer_expires(mocker, requests_mock):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(Slack, 'add_info_headers')
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
         json={}
@@ -2172,7 +2229,7 @@ def test_check_for_answers_no_answer_expires(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
 
@@ -2205,7 +2262,7 @@ def test_check_for_answers_error(mocker, requests_mock):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(Slack, 'add_info_headers')
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
         json='error',
@@ -2228,7 +2285,7 @@ def test_check_for_answers_error(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     # Assert
 
@@ -2260,7 +2317,7 @@ def test_check_for_answers_handle_entitlement_error(mocker, requests_mock):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(Slack, 'add_info_headers')
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     requests_mock.post(
         'https://oproxy.demisto.ninja/slack-poll',
         json={'payload': PAYLOAD_JSON},
@@ -2278,7 +2335,7 @@ def test_check_for_answers_handle_entitlement_error(mocker, requests_mock):
     set_integration_context(integration_context)
 
     # Arrange
-    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+    Slack.check_for_answers()
 
     # Assert
 
@@ -2640,12 +2697,13 @@ def test_send_request_with_entitlement(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43',
         'reply': 'Thanks bro',
         'expiry': '2019-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse'
     }]
 
@@ -2705,12 +2763,13 @@ def test_send_request_with_entitlement_blocks(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '2019-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse'
     }]
 
@@ -2771,12 +2830,13 @@ def test_send_request_with_entitlement_blocks_message(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
-
+    mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '2019-09-26 18:38:25',
+        'received': '2019-09-26 18:38:25',
         'default_response': 'NoResponse'
     }]
 
