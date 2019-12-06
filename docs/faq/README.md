@@ -1,10 +1,10 @@
-# FAQ
+# Demisto FAQ
 
 ### Which kind of contributions do you support?
 We support **Demisto Certified** and **Developer Supported**. For more details you can read [here]()
 
 ### Which IDEs do you support?
-- We have PyCharm plugin [link]()
+- We have [PyCharm plugin](https://plugins.jetbrains.com/plugin/12093-demisto-add-on-for-pycharm)
 - You can develop integrations and scripts in Demisto
 - Playbooks can only be developed in Demisto.
 
@@ -20,5 +20,5 @@ Our recommended OS for development is either macOS or Linux, as we use bash and 
 If you are working on Windows, you can either work with a Linux VM or utilize [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
 
 ### Licensing
-Demisto content repository is BSD license 
+Demisto content repository has [BSD license](../../LICENSE) 
 

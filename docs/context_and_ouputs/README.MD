@@ -128,7 +128,7 @@ return_outputs(
 )
 ```
 
-**Note**: The code **must** match the yml! The brand name (e.g. `ThreatStream`), the object name (e.g. `Analysis`)
+**Note**: The code **must** match the context path in the yml
 
 ### DT (Demisto Transform Language)
 In the above example, we observe the entry context using ```(val.Address==obj.Address)```. This works to *tie together* related entry context objects. In this instance, we are using the value of the Address key as the unique identifier to search through the existing context and link related objects. This prevents data from being overwritten as well as further enriches an existing entry with more information. Learn more about linking context [here](https://github.com/demisto/content/blob/master/docs/DT).

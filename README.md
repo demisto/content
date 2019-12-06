@@ -13,43 +13,16 @@ We invite you to use the playbooks and scripts, modify them to suit your needs a
 
 ## Demisto
 - For more information about Demisto you can visit [here](https://www.paloaltonetworks.com/cortex/demisto)
-- To join our community please visit [Demisto Community](https://go.demisto.com/join-our-slack-community)
-- We have Partners website - visit [here](https://demisto.developers.paloaltonetworks.com/)
+- [Demisto Community](https://go.demisto.com/join-our-slack-community)
+- [Partners website](https://demisto.developers.paloaltonetworks.com/)
 - For Demisto Components, Concepts, and Terminology visit [here](https://support.demisto.com/hc/en-us/articles/360005126713-Demisto-Components-Concepts-and-Terminology)
+- [FAQ](docs/faq)
 
 ## Contributing
 Contributions are welcome and appreciated. For instructions about adding/modifying content please see our [Content Contribution Guide](CONTRIBUTING.md).
 
-### Creating an Integration
-Let's look at Demisto and get started on your first integration.
 
-[Follow the steps here to learn about the Demisto IDE](docs/getting_started)
-
-### Code Conventions
-The Demisto Code Conventions will help you understand how we format our Integrations and some of the tips and tricks we have developed over the years.
-
-[Learn about the Demisto Code Conventions](docs/code_conventions)
- 
-### Context and Outputs
-The Demisto platform relies heavily on collecting data from various endpoints (integrations) and creating a "Context" for them. This allows customers to be able to use the data to perform various tasks they may need to accomplish.
-
-[Click here to learn about Context and Outputs](docs/context_and_ouputs)
-
-### Context Standards
-When we are working with data that is generic across all platforms, we format them according to our context standards. This helps integrations work interchangeably inside other playbooks.
-
-[Learn about our Context Standards here](docs/context_standards)
-
-### Docker
-We use docker to run python scripts and integrations in a controlled environment. You can configure an existing docker image from the [Demisto Docker Hub Organization](https://hub.docker.com/u/demisto/) or create a new docker image to suite your needs. More information about how to use Docker is available here:
-
-[Docker Images](docs/docker)
-
-## Release Notes
-For information about content release notes conventions, refer to our [release notes documentation](docs/release_notes).
-
-
-# Documentation Directory
+## Documentation Directory
 
 | Link | Description |
 | --- | ---|
@@ -61,7 +34,6 @@ For information about content release notes conventions, refer to our [release n
 | [Integration Parameter Types](docs/parameter_types) | Description of the various integration parameter types |
 | [Context and Outputs](docs/context_and_ouputs) | Brief overview of Context and Outputs |
 | [Context Conventions](docs/context_standards) | Conventions for the Demisto Standard Context |
-| [Contributing](CONTRIBUTING.md) | How to contribute to the Content Repo |
 | [Creating Playbooks](docs/creating_playbooks) | How to create a Playbook |
 | [DBot Score](docs/dbot) | How the DBot Score works |
 | [Demisto Transform Language (DT)](docs/DT) | Understanding Demisto Transform Language (DT) |
