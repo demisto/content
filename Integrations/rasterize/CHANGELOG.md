@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [19.11.0] - 2019-11-12
+Added support for the *px* suffix in the _width_ and _height_ parameters.
+
 ## [19.10.2] - 2019-10-29
   - Added the ___rasterize-pdf___ command, which converts a PDF file to an image file.
   - ___rasterize-email___ now available in offline mode. 

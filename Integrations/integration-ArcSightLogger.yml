@@ -566,15 +566,22 @@ script:
             var keys = [];
             var fields = xmlObject.fields;
             var entries = xmlObject.results;
+            var isDateField = [];
             fields.forEach(function(field){
                 if(field.name){
                     keys.push(field.name.replace(/\s/g, '').replace(/^\_/,''));
+                    isDateField.push(field.type == 'date');
                 }
             });
             entries.forEach(function(entry){
                 if (entry.length == keys.length){
                     var newEntry = {};
                     for (var i = 0; i<  entry.length; i++){
+                        if (isDateField[i] && !isNaN(entry[i])) {
+                            var dateEntry = new Date(0);
+                            dateEntry.setUTCSeconds(parseInt(entry[i]) / 1000);
+                            entry[i] = dateEntry.toISOString();
+                        }
                         newEntry[keys[i]] = entry[i];
                     }
                     context.push(newEntry);

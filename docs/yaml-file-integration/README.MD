@@ -95,8 +95,10 @@ script:
             re_read_documentation()
 
   type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.7.5.3066
 ```
-Type indicates the language your integration is written in. Demisto currently supports Python and JavaScript.
+Type indicates the language your integration is written in. Demisto currently supports Python and JavaScript. When using Python specifying `subtype` field is required (either: `python2` or `python3`). Additionally, when using Python `dockerimage` should be specified. If `dockerimage` is not specified a default Python 2 image will be used.
 
 ## Commands
 The command section tells Demisto what arguments are required for your command as well as what the outputs are.
@@ -107,6 +109,8 @@ The command section tells Demisto what arguments are required for your command a
     arguments:
     - name: command-argument
       required: true
+      default: false
+      isArray: false
       description: This is a description for the argument
     outputs:
     - contextPath: Example.Sample.Name
@@ -125,6 +129,8 @@ An explanation of these fields is as follows:
 | **name** | The name of the command |
 | **arguments: name** | The name of the argument |
 | **arguments: required** | Boolean for if the argument is required |
+| **arguments: default** | Boolean for if the argument is the one chosen when argument values are passed to a command without specifying the command argument's name. Note that only one command argument can be set as the default per command |
+| **arguments: isArray** | Boolean for if the argument accepts a CSV list of input values |
 | **arguments: description** | A description of the argument |
 | **outputs: contextPath** | The dot notation representation of the context |
 | **outputs: description** | Description of the context item |

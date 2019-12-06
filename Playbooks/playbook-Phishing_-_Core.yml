@@ -203,6 +203,14 @@ tasks:
                       value:
                         simple: Rasterize
                     ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
       - - operator: isEqualString
           left:

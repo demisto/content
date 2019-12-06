@@ -1,0 +1,99 @@
+args:
+- default: false
+  description: Additional text by which to query incidents.
+  isArray: false
+  name: query
+  required: false
+  secret: false
+- default: false
+  description: A common-separatetd list of incident types by which to filter.
+  isArray: false
+  name: incidentTypes
+  required: false
+  secret: false
+- default: false
+  description: 'The start date by which to filter incidents. Date format will be the
+      same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+      +0200")'
+  isArray: false
+  name: fromDate
+  required: false
+  secret: false
+- default: false
+  description: 'The end date by which to filter incidents. Date format will be the
+      same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+      +0200")'
+  isArray: false
+  name: toDate
+  required: false
+  secret: false
+- default: false
+  defaultValue: '3000'
+  description: The maximum number of incidents to fetch.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Whether to query and fetch incident context.
+  isArray: false
+  name: includeContext
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: created
+  description: The incident field (created or modified) to specify for the date range.
+  isArray: false
+  name: timeField
+  predefined:
+  - created
+  - modified
+  required: false
+  secret: false
+- default: false
+  description: A comma-separated list of non-empty value incident field names by
+    which to filter incidents.
+  isArray: false
+  name: NonEmptyFields
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: pickle
+  description: The output file format.
+  isArray: false
+  name: outputFormat
+  predefined:
+  - json
+  - pickle
+  required: false
+  secret: false
+comment: Gets a list of incident objects and the associated incident outputs that match
+  the specified query and filters. The results are returned in a structured data file.
+commonfields:
+  id: GetIncidentsByQuery
+  version: -1
+enabled: false
+name: GetIncidentsByQuery
+outputs:
+- contextPath: GetIncidentsByQuery.Filename
+  description: The output file name.
+  type: String
+- contextPath: GetIncidentsByQuery.FileFormat
+  description: "The output file format."
+  type: String
+script: '-'
+system: false
+tags:
+- ml
+timeout: 60µs
+type: python
+dockerimage: demisto/dateutil
+tests:
+- Create Phishing Classifier V2 ML Test
