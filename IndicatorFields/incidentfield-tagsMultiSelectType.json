@@ -1,16 +1,13 @@
 {
-  "sortValues": null,
   "closeForm": false,
   "cliName": "tags",
   "neverSetAsRequired": false,
   "threshold": 72,
   "defaultRows": null,
   "id": "indicator_tags",
-  "validatedError": "",
   "group": 2,
   "script": "",
   "isReadOnly": false,
-  "commitMessage": "",
   "system": false,
   "content": true,
   "unsearchable": false,
@@ -22,8 +19,6 @@
   "editForm": true,
   "description": "",
   "associatedToAll": false,
-  "shouldCommit": false,
-  "shouldPublish": false,
   "associatedTypes": [
     "File"
   ],
@@ -32,7 +27,6 @@
   "placeholder": "",
   "useAsKpi": false,
   "systemAssociatedTypes": null,
-  "prevName": "Tags",
   "locked": false,
   "name": "Tags",
   "ownerOnly": false,
@@ -45,5 +39,6 @@
   ],
   "validationRegex": "",
   "sla": 0,
-  "fromVersion": "5.0.0"
+  "fromVersion": "5.0.0",
+  "toVersion": "5.5.0"
 }
