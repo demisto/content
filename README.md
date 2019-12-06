@@ -88,7 +88,7 @@ For information about content release notes conventions, refer to our [release n
 | [Testing](docs/tests) | The Demisto Content Repo Testing Methods |
 | [CircleCI](docs/tests/circleci) | How we test using CircleCI |
 | [Mocks](docs/tests/mocks) | Explanation of how to test using mocked data |
-| [GenericPolling Playbook](docs/tests/genericpolling) | Explanation of how and when to use the GenericPolling playbook |
+| [GenericPolling Playbook](docs/genericpolling) | Explanation of how and when to use the GenericPolling playbook |
 | [Release Notes](docs/release_notes) | Explanation of our content release notes conventions |
 
 ---
