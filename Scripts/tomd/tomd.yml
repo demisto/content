@@ -1,0 +1,17 @@
+commonfields:
+  id: tomd
+  version: -1
+name: tomd
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: html
+  required: true
+  default: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/tomd
+runas: DBotWeakRole
