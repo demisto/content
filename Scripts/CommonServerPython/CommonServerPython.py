@@ -76,6 +76,7 @@ thresholds = {
     'vtPositives': 10,
     'vtPositiveUrlsForIP': 30
 }
+# The dictionary below does not represent DBot Scores correctly, and should not be used
 dbotscores = {
     'Critical': 4,
     'High': 3,
