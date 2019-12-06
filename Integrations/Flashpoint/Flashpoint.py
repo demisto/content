@@ -1,8 +1,10 @@
+from typing import Dict, Any
+
+from CommonServerPython import *
+
 """ IMPORTS """
 import ipaddress
 import urllib.parse
-
-from CommonServerPython import *
 
 
 class Client:
@@ -484,8 +486,6 @@ def file_lookup(client, file):
     :param file: file
     :return: command output
     """
-    file_types = ['md5', 'sha1', 'sha256', 'sha512']
-    indicators = []
 
     query = r'+type:("md5", "sha1", "sha256", "sha512") +value.\*.keyword:"' + file + '"'
     resp = client.http_request("GET", url_suffix=get_url_suffix(query))
@@ -551,9 +551,6 @@ def email_lookup(client, email):
     :param email: email address or subject
     :return: command output
     """
-    email_types = ['email-dst', 'email-src', 'email-src-display-name', 'email-subject']
-    indicators = []
-
     query = r'+type:("email-dst", "email-src", "email-src-display-name", "email-subject") +value.\*.keyword:"' \
             + email + '" '
     resp = client.http_request("GET", url_suffix=get_url_suffix(query))
@@ -697,7 +694,7 @@ def get_reports(client, report_search):
                 hr += '   Summary: N/A\n\n\n'
         fp_url = 'https://fp.tools/home/search/reports?query=' + urllib.parse.quote(report_search)
         hr += 'Link to Report-search on Flashpoint platform: [{}]({})\n'.format(fp_url, fp_url)
-        ec = {}
+        ec: Dict[Any, Any] = {}  # Create empty dictionary.
 
     else:
         hr += 'No reports found for the search.'
@@ -721,13 +718,14 @@ def get_report_by_id(client, report_id):
     hr = '### Flashpoint Intelligence Report details\n'
 
     if report:
+        timestamp = None
         try:
             time_str = report.get('posted_at', '')[:-10] + 'UTC'
             timestamp = time.strptime(time_str, '%Y-%m-%dT%H:%M:%S%Z')
         except TypeError:
-            timestamp = None
+            pass
         except ValueError:
-            timestamp = None
+            pass
 
         tags = report.get('tags', [])
         tag_string = ""
@@ -737,13 +735,13 @@ def get_report_by_id(client, report_id):
             tag_string = tag_string[2:]
 
         if timestamp:
-            timestamp = time.strftime('%b %d, %Y  %H:%M', timestamp)
+            timestamp_str = time.strftime('%b %d, %Y  %H:%M', timestamp)
         else:
-            timestamp = 'N/A'
+            timestamp_str = 'N/A'
 
         report_details = [{
             'Title': '[{}]({})'.format(report.get('title', 'N/A'), report.get('platform_url', '')),
-            'Date Published (UTC)': timestamp,
+            'Date Published (UTC)': timestamp_str,
             'Summary': report.get('summary', 'N/A'),
             'Tags': tag_string
         }]
@@ -791,7 +789,7 @@ def get_related_reports(client, report_id):
             hr += '   Summary: ' + str(report.get('summary', 'N/A')) + '\n\n\n'
         fp_url = 'https://fp.tools/home/intelligence/reports/report/' + report_id + '#detail'
         hr += 'Link to the given Report on Flashpoint platform: [{}]({})\n'.format(fp_url, fp_url)
-        ec = {}
+        ec: Dict[Any, Any] = {}
 
     else:
         hr += 'No related reports found for the search.'
@@ -812,7 +810,7 @@ def get_event_by_id(client, event_id):
     resp = client.http_request("GET", url_suffix=url_suffix)
 
     hr = '### Flashpoint Event details\n'
-    ec = {}
+    ec: Dict[Any, Any] = {}
 
     if len(resp) <= 0:
         hr += 'No event found for the given ID.'
@@ -886,7 +884,7 @@ def get_events(client, limit, report_fpid, attack_ids, time_period):
         if attack_ids:
             fp_link = fp_link + '?attack_ids=' + urllib.parse.quote(attack_ids)
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
-        ec = {}
+        ec: Dict[Any, Any] = {}
     else:
         hr += 'No event found for the argument.'
         ec = {}
@@ -1088,7 +1086,7 @@ def get_forum_sites(client, site_search):
     sites = resp.get("data", [])
 
     hr = '### Flashpoint Forum sites related to search: ' + site_search + '\n'
-    ec = {}
+    ec: Dict[Any, Any] = {}
 
     if sites:
         hr += 'Top 10 sites:\n\n'
@@ -1125,7 +1123,7 @@ def get_forum_posts(client, post_search):
     posts = resp.get("data", [])
 
     hr = '### Flashpoint Forum posts related to search: ' + post_search + '\n'
-    ec = {}
+    ec: Dict[Any, Any] = {}
 
     if posts:
         hr += 'Top 10 posts:\n\n'
