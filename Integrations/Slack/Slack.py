@@ -39,7 +39,7 @@ INCIDENT_NOTIFICATION_CHANNEL = 'incidentNotificationChannel'
 PLAYGROUND_INVESTIGATION_TYPE = 9
 WARNING_ENTRY_TYPE = 11
 ENDPOINT_URL = 'https://oproxy.demisto.ninja/slack-poll'
-POLL_INTERVAL_MINUTES = {
+POLL_INTERVAL_MINUTES: Dict[Tuple, int] = {
     (0, 15): 1,
     (15, 60): 2,
     (60, ): 5
