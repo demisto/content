@@ -1348,8 +1348,7 @@ script:
         sleep(1000);
         let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
 
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES,
-        args['cancel-on-timeout']);
+        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
         return commandEntries['memdump'](command);
     }
 
@@ -2137,7 +2136,7 @@ script:
       description: Percent of the process completed
     - contextPath: CbLiveResponse.Commands.DumpingInProgress
       description: Boolean flag indicating if memory dump is in progress.
-    description: Endpoint memory dump.
+    description: Deprecated - use cb-memdump instead.
     deprecated: true
   - name: cb-command-create
     deprecated: true
@@ -2718,7 +2717,7 @@ script:
       description: Boolean flag indicating if memory dump is completed.
       type: boolean
     - contextPath: CbLiveResponse.Commands.PercentDone
-      description: Percent of the process completed
+      description: Percent of the process completed.
     - contextPath: CbLiveResponse.Commands.DumpingInProgress
       description: Boolean flag indicating if memory dump is in progress.
       type: boolean
