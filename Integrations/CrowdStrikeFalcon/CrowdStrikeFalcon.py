@@ -30,8 +30,6 @@ HEADERS = {
 }
 # Note: True life time of token is actually 30 mins
 TOKEN_LIFE_TIME = 28
-# Note: True life time of session is actually 5 mins
-SESSION_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
 # Remove proxy if not set to true in params
 if not demisto.params().get('proxy'):
@@ -170,36 +168,38 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         )
     except requests.exceptions.RequestException:
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
-    # Handle error responses gracefully
-
-    if res.status_code not in {200, 201, 202}:
+    try:
         res_json = res.json()
-        reason = res.reason
-        resources = res_json.get('resources', {})
-        if resources:
-            for host_id, resource in resources.items():
-                errors = resource.get('errors', [])
-                if errors:
-                    error_message = errors[0].get('message')
-                    reason += f'\nHost ID {host_id} - {error_message}'
-        elif res_json.get('errors'):
-            errors = res_json.get('errors', [])
-            for error in errors:
-                reason += f"\n{error.get('message')}"
-        err_msg = 'Error in API call to CrowdStrike Falcon: code: {code} - reason: {reason}'.format(
-            code=res.status_code,
-            reason=reason
-        )
-        # try to create a new token
-        if res.status_code == 403 and get_token_flag:
-            LOG(err_msg)
-            token = get_token(new_token=True)
-            headers['Authorization'] = 'Bearer {}'.format(token)
-            return http_request(method, url_suffix, params, data, headers, safe, get_token_flag=False)
-        elif safe:
-            return None
-        return_error(err_msg)
-    return res.json()
+        if res.status_code not in {200, 201, 202}:
+            reason = res.reason
+            resources = res_json.get('resources', {})
+            if resources:
+                for host_id, resource in resources.items():
+                    errors = resource.get('errors', [])
+                    if errors:
+                        error_message = errors[0].get('message')
+                        reason += f'\nHost ID {host_id} - {error_message}'
+            elif res_json.get('errors'):
+                errors = res_json.get('errors', [])
+                for error in errors:
+                    reason += f"\n{error.get('message')}"
+            err_msg = 'Error in API call to CrowdStrike Falcon: code: {code} - reason: {reason}'.format(
+                code=res.status_code,
+                reason=reason
+            )
+            # try to create a new token
+            if res.status_code == 403 and get_token_flag:
+                LOG(err_msg)
+                token = get_token(new_token=True)
+                headers['Authorization'] = 'Bearer {}'.format(token)
+                return http_request(method, url_suffix, params, data, headers, safe, get_token_flag=False)
+            elif safe:
+                return None
+            return_error(err_msg)
+        return res_json
+    except ValueError as exception:
+        raise ValueError(
+            f'Failed to parse json object from response: {exception} - {res.content}')  # type: ignore[str-bytes-safe]
 
 
 def create_entry_object(contents='', ec=None, hr=''):
