@@ -9,18 +9,7 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-"""GLOBALS/PARAMS
-Attributes:
-    INTEGRATION_NAME:
-        Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
 
-    INTEGRATION_COMMAND_NAME:
-        Command names should be written in all lower-case letters,
-        and each word separated with a hyphen, for example: msgraph-user.
-
-    INTEGRATION_CONTEXT_NAME:
-        Context output names should be written in camel case, for example: MSGraphUser.
-"""
 INTEGRATION_NAME = 'Infoblox Integration'
 INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
