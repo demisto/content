@@ -34,6 +34,13 @@ args:
   defaultValue: ${Correlation.QID}
 - name: additionalQueryFields
   description: Add more fields for basic query (a list with comma separators)
+- name: is_cre_name_null
+  auto: PREDEFINED
+  predefined:
+  - "True"
+  - "False"
+  description: Determines whether the CRE name is null by default.
+  defaultValue: "True"
 outputs:
 - contextPath: QRadar
   description: QRadar context output
