@@ -136,7 +136,7 @@ def store_model_in_demisto(model_name, model_override, train_text_data, train_ta
         return_error(get_error(res))
     confusion_matrix_no_all = confusion_matrix.drop("All", axis=0, errors='ignore').drop("All", axis=1, errors='ignore')
     res = demisto.executeCommand('evaluateMLModel',
-                                 {'modelConfusionMatrix': confusion_matrix_no_all.to_json(),
+                                 {'modelConfusionMatrix': confusion_matrix_no_all,
                                   'modelName': model_name})
     if is_error(res):
         return_error(get_error(res))
@@ -280,7 +280,7 @@ def main():
             'DBotPhishingClassifier': {
                 'ModelName': model_name,
                 'EvaluationScores': res['Contents']['metrics_df'].to_dict(),
-                'ConfusionMatrix': confusion_matrix.to_dict()
+                'ConfusionMatrix': confusion_matrix
             }
         }
     }
