@@ -1,7 +1,8 @@
 import argparse
-import demisto_client
 import os
 import ast
+import demisto_client
+
 from Tests.test_utils import print_error
 
 
