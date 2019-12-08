@@ -108,8 +108,8 @@ class Client(BaseClient):
     """
 
     def __init__(self, tenant: str, server_url: str, username: str, password: str, verify: bool,
-                 proxies: Optional[MutableMapping[str, str]]):
-        super().__init__(base_url=server_url, verify=verify, proxy=proxies)
+                 proxy: bool):
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy)
         self._username = username
         self._password = password
         self._tenant = tenant
@@ -1146,14 +1146,14 @@ def main():
     username = params.get('username')
     password = params.get('password')
     verify = not params.get('unsecure', False)
-    proxies = handle_proxy()  # Remove proxy if not set to true in params
+    proxy = demisto.params().get('proxy') == 'true'
 
     command = demisto.command()
     LOG(f'Command being called in Securonix is: {command}')
 
     try:
         client = Client(tenant=tenant, server_url=server_url, username=username, password=password,
-                        verify=verify, proxies=proxies)
+                        verify=verify, proxy=proxy)
         commands = {
             'test-module': test_module,
             'securonix-list-workflows': list_workflows,
