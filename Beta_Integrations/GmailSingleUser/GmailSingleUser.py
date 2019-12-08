@@ -884,7 +884,7 @@ def auth_link_command(client: Client):
     link, challange = client.generate_auth_link()
     markdown = f"""
 ## Gmail Auth Link
-Please follow the follwing **[link]({link})**.
+Please follow the following **[link]({link})**.
 
 After Completing the authentication process, copy the received code
 to the **Auth Code** configuration parameter of the integration instance.
