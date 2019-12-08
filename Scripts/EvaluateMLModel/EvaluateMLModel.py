@@ -26,7 +26,7 @@ def calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, threshold):
 
 
 def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold):
-    df = pd.DataFrame(columns=['Class', 'Precision', 'Recall', 'Correct Classifications', 'Total'])
+    df = pd.DataFrame(columns=['Class', 'Precision', 'Recall', 'TP', 'Total'])
     for class_ in sorted(y_pred_per_class):
         y_pred_class = y_pred_per_class[class_]
         y_true_class = y_true_per_class[class_]
@@ -41,27 +41,29 @@ def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, thre
         df = df.append({'Class': class_,
                         'Precision': precision,
                         'Recall': recall,
-                        'Correct Classifications': classified_correctly,
+                        'TP': classified_correctly,
                         'CoverageInt': int(above_thresh),
                         'Total': total}, ignore_index=True)
     df = df.append({'Class': 'All',
                     'Precision': df["Precision"].mean(),
                     'Recall': df["Recall"].mean(),
-                    'Correct Classifications': df["Correct Classifications"].sum(),
+                    'TP': df["TP"].sum(),
                     'CoverageInt': df["CoverageInt"].sum(),
                     'Total': df["Total"].sum()}, ignore_index=True)
     df['Precision'] = df['Precision'].apply(lambda p: '{:.1f}%'.format(p * 100))
     df['Recall'] = df['Recall'].apply(lambda r: '{:.1f}%'.format(r * 100))
-    df['Coverage'] = df.apply(lambda row: '{:.1f}% ({}/{})'.format((float(row['CoverageInt']) * 100 / row['Total']),
-                                                                   int(row['CoverageInt']), row['Total']), axis=1)
-
-    df = df[['Class', 'Precision', 'Recall', 'Correct Classifications', 'Coverage', 'Total', 'CoverageInt']]
+    df['Coverage'] = df.apply(lambda row: '{}/{} ({:.1f}%)'.format(int(row['CoverageInt']), row['Total'],
+                                                                   float(row['CoverageInt']) * 100 / row['Total']),
+                              axis=1)
+    df['TP'] = df.apply(lambda row: '{}/{} ({:.1f}%)'.format(int(row['TP']),
+                                                             int(row['CoverageInt']),
+                                                             float(row['TP']) * 100 / row['CoverageInt']),
+                        axis=1)
+    df = df[['Class', 'Precision', 'TP', 'Coverage', 'Total', 'CoverageInt']]
     explanation = [
-        'Precision - binary precision of the class (correct classificationss of the class, divided by number of mails '
+        'Precision - binary precision of the class (TPs of the class, divided by number of mails '
         'in the evaluation set which were classified as this class by the model',
-        'Recall - binary recall of the class (correct Classificationss of the class, divided by number of mails in '
-        'the evaluation set which are labeled as this class of the evaluation set',
-        'Correct Classifications - number of mails from the class in the evaluation set which were correct '
+        'TP - number of mails from the class in the evaluation set which were correct '
         'classifications',
         'Coverage -  number of mails from the class in the evaluation set which their prediction was at a '
         'higher confidence than threshold',

@@ -5,7 +5,6 @@ from io import BytesIO, StringIO
 import demisto_ml
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold
-from tabulate import tabulate
 
 from CommonServerPython import *
 
@@ -22,22 +21,6 @@ GENERAL_SCORES = {
 }
 
 DBOT_TAG_FIELD = "dbot_internal_tag_field"
-
-
-def get_hr_for_scores(header, confusion_matrix, report, metric):
-    scores_rows = ["{0} - {1}".format(metric.capitalize(), GENERAL_SCORES[metric])]
-    scores_rows.append("#### Overall precision: %.2f | recall: %.2f" %
-                       (report[metric]['precision'], report[metric]['recall']))
-    for k, v in report.items():
-        if isinstance(v, dict):
-            if k not in GENERAL_SCORES:
-                scores_rows.append("- %s: %.2f (Precision) | %.2f (Recall)" % (k, v['precision'], v['recall']))
-    scores_desc = "\n".join(scores_rows)
-
-    confusion_matrix_desc = tabulate(confusion_matrix,  # disable-secrets-detection
-                                     tablefmt="pipe",
-                                     headers="keys").replace("True", "True \\ Predicted")
-    return "# {0}\n ## Confusion Matrix:\n{1}\n ## Scores:\n{2} ".format(header, confusion_matrix_desc, scores_desc)
 
 
 def canonize_label(label):
@@ -248,22 +231,20 @@ def main():
     y_train, y_test = list(y[train_index]), list(y[test_index])
     model = demisto_ml.train_text_classifier(X_train, y_train)
     ft_test_predictions = demisto_ml.predict(model, X_test, DEFAULT_LABEL_PREFIX)
-    y_pred = [{pred: prbability} for pred, prbability in zip(ft_test_predictions[0], ft_test_predictions[1])]
+    y_pred = [{y_tuple[0]: y_tuple[1]} for y_tuple in ft_test_predictions]
 
     if 'maxBelowThreshold' in demisto.args():
         target_recall = 1 - float(demisto.args()['maxBelowThreshold'])
     else:
         target_recall = 0
-
-    res = demisto.executeCommand('createMLModel', {'yTrue': json.dumps(y_test),
-                                                   'yPred': json.dumps(y_pred),
-                                                   'targetPrecision': target_accuracy,
-                                                   'targetRecall': target_recall})
+    res = demisto.executeCommand('EvaluateMLModel', {'yTrue': json.dumps(y_test),
+                                                     'yPred': json.dumps(y_pred),
+                                                     'targetPrecision': target_accuracy,
+                                                     'targetRecall': target_recall})
     if is_error(res):
         return_error(get_error(res))
-    confusion_matrix = res['Contents']['csr_matrix_at_threshold']
-
-    human_readable += res['HumanReadable']
+    confusion_matrix = res[0]['Contents']['csr_matrix_at_threshold']
+    human_readable = res[0]['HumanReadable']
     # store model
     if store_model:
         store_model_in_demisto(model_name, model_override, train_text_data, train_tag_data, confusion_matrix)
@@ -272,14 +253,14 @@ def main():
         human_readable += "\n\nSkip storing model"
     result_entry = {
         'Type': entryTypes['note'],
-        'Contents': res['Contents'],
+        'Contents': res[0]['Contents'],
         'ContentsFormat': formats['json'],
         'HumanReadable': human_readable,
         'HumanReadableFormat': formats['markdown'],
         'EntryContext': {
             'DBotPhishingClassifier': {
                 'ModelName': model_name,
-                'EvaluationScores': res['Contents']['metrics_df'].to_dict(),
+                'EvaluationScores': res[0]['Contents']['metrics_df'],
                 'ConfusionMatrix': confusion_matrix
             }
         }
