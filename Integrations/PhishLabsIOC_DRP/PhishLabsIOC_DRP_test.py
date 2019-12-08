@@ -78,12 +78,14 @@ class TestCommandsFunctions:
         tested_incidents_response, tested_last_run_response = fetch_incidents_command(client,
                                                                                       fetch_time='1 days',
                                                                                       max_records=20)
-        assert expected_incidents == tested_incidents_response, 'Failed - Test no last run - should return 2 incidents and new last run, incidents criteria'
-        assert expected_last_run == tested_last_run_response, 'Failed -  Test no last run - should return 2 incidents and new last run, last run criteria'
+        assert expected_incidents == tested_incidents_response, 'Failed - Test no last run - should return 2 incidents ' \
+                                                                'and new last run, incidents criteria'
+        assert expected_last_run == tested_last_run_response, 'Failed -  Test no last run - should return 2 incidents ' \
+                                                              'and new last run, last run criteria'
 
 
 @pytest.mark.client
-@freeze_time("2019-11-30")
+@freeze_time("2019-12-02")
 class TestClientMethods:
     @pytest.mark.get_cases
     @pytest.mark.get_cases_limit
@@ -151,7 +153,7 @@ class TestClientMethods:
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_begin_date
-    def test_get_cases_begin_date_filter_second_request(self, requests_mock, client):
+    def test_get_cases_begin_date_filter_overflow(self, requests_mock, client):
         # Test begin date is more then exsits - get cases should query three-times and return 7 cases
         requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases?offset=0&maxRecords=20',
                           json=load_params_from_json('./test_data/raw_response_1.json'))

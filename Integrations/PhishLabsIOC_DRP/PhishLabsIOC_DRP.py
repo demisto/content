@@ -11,7 +11,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 """GLOBALS/PARAMS
 
 Attributes:
@@ -41,6 +40,93 @@ class Client(BaseClient):
             Response json
         """
         return self.get_cases(max_records=2)
+
+    def travel_to_end_date(self, cases_temp: List, params: Dict, end_date: Optional[str], date_field: str, suffix: str) \
+            -> Tuple[List[Any], Dict[Any, Any], int, Optional[datetime]]:
+        """Moving index to starting point, if neccery chage cases_temp (more get request)
+
+        Args:
+            cases_temp: case as starting point assuming list sorted by date
+            params: query params
+            end_date: end date of the query searched
+            date_field: date field to apply end date filter
+            suffix: suffix of url
+
+        Returns:
+            Tuple of (list of cases temp, modified params, index in cases, datetime object of last run in traveling)
+        """
+        format_time = "%Y-%m-%dT%H:%M:%SZ"
+        last_time: Optional[datetime] = None if not cases_temp else datetime.strptime(cases_temp[0].get(date_field),
+                                                                                      format_time)
+        end_date_obj: datetime = datetime.strptime(end_date, format_time) if end_date else datetime.now()
+
+        index = 0
+        while end_date_obj and last_time:
+            if end_date_obj < last_time:
+                if len(cases_temp) == index + 1:
+                    params['offset'] += len(cases_temp)
+                    cases_temp = self._http_request('GET',
+                                                    url_suffix=suffix,
+                                                    params=assign_params(**params),
+                                                    timeout=20).get('data', [])
+                    index = 0
+                    if not cases_temp:
+                        break
+                else:
+                    index += 1
+                last_time = datetime.strptime(cases_temp[index].get(date_field), format_time)
+            else:
+                break
+
+        return cases_temp, params, index, last_time
+
+    def travel_to_begin_date(self, cases_temp: List, index: int, params: Dict, begin_date: Optional[str],
+                             last_time: Optional[datetime], date_field: str, max_records: Union[str, int], suffix: str) \
+            -> List[Dict[Any, Any]]:
+        """
+
+        Args:
+            suffix: suffix of url
+            cases_temp: case as starting point assuming list sorted by date
+            index: current traveling point in travelling
+            params: query params
+            begin_date: begin date to move while traveling case
+            last_time: last time of last case visited
+            date_field: date field to apply end date filter
+            max_records: max records to get in this query
+            suffix: suffix of url
+
+        Returns:
+            List of cases filtered by date
+        """
+        format_time = "%Y-%m-%dT%H:%M:%SZ"
+        begin_date_obj: Optional[datetime] = datetime.strptime(begin_date, format_time) if begin_date else None
+        cases: List = []
+
+        while cases_temp and len(cases) < int(max_records) and last_time:
+            if begin_date_obj:
+                if last_time > begin_date_obj:
+                    cases.append(cases_temp[index])
+                else:
+                    break
+            else:
+                cases.append(cases_temp[index])
+
+            if len(cases) == max_records:
+                break
+            elif len(cases_temp) == index + 1:
+                params['offset'] += len(cases_temp)
+                cases_temp = self._http_request('GET',
+                                                url_suffix=suffix,
+                                                params=assign_params(**params),
+                                                timeout=20).get('data', [])
+                index = 0
+                if not cases_temp:
+                    break
+            else:
+                index += 1
+            last_time = datetime.strptime(cases_temp[index].get(date_field), format_time)
+        return cases
 
     def get_cases(self, status: Optional[str] = None, case_type: Optional[str] = None,
                   max_records: Union[str, int] = 20, offset: Union[str, int] = 0,
@@ -74,56 +160,11 @@ class Client(BaseClient):
                                                 params=assign_params(**params),
                                                 timeout=20)
         cases_temp: List = raw_response.get('data', [])
-
-        format_time = "%Y-%m-%dT%H:%M:%SZ"
-        last_time: datetime = None if not cases_temp else datetime.strptime(cases_temp[0].get(date_field), format_time)
-        end_date_obj: datetime = datetime.strptime(end_date, format_time) if end_date else datetime.now()
-        begin_date_obj: Optional[datetime] = datetime.strptime(begin_date, format_time) if begin_date else None
-
-        index = 0
-        while end_date:
-            if end_date_obj < last_time:
-                if len(cases_temp) == index + 1:
-                    params['offset'] += len(cases_temp)
-                    cases_temp = self._http_request('GET',
-                                                    url_suffix=suffix,
-                                                    params=assign_params(**params),
-                                                    timeout=20).get('data', [])
-                    index = 0
-                    if not cases_temp:
-                        break
-                else:
-                    index += 1
-                last_time = datetime.strptime(cases_temp[index].get(date_field), format_time)
-            else:
-                break
-
-        # Move forward to end date but not exceed limit
-        cases: List = []
-        while cases_temp and len(cases) < int(max_records):
-            if begin_date_obj:
-                if last_time > begin_date_obj:
-                    cases.append(cases_temp[index])
-                else:
-                    break
-            else:
-                cases.append(cases_temp[index])
-
-            if len(cases) == max_records:
-                break
-            elif len(cases_temp) == index + 1:
-                params['offset'] += len(cases_temp)
-                cases_temp = self._http_request('GET',
-                                                url_suffix=suffix,
-                                                params=assign_params(**params),
-                                                timeout=20).get('data', [])
-                index = 0
-                if not cases_temp:
-                    break
-            else:
-                index += 1
-            last_time = datetime.strptime(cases_temp[index].get(date_field), format_time)
-
+        # About the drop some mean regex right now disable-secrets-detection-start
+        cases_temp, params, index, last_time = self.travel_to_end_date(cases_temp, params, end_date, date_field, suffix)
+        cases = self.travel_to_begin_date(cases_temp, index, params, begin_date, last_time, date_field, max_records,
+                                          suffix)
+        # Drops the mic disable-secrets-detection-end
         raw_response['header']['returnResult'] = len(cases)
         raw_response['header']['totalResult'] = len(cases)
         raw_response['header']['queryParams']['maxRecords'] = len(cases)
@@ -338,10 +379,9 @@ def fetch_incidents_command(
     if cases_raw:
         datetime_new_last_run = cases_raw[0].get(date_field)
         for case in cases_raw:
-            occurred = case.get(date_field)
             cases_report.append({
                 'name': f"{INTEGRATION_NAME}: {case.get('caseId')}",
-                'occurred': occurred,
+                'occurred': case.get(date_field),
                 'rawJSON': json.dumps(case)
             })
 
@@ -508,7 +548,7 @@ def main():
                                                               max_records=params.get('fetchLimit'),
                                                               date_field=params.get('fetchByDate'))
             demisto.incidents(incidents)
-            demisto.setLastRun(new_last_run)
+            demisto.setLastRun({'lastRun': new_last_run})
         else:
             readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
             return_outputs(readable_output, outputs, raw_response)
