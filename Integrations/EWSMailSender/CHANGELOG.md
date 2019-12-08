@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed issue where threads not closed after executing the command.
 
 ## [19.9.1] - 2019-09-18
 Logging improvements.
