@@ -2460,7 +2460,7 @@ script:
                             var currentUserSuppliedUserName = usersListFromUser[userIndex];
                             var currentUserID = getUserIDFromUserName(allUsersArcherData, currentUserSuppliedUserName);
 
-                            usersWithIDsInsteadOfNames.push(currentUserID)
+                            usersWithIDsInsteadOfNames.push(currentUserID);
                         }
 
                         fieldValue['users'] = usersWithIDsInsteadOfNames;
