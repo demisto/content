@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, Tuple, Optional, MutableMapping, List
+from typing import Dict, Tuple, Optional, List, Callable, Any
 
 import urllib3
 
@@ -1154,7 +1154,7 @@ def main():
     try:
         client = Client(tenant=tenant, server_url=server_url, username=username, password=password,
                         verify=verify, proxy=proxy)
-        commands = {
+        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'securonix-list-workflows': list_workflows,
             'securonix-get-default-assignee-for-workflow': get_default_assignee_for_workflow,
@@ -1186,7 +1186,7 @@ def main():
             demisto.incidents(incidents)
             demisto.setLastRun(last_run)
         elif command in commands:
-            return_outputs(*commands[command](client, demisto.args()))  # type: ignore
+            return_outputs(*commands[command](client, demisto.args()))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
