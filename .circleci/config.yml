@@ -72,7 +72,7 @@ jobs:
           command: |
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipped Infrastructure testing step"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
 
@@ -94,7 +94,7 @@ jobs:
           command: |
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipped Validate Files and Yaml step"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
 
@@ -111,7 +111,7 @@ jobs:
           command: |
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipped Secrets step"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
 
@@ -122,7 +122,7 @@ jobs:
           command: |
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipped Configure Test Filter step"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
 
@@ -133,7 +133,7 @@ jobs:
           command: |
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipped Spell Checks step"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
             python ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
@@ -182,7 +182,7 @@ jobs:
           command: |
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 1 ] ;
               then
-                echo "Skipped Unit Testing step"
+                echo "Skipping - unit tests are running only in container number 1"
                 exit 0
             fi
             SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
@@ -295,7 +295,7 @@ jobs:
             fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipped Run Tests - Latest GA step"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -316,7 +316,7 @@ jobs:
             fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipped Run Tests - One Before GA step"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -337,7 +337,7 @@ jobs:
             fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipped Run Tests - Two Before GA step"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -358,7 +358,7 @@ jobs:
             fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipped Run Tests - Server Master step"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
@@ -385,7 +385,7 @@ jobs:
             fi
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipped Slack Notifier step"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
             ./Tests/scripts/slack_notifier.sh ./env_results.json
