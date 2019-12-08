@@ -1,4 +1,3 @@
-import re
 import json
 import argparse
 
@@ -6,7 +5,7 @@ import demisto_client
 from slackclient import SlackClient
 
 from test_integration import __create_integration_instance, __delete_integrations_instances
-from Tests.test_utils import str2bool, run_command, print_color, print_error, LOG_COLORS
+from Tests.test_utils import str2bool, print_color, print_error, LOG_COLORS
 
 
 SERVER_URL = "https://{}"
