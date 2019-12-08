@@ -389,7 +389,11 @@ def main():
         all_module_instances.extend(module_instances)
 
     # Test all module instances (of modified + unchanged integrations) pre-updating content
-    print_warning('Start of Instance Testing ("Test" button) prior to Content Update:')
+    if all_module_instances:
+        # only print start message if there are instances to configure
+        print_warning('Start of Instance Testing ("Test" button) prior to Content Update:')
+    else:
+        print_warning('No integrations to configure for the chosen tests. (Pre-update)')
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
@@ -441,7 +445,10 @@ def main():
 
     # After content upload has completed - test ("Test" button) integration instances
     # Test all module instances (of pre-existing AND new integrations) post-updating content
-    print_warning('Start of Instance Testing ("Test" button) after the Content Update:')
+    if all_module_instances:
+        print_warning('Start of Instance Testing ("Test" button) after the Content Update:')
+    else:
+        print_warning('No integrations to configure for the chosen tests. (Post-update)')
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
