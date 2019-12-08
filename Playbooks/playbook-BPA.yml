@@ -1,7 +1,6 @@
 id: Run Panorama Best Practice Assessment
 version: -1
 contentitemfields:
-  propagationLabels: []
 name: Run Panorama Best Practice Assessment
 starttaskid: "0"
 description: |-
@@ -103,7 +102,6 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 100
     view: |-
       {
         "position": {
