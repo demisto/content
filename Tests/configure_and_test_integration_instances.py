@@ -89,7 +89,8 @@ def get_new_and_modified_integrations(git_sha1):
         file_path for file_path in added_files if checked_type(file_path, all_integration_regexes)
     ]
     modded_integration_files = [
-        file_path for file_path in modified_files if checked_type(file_path, all_integration_regexes)
+        file_path for file_path in modified_files if
+        isinstance(file_path, str) and checked_type(file_path, all_integration_regexes)
     ]
 
     new_integrations_names = []
