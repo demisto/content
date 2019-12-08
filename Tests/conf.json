@@ -1383,16 +1383,6 @@
         },
         {
             "integrations": [
-                "VirusTotal",
-                "urlscan.io",
-                "activedir"
-            ],
-            "instance_names": "virus_total_general",
-            "playbookID": "entity_enrichment_generic_test",
-            "timeout": 240
-        },
-        {
-            "integrations": [
                 "FalconHost",
                 "McAfee Threat Intelligence Exchange",
                 "carbonblackprotection",
@@ -2029,7 +2019,6 @@
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "calculate_severity_-_critical_assets_-_test": "Issue 17924",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
-        "entity_enrichment_generic_test": "Issue 16490",
         "ArcSight Logger test": "Issue 19117",
         "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
