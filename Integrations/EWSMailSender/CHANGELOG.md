@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Fixed issue when threads not closed after running code.
 
 ## [19.9.1] - 2019-09-18
 Logging improvements.

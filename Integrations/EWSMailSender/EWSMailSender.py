@@ -260,7 +260,7 @@ config = None  # type: ignore
 
 
 def main():
-    global USERNAME, PASSWORD, ACCOUNT_EMAIL, log_stream
+    global USERNAME, PASSWORD, ACCOUNT_EMAIL, log_stream, config
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     ACCOUNT_EMAIL = demisto.params().get('mailbox', None)
@@ -316,6 +316,9 @@ def main():
         else:
             return_error(error_message + '\n' + debug_log)
     finally:
+        if isinstance(config, Configuration):
+            # The protocol will not kill its threads after use, so kill it manually
+            config.protocol.thread_pool.terminate()
         if log_stream:
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
