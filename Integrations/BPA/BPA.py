@@ -183,6 +183,15 @@ def get_results_command(client: Client, args: Dict):
 
     return 'Checks received.', context, results
 
+
+def test_module(client, panorama):
+    client.get_documentation_request()
+    panorama.get_system_time()
+
+    demisto.results('ok')
+    return '', None, None
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -205,6 +214,8 @@ def main():
             return_outputs(*get_results_command(client, demisto.args()))
         elif command == 'get-remediation-documentation':
             return_outputs(*get_documentation_command(client))
+        elif command == 'test-module':
+            return_outputs(*test_module(client, panorama))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
