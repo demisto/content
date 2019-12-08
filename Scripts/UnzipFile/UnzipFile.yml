@@ -36,7 +36,7 @@ outputs:
   description: A list of file names that were extracted from the ZIP file.
   type: Unknown
 script: '-'
-subtype: python3
+subtype: python2
 system: false
 tags:
 - Utility
