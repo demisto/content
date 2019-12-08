@@ -73,16 +73,16 @@ This step runs all unit-test files in the following folders:
 
 <!-- TODO: add troubleshooting errors -->
 
-### Validate Files and Yaml
-This step is responsible for the majority of the static validations of the content code.
-- It validates the schema of the yml files you created:
+### Validate Content Pack Files
+This step validates all content entity files in the content pack, including, the .md, .yml, .py, .png, and .json file. The files in the `Tests` folder are not part of the validation process, meaning tests are not executed.
+#### Validate the schema of the yml files you created
     - [You can learn more about the YAML structure here](/docs/yaml-file-integration)
-- It checks for backward compatibility issues:
-  - docker changes
+#### Check for backward compatibility issues
+  - Docker changes
   - id/name changes
   - additional required parameters/arguments
   - context key changes
-- Enforce content standards:
+#### Enforce content standards
   - valid descriptions
   - content entity schemas
   - argument/parameter conflicts
