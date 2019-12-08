@@ -93,7 +93,7 @@ def main():
         results = []
         # extracted files can be in sub directories so we save the base names of
         # the files and also the full path of the file
-        files_base_names = [os.path.basename(file_path) for file_path in filenames]
+        files_base_names = [os.path.basename(file_path) for file_path in filenames]  # noqa[F812]
         files_dic = {file_path: os.path.basename(file_path) for file_path in filenames}
         for file_path, file_name in files_dic.items():
             demisto.results(file_result_existing_file(file_path, file_name))
