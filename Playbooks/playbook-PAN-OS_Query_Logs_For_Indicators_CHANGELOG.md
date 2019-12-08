@@ -3,7 +3,7 @@
 
 ## [19.12.1] - 2019-12-01
 #### New Playbook
-Use this playbook to query PANW Panorama for indicators. The playbook searches in each of the five log types according to the inputted indicators to search, such as ip addresses, urls/domains, file hashes (sha256).
+Use this playbook to query PANW PAN-OS for indicators. The playbook searches in each of the five log types according to the inputted indicators to search, such as ip addresses, urls/domains, file hashes (sha256).
 
 This playbook implements generic polling as an array for all submitted queries.
 The playbook has the following structure.
