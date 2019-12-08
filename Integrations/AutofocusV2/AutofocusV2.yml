@@ -666,7 +666,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Checks the reputation of an IP address in Autofocus.
+    description: Checks the reputation of an IP address in AutoFocus.
     execution: false
     name: ip
     outputs:
@@ -683,16 +683,16 @@ script:
       description: The indicator that was tested.
       type: String
     - contextPath: IP.Address
-      description: The IP Address.
+      description: The IP address.
       type: String
     - contextPath: AutoFocus.IP.IndicatorValue
-      description: The IP Address.
+      description: The IP address.
       type: String
     - contextPath: AutoFocus.IP.IndicatorType
-      description: The IP address type.
+      description: The indicator type.
       type: String
     - contextPath: AutoFocus.IP.LatestPanVerdicts
-      description: Latest verdicts from Palo Alto Networks products, can be either
+      description: Latest verdicts from Palo Alto Networks products. Can be either
         PAN_DB or WF_SAMPLE(WildFire).
       type: Unknown
     - contextPath: IP.Malicious.Vendor
@@ -727,7 +727,7 @@ script:
       description: The date that the tag was last encountered.
       type: Date
     - contextPath: AutoFocus.IP.Tags.Description
-      description: Tag description.
+      description: The tag description.
       type: String
   - arguments:
     - default: true
@@ -737,7 +737,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Checks the reputation of the url in Autofocus.
+    description: Checks the reputation of a URL in AutoFocus.
     execution: false
     name: url
     outputs:
@@ -763,7 +763,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: AutoFocus.URL.LatestPanVerdicts
-      description: Latest verdicts from Palo Alto Networks products, can be either
+      description: Latest verdicts from Palo Alto Networks products. Can be either
         PAN_DB or WF_SAMPLE(WildFire).
       type: Unknown
     - contextPath: URL.Malicious.Vendor
@@ -798,17 +798,17 @@ script:
       description: The date that the tag was last encountered.
       type: Date
     - contextPath: AutoFocus.URL.Tags.Description
-      description: Tag description.
+      description: The tag description.
       type: String
   - arguments:
     - default: true
-      description: File SHA-256.
+      description: The SHA256 hash of the file.
       isArray: true
       name: file
       required: true
       secret: false
     deprecated: false
-    description: Checks the reputation of a file in Autofocus.
+    description: Checks the reputation of a file in AutoFocus.
     execution: false
     name: file
     outputs:
@@ -834,7 +834,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: AutoFocus.File.LatestPanVerdicts
-      description: Latest verdicts from Palo Alto Networks products, can be either
+      description: Latest verdicts from Palo Alto Networks products. Can be either
         PAN_DB or WF_SAMPLE(WildFire).
       type: Unknown
     - contextPath: File.Malicious.Vendor
@@ -869,17 +869,17 @@ script:
       description: The date that the tag was last encountered.
       type: Date
     - contextPath: AutoFocus.File.Tags.Description
-      description: Tag description.
+      description: The tag description.
       type: String
   - arguments:
     - default: true
-      description: domain to check.
+      description: The domain to check.
       isArray: true
       name: domain
       required: true
       secret: false
     deprecated: false
-    description: Checks the reputation of a domain in Autofocus.
+    description: Checks the reputation of a domain in AutoFocus.
     execution: false
     name: domain
     outputs:
@@ -905,7 +905,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: AutoFocus.Domain.LatestPanVerdicts
-      description: Latest verdicts from Palo Alto Networks products, can be either
+      description: Latest verdicts from Palo Alto Networks products. Can be either
         PAN_DB or WF_SAMPLE(WildFire).
       type: Unknown
     - contextPath: Domain.Malicious.Vendor
@@ -940,16 +940,16 @@ script:
       description: The date that the tag was last encountered.
       type: Date
     - contextPath: AutoFocus.Domain.Tags.Description
-      description: Tag description.
+      description: The tag description.
       type: String
     - contextPath: AutoFocus.Domain.WhoisAdminCountry
-      description: The country of domain administrator.
+      description: The country of the domain administrator.
       type: String
     - contextPath: AutoFocus.Domain.WhoisAdminEmail
       description: The email address of the domain administrator.
       type: String
     - contextPath: AutoFocus.Domain.WhoisAdminName
-      description: The name of domain administrator.
+      description: The name of the domain administrator.
       type: String
     - contextPath: AutoFocus.Domain.WhoisDomainCreationDate
       description: The date that the domain was created.
