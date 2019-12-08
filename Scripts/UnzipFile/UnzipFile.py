@@ -69,6 +69,8 @@ def main():
     # extracting the zip file
     process = Popen(["7z", "x", "-p{}".format(password), file_path], stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
+    if stderr:
+        return_error(stderr)
     if "Wrong password?" in stdout:
         demisto.debug(str(stdout))
         return_error("Data Error in encrypted file. Wrong password?")
