@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added output to match output paths.
+Fixed an issue where the output mismatched the output paths.
