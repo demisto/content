@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 from flask import Flask, Response
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
-from typing import Match, Union, Optional, cast, Dict, Any, List
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'EDL'
