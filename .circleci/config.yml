@@ -151,7 +151,7 @@ jobs:
                 python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN
 
               else
-                 python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION
+                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION
             fi
       - run:
           name: Common Server Documentation
