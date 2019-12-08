@@ -7,14 +7,16 @@ import subprocess
 import urllib3
 from time import sleep
 from datetime import datetime
-
+from test_dependencies import get_test_dependencies, get_tested_integrations, get_tests_allocation
 import demisto_client.demisto_api
 from slackclient import SlackClient
+import _thread
 
 from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool, server_version_compare
 from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -31,6 +33,8 @@ SERVICE_RESTART_TIMEOUT = 300
 SERVICE_RESTART_POLLING_INTERVAL = 5
 
 SLACK_MEM_CHANNEL_ID = 'CM55V7J8K'
+
+PARALLEL_PRINTS_MESSAGES = [] # This will be used to avoid confusing prints scrambling between threads.
 
 
 def options_handler():
@@ -53,8 +57,26 @@ def options_handler():
                                                       'tests on(Valid only when using AMI)', default="NonAMI")
 
     options = parser.parse_args()
+    tests_settings = TestsSettings(options)
+    return tests_settings
 
-    return options
+
+class TestsSettings:
+    def __init__(self, options):
+        self.user = options.user
+        self.password = options.password
+        self.server = options.server
+        self.conf_path = options.conf
+        self.secret_conf_path = options.secret
+        self.nightly = options.nightly
+        self.slack = options.slack
+        self.circleci = options.circleci
+        self.buildNumber = options.buildNumber
+        self.buildName = options.buildName
+        self.isAMI = options.isAMI
+        self.memCheck = options.memCheck
+        self.serverVersion = options.serverVersion
+        self.serverNumericVersion = None
 
 
 def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration,
@@ -151,7 +173,7 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 
 
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
-                   circle_ci, build_number, server_url, build_name, is_mock_run=False):
+                   circle_ci, build_number, server_url, build_name, is_mock_run=False, thread_index=0):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
     # c.api_client.pool.close()
     if status == PB_Status.COMPLETED:
@@ -229,16 +251,17 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
     print('------ Test {} end ------\n'.format(test_message))
 
 
-def run_test(demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, is_ami=True):
+def run_test(demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
+             succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
+             server_url, build_name, is_ami=True, thread_index=0):
     start_message = '------ Test %s start ------' % (test_message,)
     client = demisto_client.configure(base_url=server_url, api_key=demisto_api_key, verify_ssl=False)
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
-        print(start_message + ' (Mock: Disabled)')
-        run_test_logic(client, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
-                       slack, circle_ci, build_number, server_url, build_name)
-        print('------ Test %s end ------\n' % (test_message,))
+        parallel_print(start_message + ' (Mock: Disabled)', thread_index)
+        run_test_logic(client, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
+                       test_options, slack, circle_ci, build_number, server_url, build_name, thread_index=thread_index)
+        parallel_print('------ Test %s end ------\n' % (test_message,), thread_index, should_print=True)
 
         return
 
@@ -388,30 +411,11 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def organize_tests(tests, unmockable_integrations, skipped_integrations_conf, nightly_integrations):
-    mock_tests, mockless_tests = [], []
-    for test in tests:
-        integrations_conf = test.get('integrations', [])
-
-        if not isinstance(integrations_conf, list):
-            integrations_conf = [integrations_conf, ]
-
-        has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
-            integrations_conf, set(), skipped_integrations_conf, nightly_integrations)
-
-        if not integrations or has_unmockable_integration(integrations, unmockable_integrations):
-            mockless_tests.append(test)
-        else:
-            mock_tests.append(test)
-
-    return mock_tests, mockless_tests
-
-
 def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
                       filtered_tests, skipped_tests, secret_params, failed_playbooks,
                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                      server_numeric_version, demisto_api_key, is_ami=True):
+                      server_numeric_version, demisto_api_key, is_ami=True, thread_index=0):
     playbook_id = t['playbookID']
     nightly_test = t.get('nightly', False)
     integrations_conf = t.get('integrations', [])
@@ -436,9 +440,9 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
 
     # Skip nightly test
     if skip_nightly_test:
-        print('\n------ Test {} start ------'.format(test_message))
-        print('Skip test')
-        print('------ Test {} end ------\n'.format(test_message))
+        parallel_print('\n------ Test {} start ------'.format(test_message), thread_index)
+        parallel_print('Skip test', thread_index)
+        parallel_print('------ Test {} end ------\n'.format(test_message), thread_index, should_print=True)
 
         return
 
@@ -462,6 +466,7 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
     if (server_version_compare(test_from_version, server_numeric_version) > 0
             or server_version_compare(test_to_version, server_numeric_version) < 0):
         print('\n------ Test {} start ------'.format(test_message))
+        # GGG - should I change print_warning, print_color etc?
         print_warning('Test {} ignored due to version mismatch (test versions: {}-{})'.format(test_message,
                                                                                               test_from_version,
                                                                                               test_to_version))
@@ -486,7 +491,7 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
 
     run_test(demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
              succeed_playbooks, test_message, test_options, slack, circle_ci,
-             build_number, server, build_name, is_ami)
+             build_number, server, build_name, is_ami, thread_index=thread_index)
 
 
 def restart_demisto_service(ami, demisto_api_key, server):
@@ -511,20 +516,55 @@ def restart_demisto_service(ami, demisto_api_key, server):
     raise Exception('Timeout waiting for demisto service to restart')
 
 
-def execute_testing(server, server_ip, server_version, server_numeric_version, is_ami=True):
+def get_and_print_server_numeric_version(tests_settings):
+    with open('./Tests/images_data.txt', 'r') as image_data_file:
+        image_data = [line for line in image_data_file if line.startswith(tests_settings.serverVersion)]
+        if len(image_data) != 1:
+            print('Did not get one image data for server version, got {}'.format(image_data))
+            return '0.0.0'
+        else:
+            server_numeric_version = re.findall('Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
+            if server_numeric_version:
+                server_numeric_version = server_numeric_version[0]
+            else:
+                server_numeric_version = '99.99.98'  # latest
+            print('Server image info: {}'.format(image_data[0]))
+            print('Server version: {}'.format(server_numeric_version))
+            return server_numeric_version
+
+
+def get_instances_ips_and_names():
+    with open('./Tests/instance_ips.txt', 'r') as instance_file:
+        instance_ips = instance_file.readlines()
+        instance_ips = [line.strip('\n').split(":") for line in instance_ips]
+        return instance_ips
+
+
+def get_tests_records_from_names(tests_settings, tests_names_to_search):
+    conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
+    tests_records = conf['tests']
+    test_records_with_supplied_names = []
+    for test_record in tests_records:
+        test_name = test_record.get("playbookID")
+        if test_name and test_name in tests_names_to_search:
+            test_records_with_supplied_names.append(test_name)
+    return test_records_with_supplied_names
+
+
+def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_tests_names, is_ami=True, thread_index=0):
+    server = SERVER_URL.format(server_ip)
+    server_version = tests_settings.serverVersion
+    server_numeric_version = tests_settings.serverNumericVersion
     print("Executing tests with the server {} - and the server ip {}".format(server, server_ip))
+    # GGG - verify that there is no good reason we were calling options_handler() again
+    is_nightly = tests_settings.nightly
+    is_memory_check = tests_settings.memCheck
+    slack = tests_settings.slack
+    circle_ci = tests_settings.circleci
+    build_number = tests_settings.buildNumber
+    build_name = tests_settings.buildName
 
-    options = options_handler()
-    conf_path = options.conf
-    secret_conf_path = options.secret
-    is_nightly = options.nightly
-    is_memory_check = options.memCheck
-    slack = options.slack
-    circle_ci = options.circleci
-    build_number = options.buildNumber
-    build_name = options.buildName
-
-    conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
+    conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
     demisto_api_key = secret_conf.get('temp_apikey')
 
     default_test_timeout = conf.get('testTimeout', 30)
@@ -558,12 +598,9 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
 
     disable_all_integrations(demisto_api_key, server)
 
-    if is_ami:
-        # move all mock tests to the top of the list
-        mock_tests, mockless_tests = organize_tests(tests, unmockable_integrations, skipped_integrations_conf,
-                                                    nightly_integrations)
-    else:  # In case of a non AMI run we don't want to use the mocking mechanism
-        mockless_tests = tests
+    mockable_tests = get_tests_records_from_names(tests_settings, mockable_tests_names)
+    unmockable_tests = get_tests_records_from_names(tests_settings, unmockable_tests_names)
+
     if is_nightly and is_memory_check:
         mem_lim, err = get_docker_limit()
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID,
@@ -571,28 +608,27 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                                                                                                mem_lim),
                            'Content CircleCI', 'False')
     # first run the mock tests to avoid mockless side effects in container
-    if is_ami and mock_tests:
+    if is_ami and mockable_tests:
         proxy.configure_proxy_in_demisto(demisto_api_key, server, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
-        for t in mock_tests:
+        for t in mockable_tests:
             run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                               skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                               is_filter_configured,
                               filtered_tests, skipped_tests, secret_params, failed_playbooks,
                               unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                              build_name, server_numeric_version, demisto_api_key)
-
+                              build_name, server_numeric_version, demisto_api_key, thread_index=thread_index)
         print("\nRunning mock-disabled tests")
         proxy.configure_proxy_in_demisto(demisto_api_key, server, '')
         print("Restarting demisto service")
         restart_demisto_service(ami, demisto_api_key, server)
         print("Demisto service restarted\n")
-    for t in mockless_tests:
+    for t in unmockable_tests:
         run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                           is_filter_configured,
                           filtered_tests, skipped_tests, secret_params, failed_playbooks,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                          build_name, server_numeric_version, demisto_api_key, is_ami)
+                          build_name, server_numeric_version, demisto_api_key, is_ami, thread_index=thread_index)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
                        proxy, is_ami)
@@ -612,48 +648,117 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
             is_build_passed_file.write('Build passed')
 
 
-def main():
-    options = options_handler()
-    server = options.server
-    is_ami = options.isAMI
-    server_version = options.serverVersion
-    server_numeric_version = '0.0.0'
+def get_unmockable_tests(tests_settings):
+    conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
+    unmockable_integrations = conf['unmockable_integrations']
+    tests = conf['tests']
+    unmockable_tests = []
+    for test_record in tests:
+        test_name = test_record.get("playbookID")
+        integrations_used_in_test = get_tested_integrations(test_record)
+        unmockable_integrations_used = [integration_name for integration_name in integrations_used_in_test if integration_name in unmockable_integrations]
+        if test_name and (not integrations_used_in_test or unmockable_integrations_used):
+            unmockable_tests.append(test_name)
+    return unmockable_tests
 
-    if is_ami:  # Run tests in AMI configuration
-        with open('./Tests/images_data.txt', 'r') as image_data_file:
-            image_data = [line for line in image_data_file if line.startswith(server_version)]
-            if len(image_data) != 1:
-                print('Did not get one image data for server version, got {}'.format(image_data))
-            else:
-                server_numeric_version = re.findall('Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
-                if server_numeric_version:
-                    server_numeric_version = server_numeric_version[0]
-                else:
-                    server_numeric_version = '99.99.98'  # latest
-                print('Server image info: {}'.format(image_data[0]))
-                print('Server version: {}'.format(server_numeric_version))
 
-        with open('./Tests/instance_ips.txt', 'r') as instance_file:
-            instance_ips = instance_file.readlines()
-            instance_ips = [line.strip('\n').split(":") for line in instance_ips]
+def get_all_tests(tests_settings):
+    conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
+    tests_records = conf['tests']
+    all_tests = []
+    for test_record in tests_records:
+        test_name = test_record.get("playbookID")
+        if test_name:
+            all_tests.append(test_name)
+    return all_tests
 
-        for ami_instance_name, ami_instance_ip in instance_ips:
-            if ami_instance_name == server_version:
+
+def parallel_print(string_to_print, thread_index, should_print=False):
+    PARALLEL_PRINTS_MESSAGES[thread_index] += string_to_print
+    if should_print:
+        print(PARALLEL_PRINTS_MESSAGES[thread_index])
+        PARALLEL_PRINTS_MESSAGES[thread_index] = ""
+
+
+def tests_manager(tests_settings):
+    """
+    This function manages the process of executing Demisto's tests.
+
+    Args:
+
+    """
+    tests_settings.serverNumericVersion = get_and_print_server_numeric_version(tests_settings)
+    instances_ips = get_instances_ips_and_names()
+    is_nightly = tests_settings.nightly
+
+    if tests_settings.server:
+        # If the user supplied a server - all tests will be done on that server.
+        server_ip = tests_settings.server
+        print_color("Starting tests for {}".format(server_ip), LOG_COLORS.GREEN)
+        print("Starts tests with server url - https://{}".format(server_ip))
+        all_tests = get_test_dependencies()[2]
+        execute_testing(tests_settings, server_ip, [], all_tests, is_ami=False)
+
+    elif is_nightly:
+        """
+        4. Change all the methods to include test records and not names, or create a method to go over the records and collect the relevant ones
+        5. Make sure to switch all the prints to the new prints
+        6. Make sure the arrays cells are restarted to empty string after each test
+        7. Check if there are any size 1 clusters. If so, understand where is the bug.
+        
+        """
+        number_of_instances = len(instances_ips)
+        test_allocation = get_tests_allocation(number_of_instances)
+        current_thread_index = 0
+        unmockable_tests_list = get_unmockable_tests(tests_settings)
+        for ami_instance_name, ami_instance_ip in instances_ips:
+            current_instance = ami_instance_ip
+            tests_allocation_for_instance = test_allocation[current_thread_index]
+
+            unmockable_tests = [test for test in tests_allocation_for_instance if test in unmockable_tests_list]
+            mockable_tests = [test for test in tests_allocation_for_instance if test not in unmockable_tests]
+            print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
+            print("Starts tests with server url - https://{}".format(ami_instance_ip))
+            thread_args = (tests_settings, current_instance, mockable_tests, unmockable_tests)
+            thread_kwargs = {
+                "thread_index": current_thread_index
+            }
+            _thread.start_new_thread(execute_testing, thread_args, thread_kwargs)
+            current_thread_index += 1
+
+    else:
+        for ami_instance_name, ami_instance_ip in instances_ips:
+            if ami_instance_name == tests_settings.serverVersion:
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                 print("Starts tests with server url - https://{}".format(ami_instance_ip))
-                server = SERVER_URL.format(ami_instance_ip)
-                execute_testing(server, ami_instance_ip, server_version, server_numeric_version)
+                all_tests = get_all_tests(tests_settings)
+                unmockable_tests = get_unmockable_tests(tests_settings)
+                mockable_tests = [test for test in all_tests if test not in unmockable_tests]
+                execute_testing(tests_settings, ami_instance_ip, mockable_tests, unmockable_tests, is_ami=True)
                 sleep(8)
 
-    else:  # Run tests in Server build configuration
+
+def main():
+    tests_settings = options_handler()
+    if tests_settings.isAMI:
+        """
+        Running tests in AMI configuration.
+        This is the way we run most tests, including running Circle for PRs and nightly.
+        """
+        tests_manager(tests_settings)
+    else:
+        """
+        This case is rare, and usually occurs on two cases:
+        1. When someone from Server wants to trigger a content build on their branch.
+        2. When someone from content wants to run tests on a specific build.
+        """
         server_numeric_version = '99.99.98'  # assume latest
         print("Using server version: {} (assuming latest for non-ami)".format(server_numeric_version))
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ips = instance_file.readlines()
             instance_ip = [line.strip('\n').split(":")[1] for line in instance_ips][0]
-
-        execute_testing(SERVER_URL.format(instance_ip), instance_ip, server_version, server_numeric_version,
-                        is_ami=False)
+        all_tests = get_all_tests(tests_settings)
+        execute_testing(tests_settings, instance_ip, [], all_tests, is_ami=False)
 
 
 if __name__ == '__main__':
