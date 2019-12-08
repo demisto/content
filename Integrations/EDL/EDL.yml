@@ -3,6 +3,18 @@ commonfields:
   id: EDL
   version: -1
 configuration:
+- display: EDL Port
+  name: longRunningPort
+  required: true
+  type: 0
+- display: Certificate (Required for HTTPS)
+  name: certificate
+  required: false
+  type: 12
+- display: Private Key (Required for HTTPS)
+  name: key
+  required: false
+  type: 14
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -17,19 +29,11 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- display: EDL Port
-  name: longRunningPort
-  required: false
-  type: 0
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 description: Provides External Dynamic List as a service. An EDL is a text file that
   is hosted on an external web server so that the firewall can import objects—IP addresses,
   URLs, domains—included in the list and enforce policy. The integration allows users
-  to add values to the list, remove values from the list, and to consume it
-  as an EDL service.
+  to add values to the list, remove values from the list, and to consume it as an
+  EDL service.
 display: External Dynamic List (EDL)
 name: EDL
 script:
@@ -66,12 +70,24 @@ script:
     - contextPath: EDL.Value
       description: Value stored in the EDL service.
       type: String
-  dockerimage: demisto/python3:3.7.5.4328
+  - arguments:
+    - default: true
+      description: Value to add to the EDL service.
+      isArray: true
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Replace all the values in the EDL service with the given values.
+      Can be a single value, or several comma seperated values.
+    execution: false
+    name: replace-edl-values
+  dockerimage: demisto/teams:1.0.0.1701
   isfetch: false
   longRunning: true
   longRunningPort: true
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 fromversion: 5.0.0
