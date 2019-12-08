@@ -563,7 +563,8 @@
         },
         {
             "integrations": "Devo",
-            "playbookID": "devo_test_playbook"
+            "playbookID": "devo_test_playbook",
+            "timeout" : 500
         },
         {
             "playbookID": "URL Enrichment - Generic v2 - Test",
@@ -1799,9 +1800,6 @@
             "playbookID": "3da2e31b-f114-4d7f-8702-117f3b498de9"
         },
         {
-            "playbookID": "5dc848e5-a649-4394-8300-386770d39d75"
-        },
-        {
             "integrations": "carbonblackprotection",
             "playbookID": "67b0f25f-b061-4468-8613-43ab13147173"
         },
@@ -1823,15 +1821,6 @@
             "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
         },
         {
-            "playbookID": "Get File Sample By Hash - Generic - Test"
-        },
-        {
-            "playbookID": "Get File Sample From Hash - Generic - Test"
-        },
-        {
-            "playbookID": "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test"
-        },
-        {
             "playbookID": "get_file_sample_from_path_-_d2_-_test"
         },
         {
@@ -1843,9 +1832,6 @@
         },
         {
             "playbookID": "TestIsEmailAddressInternal"
-        },
-        {
-            "playbookID": "search_endpoints_by_hash_-_carbon_black_response_-_test"
         },
         {
             "integrations": "Google Cloud Compute",
@@ -2012,6 +1998,8 @@
         }
     ],
     "skipped_tests": {
+        "Test-Detonate URL - Crowdstrike": "Issue 19439",
+        "Git_Integration-Test": "Issue 20029",
         "FormattingPerformance - Test": "Issue 20348",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "Request Debugging - Test": "Issue 20337",
@@ -2037,13 +2025,7 @@
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "Carbon Black Enterprise Protection V2 Test": "Issue 19838",
-        "5dc848e5-a649-4394-8300-386770d39d75": "Issue 19840",
-        "Get File Sample By Hash - Generic - Test": "Issue 19841",
-        "Get File Sample From Hash - Generic - Test": "Issue 19842",
-        "get_file_sample_by_hash_-_carbon_black_enterprise_Response_-_test": "Issue 19843",
         "get_file_sample_from_path_-_d2_-_test": "Issue 19844",
-        "ssdeepreputationtest": "Issue 19845",
-        "search_endpoints_by_hash_-_carbon_black_response_-_test": "Issue 19852",
         "Cofense Triage Test": "Creds only works on demo4",
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
         "nexpose_test": "Issue 18694",
@@ -2077,11 +2059,10 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "Protectwise": "Issue 20486",
-        "Cylance Protect v2": "Issue 20485",
+        "VxStream": "Exceeded quota, remove in 1/1/19",
+        "ProtectWise": "Issue 20486",
         "ThreatMiner": "Issue 20469",
         "DomainTools Iris": "Issue 20433",
-        "SentinelOne V2": "Issue 19361",
         "ThreatQ v2": "Issue 19468",
         "Check Point": "Issue 18643",
         "McAfee Active Response": "Issue 20320",
