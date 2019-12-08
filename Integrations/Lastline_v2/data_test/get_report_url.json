@@ -20,7 +20,7 @@
           "activity": "A script used the fromCharCode function"
         }
       ],
-      "uuid": "e1df226edfa2eeaeBt0Dq_GuJypzO6uuj5-Y7Nbdn06B2vrHv4Hq5A",
+      "uuid": "",
       "format": {
         "build_version": 0,
         "major_version": 1,
@@ -44,7 +44,7 @@
                   "is_test": true,
                   "score": 0,
                   "version": 1,
-                  "name": "llweb:info-page-contains-form",
+                  "name": "",
                   "desc": "Info: Page contains a form"
                 }
               ],
@@ -57,8 +57,8 @@
               "content_type": "text/html",
               "error": null,
               "parent_url": "USER_URL",
-              "content_md5": "4ce9fb100363baca7fd6ab82f53bd279",
-              "ip": "00.00.00.00"
+              "content_md5": "",
+              "ip": ""
             },
             {
               "status": 200,
@@ -66,8 +66,8 @@
               "end": 2182,
               "relation_type_str": 10,
               "activities": [],
-              "url": "/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxK.woff2",
-              "content_sha1": "06db651cdf354c64a7383ea9c77024ef4fb4cef8",
+              "url": "",
+              "content_sha1": "",
               "relation_type": null,
               "filename": null,
               "start": 1271,
@@ -76,7 +76,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "5d4aeb4e5f5ef754e307d7ffaef688bd",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 200,
@@ -84,7 +84,7 @@
               "end": 2266,
               "relation_type_str": 10,
               "activities": [],
-              "url": "/s/roboto/v18/KFOlCnqEu92Fr1MmWUlfBBc4.woff2",
+              "url": "",
               "content_sha1": "619389190b3cafafb5db94113990350acc8a0278",
               "relation_type": null,
               "filename": null,
@@ -94,7 +94,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "037d830416495def72b7881024c14b7b",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 200,
@@ -102,7 +102,7 @@
               "end": 2207,
               "relation_type_str": 10,
               "activities": [],
-              "url": "/gb/images/i1_1967ca6a.png",
+              "url": "/",
               "content_sha1": "e8d110b196c504d1d48d0c864411223cc3604f18",
               "relation_type": null,
               "filename": null,
@@ -112,7 +112,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "063ada405398fb5d6f1e2c3b5fb0ef59",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 200,
@@ -120,7 +120,7 @@
               "end": 2204,
               "relation_type_str": 1,
               "activities": [],
-              "url": "/images/branding/googlemic/2x/googlemic_color_24dp.png",
+              "url": "",
               "content_sha1": "8be2d4dd8890de1f314545ddfdbf583b74fd37fc",
               "relation_type": null,
               "filename": null,
@@ -130,7 +130,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "35299314fc759677b0eede4b5df29ca7",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 200,
@@ -148,7 +148,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "8f9327db2597fa57d2f42b4a6c5a9855",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 200,
@@ -166,7 +166,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "3acf25baccf6d2b22056d0d6a61c88d2",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 200,
@@ -184,7 +184,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "819561c66e69826f4b076d99b18867ea",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 200,
@@ -202,7 +202,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "1697cff83402987aff3198daf841d510",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 204,
@@ -220,7 +220,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "d41d8cd98f00b204e9800998ecf8427e",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 200,
@@ -228,7 +228,7 @@
               "end": 2546,
               "relation_type_str": 10,
               "activities": [],
-              "url": "/og/_/js/k=og.og2.en_US.4x867LSbVXU.O/rt=j/m=def,aswid/exm=in,fot/d=1/ed=1/rs=AA2YrTujuZHcDUyKvl4pFgWc20X0injnlg",
+              "url": "",
               "content_sha1": "d8e1327ea74041529a26a280b7354ca81086f043",
               "relation_type": null,
               "filename": null,
@@ -238,7 +238,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "4cf635aaf354ac9d8b914e36163d7ab8",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 204,
@@ -256,7 +256,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "d41d8cd98f00b204e9800998ecf8427e",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 200,
@@ -274,7 +274,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "2dce6621df8a61cc34358f72b418ba9e",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 200,
@@ -292,7 +292,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "cb62749e1bf22a0b725cd7c6a7481e43",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 200,
@@ -310,7 +310,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "d41d8cd98f00b204e9800998ecf8427e",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 204,
@@ -328,7 +328,7 @@
               "error": null,
               "parent_url": "https://www.google.com/",
               "content_md5": "d41d8cd98f00b204e9800998ecf8427e",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": 302,
@@ -346,7 +346,7 @@
               "error": null,
               "parent_url": "USER_URL",
               "content_md5": "d41d8cd98f00b204e9800998ecf8427e",
-              "ip": "00.00.00.00"
+              "ip": ""
             },
             {
               "status": null,
@@ -354,7 +354,7 @@
               "end": 5344,
               "relation_type_str": 5,
               "activities": [],
-              "url": "/adsid/google/ui?gadsid=AORoGNSw0NaGMfJJipN8y9Xwd00RogXxx1Q5u0DgD9yhbIb-R90ZxIyykQ",
+              "url": "",
               "content_sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
               "relation_type": null,
               "filename": null,
@@ -382,7 +382,7 @@
               "error": null,
               "parent_url": "USER_URL",
               "content_md5": "d41d8cd98f00b204e9800998ecf8427e",
-              "ip": "00.00.00.00"
+              "ip": ""
             }
           ]
         },
@@ -500,7 +500,7 @@
           "ll-web"
         ],
         "description": "Dynamic analysis in instrumented Chrome browser",
-        "report_uuid": "e1df226edfa2eeaeBt0Dq_GuJypzO6uuj5-Y7Nbdn06B2vrHv4Hq5A"
+        "report_uuid": ""
       },
       {
         "relevance": 1.0,
@@ -508,7 +508,7 @@
           "ll-pcap"
         ],
         "description": "Pcap analysis",
-        "report_uuid": "b0124dfc805fdbe3f0-1e7ebs7uCrTgrlb6NXeVvp9xRDifI5CVnhw"
+        "report_uuid": ""
       }
     ],
     "child_tasks": [
@@ -516,7 +516,7 @@
         "task_uuid": "a680b4754ff500100b5e515e19255232",
         "score": 0,
         "tag": "network traffic analysis",
-        "parent_report_uuid": "e1df226edfa2eeaeBt0Dq_GuJypzO6uuj5-Y7Nbdn06B2vrHv4Hq5A"
+        "parent_report_uuid": ""
       }
     ],
     "score": 0,
