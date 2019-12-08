@@ -1,8 +1,8 @@
-id: Panorama Query Logs For Indicators
+id: PAN-OS Query Logs For Indicators
 version: -1
 fromversion: 4.5.0
-name: Panorama Query Logs For Indicators
-description: 'Query Panorama Logs of types in one playbook: traffic, threat, url,
+name: PAN-OS Query Logs For Indicators
+description: 'Query PAN-OS Logs of types in one playbook: traffic, threat, url,
   data-filtering and wildfire. The playbook accepts inputs such as IP. hash, url.'
 starttaskid: "0"
 tasks:
