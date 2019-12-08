@@ -1,14 +1,14 @@
 import hashlib
 from typing import Dict
-import urllib3
+from urllib3 import disable_warnings
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 
 INTEGRATION_COMMAND_NAME = "lastline"
-INTEGRATION_NAME = "Lastline_v2"
-urllib3.disable_warnings()
+INTEGRATION_NAME = "Lastline v2"
+disable_warnings()
 
 
 class Client(BaseClient):
@@ -22,58 +22,51 @@ class Client(BaseClient):
         super(Client, self).__init__(base_url, verify, proxy)
 
     def file(self):
-        hash_type = help_hash_type_checker(self.command_params.get('file'))
+        hash_type = hash_type_checker(self.command_params.get('file'))
         self.command_params[hash_type] = self.command_params.get('file')
-        result = self.request_in_path('/analysis/submit/file')
-        context_entry: Dict = help_context_entry(demisto.command())
-        context_entry['DBotScore']['Indicator'] = self.command_params.get('file')
-        context_entry['DBotScore']['Type'] = hash_type
-        human_readable = tableToMarkdown(name=INTEGRATION_NAME, t=context_entry, removeNull=True)
+        result = self.http_request('/analysis/submit/file')
+        human_readable, context_entry = report_generator(result)
         return human_readable, context_entry, result
 
     def check_status(self):
-        result = self.request_in_path('/analysis/get')
-        context_entry: Dict = help_context_entry(demisto.command())
-        help_upload_and_status(result, context_entry)
-        human_readable = tableToMarkdown(name=INTEGRATION_COMMAND_NAME, t=context_entry.get('Lastline'), removeNull=True)
+        result = self.http_request('/analysis/get')
+        human_readable, context_entry = report_generator(result)
         return human_readable, context_entry, result
 
     def get_report(self):
-        result = self.request_in_path('/analysis/get')
-        context_entry: Dict = help_get_report_context(result, self.command_params.get('threshold'))
-        human_readable = tableToMarkdown(name=INTEGRATION_NAME, t=context_entry, removeNull=True)
+        result = self.http_request('/analysis/get')
+        if 'data' in result and 'score' not in result['data']:
+            uuid = self.command_params.get('uuid')
+            raise DemistoException(f'task {uuid} is not ready')
+        human_readable, context_entry = report_generator(result)
         return human_readable, context_entry, result
 
     def get_task_list(self):
-        result = self.request_in_path('/analysis/get_completed')
-        context_entry: Dict = help_context_entry(demisto.command())
+        for param in ('before', 'after'):
+            if param in self.command_params:
+                self.command_params[param] = self.command_params[param].replace('T', ' ')
+        result = self.http_request('/analysis/get_completed')
         if 'data' in result:
-            context_entry['uuid'] = result['data'].get('tasks')
-        human_readable = tableToMarkdown(name=INTEGRATION_NAME, t=context_entry, removeNull=True)
-        return human_readable, context_entry, result
+            context_entry = self.get_status_and_time(result['data'].get('tasks'))
+            human_readable = '|UUID|Time|Status|\n|--|--|--|'
+            for uuid, task_time, status in context_entry:
+                human_readable += f'\n|{uuid}|{task_time}|{status}|'
+            return human_readable, {}, result
 
     def upload_file(self):
         entry_id = self.command_params.get('EntryID')
         self.command_params['push_to_portal'] = True
         file_params = demisto.getFilePath(entry_id)
-        self.command_params['md5'] = help_file_hash(file_params.get('path'))
-        result = self.request_in_path('/analysis/submit/file',
-                                      headers={'Content-Type': 'multipart/form-data'},
-                                      files={'file': file_params.get('path')})
-        context_entry: Dict = help_context_entry(demisto.command())
-        context_entry['Lastline']['Submission']['Filename'] = self.command_params.get('name')
-        help_upload_and_status(result, context_entry)
-
-        human_readable = tableToMarkdown(INTEGRATION_COMMAND_NAME, t=context_entry, removeNull=True)
+        self.command_params['md5'] = file_hash(file_params.get('path'))
+        result = self.http_request('/analysis/submit/file',
+                                   headers={'Content-Type': 'multipart/form-data'},
+                                   files={'file': file_params.get('path')})
+        human_readable, context_entry = report_generator(result)
         return human_readable, context_entry, result
 
     def upload_url(self):
-        result = self.request_in_path('/analysis/submit/url')
-        demisto.info(result)
-        context_entry: Dict = help_context_entry(demisto.command())
-        context_entry['Lastline']['Submission']['URL'] = self.command_params.get('url')
-        help_upload_and_status(result, context_entry)
-        human_readable = tableToMarkdown(name=INTEGRATION_COMMAND_NAME, t=context_entry, removeNull=True)
+        result = self.http_request('/analysis/submit/url')
+        human_readable, context_entry = report_generator(result)
         return human_readable, context_entry, result
 
     def test_module_command(self):
@@ -81,185 +74,147 @@ class Client(BaseClient):
         self.upload_url()
         return 'ok'
 
-    def request_in_path(self, path: str, headers=None, files=None) -> Dict:
+    def get_status_and_time(self, uuids):
+        task_list = []
+        for uuid in uuids:
+            self.command_params['uuid'] = uuid
+            result = self.http_request('/analysis/get')
+            if 'data' in result:
+                task_time = result['data'].get('submission')
+                if 'score' in result['data']:
+                    status = 'Completed'
+                else:
+                    status = 'Analyzing'
+            else:
+                task_time = status = ''
+            task_list.append([uuid, task_time.replace(' ', 'T'), status])
+        return task_list
+
+    def http_request(self, path: str, headers=None, files=None) -> Dict:
         result: Dict = self._http_request('POST', path, params=self.command_params, headers=headers, files=files)
-        help_lastline_exception_handler(result)
+        lastline_exception_handler(result)
         return result
 
 
-def help_lastline_exception_handler(result: Dict):
-    if not result.get("success"):
-        error_msg = "error "
-        if 'error_code' in result:
-            error_msg += "(" + str(result['error_code']) + ") "
-        if 'error' in result:
-            error_msg += result['error']
-        raise DemistoException(error_msg)
+def lastline_exception_handler(result: Dict):
+    if result.get("success") is not None:
+        if result.get("success") == 0:
+            error_msg = "error "
+            if 'error_code' in result:
+                error_msg += "(" + str(result['error_code']) + ") "
+            if 'error' in result:
+                error_msg += result['error']
+            raise DemistoException(error_msg)
+    else:
+        raise DemistoException('No response')
 
 
-def help_hash_type_checker(hash_file: str) -> str:
+def hash_type_checker(hash_file: str) -> str:
     if len(hash_file) == Client.MD5_LEN:
         return 'md5'
     if len(hash_file) == Client.SHA1_LEN:
         return 'sha1'
     if len(hash_file) == Client.SHA256_LEN:
         return 'sha256'
-    raise DemistoException(f'{INTEGRATION_NAME} File command support md5/ sha1/ sha256 only')
+    raise DemistoException(f'{INTEGRATION_NAME} File command support md5/ sha1/ sha256 only.')
 
 
-def help_upload_and_status(result: Dict, context_entry: Dict):
+def report_generator(result: Dict, threshold=None):
+    context_entry: Dict = get_report_context(result, threshold)
+    if 'File' in context_entry:
+        key = 'File'
+    elif 'URL' in context_entry:
+        key = 'URL'
+    else:
+        key = ''
+    score = result['data'].get('score')
+    uuid = result['data'].get('task_uuid')
+    submission_time = result['data'].get('submission')
+    indicator = context_entry['DBotScore'].get('Indicator')
+    if score is not None:
+        meta_data = f'**Score: {score}**\n\nTask UUID: {uuid}\nSubmission Time: {submission_time}'
+    else:
+        meta_data = '**Status: Analyzing**'
+    human_readable = tableToMarkdown(name=f'Lastline analysis for {key.lower()}: {indicator}',
+                                     metadata=meta_data,
+                                     t=context_entry.get(key))
+    return human_readable, context_entry
+
+
+def get_report_context(result: Dict, threshold=None) -> Dict:
+    key = 'File'
+    context_entry: Dict = {}
     if 'data' in result:
-        context_entry['Lastline']['Submission']['UUID'] = result['data'].get('task_uuid')
+        data: Dict = {}
+        dbotscore: Dict = {
+            'Vendor': 'Lastline',
+            'Score': 0
+        }
         if 'score' in result['data']:
-            context_entry['Lastline']['Submission']['Status'] = 'Completed'
+            status = 'Completed'
+            if threshold is None:
+                threshold = Client.DEFAULT_THRESHOLD
+            score = result['data']['score']
+            if score > threshold:
+                dbotscore['Score'] = 3
+                data['Malicious'] = {
+                    'Vendor': 'Lastline',
+                    'Score': score
+                }
+            elif score > 30:
+                dbotscore['Score'] = 2
+            else:
+                dbotscore['Score'] = 1
         else:
-            context_entry['Lastline']['Submission']['Status'] = 'Analyzing'
+            status = 'Analyzing'
+        lastline: Dict = {
+            'Submission': {'Status': status},
+            'UUID': result['data'].get('task_uuid'),
+            'SubmissionTime': result['data'].get('submission')
+        }
+        if 'analysis_subject' in result['data']:
+            analysis_subject: Dict = result['data']['analysis_subject']
+            temp_dict: Dict = {
+                'YaraSignatures': analysis_subject.get('yara_signatures'),
+                'DNSqueries': analysis_subject.get('dns_queries'),
+                'NetworkConnections': analysis_subject.get('network_connections'),
+                'DownloadedFiles': analysis_subject.get('downloaded_files'),
+                'Process': analysis_subject.get('process'),
+                'DomainDetections': analysis_subject.get('domain_detections'),
+                'IPdetections': analysis_subject.get('ip_detections'),
+                'URLdetections': analysis_subject.get('url_detections')
+            }
+            temp_dict = {keys: values for keys, values in temp_dict.items() if values}
+            lastline['Submission'].update(temp_dict)
 
-
-def help_get_report_context(result: Dict, threshold=None) -> Dict:
-    context_entry: Dict = help_context_entry(f'{INTEGRATION_COMMAND_NAME}-get-report')
-    if 'data' in result:
-        if 'score' in result['data']:
-            if 'analysis_subject' in result['data']:
-                context_entry['Lastline']['Submission']['Status'] = 'Completed'
-                context_entry['DBotScore']['type'] = 'url'
-                context_entry['DBotScore']['Indicator'] = result['data']['analysis_subject'].get('url')
-                if threshold is None:
-                    threshold = Client.DEFAULT_THRESHOLD
-                if result['data']['score'] > threshold:
-                    if 'url' in result['data']['analysis_subject']:
-                        key = 'URL'
-                        context_entry[key]['Data'] = result['data']['analysis_subject'].get('url')
-                        context_entry['DBotScore']['Indicator'] = context_entry[key]['Data']
-                    else:
-                        key = 'File'
-                        context_entry[key]['md5'] = result['data']['analysis_subject'].get('md5')
-                        context_entry[key]['sha1'] = result['data']['analysis_subject'].get('sha1')
-                        context_entry[key]['sha256'] = result['data']['analysis_subject'].get('sha256')
-                        context_entry['DBotScore']['Indicator'] = 'md5-' + context_entry[key]['md5']
-                    context_entry['DBotScore']['Type'] = key
-                    context_entry[key]['Malicious']['Vendor'] = 'Lastline'
-                    context_entry[key]['Malicious']['score'] = result['data'].get('score')
-                    context_entry[key]['Malicious']['Description'] = 'Score above ' + str(threshold)
-
-        else:
-            context_entry['Lastline']['Submission']['Status'] = 'Analyzing'
+            if 'url' in analysis_subject:
+                key = 'URL'
+                dbotscore['Indicator'] = analysis_subject['url']
+                data['Data'] = analysis_subject.get('url')
+            else:
+                dbotscore['Indicator'] = analysis_subject.get('md5')
+                dbotscore['Type'] = 'hash'
+                data['MD5'] = analysis_subject.get('md5')
+                data['SHA1'] = analysis_subject.get('sha1')
+                data['SHA256'] = analysis_subject.get('sha256')
+                data['Type'] = analysis_subject.get('mime_type')
+            dbotscore['Type'] = key
+            context_entry['Lastline'] = lastline
+            context_entry[key] = data
+        if dbotscore['Score'] != 0:
+            context_entry['DBotScore'] = dbotscore
     return context_entry
 
 
-def help_context_entry(command: str):
-    commands: Dict = {
-        'file': {
-            'File': {
-                'MD5': "",
-                'SHA1': "",
-                'SHA256': "",
-                'Type': "",
-                'Malicious': {
-                    'Vendor': "",
-                    'Description': "",
-                    'Score': ""
-                }
-            },
-            'DBotScore': {
-                'Indicator': '',
-                'Type': '',
-                'Vendor': "Lastline v2",
-                'Score': 0
-            }
-        },
-        f'{INTEGRATION_COMMAND_NAME}-check-status': {
-            'Lastline': {
-                'Submission': {
-                    'UUID': "",
-                    'Status': ""
-                }
-            }
-        },
-        f'{INTEGRATION_COMMAND_NAME}-get-report': {
-            'URL': {
-                'Data': "",
-                'Malicious': {
-                    'Vendor': "",
-                    'Description': "",
-                    'Score': ""
-                }
-            },
-            'File': {
-                'MD5': "",
-                'SHA1': "",
-                'SHA256': "",
-                'Malicious': {
-                    'Vendor': "",
-                    'Description': "",
-                    'Score': ""
-                }
-            },
-            'DBotScore': {
-                'Indicator': "",
-                'Type': "",
-                'Vendor': 'Lastline',
-                'Score': 0
-            },
-            'Lastline': {
-                'Submission': {
-                    'Status': "",
-                    'YaraSignatures': {
-                        'name': "",
-                        'score': "",
-                        'internal': ""
-                    },
-                    'DNSqueries': "",
-                    'NetworksConnection': "",
-                    'DownloadedFiles': "",
-                    'Process': {
-                        'arguments': "",
-                        'executable': {
-                            'abs_path': "",
-                            'filename': "",
-                            'yara_signature_hits': "",
-                            'ext_info': "",
-                            'process_id': ""
-                        },
-                    }
-                }
-            }
-        },
-        f'{INTEGRATION_COMMAND_NAME}-get-task-list': {
-            'key': [],
-            'uuid': []
-        },
-        f'{INTEGRATION_COMMAND_NAME}-upload-file': {
-            'Lastline': {
-                'Submission': {
-                    'Filename': '',
-                    'UUID': "",
-                    'Status': ""
-                }
-            }
-        },
-        f'{INTEGRATION_COMMAND_NAME}-upload-url': {
-            'Lastline': {
-                'Submission': {
-                    'URL': '',
-                    'UUID': "",
-                    'Status': ""
-                }
-            }
-        }
-    }
-    return commands.get(command)
-
-
-def help_file_hash(path: str) -> str:
+def file_hash(path: str) -> str:
     block_size = 65536
-    file_hash = hashlib.md5()
-    with open(path, 'rb') as file:
-        buf = file.read(block_size)
+    file_hasher = hashlib.md5()
+    with open(path, 'rb') as file_obj:
+        buf = file_obj.read(block_size)
         while len(buf) > 0:
-            file_hash.update(buf)
-            buf = file.read(block_size)
-    return file_hash.hexdigest()
+            file_hasher.update(buf)
+            buf = file_obj.read(block_size)
+    return file_hasher.hexdigest()
 
 
 def main():
@@ -279,7 +234,7 @@ def main():
     # Switch case
     commands = {
         'test-module': Client.test_module_command,
-        # 'file': Client.file,
+        'file': Client.file,
         f'{INTEGRATION_COMMAND_NAME}-check-status': Client.check_status,
         f'{INTEGRATION_COMMAND_NAME}-get-report': Client.get_report,
         f'{INTEGRATION_COMMAND_NAME}-get-task-list': Client.get_task_list,
@@ -291,6 +246,8 @@ def main():
         if command in commands:
             readable_output, outputs, raw_response = commands[command](client)
             return_outputs(readable_output, outputs, raw_response)
+        else:
+            raise DemistoException(f'{demisto.command()} is not a command')
     # Log exceptions
     except Exception as every_error:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{every_error}]'
