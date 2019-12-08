@@ -45,7 +45,7 @@ script:
     - default: false
       defaultValue: '70'
       description: Score threshold that determines if the file is malicious.
-      isArray: false
+      isArray: true
       name: threshold
       required: false
       secret: false
