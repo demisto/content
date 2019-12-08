@@ -1848,10 +1848,6 @@
             "playbookID": "TestImageOCR"
         },
         {
-            "integrations": "fireeye",
-            "playbookID": "Detonate File - FireEye AX - Test"
-        },
-        {
             "integrations": ["Rasterize","Image OCR"],
             "playbookID": "Rasterize Test"
         },
@@ -2054,11 +2050,8 @@
         "ExtraHop v2": "No instance",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
-        "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
-
-
         "_comment": "~~~ INSTANCE ISSUES ~~~",
         "Protectwise": "Issue 20486",
         "ThreatMiner": "Issue 20469",
