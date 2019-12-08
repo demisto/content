@@ -27,10 +27,10 @@ args:
   secret: false
 comment: Finds a threshold for ML model, and performs an evaluation based on it
 commonfields:
-  id: a15f925c-0dc4-4d6c-8c81-b6123170b7f8
+  id: EvaluateMLModel
   version: -1
 enabled: true
-name: SetMLModelThreshold
+name: EvaluateMLModel
 script: '-'
 subtype: python3
 system: false

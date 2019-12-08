@@ -48,6 +48,7 @@ args:
   name: maxBelowThreshold
   required: false
   secret: false
+  deprecated: true
 - default: false
   description: The field name with the label. Supports a comma-separated list, the first
     non-empty value will be taken.
@@ -113,6 +114,7 @@ args:
   - weighted avgm
   required: false
   secret: false
+  deprecated: true
 comment: Train a machine learning text classifier.
 commonfields:
   id: DBotTrainTextClassifierV2
