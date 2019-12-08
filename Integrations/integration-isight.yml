@@ -22,7 +22,7 @@ configuration:
   defaultvalue: "2.5"
   type: 0
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -183,7 +183,8 @@ script:
         var res = createContextReportsAndScore(records);
         var context = {
             DBotScore: {Indicator: ip, Type: 'IP', Vendor: VENDOR_NAME, Score: res.dbotScore},
-            'Report(val.ID && val.ID == obj.ID)': res.reports
+            'Report(val.ID && val.ID == obj.ID)': res.reports,
+            'IP.Address': ip
         };
 
         if (res.dbotScore > 2) {
@@ -218,7 +219,8 @@ script:
         var res = createContextReportsAndScore(records);
         var context = {
             DBotScore: {Indicator: domain, Type: 'domain', Vendor: VENDOR_NAME, Score: res.dbotScore},
-            'Report(val.ID && val.ID == obj.ID)': res.reports
+            'Report(val.ID && val.ID == obj.ID)': res.reports,
+            'Domain.Name': domain
         };
 
         if (res.dbotScore > 2) {
@@ -377,6 +379,8 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
+    - contextPath: IP.Address
+      description: The IP address
     - contextPath: Report.ID
       description: Report ID
     - contextPath: Report.title
@@ -401,6 +405,8 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
+    - contextPath: Domain.Name
+      description: The domain name.
     - contextPath: Report.ID
       description: Report ID
     - contextPath: Report.title
