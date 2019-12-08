@@ -272,7 +272,6 @@ def main():
 
     try:
         start_logging()
-        global config
         config = prepare()
         args = prepare_args(demisto.args())
         if demisto.command() == 'test-module':
