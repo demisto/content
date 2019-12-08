@@ -70,7 +70,7 @@ def main():
     stdout, stderr = process.communicate()
     if stderr:
         return_error(stderr)
-    if "Wrong password?" in stdout:
+    if 'Wrong password?' in stdout:
         demisto.debug(str(stdout))
         return_error("Data Error in encrypted file. Wrong password?")
     # recursive call over the file system top down
