@@ -120,8 +120,8 @@ def submit_task_command(client: Client, panorama: LightPanoramaClient) -> Tuple[
         system_info = panorama.get_system_info()
         license_info = panorama.get_license()
         system_time = panorama.get_system_time()
-    except:
-        raise Exception('Failed getting response from Panorama.')
+    except Exception:
+        raise Exception('Failed getting response from Panorama')
 
     raw = client.submit_task_request(running_config, system_info, license_info, system_time)
     task_id = raw.get('task_id', '')
