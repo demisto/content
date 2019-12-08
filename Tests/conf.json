@@ -1953,7 +1953,7 @@
             "integrations": "VirusTotal - Private API"
         },
         {
-            "playbookID": "Panorama Query Logs For Indicators Test",
+            "playbookID": "PAN-OS Query Logs For Indicators Test",
             "fromversion": "4.5.0",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
