@@ -2450,7 +2450,7 @@ script:
                             groupsWithIDsInsteadOfNames.push(currentGroupID)
                         }
 
-                        fieldValue["groups"] = groupsWithIDsInsteadOfNames;
+                        fieldValue['groups'] = groupsWithIDsInsteadOfNames;
                         modifiedfieldsToValues[fieldName] = fieldValue;
                     }
 
