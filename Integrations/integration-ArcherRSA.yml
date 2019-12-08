@@ -2392,7 +2392,7 @@ script:
         for (var i=0; i<groupsDataFromArcher.length; i++){
             var currentArcherGroupData = groupsDataFromArcher[i].RequestedObject;
             var currentArcherGroupName = currentArcherGroupData.Name;
-            if (currentArcherGroupName.trim() === userSuppliedGroupName.trim()){
+            if (currentArcherGroupName.trim().toLowerCase() === userSuppliedGroupName.trim().toLowerCase()){
                 desiredGroupID = currentArcherGroupData.Id;
             }
         }
@@ -2405,7 +2405,7 @@ script:
         for (var i=0; i<allUsersArcherData.length; i++){
             var currentArcherUserData = allUsersArcherData[i].RequestedObject;
             var currentArcherUserName = currentArcherUserData.UserName;
-            if (currentArcherUserName.trim() === userSuppliedUserName.trim()){
+            if (currentArcherUserName.trim().toLowerCase() === userSuppliedUserName.trim().toLowerCase()){
                 desiredUserID = currentArcherUserData.Id;
             }
         }
@@ -2414,7 +2414,7 @@ script:
 
 
     function getGroupData() {
-        var groupsData = sendRestRequest("/api/core/system/group", 'archer-create-record', '', true)
+        var groupsData = sendRestRequest("/api/core/system/group", 'archer-create-record', '', true);
         return groupsData;
     }
 
@@ -2447,7 +2447,7 @@ script:
                             var currentUserSuppliedGroupName = groupsFromUser[groupIndex];
                             var currentGroupID = getGroupIDFromGroupName(allGroupsArcherData, currentUserSuppliedGroupName)
 
-                            groupsWithIDsInsteadOfNames.push(currentGroupID)
+                            groupsWithIDsInsteadOfNames.push(currentGroupID);
                         }
 
                         fieldValue['groups'] = groupsWithIDsInsteadOfNames;
