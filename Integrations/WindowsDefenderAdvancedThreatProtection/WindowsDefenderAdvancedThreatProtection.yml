@@ -50,6 +50,22 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Use self deployed app
+  name: no_oproxy
+  required: false
+  type: 8
+- display: Application ID
+  name: app_id
+  required: false
+  type: 0
+- display: Application Secret
+  name: app_secret
+  required: false
+  type: 4
+- display: Tenant ID
+  name: self_tenant_id
+  required: false
+  type: 0
 description: Windows Defender Advanced Threat Protection (ATP) is a unified platform
   for preventative protection, post-breach detection, automated investigation, and
   response.
@@ -730,6 +746,8 @@ script:
       type: boolean
   dockerimage: demisto/crypto:1.0.0.303
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python

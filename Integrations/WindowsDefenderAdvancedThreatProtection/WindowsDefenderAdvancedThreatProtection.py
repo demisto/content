@@ -16,6 +16,10 @@ if not demisto.params()['proxy']:
 
 SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
 BASE_URL = SERVER + '/api'
+NO_OPROXY = demisto.params().get('no_oproxy', False)
+APP_ID = demisto.params().get('app_id')
+APP_SECRET = demisto.params().get('app_secret')
+SELF_TENANT_ID = demisto.params().get('self_tenant_id')
 TENANT_ID = demisto.params()['tenant_id']
 AUTH_AND_TOKEN_URL = demisto.params()['auth_id'].split('@')
 AUTH_ID = AUTH_AND_TOKEN_URL[0]
@@ -80,6 +84,13 @@ def get_encrypted(content: str, key: str) -> str:
     return encrypted
 
 
+def get_token():
+    if NO_OPROXY:
+        return get_self_deployed_token()
+    else:
+        return get_access_token()
+
+
 def get_access_token():
     integration_context = demisto.getIntegrationContext()
     access_token = integration_context.get('access_token')
@@ -140,9 +151,37 @@ def get_access_token():
     return access_token
 
 
+def get_self_deployed_token():
+    if not (AUTH_ID and SELF_TENANT_ID and APP_SECRET):
+        return_error('You must provide the Tenant ID, Application ID and Client Secret.')
+    integration_context = demisto.getIntegrationContext()
+    if integration_context and integration_context['token_expiration_time']:
+        token_expiration_time = integration_context['token_expiration_time']
+        now = int(time.time())
+        if token_expiration_time < now:
+            return integration_context['token']
+    url = 'https://login.windows.net/{}/oauth2/token'.format(SELF_TENANT_ID)
+    resource_app_id_uri = 'https://api.securitycenter.windows.com'
+    data = {
+       'resource': resource_app_id_uri,
+       'client_id': APP_ID,
+       'client_secret': APP_SECRET,
+       'grant_type': 'client_credentials'
+    }
+    response = requests.post(url, data, verify=USE_SSL)
+    body = response.json()
+    if response.status_code != 200:
+        return_error('Error in Microsoft authorization: {}'.format(str(body)))
+    demisto.setIntegrationContext({
+        'token_expiration_time': body['expires_on'],
+        'token': body['access_token']
+    })
+    return body['access_token']
+
+
 def http_request(method, url_suffix, json=None, params=None):
 
-    token = get_access_token()
+    token = get_token()
     r = requests.request(
         method,
         BASE_URL + url_suffix,
@@ -800,6 +839,7 @@ def get_alert_related_user(alert_id):
 
 
 def fetch_incidents():
+
     last_run = demisto.getLastRun()
 
     if last_run and last_run['last_alert_fetched_time']:
@@ -841,7 +881,7 @@ def fetch_incidents():
 
 
 def test_function():
-    token = get_access_token()
+    token = get_token()
     response = requests.get(
         BASE_URL + '/alerts',
         headers={
