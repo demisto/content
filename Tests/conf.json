@@ -670,6 +670,11 @@
             "playbookID": "get_original_email_-_gmail_-_test"
         },
         {
+            "integrations": "Gmail Single User",
+            "playbookID": "Gmail Single User - Test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "EWS v2",
             "playbookID": "get_original_email_-_ews-_test"
         },
