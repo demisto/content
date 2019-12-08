@@ -2,7 +2,9 @@ import argparse
 import uuid
 import json
 import ast
+import sys
 import demisto_client
+
 from Tests.test_integration import __get_integration_config, __test_integration_instance
 from Tests.test_integration import __disable_integrations_instances
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
@@ -401,7 +403,9 @@ def main():
                                                                                       integration_of_instance)
         print(msg)
         # If there is a failure, __test_integration_instance will print it
-        __test_integration_instance(client, instance)
+        success = __test_integration_instance(client, instance)
+        if not success:
+            sys.exit(1)
 
     # TODO: need to add support for content packs
     # Upload content_new.zip + content_test.zip as all_content.zip to demisto server (aka upload new content)
@@ -411,7 +415,7 @@ def main():
     run_command(cmd_str, is_silenced=False)
 
     # Check if content update has finished installing
-    sleep_interval = 1
+    sleep_interval = 20
     updating_content = is_content_updating(server, username, password)
     while updating_content.lower() == 'true':
         sleep(sleep_interval)
@@ -436,6 +440,7 @@ def main():
             err_details += '"{}" but release "{}" and assetId "{}" were '.format(cd_asset_id, release, asset_id)
             err_details += 'retrieved from the instance post installation.'
             print_error('Content Update was Unsuccessful:\n{}'.format(err_details))
+            sys.exit(1)
 
     # configure instances for new integrations
     new_integration_module_instances = []
@@ -456,7 +461,9 @@ def main():
                                                                                        integration_of_instance)
         print(msg)
         # If there is a failure, __test_integration_instance will print it
-        __test_integration_instance(client, instance)
+        success = __test_integration_instance(client, instance)
+        if not success:
+            sys.exit(1)
 
     __disable_integrations_instances(client, all_module_instances)
 
