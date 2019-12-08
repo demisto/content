@@ -2458,7 +2458,7 @@ script:
                         var usersWithIDsInsteadOfNames = [];
                         for (var userIndex = 0; userIndex < usersListFromUser.length; userIndex++) {
                             var currentUserSuppliedUserName = usersListFromUser[userIndex];
-                            var currentUserID = getUserIDFromUserName(allUsersArcherData, currentUserSuppliedUserName)
+                            var currentUserID = getUserIDFromUserName(allUsersArcherData, currentUserSuppliedUserName);
 
                             usersWithIDsInsteadOfNames.push(currentUserID)
                         }
