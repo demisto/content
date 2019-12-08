@@ -2430,7 +2430,7 @@ script:
         var allGroupsArcherData = getGroupData();
         var allUsersArcherData = getUserData();
         for (var fieldName in fieldsToValues) {
-            if (createRecordMapping[fieldName] !== undefined) {
+            if (createRecordMapping[fieldName]) {
                 var fieldValue = fieldsToValues[fieldName];
                 var fieldNameMapping = createRecordMapping[fieldName];
                 var fieldType = fieldNameMapping.Type;
