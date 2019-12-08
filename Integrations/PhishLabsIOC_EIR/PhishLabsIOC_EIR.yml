@@ -92,7 +92,6 @@ script:
       - closed_at
       required: false
       secret: false
-      secret: false
     - auto: PREDEFINED
       default: false
       description: How to sort returned incidents. This will be applied
