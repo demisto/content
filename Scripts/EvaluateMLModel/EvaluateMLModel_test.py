@@ -1,6 +1,6 @@
 import json
 
-import numpy as np
+import pytest
 
 from EvaluateMLModel import find_threshold
 
@@ -37,7 +37,7 @@ def test_threshold_found(mocker):
                            y_true_str=json.dumps(y_true),
                            target_precision=0.65,
                            target_recall=0)
-    assert np.isclose(entry['Contents']['threshold'], 0.7)
+    assert abs(entry['Contents']['threshold'] - 0.7) < 10 ** -2
 
 
 def test_threshold_found_2(mocker):
@@ -46,7 +46,7 @@ def test_threshold_found_2(mocker):
                            y_true_str=json.dumps(y_true),
                            target_precision=0.6,
                            target_recall=0)
-    assert np.isclose(entry['Contents']['threshold'], 0.05)
+    assert abs(entry['Contents']['threshold'] - 0.05) < 10 ** -2
 
 
 def test_no_existing_threshold(mocker):
