@@ -1,0 +1,1545 @@
+category: Ticketing
+commonfields:
+  id: Oceane
+  version: -1
+configuration:
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: DEMISTO
+  display: Application ID (e.g. DEMISTO)
+  name: appId
+  required: true
+  type: 0
+- display: Insecure
+  name: insecure
+  required: false
+  type: 8
+- display: Proxy
+  name: proxy
+  required: false
+  type: 8
+description: Create/Update/Fetch tickets from Oceane API
+display: Oceane
+name: Oceane
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The different status of the trouble ticket
+      isArray: false
+      name: status
+      predefined:
+      - Submitted
+      - InProgress
+      - Restored
+      - Resolved
+      - Closed
+      - Pending
+      - Revised
+      - Validated
+      required: true
+      secret: false
+    - default: false
+      description: Service's ID on which trouble ticket has been created
+      isArray: false
+      name: relatedServiceId
+      required: true
+      secret: false
+    - default: false
+      description: Additional identifier coming from an external system
+      isArray: false
+      name: externalId
+      required: true
+      secret: false
+    - default: false
+      description: Description of the trouble
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Criticity  of the trouble
+      isArray: false
+      name: severity
+      predefined:
+      - Minor
+      - Major
+      - Blocking
+      - Blocking/Major
+      - Major/Minor
+      - Failure severity 1
+      - Failure severity 2
+      - Failure severity 3
+      - Failure severity 4
+      required: false
+      secret: false
+    - auto: PREDIFINED
+      default: false
+      description: Type of the ticket
+      isArray: false
+      name: type
+      predefined:
+      - Failure
+      - Assistance
+      - Installation
+      - Maintenance
+      - Parametrization
+      - Other
+      - Information request
+      - Scheduled maintenance
+      - Long period assistance
+      - Production
+      - Contradictory expertise
+      - QS Alert
+      - Problem
+      - Problem Notification
+      - Work order
+      - Alarm
+      - Crisis
+      - Critical failure
+      - External Failure info
+      - Customer complaint
+      - Service degradation
+      - Permanent alarm
+      - Management CONF&DB
+      - Problem Verification
+      - Neutral expertise
+      - User support
+      - Incident User
+      - User settings
+      - User installation
+      - Recurrent Problem
+      - Reason for Outage
+      - Data Trouble Ticket
+      - Measurements
+      - Emergency Report
+      - Trouble Report
+      - Failure Results & Risk Repair
+      - Failure VIP sites
+      - SAV+
+      - SAV+ PC
+      - Diagnostic
+      - SAV+ Contradictoire
+      - Technical
+      - Property
+      - SAV+ Contradictoire PC
+      - disruptive
+      - Fut interne
+      - Fut externe
+      - PC Informations
+      - Anomaly
+      - Activation
+      - Suspension
+      - Request Fulfillment
+      - Security
+      - Notification noticed Incident
+      - SAV+ GTR4H
+      - SAV+ Contradictory GTR4H
+      - Customer trouble ticket
+      - Recurrent
+      - Faults
+      - Event
+      - Ano Missing mandatory field
+      - Ano Pos file not corresponding
+      - Ano Delivery missing
+      - Ano Delivery mgt agent missing
+      - Ano Pb adress
+      - Ano Pb Number of housing
+      - Ano Pb Ref PM
+      - Chronic
+      - Action Plan
+      - Incident Report
+      - VIP Customer's complaint
+      - 4G customer's complaint
+      - Company's complaint
+      - request for information
+      - Incident Identification
+      - Incident Souscription
+      - Production access
+      - Production service
+      required: true
+      secret: false
+    - default: false
+      description: Additional identifier coming from customer system
+      isArray: false
+      name: customerTicketId
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Customer impact
+      isArray: false
+      name: criticity
+      predefined:
+      - Interrupted service
+      - No interference
+      - Isolated customer site
+      - Corrupted service
+      - Working backup
+      - To be Qualified
+      - Voice-Not calling-Movistar
+      - Voice-Not calling-Vodafone
+      - Voice-Not calling-Orange
+      - Voice-Not calling-All
+      - Voice-Not calling- (indicate)
+      - Voice-Not receiving-Movistar
+      - Voice-Not receiving-Vodafone
+      - Voice-Not receiving-Orange
+      - Voice-Not receiving-All
+      - Voice-Not receive- (indicate)
+      - Voice-Not call/receive-Movist
+      - Voice-Not call/receive-Vodafon
+      - Voice-Not call/receive-Orange
+      - Voice-Not call/receive-Only112
+      - Voice-Not call/receive-Others
+      - Voice-Congestion/retries
+      - Voice-Call drop
+      - Voice-Line switch
+      - Data-No connection 2G/GPRS
+      - Data-No connection 3G/UMTS
+      - Data-No connection 3G/HSDPA
+      - Data-No connection 2G and 3G
+      - Data-Connection OK, Navigatio
+      - Data-Conn OK Navig KO 2G/GPRS
+      - Data-Conn OK Navig KO 3G/UMTS
+      - Data-Conn OK Navig KO 3G/HSDPA
+      - Data-Conn OK Navig KO 2G + 3G
+      - Data-connection drop 2G/GPRS
+      - Data-connection drop 3G/UMTS
+      - Data-connection drop 3G/HSDPA
+      - Data-connection drop 2G and 3G
+      - Voice/Data-no serv some techn
+      - Voice/Data-no coverage 2G/GPR
+      - Voice/Data-no coverage 3G/UMT
+      - Voice/Data-no coverag 3G/HSDPA
+      - Voice/Data-no coverage 2G + 3G
+      - Services
+      - Mobile service not affected
+      - Data-slow navigation 2G/GPRS
+      - Data-slow navigation 3G/UMTS
+      - Data-slow navigation 3G/HSDPA
+      - Data-slow navigation 2G and 3G
+      - Voice/Data-no coverage 2G/GPRS
+      - Voice/Data-no coverage 3G/UMTS
+      - Datos-Conecta,no naveg-4G
+      - Datos-Cortes en-4G
+      - Datos-Navega lento en-4G
+      - Datos-Sin cobertura 4G
+      - Retardos emisión/recep 4G
+      - Voz-No llama/No recibe 4G
+      - Voz-No llama/No recibe-WIFI
+      - Retardos emisión/recep WIFI
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Processing Priority of the ticket
+      isArray: false
+      name: priority
+      predefined:
+      - P0
+      - P1
+      - P2
+      - P3
+      - P4
+      - P5
+      - P6
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Ticket origin
+      isArray: false
+      name: origin
+      predefined:
+      - Customer
+      - Supervision
+      - Internal
+      - Other
+      - Carrier
+      - User
+      - Partners
+      - Proactive
+      - Reactive
+      - Audit
+      - SMC
+      - Quality Analysis
+      - Customer GP (General Public)
+      - Customer PRO (Professional)
+      - NetWorkS
+      - Commercial
+      - Self-care
+      - GAQ
+      - Incident
+      - Reporting
+      - TMC
+      - IOBSP Vendor
+      - Non-IOBSP Vendor
+      - ELITE
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Priority level of the ticket
+      isArray: false
+      name: urgency
+      predefined:
+      - 'NULL'
+      - Immediate intervention
+      - Deferred Intervention
+      - (State of) Emergency
+      - No intervention
+      - '-'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - Class 1
+      - Class 2
+      - Class 3
+      - Premium program
+      required: false
+      secret: false
+    - default: false
+      description: Supervision tool
+      isArray: false
+      name: supervisiontTool
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Initial nature (product ticket class); Technical impact (resource
+        ticket class)
+      isArray: false
+      name: category
+      predefined:
+      - Isolated customer site
+      - Interrupted service
+      - Corrupted service
+      - Request for information
+      - Working backup
+      - No interference
+      - freeze incident
+      - Isolated customer(s)
+      - Total breakdown
+      - Inaccessible route/destination
+      - Incoherence SI
+      - Grouping problem
+      - Failling map
+      - Number of flat
+      - Interrupted resource
+      - Degraded resource
+      - CR MAD
+      - PLANMAD
+      - IPE
+      - PM non mutualisable
+      - STAS
+      - Not corresponding connecting
+      - Refusal Management agent
+      - Refusal co-owners
+      - Pb access privative parts
+      - Change of management agent
+      - D�gats, Fault
+      - Financial compensation
+      - Problem block OC
+      - Problem piece joined
+      - INCOH RGPT
+      - Error
+      - Circuit failure
+      - Loss of supervision
+      - Polling failure
+      - Site isolation
+      - NNI failure Interconnection
+      - Country isolation
+      - High RTD on circuit
+      - Packet Loss
+      - Security
+      - Hardware replacement
+      - Remote software operations
+      - Client failure
+      - Local SW operations
+      - Parameters changed
+      - Solution changed
+      - AR Order unit rent
+      - Fiber constraint
+      - Mail of Kindness
+      - CR MAD
+      - Busy dedicated fiber
+      - Position file
+      - Flow CR info management agent
+      - IPE
+      - IPE and CR MAD
+      - MAD Plan
+      - Several impacted supports
+      - Not corresponding PM
+      - Rising column or PM missing
+      - PM or fiber HS or inaccessible
+      - Refusal of Mutualization
+      - PTO
+      - CONNECTING LANDING
+      - PBO
+      - RISING COLUMN
+      - CRAWLING COLUMN
+      - PM
+      - HORIZONTAL NETWORK
+      - Wiring problem Access
+      - Wiring problem PM
+      - Wiring problem PB
+      - circuit unstable
+      - PM-PBO
+      - Planned Outage
+      - Unplanned Outage
+      - Unplanned Outage caused by PW
+      - No service affected
+      - Planned Outage
+      - Unplanned Outage
+      - Unplanned Outage caused by PW
+      - No service affected
+      - Degradations
+      - Various
+      - Not applicable
+      - POST PROD ORT
+      - Security
+      - Downgrading equipment
+      - No interference
+      - Corrupted service
+      - Other
+      - Interrupted service
+      - Voice Stop/Visio
+      - Data Stop
+      - Counting anomaly
+      - To be Qualified
+      - To be Qualified
+      - Major corrupted service
+      - Anomaly detected
+      - No Traffic
+      - Equipment failure
+      - Node isolated
+      - Anomaly detected
+      - No Traffic
+      - Equipment failure
+      - Node isolated
+      - Change operations fault
+      - Change parameters fault
+      - FNI impact
+      - Software failure
+      - PM to move
+      - Access problem
+      - Piping problem
+      required: false
+      secret: false
+    - default: false
+      description: The date on which the trouble was discovered
+      isArray: false
+      name: detectionDateTime
+      required: false
+      secret: false
+    - default: false
+      description: Customer target restoration date (ETR)
+      isArray: false
+      name: targetRestorationDateTime
+      required: false
+      secret: false
+    - default: false
+      description: Confirmed to customer planned restoration date (ATR)
+      isArray: false
+      name: plannedRestorationDateTime
+      required: false
+      secret: false
+    - default: false
+      description: Shows only the listed sections names, comma separated (e.g. General,Related
+        service)
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a trouble ticket
+    execution: false
+    name: oceane-create-ticket
+  - arguments:
+    - default: false
+      description: The ID of the trouble ticket to update
+      isArray: false
+      name: ticketId
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The different status of the trouble ticket
+      isArray: false
+      name: status
+      predefined:
+      - Submitted
+      - InProgress
+      - Restored
+      - Resolved
+      - Closed
+      - Pending
+      - Revised
+      - Validated
+      required: true
+      secret: false
+    - default: false
+      description: Service's ID on which trouble ticket has been created
+      isArray: false
+      name: relatedServiceId
+      required: true
+      secret: false
+    - default: false
+      description: Additional identifier coming from an external system
+      isArray: false
+      name: externalId
+      required: true
+      secret: false
+    - default: false
+      description: Description of the trouble
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Criticity  of the trouble
+      isArray: false
+      name: severity
+      predefined:
+      - Minor
+      - Major
+      - Blocking
+      - Blocking/Major
+      - Major/Minor
+      - Failure severity 1
+      - Failure severity 2
+      - Failure severity 3
+      - Failure severity 4
+      required: false
+      secret: false
+    - auto: PREDIFINED
+      default: false
+      description: Type of the ticket
+      isArray: false
+      name: type
+      predefined:
+      - Failure
+      - Assistance
+      - Installation
+      - Maintenance
+      - Parametrization
+      - Other
+      - Information request
+      - Scheduled maintenance
+      - Long period assistance
+      - Production
+      - Contradictory expertise
+      - QS Alert
+      - Problem
+      - Problem Notification
+      - Work order
+      - Alarm
+      - Crisis
+      - Critical failure
+      - External Failure info
+      - Customer complaint
+      - Service degradation
+      - Permanent alarm
+      - Management CONF&DB
+      - Problem Verification
+      - Neutral expertise
+      - User support
+      - Incident User
+      - User settings
+      - User installation
+      - Recurrent Problem
+      - Reason for Outage
+      - Data Trouble Ticket
+      - Measurements
+      - Emergency Report
+      - Trouble Report
+      - Failure Results & Risk Repair
+      - Failure VIP sites
+      - SAV+
+      - SAV+ PC
+      - Diagnostic
+      - SAV+ Contradictoire
+      - Technical
+      - Property
+      - SAV+ Contradictoire PC
+      - disruptive
+      - Fut interne
+      - Fut externe
+      - PC Informations
+      - Anomaly
+      - Activation
+      - Suspension
+      - Request Fulfillment
+      - Security
+      - Notification noticed Incident
+      - SAV+ GTR4H
+      - SAV+ Contradictory GTR4H
+      - Customer trouble ticket
+      - Recurrent
+      - Faults
+      - Event
+      - Ano Missing mandatory field
+      - Ano Pos file not corresponding
+      - Ano Delivery missing
+      - Ano Delivery mgt agent missing
+      - Ano Pb adress
+      - Ano Pb Number of housing
+      - Ano Pb Ref PM
+      - Chronic
+      - Action Plan
+      - Incident Report
+      - VIP Customer's complaint
+      - 4G customer's complaint
+      - Company's complaint
+      - request for information
+      - Incident Identification
+      - Incident Souscription
+      - Production access
+      - Production service
+      required: true
+      secret: false
+    - default: false
+      description: Additional identifier coming from customer system
+      isArray: false
+      name: customerTicketId
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Customer impact
+      isArray: false
+      name: criticity
+      predefined:
+      - Interrupted service
+      - No interference
+      - Isolated customer site
+      - Corrupted service
+      - Working backup
+      - To be Qualified
+      - Voice-Not calling-Movistar
+      - Voice-Not calling-Vodafone
+      - Voice-Not calling-Orange
+      - Voice-Not calling-All
+      - Voice-Not calling- (indicate)
+      - Voice-Not receiving-Movistar
+      - Voice-Not receiving-Vodafone
+      - Voice-Not receiving-Orange
+      - Voice-Not receiving-All
+      - Voice-Not receive- (indicate)
+      - Voice-Not call/receive-Movist
+      - Voice-Not call/receive-Vodafon
+      - Voice-Not call/receive-Orange
+      - Voice-Not call/receive-Only112
+      - Voice-Not call/receive-Others
+      - Voice-Congestion/retries
+      - Voice-Call drop
+      - Voice-Line switch
+      - Data-No connection 2G/GPRS
+      - Data-No connection 3G/UMTS
+      - Data-No connection 3G/HSDPA
+      - Data-No connection 2G and 3G
+      - Data-Connection OK, Navigatio
+      - Data-Conn OK Navig KO 2G/GPRS
+      - Data-Conn OK Navig KO 3G/UMTS
+      - Data-Conn OK Navig KO 3G/HSDPA
+      - Data-Conn OK Navig KO 2G + 3G
+      - Data-connection drop 2G/GPRS
+      - Data-connection drop 3G/UMTS
+      - Data-connection drop 3G/HSDPA
+      - Data-connection drop 2G and 3G
+      - Voice/Data-no serv some techn
+      - Voice/Data-no coverage 2G/GPR
+      - Voice/Data-no coverage 3G/UMT
+      - Voice/Data-no coverag 3G/HSDPA
+      - Voice/Data-no coverage 2G + 3G
+      - Services
+      - Mobile service not affected
+      - Data-slow navigation 2G/GPRS
+      - Data-slow navigation 3G/UMTS
+      - Data-slow navigation 3G/HSDPA
+      - Data-slow navigation 2G and 3G
+      - Voice/Data-no coverage 2G/GPRS
+      - Voice/Data-no coverage 3G/UMTS
+      - Datos-Conecta,no naveg-4G
+      - Datos-Cortes en-4G
+      - Datos-Navega lento en-4G
+      - Datos-Sin cobertura 4G
+      - Retardos emisión/recep 4G
+      - Voz-No llama/No recibe 4G
+      - Voz-No llama/No recibe-WIFI
+      - Retardos emisión/recep WIFI
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Processing Priority of the ticket
+      isArray: false
+      name: priority
+      predefined:
+      - P0
+      - P1
+      - P2
+      - P3
+      - P4
+      - P5
+      - P6
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Ticket origin
+      isArray: false
+      name: origin
+      predefined:
+      - Customer
+      - Supervision
+      - Internal
+      - Other
+      - Carrier
+      - User
+      - Partners
+      - Proactive
+      - Reactive
+      - Audit
+      - SMC
+      - Quality Analysis
+      - Customer GP (General Public)
+      - Customer PRO (Professional)
+      - NetWorkS
+      - Commercial
+      - Self-care
+      - GAQ
+      - Incident
+      - Reporting
+      - TMC
+      - IOBSP Vendor
+      - Non-IOBSP Vendor
+      - ELITE
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Priority level of the ticket
+      isArray: false
+      name: urgency
+      predefined:
+      - 'NULL'
+      - Immediate intervention
+      - Deferred Intervention
+      - (State of) Emergency
+      - No intervention
+      - '-'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - Class 1
+      - Class 2
+      - Class 3
+      - Premium program
+      - '0'
+      required: false
+      secret: false
+    - default: false
+      description: Supervision tool
+      isArray: false
+      name: supervisiontTool
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Initial nature (product ticket class); Technical impact (resource
+        ticket class)
+      isArray: false
+      name: category
+      predefined:
+      - Isolated customer site
+      - Interrupted service
+      - Corrupted service
+      - Request for information
+      - Working backup
+      - No interference
+      - freeze incident
+      - Isolated customer(s)
+      - Total breakdown
+      - Inaccessible route/destination
+      - Incoherence SI
+      - Grouping problem
+      - Failling map
+      - Number of flat
+      - Interrupted resource
+      - Degraded resource
+      - CR MAD
+      - PLANMAD
+      - IPE
+      - PM non mutualisable
+      - STAS
+      - Not corresponding connecting
+      - Refusal Management agent
+      - Refusal co-owners
+      - Pb access privative parts
+      - Change of management agent
+      - Dégats, Fault
+      - Financial compensation
+      - Problem block OC
+      - Problem piece joined
+      - INCOH RGPT
+      - Error
+      - Circuit failure
+      - Loss of supervision
+      - Polling failure
+      - Site isolation
+      - NNI failure Interconnection
+      - Country isolation
+      - High RTD on circuit
+      - Packet Loss
+      - Security
+      - Hardware replacement
+      - Remote software operations
+      - Client failure
+      - Local SW operations
+      - Parameters changed
+      - Solution changed
+      - AR Order unit rent
+      - Fiber constraint
+      - Mail of Kindness
+      - CR MAD
+      - Busy dedicated fiber
+      - Position file
+      - Flow CR info management agent
+      - IPE
+      - IPE and CR MAD
+      - MAD Plan
+      - Several impacted supports
+      - Not corresponding PM
+      - Rising column or PM missing
+      - PM or fiber HS or inaccessible
+      - Refusal of Mutualization
+      - PTO
+      - CONNECTING LANDING
+      - PBO
+      - RISING COLUMN
+      - CRAWLING COLUMN
+      - PM
+      - HORIZONTAL NETWORK
+      - Wiring problem Access
+      - Wiring problem PM
+      - Wiring problem PB
+      - circuit unstable
+      - PM-PBO
+      - Planned Outage
+      - Unplanned Outage
+      - Unplanned Outage caused by PW
+      - No service affected
+      - Planned Outage
+      - Unplanned Outage
+      - Unplanned Outage caused by PW
+      - No service affected
+      - Degradations
+      - Various
+      - Not applicable
+      - POST PROD ORT
+      - Security
+      - Downgrading equipment
+      - No interference
+      - Corrupted service
+      - Other
+      - Interrupted service
+      - Voice Stop/Visio
+      - Data Stop
+      - Counting anomaly
+      - To be Qualified
+      - To be Qualified
+      - Major corrupted service
+      - Anomaly detected
+      - No Traffic
+      - Equipment failure
+      - Node isolated
+      - Anomaly detected
+      - No Traffic
+      - Equipment failure
+      - Node isolated
+      - Change operations fault
+      - Change parameters fault
+      - FNI impact
+      - Software failure
+      - PM to move
+      - Access problem
+      - Piping problem
+      required: false
+      secret: false
+    - default: false
+      description: The date on which the trouble was discovered
+      isArray: false
+      name: detectionDateTime
+      required: false
+      secret: false
+    - default: false
+      description: Customer target restoration date (ETR)
+      isArray: false
+      name: targetRestorationDateTime
+      required: false
+      secret: false
+    - default: false
+      description: Confirmed to customer planned restoration date (ATR)
+      isArray: false
+      name: plannedRestorationDateTime
+      required: false
+      secret: false
+    - default: false
+      description: Shows only the listed sections names, comma separated (e.g. General,Related
+        service)
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an existing trouble ticket
+    execution: false
+    name: oceane-update-ticket
+  - arguments:
+    - default: false
+      description: The ID of the trouble ticket to update
+      isArray: false
+      name: ticketId
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: status
+      predefined:
+      - Submitted
+      - InProgress
+      - Restored
+      - Resolved
+      - Closed
+      - Pending
+      - Revised
+      - Validated
+      required: true
+      secret: false
+    - default: false
+      description: The reason why the status has changed
+      isArray: false
+      name: reason
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: Is it the current status of the ticket
+      isArray: false
+      name: isCurrent
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: The date when the change status
+      isArray: false
+      name: startDateTime
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Problem details
+      isArray: false
+      name: problemDetails
+      predefined:
+      - Forensic - Analysis request
+      - Forensic - Information request
+      - Forensic - Duplicate
+      - DDOS - Anomaly with impact
+      - DDOS - Anomaly without impact
+      - DDOS - False positive Orange responsibility
+      - DDOS - False positive customer responsibility
+      - DDOS - Analysis request
+      - DDOS - Information request
+      - DDOS - Duplicate
+      - IPS - Anomaly with impact
+      - IPS - Anomaly without impact
+      - IPS - False positive Orange responsibility
+      - IPS - False positive customer responsibility
+      - IPS - Information request
+      - IPS - Duplicate
+      - SIEM - Incident with impact
+      - SIEM - Incident without impact
+      - SIEM - False positive with improvement
+      - SIEM - False positive
+      - SIEM - Analysis request
+      - SIEM - Information request
+      - SIEM - Duplicate
+      - VOC - Emergency scan
+      - VOC - Vulnerability detected
+      - VOC - False positive
+      - VOC - Analysis request
+      - VOC - Information request
+      - VOC - Duplicate
+      required: true
+      secret: false
+    - default: false
+      description: Author identifier of the note
+      isArray: false
+      name: commentAuthor
+      required: true
+      secret: false
+    - default: false
+      description: Group of the note's author (OCEANE EDS)
+      isArray: false
+      name: commentGroupId
+      required: false
+      secret: false
+    - default: false
+      description: Text of the note
+      isArray: false
+      name: commentText
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Comment type
+      isArray: false
+      name: commentType
+      predefined:
+      - Customer
+      - Group
+      - Internal
+      - System
+      required: true
+      secret: false
+    - default: false
+      description: Recording date of the note
+      isArray: false
+      name: commentRecordingDate
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The note's operation type
+      isArray: false
+      name: commentOperationType
+      predefined:
+      - Inward customer comments
+      - Outward customer comments
+      - Local customer call back
+      - Organization contact
+      - Tests and measurements
+      - Diagnosis
+      - Appointment
+      - Escalation
+      - Comments
+      - Restoration
+      - Closure
+      - Restitution
+      - Freeze/unfreeze
+      - Freeze/unfreeze Request
+      - Activation
+      - Transfer refusal
+      - IRLT/CRLT
+      - Affected technician
+      - Technician on site
+      - Add file attachment
+      - TIC contact
+      - Alert
+      - Intervention
+      - Decrease Bonus
+      - Get Assignment
+      - Acknowledge Assignment
+      - Assign
+      - To be Allocated
+      - Never Allocated
+      - Assignment End
+      - Assignment Error
+      - Over planned restor. reminder
+      - Synthesis ticket
+      - End of intervention
+      - Tests and measurement
+      - Undertaking
+      - Follow-up
+      - Information request
+      - Information
+      - Threshold crossed
+      - CRM Closure
+      - End of alarm
+      - Genergy comments
+      - Notification
+      - Pilot Problem Comments
+      - Selected Unit
+      - Affected
+      - Communicated
+      - Closed
+      - Cancelled
+      - Cancellation requested
+      - Current
+      - Sent
+      - IR in error
+      - Monitoring Mode
+      - Answer to Customer
+      - Description updated
+      - Follow-up intervention
+      - Transmitted intervention
+      - Declarative form
+      - Transfer request
+      - Transfer acceptance
+      - Alarm association
+      - End of alarm association
+      - Last ONETM Status
+      - Supplier transfer
+      - Problem root cause
+      - Request of meeting
+      - Modification of meeting
+      - ESCALATION E MAIL
+      - Cust first Tech Resp
+      - Customer Status
+      - Cust given ETA
+      - 'Cust given RFO '
+      - Telco status
+      - Acknowledge
+      - Choice of resolution
+      - Chronic
+      - Crisis bridge
+      - Remote assistance
+      - Workaround
+      - ENO-ORO-Parameters
+      - Operator relationship
+      - First technical information
+      - Partner engagement
+      - Cancel appointment requested
+      required: true
+      secret: false
+    - default: false
+      description: Shows only the listed sections names, comma separated (e.g. General,Related
+        service)
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Final nature (product ticket class); Technical impact (resource
+        ticket class)
+      isArray: false
+      name: problemCategory
+      predefined:
+      - Isolated customer site
+      - Interrupted service
+      - Corrupted service
+      - Request for information
+      - Working backup
+      - No interference
+      - freeze incident
+      - Isolated customer(s)
+      - Total breakdown
+      - Inaccessible route/destination
+      - Incoherence SI
+      - Grouping problem
+      - Failling map
+      - Number of flat
+      - Interrupted resource
+      - Degraded resource
+      - CR MAD
+      - PLANMAD
+      - IPE
+      - PM non mutualisable
+      - STAS
+      - Not corresponding connecting
+      - Refusal Management agent
+      - Refusal co-owners
+      - Pb access privative parts
+      - Change of management agent
+      - Dégats, Fault
+      - Financial compensation
+      - Problem block OC
+      - Problem piece joined
+      - INCOH RGPT
+      - Error
+      - Circuit failure
+      - Loss of supervision
+      - Polling failure
+      - Site isolation
+      - NNI failure Interconnection
+      - Country isolation
+      - High RTD on circuit
+      - Packet Loss
+      - Security
+      - Hardware replacement
+      - Remote software operations
+      - Client failure
+      - Local SW operations
+      - Parameters changed
+      - Solution changed
+      - AR Order unit rent
+      - Fiber constraint
+      - Mail of Kindness
+      - CR MAD
+      - Busy dedicated fiber
+      - Position file
+      - Flow CR info management agent
+      - IPE
+      - IPE and CR MAD
+      - MAD Plan
+      - Several impacted supports
+      - Not corresponding PM
+      - Rising column or PM missing
+      - PM or fiber HS or inaccessible
+      - Refusal of Mutualization
+      - PTO
+      - CONNECTING LANDING
+      - PBO
+      - RISING COLUMN
+      - CRAWLING COLUMN
+      - PM
+      - HORIZONTAL NETWORK
+      - Wiring problem Access
+      - Wiring problem PM
+      - Wiring problem PB
+      - circuit unstable
+      - PM-PBO
+      - Planned Outage
+      - Unplanned Outage
+      - Unplanned Outage caused by PW
+      - No service affected
+      - Planned Outage
+      - Unplanned Outage
+      - Unplanned Outage caused by PW
+      - No service affected
+      - Degradations
+      - Various
+      - Not applicable
+      - POST PROD ORT
+      - Security
+      - Downgrading equipment
+      - No interference
+      - Corrupted service
+      - Other
+      - Interrupted service
+      - Voice Stop/Visio
+      - Data Stop
+      - Counting anomaly
+      - To be Qualified
+      - To be Qualified
+      - Major corrupted service
+      - Anomaly detected
+      - No Traffic
+      - Equipment failure
+      - Node isolated
+      - Anomaly detected
+      - No Traffic
+      - Equipment failure
+      - Node isolated
+      - Change operations fault
+      - Change parameters fault
+      - FNI impact
+      - Software failure
+      - PM to move
+      - Access problem
+      - Piping problem
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates an existing trouble ticket's status
+    execution: false
+    name: oceane-update-ticket-status
+  - arguments:
+    - default: false
+      description: The ID of the trouble ticket to update
+      isArray: false
+      name: ticketId
+      required: true
+      secret: false
+    - default: false
+      description: Author identifier of the note
+      isArray: false
+      name: author
+      required: true
+      secret: false
+    - default: false
+      description: Group of the note's author (OCEANE EDS)
+      isArray: false
+      name: groupId
+      required: false
+      secret: false
+    - default: false
+      description: Text of the note
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Comment type
+      isArray: false
+      name: commentType
+      predefined:
+      - Customer
+      - Group
+      - Internal
+      - System
+      required: true
+      secret: false
+    - default: false
+      description: Recording date of the note
+      isArray: false
+      name: recordingDate
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The note's operation type
+      isArray: false
+      name: operationType
+      predefined:
+      - Inward customer comments
+      - Outward customer comments
+      - Local customer call back
+      - Organization contact
+      - Tests and measurements
+      - Diagnosis
+      - Appointment
+      - Escalation
+      - Comments
+      - Restoration
+      - Closure
+      - Restitution
+      - Freeze/unfreeze
+      - Freeze/unfreeze Request
+      - Activation
+      - Transfer refusal
+      - IRLT/CRLT
+      - Affected technician
+      - Technician on site
+      - Add file attachment
+      - TIC contact
+      - Alert
+      - Intervention
+      - Decrease Bonus
+      - Get Assignment
+      - Acknowledge Assignment
+      - Assign
+      - To be Allocated
+      - Never Allocated
+      - Assignment End
+      - Assignment Error
+      - Over planned restor. reminder
+      - Synthesis ticket
+      - End of intervention
+      - Tests and measurement
+      - Undertaking
+      - Follow-up
+      - Information request
+      - Information
+      - Threshold crossed
+      - CRM Closure
+      - End of alarm
+      - Genergy comments
+      - Notification
+      - Pilot Problem Comments
+      - Selected Unit
+      - Affected
+      - Communicated
+      - Closed
+      - Cancelled
+      - Cancellation requested
+      - Current
+      - Sent
+      - IR in error
+      - Monitoring Mode
+      - Answer to Customer
+      - Description updated
+      - Follow-up intervention
+      - Transmitted intervention
+      - Declarative form
+      - Transfer request
+      - Transfer acceptance
+      - Alarm association
+      - End of alarm association
+      - Last ONETM Status
+      - Supplier transfer
+      - Problem root cause
+      - Request of meeting
+      - Modification of meeting
+      - ESCALATION E MAIL
+      - Cust first Tech Resp
+      - Customer Status
+      - Cust given ETA
+      - 'Cust given RFO '
+      - Telco status
+      - Acknowledge
+      - Choice of resolution
+      - Chronic
+      - Crisis bridge
+      - Remote assistance
+      - Workaround
+      - ENO-ORO-Parameters
+      - Operator relationship
+      - First technical information
+      - Partner engagement
+      - Cancel appointment requested
+      required: true
+      secret: false
+    - default: false
+      description: Shows only the listed sections names, comma separated (e.g. General,Related
+        service)
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Add extra information about the trouble ticket (comments)
+    execution: false
+    name: oceane-add-ticket-comment
+  - arguments:
+    - default: false
+      description: File name of the attachment (unique)
+      isArray: false
+      name: ticketId
+      required: true
+      secret: false
+    - default: false
+      description: File name of the attachment (unique)
+      isArray: false
+      name: attachmentId
+      required: true
+      secret: false
+    - default: false
+      description: Attachment label
+      isArray: false
+      name: attachmentLabel
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: attachmentType
+      predefined:
+      - internal
+      - customer
+      - system
+      required: true
+      secret: false
+    - default: false
+      description: URL access to the attachment
+      isArray: false
+      name: attachmentUrl
+      required: true
+      secret: false
+    - default: false
+      description: Shows only the listed sections names, comma separated (e.g. General,Related
+        service)
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a document attached to the trouble ticket
+    execution: false
+    name: oceane-add-ticket-attachment
+  - arguments:
+    - default: false
+      description: The ID of the trouble ticket to update
+      isArray: false
+      name: ticketId
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of involvement
+      isArray: false
+      name: involvement
+      predefined:
+      - parentticket
+      - supportticket
+      required: true
+      secret: false
+    - default: false
+      description: Reference of the object
+      isArray: false
+      name: reference
+      required: false
+      secret: false
+    - default: false
+      description: Shows only the listed sections names, comma separated (e.g. General,Related
+        service)
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds an object linked with the trouble ticket
+    execution: false
+    name: oceane-add-ticket-relatedobject
+  - arguments:
+    - default: false
+      description: The ID of the trouble ticket to update
+      isArray: false
+      name: ticketId
+      required: true
+      secret: false
+    - default: false
+      description: Identifier of the party
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Role of the party
+      isArray: false
+      name: role
+      predefined:
+      - Customer
+      - TroubleResolutionContributor
+      - TroubleResolutionLeader
+      - CustomerInterlocutor
+      - CustomerRepresentative
+      required: true
+      secret: false
+    - default: false
+      description: Shows only the listed sections names, comma separated (e.g. General,Related
+        service)
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a party playing a role within the trouble ticket
+    execution: false
+    name: oceane-add-ticket-relatedparty
+  - arguments:
+    - default: false
+      description: The ID of the trouble ticket to retrieve
+      isArray: false
+      name: ticketId
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Shows only the listed sections names, comma separated (e.g. General,Related
+          service)
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves information about a specific trouble ticket
+    execution: false
+    name: oceane-get-ticket
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
