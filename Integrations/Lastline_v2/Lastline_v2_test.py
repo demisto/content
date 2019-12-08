@@ -1,50 +1,71 @@
-# from CommonServerPython import *
+import pytest
 from Lastline_v2 import *
 
 
-def hash_test_generator(hash_size) -> str:
-    test_hash = ''
-    for _ in range(hash_size):
-        test_hash += '1'
-    return test_hash
+data_test_hash_type_checker = [
+    ('4e492e797ccfc808715c2278484517b1', 'md5'),
+    ('e18e9ebfc7204712ee6f27903e1e7a4256fccba0', 'sha1'),
+    ('7f3aa0fda6513c9fc6803fbebb0100e3a3d2ded503317d325eb2bccc097cf27b', 'sha256'),
+    ('0123456789', f'{INTEGRATION_NAME} File command support md5/ sha1/ sha256 only.')
+]
+data_test_exception_handler = [
+    (
+        {"success": 0, "error_code": 115, "error": "Submission limit exceeded"},
+        str(DemistoException('error (115) Submission limit exceeded'))
+    ),
+    (
+        {},
+        str(DemistoException('No response'))
+    ),
+    (
+        {'test': 'nothing'},
+        str(DemistoException('No response'))
+    ),
+    (
+        {'success': None},
+        str(DemistoException('No response'))
+    ),
+    (
+        {},
+        str(DemistoException('No response'))
+    )
+]
+data_test_get_report_context = [
+    None,
+    './data_test/get_report_file.json',
+    './data_test/get_report_url.json'
+]
 
 
-def test_hash_type_checker():
-    assert help_hash_type_checker(hash_test_generator(Client.MD5_LEN)) == 'md5',\
-        f'{INTEGRATION_NAME} Test.help_hash_type_checker() == md5'
-    assert help_hash_type_checker(hash_test_generator(Client.SHA1_LEN)) == 'sha1',\
-        f'{INTEGRATION_NAME} Test.help_hash_type_checker() == sha1'
-    assert help_hash_type_checker(hash_test_generator(Client.SHA256_LEN)) == 'sha256',\
-        f'{INTEGRATION_NAME} Test.help_hash_type_checker() == sha256'
+@pytest.mark.parametrize('test, result', data_test_hash_type_checker)
+def test_hash_type_checker(test: str, result: str):
     try:
-        help_hash_type_checker(hash_test_generator(10))  # hard coded invalid size
-    except DemistoException:
-        pass
-    else:
-        assert False, f'{INTEGRATION_NAME} Test.help_hash_type_checker() invalid type error'
+        assert hash_type_checker(test) == result, f'{INTEGRATION_NAME} Test.hash_type_checker() == {result}'
+    except DemistoException as error:
+        assert str(error) == result, f'{INTEGRATION_NAME} Test.hash_type_checker() invalid type error'
 
 
-def test_exception_helper():
-    temp_dict = {"success": 0, "error_code": 115, "error": "Submission limit exceeded"}
+@pytest.mark.parametrize('test, result', data_test_exception_handler)
+def test_exception_handler(test: Dict, result: str):
     try:
-        help_lastline_exception_handler(temp_dict)
+        lastline_exception_handler(test)
     except DemistoException as error_msg:
-        assert error_msg.args == DemistoException('error (115) Submission limit exceeded').args,\
-            f'{INTEGRATION_NAME} Test.exception_helper() failed'
+        assert str(error_msg) == result, f'{INTEGRATION_NAME} Test.exception_helper() failed'
+
+
+def test_file_hash():
+    # ./data_test/get_report_file.json hard coded hash md5
+    output = '20db928ad7e72ff32c28e3c2dccdeb05'
+    assert output == file_hash('./data_test/get_report_file.json'), f'{INTEGRATION_NAME} error in file_hash'
+
+
+@pytest.mark.parametrize('path', data_test_get_report_context)
+def test_get_report_context(path):
+    if path is None:
+        assert {} == get_report_context({}), f'{INTEGRATION_NAME} get_report_context filed'
     else:
-        assert False, f'{INTEGRATION_NAME} Test.exception_helper() failed'
-
-
-def test_help_upload_and_status():
-    help_upload_and_status(dict(), help_context_entry(f'{INTEGRATION_COMMAND_NAME}-check-status'))
-
-
-def test_help_context_entry():
-    assert help_context_entry('----') is None, f'{INTEGRATION_NAME} Test.help_hash_type_checker(\'----\') isn\'t None'
-    assert help_context_entry('') is None, f'{INTEGRATION_NAME} Test.help_hash_type_checker(\'\') isn\'t None'
-    assert help_context_entry(f'{INTEGRATION_COMMAND_NAME}-check-status') is not None,\
-        f'{INTEGRATION_NAME} Test.help_hash_type_checker(\'{INTEGRATION_COMMAND_NAME}-check-status\') is None'
-
-
-def test_help_get_report_context():
-    help_get_report_context(dict())
+        out_dict = {}
+        with open(path) as json_obj:
+            json_obj = json_obj.read()
+            out_dict = json.loads(json_obj)
+        get_report_context(out_dict)
