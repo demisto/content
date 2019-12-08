@@ -49,7 +49,7 @@ Some other comonly used parameters:
 1. `url`
 2. `apikey`
 3. `token`
-4. `crecentials` (username + password)
+4. `credentials` (username + password)
 5. `query` - Sometimes we need the user to specify the search query for fetch incidents (i.e. SplunkPy)
 
 ## Commands, Arguments & Outputs
@@ -70,23 +70,23 @@ Argument names must be snake case.
 * Good: `alert-id`.
 * Bad: `alertId`.
 
-#### Command Outputs {#outputs}
+#### Command Outputs
 There are 3 type of outputs from the command:
-1. Human Readable output - This is what will be printed to the war room. It should be in Markdown form.
+1. Human Readable output - This is what will be printed to the war room. It should be in Markdown format.
 2. Raw Json - A JSON of the raw response that was returned from the API. 
 3. Context Output - The outputs that will be in the context. 
 
 The Context Outupt will be a JSON in the following format `{Product.TypeofOuput.Info}`. For more info about this have a look [here](https://github.com/demisto/content/tree/master/docs/context_and_ouputs)
 
 ### Command Design
-The final result for each command should look something like this:
+The final result for each command should look like this:
 
-**Command Name**: cisco-asa-list-rules
+**Command Name**: `cisco-asa-list-rules`
 ###### Arguments
 argument | type | description|mandatory
 ---|---|---|---
-interface-name|String|the name of the interface|no
-interface-type|choose|In/Out/Global|no
+`interface-name`|String|the name of the interface|no
+`interface-type`|choose|In/Out/Global|no
 
 ###### Context Outputs
 * CiscoASA.Rule.Interface
@@ -106,10 +106,25 @@ RuleID|InterfaceName|SourceIP|DestIP|Position|
 
 
 ## Additional Comments
-1. Please  add a link to the REST API documentation to this document both so you could have it handy when needed and so we can have it ready when we review the integration.
-2. Find a logo for this integration to be displayed in Demisto that is under 10 kb.
-3. If caclulating DBot Score stay as close as possible to the vendor’s scoring thresholds and categorization (these are usually documented/can be understood from the UI). Dbot score reputation includes the following scores: 0 – unknown, 1 – good, 2 – suspicious, 3 – bad. Give users a threshold argument in order to let customers override and set another scoring logic.
-4. The data we return should make sense to an analyst so please convert EPOCH, decrypt data if needed, If you return IDs, make sure to return the original asset name, category type, group name etc.
-5. Stay as true to the product as possible- keep the same names as used by the vendor, the UI is a good baseline for what the human readable should look like.
-6. If you think a command or fetch may return a lot of data - limit it. We allow 200 results max in Demisto. Make sure to include this in the design for each command that you limit.
-7. If some commands may take a long time make sure you add a polling command. For example if you initiate a Compliance Search in EWS, an action that may take several minutes make sure you have a check-status command as well. ts accordingly, if a command needs major changes- deprecate it and add a new one
+1. Please add a link to the REST API documentation to this document both so you could have it handy when needed and so we can have it ready when we review the integration.
+2. Find a logo for the integration to be displayed in Demisto that is under 10 kb and 120px x 50px.
+3. If caclulating DBotScore, stay as close as possible to the vendor’s scoring thresholds and categorization. These are usually documented/can be understood from the UI. DbotScore reputation includes the following scores: 
+
+| Score | Rating |
+| --- | --- |
+| 0 | unknown |
+| 1 | good |
+| 2 | suspicious |
+| 3 | bad |
+
+Give users a threshold argument in order to let customers override and set another scoring logic.
+
+4. The data we return should make sense to an analyst, so please convert epoch timestamps, and decrypt data (if needed). If you return IDs, make sure to return the original asset name, category type, group name, etc.
+
+5. Stay as true to the product as possible and keep the same names as used by the vendor. The UI is a good baseline for what the human readable should look like.
+
+6. If you think a command or fetch may return a lot of data, limit it. We allow 100 results max in Demisto. Make sure to include this in the design for each command that you limit.
+
+7. If some commands may take a long time to return a response, make sure you add a polling command. For example, if you initiate a Compliance Search in EWS, an action that may take several minutes, make sure you have a `check-status` command as well. 
+
+8. If a command needs major changes, deprecate it and add a new one.
