@@ -2419,7 +2419,7 @@ script:
     }
 
     function getUserData() {
-        var userData = sendRestRequest("/api/core/system/user", 'archer-create-record', '', true)
+        var userData = sendRestRequest("/api/core/system/user", 'archer-create-record', '', true);
         return userData;
     }
 
