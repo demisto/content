@@ -87,7 +87,7 @@ def __test_integration_instance(client, module_instance):
 
 # return instance name if succeed, None otherwise
 def __create_integration_instance(client, integration_name, integration_instance_name,
-                                  integration_params, is_byoi, validate_test):
+                                  integration_params, is_byoi, validate_test=True):
     print('Configuring instance for {} (instance name: {}, validate "Test": {})'.format(integration_name,
           integration_instance_name, validate_test))
     # get configuration config (used for later rest api
