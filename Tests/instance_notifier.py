@@ -92,10 +92,6 @@ def get_attachments(secret_conf_path, server, user, password, build_url):
 
 
 def slack_notifier(slack_token, secret_conf_path, server, user, password, build_url):
-    branches = run_command("git branch")
-    branch_name_reg = re.search("\* (.*)", branches)
-    branch_name = branch_name_reg.group(1)
-
     print_color("Starting Slack notifications about instances", LOG_COLORS.GREEN)
     attachments, integrations_counter = get_attachments(secret_conf_path, server, user, password, build_url)
 
@@ -113,13 +109,12 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
 if __name__ == "__main__":
     options = options_handler()
     if options.instance_tests:
-        with open('./Tests/instance_ips.txt', 'r') as instance_file:
-            instance_ips = instance_file.readlines()
-            instance_ips = [line.strip('\n').split(":") for line in instance_ips]
-
-        for ami_instance_name, ami_instance_ip in instance_ips:
-            if ami_instance_name == "Server Master":
-                server = SERVER_URL.format(ami_instance_ip)
+        with open('./env_results.json', 'r') as json_file:
+            env_results = json.load(json_file)
+            for env in env_results:
+                if env["Role"] == "Server Master":
+                    server = SERVER_URL.format(env["InstanceDNS"])
+                    break
 
         slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl)
     else:
