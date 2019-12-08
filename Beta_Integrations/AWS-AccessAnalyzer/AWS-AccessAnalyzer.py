@@ -175,7 +175,7 @@ def list_analyzed_resource_command(args):
         resource['analyzerArn'] = args.get('analyzerArn')
         data.append(resource)
 
-    ec = {'AWS.AccessAnalyzer.Analyzers(val.analyzerArn === obj.analyzerArn).Resource(val.resourceArn === obj.resourceArn)': data}
+    ec = {'AWS.AccessAnalyzer.Analyzers(val.analyzerArn === obj.analyzerArn)': data}
     human_readable = tableToMarkdown("AWS Access Analyzer Resource", data)
     return_outputs(human_readable, ec)
 
@@ -230,7 +230,7 @@ def get_analyzed_resource_command(args):
     data = json.loads(json.dumps(response['resource'], cls=DatetimeEncoder))
     data['analyzerArn'] = args.get('analyzerArn')
 
-    ec = {'AWS.AccessAnalyzer.Analyzers(val.analyzerArn === obj.analyzerArn).Resource(val.resourceArn === obj.resourceArn)': data}
+    ec = {'AWS.AccessAnalyzer.Analyzers(val.analyzerArn === obj.analyzerArn)': data}
     human_readable = tableToMarkdown("AWS Access Analyzer Resource", data)
     return_outputs(human_readable, ec)
 
@@ -270,8 +270,9 @@ def start_resource_scan_command(args):
         'resourceArn': args.get('resourceArn')
     }
 
-    client.start_resource_scan(**kwargs)
-    return_outputs("Resource scan request sent.")
+    response = client.start_resource_scan(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results("Resource scan request sent.")
 
 
 def update_findings_command(args):
@@ -290,8 +291,9 @@ def update_findings_command(args):
         'status': args.get('status')
     }
 
-    client.update_findings(**kwargs)
-    return_outputs("Findings updated")
+    response = client.update_findings(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results("Findings updated")
 
 
 def test_function():
@@ -299,7 +301,7 @@ def test_function():
         client = aws_session()
         response = client.list_analyzers()
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return_outputs('ok')
+            demisto.results('ok')
         else:
             return_error(str(response))
 
