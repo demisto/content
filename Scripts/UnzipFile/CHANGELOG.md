@@ -1,2 +1,2 @@
 ## [Unreleased]
-Fixed an issue when a wrong password supplied and a file was published to the war room instead of an error.
+Fixed an issue where suppling a wrong password would still upload a file to the War Room.
