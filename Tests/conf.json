@@ -2038,7 +2038,7 @@
         "Test Playbook TrendMicroDDA": "Manual test"
     },
     "skipped_integrations": {
-        "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
+        "_comment": "~~~ NO INSTANCE ~~~",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "IronDefense": "Test depends on making requests to a non-public API",
         "Attivo Botsink": "no instance, not going to get it",
@@ -2056,10 +2056,6 @@
         "fireeye": "Issue 19839",
         "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
-
-
-        "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "VxStream": "Exceeded quota, remove in 1/1/19",
         "ProtectWise": "Issue 20486",
         "ThreatMiner": "Issue 20469",
         "DomainTools Iris": "Issue 20433",
