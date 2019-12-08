@@ -1,5 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-import tomd
+from markdownify import markdownify as md
 
 return_outputs(tomd.convert(demisto.getArg('html')))
