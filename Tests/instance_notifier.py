@@ -96,19 +96,18 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'master':
-        print_color("Starting Slack notifications about instances", LOG_COLORS.GREEN)
-        attachments, integrations_counter = get_attachments(secret_conf_path, server, user, password, build_url)
+    print_color("Starting Slack notifications about instances", LOG_COLORS.GREEN)
+    attachments, integrations_counter = get_attachments(secret_conf_path, server, user, password, build_url)
 
-        sc = SlackClient(slack_token)
-        sc.api_call(
-            "chat.postMessage",
-            channel="dmst-content-lab",
-            username="Instances nightly report",
-            as_user="False",
-            attachments=attachments,
-            text="You have {0} instances configurations".format(integrations_counter)
-        )
+    sc = SlackClient(slack_token)
+    sc.api_call(
+        "chat.postMessage",
+        channel="dmst-content-lab",
+        username="Instances nightly report",
+        as_user="False",
+        attachments=attachments,
+        text="You have {0} instances configurations".format(integrations_counter)
+    )
 
 
 if __name__ == "__main__":
@@ -124,4 +123,4 @@ if __name__ == "__main__":
 
         slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl)
     else:
-        print_color("Not instance tests build, stopping Slack Notifications about instances", LOG_COLORS.RED)
+        print_error("Not instance tests build, stopping Slack Notifications about instances")
