@@ -1,14 +1,16 @@
 # pylint: disable=no-member
-from CommonServerPython import *
-
 from collections import defaultdict
 from io import BytesIO, StringIO
 
 import demisto_ml
 import pandas as pd
+from sklearn.model_selection import StratifiedKFold
 from tabulate import tabulate
-import base64
 
+from CommonServerPython import *
+
+TRAIN_SIZE_FOR_EVALUATION = 0.8
+DEFAULT_LABEL_PREFIX = '|tag|'
 
 ALL_LABELS = "*"
 GENERAL_SCORES = {
@@ -32,7 +34,7 @@ def get_hr_for_scores(header, confusion_matrix, report, metric):
                 scores_rows.append("- %s: %.2f (Precision) | %.2f (Recall)" % (k, v['precision'], v['recall']))
     scores_desc = "\n".join(scores_rows)
 
-    confusion_matrix_desc = tabulate(confusion_matrix,
+    confusion_matrix_desc = tabulate(confusion_matrix,  # disable-secrets-detection
                                      tablefmt="pipe",
                                      headers="keys").replace("True", "True \\ Predicted")
     return "# {0}\n ## Confusion Matrix:\n{1}\n ## Scores:\n{2} ".format(header, confusion_matrix_desc, scores_desc)
@@ -140,36 +142,36 @@ def store_model_in_demisto(model_name, model_override, train_text_data, train_ta
         return_error(get_error(res))
 
 
-def evaluate_model(train_text_data, train_tag_data, target_accuracy, max_samples_below_threshold, metric):
-    confusion_matrix, report, cut, confusion_matrix_cut, report_cut \
-        = demisto_ml.evaluate_text_model(train_text_data,
-                                         train_tag_data,
-                                         target_precision_recall=target_accuracy)
-    model_evaluation_success = False
-    if report[metric]['precision'] >= target_accuracy and report[metric]['recall'] >= target_accuracy:
-        model_evaluation_success = True
-    else:
-        if report_cut and report_cut['belowThresholdRatio'] <= max_samples_below_threshold:
-            if report_cut[metric]['precision'] >= target_accuracy \
-                    and report_cut[metric]['recall'] >= target_accuracy:
-                model_evaluation_success = True
-
-    if not model_evaluation_success:
-        low_score = min(report[metric]['precision'], report[metric]['recall'])
-        return_error("Model target accuracy %.2f is below %.2f" % (low_score, target_accuracy))
-
-    human_readable = get_hr_for_scores("Model Evaluation", confusion_matrix, report, metric)
-    if cut > 0.5 and confusion_matrix_cut is not None:
-        human_readable += "\n"
-        human_readable += "### Found optimal probability  %.2f threshold for target accuracy %.2f " % (cut,
-                                                                                                       target_accuracy)
-        human_readable += "Samples below threshold: %d (%.2f%%)\n" % (report_cut['belowThreshold'],
-                                                                      report_cut['belowThresholdRatio'] * 100)
-        human_readable += get_hr_for_scores("Model Evaluation probability >= %.2f" % cut,
-                                            confusion_matrix_cut,
-                                            report_cut,
-                                            metric)
-    return human_readable, confusion_matrix, report
+# def evaluate_model(train_text_data, train_tag_data, target_accuracy, max_samples_below_threshold, metric):
+#     confusion_matrix, report, cut, confusion_matrix_cut, report_cut \
+#         = demisto_ml.evaluate_text_model(train_text_data,
+#                                          train_tag_data,
+#                                          target_precision_recall=target_accuracy)
+#     model_evaluation_success = False
+#     if report[metric]['precision'] >= target_accuracy and report[metric]['recall'] >= target_accuracy:
+#         model_evaluation_success = True
+#     else:
+#         if report_cut and report_cut['belowThresholdRatio'] <= max_samples_below_threshold:
+#             if report_cut[metric]['precision'] >= target_accuracy \
+#                     and report_cut[metric]['recall'] >= target_accuracy:
+#                 model_evaluation_success = True
+#
+#     if not model_evaluation_success:
+#         low_score = min(report[metric]['precision'], report[metric]['recall'])
+#         return_error("Model target accuracy %.2f is below %.2f" % (low_score, target_accuracy))
+#
+#     human_readable = get_hr_for_scores("Model Evaluation", confusion_matrix, report, metric)
+#     if cut > 0.5 and confusion_matrix_cut is not None:
+#         human_readable += "\n"
+#         human_readable += "### Found optimal probability  %.2f threshold for target accuracy %.2f " % (cut,
+#                                                                                                        target_accuracy)
+#         human_readable += "Samples below threshold: %d (%.2f%%)\n" % (report_cut['belowThreshold'],
+#                                                                       report_cut['belowThresholdRatio'] * 100)
+#         human_readable += get_hr_for_scores("Model Evaluation probability >= %.2f" % cut,
+#                                             confusion_matrix_cut,
+#                                             report_cut,
+#                                             metric)
+#     return human_readable, confusion_matrix, report
 
 
 def find_keywords(data, tag_field, text_field, min_score):
@@ -210,13 +212,10 @@ def main():
     store_model = demisto.args()['storeModel'] == 'true'
     model_override = demisto.args()['overrideExistingModel'] == 'true'
     target_accuracy = float(demisto.args()['targetAccuracy'])
-    max_samples_below_threshold = float(demisto.args()['maxBelowThreshold'])
     text_field = demisto.args()['textField']
     tag_fields = demisto.args()['tagField'].split(",")
     labels_mapping = get_phishing_map_labels(demisto.args()['phishingLabels'])
     keyword_min_score = float(demisto.args()['keywordMinScore'])
-    metric = demisto.args()['metric']
-
     if input_type.endswith("filename"):
         data = read_files_by_name(input, input_type.split("_")[0].strip())
     else:
@@ -271,14 +270,38 @@ def main():
         find_keywords(data, DBOT_TAG_FIELD, text_field, keyword_min_score)
     except Exception:
         pass
-
     # evaluate model
-    human_readable, confusion_matrix, report = evaluate_model(train_text_data,
-                                                              train_tag_data,
-                                                              target_accuracy,
-                                                              max_samples_below_threshold,
-                                                              metric)
+    # human_readable, confusion_matrix, report = evaluate_model(train_text_data,
+    #                                                           train_tag_data,
+    #                                                           target_accuracy,
+    #                                                           max_samples_below_threshold,
+    #                                                           metric)
+    X = pd.Series(train_text_data)
+    y = pd.Series(train_tag_data)
+    n_splits = int(1.0 / (1 - TRAIN_SIZE_FOR_EVALUATION))
+    skf = StratifiedKFold(n_splits=n_splits, shuffle=False, random_state=None)
+    skf.get_n_splits(X, y)
+    train_index, test_index = list(skf.split(X, y))[-1]
+    X_train, X_test = list(X[train_index]), list(X[test_index])
+    y_train, y_test = list(y[train_index]), list(y[test_index])
+    model = demisto_ml.train_text_classifier(X_train, y_train)
+    ft_test_predictions = demisto_ml.predict(model, X_test, DEFAULT_LABEL_PREFIX)
+    y_pred = [{pred: prbability} for pred, prbability in zip(ft_test_predictions[0], ft_test_predictions[1])]
 
+    if 'maxBelowThreshold' in demisto.args():
+        target_recall = 1 - float(demisto.args()['maxBelowThreshold'])
+    else:
+        target_recall = 0
+
+    res = demisto.executeCommand('createMLModel', {'yTrue': json.dumps(y_test),
+                                                   'yPred': json.dumps(y_pred),
+                                                   'targetPrecision': target_accuracy,
+                                                   'targetRecall': target_recall})
+    if is_error(res):
+        return_error(get_error(res))
+    confusion_matrix = res['Contents']['csr_matrix_at_threshold']
+
+    human_readable += res['HumanReadable']
     # store model
     if store_model:
         store_model_in_demisto(model_name, model_override, train_text_data, train_tag_data, confusion_matrix)
@@ -287,14 +310,14 @@ def main():
         human_readable += "\n\nSkip storing model"
     result_entry = {
         'Type': entryTypes['note'],
-        'Contents': {'scores': report, 'confusion_matrix': confusion_matrix.to_dict()},
+        'Contents': res['Contents'],
         'ContentsFormat': formats['json'],
         'HumanReadable': human_readable,
         'HumanReadableFormat': formats['markdown'],
         'EntryContext': {
             'DBotPhishingClassifier': {
                 'ModelName': model_name,
-                'EvaluationScores': {k.strip().replace(" ", "_"): v for k, v in report.items()},
+                'EvaluationScores': res['Contents']['metrics_df'].to_dict(),
                 'ConfusionMatrix': confusion_matrix.to_dict()
             }
         }
