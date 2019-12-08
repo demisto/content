@@ -93,8 +93,8 @@ tasks:
     task:
       id: 8baf8886-fd41-4ffc-8e05-9a6a5c57145c
       version: -1
-      name: Panorama Query Logs For Indicators
-      playbookName: Panorama Query Logs For Indicators
+      name: PAN-OS Query Logs For Indicators
+      playbookName: PAN-OS Query Logs For Indicators
       type: playbook
       iscommand: false
       brand: ""
