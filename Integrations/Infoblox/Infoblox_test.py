@@ -25,6 +25,7 @@ API_ERROR_OBJ = {
     "text": "Duplicate object 'test123.com' of type zone exists in the database."
 }
 
+# disable-secrets-detection-start
 SSL_ERROR = "Failed to parse json object from response: b'<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" " \
             "content=\"text/html; charset=utf-8\">\r\n<META HTTP-EQUIV=\"PRAGMA\" CONTENT=\"NO-CACHE\">\r\n<meta " \
             "name=\"viewport\" content=\"initial-scale=1.0\">\r\n<title>Certificate Error</title>\r\n<style>\r\n  " \
@@ -37,6 +38,7 @@ SSL_ERROR = "Failed to parse json object from response: b'<html>\r\n<head>\r\n<m
             "www.infoblox.com </p>\r\n<p><b>IP:</b> </p>\r\n<p><b>Category:</b> any </p>\r\n<p><b>Issuer:</b> " \
             "www.infoblox.com </p>\r\n<p><b>Status:</b> expired </p>\r\n<p><b>Reason:</b>  </p>\r\n<p><b>User:</b> " \
             "</p>\r\n</div>\r\n</body>\r\n</html>\r\n\r\n'"
+#  disable-secrets-detection-end
 
 GET_USER_LIST = {
     'account': [
