@@ -1,8 +1,14 @@
 args:
 - default: false
   description: A list of labels of the test set
-  isArray: false
+  isArray: true
   name: yTrue
+  required: true
+  secret: false
+- default: false
+  description: A list of dictionaries contain probability predictions for all classes
+  isArray: true
+  name: yPred
   required: true
   secret: false
 - default: false
@@ -11,12 +17,6 @@ args:
   isArray: false
   name: targetPrecision
   required: false
-  secret: false
-- default: false
-  description: A list of dictionaries contain probability predictions for all classes
-  isArray: true
-  name: yPred
-  required: true
   secret: false
 - default: false
   defaultValue: '0.0'
