@@ -569,7 +569,7 @@ def main():
     verify = not demisto.params().get('insecure', False)
     proxy = handle_proxy()
     if len(auth_and_token_url) != 2:
-        token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+        token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
     else:
         token_retrieval_url = auth_and_token_url[1]
 
