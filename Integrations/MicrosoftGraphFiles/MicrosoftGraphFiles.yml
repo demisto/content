@@ -36,46 +36,240 @@ name: Microsoft_Graph_Files
 script:
   commands:
   - arguments:
-    - default: false
-      description: 'This is a list argument, please provide comma separated list (example:
-        "1,2,3"). This item is mandatory so it must be provided in order to use the
-        command.'
-      isArray: true
-      name: item_ids
-      required: true
-      secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'true'
-      description: Get only active items, acts as boolean
-      isArray: false
-      name: is_active
+      isArray: true
+      name: object_type
       predefined:
-      - 'true'
-      - 'false'
+      - drives
+      - groups
+      - sites
+      - users
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: object_type_id
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: item_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: msgraph-delete-file
+    outputs:
+    - contextPath: MsGraph.File
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: object_type
+      predefined:
+      - drives
+      - groups
+      - users
+      - sites
+      required: true
+      secret: false
+    - default: false
+      description: id of object type
+      isArray: false
+      name: object_type_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: parent_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: file_name
       required: false
       secret: false
     - default: false
-      defaultValue: '10'
-      description: limit number of returned results, to avoid flooding context
+      isArray: false
+      name: entry_id
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: msgraph-upload-new-file
+    outputs:
+    - contextPath: MsGraph.File
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: object_type
+      predefined:
+      - drives
+      - groups
+      - sites
+      - users
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: object_type_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: item_id
+      required: true
+      secret: false
+    - default: false
+      description: demisto entry id
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: msgraph-replace-existing-file
+    outputs:
+    - contextPath: MsGraph.File
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: object_type
+      predefined:
+      - drives
+      - groups
+      - sites
+      - users
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: object_type_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: parent_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: folder_name
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: msgraph-create-new-folder
+    outputs:
+    - contextPath: MsGraph.Folder
+      type: Unknown
+  - arguments:
+    - default: false
+      isArray: false
+      name: site_id
+      required: false
+      secret: false
+    - default: false
       isArray: false
       name: limit
       required: false
       secret: false
+    - default: false
+      isArray: false
+      name: next_page_url
+      required: false
+      secret: false
     deprecated: false
-    description: Get items from service.
     execution: false
-    name: example-get-items
+    name: msgraph-list-drives-in-site
     outputs:
-    - contextPath: Example.Item.ID
-      description: Item ID
-      type: number
-    - contextPath: Example.Item.Name
-      description: Item name
-      type: string
-    - contextPath: Example.Item.CreatedDate
-      description: Item creation date
-      type: date
+    - contextPath: MsGraph-Drives
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: object_type
+      predefined:
+      - drives
+      - groups
+      - sites
+      - users
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: object_type_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: item_id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: next_page_url
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: msgraph-list-drive-children
+    outputs:
+    - contextPath: MsGraph.Drive.Children
+      type: Unknown
+  - arguments:
+    - default: false
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: msgraph-list-tenant-sites
+    outputs:
+    - contextPath: MsGraph.Sites
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: object_type
+      predefined:
+      - drives
+      - groups
+      - sites
+      - users
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: object_type_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: item_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: msgraph-download-file
+    outputs:
+    - contextPath: MsGraph.File
+      type: Unknown
   dockerimage: demisto/python_pancloud:1.0.0.286
   isfetch: false
   longRunning: false
@@ -85,5 +279,4 @@ script:
   subtype: python3
   type: python
 tests:
-  - No tests
-
+- No tests
