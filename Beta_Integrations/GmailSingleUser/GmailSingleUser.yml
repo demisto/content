@@ -8,19 +8,14 @@ configuration:
   name: email
   required: true
   type: 0
-- display: ID (received from the admin consent - see Detailed Instructions (?)
-  name: registration_id
-  required: true
+- display: Auth Code (run gmail-auth-link to start auth flow  - see Detailed Instructions (?) section)
+  name: code
+  required: false
   type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?)
-    section)
-  name: token
-  required: true
-  type: 4
-- display: Key (received from the admin consent - see Detailed Instructions (?)
-  name: enc_key
-  required: true
-  type: 4
+- display: "Client ID (Optional: use your own app - see Detailed Instructions (?)"
+  name: client_id
+  required: false
+  type: 0
 - display: Events query (e.g. "from:example@demisto.com")
   name: query
   required: false
@@ -197,6 +192,13 @@ script:
     - contextPath: Gmail.SentMail.MailBox
       description: The mailbox from which the mail was sent.
       type: String
+  - name: gmail-auth-link
+    arguments: []
+    description: Start OAuth2 process. Get a link to use to authenticate to Gmail.
+  - name: gmail-auth-test
+    arguments: []
+    description: Test that Gmail auth is properly set. Use this command after completing
+      the OAuth2 authentication process.
   dockerimage: demisto/google-api-py3:1.0.0.4238
   isfetch: true
   longRunning: false

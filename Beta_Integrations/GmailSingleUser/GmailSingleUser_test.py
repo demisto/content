@@ -159,3 +159,11 @@ def test_no_label_mail_context_creation():
     assert context_gmail.get('To') == EXPECTED_GMAIL_CONTEXT.get('To')
     assert context_gmail.get('From') == EXPECTED_GMAIL_CONTEXT.get('From')
     assert context_gmail.get('Subject') == EXPECTED_GMAIL_CONTEXT.get('Subject')
+
+
+def test_generate_auth_link():
+    client = Client()
+    link, challange = client.generate_auth_link()
+    assert link.startswith('https://accounts.google.com/o/oauth2/v2/auth?')
+    assert challange in link
+    assert 'code_challenge_method=S256' in link

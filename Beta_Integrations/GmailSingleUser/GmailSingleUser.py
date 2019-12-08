@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 ''' IMPORTS '''
 import re
 import json
@@ -22,8 +21,10 @@ import string
 from apiclient import discovery
 from oauth2client.client import AccessTokenCredentials
 import itertools as it
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import urllib.parse
+from typing import Tuple
+import secrets
+import hashlib
 
 ''' GLOBAL VARS '''
 params = demisto.params()
@@ -31,15 +32,14 @@ EMAIL = params.get('email', '')
 PROXY = params.get('proxy')
 DISABLE_SSL = params.get('insecure', False)
 FETCH_TIME = params.get('fetch_time', '1 days')
-ENC_KEY = params.get('enc_key')
-REFRESH_TOKEN = params.get('token')
-REG_ID = params.get('registration_id', '').split('@')
-AUTH_ID = REG_ID[0]
+AUTH_CODE = params.get('code')
 
-if len(REG_ID) != 2:
-    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/gmail-obtain-token'  # disable-secrets-detection
-else:
-    TOKEN_RETRIEVAL_URL = REG_ID[1]
+CLIENT_ID = params.get('client_id') or "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"
+TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token"
+TOKEN_FORM_HEADERS = {
+    "Content-Type": "application/x-www-form-urlencoded",
+    'Accept': 'application/json',
+}
 
 TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
 
@@ -126,26 +126,59 @@ class Client:
             return discovery.build(serviceName, version, http=http_client)
         return discovery.build(serviceName, version, credentials=credentials)
 
+    def get_refresh_token(self, integration_context):
+        # use cached refresh_token only if auth code hasn't changed. If it has we will try to obtain a new
+        # refresh token
+        if integration_context.get('refresh_token') and integration_context.get('code') == AUTH_CODE:
+            return integration_context.get('refresh_token')
+        if not AUTH_CODE:
+            raise ValueError("Auth code not set. Make sure to follow the auth flow. Start by running !gmail-auth-link.")
+        refresh_prefix = "refresh_token:"
+        if AUTH_CODE.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
+            demisto.debug("Using refresh token set as auth_code")
+            return AUTH_CODE[len(refresh_prefix):]
+        demisto.info(f"Going to obtain refresh token from google's oauth service. For client id: {CLIENT_ID}")
+        verifier = integration_context.get('verifier')
+        if not verifier:
+            raise ValueError("Missing verifier. Make sure to follow the auth flow. Start by running !gmail-auth-link.")
+        h = self.get_http_client_with_proxy()
+        body = {
+            'client_id': CLIENT_ID,
+            'code_verifier': verifier,
+            'grant_type': 'authorization_code',
+            'code': AUTH_CODE,
+            'redirect_uri': 'urn:ietf:wg:oauth:2.0:oob',  # disable-secrets-detection
+        }
+        resp, content = h.request(TOKEN_URL, "POST", urllib.parse.urlencode(body), TOKEN_FORM_HEADERS)
+        if resp.status not in {200, 201}:
+            raise ValueError('Error obtaining refresh token. Make sure to follow auth flow. {} {} {}'.format(
+                             resp.status, resp.reason, content))
+        resp_json = json.loads(content)
+        if not resp_json.get('refresh_token'):
+            raise ValueError('Error obtaining refresh token. Missing refresh token in response: {}'.format(content))
+        return resp_json.get('refresh_token')
+
     def get_access_token(self):
-        integration_context = demisto.getIntegrationContext()
+        integration_context = demisto.getIntegrationContext() or {}
         access_token = integration_context.get('access_token')
         valid_until = integration_context.get('valid_until')
-        if access_token and valid_until:
+        if access_token and valid_until and integration_context.get('code') == AUTH_CODE:
             if self.epoch_seconds() < valid_until:
                 return access_token
-
-        body = json.dumps({'app_name': 'google',
-                          'registration_id': AUTH_ID,
-                           'encrypted_token': self.get_encrypted(REFRESH_TOKEN, ENC_KEY)})
-
+        refresh_token = self.get_refresh_token(integration_context)
+        body = {
+            'refresh_token': refresh_token,
+            'client_id': CLIENT_ID,
+            'grant_type': 'refresh_token',
+        }
         h = self.get_http_client_with_proxy()
-        dbot_response, content = h.request(TOKEN_RETRIEVAL_URL, "POST", body, {'Accept': 'application/json'})
+        resp, content = h.request(TOKEN_URL, "POST", urllib.parse.urlencode(body), TOKEN_FORM_HEADERS)
 
-        if dbot_response.status not in {200, 201}:
-            msg = 'Error in authentication. Try checking the credentials you entered.'
+        if resp.status not in {200, 201}:
+            msg = 'Error obtaining access token. Try checking the credentials you entered.'
             try:
                 demisto.info('Authentication failure from server: {} {} {}'.format(
-                    dbot_response.status, dbot_response.reason, content))
+                    resp.status, resp.reason, content))
 
                 msg += ' Server message: {}'.format(content)
             except Exception as ex:
@@ -160,12 +193,11 @@ class Client:
         if expires_in - time_buffer > 0:
             # err on the side of caution with a slightly shorter access token validity period
             expires_in = expires_in - time_buffer
-
-        demisto.setIntegrationContext({
-            'access_token': access_token,
-            'valid_until': time_now + expires_in
-        })
-
+        integration_context['access_token'] = access_token
+        integration_context['valid_until'] = time_now + expires_in
+        integration_context['refresh_token'] = refresh_token
+        integration_context['code'] = AUTH_CODE
+        demisto.setIntegrationContext(integration_context)
         return access_token
 
     def parse_mail_parts(self, parts):
@@ -424,44 +456,6 @@ class Client:
         if not d:
             d = datetime.utcnow()
         return int((d - datetime.utcfromtimestamp(0)).total_seconds())
-
-    def get_encrypted(self, content, key):
-        """
-
-        Args:
-            content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
-                the tenant id
-            key (str): encryption key from Demistobot
-
-        Returns:
-            encrypted timestamp:content
-        """
-        def create_nonce():
-            return os.urandom(12)
-
-        def encrypt(string, enc_key):
-            """
-
-            Args:
-                enc_key (str):
-                string (str):
-
-            Returns:
-                bytes:
-            """
-            # String to bytes
-            enc_key = base64.b64decode(enc_key)
-            # Create key
-            aes_gcm = AESGCM(enc_key)
-            # Create nonce
-            nonce = create_nonce()
-            # Create ciphered data
-            data = string.encode()
-            ct = aes_gcm.encrypt(nonce, data, None)
-            return base64.b64encode(nonce + ct)
-        now = self.epoch_seconds()
-        encrypted = encrypt(str(now) + ':' + content, key).decode('utf-8')
-        return encrypted
 
     def search(self, user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
                fields=None, label_ids=None, max_results=100, page_token=None, include_spam_trash=False,
@@ -795,11 +789,25 @@ class Client:
         result = (service.users().messages().send(userId=emailfrom, body=command_args).execute())
         return result
 
+    def generate_auth_link(self) -> Tuple[str, str]:
+        """Generate an auth2 link.
+
+        Returns:
+            Tuple[str, str] -- Return the link and the challenge used for generating the link.
+        """
+        verifier = secrets.token_hex(64)
+        sha = hashlib.sha256()
+        sha.update(bytes(verifier, 'us-ascii'))
+        challenge = str(base64.urlsafe_b64encode(sha.digest()), 'us-ascii').rstrip('=')
+        link = f"https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/gmail.compose%20https://www.googleapis.com/auth/gmail.send%20https://www.googleapis.com/auth/gmail.readonly&response_type=code&redirect_uri=urn:ietf:wg:oauth:2.0:oob&client_id={CLIENT_ID}&code_challenge={challenge}&code_challenge_method=S256"  # noqa: E501
+        integration_context = demisto.getIntegrationContext() or {}
+        integration_context['verifier'] = verifier
+        demisto.setIntegrationContext(integration_context)
+        return (link, challenge)
+
 
 def test_module(client):
-    client.search('me', '', '', '', '', '', '', '', '',
-                  '', [], 10, '', False, False)
-    demisto.results('ok')
+    demisto.results('Test is not supported. Please use the following command: !gmail-auth-test.')
 
 
 def send_mail_command(client):
@@ -872,6 +880,32 @@ def fetch_incidents(client):
     return incidents
 
 
+def auth_link_command(client: Client):
+    link, challange = client.generate_auth_link()
+    markdown = f"""
+## Gmail Auth Link
+Please follow the follwing **[link]({link})**.
+
+After Completing the authentication process, copy the received code
+to the **Auth Code** configuration parameter of the integration instance.
+Save the integration instance and then run *!gmail-auth-test* to test that
+the authentication is properly set.
+    """
+    return {
+        'ContentsFormat': formats['text'],
+        'Type': entryTypes['note'],
+        'Contents': markdown,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': markdown,
+    }
+
+
+def auth_test_command(client):
+    client.search('me', '', '', '', '', '', '', '', '',
+                  '', [], 10, '', False, False)
+    return "Authentication test completed successfully."
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -884,8 +918,10 @@ def main():
 
     commands = {
         'test-module': test_module,
-        f'send-mail': send_mail_command,
-        f'fetch-incidents': fetch_incidents,
+        'send-mail': send_mail_command,
+        'fetch-incidents': fetch_incidents,
+        'gmail-auth-link': auth_link_command,
+        'gmail-auth-test': auth_test_command,
     }
 
     try:
