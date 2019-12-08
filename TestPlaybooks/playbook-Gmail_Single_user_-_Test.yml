@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4bd1d2c7-57ed-403f-8556-4f0554512153
+    taskid: 45a708e9-b19c-43d0-81e8-9e62d3ba857c
     type: start
     task:
-      id: 4bd1d2c7-57ed-403f-8556-4f0554512153
+      id: 45a708e9-b19c-43d0-81e8-9e62d3ba857c
       version: -1
       name: ""
       iscommand: false
@@ -28,12 +28,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "1":
     id: "1"
-    taskid: 74dc692b-f47d-4412-83f1-8f92601475f9
+    taskid: 329ba7be-06ef-4aae-83d6-8dc081568e96
     type: regular
     task:
-      id: 74dc692b-f47d-4412-83f1-8f92601475f9
+      id: 329ba7be-06ef-4aae-83d6-8dc081568e96
       version: -1
       name: Delete context
       scriptName: DeleteContext
@@ -58,14 +59,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "2":
     id: "2"
-    taskid: 8b521dd5-f4c0-4645-8edb-0326f7600559
+    taskid: d85d376c-c6c1-4cd0-842b-a0178e4d176a
     type: regular
     task:
-      id: 8b521dd5-f4c0-4645-8edb-0326f7600559
+      id: d85d376c-c6c1-4cd0-842b-a0178e4d176a
       version: -1
-      name: Send mail using python
+      name: Send mail using Gmail Single User
       description: Sends mail using Gmail.
       script: Gmail Single User|||send-mail
       type: regular
@@ -106,12 +108,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "3":
     id: "3"
-    taskid: 83d806d2-0f71-4da8-8718-def290d92512
+    taskid: 213608eb-10ae-4971-8453-32f913472b62
     type: regular
     task:
-      id: 83d806d2-0f71-4da8-8718-def290d92512
+      id: 213608eb-10ae-4971-8453-32f913472b62
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
@@ -135,12 +138,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "4":
     id: "4"
-    taskid: b73839b8-a92e-4dbd-8682-c7ba350a0094
+    taskid: 6d28063f-6159-4255-8af3-693515882759
     type: regular
     task:
-      id: b73839b8-a92e-4dbd-8682-c7ba350a0094
+      id: 6d28063f-6159-4255-8af3-693515882759
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -181,12 +185,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "5":
     id: "5"
-    taskid: 11d43004-c6e9-43b1-8f67-be31952ac6f7
+    taskid: 7857b775-3473-46f1-82b5-cdecc1c1b546
     type: condition
     task:
-      id: 11d43004-c6e9-43b1-8f67-be31952ac6f7
+      id: 7857b775-3473-46f1-82b5-cdecc1c1b546
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -216,12 +221,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "6":
     id: "6"
-    taskid: 441f3556-cf1c-4238-86e7-78dfd000a34a
+    taskid: 69588343-5580-4bfe-849a-e552e70e47f4
     type: regular
     task:
-      id: 441f3556-cf1c-4238-86e7-78dfd000a34a
+      id: 69588343-5580-4bfe-849a-e552e70e47f4
       version: -1
       name: Delete email list from context
       description: |-
@@ -250,12 +256,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "7":
     id: "7"
-    taskid: bd26290b-5730-4fb9-8029-46f254c566d7
+    taskid: 26a3a26e-0b5a-4567-822a-4e567b9edd2f
     type: regular
     task:
-      id: bd26290b-5730-4fb9-8029-46f254c566d7
+      id: 26a3a26e-0b5a-4567-822a-4e567b9edd2f
       version: -1
       name: Save the retrieved mail's ID under a key for search in inbox
       scriptName: Set
@@ -282,12 +289,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "8":
     id: "8"
-    taskid: 9b6133ce-983d-47ea-8334-5d7e5d9b4173
+    taskid: f71da43d-c185-4a6f-85cd-111faca567dd
     type: regular
     task:
-      id: 9b6133ce-983d-47ea-8334-5d7e5d9b4173
+      id: f71da43d-c185-4a6f-85cd-111faca567dd
       version: -1
       name: Wait for mail to receive
       scriptName: Sleep
@@ -311,12 +319,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "9":
     id: "9"
-    taskid: e2481a99-ec7d-4c35-8315-5edcd3e9dcf2
+    taskid: 6f245e0c-d6cb-410d-86e1-703bc7a8ffa7
     type: regular
     task:
-      id: e2481a99-ec7d-4c35-8315-5edcd3e9dcf2
+      id: 6f245e0c-d6cb-410d-86e1-703bc7a8ffa7
       version: -1
       name: Search for email sent (ID)
       description: Searches for Gmail records of a specified Google user.
@@ -357,12 +366,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "10":
     id: "10"
-    taskid: a2727e1b-108d-469b-8ec2-022923d3ec55
+    taskid: 8ef1c81f-3af5-41c2-8b65-5332f4510eaf
     type: condition
     task:
-      id: a2727e1b-108d-469b-8ec2-022923d3ec55
+      id: 8ef1c81f-3af5-41c2-8b65-5332f4510eaf
       version: -1
       name: Check if email was found
       type: condition
@@ -392,12 +402,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "11":
     id: "11"
-    taskid: d18f696b-b52f-44ec-800a-b7c6501ce048
+    taskid: 6455f7da-d7ce-4b8e-88c5-0656db2e04a0
     type: regular
     task:
-      id: d18f696b-b52f-44ec-800a-b7c6501ce048
+      id: 6455f7da-d7ce-4b8e-88c5-0656db2e04a0
       version: -1
       name: Fetch email from google mail using message ID
       description: Retrieves the Gmail message sent to a specified user.
@@ -425,12 +436,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "12":
     id: "12"
-    taskid: e8eca6fc-9799-4d3c-82e2-5fdf04512524
+    taskid: b8a5a664-c95e-49b9-87ed-05649925af28
     type: condition
     task:
-      id: e8eca6fc-9799-4d3c-82e2-5fdf04512524
+      id: b8a5a664-c95e-49b9-87ed-05649925af28
       version: -1
       name: Check for attachments
       type: condition
@@ -469,12 +481,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "13":
     id: "13"
-    taskid: 19a69334-fb60-4692-8ccb-596f446d321e
+    taskid: 0e480b76-789b-483a-8d6a-6802fcf13952
     type: title
     task:
-      id: 19a69334-fb60-4692-8ccb-596f446d321e
+      id: 0e480b76-789b-483a-8d6a-6802fcf13952
       version: -1
       name: Test email was found with the attachment!
       type: title
@@ -494,12 +507,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "14":
     id: "14"
-    taskid: 2504fb14-2f88-47b0-8419-773c75300353
+    taskid: b4debf93-7c51-436d-8837-abbbbd426446
     type: regular
     task:
-      id: 2504fb14-2f88-47b0-8419-773c75300353
+      id: b4debf93-7c51-436d-8837-abbbbd426446
       version: -1
       name: Email found without attachment
       description: Prints an error entry with a given message
@@ -521,12 +535,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "15":
     id: "15"
-    taskid: c56ee116-536c-42d8-8204-15d2260b4e1e
+    taskid: 4ea2632f-5fce-40e2-8af1-52f9c80c028d
     type: regular
     task:
-      id: c56ee116-536c-42d8-8204-15d2260b4e1e
+      id: 4ea2632f-5fce-40e2-8af1-52f9c80c028d
       version: -1
       name: Test failed
       description: Prints an error entry with a given message
@@ -548,12 +563,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "16":
     id: "16"
-    taskid: 9c369940-ec0d-4cbd-8e3c-65fe65b11580
+    taskid: 8ae63a35-5ff5-401a-84a7-16d04d19d7aa
     type: regular
     task:
-      id: 9c369940-ec0d-4cbd-8e3c-65fe65b11580
+      id: 8ae63a35-5ff5-401a-84a7-16d04d19d7aa
       version: -1
       name: Wait for mail to receive
       scriptName: Sleep
@@ -577,12 +593,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "17":
     id: "17"
-    taskid: 61d58827-984c-4e9f-8a78-8345bc2553f2
+    taskid: 16006cdd-aab2-4d7c-81b1-1d51bb4b4a9b
     type: regular
     task:
-      id: 61d58827-984c-4e9f-8a78-8345bc2553f2
+      id: 16006cdd-aab2-4d7c-81b1-1d51bb4b4a9b
       version: -1
       name: Search for email sent (ID)
       description: Searches for Gmail records of a specified Google user.
@@ -623,12 +640,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "18":
     id: "18"
-    taskid: a8709715-4f75-4c50-8535-ea1b2bd323ba
+    taskid: 68e480c4-7749-4fa1-8cad-be0e0801e681
     type: condition
     task:
-      id: a8709715-4f75-4c50-8535-ea1b2bd323ba
+      id: 68e480c4-7749-4fa1-8cad-be0e0801e681
       version: -1
       name: Check if email was found
       type: condition
@@ -658,12 +676,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "19":
     id: "19"
-    taskid: bd757b8e-917e-4316-8ebf-de1d262e0ab4
+    taskid: 868f9be2-1709-4866-83a4-1e529bd42f59
     type: regular
     task:
-      id: bd757b8e-917e-4316-8ebf-de1d262e0ab4
+      id: 868f9be2-1709-4866-83a4-1e529bd42f59
       version: -1
       name: Start Over - Send several files
       scriptName: DeleteContext
@@ -691,14 +710,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "20":
     id: "20"
-    taskid: f950d975-3926-49e0-893b-1f11da555d18
+    taskid: 796ef8da-d581-411e-82fb-ff45d29bf46e
     type: regular
     task:
-      id: f950d975-3926-49e0-893b-1f11da555d18
+      id: 796ef8da-d581-411e-82fb-ff45d29bf46e
       version: -1
-      name: Send mail using python
+      name: Send mail with transient attachments and file
       description: Sends mail using Gmail.
       script: Gmail Single User|||send-mail
       type: regular
@@ -722,7 +742,7 @@ tasks:
       htmlBody: {}
       replyTo: {}
       subject:
-        simple: special test via playbook (2)
+        simple: multi attachment test via playbook
       templateParams: {}
       to:
         simple: yarden@demistodev.com
@@ -742,12 +762,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "21":
     id: "21"
-    taskid: 05a0d0a0-f75e-42ea-8c14-0ea30b59c5c6
+    taskid: 4cbce998-ff00-4eb8-872e-d636dede0493
     type: regular
     task:
-      id: 05a0d0a0-f75e-42ea-8c14-0ea30b59c5c6
+      id: 4cbce998-ff00-4eb8-872e-d636dede0493
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
@@ -771,12 +792,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "22":
     id: "22"
-    taskid: 58b0aa3e-2830-463f-880d-8231f93640fb
+    taskid: e2021190-6c17-46d0-8221-64a9f0682208
     type: regular
     task:
-      id: 58b0aa3e-2830-463f-880d-8231f93640fb
+      id: e2021190-6c17-46d0-8221-64a9f0682208
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -801,7 +823,8 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:shai@demistodev.com subject:special test via playbook newer_than:1d
+        simple: from:shai@demistodev.com subject:multi attachment test via playbook
+          newer_than:1d
       subject: {}
       to: {}
       user-id:
@@ -817,12 +840,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "23":
     id: "23"
-    taskid: bd8fc15f-1400-417c-805d-a5f88461a500
+    taskid: f7aeea65-6bab-44a1-8855-57ca586c2a1f
     type: condition
     task:
-      id: bd8fc15f-1400-417c-805d-a5f88461a500
+      id: f7aeea65-6bab-44a1-8855-57ca586c2a1f
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -852,12 +876,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "24":
     id: "24"
-    taskid: 0439f909-afb7-4a9d-8485-1135fa2fc5f9
+    taskid: 36992edc-f298-4c80-8381-9e1d308e5e08
     type: regular
     task:
-      id: 0439f909-afb7-4a9d-8485-1135fa2fc5f9
+      id: 36992edc-f298-4c80-8381-9e1d308e5e08
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
@@ -881,12 +906,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "25":
     id: "25"
-    taskid: abedadfb-d1ee-484b-81ed-337efe3cf65a
+    taskid: fbe10649-6063-42ac-8839-b1519fa2c07a
     type: regular
     task:
-      id: abedadfb-d1ee-484b-81ed-337efe3cf65a
+      id: fbe10649-6063-42ac-8839-b1519fa2c07a
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -911,7 +937,8 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:shai@demistodev.com subject:special test via playbook newer_than:1d
+        simple: from:shai@demistodev.com subject:multi attachment test via playbook
+          newer_than:1d
       subject: {}
       to: {}
       user-id:
@@ -927,12 +954,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "26":
     id: "26"
-    taskid: 87127722-63eb-400b-82c5-716b05616b52
+    taskid: 405a22e3-58cc-48e4-8e24-db497ebaa44e
     type: condition
     task:
-      id: 87127722-63eb-400b-82c5-716b05616b52
+      id: 405a22e3-58cc-48e4-8e24-db497ebaa44e
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -962,12 +990,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "27":
     id: "27"
-    taskid: e1470722-871d-4aa2-895c-620677f87f1d
+    taskid: 0a01daf3-70c2-4f81-8f1f-14ae2427c1e2
     type: condition
     task:
-      id: e1470722-871d-4aa2-895c-620677f87f1d
+      id: 0a01daf3-70c2-4f81-8f1f-14ae2427c1e2
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -997,12 +1026,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "28":
     id: "28"
-    taskid: ca092da8-53e3-4504-8dc3-12ad33a56cdb
+    taskid: 608e5d85-9592-42db-83c6-3f2b98f013dd
     type: regular
     task:
-      id: ca092da8-53e3-4504-8dc3-12ad33a56cdb
+      id: 608e5d85-9592-42db-83c6-3f2b98f013dd
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
@@ -1026,12 +1056,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "29":
     id: "29"
-    taskid: 05fb3b44-7503-4c91-88fc-0e9b07bf0f17
+    taskid: 43fd5851-66b8-4354-8e04-0bf1b1c09296
     type: regular
     task:
-      id: 05fb3b44-7503-4c91-88fc-0e9b07bf0f17
+      id: 43fd5851-66b8-4354-8e04-0bf1b1c09296
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -1056,7 +1087,8 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:shai@demistodev.com subject:special test via playbook newer_than:1d
+        simple: from:shai@demistodev.com subject:multi attachment test via playbook
+          newer_than:1d
       subject: {}
       to: {}
       user-id:
@@ -1072,12 +1104,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "30":
     id: "30"
-    taskid: cf699f6d-afeb-4bc7-8f48-a897db27b341
+    taskid: 91eb5f2c-f40f-4eed-84b9-82ead8346c0f
     type: regular
     task:
-      id: cf699f6d-afeb-4bc7-8f48-a897db27b341
+      id: 91eb5f2c-f40f-4eed-84b9-82ead8346c0f
       version: -1
       name: Save the retrieved mail's ID under a key for search in inbox
       scriptName: Set
@@ -1092,7 +1125,11 @@ tasks:
       key:
         simple: Testmail.ID
       value:
-        simple: ${Email.[0].ID}
+        complex:
+          root: Email
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -1104,12 +1141,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "31":
     id: "31"
-    taskid: 5a15501b-ed21-44c5-8562-511ab6987b1f
+    taskid: b10fea1c-ccfd-4321-8cfe-193d85f1599a
     type: regular
     task:
-      id: 5a15501b-ed21-44c5-8562-511ab6987b1f
+      id: b10fea1c-ccfd-4321-8cfe-193d85f1599a
       version: -1
       name: Delete email list from context
       description: |-
@@ -1138,12 +1176,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "32":
     id: "32"
-    taskid: 6489264f-b9d0-4665-8511-eed21369a12e
+    taskid: c035545b-6a62-4517-8f79-4cd3a13cf3bc
     type: regular
     task:
-      id: 6489264f-b9d0-4665-8511-eed21369a12e
+      id: c035545b-6a62-4517-8f79-4cd3a13cf3bc
       version: -1
       name: Fetch email from google mail using message ID
       description: Retrieves the Gmail message sent to a specified user.
@@ -1171,12 +1210,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "33":
     id: "33"
-    taskid: d2817ed7-faaa-4c68-80cc-d6429f4443a1
+    taskid: 2baa3614-121a-4e84-88dd-3fc88195fccf
     type: regular
     task:
-      id: d2817ed7-faaa-4c68-80cc-d6429f4443a1
+      id: 2baa3614-121a-4e84-88dd-3fc88195fccf
       version: -1
       name: Create a new File
       scriptName: FileCreateAndUpload
@@ -1203,12 +1243,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "34":
     id: "34"
-    taskid: 79844506-febf-435e-8ce4-66c50e0fcfce
+    taskid: 44726e72-d4b7-4af4-8c99-44e1291c8f6e
     type: condition
     task:
-      id: 79844506-febf-435e-8ce4-66c50e0fcfce
+      id: 44726e72-d4b7-4af4-8c99-44e1291c8f6e
       version: -1
       name: Check for attachments
       type: condition
@@ -1247,12 +1288,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "35":
     id: "35"
-    taskid: 9538bf8c-6c54-48bd-825c-71d7986223ab
+    taskid: 786fe953-4fc6-4dda-8d3c-53e47483556a
     type: regular
     task:
-      id: 9538bf8c-6c54-48bd-825c-71d7986223ab
+      id: 786fe953-4fc6-4dda-8d3c-53e47483556a
       version: -1
       name: Email found without attachment
       description: Prints an error entry with a given message
@@ -1274,12 +1316,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "36":
     id: "36"
-    taskid: 54cd7761-0705-49f9-894c-878360aeacbc
+    taskid: ef1f32d5-eeac-4893-88e4-e0b1d99cf1b2
     type: title
     task:
-      id: 54cd7761-0705-49f9-894c-878360aeacbc
+      id: ef1f32d5-eeac-4893-88e4-e0b1d99cf1b2
       version: -1
       name: Finished Successfully
       type: title
@@ -1296,12 +1339,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "37":
     id: "37"
-    taskid: 5b26cc1f-19e8-4cac-814d-51ee18889885
+    taskid: 69c38fab-341d-4f90-81a0-31ca0a517e9b
     type: condition
     task:
-      id: 5b26cc1f-19e8-4cac-814d-51ee18889885
+      id: 69c38fab-341d-4f90-81a0-31ca0a517e9b
       version: -1
       name: Check for attachments
       type: condition
@@ -1343,6 +1387,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
 view: |-
   {
     "linkLabelsPosition": {
