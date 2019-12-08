@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Lastline_v2
+  id: Lastline v2
   version: -1
 configuration:
 - defaultvalue: https://analysis.lastline.com
@@ -30,11 +30,8 @@ configuration:
   name: threshold
   required: false
   type: 0
-description: Provides threat analysts and incident response teams with the advanced
-  malware isolation and inspection environment, needed to safely execute advanced
-  malware samples and understand their behavior.
-display: Lastline_v2
-name: Lastline_v2
+display: Lastline v2
+name: Lastline v2
 script:
   commands:
   - arguments:
@@ -56,39 +53,92 @@ script:
     execution: false
     name: file
     outputs:
-    - contextPath: File.MD5
-      description: Bad MD5 hash.
-      type: string
-    - contextPath: File.SHA1
-      description: Bad SHA1 hash.
-      type: string
-    - contextPath: File.SHA256
-      description: Bad SHA256 hash.
-      type: string
-    - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision.
-      type: string
-    - contextPath: File.Malicious.Description
-      description: For malicious files, the reason that the vendor made the decision.
-      type: string
-    - contextPath: File.Malicious.Score
-      description: For malicious files, the score from the vendor.
-      type: number
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: string
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: string
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: string
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: number
-    - contextPath: File.Type
-      description: The file type.
-      type: string
+      - contextPath: File.MD5
+        description: Bad MD5 hash.
+        type: string
+      - contextPath: File.SHA1
+        description: Bad SHA1 hash.
+        type: string
+      - contextPath: File.SHA256
+        description: Bad SHA256 hash.
+        type: string
+      - contextPath: File.Type
+        description: File type
+        type: string
+      - contextPath: File.Malicious.Vendor
+        description: For malicious files, the vendor that made the decision.
+        type: string
+      - contextPath: File.Malicious.Description
+        description: For malicious files, the reason that the vendor made the decision.
+        type: string
+      - contextPath: File.Malicious.Score
+        description: For malicious files, the score from the vendor.
+        type: number
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: string
+      - contextPath: DBotScore.Type
+        description: The type of indicator.
+        type: string
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: string
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: number
+      - contextPath: Lastline.Submission.Status
+        description: Status of the submission.
+        type: string
+      - contextPath: Lastline.UUID
+        description: Task UUID.
+        type: string
+      - contextPath: Lastline.SubmissionTime
+        description: Time stamp in Lastline.
+        type: string
+      - contextPath: Lastline.Submission.YaraSignatures.name
+        description: Yara signatures name.
+        type: string
+      - contextPath: Lastline.Submission.YaraSignatures.score
+        description: The score according to the yara signatures (0 to 100).
+        type: number
+      - contextPath: Lastline.Submission.YaraSignatures.internal
+        description: Whether the signature is for internal usage only.
+        type: boolean
+      - contextPath: Lastline.Submission.DNSqueries
+        description: List of DNS queries executed by the analysis subject.
+        type: string
+      - contextPath: Lastline.Submission.NetworkConnections
+        description: A list of network connections executed by the analysis subject.
+        type: string
+      - contextPath: Lastline.Submission.DownloadedFiles
+        description: A list of files that were downloaded using the Microsoft Windows
+          file-download API functions. Each element is a tuple of file-origin URL and
+          a File element.
+        type: string
+      - contextPath: Lastline.Submission.Process
+        description: Information on a Windows process.
+        type: Unknown
+      - contextPath: Lastline.Submission.Process.arguments
+        description: The argument of the process.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable
+        description: The executable of the process.
+        type: Unknown
+      - contextPath: Lastline.Submission.Process.executable.abs_path
+        description: The absolute path of the executable of the process.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable.filename
+        description: The filename of the executable.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable.yara_signature_hits
+        description: The Yara signature of the executable of the process.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable.ext_info
+        description: The Executable information of the process.
+        type: unknown
+      - contextPath: Lastline.Submission.Process.process_id
+        description: The process ID.
+        type: string
   - arguments:
     - default: false
       description: The URL to analyze. For example, https://www.demisto.com
@@ -109,15 +159,80 @@ script:
     execution: false
     name: lastline-upload-url
     outputs:
-    - contextPath: Lastline.Submission.URL
-      description: The URL to upload.
-      type: string
-    - contextPath: Lastline.Submission.UUID
-      description: The ID of the submission.
-      type: string
-    - contextPath: Lastline.Submission.Status
-      description: The status of the submission.
-      type: string
+      - contextPath: URL.Data
+        description: A list of malicious URLs identified by the lastline analysis.
+        type: string
+      - contextPath: URL.Malicious.Vendor
+        description: For malicious URLs, the vendor that made the decision.
+        type: string
+      - contextPath: URL.Malicious.Description
+        description: For malicious URLs, the reason that the vendor made the decision.
+        type: string
+      - contextPath: URL.Malicious.Score
+        description: For malicious URLs, the score from the vendor.
+        type: number
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: string
+      - contextPath: DBotScore.Type
+        description: The type of indicator.
+        type: string
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: string
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: number
+      - contextPath: Lastline.Submission.Status
+        description: Status of the submission.
+        type: string
+      - contextPath: Lastline.UUID
+        description: Task UUID.
+        type: string
+      - contextPath: Lastline.SubmissionTime
+        description: Time stamp in Lastline.
+        type: string
+      - contextPath: Lastline.Submission.YaraSignatures.name
+        description: Yara signatures name.
+        type: string
+      - contextPath: Lastline.Submission.YaraSignatures.score
+        description: The score according to the yara signatures (0 to 100).
+        type: number
+      - contextPath: Lastline.Submission.YaraSignatures.internal
+        description: Whether the signature is for internal usage only.
+        type: boolean
+      - contextPath: Lastline.Submission.DNSqueries
+        description: List of DNS queries executed by the analysis subject.
+        type: string
+      - contextPath: Lastline.Submission.NetworkConnections
+        description: A list of network connections executed by the analysis subject.
+        type: string
+      - contextPath: Lastline.Submission.DownloadedFiles
+        description: A list of files that were downloaded using the Microsoft Windows
+          file-download API functions. Each element is a tuple of file-origin URL and
+          a File element.
+        type: string
+      - contextPath: Lastline.Submission.Process
+        description: Information on a Windows process.
+        type: Unknown
+      - contextPath: Lastline.Submission.Process.arguments
+        description: The argument of the process.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable
+        description: The executable of the process.
+        type: Unknown
+      - contextPath: Lastline.Submission.Process.executable.abs_path
+        description: The absolute path of the executable of the process.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable.yara_signature_hits
+        description: The Yara signature of the executable of the process.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable.ext_info
+        description: The Executable information of the process.
+        type: unknown
+      - contextPath: Lastline.Submission.Process.process_id
+        description: The process ID.
+        type: string
   - arguments:
     - default: false
       description: The entry ID of the file to upload.
@@ -138,15 +253,92 @@ script:
     execution: false
     name: lastline-upload-file
     outputs:
-    - contextPath: Lastline.Submission.Filename
-      description: The file name of the submitted sample.
-      type: string
-    - contextPath: Lastline.Submission.UUID
-      description: The task UUID of the submitted sample.
-      type: string
-    - contextPath: Lastline.Submission.Status
-      description: The status of the submission.
-      type: string
+      - contextPath: File.MD5
+        description: Bad MD5 hash.
+        type: string
+      - contextPath: File.SHA1
+        description: Bad SHA1 hash.
+        type: string
+      - contextPath: File.SHA256
+        description: Bad SHA256 hash.
+        type: string
+      - contextPath: File.Type
+        description: File type
+        type: string
+      - contextPath: File.Malicious.Vendor
+        description: For malicious files, the vendor that made the decision.
+        type: string
+      - contextPath: File.Malicious.Description
+        description: For malicious files, the reason that the vendor made the decision.
+        type: string
+      - contextPath: File.Malicious.Score
+        description: For malicious files, the score from the vendor.
+        type: number
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: string
+      - contextPath: DBotScore.Type
+        description: The type of indicator.
+        type: string
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: string
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: number
+      - contextPath: Lastline.Submission.Status
+        description: Status of the submission.
+        type: string
+      - contextPath: Lastline.UUID
+        description: Task UUID.
+        type: string
+      - contextPath: Lastline.SubmissionTime
+        description: Time stamp in Lastline.
+        type: string
+      - contextPath: Lastline.Submission.YaraSignatures.name
+        description: Yara signatures name.
+        type: string
+      - contextPath: Lastline.Submission.YaraSignatures.score
+        description: The score according to the yara signatures (0 to 100).
+        type: number
+      - contextPath: Lastline.Submission.YaraSignatures.internal
+        description: Whether the signature is for internal usage only.
+        type: boolean
+      - contextPath: Lastline.Submission.DNSqueries
+        description: List of DNS queries executed by the analysis subject.
+        type: string
+      - contextPath: Lastline.Submission.NetworkConnections
+        description: A list of network connections executed by the analysis subject.
+        type: string
+      - contextPath: Lastline.Submission.DownloadedFiles
+        description: A list of files that were downloaded using the Microsoft Windows
+          file-download API functions. Each element is a tuple of file-origin URL and
+          a File element.
+        type: string
+      - contextPath: Lastline.Submission.Process
+        description: Information on a Windows process.
+        type: Unknown
+      - contextPath: Lastline.Submission.Process.arguments
+        description: The argument of the process.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable
+        description: The executable of the process.
+        type: Unknown
+      - contextPath: Lastline.Submission.Process.executable.abs_path
+        description: The absolute path of the executable of the process.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable.filename
+        description: The filename of the executable.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable.yara_signature_hits
+        description: The Yara signature of the executable of the process.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable.ext_info
+        description: The Executable information of the process.
+        type: unknown
+      - contextPath: Lastline.Submission.Process.process_id
+        description: The process ID.
+        type: string
   - arguments:
     - default: false
       description: The task UUID of the submitted Lastline analysis.
@@ -187,6 +379,9 @@ script:
     - contextPath: File.SHA256
       description: Bad SHA256 hash.
       type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
       type: string
@@ -210,6 +405,12 @@ script:
       type: number
     - contextPath: Lastline.Submission.Status
       description: Status of the submission.
+      type: string
+    - contextPath: Lastline.UUID
+      description: Task UUID.
+      type: string
+    - contextPath: Lastline.SubmissionTime
+      description: Time stamp in Lastline.
       type: string
     - contextPath: Lastline.Submission.YaraSignatures.name
       description: Yara signatures name.
@@ -255,20 +456,15 @@ script:
     - contextPath: Lastline.Submission.Process.process_id
       description: The process ID.
       type: string
-    - contextPath: File.Type
-      description: File type
-      type: string
   - arguments:
     - default: false
-      description: Tasks before in UTC format %Y-%m-%d %H:%M:%S. For example, 2018-07-08
-        12:00:00.
+      description: Tasks before in UTC format %Y-%m-%dT%H:%M:%S. For example, 2018-07-08T12:00:00.
       isArray: false
       name: before
       required: false
       secret: false
     - default: false
-      description: Tasks after in UTC format %Y-%m-%d %H:%M:%S. For example, 2018-07-10
-        12:00:00.
+      description: Tasks after in UTC format %Y-%m-%dT%H:%M:%S. For example, 2018-07-10T12:00:00.
       isArray: false
       name: after
       required: true
@@ -289,13 +485,105 @@ script:
     execution: false
     name: lastline-check-status
     outputs:
-    - contextPath: Lastline.Submission.UUID
-      description: The task UUID of submitted sample.
-      type: string
-    - contextPath: Lastline.Submission.Status
-      description: The status of the submission.
-      type: string
-  dockerimage: demisto/python3:3.7.3.221
+      - contextPath: URL.Data
+        description: A list of malicious URLs identified by the lastline analysis.
+        type: string
+      - contextPath: URL.Malicious.Vendor
+        description: For malicious URLs, the vendor that made the decision.
+        type: string
+      - contextPath: URL.Malicious.Description
+        description: For malicious URLs, the reason that the vendor made the decision.
+        type: string
+      - contextPath: URL.Malicious.Score
+        description: For malicious URLs, the score from the vendor.
+        type: number
+      - contextPath: File.MD5
+        description: Bad MD5 hash.
+        type: string
+      - contextPath: File.SHA1
+        description: Bad SHA1 hash.
+        type: string
+      - contextPath: File.SHA256
+        description: Bad SHA256 hash.
+        type: string
+      - contextPath: File.Type
+        description: File type
+        type: string
+      - contextPath: File.Malicious.Vendor
+        description: For malicious files, the vendor that made the decision.
+        type: string
+      - contextPath: File.Malicious.Description
+        description: For malicious files, the reason that the vendor made the decision.
+        type: string
+      - contextPath: File.Malicious.Score
+        description: For malicious files, the score from the vendor.
+        type: number
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: string
+      - contextPath: DBotScore.Type
+        description: The type of indicator.
+        type: string
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: string
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: number
+      - contextPath: Lastline.Submission.Status
+        description: Status of the submission.
+        type: string
+      - contextPath: Lastline.UUID
+        description: Task UUID.
+        type: string
+      - contextPath: Lastline.SubmissionTime
+        description: Time stamp in Lastline.
+        type: string
+      - contextPath: Lastline.Submission.YaraSignatures.name
+        description: Yara signatures name.
+        type: string
+      - contextPath: Lastline.Submission.YaraSignatures.score
+        description: The score according to the yara signatures (0 to 100).
+        type: number
+      - contextPath: Lastline.Submission.YaraSignatures.internal
+        description: Whether the signature is for internal usage only.
+        type: boolean
+      - contextPath: Lastline.Submission.DNSqueries
+        description: List of DNS queries executed by the analysis subject.
+        type: string
+      - contextPath: Lastline.Submission.NetworkConnections
+        description: A list of network connections executed by the analysis subject.
+        type: string
+      - contextPath: Lastline.Submission.DownloadedFiles
+        description: A list of files that were downloaded using the Microsoft Windows
+          file-download API functions. Each element is a tuple of file-origin URL and
+          a File element.
+        type: string
+      - contextPath: Lastline.Submission.Process
+        description: Information on a Windows process.
+        type: Unknown
+      - contextPath: Lastline.Submission.Process.arguments
+        description: The argument of the process.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable
+        description: The executable of the process.
+        type: Unknown
+      - contextPath: Lastline.Submission.Process.executable.abs_path
+        description: The absolute path of the executable of the process.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable.filename
+        description: The filename of the executable.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable.yara_signature_hits
+        description: The Yara signature of the executable of the process.
+        type: string
+      - contextPath: Lastline.Submission.Process.executable.ext_info
+        description: The Executable information of the process.
+        type: unknown
+      - contextPath: Lastline.Submission.Process.process_id
+        description: The process ID.
+        type: string
+  dockerimage: demisto/python3:3.7.5.4328
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -304,4 +592,4 @@ script:
   subtype: python3
   type: python
 tests:
-  - No tests
+- No tests
