@@ -1,7 +1,7 @@
 commonfields:
-  id: tomd
+  id: markdownify
   version: -1
-name: tomd
+name: markdownify
 script: ''
 type: python
 tags: []
@@ -13,5 +13,5 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/tomd
+dockerimage: demisto/demisto/btfl-soup
 runas: DBotWeakRole
