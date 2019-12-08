@@ -165,11 +165,11 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:admin@demistodev.com subject:special test via playbook newer_than:1d
+        simple: from:shai@demistodev.com subject:special test via playbook newer_than:1d
       subject: {}
       to: {}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -341,11 +341,11 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:admin@demistodev.com subject:special test via playbook newer_than:1d
+        simple: from:shai@demistodev.com subject:special test via playbook newer_than:1d
       subject: {}
       to: {}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -413,7 +413,7 @@ tasks:
       message-id:
         simple: ${Testmail.ID}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -607,11 +607,11 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:admin@demistodev.com subject:special test via playbook newer_than:1d
+        simple: from:shai@demistodev.com subject:special test via playbook newer_than:1d
       subject: {}
       to: {}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -801,11 +801,11 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:admin@demistodev.com subject:special test via playbook newer_than:1d
+        simple: from:shai@demistodev.com subject:special test via playbook newer_than:1d
       subject: {}
       to: {}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -911,11 +911,11 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:admin@demistodev.com subject:special test via playbook newer_than:1d
+        simple: from:shai@demistodev.com subject:special test via playbook newer_than:1d
       subject: {}
       to: {}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -1056,11 +1056,11 @@ tasks:
       max-results: {}
       page-token: {}
       query:
-        simple: from:admin@demistodev.com subject:special test via playbook newer_than:1d
+        simple: from:shai@demistodev.com subject:special test via playbook newer_than:1d
       subject: {}
       to: {}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {
@@ -1159,7 +1159,7 @@ tasks:
       message-id:
         simple: ${Testmail.ID}
       user-id:
-        simple: admin@demistodev.com
+        simple: shai@demistodev.com
     separatecontext: false
     view: |-
       {

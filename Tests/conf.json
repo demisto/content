@@ -670,7 +670,7 @@
             "playbookID": "get_original_email_-_gmail_-_test"
         },
         {
-            "integrations": "Gmail Single User",
+            "integrations": ["Gmail Single User", "Gmail"],
             "playbookID": "Gmail Single User - Test",
             "fromversion": "4.5.0"
         },
