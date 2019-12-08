@@ -2085,6 +2085,8 @@ def main():
                 {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
     finally:
+        if isinstance(config, Configuration):
+            config.protocol.thread_pool.terminate()
         if log_stream:
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
