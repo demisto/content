@@ -116,5 +116,8 @@ if __name__ == "__main__":
                     break
 
         slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl)
+        # create this file for destroy_instances script
+        with open("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', '')), 'a'):
+            pass
     else:
         print_error("Not instance tests build, stopping Slack Notifications about instances")
