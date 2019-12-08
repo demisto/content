@@ -132,7 +132,7 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def list_analyzers(args):
+def list_analyzers_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -152,7 +152,7 @@ def list_analyzers(args):
     return_outputs(human_readable, ec)
 
 
-def list_analyzed_resource(args):
+def list_analyzed_resource_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -180,7 +180,7 @@ def list_analyzed_resource(args):
     return_outputs(human_readable, ec)
 
 
-def list_findings(args):
+def list_findings_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -213,7 +213,7 @@ def list_findings(args):
     return_outputs(human_readable, ec)
 
 
-def get_analyzed_resource(args):
+def get_analyzed_resource_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -235,7 +235,7 @@ def get_analyzed_resource(args):
     return_outputs(human_readable, ec)
 
 
-def get_finding(args):
+def get_finding_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -252,12 +252,12 @@ def get_finding(args):
     data = json.loads(json.dumps(response['finding'], cls=DatetimeEncoder))
     data['analyzerArn'] = args.get('analyzerArn')
 
-    ec = {'AWS.AccessAnalyzer.Analyzers(val.analyzerArn === obj.analyzerArn).Findings(val.resourceArn === obj.resourceArn)': data}
+    ec = {'AWS.AccessAnalyzer.Analyzers(val.analyzerArn === obj.analyzerArn)': data}
     human_readable = tableToMarkdown("AWS Access Analyzer Resource", data)
     return_outputs(human_readable, ec)
 
 
-def start_resource_scan(args):
+def start_resource_scan_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -274,7 +274,7 @@ def start_resource_scan(args):
     return_outputs("Resource scan request sent.")
 
 
-def update_findings(args):
+def update_findings_command(args):
     client = aws_session(
         region=args.get('region'),
         roleArn=args.get('roleArn'),
@@ -300,6 +300,8 @@ def test_function():
         response = client.list_analyzers()
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
             return_outputs('ok')
+        else:
+            return_error(str(response))
 
     except Exception as e:
         return return_error(str(e))
@@ -310,19 +312,19 @@ try:
     if demisto.command() == 'test-module':
         result = test_function()
     elif demisto.command() == 'aws-access-analyzer-list-analyzers':
-        list_analyzers(demisto.args())
+        list_analyzers_command(demisto.args())
     elif demisto.command() == 'aws-access-analyzer-list-analyzed-resource':
-        list_analyzed_resource(demisto.args())
+        list_analyzed_resource_command(demisto.args())
     elif demisto.command() == 'aws-access-analyzer-list-findings':
-        list_findings(demisto.args())
+        list_findings_command(demisto.args())
     elif demisto.command() == 'aws-access-analyzer-get-analyzed-resource':
-        get_analyzed_resource(demisto.args())
+        get_analyzed_resource_command(demisto.args())
     elif demisto.command() == 'aws-access-analyzer-get-finding':
-        get_finding(demisto.args())
+        get_finding_command(demisto.args())
     elif demisto.command() == 'aws-access-analyzer-start-resource-scan':
-        start_resource_scan(demisto.args())
+        start_resource_scan_command(demisto.args())
     elif demisto.command() == 'aws-access-analyzer-update-findings':
-        update_findings(demisto.args())
+        update_findings_command(demisto.args())
 
 except Exception as e:
     return_error(f"Error has occured in AWS Access Analyzer Integration: {str(e)}")
