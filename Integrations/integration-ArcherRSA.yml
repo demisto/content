@@ -2463,7 +2463,7 @@ script:
                             usersWithIDsInsteadOfNames.push(currentUserID)
                         }
 
-                        fieldValue["users"] = usersWithIDsInsteadOfNames;
+                        fieldValue['users'] = usersWithIDsInsteadOfNames;
                         modifiedfieldsToValues[fieldName] = fieldValue;
                     }
                 }
