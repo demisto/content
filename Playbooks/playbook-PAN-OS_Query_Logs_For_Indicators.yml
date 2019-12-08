@@ -2,8 +2,8 @@ id: PAN-OS Query Logs For Indicators
 version: -1
 fromversion: 4.5.0
 name: PAN-OS Query Logs For Indicators
-description: 'Query PAN-OS Logs of types in one playbook: traffic, threat, url,
-  data-filtering and wildfire. The playbook accepts inputs such as IP. hash, url.'
+description: 'This playbook queries the following PAN-OS log types: traffic, threat, url,
+  data-filtering and wildfire. The playbook accepts inputs such as IP. hash, and url.'
 starttaskid: "0"
 tasks:
   "0":
@@ -39,7 +39,7 @@ tasks:
       id: eebbd7e1-3e02-4f71-8ddb-c01eec4636f6
       version: -1
       name: Is Palo Alto Networks PAN-OS enabled?
-      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS
+      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS.
         integration enabled.
       type: condition
       iscommand: false
@@ -97,7 +97,7 @@ tasks:
       id: 474e6bcb-cf44-46ea-8616-fbb6f1f92cae
       version: -1
       name: Panorama query traffic logs
-      description: Query logs
+      description: Query logs.
       script: '|||panorama-query-logs'
       type: regular
       iscommand: true
@@ -197,7 +197,7 @@ tasks:
       id: 9e9acf9e-c243-475f-84e6-8dbb7d4857aa
       version: -1
       name: Panorama Get Logs
-      description: Retrieves logs query data by job ID.
+      description: Retrieves log query data by job ID.
       script: '|||panorama-get-logs'
       type: regular
       iscommand: true
@@ -261,8 +261,8 @@ tasks:
     task:
       id: 8c0d50c3-d613-43b6-8de3-dc8b30b99683
       version: -1
-      name: Panorama Check Logs Status
-      description: Checks the status of a logs query.
+      name: Panorama Check Log Status
+      description: Checks the status of a log query.
       script: '|||panorama-check-logs-status'
       type: regular
       iscommand: true
@@ -411,7 +411,7 @@ tasks:
     task:
       id: 534a5c56-d31e-4dfb-8080-e23f2c302fea
       version: -1
-      name: Is there an IP?
+      name: Is there an IP address?
       description: Is there an IP?
       type: condition
       iscommand: false
@@ -452,7 +452,7 @@ tasks:
       id: 1a23d1fa-1bb2-40c7-881d-22f103bf90a5
       version: -1
       name: Panorama query wildfire logs
-      description: Query logs
+      description: Query logs.
       script: '|||panorama-query-logs'
       type: regular
       iscommand: true
@@ -497,7 +497,7 @@ tasks:
       id: c87c1f78-5b9e-401c-8e29-f0969c9bdd3f
       version: -1
       name: Panorama query data logs
-      description: Query logs
+      description: Query logs.
       script: '|||panorama-query-logs'
       type: regular
       iscommand: true
@@ -803,7 +803,7 @@ tasks:
       id: d90b814b-f7bc-477b-8389-8967182e5feb
       version: -1
       name: Panorama query data logs
-      description: Query logs
+      description: Query logs.
       script: '|||panorama-query-logs'
       type: regular
       iscommand: true
@@ -848,7 +848,7 @@ tasks:
       id: a8ad6645-3502-41bc-8c19-0d19a1a042d3
       version: -1
       name: Panorama query url logs
-      description: Query logs
+      description: Query logs.
       script: '|||panorama-query-logs'
       type: regular
       iscommand: true
@@ -907,7 +907,7 @@ inputs:
 - key: filedigest
   value: {}
   required: false
-  description: File hash (for WildFIre logs only).
+  description: File hash (for WildFire logs only).
 - key: ip
   value: {}
   required: false
