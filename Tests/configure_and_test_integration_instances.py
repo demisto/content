@@ -18,7 +18,7 @@ def options_handler():
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
-    parser.add_argument('-env', '--ami_env', help='The AMI environment for the current run. Options are '
+    parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
                         '"Server Master", "Demisto GA", "Demisto one before GA", "Demisto two before GA". '
                         'The server url is determined by the AMI environment.')
     parser.add_argument('-g', '--git_sha1', help='commit sha1 to compare changes with')
