@@ -1998,6 +1998,8 @@
         }
     ],
     "skipped_tests": {
+        "Test-Detonate URL - Crowdstrike": "Issue 19439",
+        "Git_Integration-Test": "Issue 20029",
         "FormattingPerformance - Test": "Issue 20348",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "Request Debugging - Test": "Issue 20337",
@@ -2058,7 +2060,7 @@
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
         "VxStream": "Exceeded quota, remove in 1/1/19",
-        "Protectwise": "Issue 20486",
+        "ProtectWise": "Issue 20486",
         "ThreatMiner": "Issue 20469",
         "DomainTools Iris": "Issue 20433",
         "ThreatQ v2": "Issue 19468",
