@@ -700,9 +700,9 @@ tasks:
     type: condition
     task:
       id: de6bfa6c-d6a1-40e5-8bbf-134270c9d44e
-      description: Is Panorama enabled?
+      description: Is PAN-OS enabled?
       version: -1
-      name: Is Panorama enabled?
+      name: Is PAN-OS enabled?
       type: condition
       iscommand: false
       brand: ""
@@ -2387,9 +2387,9 @@ tasks:
     type: title
     task:
       id: 8f850785-2523-4821-8a1c-0e8a9e66a266
-      description: Panorama hash search
+      description: PAN-OS hash search
       version: -1
-      name: Panorama hash search
+      name: PAN-OS hash search
       type: title
       iscommand: false
       brand: ""
@@ -2956,7 +2956,7 @@ tasks:
       id: 3d88479c-bc21-4821-812a-d9d3027ea6d6
       description: Header
       version: -1
-      name: Panorama domain/url search
+      name: PAN-OS domain/url search
       type: title
       iscommand: false
       brand: ""
@@ -3008,7 +3008,7 @@ tasks:
       id: 80c54910-0a39-49c2-882a-0ffa04b79371
       description: Header
       version: -1
-      name: Panorama IP search
+      name: PAN-OS IP search
       type: title
       iscommand: false
       brand: ""
@@ -3282,10 +3282,10 @@ tasks:
     type: playbook
     task:
       id: 2f402f5e-2e01-4a7f-8013-ec3a416c4ef6
-      description: Panorama Query Logs for Indicators
+      description: PAN-OS Query Logs for Indicators
       version: -1
-      name: Panorama Query Logs For Indicators
-      playbookName: Panorama Query Logs for Indicators
+      name: PAN-OS Query Logs For Indicators
+      playbookName: PAN-OS Query Logs for Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -3327,11 +3327,11 @@ tasks:
     task:
       id: 0032ebec-4df5-4623-8832-02cc511a16b6
       version: -1
-      name: Panorama Query Logs For Indicators
-      description: 'Query Panorama Logs of different types in one playbook: traffic, threat,
+      name: PAN-OS Query Logs For Indicators
+      description: 'Query PAN-OS Logs of different types in one playbook: traffic, threat,
         url, data-filtering and wildfire. The playbook accepts inputs such as IP.
         hash, url.'
-      playbookName: Panorama Query Logs For Indicators
+      playbookName: PAN-OS Query Logs For Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -3373,10 +3373,10 @@ tasks:
     type: playbook
     task:
       id: 78f70966-8fe8-4eb4-834b-0f910bc21458
-      description: Panorama Query Logs for Indicators
+      description: PAN-OS Query Logs for Indicators
       version: -1
-      name: Panorama Query Logs For Indicators
-      playbookName: Panorama Query Logs for Indicators
+      name: PAN-OS Query Logs For Indicators
+      playbookName: PAN-OS Query Logs for Indicators
       type: playbook
       iscommand: false
       brand: ""
