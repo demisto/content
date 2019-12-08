@@ -10,7 +10,6 @@ from subprocess import Popen, PIPE
 
 def main():
     args = demisto.args()  # type: dict
-    file_path = None
     file_entry_id = ''
     if args.get('fileName') or args.get('lastZipFileInWarroom'):
         entries = demisto.executeCommand('getEntries', {})
