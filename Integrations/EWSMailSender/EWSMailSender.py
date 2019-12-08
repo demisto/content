@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 from cStringIO import StringIO
 import logging
 import warnings
@@ -9,7 +10,7 @@ import traceback
 import getpass
 
 
-# work arround for bug in exchangelib: https://github.com/ecederstrand/exchangelib/issues/448
+# workaround for bug in exchangelib: https://github.com/ecederstrand/exchangelib/issues/448
 class FixGetPass(object):
     def __init__(self):
         self.getpass_getuser_org = getpass.getuser
@@ -259,7 +260,7 @@ config = None  # type: ignore
 
 
 def main():
-    global USERNAME, PASSWORD, ACCOUNT_EMAIL, log_stream
+    global USERNAME, PASSWORD, ACCOUNT_EMAIL, log_stream, config
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     ACCOUNT_EMAIL = demisto.params().get('mailbox', None)
@@ -271,7 +272,6 @@ def main():
 
     try:
         start_logging()
-        global config
         config = prepare()
         args = prepare_args(demisto.args())
         if demisto.command() == 'test-module':
@@ -315,6 +315,9 @@ def main():
         else:
             return_error(error_message + '\n' + debug_log)
     finally:
+        if isinstance(config, Configuration):
+            # The protocol will not kill its threads after use, so kill it manually
+            config.protocol.thread_pool.terminate()
         if log_stream:
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
