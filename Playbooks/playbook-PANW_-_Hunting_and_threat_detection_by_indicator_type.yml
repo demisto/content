@@ -4,7 +4,9 @@ name: PANW - Hunting and threat detection by indicator type
 fromversion: 4.5.0
 description: |-
   Integrations list: Cortex (Traps, PAN-OS, Analytics)
-  This is a multipurpose playbook used for hunting and threat detection. The playbook received inputs based on hashes, ip's or domain names provided manually or from outputs by other playbooks. With the received indicators the playbook leverages Palo Alto Cortex data received by products such as Traps, Analytics and Pan-OS to search for ips and hosts related to that specific hash. The output provided by the Playbook allows to pivot searches for possibly affected hosts, ip's or users.
+  This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. 
+  With the received indicators, the playbook leverages Palo Alto Cortex data received by products such as Traps, Analytics and Pan-OS to search for IP addresses and hosts related to that specific hash. 
+  The output provided by the playbook facilitates pivoting searches for possibly affected hosts, IP addresses, or users.
 starttaskid: "0"
 tasks:
   "0":
@@ -43,8 +45,8 @@ tasks:
       version: -1
       name: Convert file hash to corresponding hashes
       description: |
-        The playbook allows to get all of the relevant file hash even if there is only one hash type available
-        For example if we have only the SHA256 hash the playbook will get the SHA1 and MD5 hashes.
+        The playbook enables you to get all of the relevant file hashes even if there is only one hash type available.
+        For example, if we have only the SHA256 hash, the playbook will get the SHA1 and MD5 hashes.
       playbookName: Convert file hash to corresponding hashes
       type: playbook
       iscommand: false
@@ -201,7 +203,7 @@ tasks:
       id: 04619f6e-84db-4562-8c31-a1fd1518323c
       description: Is there an domain/url?
       version: -1
-      name: Is there an domain/url?
+      name: Is there a domain/url?
       type: condition
       iscommand: false
       brand: ""
@@ -405,9 +407,9 @@ tasks:
     type: condition
     task:
       id: e15b4fef-75b8-4c07-8a9f-6eebb8456a57
-      description: Is ip detected in Cortex threat logs?
+      description: Is the IP address detected in Cortex threat logs?
       version: -1
-      name: Is ip detected in Cortex threat logs?
+      name: Is IP address detected in Cortex threat logs?
       type: condition
       iscommand: false
       brand: ""
@@ -441,10 +443,10 @@ tasks:
     type: regular
     task:
       id: d1762265-fecc-426c-8247-ad1286c4a568
-      description: Set detected source and destination IPs
+      description: Set detected source and destination IP addresses.
       version: -1
       name: Set detected source and destination IPs
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -533,7 +535,7 @@ tasks:
       description: Set detected users
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -568,7 +570,7 @@ tasks:
     type: regular
     task:
       id: a48eeba0-8c0e-4e05-841f-ca99383878b3
-      description: Search in Cortex Traffic logs
+      description: Search in Cortex Traffic logs.
       version: -1
       name: Search in Cortex Traffic logs
       script: '|||cortex-query-traffic-logs'
@@ -618,9 +620,9 @@ tasks:
     type: condition
     task:
       id: 089cf7cd-0115-4595-8ad1-7fa5376fe8e7
-      description: Is ip detected in Cortex traffic logs?
+      description: Is the IP address detected in Cortex traffic logs?
       version: -1
-      name: Is ip detected in Cortex traffic logs?
+      name: Is IP detected in Cortex traffic logs?
       type: condition
       iscommand: false
       brand: ""
@@ -655,8 +657,8 @@ tasks:
     task:
       id: ff3caca5-d5eb-4625-8b0f-b2930af3893d
       version: -1
-      name: Set  detected source and destination IPs
-      description: Sets a value into the context with the given context key
+      name: Set detected source and destination IPs
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -750,7 +752,7 @@ tasks:
     type: regular
     task:
       id: 00873beb-a0e2-458f-8c6f-e0c8d3a82813
-      description: Search hash in Cortex (Traps Endpoint)
+      description: Search hash in Cortex (Traps Endpoint).
       version: -1
       name: Search hash in Cortex (Traps Endpoint)
       script: '|||cortex-query-traps-logs'
@@ -801,7 +803,7 @@ tasks:
     type: regular
     task:
       id: cda12bb9-7842-4bf1-8c00-178c14087336
-      description: Search hash in Cortex (XDR Analytics)
+      description: Search hash in Cortex (XDR Analytics).
       version: -1
       name: Search hash in Cortex (XDR Analytics)
       script: '|||cortex-query-analytics-logs'
@@ -893,7 +895,7 @@ tasks:
     type: condition
     task:
       id: a9361574-bc64-4e41-8d9b-988cb470833a
-      description: Is hash detected by Cortex Traps?
+      description: Is the hash detected by Cortex Traps?
       version: -1
       name: Is hash detected by Cortex Traps?
       type: condition
@@ -929,7 +931,7 @@ tasks:
     type: condition
     task:
       id: f1211202-657d-4ffa-8f65-ae9fd672ffa7
-      description: Is hash detected by Cortex Analytics?
+      description: Is the hash detected by Cortex Analytics?
       version: -1
       name: Is hash detected by Cortex Analytics?
       type: condition
@@ -966,8 +968,8 @@ tasks:
     task:
       id: 1ddc064b-ee10-4dc8-8c9e-dbae661b9464
       version: -1
-      name: Search hash in Cortex Threat logs
-      description: The command searches the Cortex panw.threat table which is the
+      name: Search for the hash in Cortex Threat logs
+      description: The command searches the Cortex panw.threat table, which is the
         threat logs table for PAN-OS/Panorama.
       script: '|||cortex-query-threat-logs'
       type: regular
@@ -1020,7 +1022,7 @@ tasks:
     type: condition
     task:
       id: 6eb8c99e-3d4a-474d-84bd-521aa1cfe92f
-      description: Is hash detected by Cortex Threat logs?
+      description: Is the hash detected by Cortex Threat logs?
       version: -1
       name: Is hash detected by Cortex Threat logs?
       type: condition
@@ -1058,7 +1060,7 @@ tasks:
       id: cd354ae7-81de-495d-85f5-18732f151b03
       version: -1
       name: Set detected Hosts
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1096,7 +1098,7 @@ tasks:
       id: b6fe6807-3f46-438c-8db5-8ee1b9290465
       version: -1
       name: Set detected IPs
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1155,7 +1157,7 @@ tasks:
     type: regular
     task:
       id: b963aae5-4f9b-4859-8415-1abe79b6df6f
-      description: Search domain in Cortex Threat logs
+      description: Search for the domain in Cortex Threat logs.
       version: -1
       name: Search domain in Cortex Threat logs
       script: '|||cortex-query-threat-logs'
@@ -1253,7 +1255,7 @@ tasks:
       id: eded135c-fff0-4139-8ebf-09f703a44359
       version: -1
       name: Set detected source and destionation IPs
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1297,7 +1299,7 @@ tasks:
       id: ce169488-a826-4099-84b4-d3929b5fd4e1
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1662,7 +1664,7 @@ tasks:
       id: 61df7fd2-5df9-42cc-8301-b4689e484ddb
       version: -1
       name: Set unique detected source and destination IP's
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1706,7 +1708,7 @@ tasks:
       id: a6263d1e-695e-48d7-86b4-b7c67238b9da
       version: -1
       name: Set detected Hosts
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1744,7 +1746,7 @@ tasks:
       id: 79b9e374-120a-4d4c-8417-57a36004ba65
       version: -1
       name: Set detected IPs
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1782,7 +1784,7 @@ tasks:
       id: d1a1f34a-171f-4bdd-8786-e58f46083fb6
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1820,7 +1822,7 @@ tasks:
       id: 4f8119a5-987a-4146-8f21-af6cb20eb64c
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1858,7 +1860,7 @@ tasks:
       id: c3c61dec-436e-49a3-89a0-1667c1b2b55b
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1896,7 +1898,7 @@ tasks:
       id: 1ca375e6-e10f-4d7b-8ecd-1c10a50940c4
       version: -1
       name: Set unique detected source and destination IP's
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1938,7 +1940,7 @@ tasks:
     type: condition
     task:
       id: 451306d0-c373-4707-80a9-c3be35f72671
-      description: Is hash detected by Panorama Wildfire?
+      description: Is the hash detected by Panorama Wildfire?
       version: -1
       name: Is hash detected by Panorama Wildfire?
       type: condition
@@ -1998,7 +2000,7 @@ tasks:
       id: 302fb615-03f7-4b7c-8346-42912cbf8690
       version: -1
       name: Set detected source and destination IP's
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2080,7 +2082,7 @@ tasks:
     type: condition
     task:
       id: 3e151189-482a-4af0-8e9c-86393e545b72
-      description: Is domain detected by Cortex Threat logs?
+      description: Is the domain detected by Cortex Threat logs?
       version: -1
       name: Is domain detected by Cortex Threat logs?
       type: condition
@@ -2117,8 +2119,8 @@ tasks:
     task:
       id: bf85e6bb-e6b6-41a7-8916-f360c884e728
       version: -1
-      name: Set  detected source and destination IPs
-      description: Sets a value into the context with the given context key
+      name: Set detected source and destination IPs
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2302,7 +2304,7 @@ tasks:
       id: 18c2b8b4-3430-4231-8cf9-554f40479f77
       version: -1
       name: Set detected source and destination IPs
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2413,7 +2415,7 @@ tasks:
       id: 0590dd67-b16f-4a9a-897b-446160b4ecae
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2502,7 +2504,9 @@ tasks:
       version: -1
       name: Autofocus Query Samples, Sessions and Tags
       description: |-
-        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
+        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, and domains to run queries that can leverage
+        several query parameters. To run the more advanced queries, its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to create a query,
+        and use the export search button. The result can be used as a playbook input.
 
         The playbook supports searching both the Samples API and the sessions API.
       playbookName: Autofocus Query Samples, Sessions and Tags
@@ -2568,7 +2572,9 @@ tasks:
       version: -1
       name: Autofocus Query Samples, Sessions and Tags
       description: |-
-        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
+        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, and domains to run queries that can leverage
+        several query parameters. To run the more advanced queries, its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to create a query,
+        and use the export search button. The result can be used as a playbook input.
 
         The playbook supports searching both the Samples API and the sessions API.
       playbookName: Autofocus Query Samples, Sessions and Tags
@@ -2632,7 +2638,9 @@ tasks:
       version: -1
       name: Autofocus Query Samples, Sessions and Tags
       description: |-
-        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
+        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, and domains to run queries that can leverage
+        several query parameters. To run the more advanced queries, its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to create a query,
+        and use the export search button. The result can be used as a playbook input.
 
         The playbook supports searching both the Samples API and the sessions API.
       playbookName: Autofocus Query Samples, Sessions and Tags
@@ -2740,7 +2748,7 @@ tasks:
       id: 2a7acc60-cdb0-4dce-8dbc-5b247f093f9b
       version: -1
       name: Set unique detected source and destination IP's
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2826,7 +2834,7 @@ tasks:
       id: 07785f59-947f-4c31-8086-5b199507a953
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -3112,7 +3120,7 @@ tasks:
       id: 6773a849-1162-4ab5-8fae-9cf08a717bf2
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -3156,7 +3164,7 @@ tasks:
       id: 82db6939-9aed-4b43-8fe8-989893e78216
       version: -1
       name: Set unique detected source and destination IP's
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -3200,7 +3208,7 @@ tasks:
       id: 768fad10-66da-4887-8c1c-8c3bb2a3e3ce
       version: -1
       name: Set Traps id
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -3238,7 +3246,7 @@ tasks:
       id: 571ea8fc-2f3d-402e-8050-fc59f76013a1
       version: -1
       name: Set Traps id
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -3274,10 +3282,10 @@ tasks:
     type: playbook
     task:
       id: 2f402f5e-2e01-4a7f-8013-ec3a416c4ef6
-      description: Panorama Query Logs For Indicators
+      description: Panorama Query Logs for Indicators
       version: -1
       name: Panorama Query Logs For Indicators
-      playbookName: Panorama Query Logs For Indicators
+      playbookName: Panorama Query Logs for Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -3320,7 +3328,7 @@ tasks:
       id: 0032ebec-4df5-4623-8832-02cc511a16b6
       version: -1
       name: Panorama Query Logs For Indicators
-      description: 'Query Panorama Logs of types in one playbook: traffic, threat,
+      description: 'Query Panorama Logs of different types in one playbook: traffic, threat,
         url, data-filtering and wildfire. The playbook accepts inputs such as IP.
         hash, url.'
       playbookName: Panorama Query Logs For Indicators
@@ -3365,10 +3373,10 @@ tasks:
     type: playbook
     task:
       id: 78f70966-8fe8-4eb4-834b-0f910bc21458
-      description: Panorama Query Logs For Indicators
+      description: Panorama Query Logs for Indicators
       version: -1
       name: Panorama Query Logs For Indicators
-      playbookName: Panorama Query Logs For Indicators
+      playbookName: Panorama Query Logs for Indicators
       type: playbook
       iscommand: false
       brand: ""
@@ -3463,16 +3471,16 @@ inputs:
   description: List of domains or urls.
 outputs:
 - contextPath: detectedips
-  description: Ip or array of ip's that were detected by the hunting.
+  description: IP address or array of IP addresses that were detected during hunting.
   type: string
 - contextPath: detectedhosts
-  description: Host or array of hosts that were detected by the hunting.
+  description: Host or array of hosts that were detected during hunting.
   type: string
 - contextPath: detectedusers
-  description: User or array of users that were detected by the hunting.
+  description: User or array of users that were detected during hunting.
   type: string
 - contextPath: trapsid
-  description: Id or array of id's for traps hosts detected in the searches.
+  description: ID or array of IDs for traps hosts detected in the searches.
   type: string
 
 tests:
