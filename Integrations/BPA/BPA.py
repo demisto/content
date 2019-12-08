@@ -212,7 +212,7 @@ def main():
             return_outputs(*submit_task_command(client, panorama))
         elif command == 'pan-os-bpa-get-job-results':
             return_outputs(*get_results_command(client, demisto.args()))
-        elif command == 'get-remediation-documentation':
+        elif command == 'pan-os-get-documentation':
             return_outputs(*get_documentation_command(client))
         elif command == 'test-module':
             return_outputs(*test_module(client, panorama))

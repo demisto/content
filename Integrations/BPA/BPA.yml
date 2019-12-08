@@ -16,7 +16,7 @@ configuration:
     name: key
     required: true
     type: 4
-  - display: BPA Token
+  - display: BPA Access Token
     name: token
     required: true
     type: 4
@@ -34,13 +34,13 @@ name: BPA
 script:
   commands:
     - deprecated: false
-      description: Get documentaion
+      description: Gets the documentation of all BPA checks
       execution: false
-      name: get-remediation-documentation
+      name: pan-os-get-documentation
       outputs:
         - contextPath: PAN-OS-BPA.Documentation
-          description: Gets the documentation of all BPA checks
-          type: string
+          description: List of BPA checks
+          type: Unknown
     - deprecated: false
       description: Submits a BPA job.
       execution: false
