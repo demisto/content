@@ -150,7 +150,7 @@ def get_access_token():
 
 def get_self_deployed_token():
     integration_context = demisto.getIntegrationContext()
-    if integration_context and integration_context['token_expiration_time']:
+    if integration_context and integration_context.get('token_expiration_time'):
         token_expiration_time = integration_context['token_expiration_time']
         now = int(time.time())
         if token_expiration_time < now:
@@ -163,15 +163,22 @@ def get_self_deployed_token():
        'client_secret': ENC_KEY,
        'grant_type': 'client_credentials'
     }
-    response = requests.post(url, data, verify=USE_SSL)
-    body = response.json()
-    if response.status_code != 200:
-        return_error('Error in Microsoft authorization: {}'.format(str(body)))
-    demisto.setIntegrationContext({
-        'token_expiration_time': body['expires_on'],
-        'token': body['access_token']
-    })
-    return body['access_token']
+    access_token = ''
+    try:
+        response = requests.post(url, data, verify=USE_SSL)
+        body = response.json()
+        if response.status_code != 200:
+            return_error('Error in Microsoft authorization: {}'.format(str(body)))
+        demisto.setIntegrationContext({
+            'token_expiration_time': body.get('expires_on', 3595),
+            'token': body.get('access_token')
+        })
+
+        access_token = body['access_token']
+    except Exception as e:
+        return_error('Error in Microsoft authorization: {}'.format(str(e)))
+
+    return access_token
 
 
 def http_request(method, url_suffix, json=None, params=None):
