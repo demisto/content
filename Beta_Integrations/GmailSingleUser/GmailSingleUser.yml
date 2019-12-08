@@ -1,5 +1,6 @@
 category: Messaging
 beta: true
+fromversion: 4.5.0
 commonfields:
   id: Gmail Single User
   version: -1
@@ -8,7 +9,7 @@ configuration:
   name: email
   required: true
   type: 0
-- display: Auth Code (run gmail-auth-link to start auth flow  - see Detailed Instructions (?) section)
+- display: Auth Code (run !gmail-auth-link to start auth flow  - see Detailed Instructions (?) section)
   name: code
   required: false
   type: 4
