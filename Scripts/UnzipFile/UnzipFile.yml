@@ -43,7 +43,8 @@ tags:
 - file
 timeout: '0'
 type: python
-dockerimage: demisto/7zip
+dockerimage45: demisto/7zip
+dockerimage: demisto/7zip:latest
 runonce: false
 tests:
 - ZipFile-Test
