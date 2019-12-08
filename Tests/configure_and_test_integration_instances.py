@@ -132,7 +132,8 @@ def is_content_updating(server, username, password):
 
 def get_content_installation(client):
     '''Make request for details about the content installed on the demisto instance'''
-    msg = '\nMaking "POST" request to server - "{}" to check installed content.'.format(client.configuration.host)
+    host = client.api_client.configuration.host
+    msg = '\nMaking "POST" request to server - "{}" to check installed content.'.format(host)
     print(msg)
 
     # make request to installed content details
