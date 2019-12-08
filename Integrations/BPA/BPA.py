@@ -151,21 +151,16 @@ def get_results_command(client: Client, args: Dict):
     raw: Dict = client.get_results_request(task_id)
 
     status = raw.get('status', '')
+    job_checks = []
 
     if status == 'invalid':
         raise Exception("Job ID not valid or doesn't exist")
 
-    # TODO check status for in-progress
-    if status == 'TODO':
-        pass
-
-    elif status == 'complete':
+    if status == 'complete':
         results = raw.get('results', {})
         bpa = results.get('bpa', {})
         if not bpa:
             raise Exception("Invalid response from BPA")
-
-        job_checks = []
 
         for category_name, features in bpa.items():
             for feature_name, feature_contents in features.items():
