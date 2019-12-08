@@ -1934,7 +1934,7 @@ def test_check_for_answers_no_proxy(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }])
@@ -1984,7 +1984,7 @@ def test_check_for_answers_proxy(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }])
@@ -2033,7 +2033,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }, {
@@ -2041,7 +2041,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }, {
@@ -2049,7 +2049,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }])
@@ -2077,7 +2077,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:38:25'
     }, {
@@ -2085,52 +2085,25 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:38:25'
     }])
 
 
-def test_get_poll_minutes_no_received():
+@pytest.mark.parametrize('sent, expected_minutes', [(None, 1), ('2019-09-26 18:37:25', 1), ('2019-09-26 18:10:25', 2),
+                                                    ('2019-09-26 17:38:24', 5), ('2019-09-25 18:10:25', 5)])
+def test_get_poll_minutes(sent, expected_minutes):
     from Slack import get_poll_minutes
 
     # Set
-    received = None
     current = datetime.datetime(2019, 9, 26, 18, 38, 25)
 
     # Arrange
-    minutes = get_poll_minutes(current, received)
+    minutes = get_poll_minutes(current, sent)
 
     # Assert
-    assert minutes == 1
-
-
-def test_get_poll_minutes_received_in_range():
-    from Slack import get_poll_minutes
-
-    # Set
-    received = '2019-09-26 18:10:25'
-    current = datetime.datetime(2019, 9, 26, 18, 38, 25)
-
-    # Arrange
-    minutes = get_poll_minutes(current, received)
-
-    # Assert
-    assert minutes == 2
-
-
-def test_get_poll_minutes_received_out_of_range():
-    from Slack import get_poll_minutes
-
-    # Set
-    received = '2019-09-26 18:10:25'
-    current = datetime.datetime(2019, 9, 27, 12, 38, 25)
-
-    # Arrange
-    minutes = get_poll_minutes(current, received)
-
-    # Assert
-    assert minutes == 5
+    assert minutes == expected_minutes
 
 
 def test_check_for_answers_no_answer(mocker, requests_mock):
@@ -2153,7 +2126,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }, {
@@ -2161,7 +2134,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:34:25'
     }])
@@ -2181,7 +2154,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:38:25'
     }, {
@@ -2189,7 +2162,7 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
         'reply': 'Thanks bro',
         'expiry': '3000-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse',
         'last_poll_time': '2019-09-26 18:38:25'
     }])
@@ -2703,7 +2676,7 @@ def test_send_request_with_entitlement(mocker):
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43',
         'reply': 'Thanks bro',
         'expiry': '2019-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse'
     }]
 
@@ -2769,7 +2742,7 @@ def test_send_request_with_entitlement_blocks(mocker):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '2019-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse'
     }]
 
@@ -2836,7 +2809,7 @@ def test_send_request_with_entitlement_blocks_message(mocker):
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
         'reply': 'Thanks bro',
         'expiry': '2019-09-26 18:38:25',
-        'received': '2019-09-26 18:38:25',
+        'sent': '2019-09-26 18:38:25',
         'default_response': 'NoResponse'
     }]
 

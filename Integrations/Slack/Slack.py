@@ -39,7 +39,7 @@ INCIDENT_NOTIFICATION_CHANNEL = 'incidentNotificationChannel'
 PLAYGROUND_INVESTIGATION_TYPE = 9
 WARNING_ENTRY_TYPE = 11
 ENDPOINT_URL = 'https://oproxy.demisto.ninja/slack-poll'
-POLL_INTERVAL_MINUTES: Dict[Tuple, int] = {
+POLL_INTERVAL_MINUTES: Dict[Tuple, float] = {
     (0, 15): 1,
     (15, 60): 2,
     (60, ): 5
@@ -102,7 +102,7 @@ def test_module():
     demisto.results('ok')
 
 
-def get_current_utc_time():
+def get_current_utc_time() -> datetime:
     """
     :return: The current UTC time.
     """
@@ -607,8 +607,8 @@ def check_for_answers():
             last_poll_time = datetime.strptime(question['last_poll_time'], DATE_FORMAT)
             delta = now - last_poll_time
             minutes = delta.total_seconds() / 60
-            received = question.get('received')
-            poll_time_minutes = get_poll_minutes(now, received)
+            sent = question.get('sent')
+            poll_time_minutes = get_poll_minutes(now, sent)
 
             if minutes < poll_time_minutes:
                 continue
@@ -663,17 +663,17 @@ def check_for_answers():
     set_to_latest_integration_context('questions', questions)
 
 
-def get_poll_minutes(current_time: datetime, received: Optional[str]):
+def get_poll_minutes(current_time: datetime, sent: Optional[str]) -> float:
     """
     Get the interval to wait before polling again in minutes.
     :param current_time: The current time.
-    :param received: The time when the polling request was received.
+    :param sent: The time when the polling request was sent.
     :return: Total minutes to wait before polling.
     """
-    poll_time_minutes = 1
-    if received:
-        received_time = datetime.strptime(received, DATE_FORMAT)
-        total_delta = current_time - received_time
+    poll_time_minutes = 1.0
+    if sent:
+        sent_time = datetime.strptime(sent, DATE_FORMAT)
+        total_delta = current_time - sent_time
         total_minutes = total_delta.total_seconds() / 60
 
         for minute_range, interval in POLL_INTERVAL_MINUTES.items():
@@ -1286,7 +1286,7 @@ def save_entitlement(entitlement, thread, reply, expiry, default_response):
         'entitlement': entitlement,
         'reply': reply,
         'expiry': expiry,
-        'received': datetime.strftime(get_current_utc_time(), DATE_FORMAT),
+        'sent': datetime.strftime(get_current_utc_time(), DATE_FORMAT),
         'default_response': default_response
     })
 
