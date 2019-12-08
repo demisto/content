@@ -2085,8 +2085,11 @@ def main():
                 {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
     finally:
-        if isinstance(config, Configuration):
-            config.protocol.thread_pool.terminate()
+        try:
+            if isinstance(config, Configuration):
+                config.protocol.thread_pool.terminate()
+        except Exception:
+            demisto.debug("Error was found in terminating threads in config.protocol, ignoring.")
         if log_stream:
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
@@ -2096,5 +2099,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__builtin__", "builtins"):
     main()
