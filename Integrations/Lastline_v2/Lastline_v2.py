@@ -22,10 +22,18 @@ class Client(BaseClient):
         super(Client, self).__init__(base_url, verify, proxy)
 
     def file(self):
-        hash_type = hash_type_checker(self.command_params.get('file'))
-        self.command_params[hash_type] = self.command_params.get('file')
-        result = self.http_request('/analysis/submit/file')
-        human_readable, context_entry = report_generator(result)
+        human_readable = []
+        context_entry = []
+        result = []
+        hash_arg = argToList(self.command_params.get('file'))
+        for arg in hash_arg:
+            hash_type = hash_type_checker(arg)
+            self.command_params[hash_type] = arg
+            temp_result = self.http_request('/analysis/submit/file')
+            temp_human_readable, temp_context_entry = report_generator(result)
+            human_readable.append(temp_human_readable)
+            context_entry.append(temp_context_entry)
+            result.append(temp_result)
         return human_readable, context_entry, result
 
     def check_status(self):
@@ -47,7 +55,7 @@ class Client(BaseClient):
                 self.command_params[param] = self.command_params[param].replace('T', ' ')
         result = self.http_request('/analysis/get_completed')
         if 'data' in result:
-            context_entry = self.get_status_and_time(result['data'].get('tasks'))
+            context_entry = self.get_status_and_time(argToList(result['data'].get('tasks')))
             human_readable = '|UUID|Time|Status|\n|--|--|--|'
             for uuid, task_time, status in context_entry:
                 human_readable += f'\n|{uuid}|{task_time}|{status}|'
