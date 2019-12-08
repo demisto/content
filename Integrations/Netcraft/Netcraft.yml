@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Netcraft
 display: Netcraft
-category: Authentication
+category: Network Security
 description: An integration for Netcraft, allowing you to open and handle takedown requests.
 configuration:
 - display: Credentials
