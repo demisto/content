@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 
 import requests
 
@@ -151,7 +151,7 @@ def get_results_command(client: Client, args: Dict):
     raw: Dict = client.get_results_request(task_id)
 
     status = raw.get('status', '')
-    job_checks = []
+    job_checks: List[Dict] = []
 
     if status == 'invalid':
         raise Exception("Job ID not valid or doesn't exist")
