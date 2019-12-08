@@ -583,8 +583,9 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
 
         print("\nRunning mock-disabled tests")
         proxy.configure_proxy_in_demisto(demisto_api_key, server, '')
-        print("Restarting demisto service")
-        restart_demisto_service(ami, demisto_api_key, server)
+        print("Restarting demisto service - STAM - we aren't, just sleeping for 10 seconds")
+        # restart_demisto_service(ami, demisto_api_key, server)
+        sleep(10)
         print("Demisto service restarted\n")
     for t in mockless_tests:
         run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
