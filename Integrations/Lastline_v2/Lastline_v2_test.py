@@ -55,7 +55,7 @@ def test_exception_handler(test: Dict, result: str):
 
 def test_file_hash():
     # ./data_test/get_report_file.json hard coded hash md5
-    output = '20db928ad7e72ff32c28e3c2dccdeb05'
+    output = '7ec67d7adb2ecfa05f54c852b646eeac'
     assert output == file_hash('./data_test/get_report_file.json'), f'{INTEGRATION_NAME} error in file_hash'
 
 

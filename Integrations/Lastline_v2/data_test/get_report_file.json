@@ -34,7 +34,7 @@
           "md5": "b7476a4885b1414399e86b671db699a2"
         },
         {
-          "sha1": "4ae880775fa4862e5c6a7f6d3261be540b938292",
+          "sha1": "",
           "file_name": "search_example.py",
           "task_uuid": "9be7a97153060010199e9bf27f5ee4f8",
           "mime_type": "text/x-python",
@@ -114,7 +114,7 @@
           "md5": "c452556328b845181f7d8a27eca01984"
         },
         {
-          "sha1": "be7a0f510f8dce85260384e91273d0a969546cbd",
+          "sha1": "",
           "file_name": "dxlclient.callbacks.html",
           "task_uuid": "7c6537dd20be001017f882f9aa1a6adc",
           "mime_type": "text/html",
@@ -134,7 +134,7 @@
           "md5": "0d7849fd4d4148b7f78cab60a087633a"
         },
         {
-          "sha1": "0c4ab399b57fd608bdd71c3d0eacc22f35a9b898",
+          "sha1": "",
           "file_name": "file_rep_sample.py",
           "task_uuid": "6790c757aa57001015a60e236c74747c",
           "mime_type": "text/x-python",
@@ -182,7 +182,7 @@
           "md5": "f59a2181743c8239f3fa325a9c2141ba"
         }
       ],
-      "uuid": "26293d4be91960c6Q27weVEOE23JJyX5QPFLlxEfmJMUWjJJXsnspA",
+      "uuid": "",
       "format": {
         "build_version": 0,
         "major_version": 1,
@@ -198,7 +198,7 @@
           "ll-doc"
         ],
         "description": "Document analysis",
-        "report_uuid": "6bfec06837416c83iMENUhnig0zPu8rIwZjvT1-eceKGxXBZzpDo0g"
+        "report_uuid": ""
       },
       {
         "relevance": 1.0,
@@ -206,7 +206,7 @@
           "ll-int-archive"
         ],
         "description": "Archive inflation",
-        "report_uuid": "26293d4be91960c6Q27weVEOE23JJyX5QPFLlxEfmJMUWjJJXsnspA"
+        "report_uuid": ""
       }
     ],
     "child_tasks": [
@@ -214,61 +214,61 @@
         "task_uuid": "701f7e86fac600101106b9082b230689",
         "score": 0,
         "tag": "file extracted from archive",
-        "parent_report_uuid": "26293d4be91960c6Q27weVEOE23JJyX5QPFLlxEfmJMUWjJJXsnspA"
+        "parent_report_uuid": ""
       },
       {
         "task_uuid": "4a3d5b990f4800101ed32d93d49c2615",
         "score": 0,
         "tag": "file extracted from archive",
-        "parent_report_uuid": "26293d4be91960c6Q27weVEOE23JJyX5QPFLlxEfmJMUWjJJXsnspA"
+        "parent_report_uuid": ""
       },
       {
         "task_uuid": "9be7a97153060010199e9bf27f5ee4f8",
         "score": 0,
         "tag": "file extracted from archive",
-        "parent_report_uuid": "26293d4be91960c6Q27weVEOE23JJyX5QPFLlxEfmJMUWjJJXsnspA"
+        "parent_report_uuid": ""
       },
       {
         "task_uuid": "70eca50c8864001017e3a5c8014006e1",
         "score": 0,
         "tag": "file extracted from archive",
-        "parent_report_uuid": "26293d4be91960c6Q27weVEOE23JJyX5QPFLlxEfmJMUWjJJXsnspA"
+        "parent_report_uuid": ""
       },
       {
         "task_uuid": "a40307143d8100101d537f45d5eb01b9",
         "score": 0,
         "tag": "file extracted from archive",
-        "parent_report_uuid": "26293d4be91960c6Q27weVEOE23JJyX5QPFLlxEfmJMUWjJJXsnspA"
+        "parent_report_uuid": ""
       },
       {
         "task_uuid": "0ad4d423594b00101a1fb6812b57f8c7",
         "score": 0,
         "tag": "file extracted from archive",
-        "parent_report_uuid": "26293d4be91960c6Q27weVEOE23JJyX5QPFLlxEfmJMUWjJJXsnspA"
+        "parent_report_uuid": ""
       },
       {
         "task_uuid": "364261fc551b0010128dbee205154a83",
         "score": 0,
         "tag": "file extracted from archive",
-        "parent_report_uuid": "26293d4be91960c6Q27weVEOE23JJyX5QPFLlxEfmJMUWjJJXsnspA"
+        "parent_report_uuid": ""
       },
       {
         "task_uuid": "6790c757aa57001015a60e236c74747c",
         "score": 0,
         "tag": "file extracted from archive",
-        "parent_report_uuid": "26293d4be91960c6Q27weVEOE23JJyX5QPFLlxEfmJMUWjJJXsnspA"
+        "parent_report_uuid": ""
       },
       {
         "task_uuid": "f38e7e7f601200101cf9c8b0c252d7ab",
         "score": 0,
         "tag": "file extracted from archive",
-        "parent_report_uuid": "26293d4be91960c6Q27weVEOE23JJyX5QPFLlxEfmJMUWjJJXsnspA"
+        "parent_report_uuid": ""
       },
       {
         "task_uuid": "7c6537dd20be001017f882f9aa1a6adc",
         "score": 0,
         "tag": "file extracted from archive",
-        "parent_report_uuid": "26293d4be91960c6Q27weVEOE23JJyX5QPFLlxEfmJMUWjJJXsnspA"
+        "parent_report_uuid": ""
       }
     ],
     "score": 0,
