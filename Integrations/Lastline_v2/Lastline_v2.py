@@ -22,15 +22,15 @@ class Client(BaseClient):
         super(Client, self).__init__(base_url, verify, proxy)
 
     def file(self):
-        human_readable = []
-        context_entry = []
-        result = []
+        human_readable = [str]
+        context_entry = [Dict]
+        result = [Dict]
         hash_arg = argToList(self.command_params.get('file'))
         for arg in hash_arg:
             hash_type = hash_type_checker(arg)
             self.command_params[hash_type] = arg
             temp_result = self.http_request('/analysis/submit/file')
-            temp_human_readable, temp_context_entry = report_generator(result)
+            temp_human_readable, temp_context_entry = report_generator(temp_result)
             human_readable.append(temp_human_readable)
             context_entry.append(temp_context_entry)
             result.append(temp_result)
