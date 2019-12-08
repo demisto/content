@@ -8,7 +8,7 @@ configuration:
   name: email
   required: true
   type: 0
-- display: Auth Code (run gmail-auth-link to start auth flow  - see Detailed Instructions (?) section)
+- display: Auth Code (run the gmail-auth-link command to start the auth flow - see Detailed Instructions (?) section)
   name: code
   required: false
   type: 4
@@ -16,7 +16,7 @@ configuration:
   name: client_id
   required: false
   type: 0
-- display: Events query (e.g. "from:example@demisto.com")
+- display: Events query (e.g., "from:example@demisto.com")
   name: query
   required: false
   type: 0
@@ -67,7 +67,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma separated list of IDs of War Room entries that contain
+      description: A comma-separated list of IDs of War Room entries that contain
         files, which need be attached to the email.
       isArray: true
       name: attachIDs
@@ -99,7 +99,7 @@ script:
       secret: false
     - default: false
       description: |-
-        A comma separated list of new names to rename attachments, which relates to the order that they were attached to the email.
+        A comma-separated list of new names to renamfor existing attachments, which relates to the order that they were attached to the email.
                 For example, rename the first and third file attachNames=new_fileName1,,new_fileName3
                 To rename the second and fifth files, attachNames=,new_fileName2,,,new_fileName5
       isArray: true
@@ -107,8 +107,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of CID images to embed attachments.
-        the email.
+      description: A comma-separated list of CID images to embed attachments to the email.
       isArray: true
       name: attachCIDs
       required: false
@@ -141,7 +140,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma separated list of additional headers in the format: headerName=headerValue.
+      description: 'A comma-separated list of additional headers in the format: headerName=headerValue.
         For example, "headerName1=headerValue1,headerName2=headerValue2".'
       isArray: true
       name: additionalHeader
@@ -158,7 +157,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sends email using Gmail.
+    description: Sends an email using Gmail.
     execution: false
     name: send-mail
     outputs:
@@ -194,10 +193,10 @@ script:
       type: String
   - name: gmail-auth-link
     arguments: []
-    description: Start OAuth2 process. Get a link to use to authenticate to Gmail.
+    description: Starts the OAuth2 process. Get a link to use to authenticate to Gmail.
   - name: gmail-auth-test
     arguments: []
-    description: Test that Gmail auth is properly set. Use this command after completing
+    description: Tests that Gmail auth is properly configured. Use this command after completing
       the OAuth2 authentication process.
   dockerimage: demisto/google-api-py3:1.0.0.4554
   isfetch: true
