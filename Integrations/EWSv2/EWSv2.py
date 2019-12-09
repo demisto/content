@@ -2088,7 +2088,11 @@ def main():
         try:
             if isinstance(config, Configuration):
                 # Sometimes new threads are created but never killed, so killing them manually.
-                config.protocol.thread_pool.terminate()
+                if "thread_pool" in config.protocol.__dict__:
+                    config.protocol.thread_pool.close()
+                    config.protocol.thread_pool.join()
+                    del config.protocol.thread_pool
+                super(type(config.protocol), config.protocol).close()
         except Exception:
             demisto.debug("Error was found in terminating threads in config.protocol, ignoring.")
         if log_stream:
