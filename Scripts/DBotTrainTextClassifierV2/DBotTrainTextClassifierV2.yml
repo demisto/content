@@ -34,7 +34,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '0.82'
+  defaultValue: '0.8'
   description: The target accuracy, between 0 and 1.
   isArray: false
   name: targetAccuracy
@@ -77,7 +77,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: 0.8
+  defaultValue: '0.8'
   description: The rario of the training set out of the entire data. Used for model evaluation
   isArray: false
   name: trainSetRatio
