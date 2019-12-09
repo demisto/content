@@ -25,12 +25,32 @@ args:
   name: targetRecall
   required: false
   secret: false
+- default: true
+  defaultValue: 'true'
+  description: if set to 'true', the output will include a full exaplanation of the confidence threshold meaning
+  isArray: true
+  name: detailedOutput
+  predefined:
+    - 'true'
+    - 'false'
+  required: false
+  secret: false
 comment: Finds a threshold for ML model, and performs an evaluation based on it
 commonfields:
   id: EvaluateMLModel
   version: -1
 enabled: true
 name: EvaluateMLModel
+outputs:
+- contextPath: EvaluateMLModel.Threshold
+  description: The found thresholds which meets the conditions of precision and recall
+  type: String
+- contextPath: EvaluateMLModel.ConfusionMatrixAtThreshold
+  description: The model evaluation confusion matrix for mails above the threhsold.
+  type: Unknown
+- contextPath: EvaluateMLModel.Metrics
+  description: Metrics per each class (includes precision, true positive, coverage, etc.)
+  type: Unknown
 script: '-'
 subtype: python3
 system: false
