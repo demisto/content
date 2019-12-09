@@ -698,7 +698,7 @@ def add_info_headers(headers, expiry):
         headers['X-Content-TeamName'] = team
         headers['X-Content-Expiry'] = expiry if expiry else 'No expiry'
         if hasattr(demisto, 'demistoVersion'):
-            headers['X-Content-Server-Version'] = demisto.demistoVersion()
+            headers['X-Content-Server-Version'] = demisto.demistoVersion().get('version')
     except Exception as e:
         demisto.error('Failed getting integration info: {}'.format(str(e)))
 
