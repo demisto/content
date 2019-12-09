@@ -271,7 +271,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: DBotPhishingClassifier.EvaluationScores.micro_avg
+              simple: DBotPhishingClassifier.EvaluationScores.Precision
             iscontext: true
     view: |-
       {
