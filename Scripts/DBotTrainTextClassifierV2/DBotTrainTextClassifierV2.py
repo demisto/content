@@ -261,13 +261,12 @@ def main():
         'EntryContext': {
             'DBotPhishingClassifier': {
                 'ModelName': model_name,
-                'EvaluationScores': res[0]['Contents']['metrics_df'],
-                'ConfusionMatrix': confusion_matrix
+                'EvaluationScores': json.loads(res[0]['Contents']['metrics_df']),
+                'ConfusionMatrix': json.loads(confusion_matrix)
             }
         }
     }
     demisto.results(result_entry)
-
     # show results if no threshold (threhsold=0) was used:
     res = demisto.executeCommand('GetMLModelEvaluation', {'yTrue': json.dumps(y_test),
                                                           'yPred': json.dumps(y_pred),
@@ -288,8 +287,8 @@ def main():
         'HumanReadableFormat': formats['markdown'],
         'EntryContext': {
             'DBotPhishingClassifierNoThresh': {
-                'EvaluationScores': res[0]['Contents']['metrics_df'],
-                'ConfusionMatrix': res[0]['Contents']['csr_matrix_at_threshold']
+                'EvaluationScores': json.loads([0]['Contents']['metrics_df']),
+                'ConfusionMatrix': json.loads(res[0]['Contents']['csr_matrix_at_threshold'])
             }
         }
     }
