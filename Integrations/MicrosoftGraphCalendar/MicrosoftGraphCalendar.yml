@@ -315,6 +315,12 @@ script:
         isArray: false
         required: true
         secret: false
+      - name: calendar_id
+        default: false
+        description: Calendar ID or name.
+        isArray: false
+        required: false
+        secret: false
       - name: attendees
         default: false
         description: The collection of attendees for the event.
