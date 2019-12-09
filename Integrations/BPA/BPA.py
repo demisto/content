@@ -199,7 +199,7 @@ def main():
     proxy = demisto.params().get('proxy')
 
     try:
-        client = Client(bpa_token, proxy, verify)
+        client = Client(bpa_token, verify, proxy)
         panorama = LightPanoramaClient(panorama_server, panorama_port, panorama_api_key, verify, proxy)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
