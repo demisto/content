@@ -25,7 +25,6 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'false'
   description: Whether to override the existing model if a model with the same name exists. Default is "false".
   isArray: false
   name: overrideExistingModel
@@ -42,7 +41,6 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '0.33'
   description: Maximum nubmer of samples below the threshold (for the target accuracy).
   isArray: false
   name: maxBelowThreshold
@@ -76,6 +74,13 @@ args:
     external legit email:non-malicious'
   isArray: false
   name: phishingLabels
+  required: false
+  secret: false
+- default: false
+  defaultValue: 0.8
+  description: The rario of the training set out of the entire data. Used for model evaluation
+  isArray: false
+  name: trainSetRatio
   required: false
   secret: false
 - auto: PREDEFINED
@@ -126,10 +131,16 @@ outputs:
   description: The model name.
   type: String
 - contextPath: DBotPhishingClassifier.EvaluationScores
-  description: The model evaluation scores (f1-score, precision, andrecall).
+  description: The model evaluation scores (precision, coverage, etc.) for the found threshold.
   type: Unknown
 - contextPath: DBotPhishingClassifier.ConfusionMatrix
-  description: The model evaluation confusion matrix.
+  description: The model evaluation confusion matrix for the found threshold.
+  type: Unknown
+- contextPath: DBotPhishingClassifierNoThresh.EvaluationScores
+  description: The model evaluation scores (precision, coverage, etc.) for threshold = 0.
+  type: Unknown
+- contextPath: DBotPhishingClassifierNoThresh.ConfusionMatrix
+  description: The model evaluation confusion matrix for threshold = 0.
   type: Unknown
 script: '-'
 system: false

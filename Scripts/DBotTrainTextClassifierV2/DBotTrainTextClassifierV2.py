@@ -8,9 +8,6 @@ from sklearn.model_selection import StratifiedKFold
 
 from CommonServerPython import *
 
-TRAIN_SIZE_FOR_EVALUATION = 0.8
-DEFAULT_LABEL_PREFIX = '|tag|'
-
 ALL_LABELS = "*"
 GENERAL_SCORES = {
     'micro avg': 'The metrics is applied globally by counting the total true positives, '
@@ -223,14 +220,15 @@ def main():
         pass
     X = pd.Series(train_text_data)
     y = pd.Series(train_tag_data)
-    n_splits = int(1.0 / (1 - TRAIN_SIZE_FOR_EVALUATION))
+    train_set_ratio = float(demisto.args()['trainSetRatio'])
+    n_splits = int(1.0 / (1 - train_set_ratio))
     skf = StratifiedKFold(n_splits=n_splits, shuffle=False, random_state=None)
     skf.get_n_splits(X, y)
     train_index, test_index = list(skf.split(X, y))[-1]
     X_train, X_test = list(X[train_index]), list(X[test_index])
     y_train, y_test = list(y[train_index]), list(y[test_index])
     model = demisto_ml.train_text_classifier(X_train, y_train)
-    ft_test_predictions = demisto_ml.predict(model, X_test, DEFAULT_LABEL_PREFIX)
+    ft_test_predictions = demisto_ml.predict(model, X_test)
     y_pred = [{y_tuple[0]: y_tuple[1]} for y_tuple in ft_test_predictions]
 
     if 'maxBelowThreshold' in demisto.args():
