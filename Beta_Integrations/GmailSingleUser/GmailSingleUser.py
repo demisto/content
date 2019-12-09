@@ -933,13 +933,7 @@ def main():
         # Log exceptions
     except Exception as e:
         import traceback
-        if command == 'fetch-incidents':
-            LOG(traceback.format_exc())
-            LOG.print_log()
-            raise
-
-        else:
-            return_error('GMAIL: {}'.format(str(e)), traceback.format_exc())
+        return_error('GMAIL: {}'.format(str(e)), traceback.format_exc())
 
 
 # python2 uses __builtin__ python3 uses builtins
