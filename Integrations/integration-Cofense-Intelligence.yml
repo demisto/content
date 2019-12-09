@@ -345,7 +345,8 @@ script:
             }
             if (threats.length && threats.length !== 0) {
                 ec[outputPaths.ip] = {
-                    Data: ip
+                    Data: ip,
+                    'Address': ip
                 };
                 for (var k = 0; k < threats.length; k++) {
                     var severityLevel = 0;
