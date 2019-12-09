@@ -196,4 +196,3 @@ def calculate_and_validate_float_parameter(var_name):
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
-

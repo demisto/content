@@ -25,7 +25,7 @@ args:
   name: targetRecall
   required: false
   secret: false
-- default: true
+- default: fale
   defaultValue: 'true'
   description: if set to 'true', the output will include a full exaplanation of the confidence threshold meaning
   isArray: true
