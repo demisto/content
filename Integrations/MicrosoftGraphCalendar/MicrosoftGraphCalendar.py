@@ -612,15 +612,14 @@ def get_calendar_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, calendar
 
 
-def module_test_function_command(client: Client):
+def module_test_function_command(client: Client, **_):
     """
     Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
         client: Client object with request
-        args: Usually demisto.args()
     """
-    client.test_function()
+    client.test_function()  # todo: a real test function
 
 
 def main():
