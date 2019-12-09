@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: Proxy URL Filter Server
 display: Proxy URL Filter Server
-fromversion: 5.0.0
 category: Network Security
 description: Serves a URL filtering list to be fetched by proxies
 configuration:
@@ -24,6 +23,21 @@ configuration:
   defaultvalue: "80"
   type: 0
   required: true
+- display: HTTP Authentication
+  name: auth
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Use SSL (certificate from credential store)
+  name: use_ssl
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
 script:
   script: ''
   type: python
@@ -49,6 +63,12 @@ script:
       description: Category
       defaultValue: blacklist
     description: Remove a URL from the proxy filter list
+  - name: proxy-filter-list-urls
+    arguments: []
+    outputs:
+    - contextPath: ProxyFilter.URLs
+      description: List of URLs by category
+    description: 'List all URLs '
   dockerimage: demisto/python3:3.7.5.4002
   runonce: false
   longRunning: true
