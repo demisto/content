@@ -287,7 +287,7 @@ def main():
         'HumanReadableFormat': formats['markdown'],
         'EntryContext': {
             'DBotPhishingClassifierNoThresh': {
-                'EvaluationScores': json.loads([0]['Contents']['metrics_df']),
+                'EvaluationScores': json.loads(res[0]['Contents']['metrics_df']),
                 'ConfusionMatrix': json.loads(res[0]['Contents']['csr_matrix_at_threshold'])
             }
         }
