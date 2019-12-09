@@ -1,3 +1,3 @@
 ## [Unreleased]
 - Updating playbook
-  - Replace Detonate File - Lastline to Detonate File - Lastline v2
+  - In Detonate File - Generic replace Detonate File - Lastline to Detonate File - Lastline v2
