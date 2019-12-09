@@ -689,10 +689,11 @@ def add_info_headers(headers, expiry):
     # pylint: disable=no-member
     try:
         calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
+        brand_name = calling_context.get('IntegrationBrand', '')
         instance_name = calling_context.get('IntegrationInstance', '')
         auth = send_slack_request_sync(CLIENT, 'auth.test')
         team = auth.get('team', '')
-        headers['X-Content-Name'] = instance_name
+        headers['X-Content-Name'] = brand_name or instance_name or 'No instance'
         headers['X-Content-TeamName'] = team
         headers['X-Content-Expiry'] = expiry if expiry else 'No expiry'
     except Exception as e:
