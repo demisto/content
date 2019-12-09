@@ -15,6 +15,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 PARAMS = demisto.params()
+NO_OPROXY = demisto.params().get('no_oproxy', False)
 TENANT_ID = PARAMS.get('tenant_id')
 AUTH_AND_TOKEN_URL = PARAMS.get('auth_id', '').split('@')
 AUTH_ID = AUTH_AND_TOKEN_URL[0]
@@ -108,6 +109,35 @@ def get_encrypted(content: str, key: str) -> str:
     return encrypted
 
 
+def error_parser(resp_err: requests.Response) -> str:
+    """
+
+    Args:
+        error (requests.Response): response with error
+
+    Returns:
+        str: string of error
+
+    """
+    try:
+        response = resp_err.json()
+        error = response.get('error', {})
+        err_str = f"{error.get('code')}: {error.get('message')}"
+        if err_str:
+            return err_str
+        # If no error message
+        raise ValueError
+    except ValueError:
+        return resp_err.text
+
+
+def get_token():
+    if NO_OPROXY:
+        return get_self_deployed_token()
+    else:
+        return get_access_token()
+
+
 def get_access_token():
     integration_context = demisto.getIntegrationContext()
     access_token = integration_context.get('access_token')
@@ -168,26 +198,37 @@ def get_access_token():
     return access_token
 
 
-def error_parser(resp_err: requests.Response) -> str:
-    """
-
-    Args:
-        error (requests.Response): response with error
-
-    Returns:
-        str: string of error
-
-    """
+def get_self_deployed_token():
+    integration_context = demisto.getIntegrationContext()
+    if integration_context and integration_context.get('token_expiration_time'):
+        token_expiration_time = integration_context['token_expiration_time']
+        now = int(time.time())
+        if token_expiration_time < now:
+            return integration_context['token']
+    url = 'https://login.windows.net/{}/oauth2/token'.format(TENANT_ID)
+    resource_app_id_uri = 'https://graph.microsoft.com'
+    data = {
+        'resource': resource_app_id_uri,
+        'client_id': AUTH_ID,
+        'client_secret': ENC_KEY,
+        'grant_type': 'client_credentials'
+    }
+    access_token = ''
     try:
-        response = resp_err.json()
-        error = response.get('error', {})
-        err_str = f"{error.get('code')}: {error.get('message')}"
-        if err_str:
-            return err_str
-        # If no error message
-        raise ValueError
-    except ValueError:
-        return resp_err.text
+        response = requests.post(url, data, verify=USE_SSL)
+        body = response.json()
+        if response.status_code != 200:
+            return_error('Error in Microsoft authorization: {}'.format(str(body)))
+        access_token = body.get('access_token')
+        demisto.setIntegrationContext({
+            'token_expiration_time': body.get('expires_on', 3595),
+            'token': access_token
+        })
+
+    except Exception as e:
+        return_error('Error in Microsoft authorization: {}'.format(str(e)))
+
+    return access_token
 
 
 def http_request(method: str, url_suffix: str = '', params: dict = None, data: dict = None, odata: str = None,
@@ -209,7 +250,7 @@ def http_request(method: str, url_suffix: str = '', params: dict = None, data: d
     Returns:
         dict or str: requests.json() or string
     """
-    token = get_access_token()
+    token = get_token()
     headers = {
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json',
@@ -849,7 +890,7 @@ def main():
 
     try:
         if command == 'test-module':
-            get_access_token()
+            get_token()
             demisto.results('ok')
         elif command in ('msgraph-mail-list-emails', 'msgraph-mail-search-email'):
             list_mails_command(args)

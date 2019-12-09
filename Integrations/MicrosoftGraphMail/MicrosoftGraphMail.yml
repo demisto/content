@@ -29,6 +29,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Use self deployed Azure Application
+  name: no_oproxy
+  defaultvalue: ""
+  type: 8
+  required: false
 description: Microsoft Graph lets your app get authorized access to a user's Outlook
   mail data in a personal or organization account.
 display: Microsoft Graph Mail
