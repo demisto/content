@@ -38,14 +38,14 @@ script:
   - arguments:
     - default: true
       description: File hash to check (MD5, SHA-1 or SHA-256).
-      isArray: false
+      isArray: true
       name: file
       required: true
       secret: false
     - default: false
       defaultValue: '70'
       description: Score threshold that determines if the file is malicious.
-      isArray: true
+      isArray: false
       name: threshold
       required: false
       secret: false
