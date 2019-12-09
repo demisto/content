@@ -310,9 +310,8 @@ def main():
         if isinstance(config, Configuration):
             # The protocol will not kill its threads after use, so kill it manually
             if "thread_pool" in config.protocol.__dict__:
-                config.protocol.thread_pool.close()
-                config.protocol.thread_pool.join()
-                del config.protocol.thread_pool
+                config.protocol.terminate()
+                del config.protocol.__dict__["thread_pool"]
         try:
             # we don't want to leave cached connection around as EWS limits the number of connections
             # in a very aggressive way. 12 seems to be the default limit
