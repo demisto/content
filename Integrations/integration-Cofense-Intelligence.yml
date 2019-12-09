@@ -552,6 +552,9 @@ script:
       description: Location in format latitude, longitude.
     - contextPath: IP.GEO.Country
       description: Country of the IP.
+    - contextPath: IP.Address
+      description: IP address.
+      type: string
     description: Checks the reputation of an IP address.
   - name: email
     arguments:
