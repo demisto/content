@@ -310,7 +310,7 @@ def main():
         if isinstance(config, Configuration):
             # The protocol will not kill its threads after use, so kill it manually
             if "thread_pool" in config.protocol.__dict__:
-                config.protocol.terminate()
+                config.protocol.thread_pool.terminate()
                 del config.protocol.__dict__["thread_pool"]
         try:
             # we don't want to leave cached connection around as EWS limits the number of connections
