@@ -671,6 +671,11 @@
             "playbookID": "get_original_email_-_gmail_-_test"
         },
         {
+            "integrations": ["Gmail Single User", "Gmail"],
+            "playbookID": "Gmail Single User - Test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "EWS v2",
             "playbookID": "get_original_email_-_ews-_test"
         },
@@ -2173,6 +2178,7 @@
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "RedLock": "SSL Issues",
-        "SafeBreach": "SSL Issues"
+        "SafeBreach": "SSL Issues",
+        "Gmail Single User" : "checking"
     }
 }
