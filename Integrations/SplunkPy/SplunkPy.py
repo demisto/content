@@ -22,6 +22,7 @@ FETCH_LIMIT = int(demisto.params().get('fetch_limit', 50))
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 
 
+
 def get_current_splunk_time(splunk_service):
     t = datetime.utcnow() - timedelta(days=3)
     time = t.strftime(SPLUNK_TIME_FORMAT)
