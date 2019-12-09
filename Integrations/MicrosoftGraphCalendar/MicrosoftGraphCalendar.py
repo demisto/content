@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from typing import List, Dict, Tuple, AnyStr, Optional, Union
+from typing import List, Dict, Tuple, Optional, Union
 from datetime import datetime
 import base64
 import urllib3
@@ -13,9 +13,11 @@ INTEGRATION_CONTEXT_NAME = 'MSGraphCalendar'
 DEFAULT_PAGE_SIZE = 100
 NO_OUTPUTS: dict = {}
 APP_NAME = 'ms-graph-calendar'
+EVENT_HEADERS = ['Subject', 'Organizer', 'Attendees', 'Start', 'End', 'ID']
+CALENDAR_HEADERS = ['Name', 'Owner Name', 'Owner Address', 'ID']
 
 
-def camel_case_to_readable(cc: Union[AnyStr, Dict], fields_to_drop: List[str] = None) -> Union[str, Dict]:
+def camel_case_to_readable(cc: Union[str, Dict], fields_to_drop: List[str] = None) -> Union[str, Dict]:
     """
     'camelCase' -> 'Camel Case' (text or dictionary keys)
 
@@ -26,6 +28,8 @@ def camel_case_to_readable(cc: Union[AnyStr, Dict], fields_to_drop: List[str] = 
     Returns:
         A Camel Cased string of Dict.
     """
+    if fields_to_drop is None:
+        fields_to_drop = []
     if isinstance(cc, str):
         if cc == 'id':
             return 'ID'
@@ -33,9 +37,10 @@ def camel_case_to_readable(cc: Union[AnyStr, Dict], fields_to_drop: List[str] = 
 
     elif isinstance(cc, Dict):
         return {camel_case_to_readable(field): value for field, value in cc.items() if field not in fields_to_drop}
+    return cc
 
 
-def snakecase_to_camelcase(sc: Union[AnyStr, Dict], fields_to_drop: List[str] = None) -> Union[str, Dict]:
+def snakecase_to_camelcase(sc: Union[str, Dict], fields_to_drop: List[str] = None) -> Union[str, Dict]:
     """
     'snake_case' -> 'snakeCase' (text or dictionary keys)
 
@@ -46,11 +51,14 @@ def snakecase_to_camelcase(sc: Union[AnyStr, Dict], fields_to_drop: List[str] = 
     Returns:
         A connectedCamelCased string of Dict.
     """
+    if fields_to_drop is None:
+        fields_to_drop = []
     if isinstance(sc, str):
-        return ''.join(' ' + char if char.isupper() else char.strip() for char in sc).strip().title()
+        return ''.join([word.title() for word in sc.split('_')])
 
     elif isinstance(sc, Dict):
-        return {camel_case_to_readable(field): value for field, value in sc.items() if field not in fields_to_drop}
+        return {snakecase_to_camelcase(field): value for field, value in sc.items() if field not in fields_to_drop}
+    return sc
 
 
 def parse_events(raw_events: Union[Dict, List[Dict]]) -> Tuple[List[Dict], List[Dict]]:
@@ -65,15 +73,16 @@ def parse_events(raw_events: Union[Dict, List[Dict]]) -> Tuple[List[Dict], List[
 
     readable_events, context_output = [], []
     for event in raw_events:
-        event_readable = camel_case_to_readable(event, fields_to_drop)
+        event_readable: Dict = camel_case_to_readable(event, fields_to_drop)  # type: ignore
         if '@removed' in event:
             event_readable['Status'] = 'deleted'
         event_context = {field.replace(' ', ''): value for field, value in event_readable.items()}
 
         event_readable = {
             'Subject': event_readable.get('Subject'),
+            'ID': event_readable.get('ID'),
             'Organizer': demisto.get(event_readable, 'Organizer.emailAddress.name'),
-            'Attendees': [attendee.get('emailAddress', {}).get('name') for attendee in event_readable.get('Attendees')],
+            'Attendees': [att.get('emailAddress', {}).get('name') for att in event_readable.get('Attendees', [])],
             'Start': event_readable.get('Start', {}).get('dateTime'),
             'End': event_readable.get('End', {}).get('dateTime')
         }
@@ -93,7 +102,7 @@ def parse_calendar(raw_calendars: Union[Dict, List[Dict]]) -> Tuple[List[Dict], 
 
     readable_calendars, context_output = [], []
     for raw_calendar in raw_calendars:
-        readable_calendar = camel_case_to_readable(raw_calendar, fields_to_drop=['@odata.context', 'color'])
+        readable_calendar: Dict = camel_case_to_readable(raw_calendar, ['@odata.context', 'color'])  # type: ignore
         if '@removed' in readable_calendar:
             readable_calendar['Status'] = 'deleted'
         context_calendar = {field.replace(' ', ''): value for field, value in readable_calendar.items()}
@@ -309,10 +318,10 @@ class Client(BaseClient):
 
         Args:
         :argument user: the user id | userPrincipalName
-        :argument order_by: the event fields to order by the response.
+        :argument order_by: specify the sort order of the items returned from Microsoft Graph
         :argument next_link: link for the next page of results, if exists. See Microsoft documentation for more details.
             docs.microsoft.com/en-us/graph/api/event-list?view=graph-rest-1.0
-        :argument top: sets the page size of results.
+        :argument top: specify the page size of the result set.
         filter_by: filters results.
         """
         params = {'$orderby': order_by} if order_by else {}
@@ -333,9 +342,9 @@ class Client(BaseClient):
 
         Args:
         :argument user: the user id | userPrincipalName
-        :argument order_by: the event fields to order by the response.
+        :argument order_by: specify the sort order of the items returned from Microsoft Graph
         :argument next_link: the link for the next page of results. see Microsoft documentation for more details.
-        :argument top: sets the page size of results.
+        :argument top: specify the page size of the result set.
         :argument filter_by: filters results.
         """
         params = {'$orderby': order_by} if order_by else {}
@@ -355,7 +364,7 @@ class Client(BaseClient):
         :argument user: the user id | userPrincipalName
         :argument event_id: the event id
         """
-        event = self.http_request('GET', f'user/{user}/calendar/events/{event_id}')
+        event = self.http_request('GET', f'users/{user}/calendar/events/{event_id}')
 
         return event
 
@@ -369,7 +378,7 @@ class Client(BaseClient):
         Event Properties:
         :keyword attendees: The collection of attendees for the event.
         :keyword body: The body of the message associated with the event. It can be in HTML or text format.
-        :keyword subject:The text of the event's subject line.
+        :keyword subject: The text of the event's subject line.
         :keyword location: The location of the event.
          an event as an online meeting such as a Skype meeting. Read-only.
         :keyword end: The date, time, and time zone that the event ends. By default, the end time is in UTC.
@@ -378,7 +387,7 @@ class Client(BaseClient):
          For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'
         :keyword originalStartTimeZone: The start time zone that was set when the event was created.
         """
-        event = self.http_request('POST', f'user/{user}/calendar/events', body=json.dumps(kwargs))
+        event = self.http_request('POST', f'users/{user}/calendar/events', body=json.dumps(kwargs))
         return event
 
     def update_event(self, user: str, event_id: str, **kwargs) -> Dict:
@@ -387,7 +396,7 @@ class Client(BaseClient):
 
         Args:
         :argument user: the user id | userPrincipalName
-        :argument event_id: the event id
+        :argument event_id: the event ID
 
         Event Properties:
         :keyword attendees: The collection of attendees for the event.
@@ -414,7 +423,7 @@ class Client(BaseClient):
         """
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
-        self.http_request('DELETE', f'user/{user}/calendar/events/{event_id}')
+        self.http_request('DELETE', f'users/{user}/calendar/events/{event_id}')
 
 
 def list_events_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -427,28 +436,50 @@ def list_events_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     events = client.list_events(**args)
 
-    events_readable, events_outputs = parse_events(events.get('value'))
+    events_readable, events_outputs = parse_events(events.get('value'))  # type: ignore
 
     next_link_response = ''
     if '@odata.nextLink' in events:
         next_link_response = events['@odata.nextLink']
 
     if next_link_response:
-        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID).NextLink': next_link_response,
-                         f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': events_outputs}
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID === obj.ID).NextLink': next_link_response,
+                         f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID === obj.ID)': events_outputs}
         title = 'Events (Note that there are more results. Please use the next_link argument to see them.):'
     else:
-        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': events_outputs}
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID === obj.ID)': events_outputs}
         title = 'Events:'
 
     human_readable = tableToMarkdown(
         name=title,
         t=events_readable,
-        headers=['Subject', 'Organizer', 'Attendees', 'Start', 'End'],
+        headers=EVENT_HEADERS,
         removeNull=True
     )
 
     return human_readable, entry_context, events
+
+
+def get_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """
+    Retrieves an event by event id and return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+    """
+    event = client.get_event(**args)
+
+    # display the event and it's properties
+    event_readable, event_outputs = parse_events(event)
+    human_readable = tableToMarkdown(
+        name=f"Event - {event_outputs[0].get('Subject')}",
+        t=event_readable,
+        headers=EVENT_HEADERS,
+        removeNull=True
+    )
+    entry_context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID === obj.ID)': event_outputs}
+    return human_readable, entry_context, event
 
 
 def create_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -460,17 +491,18 @@ def create_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         args: Usually demisto.args()
     """
     # create the event
-    event = client.create_event(**snakecase_to_camelcase(args))
+    params: Dict = snakecase_to_camelcase(args, fields_to_drop=['user'])  # type: ignore
+    event = client.create_event(user=args.get('user', ''), **params)
 
     # display the new event and it's properties
     event_readable, event_outputs = parse_events(event)
     human_readable = tableToMarkdown(
         name=f"Event was created successfully:",
         t=event_readable,
-        headers=['Subject', 'Organizer', 'Attendees', 'Start', 'End'],
+        headers=EVENT_HEADERS,
         removeNull=True
     )
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': event_outputs}
+    entry_context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID === obj.ID)': event_outputs}
     return human_readable, entry_context, event
 
 
@@ -483,13 +515,17 @@ def update_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         args: Usually demisto.args()
     """
     event_id = str(args.get('event_id'))
-    event = client.get_event(**args)
 
+    # create the event
+    params: Dict = snakecase_to_camelcase(args, fields_to_drop=['user'])  # type: ignore
+    event = client.create_event(user=args.get('user', ''), **params)
+
+    # display the updated event and it's properties
     event_readable, event_outputs = parse_events(event)
     human_readable = tableToMarkdown(
         name="Event:",
         t=event_readable,
-        headers=['Subject', 'Organizer', 'Attendees', 'Start', 'End'],
+        headers=EVENT_HEADERS,
         removeNull=True
     )
     entry_context = {f'{INTEGRATION_CONTEXT_NAME}(obj.ID === {event_id})': event_outputs}
@@ -508,15 +544,15 @@ def delete_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     client.delete_event(**args)
 
     # get the event data from the context
-    event_data = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === "{event_id}")')
+    event_data = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID === "{event_id}")')
     if isinstance(event_data, list):
         event_data = event_data[0]
 
     # add a field that indicates that the event was deleted
     event_data['Deleted'] = True  # add a field with the members to the event
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': event_data}
+    entry_context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID === obj.ID)': event_data}
 
-    human_readable = f'Event: "{event_id}" was deleted successfully.'
+    human_readable = f'Event was deleted successfully.'
     return human_readable, entry_context, NO_OUTPUTS
 
 
@@ -530,15 +566,15 @@ def list_calendars_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
     """
     calendar = client.list_calendars(**args)
 
-    calendar_readable, calendar_outputs = parse_calendar(calendar.get('value'))
+    calendar_readable, calendar_outputs = parse_calendar(calendar.get('value'))  # type: ignore
 
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': calendar_outputs}
+    entry_context = {f'{INTEGRATION_CONTEXT_NAME}.Calendar(val.ID === obj.ID)': calendar_outputs}
     title = 'Calendar:'
 
     human_readable = tableToMarkdown(
         name=title,
         t=calendar_readable,
-        headers=['Name', 'Owner Name', 'Owner Address', 'ID'],
+        headers=CALENDAR_HEADERS,
         removeNull=True
     )
 
@@ -558,20 +594,20 @@ def get_calendar_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
     calendar_readable, calendar_outputs = parse_calendar(calendar)
 
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': calendar_outputs}
+    entry_context = {f'{INTEGRATION_CONTEXT_NAME}.Calendar(val.ID === obj.ID)': calendar_outputs}
     title = 'Calendar:'
 
     human_readable = tableToMarkdown(
         name=title,
         t=calendar_readable,
-        headers=['Name', 'Owner Name', 'Owner Address', 'ID'],
+        headers=CALENDAR_HEADERS,
         removeNull=True
     )
 
     return human_readable, entry_context, calendar
 
 
-def test_function_command(client: Client, args: Dict):
+def module_test_function_command(client: Client):
     """
     Performs a basic GET request to check if the API is reachable and authentication is successful.
 
@@ -583,7 +619,7 @@ def test_function_command(client: Client, args: Dict):
 
 
 def main():
-    base_url = demisto.params().get('host').rstrip('/') + '/v1.0/'
+    base_url = demisto.params().get('url').rstrip('/') + '/v1.0/'
     tenant = demisto.params().get('tenant_id')
     auth_and_token_url = demisto.params().get('auth_id').split('@')
     auth_id = auth_and_token_url[0]
@@ -593,18 +629,20 @@ def main():
 
     if len(auth_and_token_url) != 2:
         # token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
-        token_retrieval_url = 'https://us-central1-oproxy-dev.cloudfunctions.net/calendar_graph_ProvideAccessTokenFunction'  # todo: prod
+        token_retrieval_url = \
+            'https://us-central1-oproxy-dev.cloudfunctions.net/calendar_graph_ProvideAccessTokenFunction'  # todo: prod
     else:
         token_retrieval_url = auth_and_token_url[1]
 
     commands = {
-        'test-module':                     test_function_command,
-        'msgraph-calendar-list-events':    list_events_command,
+        'test-module': module_test_function_command,
         'msgraph-calendar-list-calendars': list_calendars_command,
-        'msgraph-calendar-get-calendar':   get_calendar_command,
-        'msgraph-calendar-create-event':   create_event_command,
-        'msgraph-calendar-update-event':   update_event_command,
-        'msgraph-calendar-delete-event':   delete_event_command,
+        'msgraph-calendar-get-calendar': get_calendar_command,
+        'msgraph-calendar-list-events': list_events_command,
+        'msgraph-calendar-get-event': get_event_command,
+        'msgraph-calendar-create-event': create_event_command,
+        'msgraph-calendar-update-event': update_event_command,
+        'msgraph-calendar-delete-event': delete_event_command
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
@@ -623,12 +661,4 @@ def main():
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
 
-# todo: filter -> filter_by in yml
-# todo: include those fields? events
-"""
-    :keyword onlineMeetingUrl: A URL for an online meeting. The property is set only when an organizer specifies
-    :keyword importance: The importance of the event. The possible values are: low, normal, high.
-    :keyword categories: The categories associated with the event.
-    :keyword responseRequested: Set to true if the sender would like a response when the event is accepted/declined.
-    :keyword isAllDay: Set to true if the event lasts all day.
-"""
+# todo: make sure commands params are snake case according to demisto
