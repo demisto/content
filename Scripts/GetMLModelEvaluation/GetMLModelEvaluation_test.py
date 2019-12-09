@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from EvaluateMLModel import find_threshold
+from GetMLModelEvaluation import find_threshold
 
 y_true = []
 y_pred = []
