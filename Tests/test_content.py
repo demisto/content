@@ -6,7 +6,6 @@ import requests
 import subprocess
 import urllib3
 from time import sleep
-from datetime import datetime
 
 import demisto_client.demisto_api
 from slackclient import SlackClient
