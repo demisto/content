@@ -176,9 +176,11 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
         else:
             status = 'Analyzing'
         lastline: Dict = {
-            'Submission': {'Status': status},
-            'UUID': result['data'].get('task_uuid'),
-            'SubmissionTime': result['data'].get('submission')
+            'Submission': {
+                'Status': status,
+                'UUID': result['data'].get('task_uuid'),
+                'SubmissionTime': result['data'].get('submission')
+            }
         }
         if 'analysis_subject' in result['data']:
             analysis_subject: Dict = result['data']['analysis_subject']
