@@ -46,7 +46,7 @@ def test_threshold_found_2(mocker):
                            y_true_str=json.dumps(y_true),
                            target_precision=0.6,
                            target_recall=0)
-    assert abs(entry['Contents']['threshold'] - 0.05) < 10 ** -2
+    assert abs(entry['Contents']['threshold'] - 0) < 10 ** -2
 
 
 def test_no_existing_threshold(mocker):
