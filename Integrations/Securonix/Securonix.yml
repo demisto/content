@@ -937,7 +937,7 @@ script:
     description: Add an entity to a watchlist.
     execution: false
     name: securonix-add-entity-to-watchlist
-  dockerimage: demisto/python3:3.7.5.4002
+  dockerimage: demisto/python3:3.7.5.4328
   isfetch: true
   longRunning: false
   longRunningPort: false
