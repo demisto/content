@@ -21,9 +21,26 @@ from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_versio
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
+''' CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
                          BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, SCRIPT_YML_REGEX,
-                         INTEGRATION_YML_REGEX]
+                         INTEGRATION_YML_REGEX] '''
+
+CHECKED_TYPES_REGEXES = [
+    # Integrations
+    INTEGRATION_REGEX,
+    INTEGRATION_YML_REGEX,
+    BETA_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_REGEX,
+    PACKS_INTEGRATION_YML_REGEX,
+    # Scripts
+    SCRIPT_REGEX,
+    SCRIPT_YML_REGEX,
+    PACKS_SCRIPT_YML_REGEX,
+    # Playbooks
+    PLAYBOOK_REGEX,
+    BETA_PLAYBOOK_REGEX,
+    PACKS_PLAYBOOK_YML_REGEX
+]
 
 # File names
 ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
@@ -87,7 +104,7 @@ def get_modified_files(files_string):
                 modified_files_list.append(file_path)
 
             # tests
-            elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            elif checked_type(file_path, YML_TEST_PLAYBOOKS_REGEXES):
                 modified_tests_list.append(file_path)
 
             # reputations.json
@@ -95,15 +112,16 @@ def get_modified_files(files_string):
                     re.match(REPUTATION_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
-            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE):
+            elif checked_type(file_path, INCIDENT_FIELD_REGEXES):
                 is_indicator_json = True
 
             # conf.json
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
 
-            # docs and test files does not influence integration tests filtering
-            elif file_path.startswith(INTEGRATIONS_DIR) or file_path.startswith(SCRIPTS_DIR):
+            # docs and test files do not influence integration tests filtering
+            elif file_path.startswith(INTEGRATIONS_DIR) or file_path.startswith(SCRIPTS_DIR) or \
+                    re.match(PACKS_INTEGRATIONS_DIR_REGEX, file_path, re.IGNORECASE):
                 if os.path.splitext(file_path)[-1] not in FILE_TYPES_FOR_TESTING:
                     continue
 
@@ -296,8 +314,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     playbook_to_version = {}
     integration_to_version = {}
     for file_path in modified_files:
-        if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE) or \
-                re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE):
+        if checked_type(file_path, YML_SCRIPT_REGEXES) or re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE):
             name = get_name(file_path)
             script_names.add(name)
             script_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
@@ -307,13 +324,12 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
                 catched_scripts.add(name)
                 tests_set.add('Found a unittest for the script {}'.format(package_name))
 
-        elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+        elif checked_type(file_path, YML_PLAYBOOKS_NO_TESTS_REGEXES):
             name = get_name(file_path)
             playbook_names.add(name)
             playbook_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
-        elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+
+        elif checked_type(file_path, INTEGRATION_REGEXES + YML_INTEGRATION_REGEXES):
             _id = get_script_or_integration_id(file_path)
             integration_ids.add(_id)
             integration_to_version[_id] = (get_from_version(file_path), get_to_version(file_path))
