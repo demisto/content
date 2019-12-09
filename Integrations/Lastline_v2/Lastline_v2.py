@@ -80,7 +80,7 @@ class Client(BaseClient):
     def test_module_command(self):
         self.command_params['url'] = 'https://www.google.com'
         self.upload_url()
-        return 'ok'
+        return 'ok', {}, {}
 
     def get_status_and_time(self, uuids):
         task_list = []

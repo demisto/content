@@ -90,10 +90,10 @@ script:
       - contextPath: Lastline.Submission.Status
         description: Status of the submission.
         type: string
-      - contextPath: Lastline.UUID
+      - contextPath: Lastline.Submission.UUID
         description: Task UUID.
         type: string
-      - contextPath: Lastline.SubmissionTime
+      - contextPath: Lastline.Submission.SubmissionTime
         description: Time stamp in Lastline.
         type: string
       - contextPath: Lastline.Submission.YaraSignatures.name
@@ -187,10 +187,10 @@ script:
       - contextPath: Lastline.Submission.Status
         description: Status of the submission.
         type: string
-      - contextPath: Lastline.UUID
+      - contextPath: Lastline.Submission.UUID
         description: Task UUID.
         type: string
-      - contextPath: Lastline.SubmissionTime
+      - contextPath: Lastline.Submission.SubmissionTime
         description: Time stamp in Lastline.
         type: string
       - contextPath: Lastline.Submission.YaraSignatures.name
@@ -290,10 +290,10 @@ script:
       - contextPath: Lastline.Submission.Status
         description: Status of the submission.
         type: string
-      - contextPath: Lastline.UUID
+      - contextPath: Lastline.Submission.UUID
         description: Task UUID.
         type: string
-      - contextPath: Lastline.SubmissionTime
+      - contextPath: Lastline.Submission.SubmissionTime
         description: Time stamp in Lastline.
         type: string
       - contextPath: Lastline.Submission.YaraSignatures.name
@@ -407,10 +407,10 @@ script:
     - contextPath: Lastline.Submission.Status
       description: Status of the submission.
       type: string
-    - contextPath: Lastline.UUID
+    - contextPath: Lastline.Submission.UUID
       description: Task UUID.
       type: string
-    - contextPath: Lastline.SubmissionTime
+    - contextPath: Lastline.Submission.SubmissionTime
       description: Time stamp in Lastline.
       type: string
     - contextPath: Lastline.Submission.YaraSignatures.name
@@ -534,10 +534,10 @@ script:
       - contextPath: Lastline.Submission.Status
         description: Status of the submission.
         type: string
-      - contextPath: Lastline.UUID
+      - contextPath: Lastline.Submission.UUID
         description: Task UUID.
         type: string
-      - contextPath: Lastline.SubmissionTime
+      - contextPath: Lastline.Submission.SubmissionTime
         description: Time stamp in Lastline.
         type: string
       - contextPath: Lastline.Submission.YaraSignatures.name
