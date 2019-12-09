@@ -5,6 +5,8 @@ from tabulate import tabulate
 
 from CommonServerPython import *
 
+# pylint: disable=no-member
+
 DETAILED_OUTPUT = True
 
 
