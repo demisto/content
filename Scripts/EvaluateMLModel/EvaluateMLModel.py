@@ -5,9 +5,11 @@ from tabulate import tabulate
 
 from CommonServerPython import *
 
+DETAILED_OUTPUT = True
+
 
 def binarize(arr, threshold):
-    return np.where(arr >= threshold, 1.0, 0)
+    return np.where(arr > threshold, 1.0, 0)
 
 
 def calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, threshold):
@@ -75,6 +77,7 @@ def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, thre
 
 
 def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold):
+    global DETAILED_OUTPUT
     csr_matrix_at_threshold = calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, threshold)
     metrics_df, metrics_explanation = generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold)
 
@@ -103,20 +106,27 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold)
                                     tablefmt="pipe",
                                     headers="keys").replace("True", "True \\ Predicted"),
                            '\n']
-    human_readable = []
-    human_readable += human_readable_threshold + ['\n']
+    human_readable = []  # type: ignore
+    if DETAILED_OUTPUT:
+        human_readable += human_readable_threshold + ['\n']
     human_readable += class_metrics_human_readable + ['\n']
-    human_readable += csr_matrix_readable
     human_readable += csr_matrix_readable
     human_readable = '\n'.join(human_readable)
     contents = {'threshold': threshold, 'csr_matrix_at_threshold': csr_matrix_at_threshold.to_json(),
-                'metrics_df': metrics_df.to_string()}
+                'metrics_df': metrics_df.to_json()}
     entry = {
         'Type': entryTypes['note'],
         'Contents': contents,
         'ContentsFormat': formats['json'],
         'HumanReadable': human_readable,
-        'HumanReadableFormat': formats['markdown']
+        'HumanReadableFormat': formats['markdown'],
+        'EntryContext': {
+            'EvaluateMLModel': {
+                'Threshold': threshold,
+                'ConfusionMatrixAtThreshold': csr_matrix_at_threshold.to_json(),
+                'Metrics': metrics_df.to_json()
+            }
+        }
     }
     return entry
 
@@ -135,7 +145,7 @@ def find_threshold(y_true_str, y_pred_str, target_precision, target_recall):
         predicted_class = sorted(y.items(), key=lambda x: x[1], reverse=True)[0][0]
         y_pred_per_class[predicted_class][i] = y[predicted_class]
         y_pred.append(predicted_class)
-    for threshold in np.arange(0.05, 1, 0.05):
+    for threshold in np.arange(0, 1, 0.05):
         if any(binarize(y_pred_per_class[class_], threshold).sum() == 0 for class_ in labels):
             break
         if all(precision_score(y_true_per_class[class_],
@@ -160,10 +170,12 @@ def convert_str_to_json(str_json, var_name):
 
 
 def main():
+    global DETAILED_OUTPUT
     y_pred_all_classes = demisto.args()["yPred"]
     y_true = demisto.args()["yTrue"]
     target_precision = calculate_and_validate_float_parameter("targetPrecision")
     target_recall = calculate_and_validate_float_parameter("targetRecall")
+    DETAILED_OUTPUT = 'detailedOutput' in demisto.args() and demisto.args()['detailedOutput'] == 'true'
     entry = find_threshold(y_true_str=y_true,
                            y_pred_str=y_pred_all_classes,
                            target_precision=target_precision,
@@ -184,3 +196,4 @@ def calculate_and_validate_float_parameter(var_name):
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
+

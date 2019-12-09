@@ -240,7 +240,7 @@ def main():
     res = demisto.executeCommand('EvaluateMLModel', {'yTrue': json.dumps(y_test),
                                                      'yPred': json.dumps(y_pred),
                                                      'targetPrecision': target_accuracy,
-                                                     'targetRecall': target_recall})
+                                                     'targetRecall': str(target_recall)})
     if is_error(res):
         return_error(get_error(res))
     confusion_matrix = res[0]['Contents']['csr_matrix_at_threshold']
@@ -262,6 +262,33 @@ def main():
                 'ModelName': model_name,
                 'EvaluationScores': res[0]['Contents']['metrics_df'],
                 'ConfusionMatrix': confusion_matrix
+            }
+        }
+    }
+    demisto.results(result_entry)
+
+    # show results if no threshold (threhsold=0) was used:
+    res = demisto.executeCommand('EvaluateMLModel', {'yTrue': json.dumps(y_test),
+                                                     'yPred': json.dumps(y_pred),
+                                                     'targetPrecision': '0',
+                                                     'targetRecall': '0',
+                                                     'detailedOutput': 'false'})
+    if is_error(res):
+        return_error(get_error(res))
+    human_readable = res[0]['HumanReadable']
+    human_readable = '\n'.join(['## Results for No Threshold',
+                                'The following results were achieved by using no threshold (threshold equals 0)',
+                                human_readable])
+    result_entry = {
+        'Type': entryTypes['note'],
+        'Contents': res[0]['Contents'],
+        'ContentsFormat': formats['json'],
+        'HumanReadable': human_readable,
+        'HumanReadableFormat': formats['markdown'],
+        'EntryContext': {
+            'DBotPhishingClassifierNoThresh': {
+                'EvaluationScores': res[0]['Contents']['metrics_df'],
+                'ConfusionMatrix': res[0]['Contents']['csr_matrix_at_threshold']
             }
         }
     }
