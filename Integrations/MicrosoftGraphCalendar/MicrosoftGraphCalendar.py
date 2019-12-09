@@ -368,26 +368,29 @@ class Client(BaseClient):
 
         return event
 
-    def create_event(self, user: str, **kwargs) -> Dict:
+    def create_event(self, user: str, calendar_id: str = '', **kwargs) -> Dict:
         """
         Create a single event in a user calendar, or the default calendar of an Office 365 group.
 
         Args:
         :argument user: the user id | userPrincipalName
+        :argument calendar_id: calendar id  | name
 
         Event Properties:
         :keyword attendees: The collection of attendees for the event.
         :keyword body: The body of the message associated with the event. It can be in HTML or text format.
         :keyword subject: The text of the event's subject line.
-        :keyword location: The location of the event.
-         an event as an online meeting such as a Skype meeting. Read-only.
+        :keyword location: The location of the event. an event as an online meeting such as a Zoom meeting. Read-only.
         :keyword end: The date, time, and time zone that the event ends. By default, the end time is in UTC.
         :keyword originalEndTimeZone: The end time zone that was set when the event was created.
         :keyword originalStart: The Timestamp type represents date and time using ISO 8601 format in UTC time.
          For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'
         :keyword originalStartTimeZone: The start time zone that was set when the event was created.
         """
-        event = self.http_request('POST', f'users/{user}/calendar/events', body=json.dumps(kwargs))
+        if calendar_id:
+            event = self.http_request('POST', f'/users/{user}/calendars/{calendar_id}/events', body=json.dumps(kwargs))
+        else:
+            event = self.http_request('POST', f'users/{user}/calendar/events', body=json.dumps(kwargs))
         return event
 
     def update_event(self, user: str, event_id: str, **kwargs) -> Dict:
@@ -410,7 +413,7 @@ class Client(BaseClient):
          For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'
         :keyword originalStartTimeZone: The start time zone that was set when the event was created.
         """
-        event = self.http_request('PATCH', f'user/{user}/calendar/events/{event_id}', body=json.dumps(kwargs))
+        event = self.http_request('PATCH', f'users/{user}/calendar/events/{event_id}', body=json.dumps(kwargs))
         return event
 
     def delete_event(self, user: str, event_id: str):
@@ -491,8 +494,9 @@ def create_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         args: Usually demisto.args()
     """
     # create the event
-    params: Dict = snakecase_to_camelcase(args, fields_to_drop=['user'])  # type: ignore
-    event = client.create_event(user=args.get('user', ''), **params)
+    args['body'] = {'content': args.get('body', '')}
+    params: Dict = snakecase_to_camelcase(args, fields_to_drop=['user', 'calendar_id'])  # type: ignore
+    event = client.create_event(user=args.get('user', ''), calendar_id=args.get('calendar_id', ''), **params)
 
     # display the new event and it's properties
     event_readable, event_outputs = parse_events(event)
@@ -517,8 +521,9 @@ def update_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     event_id = str(args.get('event_id'))
 
     # create the event
-    params: Dict = snakecase_to_camelcase(args, fields_to_drop=['user'])  # type: ignore
-    event = client.create_event(user=args.get('user', ''), **params)
+    args['body'] = {'content': args.get('body', '')}
+    params: Dict = snakecase_to_camelcase(args, fields_to_drop=['user', 'event_id'])  # type: ignore
+    event = client.update_event(user=args.get('user', ''), event_id=args.get('event_id', ''), **params)
 
     # display the updated event and it's properties
     event_readable, event_outputs = parse_events(event)
