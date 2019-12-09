@@ -249,9 +249,9 @@ tasks:
     task:
       id: 4e47aa4e-bef0-4566-8aae-b249bdf06ce0
       version: -1
-      name: Detonate URL - Lastline
+      name: Detonate URL - Lastline v2
       description: Detonates a URL using the Lastline sandbox integration.
-      playbookName: Detonate URL - Lastline
+      playbookName: Detonate URL - Lastline v2
       type: playbook
       iscommand: false
       brand: ""
