@@ -1,7 +1,7 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy
   version: -1
+  id: SplunkPy
 configuration:
 - display: Host - ip (x.x.x.x)
   name: host
