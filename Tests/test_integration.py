@@ -87,9 +87,9 @@ def __test_integration_instance(client, module_instance):
 
 # return instance name if succeed, None otherwise
 def __create_integration_instance(client, integration_name, integration_instance_name,
-                                  integration_params, is_byoi):
-    print('Configuring instance for {} (instance name: {})'.format(integration_name,
-                                                                   integration_instance_name))
+                                  integration_params, is_byoi, validate_test=True):
+    print('Configuring instance for {} (instance name: {}, validate "Test": {})'.format(integration_name,
+          integration_instance_name, validate_test))
     # get configuration config (used for later rest api
     configuration = __get_integration_config(client, integration_name)
     if not configuration:
@@ -157,7 +157,11 @@ def __create_integration_instance(client, integration_name, integration_instance
     module_instance['id'] = integration_config['id']
 
     # test integration
-    test_succeed = __test_integration_instance(client, module_instance)
+    if validate_test:
+        test_succeed = __test_integration_instance(client, module_instance)
+    else:
+        print_warning("Skipping test validation for integration: {} (it has test_validate set to false)".format(integration_name))
+        test_succeed = True
 
     if not test_succeed:
         __disable_integrations_instances(client, [module_instance])
@@ -370,13 +374,14 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         integration_instance_name = integration.get('instance_name', '')
         integration_params = integration.get('params', None)
         is_byoi = integration.get('byoi', True)
+        validate_test = integration.get('validate_test', True)
 
         if is_mock_run:
             configure_proxy_unsecure(integration_params)
 
         module_instance = __create_integration_instance(client, integration_name,
                                                         integration_instance_name,
-                                                        integration_params, is_byoi)
+                                                        integration_params, is_byoi, validate_test)
         if module_instance is None:
             print_error('Failed to create instance')
             __delete_integrations_instances(client, module_instances)
