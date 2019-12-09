@@ -705,7 +705,7 @@ script:
         description: "A URL for an online meeting. The property is set only when an organizer specifies an
         event as an online meeting such as a Skype meeting. Read-only."
         type: Unknown
-  dockerimage: demisto/crypto:1.0.0.4187
+  dockerimage: demisto/crypto:1.0.0.4488
   isfetch: false
   longRunning: false
   longRunningPort: false
