@@ -701,6 +701,8 @@ def tests_manager(tests_settings):
 
     elif is_nightly:
         """
+        2. Verify that I don't accidentally get different records with the same name on different clusters - maybe that's ok? - WAITING FOR RONY
+        3. Add new instances to the conf file Jakobi showed me
         4. Change all the methods to include test records and not names, or create a method to go over the records and collect the relevant ones
         5. Make sure to switch all the prints to the new prints
         6. Make sure the arrays cells are restarted to empty string after each test

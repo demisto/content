@@ -150,14 +150,6 @@ def get_dependent_integrations_clusters_data():
     return tests_graph.clusters
 
 
-def get_nightly_instances():
-    with open('/env_results.json', 'r') as myfile: # GGG - where is the env results file found? which path?
-        instances_data_string = myfile.read()
-    instances_data = json.loads(instances_data_string)
-    nightly_instances = instances_data.get("Nightly")
-    return nightly_instances
-
-
 def get_tests_allocation(number_of_instances):
     dependent_tests, independent_tests, all_tests = get_test_dependencies()
     dependent_tests_clusters = get_dependent_integrations_clusters_data()
@@ -231,6 +223,9 @@ def run_nightly_tests(desired_number_of_demisto_machines):
 
 
 
-#get_test_dependencies()
-#tests_graph = TestsGraph()
-#get_dependent_integrations_clusters_data()
+get_test_dependencies()
+tests_graph = TestsGraph()
+clusters = get_dependent_integrations_clusters_data()
+cluster_size_arr = [len(cluster) for cluster in clusters]
+print(clusters)
+
