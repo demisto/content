@@ -216,9 +216,9 @@ tasks:
     task:
       id: 062629c2-22a9-430b-8155-a6a5dd55506b
       version: -1
-      name: get-remediation-documentation
+      name: pan-os-get-documentation
       description: Get documentaion
-      script: BPA|||get-remediation-documentation
+      script: BPA|||pan-os-get-documentation
       type: regular
       iscommand: true
       brand: BPA

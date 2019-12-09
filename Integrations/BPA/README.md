@@ -34,16 +34,16 @@ This integration was integrated and tested with version 1.0 of BPA
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
-  <li><a href="#get-remediation-documentation" target="_self">Get documentaion: get-remediation-documentation</a></li>
+  <li><a href="#pan-os-get-documentation" target="_self">Get documentaion: pan-os-get-documentation</a></li>
   <li><a href="#pan-os-bpa-submit-job" target="_self">Submits a BPA job: pan-os-bpa-submit-job</a></li>
   <li><a href="#pan-os-bpa-get-job-results" target="_self">Returns results of BPA job: pan-os-bpa-get-job-results</a></li>
 </ol>
-<h3 id="get-remediation-documentation">1. get-remediation-documentation</h3>
+<h3 id="pan-os-get-documentation">1. pan-os-get-documentation</h3>
 <hr>
 <p>Get documentaion</p>
 <h5>Base Command</h5>
 <p>
-  <code>get-remediation-documentation</code>
+  <code>pan-os-get-documentation</code>
 </p>
 
 <h5>Required Permissions</h5>
