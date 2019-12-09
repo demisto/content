@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 125f2585-a970-4089-80aa-a43acbaf9d4f
+    taskid: ed582102-db14-475f-8a84-86c4a5daa1c7
     type: start
     task:
-      id: 125f2585-a970-4089-80aa-a43acbaf9d4f
+      id: ed582102-db14-475f-8a84-86c4a5daa1c7
       version: -1
       name: ""
       iscommand: false
@@ -27,12 +27,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "1":
     id: "1"
-    taskid: 9d29a99e-c268-4ada-85d1-d69c0b28390d
+    taskid: 394ae079-0215-4f77-83a4-a99a1c7f41b6
     type: regular
     task:
-      id: 9d29a99e-c268-4ada-85d1-d69c0b28390d
+      id: 394ae079-0215-4f77-83a4-a99a1c7f41b6
       version: -1
       name: Analyze by SHA256
       description: Checks file reputation of the given hash, supports SHA256
@@ -67,12 +68,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "3":
     id: "3"
-    taskid: 6c7f4d81-451b-4dfd-8d6f-8d1b6c174aff
+    taskid: be6fa84b-8363-44f6-8c81-997c9d1cf893
     type: regular
     task:
-      id: 6c7f4d81-451b-4dfd-8d6f-8d1b6c174aff
+      id: be6fa84b-8363-44f6-8c81-997c9d1cf893
       version: -1
       name: Verify existing on Intezer
       description: |-
@@ -105,12 +107,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "4":
     id: "4"
-    taskid: 724b11a8-aefe-43ff-80d5-6d2cbbcc8922
+    taskid: e3576ac8-33a8-4daa-8c3c-eaed423a3624
     type: title
     task:
-      id: 724b11a8-aefe-43ff-80d5-6d2cbbcc8922
+      id: e3576ac8-33a8-4daa-8c3c-eaed423a3624
       version: -1
       name: Success
       type: title
@@ -127,12 +130,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "5":
     id: "5"
-    taskid: 982bffce-8819-41b5-870c-3990fc5656ab
+    taskid: 46aea140-d414-4ad5-835d-72bab0941939
     type: regular
     task:
-      id: 982bffce-8819-41b5-870c-3990fc5656ab
+      id: 46aea140-d414-4ad5-835d-72bab0941939
       version: -1
       name: Verify Hash on DBot score
       scriptName: VerifyContext
@@ -159,12 +163,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "6":
     id: "6"
-    taskid: ed940be7-57d7-4195-8a17-2b9ea3ee0b17
+    taskid: ff2d4027-b595-471a-80f7-b6f6e7705376
     type: regular
     task:
-      id: ed940be7-57d7-4195-8a17-2b9ea3ee0b17
+      id: ff2d4027-b595-471a-80f7-b6f6e7705376
       version: -1
       name: Verify Vendor
       scriptName: VerifyContext
@@ -191,12 +196,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "7":
     id: "7"
-    taskid: 1dbae718-81cf-42b8-8997-ba4951c19dd2
+    taskid: 4fdd362f-6c44-4a56-8e57-f4477b7cde0c
     type: regular
     task:
-      id: 1dbae718-81cf-42b8-8997-ba4951c19dd2
+      id: 4fdd362f-6c44-4a56-8e57-f4477b7cde0c
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -221,12 +227,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "8":
     id: "8"
-    taskid: 89831672-2dbd-46cc-86e6-cb6d441c7622
+    taskid: cccc2078-aa50-4cb1-8254-d113c4c3c06a
     type: regular
     task:
-      id: 89831672-2dbd-46cc-86e6-cb6d441c7622
+      id: cccc2078-aa50-4cb1-8254-d113c4c3c06a
       version: -1
       name: Verify Hash on File
       scriptName: VerifyContext
@@ -253,12 +260,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "9":
     id: "9"
-    taskid: 36a6316a-3e15-4cd0-8453-212465405028
+    taskid: accbac7c-ae1b-4575-862a-552b88be5b78
     type: title
     task:
-      id: 36a6316a-3e15-4cd0-8453-212465405028
+      id: accbac7c-ae1b-4575-862a-552b88be5b78
       version: -1
       name: File upload
       type: title
@@ -278,12 +286,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "10":
     id: "10"
-    taskid: 574bd895-f933-4ba3-87df-ab420021db4a
+    taskid: fd6e209b-1fad-4e36-8d39-11950d4034a8
     type: title
     task:
-      id: 574bd895-f933-4ba3-87df-ab420021db4a
+      id: fd6e209b-1fad-4e36-8d39-11950d4034a8
       version: -1
       name: Analyze file by SHA256
       type: title
@@ -303,12 +312,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "11":
     id: "11"
-    taskid: d6118392-2eda-43f5-8da6-b4a142ed15bc
+    taskid: b025f064-e12c-4335-8159-f6700463fa08
     type: regular
     task:
-      id: d6118392-2eda-43f5-8da6-b4a142ed15bc
+      id: b025f064-e12c-4335-8159-f6700463fa08
       version: -1
       name: Upload Sample File
       scriptName: http
@@ -344,12 +354,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "12":
     id: "12"
-    taskid: a066a4a4-f57d-4cac-8ffb-3c734052bc5a
+    taskid: 478e41e5-1ba0-4a2a-8462-91ac7f88520b
     type: regular
     task:
-      id: a066a4a4-f57d-4cac-8ffb-3c734052bc5a
+      id: 478e41e5-1ba0-4a2a-8462-91ac7f88520b
       version: -1
       name: 'Analyze by Upload File '
       description: Checks file reputation for uploaded file (up to 20MB)
@@ -378,12 +389,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "13":
     id: "13"
-    taskid: 679d69d0-c5a9-4a5a-8e3c-6be31cbbcb84
+    taskid: 2006c19a-f677-48db-871c-97cb721d63e2
     type: regular
     task:
-      id: 679d69d0-c5a9-4a5a-8e3c-6be31cbbcb84
+      id: 2006c19a-f677-48db-871c-97cb721d63e2
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -408,12 +420,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "14":
     id: "14"
-    taskid: 2ae3f398-0f05-44b2-8552-82a6a1008fe8
+    taskid: 916e15fd-1900-4437-8b39-a0f4e59ae70c
     type: regular
     task:
-      id: 2ae3f398-0f05-44b2-8552-82a6a1008fe8
+      id: 916e15fd-1900-4437-8b39-a0f4e59ae70c
       version: -1
       name: Verify Hash on File
       scriptName: VerifyContext
@@ -440,12 +453,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "15":
     id: "15"
-    taskid: 7859900f-336b-416a-8b74-182679a107cb
+    taskid: e927a2be-2409-4533-871e-62d95633cfbd
     type: regular
     task:
-      id: 7859900f-336b-416a-8b74-182679a107cb
+      id: e927a2be-2409-4533-871e-62d95633cfbd
       version: -1
       name: Verify Hash on DBot score
       scriptName: VerifyContext
@@ -472,12 +486,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "16":
     id: "16"
-    taskid: 6b3540b8-d216-43d8-8f50-c2dc6fb3b2b8
+    taskid: 492d9266-a80a-445d-8808-50dd55c2eb5d
     type: regular
     task:
-      id: 6b3540b8-d216-43d8-8f50-c2dc6fb3b2b8
+      id: 492d9266-a80a-445d-8808-50dd55c2eb5d
       version: -1
       name: Verify Vendor
       scriptName: VerifyContext
@@ -504,12 +519,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "17":
     id: "17"
-    taskid: 57cc0a1c-6d7f-461a-8c0d-76524b08227b
+    taskid: 29ae1838-717d-4a2a-887b-eb7e8c2b946f
     type: regular
     task:
-      id: 57cc0a1c-6d7f-461a-8c0d-76524b08227b
+      id: 29ae1838-717d-4a2a-887b-eb7e8c2b946f
       version: -1
       name: Verify existing on Intezer
       description: |-
@@ -542,12 +558,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "18":
     id: "18"
-    taskid: 6d094a74-3f20-4f4c-84c5-e256f5e65383
+    taskid: fec20782-e135-4eb8-85bf-e94bd9f004c3
     type: regular
     task:
-      id: 6d094a74-3f20-4f4c-84c5-e256f5e65383
+      id: fec20782-e135-4eb8-85bf-e94bd9f004c3
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -576,12 +593,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "19":
     id: "19"
-    taskid: a3f11892-527a-4b70-869d-5c098d4347af
+    taskid: 8bbd1cca-7776-40bc-875a-3d3ada7897be
     type: regular
     task:
-      id: a3f11892-527a-4b70-869d-5c098d4347af
+      id: 8bbd1cca-7776-40bc-875a-3d3ada7897be
       version: -1
       name: file (with sha1 value in the file argument)
       description: Checks file reputation of the given hash, supports SHA256
@@ -610,12 +628,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "20":
     id: "20"
-    taskid: b2bbd3e3-6b21-4562-8a58-8e59872037bb
+    taskid: 3e0e9dd8-8628-4470-84a2-d925e00a2929
     type: regular
     task:
-      id: b2bbd3e3-6b21-4562-8a58-8e59872037bb
+      id: 3e0e9dd8-8628-4470-84a2-d925e00a2929
       version: -1
       name: commentsTocontext
       description: "Takes the comments of a given entry ID and stores them in the
@@ -646,12 +665,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "21":
     id: "21"
-    taskid: 98116387-4217-4ae4-8460-1904044a3e04
+    taskid: 186fed17-ac1c-45cb-892f-c660be5286ed
     type: condition
     task:
-      id: 98116387-4217-4ae4-8460-1904044a3e04
+      id: 186fed17-ac1c-45cb-892f-c660be5286ed
       version: -1
       name: test file with sha1 input
       type: condition
@@ -682,12 +702,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "22":
     id: "22"
-    taskid: 935f56b7-02b7-4cf2-8821-9ce5220b0eaa
+    taskid: 53372085-915a-4e9c-8892-cf787e8c1a26
     type: regular
     task:
-      id: 935f56b7-02b7-4cf2-8821-9ce5220b0eaa
+      id: 53372085-915a-4e9c-8892-cf787e8c1a26
       version: -1
       name: file_command_enrichment_test_script_helper
       scriptName: file_command_enrichment_test_script_helper
@@ -709,12 +730,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "23":
     id: "23"
-    taskid: 873127a0-70d5-44d1-8ead-2bbf9776ea59
+    taskid: 6abceb7c-d534-4157-8d1f-d5e103bc9a17
     type: title
     task:
-      id: 873127a0-70d5-44d1-8ead-2bbf9776ea59
+      id: 6abceb7c-d534-4157-8d1f-d5e103bc9a17
       version: -1
       name: non supported hash values
       type: title
@@ -734,12 +756,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "24":
     id: "24"
-    taskid: 446e6bef-4a7b-41c0-8d0e-02e89fadb628
+    taskid: a5b459bc-25fe-4e44-82ce-784b1796001f
     type: regular
     task:
-      id: 446e6bef-4a7b-41c0-8d0e-02e89fadb628
+      id: a5b459bc-25fe-4e44-82ce-784b1796001f
       version: -1
       name: deleteContext
       description: Delete field from context
@@ -768,12 +791,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "25":
     id: "25"
-    taskid: 6d542379-0cd3-4394-8fb7-19381788faf8
+    taskid: 30bf2e99-392f-411b-8605-471ef18b7254
     type: condition
     task:
-      id: 6d542379-0cd3-4394-8fb7-19381788faf8
+      id: 30bf2e99-392f-411b-8605-471ef18b7254
       version: -1
       name: Test enrichment with sha256 exist
       type: condition
@@ -812,14 +836,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "26":
     id: "26"
-    taskid: 634612d2-4e01-454e-8034-d017987543a8
+    taskid: 535fae1f-e516-4010-8078-674e0d9770b4
     type: condition
     task:
-      id: 634612d2-4e01-454e-8034-d017987543a8
+      id: 535fae1f-e516-4010-8078-674e0d9770b4
       version: -1
-      name: Test enrichment of md5 does not exist
+      name: Test enrichment of md5 exist
       type: condition
       iscommand: false
       brand: ""
@@ -830,7 +855,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotExists
+      - - operator: isExists
           left:
             value:
               complex:
@@ -863,12 +888,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "27":
     id: "27"
-    taskid: bfaaf5b7-c83b-44aa-8591-c36b0f7b799d
+    taskid: 97a88776-a46c-4767-8264-af7bb71a18dc
     type: regular
     task:
-      id: bfaaf5b7-c83b-44aa-8591-c36b0f7b799d
+      id: 97a88776-a46c-4767-8264-af7bb71a18dc
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -893,6 +919,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
 view: |-
   {
     "linkLabelsPosition": {},
