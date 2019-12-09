@@ -2092,7 +2092,7 @@ def main():
                     config.protocol.thread_pool.close()
                     config.protocol.thread_pool.join()
                     del config.protocol.thread_pool
-                super(type(config.protocol), config.protocol).close()
+            exchangelib.close_connections()
         except Exception:
             demisto.debug("Error was found in terminating threads in config.protocol, ignoring.")
         if log_stream:
