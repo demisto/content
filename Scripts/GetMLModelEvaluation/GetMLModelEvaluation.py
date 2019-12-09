@@ -123,7 +123,7 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold)
         'HumanReadable': human_readable,
         'HumanReadableFormat': formats['markdown'],
         'EntryContext': {
-            'EvaluateMLModel': {
+            'GetMLModelEvaluation': {
                 'Threshold': threshold,
                 'ConfusionMatrixAtThreshold': csr_matrix_at_threshold.to_json(),
                 'Metrics': metrics_df.to_json()
