@@ -110,7 +110,7 @@ def run_long_running(port):
         if ssl_cert:
             with tempfile.NamedTemporaryFile(delete=False) as fh:
                 fh.write(ssl_cert.encode())
-            httpd.socket = ssl.wrap_socket(httpd.socket, server_side=True, certfile=fh.name, ssl_version=ssl.PROTOCOL_TLSv1)
+            httpd.socket = ssl.wrap_socket(httpd.socket, server_side=True, certfile=fh.name)
 
         signal.signal(signal.SIGTERM, httpd.shutdown)
         signal.signal(signal.SIGINT, httpd.shutdown)
