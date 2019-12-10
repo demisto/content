@@ -297,8 +297,8 @@ class Client(BaseClient):
 
         Returns ok if successful.
         """
-        self.http_request('GET', 'users/3fa9f28b-eb0e-463a-ba7b-8089fe9991e2/calendar/events')  # todo: real test
-        demisto.results('ok')
+        self.http_request('GET', 'users/')
+        return 'ok', NO_OUTPUTS, NO_OUTPUTS
 
     def get_calendar(self, user: str, calendar_id: str = None) -> Dict:
         """Returns a single calendar by sending a GET request.
@@ -612,14 +612,14 @@ def get_calendar_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, calendar
 
 
-def module_test_function_command(client: Client, args: Dict):
+def module_test_function_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
         client: Client object with request
     """
-    client.test_function()  # todo: a real test function
+    return client.test_function()
 
 
 def main():
