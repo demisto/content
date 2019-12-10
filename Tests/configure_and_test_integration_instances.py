@@ -4,6 +4,7 @@ import json
 import ast
 import sys
 import demisto_client
+from time import sleep
 
 from Tests.test_integration import __get_integration_config, __test_integration_instance
 from Tests.test_integration import __disable_integrations_instances
@@ -13,7 +14,6 @@ from Tests.test_utils import run_command, get_last_release_version, checked_type
 from Tests.scripts.validate_files import FilesValidator
 from Tests.scripts.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX
 from Tests.scripts.constants import PACKS_INTEGRATION_REGEX, BETA_INTEGRATION_REGEX
-from time import sleep
 
 
 def options_handler():
