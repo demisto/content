@@ -2016,7 +2016,6 @@
         "NetWitness Endpoint Test": "Issue 19878",
         "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
-        "search_endpoints_by_hash_-_tie_-_test": "Issue #18350",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "calculate_severity_-_critical_assets_-_test": "Issue 17924",
