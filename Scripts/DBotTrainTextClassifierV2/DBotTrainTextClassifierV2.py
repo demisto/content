@@ -292,7 +292,7 @@ def main():
             }
         }
     }
-    demisto.results(result_entry)
+    # demisto.results(result_entry)
 
 
 if __name__ in ['__builtin__', '__main__']:
