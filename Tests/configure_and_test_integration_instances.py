@@ -328,6 +328,39 @@ def set_integration_instance_parameters(integration_configuration, integration_p
     return module_instance
 
 
+def group_integrations(integrations, skipped_integrations_conf, new_integrations_names, modified_integrations_names):
+    '''
+    Filter integrations into their respective lists - new, modified or unchanged. if it's on the skip list, then
+    skip if random tests were chosen then we may be configuring integrations that are neither new or modified.
+
+    Args:
+        integrations (list): The integrations to categorize.
+        skipped_integrations_conf (dict): Integrations that are on the skip list.
+        new_integrations_names (list): The names of new integrations.
+        modified_integrations_names (list): The names of modified integrations.
+
+    Returns:
+        (tuple): Lists of integrations objects as well as an Integration-to-Status dictionary useful for logs.
+    '''
+    new_integrations = []
+    modified_integrations = []
+    unchanged_integrations = []
+    integration_to_status = {}
+    for integration in integrations:
+        integration_name = integration.get('name', '')
+        if integration_name in skipped_integrations_conf.keys():
+            continue
+        elif integration_name in new_integrations_names:
+            new_integrations.append(integration)
+        elif integration_name in modified_integrations_names:
+            modified_integrations.append(integration)
+            integration_to_status[integration_name] = 'Modified Integration'
+        else:
+            unchanged_integrations.append(integration)
+            integration_to_status[integration_name] = 'Unchanged Integration'
+    return new_integrations, modified_integrations, unchanged_integrations, integration_to_status
+
+
 def main():
     options = options_handler()
     username = options.user
@@ -393,25 +426,9 @@ def main():
         print_warning('All Integrations for test "{}":'.format(test.get('playbookID')))
         print_warning(integrations_names)
 
-        new_integrations = []
-        modified_integrations = []
-        unchanged_integrations = []
-        integration_to_status = {}
-
-        # filter integrations into their respective lists - new, modified or unchanged. if it's on the skip list, then
-        # skip if random tests were chosen then we may be configuring integrations that are neither new or modified.
-        for integration in integrations:
-            integration_name = integration.get('name', '')
-            if integration_name in skipped_integrations_conf.keys():
-                continue
-            elif integration_name in new_integrations_names:
-                new_integrations.append(integration)
-            elif integration_name in modified_integrations_names:
-                modified_integrations.append(integration)
-                integration_to_status[integration_name] = 'Modified Integration'
-            else:
-                unchanged_integrations.append(integration)
-                integration_to_status[integration_name] = 'Unchanged Integration'
+        new_integrations, modified_integrations, unchanged_integrations, integration_to_status = group_integrations(
+            integrations, skipped_integrations_conf, new_integrations_names, modified_integrations_names
+        )
 
         integrations_msg = '\n'.join(['"{}" - {}'.format(key, val) for key, val in integration_to_status.items()])
         print_warning('{}\n'.format(integrations_msg))
