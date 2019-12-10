@@ -132,11 +132,17 @@ def is_content_updating(server, username, password):
         return response_data
 
 
-def get_content_installation(client):
-    '''Make request for details about the content installed on the demisto instance'''
+def get_content_version_details(client):
+    '''Make request for details about the content installed on the demisto instance.
+
+    Args:
+        client (demisto_client): The configured client to use.
+
+    Returns:
+        (tuple): The release version and asset ID of the content installed on the demisto instance.
+    '''
     host = client.api_client.configuration.host
-    msg = '\nMaking "POST" request to server - "{}" to check installed content.'.format(host)
-    print(msg)
+    print('\nMaking "POST" request to server - "{}" to check installed content.'.format(host))
 
     # make request to installed content details
     response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/content/installed',
@@ -448,7 +454,7 @@ def main():
         # check that the content installation updated
         # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
         release, asset_id = get_content_installation(client)
-        with open('content-descriptor.json', 'r') as cd_file:
+        with open('content-descrget_content_version_detailsfile:
             cd_json = json.loads(cd_file.read())
             cd_release = cd_json.get('release')
             cd_asset_id = cd_json.get('assetId')
