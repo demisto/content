@@ -12,7 +12,7 @@ def options_handler():
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
     parser.add_argument('-s', '--server', help='The server to connect to (leaving out the protocol e.g.'
                         ' without \'https://\')', required=True)
-    parser.add_argument('-up', '--content_zip', help='Path to new content zipfile to upload', required=True)
+    parser.add_argument('--content_zip', help='Path to new content zipfile to upload', required=True)
 
     options = parser.parse_args()
 
