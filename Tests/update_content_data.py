@@ -19,7 +19,15 @@ def options_handler():
     return options
 
 
-def upload_content(server, username, password, content_zip_path):
+def update_content(server, username, password, content_zip_path):
+    """Update the content on a demisto instance with the content files in a zip file.
+
+    Args:
+        server (str): URL of the demisto server instance.
+        username (str): Username to login to the demisto instance.
+        password (str): Password of the associated username to login to the demisto insatnce.
+        content_zip_path (str): The path to the zip file containing content files.
+    """
     try:
         # Configure Demisto Client and make request to upload content zip file
         c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
@@ -51,7 +59,7 @@ def main():
     username = options.user
     password = options.password
     content_zip_path = options.content_zip
-    upload_content(server, username, password, content_zip_path)
+    update_content(server, username, password, content_zip_path)
 
 
 if __name__ == '__main__':
