@@ -61,23 +61,28 @@ def __get_integration_config(client, integration_name):
 
 # __test_integration_instance
 def __test_integration_instance(client, module_instance):
-    try:
-        response_data, response_code, _ = demisto_client.generic_request_func(self=client, method='POST',
-                                                                              path='/settings/integration/test',
-                                                                              body=module_instance)
-    except ApiException as conn_err:
-        print_error(
-            'Failed to test integration instance, error trying to communicate with demisto '
-            'server: {} '.format(
-                conn_err))
-        return False
-    if int(response_code) != 200:
-        print_error('Integration-instance test ("Test" button) failed.\nBad status code: ' + str(
-            response_code))
-        return False
+    connection_retries = 3
+    success = False
+    for i in range(connection_retries):
+        try:
+            response_data, response_code, _ = demisto_client.generic_request_func(self=client, method='POST',
+                                                                                  path='/settings/integration/test',
+                                                                                  body=module_instance)
+        except ApiException as conn_err:
+            print_error(
+                'Failed to test integration instance, error trying to communicate with demisto '
+                'server: {} '.format(
+                    conn_err))
+            return False
+        if int(response_code) != 200:
+            print_error('Integration-instance test ("Test" button) failed.\nBad status code: ' + str(
+                response_code))
+            return False
 
-    result_object = ast.literal_eval(response_data)
-    success = result_object['success']
+        result_object = ast.literal_eval(response_data)
+        success = result_object['success']
+        if success:
+            break
     if not success:
         print_error('Test integration failed.\n Failure message: ' + result_object['message'])
         return False
