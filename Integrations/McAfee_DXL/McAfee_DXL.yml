@@ -13,10 +13,10 @@ configuration:
   defaultvalue: ""
   type: 12
   required: true
-- display: Client private key path (e.g. /usr/config/client.key)
+- display: Client private key content (e.g. client.key)
   name: private_key
   defaultvalue: ""
-  type: 14
+  type: 12
   required: true
 - display: Brokers urls (comma separated list in the form of - [ssl://]<hostname>[:port])
     - get hostname & port from `brokerlist.properties` file in instructions. Note
@@ -145,7 +145,7 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python2
-  dockerimage: demisto/dxl:latest
+  subtype: python3
+  dockerimage: devdemisto/dxl:1.0.0.4304
 tests:
   - No tests
