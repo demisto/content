@@ -78,7 +78,7 @@ def __test_integration_instance(client, module_instance):
                     conn_err))
             return False
         except requests.exceptions.Timeout:
-            print_warning("Could not connect. Trying to connect for the {} time".format(i+1))
+            print_warning("Could not connect. Trying to connect for the {} time".format(i + 1))
 
     if int(response_code) != 200:
         print_error('Integration-instance test ("Test" button) failed.\nBad status code: ' + str(
