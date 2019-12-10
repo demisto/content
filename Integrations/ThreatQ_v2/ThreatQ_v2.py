@@ -1228,61 +1228,66 @@ def get_all_objs_command(obj_type):
 
 def get_ip_reputation():
     args = demisto.args()
-    ip = args.get('ip')
+    ips = argToList(args.get('ip'))
 
-    if not is_ip_valid(ip, accept_v6_ips=True):
-        return_error('{0} is not a valid IP address.'.format(ip))
+    for ip in ips:
+        if not is_ip_valid(ip, accept_v6_ips=True):
+            return_error('{0} is not a valid IP address.'.format(ip))
 
-    generic_context = {'Address': ip}
+        generic_context = {'Address': ip}
 
-    make_indicator_reputation_request(indicator_type='ip', value=ip, generic_context=generic_context)
+        make_indicator_reputation_request(indicator_type='ip', value=ip, generic_context=generic_context)
 
 
 def get_url_reputation():
     args = demisto.args()
-    url = args.get('url')
+    urls = argToList(args.get('url'))
 
-    if not REGEX_MAP['url'].match(url):
-        return_error('{0} is not a valid URL.'.format(url))
+    for url in urls:
+        if not REGEX_MAP['url'].match(url):
+            return_error('{0} is not a valid URL.'.format(url))
 
-    generic_context = {'Data': url}
+        generic_context = {'Data': url}
 
-    make_indicator_reputation_request(indicator_type='url', value=url, generic_context=generic_context)
+        make_indicator_reputation_request(indicator_type='url', value=url, generic_context=generic_context)
 
 
 def get_email_reputation():
     args = demisto.args()
-    email = args.get('email')
+    emails = argToList(args.get('email'))
 
-    if not REGEX_MAP['email'].match(email):
-        return_error('{0} is not a valid email address.'.format(email))
+    for email in emails:
+        if not REGEX_MAP['email'].match(email):
+            return_error('{0} is not a valid email address.'.format(email))
 
-    generic_context = {'Address': email}
+        generic_context = {'Address': email}
 
-    make_indicator_reputation_request(indicator_type='email', value=email, generic_context=generic_context)
+        make_indicator_reputation_request(indicator_type='email', value=email, generic_context=generic_context)
 
 
 def get_domain_reputation():
     args = demisto.args()
-    domain = args.get('domain')
+    domains = argToList(args.get('domain'))
 
-    if not REGEX_MAP['domain'].match(domain):
-        return_error('{0} is not a valid domain.'.format(domain))
+    for domain in domains:
+        if not REGEX_MAP['domain'].match(domain):
+            return_error('{0} is not a valid domain.'.format(domain))
 
-    generic_context = {'Name': domain}
+        generic_context = {'Name': domain}
 
-    make_indicator_reputation_request(indicator_type='domain', value=domain, generic_context=generic_context)
+        make_indicator_reputation_request(indicator_type='domain', value=domain, generic_context=generic_context)
 
 
 def get_file_reputation():
     args = demisto.args()
-    file = args.get('file')
+    files = argToList(args.get('file'))
 
-    for fmt in ['md5', 'sha1', 'sha256']:
-        if REGEX_MAP[fmt].match(file):
-            break
-    else:
-        return_error('{0} is not a valid file format.'.format(file))
+    for file in files:
+        for fmt in ['md5', 'sha1', 'sha256']:
+            if REGEX_MAP[fmt].match(file):
+                break
+        else:
+            return_error('{0} is not a valid file format.'.format(file))
 
     generic_context = createContext({
         'MD5': file if fmt == 'md5' else None,

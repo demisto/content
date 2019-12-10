@@ -76,7 +76,7 @@ script:
     - default: true
       defaultValue: ''
       description: The IP address to check.
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -149,7 +149,7 @@ script:
     - default: true
       defaultValue: ''
       description: URL to check
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -222,7 +222,7 @@ script:
     - default: true
       defaultValue: ''
       description: File MD5, SHA-1 or SHA-256
-      isArray: false
+      isArray: true
       name: file
       required: true
       secret: false
@@ -310,7 +310,7 @@ script:
     - default: true
       defaultValue: ''
       description: The email address to check.
-      isArray: false
+      isArray: true
       name: email
       required: true
       secret: false
@@ -382,7 +382,7 @@ script:
   - arguments:
     - default: true
       description: Domain or FQDN
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
