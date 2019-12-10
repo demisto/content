@@ -25,6 +25,12 @@ fromversion: '5.0.0'
 script:
   commands:
   - arguments:
+    - default: false
+      description: Time in seconds to wait before taking a screenshot
+      isArray: false
+      name: wait_time
+      required: false
+      secret: false
     - default: true
       description: The URL to rasterize. Must be the full URL, including the http prefix.
       isArray: false
@@ -84,12 +90,6 @@ script:
         - "true"
         - "false"
       description: If "true", will block all outgoing communication.
-    - default: false
-      description: Time in seconds to wait before taking a screenshot
-      isArray: false
-      name: wait_time
-      required: false
-      secret: false
     deprecated: false
     description: Converts the body of an email to an image file or a PDF file.
     execution: false

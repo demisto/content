@@ -1,4 +1,8 @@
 ## [Unreleased]
+  - Fixed an issue where the line chart x-axis was not readable.
+  - Fixed an issue with the graphs width.
+
+## [19.11.0] - 2019-11-12
   - Fixed table and list functions.
   - Fixed an issue where trends have long floating point values.
   - Fixed an issue where line charts with more than 40 columns were not readable.

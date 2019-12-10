@@ -28,6 +28,7 @@ args:
     supported) e.g., article,noun.
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.7.4.2728
+dockerimage: demisto/python3:3.7.5.3066
+dockerimage45:
 tests:
 - RegexGroups Test

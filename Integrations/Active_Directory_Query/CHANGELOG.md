@@ -1,4 +1,10 @@
 ## [Unreleased]
+
+
+## [19.12.0] - 2019-12-10
+Improved handling of error messages.
+
+## [19.11.0] - 2019-11-12
 -
 
 ## [19.10.1] - 2019-10-15

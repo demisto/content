@@ -3,11 +3,16 @@ import signal
 import string
 import time
 import unicodedata
+import urllib3
+import demisto_client.demisto_api
 from subprocess import call, Popen, PIPE, check_call, check_output
 
 VALID_FILENAME_CHARS = '-_.() %s%s' % (string.ascii_letters, string.digits)
 PROXY_PROCESS_INIT_TIMEOUT = 20
 PROXY_PROCESS_INIT_INTERVAL = 1
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 
 def clean_filename(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' ()'):
@@ -151,7 +156,7 @@ class MITMProxy:
     """Manager for MITM Proxy and the mock file structure.
 
     Attributes:
-        demisto_client (demisto.DemistoClient): Wrapper for demisto API.
+        demisto_api_key: API key for demisto API.
         public_ip (string): The IP of the AMI instance.
         repo_folder (string): path to the local clone of the content-test-data git repo.
         tmp_folder (string): path to a temporary folder for log/mock files before pushing to git.
@@ -167,9 +172,8 @@ class MITMProxy:
     MOCKS_TMP_PATH = '/tmp/Mocks/'
     MOCKS_GIT_PATH = 'content-test-data/'
 
-    def __init__(self, demisto_client, public_ip,
+    def __init__(self, public_ip,
                  repo_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH, debug=False):
-        self.demisto_client = demisto_client
         self.public_ip = public_ip
         self.current_folder = self.repo_folder = repo_folder
         self.tmp_folder = tmp_folder
@@ -183,7 +187,9 @@ class MITMProxy:
 
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
-    def configure_proxy_in_demisto(self, proxy=''):
+    def configure_proxy_in_demisto(self, demisto_api_key, server, proxy=''):
+        client = demisto_client.configure(base_url=server, api_key=demisto_api_key,
+                                          verify_ssl=False)
         http_proxy = https_proxy = proxy
         if proxy:
             http_proxy = 'http://' + proxy
@@ -196,7 +202,10 @@ class MITMProxy:
                 },
             'version': -1
         }
-        return self.demisto_client.req('POST', '/system/config', data)
+        response = demisto_client.generic_request_func(self=client, path='/system/config',
+                                                       method='POST', body=data)
+        # client.api_client.pool.close()
+        return response
 
     def get_mock_file_size(self, filepath):
         return self.ami.check_output(['stat', '-c', '%s', filepath]).strip()
@@ -228,9 +237,9 @@ class MITMProxy:
         dst_folder = os.path.join(self.repo_folder, get_folder_path(playbook_id))
 
         if not self.has_mock_file(playbook_id):
-            print 'Mock file not created!'
+            print('Mock file not created!')
         elif self.get_mock_file_size(src_filepath) == '0':
-            print 'Mock file is empty, ignoring.'
+            print('Mock file is empty, ignoring.')
             self.empty_files.append(playbook_id)
         else:
             # Move to repo folder
@@ -291,8 +300,8 @@ class MITMProxy:
 
         # Handle logs
         if self.debug:
-            print "proxy outputs:"
-            print self.process.stdout.read()
-            print self.process.stderr.read()
+            print("proxy outputs:")
+            print(self.process.stdout.read())
+            print(self.process.stderr.read())
 
         self.process = None
