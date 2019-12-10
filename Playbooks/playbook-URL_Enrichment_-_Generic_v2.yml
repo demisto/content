@@ -177,8 +177,10 @@ tasks:
           root: inputs.URL
           transformers:
           - operator: uniq
+      wait_time: {}
       width: {}
     reputationcalc: 1
+    continueonerror: true
     separatecontext: false
     view: |-
       {
