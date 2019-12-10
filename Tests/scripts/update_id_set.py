@@ -238,7 +238,7 @@ def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
 
     updated = False
     for instance in instances_set:
-        instance_id = instance.keys()[0]
+        instance_id = list(instance.keys())[0]
         integration_to_version = instance[instance_id].get('toversion', '99.99.99')
         integration_from_version = instance[instance_id].get('fromversion', '0.0.0')
 

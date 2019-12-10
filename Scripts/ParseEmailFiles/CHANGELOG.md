@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue with handling smime signed files with no attachments.
 
 ## [19.11.0] - 2019-11-12
 -
