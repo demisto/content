@@ -1,24 +1,24 @@
 import demistomock as demisto
 from CommonServerPython import *
-import regex as re
+import regex
 
 
 def main():
     match_target = demisto.args()['value']
 
-    re_flags = re.V1
+    re_flags = regex.V1
     error_if_no_match = False
 
     try:
 
         if demisto.args()['multi_line'].lower() == 'true':
-            re_flags |= re.MULTILINE
+            re_flags |= regex.MULTILINE
 
         if demisto.args()['ignore_case'].lower() == 'true':
-            re_flags |= re.IGNORECASE
+            re_flags |= regex.IGNORECASE
 
         if demisto.args()['period_matches_newline'].lower() == 'true':
-            re_flags |= re.DOTALL
+            re_flags |= regex.DOTALL
 
         if demisto.args()['error_if_no_match'].lower() == 'true':
             error_if_no_match = True
@@ -26,10 +26,10 @@ def main():
     except KeyError:
         pass
 
-    regex_pattern = re.compile(r'{}'.format(demisto.args()['regex']), flags=re_flags)
+    regex_pattern = regex.compile(r'{}'.format(demisto.args()['regex']), flags=re_flags)
 
     try:
-        matches = re.findall(regex_pattern, match_target)
+        matches = regex.findall(regex_pattern, match_target)
 
         if error_if_no_match is False or len(matches) != 0:
             demisto.results(matches)
