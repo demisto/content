@@ -2149,6 +2149,7 @@
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "RedLock": "SSL Issues",
         "SafeBreach": "SSL Issues",
-        "Gmail Single User" : "checking"
+        "Gmail Single User" : "checking",
+        "AWS - CloudWatchLogs": "Integration has no proxy checkbox"
     }
 }
