@@ -59,7 +59,7 @@ def main(value, key=None):
             else:
                 transformed_value = 'None'
 
-        elif context_key:
+        else:
             # no transformer was found
             transformed_value = context_lookup(context_key)
 
