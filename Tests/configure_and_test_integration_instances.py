@@ -78,8 +78,30 @@ def configure_integration_instance(integration, client):
     return module_instance
 
 
+def filepath_to_integration_name(integration_file_path):
+    '''Load an integration file and return the integration name.
+
+    Args:
+        integration_file_path (str): The path to an integration yml file.
+
+    Returns:
+        (str): The name of the integration.
+    '''
+    integration_yaml = get_yaml(integration_file_path)
+    integration_name = integration_yaml.get('name')
+    return integration_name
+
+
 def get_new_and_modified_integrations(git_sha1):
-    '''Return 2 lists - list of new integrations and list of modified integrations since the commit of the git_sha1'''
+    '''Return 2 lists - list of new integrations and list of modified integrations since the commit of the git_sha1.
+
+    Args:
+        git_sha1 (str): The git sha of the commit against which we will run the 'git diff' command.
+
+    Returns:
+        (tuple): Returns a tuple of two lists, the names of the new integrations, and the names of
+            modified integrations.
+    '''
     # get changed yaml files (filter only added and modified files)
     tag = get_last_release_version()
     file_validator = FilesValidator()
@@ -90,24 +112,20 @@ def get_new_and_modified_integrations(git_sha1):
     added_integration_files = [
         file_path for file_path in added_files if checked_type(file_path, all_integration_regexes)
     ]
-    modded_integration_files = [
+    modified_integration_files = [
         file_path for file_path in modified_files if
         isinstance(file_path, str) and checked_type(file_path, all_integration_regexes)
     ]
 
-    new_integrations_names = []
-    for integration_file_path in added_integration_files:
-        integration_yaml = get_yaml(integration_file_path)
-        integration_name = integration_yaml.get('name')
-        if integration_name:
-            new_integrations_names.append(integration_name)
-    modded_integrations_names = []
-    for integration_file_path in modded_integration_files:
-        integration_yaml = get_yaml(integration_file_path)
-        integration_name = integration_yaml.get('name')
-        if integration_name:
-            modded_integrations_names.append(integration_name)
-    return new_integrations_names, modded_integrations_names
+    new_integrations_names = [
+        filepath_to_integration_name(file_path) for
+        file_path in added_integration_files if filepath_to_integration_name(file_path)
+    ]
+    modified_integrations_names = [
+        filepath_to_integration_name(file_path) for
+        file_path in modified_integration_files if filepath_to_integration_name(file_path)
+    ]
+    return new_integrations_names, modified_integrations_names
 
 
 def is_content_update_in_progress(client):
