@@ -63,7 +63,7 @@ def __get_integration_config(client, integration_name):
 def __test_integration_instance(client, module_instance):
     connection_retries = 3
     response_code = 0
-    print_warning("time trying to connect.")
+    print_warning("trying to connect.")
     for i in range(connection_retries):
         try:
             response_data, response_code, _ = demisto_client.generic_request_func(self=client, method='POST',
