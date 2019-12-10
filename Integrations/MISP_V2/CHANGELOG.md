@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.12.0] - 2019-12-10
 Added support to filter an event by attribute data fields.
 
 ## [19.11.1] - 2019-11-26
