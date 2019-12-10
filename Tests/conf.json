@@ -1992,7 +1992,6 @@
         "McAfee-TIE Test": "Issue #18350",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
-        "calculate_severity_-_critical_assets_-_test": "Issue 17924",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "ArcSight Logger test": "Issue 19117",
         "TruSTAR Test": "Issue 19777",
