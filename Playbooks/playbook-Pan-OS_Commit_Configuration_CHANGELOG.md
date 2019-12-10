@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+removed PA-VM as the firewall identificator and changed the condition to else
 
 ## [19.9.1] - 2019-09-18
 Name changes and layout improvement
