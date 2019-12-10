@@ -1,4 +1,14 @@
 ## [Unreleased]
+  - Fixed an issue where the status log queries that returned zero results did not update to *Completed*.
+  - Added 2 commands.
+    - ***panorama-get-url-category-from-cloud***
+    - ***panorama-get-url-category-from-host***
+  - Added support to get, create, and edit custom URL category objects, including using the categories attribute in PAN-OS v9.x and above.
+
+
+## [19.11.1] - 2019-11-26
+  - Added support for a list of *job_id* in the ***panorama-query-logs*** and ***panorama-check-logs-status*** commands.
+  - Added the *ip* argument in the ***panorama-query-logs*** command.
 
 
 ## [19.11.0] - 2019-11-12

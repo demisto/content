@@ -1,4 +1,4 @@
-from Tests.scripts.constants import PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
+from Tests.scripts.constants import PYTHON_SUBTYPES, INTEGRATION_CATEGORIES, REPUTATION_COMMANDS
 from Tests.test_utils import print_error, get_yaml, print_warning, get_remote_file, server_version_compare, \
     get_dockerimage45
 
@@ -46,6 +46,7 @@ class IntegrationValidator(object):
         """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
         self.is_valid_subtype()
         self.is_default_arguments()
+        self.is_isarray_arguments()
         self.is_proxy_configured_correctly()
         self.is_insecure_configured_correctly()
         self.is_valid_category()
@@ -132,6 +133,26 @@ class IntegrationValidator(object):
 
         return self._is_valid
 
+    def is_isarray_arguments(self):
+        """Check if a reputation command's (domain/email/file/ip/url)
+            argument of the same name has the 'isArray' attribute set to True
+
+        Returns:
+            bool. Whether 'isArray' is True
+        """
+        commands = self.current_integration.get('script', {}).get('commands', [])
+        for command in commands:
+            command_name = command.get('name')
+            if command_name in REPUTATION_COMMANDS:
+                for arg in command.get('arguments', []):
+                    arg_name = arg.get('name')
+                    if arg_name == command_name:
+                        if arg.get('isArray') is False:
+                            self._is_valid = False
+                            print_error("The argument '{}' of the command '{}' is not configured with 'isArray' set to True"
+                                        .format(arg_name, command_name))
+        return self._is_valid
+
     def is_outputs_for_reputations_commands_valid(self):
         """Check if a reputation command (domain/email/file/ip/url)
             has the correct DBotScore outputs according to the context standard
@@ -189,8 +210,8 @@ class IntegrationValidator(object):
                 reputation_output = command_to_output.get(command_name)
                 if reputation_output and not reputation_output.intersection(context_outputs_paths):
                     self._is_valid = False
-                    print_error("The outputs of the reputation command {} aren't valid. The {} outputs is missing"
-                                "Fix according to context standard {} "
+                    print_error("The outputs of the reputation command {} aren't valid. The {} outputs are missing."
+                                " Fix according to context standard {} "
                                 .format(command_name, reputation_output, context_standard))
 
         return self._is_valid
@@ -470,10 +491,15 @@ class IntegrationValidator(object):
         if server_version_compare(self.old_integration.get('fromversion', '0'), '5.0.0') < 0:
             old_docker = get_dockerimage45(self.old_integration.get('script', {}))
             new_docker = get_dockerimage45(self.current_integration.get('script', {}))
-            if old_docker != new_docker:
+            if old_docker != new_docker and new_docker:
                 print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
                             " this is not allowed. Old: {}. New: {}".format(self.file_path, old_docker, new_docker))
                 self._is_valid = False
                 return True
+            elif old_docker != new_docker and not new_docker:
+                print_warning("Possible backwards compatibility break. You've removed "
+                              "the docker image for the file {0}, make sure this isn't a mistake.  "
+                              "Old image: {1}".format(self.file_path, old_docker))
+                return False
 
         return False
