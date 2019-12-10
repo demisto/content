@@ -90,6 +90,11 @@ For information about content release notes conventions, refer to our [release n
 | [Mocks](docs/tests/mocks) | Explanation of how to test using mocked data |
 | [GenericPolling Playbook](docs/genericpolling) | Explanation of how and when to use the GenericPolling playbook |
 | [Release Notes](docs/release_notes) | Explanation of our content release notes conventions |
+| [Debugging](docs/Debugging)| Explanation of how best to debug Demisto integrations and scripts|
+| [Long Running Containers](docs/long_running_containers)|Explanation of using long running containers to run specific processes in an integration forever
+| [Test Playbook](docs/test_playbook)| Explanation of how to test your integration using a playbook
+| [Playbook Conventions](docs/playbook_conventions)|Conventions and standards for our playbooks
 
 ---
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com).
+
