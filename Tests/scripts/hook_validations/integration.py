@@ -210,8 +210,8 @@ class IntegrationValidator(object):
                 reputation_output = command_to_output.get(command_name)
                 if reputation_output and not reputation_output.intersection(context_outputs_paths):
                     self._is_valid = False
-                    print_error("The outputs of the reputation command {} aren't valid. The {} outputs is missing"
-                                "Fix according to context standard {} "
+                    print_error("The outputs of the reputation command {} aren't valid. The {} outputs are missing."
+                                " Fix according to context standard {} "
                                 .format(command_name, reputation_output, context_standard))
 
         return self._is_valid
