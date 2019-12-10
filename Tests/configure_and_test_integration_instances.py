@@ -9,7 +9,7 @@ from time import sleep
 from Tests.test_integration import __get_integration_config, __test_integration_instance
 from Tests.test_integration import __disable_integrations_instances
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
-from Tests.test_content import load_conf_files, collect_integrations, extract_filtered_tests
+from Tests.test_content import load_conf_files, extract_filtered_tests
 from Tests.test_utils import run_command, get_last_release_version, checked_type, get_yaml
 from Tests.scripts.validate_files import FilesValidator
 from Tests.scripts.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX
@@ -361,6 +361,75 @@ def group_integrations(integrations, skipped_integrations_conf, new_integrations
     return new_integrations, modified_integrations, unchanged_integrations, integration_to_status
 
 
+def get_integrations_for_test(test, skipped_integrations_conf):
+    '''Return a list of integration objects that are necessary for a test (excluding integrations on the skip list).
+
+    Args:
+        test (dict): Test dictionary from the conf.json file containing the playbookID, integrations and
+            instance names.
+        skipped_integrations_conf (dict): Skipped integrations dictionary with integration names as keys and
+            the skip reason as values.
+
+    Returns:
+        (list): List of integration objects to configure.
+    '''
+    integrations_conf = test.get('integrations', [])
+
+    if not isinstance(integrations_conf, list):
+        integrations_conf = [integrations_conf]
+
+    integrations = [
+        {'name': integration, 'params': {}} for
+        integration in integrations_conf if integration not in skipped_integrations_conf
+    ]
+    return integrations
+
+
+def update_content_on_demisto_instance(client, username, password, server):
+    '''Try to update the content
+
+    Args:
+        client (demisto_client): The configured client to use.
+        username (str): The username to pass to Tests/update_content_data.py
+        password (str): The password to pass to Tests/update_content_data.py
+        server (str): The server url to pass to Tests/update_content_data.py
+    '''
+    # TODO: need to add support for content packs
+    # Upload content_new.zip + content_test.zip as all_content.zip to demisto server (aka upload new content)
+    content_zip_path = 'all_content.zip'
+    cmd_str = 'python Tests/update_content_data.py -u {} -p {} -s {} --content_zip {}'.format(username, password,
+                                                                                              server, content_zip_path)
+    run_command(cmd_str, is_silenced=False)
+
+    # Check if content update has finished installing
+    sleep_interval = 20
+    updating_content = is_content_update_in_progress(client)
+    while updating_content.lower() == 'true':
+        sleep(sleep_interval)
+        updating_content = is_content_update_in_progress(client)
+
+    if updating_content.lower() == 'request unsuccessful':
+        # since the request to check if content update installation finished didn't work, can't use that mechanism
+        # to check and just try sleeping for 30 seconds instead to allow for content update installation to complete
+        sleep(30)
+    else:
+        # check that the content installation updated
+        # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
+        release, asset_id = get_content_version_details(client)
+        with open('content-descriptor.json', 'r') as cd_file:
+            cd_json = json.loads(cd_file.read())
+            cd_release = cd_json.get('release')
+            cd_asset_id = cd_json.get('assetId')
+        if release == cd_release and asset_id == cd_asset_id:
+            print_color('Content Update Successfully Installed!', color=LOG_COLORS.GREEN)
+        else:
+            err_details = 'Attempted to install content with release "{}" and assetId '.format(cd_release)
+            err_details += '"{}" but release "{}" and assetId "{}" were '.format(cd_asset_id, release, asset_id)
+            err_details += 'retrieved from the instance post installation.'
+            print_error('Content Update was Unsuccessful:\n{}'.format(err_details))
+            sys.exit(1)
+
+
 def main():
     options = options_handler()
     username = options.user
@@ -380,10 +449,7 @@ def main():
     client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
 
     tests = conf['tests']
-    nightly_integrations = conf['nightly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
-
-    skipped_integration = set([])
     all_module_instances = []
 
     filtered_tests, filter_configured, run_all_tests = extract_filtered_tests()
@@ -411,16 +477,10 @@ def main():
     # [conf.json](../conf.json) for examples
     brand_new_integrations = []
     for test in tests_for_iteration:
-        integrations_conf = test.get('integrations', [])
+        integrations = get_integrations_for_test(test, skipped_integrations_conf)
         instance_names_conf = test.get('instance_names', [])
-
-        if not isinstance(integrations_conf, list):
-            integrations_conf = [integrations_conf]
         if not isinstance(instance_names_conf, list):
             instance_names_conf = [instance_names_conf]
-
-        _, integrations, _ = collect_integrations(integrations_conf, skipped_integration,
-                                                  skipped_integrations_conf, nightly_integrations)
 
         integrations_names = [i.get('name') for i in integrations]
         print_warning('All Integrations for test "{}":'.format(test.get('playbookID')))
@@ -471,40 +531,7 @@ def main():
         if not success:
             sys.exit(1)
 
-    # TODO: need to add support for content packs
-    # Upload content_new.zip + content_test.zip as all_content.zip to demisto server (aka upload new content)
-    content_zip_path = 'all_content.zip'
-    cmd_str = 'python Tests/update_content_data.py -u {} -p {} -s {} --content_zip {}'.format(username, password,
-                                                                                              server, content_zip_path)
-    run_command(cmd_str, is_silenced=False)
-
-    # Check if content update has finished installing
-    sleep_interval = 20
-    updating_content = is_content_update_in_progress(client)
-    while updating_content.lower() == 'true':
-        sleep(sleep_interval)
-        updating_content = is_content_update_in_progress(client)
-
-    if updating_content.lower() == 'request unsuccessful':
-        # since the request to check if content update installation finished didn't work, can't use that mechanism
-        # to check and just try sleeping for 30 seconds instead to allow for content update installation to complete
-        sleep(30)
-    else:
-        # check that the content installation updated
-        # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
-        release, asset_id = get_content_version_details(client)
-        with open('content-descriptor.json', 'r') as cd_file:
-            cd_json = json.loads(cd_file.read())
-            cd_release = cd_json.get('release')
-            cd_asset_id = cd_json.get('assetId')
-        if release == cd_release and asset_id == cd_asset_id:
-            print_color('Content Update Successfully Installed!', color=LOG_COLORS.GREEN)
-        else:
-            err_details = 'Attempted to install content with release "{}" and assetId '.format(cd_release)
-            err_details += '"{}" but release "{}" and assetId "{}" were '.format(cd_asset_id, release, asset_id)
-            err_details += 'retrieved from the instance post installation.'
-            print_error('Content Update was Unsuccessful:\n{}'.format(err_details))
-            sys.exit(1)
+    update_content_on_demisto_instance(client, username, password, server)
 
     # configure instances for new integrations
     new_integration_module_instances = []
