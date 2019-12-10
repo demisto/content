@@ -122,15 +122,19 @@ def get_fetch_reponse():
 
 def test_function() -> None:
     try:
-        response, _ = get_fetch_reponse()
+        response = requests.get(
+            BASE_URL + '/processed_reports',
+            headers=HEADERS,
+            params="",
+            verify=USE_SSL,
+        )
 
         if response.ok:
-            demisto.results('ok')
+            # test fetching mechanism
+            if demisto.params().get('isFetch'):
+                get_fetch_reponse()
 
-        else:
-            return_error(
-                f'API call to Cofense Triage failed. Please check Server URL, or integration parameters.'
-                f' [{response.status_code}] - {response.reason}')
+            demisto.results('ok')
 
     except Exception as ex:
         demisto.debug(str(ex))
