@@ -208,6 +208,44 @@ def set_integration_params(integrations, secret_params, instance_names):
     return True
 
 
+def set_module_params(param_conf, integration_params):
+    '''Configure a parameter object for use in a module instance.
+
+    Each integration parameter is actually an object with many fields that together describe it. E.g. a given
+    parameter will have all of the following fields - "name", "display", "value", "hasvalue", "defaultValue",
+    etc. This function fills the "value" field for a parameter configuration object and returns it for use in
+    a module instance.
+
+    Args:
+        param_conf (dict): The parameter configuration object.
+        integration_params (dict): The values to use for an integration's parameters to configure an instance.
+
+    Returns:
+        (dict): The configured paramter object
+    '''
+    if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
+        # param defined in conf
+        key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
+        if key == 'credentials':
+            credentials = integration_params[key]
+            param_value = {
+                'credential': '',
+                'identifier': credentials['identifier'],
+                'password': credentials['password'],
+                'passwordChanged': False
+            }
+        else:
+            param_value = integration_params[key]
+
+        param_conf['value'] = param_value
+        param_conf['hasvalue'] = True
+    elif param_conf['defaultValue']:
+        # if the parameter doesn't have a value provided in the integration's configuration values
+        # but does have a default value then assign it to the parameter for the module instance
+        param_conf['value'] = param_conf['defaultValue']
+    return param_conf
+
+
 def set_integration_instance_parameters(integration_configuration, integration_params, integration_instance_name,
                                         is_byoi):
     '''Set integration module values for integration instance creation
@@ -256,27 +294,8 @@ def set_integration_instance_parameters(integration_configuration, integration_p
 
     # set module params
     for param_conf in module_configuration:
-        if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
-            # param defined in conf
-            key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
-            if key == 'credentials':
-                credentials = integration_params[key]
-                param_value = {
-                    'credential': '',
-                    'identifier': credentials['identifier'],
-                    'password': credentials['password'],
-                    'passwordChanged': False
-                }
-            else:
-                param_value = integration_params[key]
-
-            param_conf['value'] = param_value
-            param_conf['hasvalue'] = True
-        elif param_conf['defaultValue']:
-            # if the parameter doesn't have a value provided in the integration's configuration values
-            # but does have a default value then assign it to the parameter for the module instance
-            param_conf['value'] = param_conf['defaultValue']
-        module_instance['data'].append(param_conf)
+        configured_param = set_module_params(param_conf, integration_params)
+        module_instance['data'].append(configured_param)
 
     return module_instance
 
