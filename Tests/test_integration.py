@@ -68,7 +68,8 @@ def __test_integration_instance(client, module_instance):
         try:
             response_data, response_code, _ = demisto_client.generic_request_func(self=client, method='POST',
                                                                                   path='/settings/integration/test',
-                                                                                  body=module_instance)
+                                                                                  body=module_instance,
+                                                                                  _request_timeout=120)
         except ApiException as conn_err:
             print_error(
                 'Failed to test integration instance, error trying to communicate with demisto '
