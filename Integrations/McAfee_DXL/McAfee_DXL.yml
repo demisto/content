@@ -146,6 +146,6 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: devdemisto/dxl:1.0.0.4304
+  dockerimage: devdemisto/dxl:1.0.0.4922
 tests:
   - No tests
