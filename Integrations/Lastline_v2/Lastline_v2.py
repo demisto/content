@@ -22,18 +22,25 @@ class Client(BaseClient):
         super(Client, self).__init__(base_url, verify, proxy)
 
     def file(self):
-        human_readable = [str]
-        context_entry = [Dict]
-        result = [Dict]
+        human_readable = ''
+        context_entry = {
+            'Lastline': list(),
+            'File': list(),
+            'DBotScore': list()
+        }
+        result = list()
         hash_arg = argToList(self.command_params.get('file'))
         for arg in hash_arg:
             hash_type = hash_type_checker(arg)
             self.command_params[hash_type] = arg
             temp_result = self.http_request('/analysis/submit/file')
             temp_human_readable, temp_context_entry = report_generator(temp_result)
-            human_readable.append(temp_human_readable)
-            context_entry.append(temp_context_entry)
+            human_readable += f'\n{temp_human_readable}'
+            context_entry['Lastline'].append(temp_context_entry.get('Lastline'))
+            context_entry['File'].append(temp_context_entry.get('File'))
+            context_entry['DBotScore'].append(temp_context_entry.get('DBotScore'))
             result.append(temp_result)
+            del self.command_params[hash_type]
         return human_readable, context_entry, result
 
     def check_status(self):
@@ -68,7 +75,7 @@ class Client(BaseClient):
         self.command_params['md5'] = file_hash(file_params.get('path'))
         result = self.http_request('/analysis/submit/file',
                                    headers={'Content-Type': 'multipart/form-data'},
-                                   files={'file': file_params.get('path')})
+                                   files={file_params.get('name'): file_params.get('path')})
         human_readable, context_entry = report_generator(result)
         return human_readable, context_entry, result
 
@@ -118,13 +125,16 @@ def lastline_exception_handler(result: Dict):
 
 
 def hash_type_checker(hash_file: str) -> str:
-    if len(hash_file) == Client.MD5_LEN:
-        return 'md5'
-    if len(hash_file) == Client.SHA1_LEN:
-        return 'sha1'
-    if len(hash_file) == Client.SHA256_LEN:
-        return 'sha256'
-    raise DemistoException(f'{INTEGRATION_NAME} File command support md5/ sha1/ sha256 only.')
+    hash_types = {
+        str(Client.MD5_LEN): 'md5',
+        str(Client.SHA1_LEN): 'sha1',
+        str(Client.SHA256_LEN): 'sha256',
+    }
+    hash_type = hash_types.get(str(len(hash_file)))
+    if hash_type is not None:
+        return hash_type
+    else:
+        raise DemistoException(f'{INTEGRATION_NAME} File command support md5/ sha1/ sha256 only.')
 
 
 def report_generator(result: Dict, threshold=None):
@@ -252,7 +262,6 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-upload-url': Client.upload_url
     }
     try:
-        demisto.info(command)
         if command in commands:
             readable_output, outputs, raw_response = commands[command](client)
             return_outputs(readable_output, outputs, raw_response)
