@@ -714,10 +714,6 @@
             "playbookID": "ShodanTest"
         },
         {
-            "playbookID": "Extract Indicators From File - test",
-            "timeout": 2000
-        },
-        {
             "playbookID": "dedup_-_generic_-_test"
         },
         {
@@ -1425,30 +1421,6 @@
             "playbookID": "C2sec-Test",
             "integrations": "C2sec irisk",
             "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "Phishing test - attachment",
-            "timeout": 600,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Have I Been Pwned? V2",
-                "Demisto REST API",
-                "Palo Alto Minemeld",
-                "Rasterize"
-            ]
-        },
-        {
-            "playbookID": "Phishing test - Inline",
-            "timeout": 500,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Have I Been Pwned? V2",
-                "Demisto REST API",
-                "Palo Alto Minemeld",
-                "Rasterize"
-            ]
         },
         {
             "playbookID": "Phishing v2 Test - Attachment",
