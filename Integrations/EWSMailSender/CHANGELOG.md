@@ -1,6 +1,7 @@
 ## [Unreleased]
 -
 
+
 ## [19.12.0] - 2019-12-19
 Fixed issue where threads not closed after executing the command.
 
