@@ -23,13 +23,13 @@ def context_lookup(key):
 
 
 def main(value, key=None):
-    BODY = value
-    res_body = BODY  # a copy of BODY to be modified and returned
+    body = value
+    res_body = body  # a copy of body to be modified and returned
 
     pattern = r'\{\{(.*)\}\}'  # for pulling out {{}} templates
     subpattern = r'(\S+)(?:\s*\|\s*(.*))?'  # for pulling out vars and transformers from the extracted template
 
-    for m in re.finditer(pattern, BODY):
+    for m in re.finditer(pattern, body):
         # extract matches to run transformers on
 
         match = m.group(1)
@@ -52,7 +52,7 @@ def main(value, key=None):
             # found a key and a transformer
             context_value = context_lookup(context_key)
 
-            if context_value:
+            if not is_error(context_value):
                 # now run the transformer
                 transformed_value = demisto.executeCommand(transformer, {'value': str(context_value)})[0]['Contents']
 
@@ -67,7 +67,7 @@ def main(value, key=None):
 
     # return completed template
     if not key:
-        demisto.results(res_body)
+        return_outputs(res_body)
     else:
         demisto.results({
             'Type': entryTypes['note'],
@@ -79,5 +79,5 @@ def main(value, key=None):
         })
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__builtin__', 'builtins'):
     main(**demisto.args())

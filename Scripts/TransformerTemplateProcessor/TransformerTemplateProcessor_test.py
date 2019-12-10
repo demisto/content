@@ -54,7 +54,7 @@ def test_main(mocker):
 
     main(value='The duration of my timer was {{incident.overalltime.totalDuration | SecondsToString}}')
     assert demisto.results.call_count == 1
-    results = demisto.results.call_args[0][0]
+    results = demisto.results.call_args[0][0]['Contents']
     assert results == 'The duration of my timer was 1d 1h 2m 2s'
 
     main(key='mystring', value='The duration of my timer was {{incident.overalltime.totalDuration | SecondsToString}}')
