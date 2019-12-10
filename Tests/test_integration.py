@@ -182,8 +182,8 @@ def __disable_integrations_instances(client, module_instances):
         except ApiException as conn_err:
             print_error(
                 'Failed to disable integration instance, error trying to communicate with demisto '
-                'server: {} '.format(
-                    conn_err))
+                'server: {} '.format(conn_err)
+            )
 
         if res[1] != 200:
             print_error('disable instance failed with status code ' + str(res[1]))
@@ -206,8 +206,8 @@ def __enable_integrations_instances(client, module_instances):
         except ApiException as conn_err:
             print_error(
                 'Failed to enable integration instance, error trying to communicate with demisto '
-                'server: {} '.format(
-                    conn_err))
+                'server: {} '.format(conn_err)
+            )
 
         if res[1] != 200:
             print_error('enable instance failed with status code ' + str(res[1]) + '\n' + pformat(res))
