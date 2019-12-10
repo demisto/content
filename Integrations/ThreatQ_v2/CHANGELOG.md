@@ -1,4 +1,6 @@
 ## [Unreleased]
+  - Added ***threatq-advanced-search*** - Runs an advanced indicator search
+  - Added TLP values to indicator outputs 
 
 
 ## [19.10.1] - 2019-10-15

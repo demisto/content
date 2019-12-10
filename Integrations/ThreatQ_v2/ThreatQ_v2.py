@@ -1367,5 +1367,3 @@ try:
 
 except Exception as ex:
     return_error(str(ex))
-
-# todo: outputs
