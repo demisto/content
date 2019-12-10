@@ -21,7 +21,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integration Template
+description: Infoblox connects to your NIOS appliance. It allows getting metadata about IPs in your network and managing
+  the DNS Firewall by configuring RPZs and defining RPZ rules to block DNS resolution for malicious or unauthorized
+  hostnames, or redirect clients to a walled garden by substituting responses.
 display: Infoblox
 name: Infoblox
 script:
@@ -42,28 +44,28 @@ script:
       description: Object Reference ID
       type: number
     - contextPath: Infoblox.IP.MacAddress
-      description: '-'
+      description: The Mac Address of the IP.
       type: string
     - contextPath: Infoblox.IP.Network
-      description: '-'
+      description: The network that the ip belongs,  in FQDN/CIDR format.
       type: string
     - contextPath: Infoblox.IP.NetworkView
-      description: '-'
+      description: The name of the network view.
       type: string
     - contextPath: Infoblox.IP.Status
-      description: '-'
+      description: The current status of the address.
       type: string
     - contextPath: Infoblox.IP.IsConflict
-      description: '-'
+      description: If set to True, the IP address has either a MAC address conflict or a DHCP lease conflict detected through a network discovery.
       type: string
     - contextPath: Infoblox.IP. Objects
-      description: '-'
+      description: The objects associated with the IP address.
       type: string
     - contextPath: Infoblox.IP.Types
-      description: '-'
+      description: The current status of the address.
       type: string
     - contextPath: Infoblox.IP. Names
-      description: '-'
+      description: The DNS names. For example, if the IP address belongs to a host record, this field contains the hostname.
       type: string
     - contextPath: Infoblox.IP. Extattrs
       description: Extra attributes relevant for this object
@@ -72,7 +74,7 @@ script:
       description: IP address
       type: string
     - contextPath: Infoblox.IP.Usage
-      description: '-'
+      description: Indicates whether the IP address is configured for DNS or DHCP.
       type: string
   - arguments:
     - default: false
