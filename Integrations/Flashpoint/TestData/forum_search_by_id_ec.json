@@ -1,9 +1,9 @@
 {
   "Flashpoint": {
     "forum": {
-      "hostname": "ord-ua.com",
-      "description": "Ukrainian forum with focus on Russian-Ukrainian conflict.",
-      "name": "Ord-UA",
+      "hostname": "fake hostname",
+      "description": "fake description",
+      "name": "fake name",
       "stats": {
         "users": 71614,
         "rooms": 1,
@@ -12,27 +12,15 @@
       },
       "tags": [
         {
-          "name": "Communities in Conflict",
+          "name": "fake tag name",
           "uuid": "83a2e5d4-e591-42be-943f-4af7d5de30e4",
           "id": 55,
           "parent_tag": 17
         },
         {
-          "name": "Language",
+          "name": "fake tag1 name",
           "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b",
           "id": 28,
-          "parent_tag": null
-        },
-        {
-          "name": "Russian",
-          "uuid": "c3815816-c639-4ea2-9e5c-aec29eee2b1a",
-          "id": 30,
-          "parent_tag": 28
-        },
-        {
-          "name": "Ukrainian",
-          "uuid": "9bf8c176-3b2d-4445-a2f5-6fe92843a4a1",
-          "id": 98,
           "parent_tag": null
         }
       ]

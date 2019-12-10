@@ -9,8 +9,8 @@ import urllib.parse
 
 class Client:
 
-    def __init__(self, api_key):
-        self.base_url = "https://fp.tools/api/v4"
+    def __init__(self, api_key, url):
+        self.url = url
         self.api_key = api_key
 
     def http_request(self, method, url_suffix, params=None):
@@ -22,7 +22,8 @@ class Client:
         :param params: None
         :return: http response on json
         """
-        full_url = self.base_url + url_suffix
+        base_url = self.url + "/api/v4"
+        full_url = base_url + url_suffix
 
         headers = {
             'Authorization': self.api_key
@@ -52,6 +53,9 @@ class Client:
                 else:
                     resp.raise_for_status()
         except Exception:
+            if status_code in (521, 403):
+                demisto.log("Test connectivity failed. Please provide valid input parameters.")
+                sys.exit(1)
             demisto.log("Failed to parse http response to JSON format. Original response body: \n{}".format(resp.text))
             sys.exit(1)
 
@@ -96,10 +100,11 @@ def get_url_suffix(query):
     return r'/indicators/simple?query=' + urllib.parse.quote(query.encode('utf8'))
 
 
-def convert_event(event):
+def convert_event(client, event):
     """
     Prepare required event jason object from event response
 
+    :param client:
     :param event: event indicator from response
     :return: required event json object
     """
@@ -107,7 +112,7 @@ def convert_event(event):
     name = event.get('info', '')
     uuid = event.get('uuid', '')
     if uuid:
-        fp_link = 'https://fp.tools/home/technical_data/iocs/items/' + uuid
+        fp_link = client.url + '/home/technical_data/iocs/items/' + uuid
         name_str = '[{}]({})'.format(name, fp_link)
     else:
         name_str = name
@@ -184,7 +189,7 @@ def ip_lookup(client, ip):
         hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
                               ['Date Observed (UTC)', 'Name', 'Tags'])
 
-        fp_link = 'https://fp.tools/home/search/iocs?group=indicator&ioc_type=ip-dst%2Cip-src&ioc_value=' + ip
+        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=ip-dst%2Cip-src&ioc_value=' + ip
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
         ec = {outputPaths['ip']: {
@@ -214,7 +219,7 @@ def ip_lookup(client, ip):
         torrent_result = torrent_resp.get('hits').get('hits', [])
 
         if torrent_result:
-            torrent_search_link = 'https://fp.tools/home/search/torrents?ip_address=' + ip
+            torrent_search_link = client.url + '/home/search/torrents?ip_address=' + ip
 
             hr = '### Flashpoint IP address reputation for ' + ip + '\n'
             hr += 'Reputation: Suspicious\n\n'
@@ -235,8 +240,8 @@ def ip_lookup(client, ip):
             forum_result = forum_resp.get('data', [])
 
             if forum_result:
-                forum_search_link = 'https://fp.tools/home/search/visits?exclude_tor_nodes_and_known_proxies=true' \
-                                    '&ip_address=' + ip
+                forum_search_link = client.url + '/home/search/visits?exclude_tor_nodes_and_known_proxies=true' \
+                                                 '&ip_address=' + ip
 
                 hr = '### Flashpoint IP address reputation for ' + ip + '\n'
                 hr += 'Reputation: Suspicious\n\n'
@@ -291,7 +296,7 @@ def domain_lookup(client, domain):
         hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
                               ['Date Observed (UTC)', 'Name', 'Tags'])
 
-        fp_link = 'https://fp.tools/home/search/iocs?group=indicator&ioc_type=domain&ioc_value=' + domain
+        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=domain&ioc_value=' + domain
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
         ec = {outputPaths['domain']: {
@@ -385,7 +390,7 @@ def filename_lookup(client, filename):
         hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
                               ['Date Observed (UTC)', 'Name', 'Tags'])
 
-        fp_link = 'https://fp.tools/home/search/iocs?group=indicator&ioc_type=filename&ioc_value=' + urllib.parse.quote(
+        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=filename&ioc_value=' + urllib.parse.quote(
             filename.replace('\\', '\\\\').encode('utf8'))
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
@@ -441,7 +446,7 @@ def url_lookup(client, url):
         hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
                               ['Date Observed (UTC)', 'Name', 'Tags'])
 
-        fp_link = 'https://fp.tools/home/search/iocs?group=indicator&ioc_type=url&ioc_value=' + encoded_url
+        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=url&ioc_value=' + encoded_url
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
         ec = {outputPaths['url']: {
@@ -505,8 +510,9 @@ def file_lookup(client, file):
         hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
                               ['Date Observed (UTC)', 'Name', 'Tags'])
 
-        fp_link = 'https://fp.tools/home/search/iocs?group=indicator&ioc_type=md5%2Csha1%2Csha256%2Csha512&ioc_value=' \
-                  + urllib.parse.quote(file.encode('utf8'))
+        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=md5%2Csha1%2Csha256%2Csha512' \
+                               '&ioc_value=' + urllib.parse.quote(file.encode('utf8'))
+
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
         ec = {outputPaths['file']: {
@@ -570,8 +576,8 @@ def email_lookup(client, email):
         hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
                               ['Date Observed (UTC)', 'Name', 'Tags'])
 
-        fp_link = 'https://fp.tools/home/search/iocs?group=indicator&ioc_type=email-dst%2Cemail-src%2Cemail-src' \
-                  '-display-name%2Cemail-subject&ioc_value=' + urllib.parse.quote(email.encode('utf8'))
+        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=email-dst%2Cemail-src%2Cemail-src' \
+                               '-display-name%2Cemail-subject&ioc_value=' + urllib.parse.quote(email.encode('utf8'))
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
         ec = {outputPaths['email']: {
@@ -647,7 +653,7 @@ def common_lookup(client, indicator_value):
         hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
                               ['Date Observed (UTC)', 'Name', 'Tags'])
 
-        fp_link = 'https://fp.tools/home/search/iocs?group=indicator&ioc_value=' + encoded_value
+        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_value=' + encoded_value
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
         ec = {'DBotScore': {
@@ -692,7 +698,7 @@ def get_reports(client, report_search):
                 hr += '   Summary: ' + report.get('summary', 'N/A') + '\n\n\n'
             else:
                 hr += '   Summary: N/A\n\n\n'
-        fp_url = 'https://fp.tools/home/search/reports?query=' + urllib.parse.quote(report_search)
+        fp_url = client.url + '/home/search/reports?query=' + urllib.parse.quote(report_search)
         hr += 'Link to Report-search on Flashpoint platform: [{}]({})\n'.format(fp_url, fp_url)
         ec: Dict[Any, Any] = {}  # Create empty dictionary.
 
@@ -787,7 +793,7 @@ def get_related_reports(client, report_id):
             hr += '' + str(index) + ') [{}]({})'.format(report.get('title', 'N/A'),
                                                         report.get('platform_url', '')) + '\n'
             hr += '   Summary: ' + str(report.get('summary', 'N/A')) + '\n\n\n'
-        fp_url = 'https://fp.tools/home/intelligence/reports/report/' + report_id + '#detail'
+        fp_url = client.url + '/home/intelligence/reports/report/' + report_id + '#detail'
         hr += 'Link to the given Report on Flashpoint platform: [{}]({})\n'.format(fp_url, fp_url)
         ec: Dict[Any, Any] = {}
 
@@ -820,7 +826,7 @@ def get_event_by_id(client, event_id):
 
     events = []
     if event:
-        event = convert_event(event)
+        event = convert_event(client, event)
         events.append(event)
         hr += tableToMarkdown('Below are the detail found:', events, ['Observed time (UTC)', 'Name', 'Tags'])
 
@@ -875,12 +881,12 @@ def get_events(client, limit, report_fpid, attack_ids, time_period):
         for indicator in indicators:
             hrefs.append(indicator.get('href', ''))
             event = indicator.get('Event', {})
-            event = convert_event(event)
+            event = convert_event(client, event)
             events.append(event)
 
         hr += tableToMarkdown('Below are the detail found:', events, ['Observed time (UTC)', 'Name', 'Tags'])
 
-        fp_link = 'https://fp.tools/home/search/iocs'
+        fp_link = client.url + '/home/search/iocs'
         if attack_ids:
             fp_link = fp_link + '?attack_ids=' + urllib.parse.quote(attack_ids)
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
@@ -1145,7 +1151,7 @@ def get_forum_posts(client, post_search):
                               ['Forum Name', 'Thread Title', 'Room Title', 'Author Name', 'Platform URL'])
         hr += '\n'
 
-        fp_url = 'https://fp.tools/home/search/forums?query=' + urllib.parse.quote(post_search.encode('utf8'))
+        fp_url = client.url + '/home/search/forums?query=' + urllib.parse.quote(post_search.encode('utf8'))
         hr += 'Link to forum post-search on Flashpoint platform: [{}]({})\n'.format(fp_url, fp_url)
 
     else:
@@ -1159,9 +1165,10 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     api_key = get_apikey()
+    url = demisto.params()["url"]
 
     try:
-        client = Client(api_key)
+        client = Client(api_key, url)
 
         if demisto.command() == 'test-module':
             _ = ip_lookup(client, '8.8.8.8')

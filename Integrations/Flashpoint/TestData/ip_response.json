@@ -4,25 +4,25 @@
       "Event": {
         "RelatedEvent": [],
         "Tags": [
-          "source:OSINT"
+          "tag1"
         ],
         "attack_ids": [],
-        "fpid": "4J0I4NojWB2fm8IhKRJ6iw",
-        "href": "https://fp.tools/api/v4/indicators/event/4J0I4NojWB2fm8IhKRJ6iw",
-        "info": "Lazarus Resurfaces, Targets Global Banks and Bitcoin Users",
+        "fpid": "hdjfhdjfhdjhfjdhdf",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/hdjfhdjfhdjhfjdhdf",
+        "info": "testing information",
         "reports": [],
         "timestamp": "1518471985"
       },
-      "category": "Network activity",
-      "fpid": "KyhpGHc2XYKp2iUESO7ejA",
-      "href": "https://fp.tools/api/v4/indicators/attribute/KyhpGHc2XYKp2iUESO7ejA",
+      "category": "category1",
+      "fpid": "hdjfhdjfhdjhfjdhdf",
+      "href": "http://123-fake-api.com/api/v4/indicators/attribute/hdjfhdjfhdjhfjdhdf",
       "timestamp": "1518471985",
       "to_ids": true,
       "type": "ip-dst",
       "uuid": "5a820b31-3894-4ed9-bd2a-29d6ac110002",
       "value": {
         "comment": "",
-        "ip-dst": "210.122.7.129"
+        "ip-dst": "0.0.0.0"
       }
     }
   }

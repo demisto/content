@@ -1,10 +1,10 @@
 {
   "flashpoint": {
     "event": {
-      "tag": "source:CryptingService2",
+      "tag": "tag1",
       "date": "Jun 18, 2019  22:08",
-      "event_creator_email": "info@flashpoint-intel.com",
-      "href": "https://fp.tools/api/v4/indicators/event/Hu2SoTWJWteLrH9mR94JbQ"
+      "event_creator_email": "fake@test.com",
+      "href": "http://123-fake-api.com/api/v4/indicators/event/test_scan_id"
     }
   }
 }

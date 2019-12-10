@@ -4,44 +4,33 @@
       "Event": {
         "RelatedEvent": [],
         "Tags": [
-          "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Spearphishing Attachment - T1193\"",
-          "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Scripting - T1064\"",
-          "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Command-Line Interface - T1059\"",
-          "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"System Information Discovery - T1082\"",
-          "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Remote Services - T1021\"",
-          "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Exfiltration Over Command and Control Channel - T1041\"",
-          "os:Windows",
-          "source:phishing",
-          "type:RAT",
-          "malware:rat:Quasar",
-          "malware:banker:Lokibot",
-          "file_name: njrat.exe",
-          "file_name: excel_.exe"
+          "Tags1",
+          "Tags2"
         ],
         "attack_ids": [
-          "T1193",
-          "T1064",
-          "T1059",
-          "T1082",
-          "T1021",
-          "T1041"
+          "AT1",
+          "AT2",
+          "AT3",
+          "AT4",
+          "AT5",
+          "AT6"
         ],
-        "fpid": "xTcVdG3mU2ayoTZATFTqJQ",
-        "href": "https://fp.tools/api/v4/indicators/event/xTcVdG3mU2ayoTZATFTqJQ",
+        "fpid": "aaaaaaaaaaabbbbbbbbbbb",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/aaaaaaaaaaabbbbbbbbbbb",
         "info": "Gorgon Group actor profile",
         "reports": [],
         "timestamp": "1569441099"
       },
-      "category": "Network activity",
-      "fpid": "ua5eL6q5W5CTmYcmAhS0XQ",
-      "href": "https://fp.tools/api/v4/indicators/attribute/ua5eL6q5W5CTmYcmAhS0XQ",
+      "category": "category1",
+      "fpid": "aaaaaaaaaaabbbbbbbbbbb",
+      "href": "http://123-fake-api.com/api/v4/indicators/attribute/aaaaaaaaaaabbbbbbbbbbb",
       "timestamp": "1569436997",
       "to_ids": true,
       "type": "domain",
-      "uuid": "5d8bb545-7ef0-4463-9595-02bac9bb0799",
+      "uuid": "5d8bb545-3eds-2222-1111-aaaaaaaaaaaa",
       "value": {
         "comment": "",
-        "domain": "subaat.com"
+        "domain": "fakedomain.com"
       }
     }
   }

@@ -1,9 +1,9 @@
 {
   "Account.Email(val.Address && val.Address == obj.Address)": {
-    "Name": "qicifomuejijika@o2.pl",
+    "Name": "fakeemail@test.com",
     "Flashpoint": {
       "href": [
-        "https://fp.tools/api/v4/indicators/attribute/TrwIYc5AWP-xtjODCXyp7w"
+        "http://123-fake-api.com/api/v4/indicators/attribute/abcdefghij-fffffffffff"
       ]
     },
     "Malicious": {
@@ -12,7 +12,7 @@
     }
   },
   "DBotScore": {
-    "Indicator": "qicifomuejijika@o2.pl",
+    "Indicator": "fakeemail@test.com",
     "Type": "email",
     "Vendor": "Flashpoint",
     "Score": 3

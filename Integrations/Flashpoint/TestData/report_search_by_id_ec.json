@@ -2,7 +2,7 @@
   "Flashpoint.Report.updated_at": "2019-09-23T20:27:20.638+00:00",
   "Flashpoint.Report.posted_at": "2019-09-23T20:27:20.638+00:00",
   "Flashpoint.Report.notified_at": "2019-09-23T20:27:20.638+00:00",
-  "Flashpoint.Report.platform_url": "https://fp.tools/home/intelligence/reports/report/e-QdYuuwRwCntzRljzn9-A#detail",
-  "Flashpoint.Report.title": "ISIS Supporters Warn of the Risks Associated with Exif Data",
-  "Flashpoint.Report.summary": "On September 17, 2019, multiple pro-ISIS Telegram groups disseminated a message warning of the dangers of exposed exif data?a type of metadata showing GPS coordinates, time, and date the image was taken and the make and model of the device used?that is typically captured from images taken by a phone or camera, unless the security settings are properly configured."
+  "Flashpoint.Report.platform_url": "http://123-fake-api.com/home/intelligence/reports/report/test_scan_id",
+  "Flashpoint.Report.title": "faketitle",
+  "Flashpoint.Report.summary": "fakesummary"
 }

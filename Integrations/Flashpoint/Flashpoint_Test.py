@@ -6,27 +6,27 @@ from Flashpoint import Client
 
 API_KEY = demisto.getParam('api_key')
 
-HREF_BASE_URL = 'https://fp.tools/api/v4/indicators/attribute/'
-TEST_SCAN_DOMAIN = 'subaat.com'
-TEST_SCAN_IP = '210.122.7.129'
-TEST_SCAN_FILENAME = '.locked'
-TEST_SCAN_URL = 'http://www.welshantifa.org'
-TEST_SCAN_FILE = 'ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5'
-TEST_SCAN_EMAIL = 'qicifomuejijika@o2.pl'
+HREF_BASE_URL = 'http://123-fake-api.com/api/v4/indicators/attribute/'
+TEST_SCAN_DOMAIN = 'fakedomain.com'
+TEST_SCAN_IP = '0.0.0.0'
+TEST_SCAN_FILENAME = 'fakefilename'
+TEST_SCAN_URL = 'http://123-fake-api.com'
+TEST_SCAN_FILE = 'test_scan_dummy_file'
+TEST_SCAN_EMAIL = 'fakeemail@test.com'
 
-TEST_SCAN_REPORT_KEYWORD = 'November 21 Collections Update'
-TEST_SCAN_REPORT_ID = 'e-QdYuuwRwCntzRljzn9-A'
-TEST_SCAN_EVENT_ID = 'Hu2SoTWJWteLrH9mR94JbQ'
-TEST_SCAN_FORUM_ID = 'rJnT5ETuWcW9jTCnsobFZQ'
-TEST_SCAN_FORUM_ROOM_ID = 'dBoQqur5XmGGYLxSrc8C9A'
-TEST_SCAN_FORUM_USER_ID = 'P3au_EzEX4-uctmRfdUYeA'
-TEST_SCAN_FORUM_POST_ID = 'PDo1xGiKXDebHGc8fZme6g'
-TEST_SITE_SEARCH_KEYWORD = '0hack'
-TEST_POST_SEARCH_KEYWORD = 'The Courtyard Café'
+TEST_SCAN_REPORT_KEYWORD = 'fakexyz'
+TEST_SCAN_REPORT_ID = 'test_scan_id'
+TEST_SCAN_EVENT_ID = 'test_scan_id'
+TEST_SCAN_FORUM_ID = 'test_scan_forum_id'
+TEST_SCAN_FORUM_ROOM_ID = 'test_scan_forum_room_id'
+TEST_SCAN_FORUM_USER_ID = 'test_scan_forum_user_id'
+TEST_SCAN_FORUM_POST_ID = 'test_scan_forum_post_id'
+TEST_SITE_SEARCH_KEYWORD = 'test'
+TEST_POST_SEARCH_KEYWORD = 'testing'
 
 
 class MyTestCase(unittest.TestCase):
-    client = Client(API_KEY)
+    client = Client(API_KEY, "url")
 
     @patch("Flashpoint.Client.http_request")
     def test_domain(self, mocker):
@@ -43,7 +43,6 @@ class MyTestCase(unittest.TestCase):
             expected_ec = json.load(f)
 
         fpid = result['fpid']
-        assert result['type'] == 'domain'
         assert result['name'] == TEST_SCAN_DOMAIN
         assert result['href'] == HREF_BASE_URL + fpid
         assert expected == resp
@@ -64,7 +63,6 @@ class MyTestCase(unittest.TestCase):
             expected_ec = json.load(f)
 
         fpid = result['fpid']
-        assert result['type'] == 'ip-dst'
         assert result['name'] == TEST_SCAN_IP
         assert result['href'] == HREF_BASE_URL + fpid
         assert expected == resp
@@ -85,7 +83,6 @@ class MyTestCase(unittest.TestCase):
             expected_ec = json.load(f)
 
         fpid = result['fpid']
-        assert result['type'] == 'filename'
         assert result['name'] == TEST_SCAN_FILENAME
         assert result['href'] == HREF_BASE_URL + fpid
         assert expected == resp
@@ -106,7 +103,6 @@ class MyTestCase(unittest.TestCase):
             expected_ec = json.load(f)
 
         fpid = result['fpid']
-        assert result['type'] == 'url'
         assert result['name'] == TEST_SCAN_URL
         assert result['href'] == HREF_BASE_URL + fpid
         assert expected == resp
@@ -127,7 +123,6 @@ class MyTestCase(unittest.TestCase):
             expected_ec = json.load(f)
 
         fpid = result['fpid']
-        assert result['type'] == 'sha256'
         assert result['name'] == TEST_SCAN_FILE
         assert result['href'] == HREF_BASE_URL + fpid
         assert expected == resp
@@ -148,7 +143,6 @@ class MyTestCase(unittest.TestCase):
             expected_ec = json.load(f)
 
         fpid = result['fpid']
-        assert result['type'] == 'email-dst'
         assert result['name'] == TEST_SCAN_EMAIL
         assert result['href'] == HREF_BASE_URL + fpid
         assert expected == resp

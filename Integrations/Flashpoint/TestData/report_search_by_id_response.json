@@ -1,39 +1,35 @@
 {
-  "id": "e-QdYuuwRwCntzRljzn9-A",
-  "title": "ISIS Supporters Warn of the Risks Associated with Exif Data",
-  "summary": "On September 17, 2019, multiple pro-ISIS Telegram groups disseminated a message warning of the dangers of exposed exif data?a type of metadata showing GPS coordinates, time, and date the image was taken and the make and model of the device used?that is typically captured from images taken by a phone or camera, unless the security settings are properly configured.",
+  "id": "test_scan_id",
+  "title": "faketitle",
+  "summary": "fakesummary",
   "tags": [
-    "Intelligence Report",
-    "Law Enforcement &amp; Military",
-    "Physical Threats",
-    "Jihadist",
-    "Propaganda",
-    "Terrorism",
-    "Global"
+    "tags1",
+    "tags2",
+    "tags3"
   ],
-  "body": "&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body class=\"c11 c17\"&gt;&lt;div&gt;&lt;p class=\"c18\"&gt;&lt;span class=\"c8\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;&lt;p class=\"c5\"&gt;&lt;span&gt;On September 17, 2019, multiple pro-ISIS Telegram groups disseminated a message warning of the dangers of exposed exif data&amp;mdash;a type of metadata showing GPS coordinates, time, and date the image was taken and the make and model of the device used&amp;mdash;that is typically captured from images taken by a phone or camera, unless the security settings are properly configured&lt;/span&gt;&lt;span&gt;. &lt;/span&gt;&lt;span&gt;A subsequent message by another pro-ISIS group highlighted some of the mistakes that ISIS supporters commit when taking images with their devices. &lt;/span&gt;&lt;span&gt;While jihadists frequently share operational security [OpSec] warnings and tips, they tend to have minimal impact and rarely influence actors&amp;rsquo; behavior.&lt;/span&gt;&lt;/p&gt;&lt;p class=\"c3\"&gt;&lt;span class=\"c2\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;ul class=\"c16 lst-kix_j6hfexb7o9t9-0 start\"&gt;&lt;li class=\"c0\"&gt;&lt;span class=\"c1\"&gt;Difference Between Photos and Screenshots&lt;/span&gt;&lt;span class=\"c2\"&gt;: In a subsequent, widely-disseminated post by a separate pro-ISIS group, the differences between exif data captured from photos and screenshots were highlighted. A screenshot contains the time, date, and the device that was used, unlike a camera photo that may include GPS location and the device&amp;rsquo;s operating system. &lt;/span&gt;&lt;/li&gt;&lt;li class=\"c0\"&gt;&lt;span class=\"c1\"&gt;Security Mistakes When Taking Photos&lt;/span&gt;&lt;span&gt;: The post also cautioned against a trend popular among some ISIS supporters of taking a &lt;/span&gt;&lt;span&gt;photo, with&lt;/span&gt;&lt;span&gt;&amp;nbsp;their phone, of a piece of paper containing pro-ISIS statements&amp;mdash;as it could provide location data. That trend has been prevalent, especially following Abu Bakr al-Baghdadi&amp;rsquo;s &lt;/span&gt;&lt;span&gt;September 2019&lt;/span&gt;&lt;span class=\"c2\"&gt;&amp;nbsp;video, with supporters posting images of handwritten notes pledging support to ISIS and its leader. &lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p class=\"c3\"&gt;&lt;span class=\"c2\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;h1 class=\"c5 c9\" id=\"h.95veo4ufcmfk\"&gt;&lt;span&gt;DETAILS&lt;/span&gt;&lt;/h1&gt;&lt;p class=\"c3\"&gt;&lt;span class=\"c2\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p class=\"c5\"&gt;&lt;span&gt;On September 17, 2019, the pro-ISIS Telegram group &amp;ldquo;al-Ansar Bank&amp;rdquo;&amp;mdash;which provides ISIS supporters with social media accounts to spread jihadist propaganda&amp;mdash;published a widely dissimenated post warning of the security risks of exif data, which can be captured from images taken on smartphones. According to the al-Ansar infographic [translated from Arabic]:&lt;/span&gt;&lt;/p&gt;&lt;h3 class=\"c5 c9 c20\" id=\"h.osplb615jrgr\"&gt;&lt;span class=\"c4 c11\"&gt;&lt;/span&gt;&lt;/h3&gt;&lt;h6 class=\"c5 c9 c14\" id=\"h.tje6okmqicwe\"&gt;&lt;span class=\"c7\"&gt;Digital photos contain information known as (Exif Data) through which sensitive data can be extracted about the device used to take the picture, which helps security services and intelligence agencies gather and analyze more data on users through these pictures. The National Security Agency [NSA] extracts this data from images and analyzes it, which helps in tracking targets. According to Edward Snoweden&amp;rsquo;s leaks, the NSA extracts Exif data through a program called Xkeyscore, which is a part of its intelligence collections. In fact, the location of many jihadists and supporters was identified because of... [exif data]&lt;/span&gt;&lt;/h6&gt;&lt;p class=\"c3\"&gt;&lt;span class=\"c2\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p class=\"c12\"&gt;&lt;span style=\"overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 562.50px; height: 349.14px;\"&gt;&lt;img alt=\"\" src='/api/v4/assets/WPzxnd4MTDSIBTl1ufCDjQ' style=\"width: 562.50px; height: 349.14px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);\" title=\"\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;h3 class=\"c6\" id=\"h.a16kedc6g5m9\"&gt;&lt;span&gt;Image 1: Al-Ansar&amp;rsquo;s infographic highlighting risk of exif data&lt;/span&gt;&lt;/h3&gt;&lt;p class=\"c3\"&gt;&lt;span class=\"c2\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p class=\"c5\"&gt;&lt;span&gt;In a subsequent post&amp;mdash;also widely disseminated&amp;mdash;by the pro-ISIS information security [InfoSec] group &amp;ldquo;Horizons,&amp;rdquo; the group highlights the differences between the security risks of using screenshots and images [translated from Arabic]: &lt;/span&gt;&lt;/p&gt;&lt;p class=\"c3\"&gt;&lt;span class=\"c2\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;h6 class=\"c5 c9 c14\" id=\"h.j8lxgr23cnwx\"&gt;&lt;span class=\"c7\"&gt;The metadata of screenshots do not contain data such as (IP-MAC Address-GPS-IMEI) but contains the time and date [of the photo] &amp;nbsp;and the type of phone taken. However, images taken with a camera contain the location coordinates if the GPS tag was not disabled in the camera settings, which is automatically turned on in smartphones. Pictures taken with a camera also contain data [such as] time, date, the phone used, and the operating system.&lt;/span&gt;&lt;/h6&gt;&lt;p class=\"c3\"&gt;&lt;span class=\"c2\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p class=\"c5\"&gt;&lt;span&gt;Horizons&lt;/span&gt;&lt;span class=\"c2\"&gt;&amp;nbsp;also identifies what it claims to be security mistakes that ISIS supporters commit when taking pictures [translated from Arabic]:&lt;/span&gt;&lt;/p&gt;&lt;p class=\"c3\"&gt;&lt;span class=\"c2\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;ul class=\"c16 lst-kix_ijyc4hxmgli6-0 start\"&gt;&lt;li class=\"c0 c9\"&gt;&lt;h6 id=\"h.hn7rd2pvrlnk\" style=\"display:inline\"&gt;&lt;span class=\"c7\"&gt;Taking an image of a paper that professes support to ISIS, in place that is known in their country: Public places contains CCTV cameras, and through reviewing the time that the image was posted...they [law enforcement] can identify the identity of the [ISIS] supporters.&lt;/span&gt;&lt;/h6&gt;&lt;/li&gt;&lt;li class=\"c0 c9\"&gt;&lt;h6 id=\"h.hn7rd2pvrlnk-1\" style=\"display:inline\"&gt;&lt;span class=\"c7\"&gt;Taking a picture without paying attention to the settings of the &amp;ldquo;GPS Tag&amp;rdquo; or the location setting &amp;nbsp;and publishing it on the internet: if you take a picture in your house or office, intelligence agencies can analyze the coordinate and will visit you soon. &lt;/span&gt;&lt;/h6&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p class=\"c3\"&gt;&lt;span class=\"c4 c11\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p class=\"c5\"&gt;&lt;span class=\"c4\"&gt;=======&lt;/span&gt;&lt;/p&gt;&lt;p class=\"c3\"&gt;&lt;span class=\"c4\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p class=\"c5\"&gt;&lt;span class=\"c4\"&gt;All Flashpoint intelligence reports, related data, and content are the property of Flashpoint, and are protected under all applicable laws. Flashpoint reports and data are intended solely for the internal use of the individual and organization to which they are addressed, and are subject to the applicable terms and conditions of your Subscription Agreement with Flashpoint and/or your NDA, as applicable. Flashpoint reports and data are Flashpoint Confidential Information, and as such, may not be shared outside of your company or disclosed publicly for any purposes without Flashpoint&amp;rsquo;s written consent; provided, however, that you may share such materials to third parties if legally required, or on a need-to-know basis, and then only to those parties who are bound by confidentiality obligations no less protective of Flashpoint than those contained in your Agreement and/or your NDA.&lt;/span&gt;&lt;/p&gt;&lt;p class=\"c3\"&gt;&lt;span class=\"c4\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p class=\"c5\"&gt;&lt;span class=\"c10\"&gt;=======&lt;/span&gt;&lt;/p&gt;&lt;p class=\"c3\"&gt;&lt;span class=\"c4\"&gt;&lt;/span&gt;&lt;/p&gt;&lt;p class=\"c5\"&gt;&lt;span class=\"c4\"&gt;",
-  "title_asset": "/assets/bbIEqQtSRUu1hpg4vTGrSA",
-  "title_asset_id": "bbIEqQtSRUu1hpg4vTGrSA",
+  "body": "fakebody",
+  "title_asset": "/assets/test_scan_id",
+  "title_asset_id": "test_scan_id",
   "assets": [
-    "/assets/WPzxnd4MTDSIBTl1ufCDjQ"
+    "/assets/test_scan_id"
   ],
   "asset_ids": [
-    "WPzxnd4MTDSIBTl1ufCDjQ"
+    "test_scan_id"
   ],
   "sources": [
     {
-      "type": "External",
+      "type": "faketype",
       "source_id": null,
-      "title": "https://fp.tools/home/ddw/chats/channels/E3BMNe9BUFKAVOnuOotlww?fpid=hgreAfxlUsOFqy6ETaarTA&amp;id=1568815355&amp;",
+      "title": "http://123-fake-api.com/home/ddw/chats/channels/test_scan_id",
       "source": null,
-      "original": "https://fp.tools/home/ddw/chats/channels/E3BMNe9BUFKAVOnuOotlww?fpid=hgreAfxlUsOFqy6ETaarTA&amp;id=1568815355&amp;",
+      "original": "http://123-fake-api.com/home/ddw/chats/channels/test_scan_id",
       "platform_url": null
     }
   ],
   "is_featured": false,
   "ingested_at": "2019-09-23T20:27:20.638+00:00",
   "posted_at": "2019-09-23T20:27:20.638+00:00",
-  "platform_url": "https://fp.tools/home/intelligence/reports/report/e-QdYuuwRwCntzRljzn9-A#detail",
+  "platform_url": "http://123-fake-api.com/home/intelligence/reports/report/test_scan_id",
   "notified_at": "2019-09-23T20:27:20.638+00:00",
   "updated_at": "2019-09-23T20:27:20.638+00:00",
   "version_posted_at": "2019-09-23T20:27:20.638+00:00",

@@ -1,8 +1,8 @@
 {
 	"Domain(val.Name && val.Name == obj.Name)": {
-		"Name": "subaat.com",
+		"Name": "fakedomain.com",
 		"Flashpoint": {
-			"href": ["https://fp.tools/api/v4/indicators/attribute/ua5eL6q5W5CTmYcmAhS0XQ"]
+			"href": ["http://123-fake-api.com/api/v4/indicators/attribute/aaaaaaaaaaabbbbbbbbbbb"]
 		},
 		 "Malicious": {
 			"Vendor": "Flashpoint",
@@ -10,7 +10,7 @@
 		}
 	},
 	"DBotScore": {
-		"Indicator": "subaat.com",
+		"Indicator": "fakedomain.com",
 		"Type": "domain",
 		"Vendor": "Flashpoint",
 		"Score": 3

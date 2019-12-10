@@ -5,35 +5,35 @@
         "RelatedEvent": [
           {
             "Event": {
-              "fpid": "DHDkx7UaWX6bYoBo2dqxlA",
-              "info": "win_ransomware_generic"
+              "fpid": "djfndkjfndkfdkffndfdjnda",
+              "info": "info"
             }
           }
         ],
         "Tags": [
-          "source:VirusTotal",
-          "type:Ransomware",
-          "gandcrab",
-          "malware:GandCrab",
-          "os:Windows"
+          "tags1",
+          "tags2",
+          "tags3",
+          "tags3",
+          "tags4"
         ],
         "attack_ids": [],
-        "fpid": "Lc3dCH1sXbOIYkKTyUQoow",
-        "href": "https://fp.tools/api/v4/indicators/event/Lc3dCH1sXbOIYkKTyUQoow",
-        "info": "Gandcrab",
+        "fpid": "djfndkjfndkfdkffndfdjnda",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/djfndkjfndkfdkffndfdjnda",
+        "info": "info",
         "reports": [],
         "timestamp": "1574316193"
       },
       "category": "Payload delivery",
-      "fpid": "rqIX70QLVlC3aAydF8uECQ",
-      "href": "https://fp.tools/api/v4/indicators/attribute/rqIX70QLVlC3aAydF8uECQ",
+      "fpid": "djfndkjfndkfdkffndfdjnda",
+      "href": "http://123-fake-api.com/api/v4/indicators/attribute/djfndkjfndkfdkffndfdjnda",
       "timestamp": "1560826915",
       "to_ids": false,
       "type": "sha256",
       "uuid": "f161c532-26fa-422d-ad71-3781b6619894",
       "value": {
         "comment": "",
-        "sha256": "ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5"
+        "sha256": "test_scan_dummy_file"
       }
     }
   },
@@ -43,46 +43,47 @@
         "RelatedEvent": [
           {
             "Event": {
-              "fpid": "6tTJ5r_nUoW5FGlEtGl_Yg",
-              "info": "crime_azorult_2"
+              "fpid": "djfndkjfndkfdkffndfdjnda",
+              "info": "info"
             }
           },
           {
             "Event": {
-              "fpid": "4VTU1zY3V5qO0W7HvEgeig",
-              "info": "crime_azorult_1"
+              "fpid": "djfndkjfndkfdkffndfdjnda",
+              "info": "info1"
             }
           },
           {
             "Event": {
-              "fpid": "Lc3dCH1sXbOIYkKTyUQoow",
-              "info": "Gandcrab"
+              "fpid": "djfndkjfndkfdkffndfdjnda",
+              "info": "info2"
             }
           }
         ],
         "Tags": [
-          "source:VirusTotal",
-          "type:Ransomware",
-          "win_ransomware_generic",
-          "os:Windows"
+          "tags1",
+          "tags2",
+          "tags3",
+          "tags3",
+          "tags4"
         ],
         "attack_ids": [],
-        "fpid": "DHDkx7UaWX6bYoBo2dqxlA",
-        "href": "https://fp.tools/api/v4/indicators/event/DHDkx7UaWX6bYoBo2dqxlA",
-        "info": "win_ransomware_generic",
+        "fpid": "djfndkjfndkfdkffndfdjnda",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/djfndkjfndkfdkffndfdjnda",
+        "info": "info2",
         "reports": [],
         "timestamp": "1563386535"
       },
-      "category": "Payload delivery",
-      "fpid": "9oi7LdmmWGuh1AG4fKv13g",
-      "href": "https://fp.tools/api/v4/indicators/attribute/9oi7LdmmWGuh1AG4fKv13g",
+      "category": "category1",
+      "fpid": "djfndkjfndkfdkffndfdjnda",
+      "href": "http://123-fake-api.com/api/v4/indicators/attribute/djfndkjfndkfdkffndfdjnda",
       "timestamp": "1560826913",
       "to_ids": false,
       "type": "sha256",
       "uuid": "08f5ac60-45cb-4bc1-be05-591eb51071dc",
       "value": {
         "comment": "",
-        "sha256": "ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5"
+        "sha256": "test_scan_dummy_file"
       }
     }
   }

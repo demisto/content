@@ -1,9 +1,9 @@
 {
   "URL(val.Data && val.Data == obj.Data)": {
-    "Name": "http://www.welshantifa.org",
+    "Name": "http://123-fake-api.com",
     "Flashpoint": {
       "href": [
-        "https://fp.tools/api/v4/indicators/attribute/Xm6O-wpPXDiJ4rWNyeROZA"
+        "http://123-fake-api.com/api/v4/indicators/attribute/hdjkfhdjkhfdjfhd"
       ]
     },
     "Malicious": {
@@ -12,7 +12,7 @@
     }
   },
   "DBotScore": {
-    "Indicator": "http://www.welshantifa.org",
+    "Indicator": "http://123-fake-api.com",
     "Type": "url",
     "Vendor": "Flashpoint",
     "Score": 3

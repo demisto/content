@@ -1,9 +1,9 @@
 {
   "IP(val.Address && val.Address == obj.Address)": {
-    "Address": "210.122.7.129",
+    "Address": "0.0.0.0",
     "Flashpoint": {
       "href": [
-        "https://fp.tools/api/v4/indicators/attribute/KyhpGHc2XYKp2iUESO7ejA"
+        "http://123-fake-api.com/api/v4/indicators/attribute/hdjfhdjfhdjhfjdhdf"
       ]
     },
     "Malicious": {
@@ -12,7 +12,7 @@
     }
   },
   "DBotScore": {
-    "Indicator": "210.122.7.129",
+    "Indicator": "0.0.0.0",
     "Type": "ip",
     "Vendor": "Flashpoint",
     "Score": 3

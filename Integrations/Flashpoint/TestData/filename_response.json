@@ -4,34 +4,30 @@
       "Event": {
         "RelatedEvent": [],
         "Tags": [
-          "malware:ransomware:lockergoga",
-          "report:lKyimEX1TWS8x6AtdiJ_vA",
-          "report:jEteM4YxQZCdm4macbE3vQ",
-          "report:w0fL5MgoQ_Wih8XyB6Lowg",
-          "report:7t-BsuFKTL-HJWbid8nupg"
+          "tag1",
+          "tag2",
+          "tag3"
         ],
         "attack_ids": [],
-        "fpid": "iBUPRQOoU4SQrH64LGUbzw",
-        "href": "https://fp.tools/api/v4/indicators/event/iBUPRQOoU4SQrH64LGUbzw",
-        "info": "LockerGoga",
+        "fpid": "fhdjkasfdddfdjfdhhsd",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/fhdjkasfdddfdjfdhhsd",
+        "info": "info1",
         "reports": [
-          "https://fp.tools/home/intelligence/reports/report/lKyimEX1TWS8x6AtdiJ_vA",
-          "https://fp.tools/home/intelligence/reports/report/jEteM4YxQZCdm4macbE3vQ",
-          "https://fp.tools/home/intelligence/reports/report/w0fL5MgoQ_Wih8XyB6Lowg",
-          "https://fp.tools/home/intelligence/reports/report/7t-BsuFKTL-HJWbid8nupg"
+          "report_url1",
+          "report_url2"
         ],
         "timestamp": "1571934618"
       },
-      "category": "Artifacts dropped",
-      "fpid": "nFIUupaMWdSpJQZI03ryZA",
-      "href": "https://fp.tools/api/v4/indicators/attribute/nFIUupaMWdSpJQZI03ryZA",
+      "category": "category1",
+      "fpid": "fhdjkasfdddfdjfdhhsd",
+      "href": "http://123-fake-api.com/api/v4/indicators/attribute/fhdjkasfdddfdjfdhhsd",
       "timestamp": "1553280019",
       "to_ids": false,
       "type": "filename",
       "uuid": "5c952c13-d048-4741-a769-05cd0a640c05",
       "value": {
         "comment": "",
-        "filename": ".locked"
+        "filename": "fakefilename"
       }
     }
   }

@@ -3,87 +3,59 @@
     "Event": {
       "Attribute": [
         {
-          "category": "Other",
+          "category": "CATEGORY1",
           "comment": "",
-          "fpid": "fAt4RBlKVZS-FA97KbdDcA",
-          "href": "https://fp.tools/api/v4/indicators/attribute/fAt4RBlKVZS-FA97KbdDcA",
+          "fpid": "test_scan_id",
+          "href": "http://123-fake-api.com/api/v4/indicators/attribute/test_scan_id",
           "timestamp": "1560895692",
           "to_ids": false,
           "type": "other",
-          "uuid": "2d1de3ac-ae4b-4394-8de6-9218317b10b4",
+          "uuid": "5d8bb545-3eds-2222-1111-aaaaaaaaaaaa",
           "value": {
             "comment": "",
-            "other": "id:wyM5lwajVSC_ebCbU0P1kA"
+            "other": "id:test_scan_id"
           }
         },
         {
           "category": "Payload delivery",
           "comment": "",
-          "fpid": "cepUsKxUUeS-_nUKeKRnow",
-          "href": "https://fp.tools/api/v4/indicators/attribute/cepUsKxUUeS-_nUKeKRnow",
+          "fpid": "test_scan_id",
+          "href": "http://123-fake-api.com/api/v4/indicators/attribute/test_scan_id",
           "timestamp": "1560895692",
           "to_ids": true,
           "type": "md5",
           "uuid": "c0b03621-02b8-41d8-8f6d-d1e6946e011b",
           "value": {
             "comment": "",
-            "md5": "55be0558a911a4ec6b0f08a521de7744"
-          }
-        },
-        {
-          "category": "Payload delivery",
-          "comment": "",
-          "fpid": "KblXvWRPVjqOIOm-vgFYIw",
-          "href": "https://fp.tools/api/v4/indicators/attribute/KblXvWRPVjqOIOm-vgFYIw",
-          "timestamp": "1560895692",
-          "to_ids": true,
-          "type": "sha1",
-          "uuid": "468769b1-1216-4f4a-9322-9b61b3acaeb6",
-          "value": {
-            "comment": "",
-            "sha1": "4c0d570ecdf23529c91b8decf27107db5c5e9430"
-          }
-        },
-        {
-          "category": "Payload delivery",
-          "comment": "",
-          "fpid": "GMJunANDXtCCmXZwZx_5bw",
-          "href": "https://fp.tools/api/v4/indicators/attribute/GMJunANDXtCCmXZwZx_5bw",
-          "timestamp": "1560895692",
-          "to_ids": true,
-          "type": "sha256",
-          "uuid": "73989a06-aac9-4112-9fa5-e03e38e26ff2",
-          "value": {
-            "comment": "",
-            "sha256": "f566136756c452e0afaba913e289a93b14a905f15aa58127699804330408a336"
+            "md5": "testfile"
           }
         }
       ],
       "Tag": [
         {
-          "name": "source:CryptingService2"
+          "name": "tag1"
         }
       ],
       "attribute_count": "4",
       "date": "2019-06-18",
-      "event_creator_email": "info@flashpoint-intel.com",
-      "info": "CryptingService_4c0d570ecdf23529c91b8decf27107db5c5e9430_2019-06-17T03:01:03.000Z",
+      "event_creator_email": "fake@test.com",
+      "info": "testing info",
       "publish_timestamp": "1560895692",
       "timestamp": "1560895692",
       "uuid": "5d0960cc-6128-4416-9996-05d20a640c05"
     },
     "basetypes": [
-      "misp",
-      "indicator"
+      "b1",
+      "b2"
     ],
-    "fpid": "Hu2SoTWJWteLrH9mR94JbQ",
+    "fpid": "test_scan_id",
     "header_": {
       "indexed_at": 1560965494,
       "ingested_at": 1560961813,
       "is_visible": true,
       "observed_at": 1560961813,
-      "source": "urn:fp:component:misp-exporter"
+      "source": "source1"
     },
-    "href": "https://fp.tools/api/v4/indicators/event/Hu2SoTWJWteLrH9mR94JbQ"
+    "href": "http://123-fake-api.com/api/v4/indicators/event/test_scan_id"
   }
 ]
