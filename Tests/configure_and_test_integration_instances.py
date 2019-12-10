@@ -110,16 +110,20 @@ def get_new_and_modified_integrations(git_sha1):
     return new_integrations_names, modded_integrations_names
 
 
-def is_content_updating(server, username, password):
-    '''Configure Demisto Client and make request to check if content is updating'''
-    # Configure Demisto Client
-    c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
+def is_content_update_in_progress(client):
+    '''Make request to check if content is updating.
 
-    msg = '\nMaking "Get" request to server - "{}" to check if content is installing.'.format(server)
-    print(msg)
+    Args:
+        client (demisto_client): The configured client to use.
+
+    Returns:
+        (str): Returns the request response data which is 'true' if updating and 'false' if not.
+    '''
+    host = client.api_client.configuration.host
+    print('\nMaking "Get" request to server - "{}" to check if content is installing.'.format(host))
 
     # make request to check if content is updating
-    response_data, status_code, _ = demisto_client.generic_request_func(self=c, path='/content/updating',
+    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/content/updating',
                                                                         method='GET', accept='application/json')
 
     if status_code >= 300 or status_code < 200:
@@ -441,10 +445,10 @@ def main():
 
     # Check if content update has finished installing
     sleep_interval = 20
-    updating_content = is_content_updating(server, username, password)
+    updating_content = is_content_update_in_progress(client)
     while updating_content.lower() == 'true':
         sleep(sleep_interval)
-        updating_content = is_content_updating(server, username, password)
+        updating_content = is_content_update_in_progress(client)
 
     if updating_content.lower() == 'request unsuccessful':
         # since the request to check if content update installation finished didn't work, can't use that mechanism
@@ -453,8 +457,8 @@ def main():
     else:
         # check that the content installation updated
         # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
-        release, asset_id = get_content_installation(client)
-        with open('content-descrget_content_version_detailsfile:
+        release, asset_id = get_content_version_details(client)
+        with open('content-descriptor.json', 'r') as cd_file:
             cd_json = json.loads(cd_file.read())
             cd_release = cd_json.get('release')
             cd_asset_id = cd_json.get('assetId')
