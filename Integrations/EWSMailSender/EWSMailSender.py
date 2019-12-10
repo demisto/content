@@ -278,14 +278,6 @@ def main():
             test_module()
         elif demisto.command() == 'send-mail':
             demisto.results(send_email(**args))
-        try:
-            # we don't want to leave cached connection arround as EWS limits the number of connections
-            # in a very aggressive way. 12 seems to be the default limit
-            # see: https://blogs.msdn.microsoft.com/webdav_101/2018/06/02/you-are-doing-too-much-at-one-time-ewsmaxconcurrency-too-many-concurrent-connections-opened/ # noqa
-            close_connections()
-        except Exception as ex:
-            demisto.info("Failed close_connections (shouldn't happen). Ignoring exception: {}".format(ex))
-
     except Exception as e:
         import time
 
