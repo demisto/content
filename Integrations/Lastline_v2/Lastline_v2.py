@@ -23,7 +23,7 @@ class Client(BaseClient):
 
     def file(self):
         human_readable = ''
-        context_entry = {
+        context_entry: Dict = {
             'Lastline': list(),
             'File': list(),
             'DBotScore': list()
