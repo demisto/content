@@ -148,4 +148,4 @@ script:
   subtype: python3
   dockerimage: demisto/dxl:1.0.0.4984
 tests:
-  - No tests
+  - McAfee DXL - test
