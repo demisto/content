@@ -21,10 +21,6 @@ from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_versio
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
 
-''' CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
-                         BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, SCRIPT_YML_REGEX,
-                         INTEGRATION_YML_REGEX] '''
-
 CHECKED_TYPES_REGEXES = [
     # Integrations
     INTEGRATION_REGEX,
@@ -299,8 +295,7 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
             if test in test_ids or re.match(NO_TESTS_FORMAT, test, re.IGNORECASE):
-                if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                        re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
+                if checked_type(file_path, INTEGRATION_REGEXES):
                     _id = get_script_or_integration_id(file_path)
 
                 else:
