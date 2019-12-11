@@ -267,6 +267,8 @@ def main():
         }
     }
     demisto.results(result_entry)
+    demisto.results(result_entry['EntryContext']['DBotPhishingClassifier'])
+    demisto.results(result_entry['EntryContext']['DBotPhishingClassifier']['EvaluationScores'])
     # show results if no threshold (threhsold=0) was used:
     res = demisto.executeCommand('GetMLModelEvaluation', {'yTrue': json.dumps(y_test),
                                                           'yPred': json.dumps(y_pred),
@@ -292,7 +294,7 @@ def main():
             }
         }
     }
-    # demisto.results(result_entry)
+    demisto.results(result_entry)
 
 
 if __name__ in ['__builtin__', '__main__']:
