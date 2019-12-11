@@ -102,8 +102,74 @@ script:
     execution: false
     name: msgraph-upload-new-file
     outputs:
-    - contextPath: MsGraph.File
-      type: String
+      - contextPath: MsGraphFiles.ParentReference.driveId
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.ParentReference.driveType
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.ParentReference.id
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.ParentReference.path
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.CTag
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.LastModifiedDateTime
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.File.mimeType
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.File.hashes.quickXorHash
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.CreatedDateTime
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.WebUrl
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.@odata.context # disable-secrets-detection
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.FileSystemInfo.createdDateTime
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.FileSystemInfo.lastModifiedDateTime
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.LastModifiedBy.application.displayName
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.LastModifiedBy.application.id
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.ETag
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.CreatedBy.application.displayName
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.CreatedBy.application.id
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.@microsoft.graph.downloadUrl # disable-secrets-detection
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.Size
+        description: ''
+        type: Number
+      - contextPath: MsGraphFiles.Id
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.Name
+        description: ''
+        type: String
+      - contextPath: MsGraph.File
+        type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -136,8 +202,74 @@ script:
     execution: false
     name: msgraph-replace-existing-file
     outputs:
-    - contextPath: MsGraph.File
-      type: String
+      - contextPath: MsGraphFiles.ParentReference.driveId
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.ParentReference.driveType
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.ParentReference.id
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.ParentReference.path
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.CTag
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.LastModifiedDateTime
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.File.mimeType
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.File.hashes.quickXorHash
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.CreatedDateTime
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.WebUrl
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.@odata.context # disable-secrets-detection
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.FileSystemInfo.createdDateTime
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.FileSystemInfo.lastModifiedDateTime
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.LastModifiedBy.application.displayName
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.LastModifiedBy.application.id
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.ETag
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.CreatedBy.application.displayName
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.CreatedBy.application.id
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.@microsoft.graph.downloadUrl # disable-secrets-detection
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.Size
+        description: ''
+        type: Number
+      - contextPath: MsGraphFiles.Id
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.Name
+        description: ''
+        type: String
+      - contextPath: MsGraphFiles.File
+        type: String
   - arguments:
     - auto: PREDEFINED
       default: false
