@@ -3373,7 +3373,7 @@ tasks:
     type: playbook
     task:
       id: 78f70966-8fe8-4eb4-834b-0f910bc21458
-      description: PAN-OS Query Logs for Indicators
+      description: PAN-OS Query Logs For Indicators
       version: -1
       name: PAN-OS Query Logs For Indicators
       playbookName: PAN-OS Query Logs For Indicators
