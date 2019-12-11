@@ -240,7 +240,7 @@ def main():
         human_readable += "\n\nSkip storing model"
     result_entry = {
         'Type': entryTypes['note'],
-        'Contents': {k: json.loads(v) for k, v in res[0]['Contents']},
+        'Contents': {k: json.loads(v) for k, v in res[0]['Contents'].items()},
         'ContentsFormat': formats['json'],
         'HumanReadable': human_readable,
         'HumanReadableFormat': formats['markdown'],
@@ -267,7 +267,7 @@ def main():
                                 human_readable])
     result_entry = {
         'Type': entryTypes['note'],
-        'Contents': {k: json.loads(v) for k, v in res[0]['Contents']},
+        'Contents': {k: json.loads(v) for k, v in res[0]['Contents'].items()},
         'ContentsFormat': formats['json'],
         'HumanReadable': human_readable,
         'HumanReadableFormat': formats['markdown'],
