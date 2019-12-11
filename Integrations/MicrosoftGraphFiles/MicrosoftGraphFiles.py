@@ -316,8 +316,7 @@ class Client(BaseClient):
 
     def replace_existing_file(self, object_type, object_type_id, item_id, entry_id):
 
-        file_path = demisto.getFilePath(entry_id).get('path') # TODO: change it to the file_path
-
+        file_path = demisto.getFilePath(entry_id).get('path')
         if object_type == 'drives':
             url = f'{object_type}/{object_type_id}/items/{item_id}/content'
 
@@ -355,9 +354,7 @@ class Client(BaseClient):
         :param entry_id:
         :return:
         """
-        file_path = r'/Users/gberger/Desktop/Untitled.txt'  # TODO: remove when finish to debug
-        # file_path = demisto.getFilePath(entry_id).get(‘path’) # TODO: change it to the file_path
-
+        file_path = demisto.getFilePath(entry_id).get('path')
         if 'drives' == object_type:
             url = f'{object_type}/{object_type_id}/items/{parent_id}:/{file_name}:/content'
 
@@ -367,9 +364,8 @@ class Client(BaseClient):
         url = BASE_URL + f'/{url}'
         with open(file_path, 'rb') as file:
             self.headers['Content-Type'] = 'application/octet-stream'
-            return self._http_request('PUT', url, data=file, headers=self.headers)
-        # file = {'file': open(file_path, 'rb')}
-        # self._http_request('PUT', url, data=file, headers=self.headers)
+            return self.http_call('PUT', full_url=url, headers=self.headers, url_suffix='', data=file)
+
 
     def download_file(self, object_type, object_type_id, item_id):
         if object_type == 'drives':
@@ -380,7 +376,9 @@ class Client(BaseClient):
 
         # send request
         url = BASE_URL + f'/{url}'
-        res = self.http_call('GET', full_url=url, headers=self.headers, url_suffix='', resp_type='')
+        res = self.http_call('GET', full_url=url, headers=self.headers, url_suffix='', resp_type='')  # it needs
+        # resp_type='' to stay empty because if response type is empty http_requests returned the raw response.
+        # I need it because graph api returnes an response as text without content so res.text fails
         return res
 
 
@@ -540,12 +538,12 @@ def replace_an_existing_file_command(client, args):
 
 def upload_new_file_command(client, args):
     object_type = args.get('object_type')
-    entry_id = args.get('entry_id')
+    object_type_id = args.get('object_type_id')
     parent_id = args.get('parent_id')
     file_name = args.get('file_name')
-    object_type_id = args.get('object_type_id')
+    entry_id = args.get('entry_id')
 
-    result = client.upload_new_file(object_type, parent_id, file_name, entry_id, object_type_id)
+    result = client.upload_new_file(object_type, object_type_id, parent_id, file_name, entry_id)
 
     context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
 
@@ -638,7 +636,9 @@ def main():
         elif demisto.command() == 'msgraph-delete-file':
             return_outputs(*delete_file_command(client, demisto.args()))
         elif demisto.command() == 'msgraph-download-file':
-            demisto.results(download_file_command(client, demisto.args()))
+            demisto.results(download_file_command(client, demisto.args()))  # it has to be demisto.results instead
+            # of return_outputs. because fileResult contains 'content': '' and if that key is empty return_outputs
+            # returns error
         elif demisto.command() == 'msgraph-list-tenant-sites':
             return_outputs(*list_tenant_sites_command(client, demisto.args()))
         elif demisto.command() == 'msgraph-list-drive-children':

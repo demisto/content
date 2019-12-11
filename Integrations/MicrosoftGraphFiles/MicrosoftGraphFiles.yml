@@ -91,12 +91,12 @@ script:
     - default: false
       isArray: false
       name: file_name
-      required: false
+      required: true
       secret: false
     - default: false
       isArray: false
       name: entry_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     execution: false
