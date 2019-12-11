@@ -1,6 +1,6 @@
-id: Create Phishing Classifier V2 ML Test
+id: Create Phishing Classifier V2 ML Test debug
 version: -1
-name: Create Phishing Classifier V2 ML Test
+name: Create Phishing Classifier V2 ML Test debug
 description: Test CreatePhishingClassifierML playbook
 starttaskid: "0"
 tasks:
@@ -203,6 +203,7 @@ tasks:
       description: Create a phishing classifier using machine learning technique,
         based on email content
       playbookName: DBot Create Phishing Classifier V2
+      playbookId: DBot Create Phishing Classifier V2
       type: playbook
       iscommand: false
       brand: ""
@@ -271,7 +272,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: DBotPhishingClassifier.EvaluationScores.Precision
+              simple: DBotPhishingClassifier.EvaluationScores.Precision.All
             iscontext: true
     view: |-
       {
