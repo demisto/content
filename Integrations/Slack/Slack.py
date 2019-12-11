@@ -689,12 +689,16 @@ def add_info_headers(headers, expiry):
     # pylint: disable=no-member
     try:
         calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
+        brand_name = calling_context.get('IntegrationBrand', '')
         instance_name = calling_context.get('IntegrationInstance', '')
         auth = send_slack_request_sync(CLIENT, 'auth.test')
         team = auth.get('team', '')
-        headers['X-Content-Name'] = instance_name
+        headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
+        headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
         headers['X-Content-TeamName'] = team
         headers['X-Content-Expiry'] = expiry if expiry else 'No expiry'
+        if hasattr(demisto, 'demistoVersion'):
+            headers['X-Content-Server-Version'] = demisto.demistoVersion().get('version')
     except Exception as e:
         demisto.error('Failed getting integration info: {}'.format(str(e)))
 
