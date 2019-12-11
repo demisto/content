@@ -114,7 +114,6 @@ def store_model_in_demisto(model_name, model_override, train_text_data, train_ta
                                                    'modelOverride': model_override})
     if is_error(res):
         return_error(get_error(res))
-    confusion_matrix = json.loads(confusion_matrix)
     confusion_matrix_no_all = {k: v for k, v in confusion_matrix.items() if k != 'All'}
     confusion_matrix_no_all = {k: {sub_k: sub_v for sub_k, sub_v in v.items() if sub_k != 'All'}
                                for k, v in confusion_matrix_no_all.items()}
@@ -230,7 +229,9 @@ def main():
                                                           'targetRecall': str(target_recall)})
     if is_error(res):
         return_error(get_error(res))
-    confusion_matrix = res[0]['Contents']['csr_matrix_at_threshold']
+    threshold = float(res[0]['Contents']['threshold'])
+    confusion_matrix = json.loads(res[0]['Contents']['csr_matrix_at_threshold'])
+    metrics_df = json.loads(res[0]['Contents']['metrics_df'])
     human_readable = res[0]['HumanReadable']
     # store model
     if store_model:
@@ -240,15 +241,16 @@ def main():
         human_readable += "\n\nSkip storing model"
     result_entry = {
         'Type': entryTypes['note'],
-        'Contents': {k: json.loads(v) for k, v in res[0]['Contents'].items()},
+        'Contents': {'Threshold': threshold, 'ConfusionMatrixAtThreshold': confusion_matrix,
+                     'Metrics': metrics_df},
         'ContentsFormat': formats['json'],
         'HumanReadable': human_readable,
         'HumanReadableFormat': formats['markdown'],
         'EntryContext': {
             'DBotPhishingClassifier': {
                 'ModelName': model_name,
-                'EvaluationScores': json.loads(res[0]['Contents']['metrics_df']),
-                'ConfusionMatrix': json.loads(confusion_matrix)
+                'EvaluationScores': metrics_df,
+                'ConfusionMatrix': confusion_matrix
             }
         }
     }
@@ -261,20 +263,24 @@ def main():
                                                           'detailedOutput': 'false'})
     if is_error(res):
         return_error(get_error(res))
+    threshold = float(res[0]['Contents']['threshold'])
+    confusion_matrix = json.loads(res[0]['Contents']['csr_matrix_at_threshold'])
+    metrics_df = json.loads(res[0]['Contents']['metrics_df'])
     human_readable = res[0]['HumanReadable']
     human_readable = '\n'.join(['## Results for No Threshold',
                                 'The following results were achieved by using no threshold (threshold equals 0)',
                                 human_readable])
     result_entry = {
         'Type': entryTypes['note'],
-        'Contents': {k: json.loads(v) for k, v in res[0]['Contents'].items()},
+        'Contents': {'Threshold': threshold, 'ConfusionMatrixAtThreshold': confusion_matrix,
+                     'Metrics': metrics_df},
         'ContentsFormat': formats['json'],
         'HumanReadable': human_readable,
         'HumanReadableFormat': formats['markdown'],
         'EntryContext': {
             'DBotPhishingClassifierNoThresh': {
-                'EvaluationScores': json.loads(res[0]['Contents']['metrics_df']),
-                'ConfusionMatrix': json.loads(res[0]['Contents']['csr_matrix_at_threshold'])
+                'EvaluationScores': metrics_df,
+                'ConfusionMatrix': confusion_matrix
             }
         }
     }
