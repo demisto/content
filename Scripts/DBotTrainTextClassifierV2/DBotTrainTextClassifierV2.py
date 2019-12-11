@@ -210,30 +210,16 @@ def main():
             'HumanReadableFormat': formats['markdown'],
         }
         demisto.results(entry)
-
-    train_tag_data = map(lambda x: x[DBOT_TAG_FIELD], data)
-    train_text_data = map(lambda x: x[text_field], data)
-    if len(train_text_data) != len(train_tag_data):
-        return_error("Error: data and tag data are different length")
-
     # print important words for each category
     try:
         find_keywords(data, DBOT_TAG_FIELD, text_field, keyword_min_score)
     except Exception:
         pass
-    X = pd.Series(train_text_data)
-    y = pd.Series(train_tag_data)
-    train_set_ratio = float(demisto.args()['trainSetRatio'])
-    n_splits = int(1.0 / (1 - train_set_ratio))
-    skf = StratifiedKFold(n_splits=n_splits, shuffle=False, random_state=None)
-    skf.get_n_splits(X, y)
-    train_index, test_index = list(skf.split(X, y))[-1]
-    X_train, X_test = list(X[train_index]), list(X[test_index])
-    y_train, y_test = list(y[train_index]), list(y[test_index])
-    model = demisto_ml.train_text_classifier(X_train, y_train)
-    ft_test_predictions = demisto_ml.predict(model, X_test)
-    y_pred = [{y_tuple[0]: y_tuple[1]} for y_tuple in ft_test_predictions]
-
+    train_tag_data = map(lambda x: x[DBOT_TAG_FIELD], data)
+    train_text_data = map(lambda x: x[text_field], data)
+    if len(train_text_data) != len(train_tag_data):
+        return_error("Error: data and tag data are different length")
+    y_test, y_pred = get_predictions_for_test_set(train_text_data, train_tag_data)
     if 'maxBelowThreshold' in demisto.args():
         target_recall = 1 - float(demisto.args()['maxBelowThreshold'])
     else:
@@ -254,7 +240,7 @@ def main():
         human_readable += "\n\nSkip storing model"
     result_entry = {
         'Type': entryTypes['note'],
-        'Contents': res[0]['Contents'],
+        'Contents': {k: json.loads(v) for k, v in res[0]['Contents']},
         'ContentsFormat': formats['json'],
         'HumanReadable': human_readable,
         'HumanReadableFormat': formats['markdown'],
@@ -281,7 +267,7 @@ def main():
                                 human_readable])
     result_entry = {
         'Type': entryTypes['note'],
-        'Contents': res[0]['Contents'],
+        'Contents': {k: json.loads(v) for k, v in res[0]['Contents']},
         'ContentsFormat': formats['json'],
         'HumanReadable': human_readable,
         'HumanReadableFormat': formats['markdown'],
@@ -293,6 +279,22 @@ def main():
         }
     }
     demisto.results(result_entry)
+
+
+def get_predictions_for_test_set(train_text_data, train_tag_data):
+    X = pd.Series(train_text_data)
+    y = pd.Series(train_tag_data)
+    train_set_ratio = float(demisto.args()['trainSetRatio'])
+    n_splits = int(1.0 / (1 - train_set_ratio))
+    skf = StratifiedKFold(n_splits=n_splits, shuffle=False, random_state=None)
+    skf.get_n_splits(X, y)
+    train_index, test_index = list(skf.split(X, y))[-1]
+    X_train, X_test = list(X[train_index]), list(X[test_index])
+    y_train, y_test = list(y[train_index]), list(y[test_index])
+    model = demisto_ml.train_text_classifier(X_train, y_train)
+    ft_test_predictions = demisto_ml.predict(model, X_test)
+    y_pred = [{y_tuple[0]: y_tuple[1]} for y_tuple in ft_test_predictions]
+    return y_test, y_pred
 
 
 if __name__ in ['__builtin__', '__main__']:

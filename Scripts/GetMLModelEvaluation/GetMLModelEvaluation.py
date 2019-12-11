@@ -5,9 +5,8 @@ from tabulate import tabulate
 
 from CommonServerPython import *
 
-# pylint: disable=no-member
 
-DETAILED_OUTPUT = True
+# pylint: disable=no-member
 
 
 def binarize(arr, threshold):
@@ -30,7 +29,7 @@ def calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, threshold):
 
 
 def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold):
-    df = pd.DataFrame(columns=['Class', 'Precision', 'Recall', 'TP', 'Total'])
+    df = pd.DataFrame(columns=['Class', 'Precision', 'Recall', 'TP', 'FP', 'Coverage', 'Total'])
     for class_ in sorted(y_pred_per_class):
         y_pred_class = y_pred_per_class[class_]
         y_true_class = y_true_per_class[class_]
@@ -41,36 +40,32 @@ def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, thre
                                    and y_pred_i == 1)
         above_thresh = sum(1 for i, y_true_i in enumerate(y_true_class) if y_true_i == 1
                            and any(y_pred_per_class[c][i] >= threshold for c in y_pred_per_class))
+        fp = sum(1 for i, y_true_i in enumerate(y_true_class) if y_true_i == 0
+                 and any(y_pred_per_class[c][i] >= threshold for c in y_pred_per_class))
         total = int(sum(y_true_class))
         df = df.append({'Class': class_,
                         'Precision': precision,
                         'Recall': recall,
                         'TP': classified_correctly,
-                        'CoverageInt': int(above_thresh),
+                        'FP': fp,
+                        'Coverage': int(above_thresh),
                         'Total': total}, ignore_index=True)
     df = df.append({'Class': 'All',
                     'Precision': df["Precision"].mean(),
                     'Recall': df["Recall"].mean(),
                     'TP': df["TP"].sum(),
-                    'CoverageInt': df["CoverageInt"].sum(),
+                    'FP': df["FP"].sum(),
+                    'Coverage': df["Coverage"].sum(),
                     'Total': df["Total"].sum()}, ignore_index=True)
-    df['Precision'] = df['Precision'].apply(lambda p: '{:.1f}%'.format(p * 100))
-    df['Recall'] = df['Recall'].apply(lambda r: '{:.1f}%'.format(r * 100))
-    df['Coverage'] = df.apply(lambda row: '{}/{} ({:.1f}%)'.format(int(row['CoverageInt']), row['Total'],
-                                                                   float(row['CoverageInt']) * 100 / row['Total']),
-                              axis=1)
-    df['TP'] = df.apply(lambda row: '{}/{} ({:.1f}%)'.format(int(row['TP']),
-                                                             int(row['CoverageInt']),
-                                                             float(row['TP']) * 100 / row['CoverageInt']),
-                        axis=1)
-    df = df[['Class', 'Precision', 'TP', 'Coverage', 'Total', 'CoverageInt']]
+    df = df[['Class', 'Precision', 'TP', 'FP', 'Coverage', 'Total']]
     explanation = [
         'Precision - binary precision of the class (TPs of the class, divided by number of mails '
-        'in the evaluation set which were classified as this class by the model',
+        + 'in the evaluation set which were classified as this class by the model',
         'TP - number of mails from the class in the evaluation set which were correct '
-        'classifications',
+        + 'classifications',
+        'FP - number of mails from other classes which were predicted wrongly as this class',
         'Coverage -  number of mails from the class in the evaluation set which their prediction was at a '
-        'higher confidence than threshold',
+        + 'higher confidence than threshold',
         'Total - The number of mails from the class in the evaluation set (above and below threshold)',
 
     ]
@@ -78,12 +73,24 @@ def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, thre
     return df, explanation
 
 
-def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold):
-    global DETAILED_OUTPUT
+def convert_df_to_human(metrics_df):
+    hr_df = metrics_df.copy()
+    hr_df['Precision'] = hr_df['Precision'].apply(lambda p: '{:.1f}%'.format(p * 100))
+    hr_df['TP'] = hr_df.apply(lambda row: '{}/{} ({:.1f}%)'.format(int(row['TP']),
+                                                                   int(row['Coverage']),
+                                                                   float(row['TP']) * 100 / row['Coverage']),
+                              axis=1)
+    hr_df['Coverage'] = hr_df.apply(lambda row: '{}/{} ({:.1f}%)'.format(int(row['Coverage']), row['Total'],
+                                                                         float(row['Coverage']) * 100 / row['Total']),
+                                    axis=1)
+    return hr_df
+
+
+def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold, detailed_output=True):
     csr_matrix_at_threshold = calculate_confusion_matrix(y_true, y_pred, y_pred_per_class, threshold)
     metrics_df, metrics_explanation = generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold)
 
-    coverage = metrics_df.loc[['All']]['CoverageInt'][0]
+    coverage = metrics_df.loc[['All']]['Coverage'][0]
     test_set_size = metrics_df.loc[['All']]['Total'][0]
     human_readable_threshold = [
         '## Summary',
@@ -97,10 +104,9 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold)
         '({}/{})'.format(
             coverage / test_set_size * 100, int(coverage), int(test_set_size)),
         '- Evaluation of the model performance using this probability threshold can be found below:']
-    metrics_df.drop(columns=['CoverageInt'], inplace=True)
     pd.set_option('display.max_columns', None)
 
-    tablualted_csr = tabulate(metrics_df, tablefmt="pipe", headers="keys")
+    tablualted_csr = tabulate(convert_df_to_human(metrics_df), tablefmt="pipe", headers="keys")
     class_metrics_human_readable = ['## Metrics per Class', tablualted_csr, '### Metrics Explanation']
     class_metrics_human_readable += ['- ' + row for row in metrics_explanation]
     csr_matrix_readable = ['## Confusion Matrix for Evaluation Set above Confidence Threshold',
@@ -109,7 +115,7 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold)
                                     headers="keys").replace("True", "True \\ Predicted"),
                            '\n']
     human_readable = []  # type: ignore
-    if DETAILED_OUTPUT:
+    if detailed_output:
         human_readable += human_readable_threshold + ['\n']
     human_readable += class_metrics_human_readable + ['\n']
     human_readable += csr_matrix_readable
@@ -133,7 +139,7 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold)
     return entry
 
 
-def find_threshold(y_true_str, y_pred_str, target_precision, target_recall):
+def find_threshold(y_true_str, y_pred_str, target_precision, target_recall, detailed_output=True):
     y_true = convert_str_to_json(y_true_str, 'yTrue')
     y_pred_all_classes = convert_str_to_json(y_pred_str, 'yPred')
     labels = sorted(set(y_true + y_pred_all_classes[0].keys()))
@@ -155,7 +161,8 @@ def find_threshold(y_true_str, y_pred_str, target_precision, target_recall):
                labels) and \
                 all(recall_score(y_true_per_class[class_],
                                  binarize(y_pred_per_class[class_], threshold)) >= target_recall for class_ in labels):
-            entry = output_report(np.array(y_true), y_true_per_class, np.array(y_pred), y_pred_per_class, threshold)
+            entry = output_report(np.array(y_true), y_true_per_class, np.array(y_pred), y_pred_per_class,
+                                  threshold, detailed_output)
             return entry
 
     return_error('Could not find threshold which satisfies the following conditions :\n\
@@ -172,16 +179,16 @@ def convert_str_to_json(str_json, var_name):
 
 
 def main():
-    global DETAILED_OUTPUT
     y_pred_all_classes = demisto.args()["yPred"]
     y_true = demisto.args()["yTrue"]
     target_precision = calculate_and_validate_float_parameter("targetPrecision")
     target_recall = calculate_and_validate_float_parameter("targetRecall")
-    DETAILED_OUTPUT = 'detailedOutput' in demisto.args() and demisto.args()['detailedOutput'] == 'true'
+    detailed_output = 'detailedOutput' in demisto.args() and demisto.args()['detailedOutput'] == 'true'
     entry = find_threshold(y_true_str=y_true,
                            y_pred_str=y_pred_all_classes,
                            target_precision=target_precision,
-                           target_recall=target_recall)
+                           target_recall=target_recall,
+                           detailed_output=detailed_output)
 
     demisto.results(entry)
 
