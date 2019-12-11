@@ -1,2 +1,2 @@
 ## [Unreleased]
-Fixed an issue in which the playbook finished before finish analysis.
+Fixed an issue where the playbook finished before the analysis was done.
