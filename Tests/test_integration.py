@@ -77,7 +77,7 @@ def __test_integration_instance(client, module_instance):
                 'server: {} '.format(
                     conn_err))
             return False
-        except requests.exceptions.Timeout:
+        except urllib3.exceptions.ReadTimeoutError:
             print_warning("Could not connect. Trying to connect for the {} time".format(i + 1))
 
     if int(response_code) != 200:
