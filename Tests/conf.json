@@ -608,6 +608,10 @@
             "playbookID": "Test Playbook McAfee ePO"
         },
         {
+            "integrations": "McAfee DXL",
+            "playbookID": "McAfee DXL - test"
+        },
+        {
             "integrations": "activedir",
             "playbookID": "calculate_severity_-_critical_assets_-_test"
         },
