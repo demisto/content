@@ -1,4 +1,4 @@
-id: Create Phishing Classifier V2 ML Test debug
+id: Create Phishing Classifier V2 ML Test
 version: -1
 name: Create Phishing Classifier V2 ML Test debug
 description: Test CreatePhishingClassifierML playbook
