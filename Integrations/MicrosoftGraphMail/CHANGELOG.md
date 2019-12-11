@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.12.0] - 2019-12-10
 Added 7 new commands.
   - ***msgraph-mail-list-folders***
   - ***msgraph-mail-list-child-folders***
