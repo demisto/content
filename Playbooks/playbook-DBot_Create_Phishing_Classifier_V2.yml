@@ -382,14 +382,17 @@ inputs:
   required: false
   description: The files output format, choose between json \ pickle.
 outputs:
-- contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.f1-score
-  description: F1 score (0-1)
+- contextPath: DBotPhishingClassifier.EvaluationScores.Precision.All
+  description: Average binary precision over all classes (0-1)
   type: number
-- contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.precision
-  description: Precision score (0-1)
+- contextPath: DBotPhishingClassifier.EvaluationScores.TP.All
+  description: Number of instances of all classes which were predicted correctly
   type: number
-- contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.recall
-  description: Rrecision score (0-1)
+- contextPath: DBotPhishingClassifier.EvaluationScores.Coverage.All
+  description: Number of instances which were predicted at a probability greater than threshold
+  type: number
+- contextPath: DBotPhishingClassifier.EvaluationScores.Total.All
+  description: Total number of instances
   type: number
 - contextPath: DBotPhishingClassifier.ModelName
   description: Model name in Demisto
