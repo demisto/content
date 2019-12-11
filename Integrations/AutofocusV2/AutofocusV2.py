@@ -20,7 +20,7 @@ USE_SSL = not PARAMS.get('insecure', False)
 # Service base URL
 BASE_URL = SERVER + '/api/v1.0'
 
-VENDOR_NAME = 'Palo Alto Networks AutoFocus V2'
+VENDOR_NAME = 'AutoFocus V2'
 
 # Headers to be sent in requests
 HEADERS = {
@@ -890,55 +890,69 @@ def calculate_dbot_score(indicator_response, indicator_type):
         return VERDICTS_TO_DBOTSCORE.get(score.lower(), 0)
 
 
-def get_indicator_outputs(indicator_type, indicator_response, indicator_value, score,
-                          indicator_context_output, raw_res):
-    dbot_score = {
-        'Indicator': indicator_value,
-        'Type': indicator_type.lower(),
-        'Vendor': VENDOR_NAME,
-        'Score': score
-    }
+def get_indicator_outputs(indicator_type, indicators, indicator_context_output):
+    human_readable = ''
+    raw_res = []
+    scores = []
+    _indicators = []
+    context = []
 
-    indicator_context = {
-        indicator_context_output: indicator_value
-    }
+    for indicator in indicators:
+        indicator_response = indicator['response']
+        indicator_value = indicator['value']
 
-    if score == 3:
-        indicator_context['Malicious'] = {
-            'Vendor': VENDOR_NAME
+        dbot_score = {
+            'Indicator': indicator_value,
+            'Type': indicator_type.lower(),
+            'Vendor': VENDOR_NAME,
+            'Score': indicator['score']
         }
 
-    if indicator_type == 'Domain':
-        whois = dict()  # type: ignore
-        whois['Admin'] = dict()
-        whois['Registrant'] = dict()
-        whois['Registrar'] = dict()
-        whois['CreationDate'] = indicator_response['WhoisDomainCreationDate']
-        whois['ExpirationDate'] = indicator_response['WhoisDomainExpireDate']
-        whois['UpdatedDate'] = indicator_response['WhoisDomainUpdateDate']
-        whois['Admin']['Email'] = indicator_response['WhoisAdminEmail']
-        whois['Admin']['Name'] = indicator_response['WhoisAdminName']
-        whois['Registrar']['Name'] = indicator_response['WhoisRegistrar']
-        whois['Registrant']['Name'] = indicator_response['WhoisRegistrant']
-        indicator_context['WHOIS'] = whois
+        indicator_context = {
+            indicator_context_output: indicator_value
+        }
 
-    tags = indicator_response.get('Tags')
-    table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {indicator_value}'
-    if tags:
-        indicators_data = indicator_response.copy()
-        del indicators_data['Tags']
-        md = tableToMarkdown(table_name, indicators_data, headerTransform=string_to_table_header)
-        md += tableToMarkdown('Indicator Tags:', tags, headerTransform=string_to_table_header)
-    else:
-        md = tableToMarkdown(table_name, indicator_response, headerTransform=string_to_table_header)
+        if indicator['score'] == 3:
+            indicator_context['Malicious'] = {
+                'Vendor': VENDOR_NAME
+            }
+
+        if indicator_type == 'Domain':
+            whois = dict()  # type: ignore
+            whois['Admin'] = dict()
+            whois['Registrant'] = dict()
+            whois['Registrar'] = dict()
+            whois['CreationDate'] = indicator_response['WhoisDomainCreationDate']
+            whois['ExpirationDate'] = indicator_response['WhoisDomainExpireDate']
+            whois['UpdatedDate'] = indicator_response['WhoisDomainUpdateDate']
+            whois['Admin']['Email'] = indicator_response['WhoisAdminEmail']
+            whois['Admin']['Name'] = indicator_response['WhoisAdminName']
+            whois['Registrar']['Name'] = indicator_response['WhoisRegistrar']
+            whois['Registrant']['Name'] = indicator_response['WhoisRegistrant']
+            indicator_context['WHOIS'] = whois
+
+        tags = indicator_response.get('Tags')
+        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {indicator_value}'
+        if tags:
+            indicators_data = indicator_response.copy()
+            del indicators_data['Tags']
+            md = tableToMarkdown(table_name, indicators_data, headerTransform=string_to_table_header)
+            md += tableToMarkdown('Indicator Tags:', tags, headerTransform=string_to_table_header)
+        else:
+            md = tableToMarkdown(table_name, indicator_response, headerTransform=string_to_table_header)
+
+        human_readable += md
+        raw_res.append(indicator['raw_response'])
+        scores.append(dbot_score)
+        context.append(indicator_context)
+        _indicators.append(indicator_response)
 
     ec = {
-        outputPaths['dbotscore']: dbot_score,
-        outputPaths[indicator_type.lower()]: indicator_context,
-        f'AutoFocus.{indicator_type}(val.IndicatorValue === obj.IndicatorValue)': indicator_response,
+        outputPaths['dbotscore']: scores,
+        outputPaths[indicator_type.lower()]: context,
+        f'AutoFocus.{indicator_type}(val.IndicatorValue === obj.IndicatorValue)': _indicators,
     }
-
-    return_outputs(readable_output=md, outputs=ec, raw_response=raw_res)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=raw_res)
 
 
 ''' COMMANDS'''
@@ -1153,41 +1167,53 @@ def top_tags_results_command():
 def search_ip_command(ip):
     indicator_type = 'IP'
     ip_list = argToList(ip)
+    indicator_details = []
     for ip_address in ip_list:
         raw_res = search_indicator('ipv4_address', ip_address)
         score = calculate_dbot_score(raw_res, indicator_type)
         res = parse_indicator_response(raw_res, indicator_type)
-        get_indicator_outputs(indicator_type, res, ip_address, score, 'Address', raw_res)
+        indicator_details.append({'raw_response': raw_res, 'value': ip_address, 'score': score, 'response': res})
+
+    get_indicator_outputs(indicator_type, indicator_details, 'Address')
 
 
 def search_domain_command(domain):
     indicator_type = 'Domain'
     domain_list = argToList(domain)
-    for domain in domain_list:
-        raw_res = search_indicator('domain', domain)
+    indicator_details = []
+    for _domain in domain_list:
+        raw_res = search_indicator('domain', _domain)
         score = calculate_dbot_score(raw_res, indicator_type)
         res = parse_indicator_response(raw_res, indicator_type)
-        get_indicator_outputs(indicator_type, res, domain, score, 'Name', raw_res)
+        indicator_details.append({'raw_response': raw_res, 'value': _domain, 'score': score, 'response': res})
+
+    get_indicator_outputs(indicator_type, indicator_details, 'Name')
 
 
 def search_url_command(url):
     indicator_type = 'URL'
     url_list = argToList(url)
-    for url in url_list:
-        raw_res = search_indicator('url', url)
+    indicator_details = []
+    for _url in url_list:
+        raw_res = search_indicator('url', _url)
         score = calculate_dbot_score(raw_res, indicator_type)
         res = parse_indicator_response(raw_res, indicator_type)
-        get_indicator_outputs(indicator_type, res, url, score, 'Data', raw_res)
+        indicator_details.append({'raw_response': raw_res, 'value': _url, 'score': score, 'response': res})
+
+    get_indicator_outputs(indicator_type, indicator_details, 'Data')
 
 
 def search_file_command(file):
     indicator_type = 'File'
     file_list = argToList(file)
-    for file in file_list:
-        raw_res = search_indicator('sha256', file)
+    indicator_details = []
+    for _file in file_list:
+        raw_res = search_indicator('sha256', _file)
         score = calculate_dbot_score(raw_res, indicator_type)
         res = parse_indicator_response(raw_res, indicator_type)
-        get_indicator_outputs(indicator_type, res, file, score, 'SHA256', raw_res)
+        indicator_details.append({'raw_response': raw_res, 'value': _file, 'score': score, 'response': res})
+
+    get_indicator_outputs(indicator_type, indicator_details, 'SHA256')
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
