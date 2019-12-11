@@ -719,10 +719,6 @@
             "playbookID": "ShodanTest"
         },
         {
-            "playbookID": "Extract Indicators From File - test",
-            "timeout": 2000
-        },
-        {
             "playbookID": "dedup_-_generic_-_test"
         },
         {
@@ -745,12 +741,6 @@
         },
         {
             "playbookID": "exporttocsv_script_test"
-        },
-        {
-            "integrations": "Intezer",
-            "playbookID": "Intezer Testing",
-            "nightly": true,
-            "timeout": 500
         },
         {
             "integrations": "Intezer v2",
@@ -1432,30 +1422,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "Phishing test - attachment",
-            "timeout": 600,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Have I Been Pwned? V2",
-                "Demisto REST API",
-                "Palo Alto Minemeld",
-                "Rasterize"
-            ]
-        },
-        {
-            "playbookID": "Phishing test - Inline",
-            "timeout": 500,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Have I Been Pwned? V2",
-                "Demisto REST API",
-                "Palo Alto Minemeld",
-                "Rasterize"
-            ]
-        },
-        {
             "playbookID": "Phishing v2 Test - Attachment",
             "timeout": 1200,
             "nightly": true,
@@ -2025,7 +1991,6 @@
         "McAfee-TIE Test": "Issue #18350",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
-        "calculate_severity_-_critical_assets_-_test": "Issue 17924",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "ArcSight Logger test": "Issue 19117",
         "TruSTAR Test": "Issue 19777",
@@ -2070,10 +2035,8 @@
         "DomainTools Iris": "Issue 20433",
         "ThreatQ v2": "Issue 19468",
         "Check Point": "Issue 18643",
-        "McAfee Active Response": "Issue 20320",
         "RSA Archer": "Issue 20335",
         "LogRhythmRest": "Issue 19870",
-        "Fidelis Elevate Network": "Issue 20263",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "Joe Security": "Issue 17996",
