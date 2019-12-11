@@ -119,6 +119,21 @@ def parse_calendar(raw_calendars: Union[Dict, List[Dict]]) -> Tuple[List[Dict], 
     return readable_calendars, context_output
 
 
+def process_event_params(body: str = '', start: str = '', end: str = '', time_zone: str = '',
+                            attendees: str = '', location: str = '', **other_params) -> Dict:
+    # some parameters don't need any processing
+    event_params: Dict[str, Union[str, Dict, List[Dict]]] = other_params
+
+    event_params['body'] = {"content": body}
+    event_params['location'] = {"displayName": location}
+    if start:
+        event_params['start'] = {"dateTime": start, "timeZone": time_zone}
+    if end:
+        event_params['end'] = {"dateTime": end, "timeZone": time_zone}
+    event_params['attendees'] = [{'emailAddress': {'address': attendee}} for attendee in attendees.split(',')]
+    return event_params
+
+
 def epoch_seconds() -> int:
     """
     Returns the number of seconds for return current date.
@@ -335,25 +350,28 @@ class Client(BaseClient):
 
         return calendars
 
-    def list_events(self, user: str, order_by: str = None, next_link: str = None, top: int = DEFAULT_PAGE_SIZE,
-                    filter_by: str = None) -> Dict:
+    def list_events(self, user: str, calendar_id: str = '', order_by: str = None, next_link: str = None,
+                    top: int = DEFAULT_PAGE_SIZE, filter_by: str = None) -> Dict:
         """
         Returns all events by sending a GET request.
 
         Args:
         :argument user: the user id | userPrincipalName
+        :argument calendar_id: calendar id  | name
         :argument order_by: specify the sort order of the items returned from Microsoft Graph
         :argument next_link: the link for the next page of results. see Microsoft documentation for more details.
         :argument top: specify the page size of the result set.
         :argument filter_by: filters results.
         """
+        calendar_url = f'{user}/calendars/{calendar_id}' if calendar_id else user
         params = {'$orderby': order_by} if order_by else {}
         if next_link:  # pagination
-            events = self.http_request(url_suffix=f'users/{user}/events', next_link=next_link)
+            events = self.http_request(url_suffix=f'users/{calendar_url}/events', next_link=next_link)
         elif filter_by:
-            events = self.http_request(url_suffix=f'users/{user}/events?$filter={filter_by}&$top={top}', params=params)
+            events = self.http_request(url_suffix=f'users/{calendar_url}/events?$filter={filter_by}&$top={top}',
+                                       params=params)
         else:
-            events = self.http_request(url_suffix=f'users/{user}/events?$top={top}', params=params)
+            events = self.http_request(url_suffix=f'users/{calendar_url}/events?$top={top}', params=params)
         return events
 
     def get_event(self, user: str, event_id: str) -> Dict:
@@ -388,7 +406,8 @@ class Client(BaseClient):
         :keyword originalStartTimeZone: The start time zone that was set when the event was created.
         """
         if calendar_id:
-            event = self.http_request('POST', f'/users/{user}/calendars/{calendar_id}/events', body=json.dumps(kwargs))
+            event = self.http_request('POST', f'/users/{user}/calendars/{calendar_id}/events',
+                                      params=json.dumps(kwargs))
         else:
             event = self.http_request('POST', f'users/{user}/calendar/events', body=json.dumps(kwargs))
         return event
@@ -493,9 +512,10 @@ def create_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         client: Client object with request
         args: Usually demisto.args()
     """
-    # create the event
-    args['body'] = {'content': args.get('body', '')}
+    args = process_event_params(**args)
     params: Dict = snakecase_to_camelcase(args, fields_to_drop=['user', 'calendar_id'])  # type: ignore
+
+    # create the event
     event = client.create_event(user=args.get('user', ''), calendar_id=args.get('calendar_id', ''), **params)
 
     # display the new event and it's properties
@@ -519,10 +539,10 @@ def update_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         args: Usually demisto.args()
     """
     event_id = str(args.get('event_id'))
+    params: Dict = process_event_params(snakecase_to_camelcase(args, fields_to_drop=['user', 'calendar_id']))  # type: ignore
 
-    # create the event
-    args['body'] = {'content': args.get('body', '')}
-    params: Dict = snakecase_to_camelcase(args, fields_to_drop=['user', 'event_id'])  # type: ignore
+
+    # update the event
     event = client.update_event(user=args.get('user', ''), event_id=args.get('event_id', ''), **params)
 
     # display the updated event and it's properties

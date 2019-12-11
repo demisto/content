@@ -142,6 +142,12 @@ script:
         isArray: false
         required: true
         secret: false
+      - name: calendar_id
+        default: false
+        description: Calendar ID or name. If not provided, the default calendar will be used.
+        isArray: false
+        required: false
+        secret: false
       - name: order_by
         default: false
         description: Specify the sort order of the items returned from Microsoft Graph.
@@ -317,7 +323,7 @@ script:
         secret: false
       - name: calendar_id
         default: false
-        description: Calendar ID or name.
+        description: Calendar ID or name. If not provided, the default calendar will be used..
         isArray: false
         required: false
         secret: false
@@ -347,7 +353,8 @@ script:
         secret: false
       - name: end
         default: false
-        description: The date, time, and time zone that the event ends. By default, the end time is in UTC.
+        description: "The date and time the event ends at,
+         for example '2017-05-28T12:00:00'. By default, the start time is in UTC."
         isArray: false
         required: false
         secret: false
@@ -361,6 +368,20 @@ script:
         default: false
         description: "The Timestamp type represents date and time using ISO 8601 format in UTC time.
         For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'"
+        isArray: false
+        required: false
+        secret: false
+      - name: start
+        default: false
+        description: "The date and time the event starts at,
+         for example '2017-05-28T12:00:00'. By default, the start time is in UTC."
+        isArray: false
+        required: false
+        secret: false
+      - name: time_zone
+        default: false
+        description: "Represents a time zone, for example, 'Pacific Standard Time'.
+         See https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0"
         isArray: false
         required: false
         secret: false
@@ -499,13 +520,28 @@ script:
         secret: false
       - name: end
         default: false
-        description: The date, time, and time zone that the event ends. By default, the end time is in UTC.
+        description: "The date and time the event ends at,
+         for example '2017-05-28T12:00:00'. By default, the start time is in UTC."
         isArray: false
         required: false
         secret: false
       - name: original_end_time_zone
         default: false
         description: The end time zone that was set when the event was created.
+        isArray: false
+        required: false
+        secret: false
+      - name: start
+        default: false
+        description: "The date and time the event starts at,
+         for example '2017-05-28T12:00:00'. By default, the start time is in UTC."
+        isArray: false
+        required: false
+        secret: false
+      - name: time_zone
+        default: false
+        description: "Represents a time zone, for example, 'Pacific Standard Time'.
+         See https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0"
         isArray: false
         required: false
         secret: false
