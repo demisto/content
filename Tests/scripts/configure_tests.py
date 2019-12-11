@@ -117,8 +117,7 @@ def get_modified_files(files_string):
                 is_conf_json = True
 
             # docs and test files do not influence integration tests filtering
-            elif file_path.startswith(INTEGRATIONS_DIR) or file_path.startswith(SCRIPTS_DIR) or \
-                    re.match(PACKS_INTEGRATIONS_DIR_REGEX, file_path, re.IGNORECASE):
+            elif checked_type(file_path, FILES_IN_SCRIPTS_OR_INTEGRATIONS_DIRS_REGEXES):
                 if os.path.splitext(file_path)[-1] not in FILE_TYPES_FOR_TESTING:
                     continue
 
@@ -323,7 +322,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     playbook_to_version = {}
     integration_to_version = {}
     for file_path in modified_files:
-        if checked_type(file_path, YML_SCRIPT_REGEXES) or re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE):
+        if checked_type(file_path, YML_SCRIPT_REGEXES):
             name = get_name(file_path)
             script_names.add(name)
             script_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
@@ -333,7 +332,7 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
                 catched_scripts.add(name)
                 tests_set.add('Found a unittest for the script {}'.format(package_name))
 
-        elif checked_type(file_path, YML_PLAYBOOKS_NO_TESTS_REGEXES):
+        elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             name = get_name(file_path)
             playbook_names.add(name)
             playbook_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
@@ -419,7 +418,7 @@ def exclude_deprecated_scripts(script_set, script_names):
 
     if deprecated_scripts_string:
         deprecated_message = 'The following scripts are deprecated and are not taken ' \
-                             'into account in the test collection:\n{}\n\n'.format(deprecated_scripts_string)
+                             'into account in the test collection:\n{}\n'.format(deprecated_scripts_string)
 
     return deprecated_message
 
@@ -445,7 +444,7 @@ def exclude_deprecated_playbooks(playbook_set, playbook_names):
 
     if deprecated_playbooks_string:
         deprecated_message = 'The following playbooks are deprecated and are not taken ' \
-                             'into account in the test collection:\n{}\n\n'.format(deprecated_playbooks_string)
+                             'into account in the test collection:\n{}\n'.format(deprecated_playbooks_string)
 
     return deprecated_message
 
@@ -471,7 +470,7 @@ def exclude_deprecated_integrations(integration_set, integration_ids):
 
     if deprecated_integrations_string:
         deprecated_message = 'The following integrations are deprecated and are not taken ' \
-                             'into account in the test collection:\n{}\n\n'.format(deprecated_integrations_string)
+                             'into account in the test collection:\n{}\n'.format(deprecated_integrations_string)
 
     return deprecated_message
 
