@@ -738,12 +738,6 @@
             "playbookID": "exporttocsv_script_test"
         },
         {
-            "integrations": "Intezer",
-            "playbookID": "Intezer Testing",
-            "nightly": true,
-            "timeout": 500
-        },
-        {
             "integrations": "Intezer v2",
             "playbookID": "Intezer Testing v2",
             "fromversion": "4.1.0",
