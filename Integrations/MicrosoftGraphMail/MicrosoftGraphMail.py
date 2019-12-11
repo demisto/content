@@ -5,10 +5,8 @@ from typing import Union, Optional, Any
 
 ''' IMPORTS '''
 import requests
-import base64
 import os
 import binascii
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -54,183 +52,6 @@ FOLDER_MAPPING = {
 ''' HELPER FUNCTIONS '''
 
 
-def epoch_seconds(d: datetime = None) -> int:
-    """
-    Return the number of seconds for given date. If no date, return current.
-
-    Args:
-        d (datetime): timestamp
-    Returns:
-         int: timestamp in epoch
-    """
-    if not d:
-        d = datetime.utcnow()
-    return int((d - datetime.utcfromtimestamp(0)).total_seconds())
-
-
-def get_encrypted(content: str, key: str) -> str:
-    """
-
-    Args:
-        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
-            the tenant id
-        key (str): encryption key from Demistobot
-
-    Returns:
-        encrypted timestamp:content
-    """
-
-    def create_nonce() -> bytes:
-        return os.urandom(12)
-
-    def encrypt(string: str, enc_key: str) -> bytes:
-        """
-
-        Args:
-            enc_key (str):
-            string (str):
-
-        Returns:
-            bytes:
-        """
-        # String to bytes
-        enc_key = base64.b64decode(enc_key)
-        # Create key
-        aes_gcm = AESGCM(enc_key)
-        # Create nonce
-        nonce = create_nonce()
-        # Create ciphered data
-        data = string.encode()
-        ct = aes_gcm.encrypt(nonce, data, None)
-        return base64.b64encode(nonce + ct)
-
-    now = epoch_seconds()
-    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
-    return encrypted
-
-
-def error_parser(resp_err: requests.Response) -> str:
-    """
-
-    Args:
-        error (requests.Response): response with error
-
-    Returns:
-        str: string of error
-
-    """
-    try:
-        response = resp_err.json()
-        error = response.get('error', {})
-        err_str = f"{error.get('code')}: {error.get('message')}"
-        if err_str:
-            return err_str
-        # If no error message
-        raise ValueError
-    except ValueError:
-        return resp_err.text
-
-
-def get_token():
-    if NO_OPROXY:
-        return get_self_deployed_token()
-    else:
-        return get_access_token()
-
-
-def get_access_token():
-    integration_context = demisto.getIntegrationContext()
-    access_token = integration_context.get('access_token')
-    valid_until = integration_context.get('valid_until')
-    if access_token and valid_until:
-        if epoch_seconds() < valid_until:
-            return access_token
-    headers = {'Accept': 'application/json'}
-
-    dbot_response = requests.post(
-        TOKEN_RETRIEVAL_URL,
-        headers=headers,
-        data=json.dumps({
-            'app_name': APP_NAME,
-            'registration_id': AUTH_ID,
-            'encrypted_token': get_encrypted(TENANT_ID, ENC_KEY)
-        }),
-        verify=USE_SSL
-    )
-    if dbot_response.status_code not in {200, 201}:
-        msg = 'Error in authentication. Try checking the credentials you entered.'
-        try:
-            demisto.info('Authentication failure from server: {} {} {}'.format(
-                dbot_response.status_code, dbot_response.reason, dbot_response.text))
-            err_response = dbot_response.json()
-            server_msg = err_response.get('message')
-            if not server_msg:
-                title = err_response.get('title')
-                detail = err_response.get('detail')
-                if title:
-                    server_msg = f'{title}. {detail}'
-            if server_msg:
-                msg += ' Server message: {}'.format(server_msg)
-        except Exception as ex:
-            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
-        raise Exception(msg)
-    try:
-        gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
-        demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
-        parsed_response = dbot_response.json()
-    except ValueError:
-        raise Exception(
-            'There was a problem in retrieving an updated access token.\n'
-            'The response from the Demistobot server did not contain the expected content.'
-        )
-    access_token = parsed_response.get('access_token')
-    expires_in = parsed_response.get('expires_in', 3595)
-    time_now = epoch_seconds()
-    time_buffer = 5  # seconds by which to shorten the validity period
-    if expires_in - time_buffer > 0:
-        # err on the side of caution with a slightly shorter access token validity period
-        expires_in = expires_in - time_buffer
-
-    demisto.setIntegrationContext({
-        'access_token': access_token,
-        'valid_until': time_now + expires_in
-    })
-    return access_token
-
-
-def get_self_deployed_token():
-    integration_context = demisto.getIntegrationContext()
-    if integration_context and integration_context.get('token_expiration_time'):
-        token_expiration_time = integration_context['token_expiration_time']
-        now = int(time.time())
-        if token_expiration_time < now:
-            return integration_context['token']
-    url = 'https://login.windows.net/{}/oauth2/token'.format(TENANT_ID)
-    resource_app_id_uri = 'https://graph.microsoft.com'
-    data = {
-        'resource': resource_app_id_uri,
-        'client_id': AUTH_ID,
-        'client_secret': ENC_KEY,
-        'grant_type': 'client_credentials'
-    }
-    access_token = ''
-    try:
-        response = requests.post(url, data, verify=USE_SSL)
-        body = response.json()
-        if response.status_code != 200:
-            return_error('Error in Microsoft authorization: {}'.format(str(body)))
-        access_token = body.get('access_token')
-        demisto.setIntegrationContext({
-            'token_expiration_time': body.get('expires_on', 3595),
-            'token': access_token
-        })
-
-    except Exception as e:
-        return_error('Error in Microsoft authorization: {}'.format(str(e)))
-
-    return access_token
-
-
 def http_request(method: str, url_suffix: str = '', params: dict = None, data: dict = None, odata: str = None,
                  url: str = None, resp_type: str = 'json', json_data: dict = None) -> Any:
     """
@@ -250,7 +71,10 @@ def http_request(method: str, url_suffix: str = '', params: dict = None, data: d
     Returns:
         dict or str: requests.json() or string
     """
-    token = get_token()
+    auth_type = OPROXY_AUTH_TYPE if not NO_OPROXY else SELF_DEPLOYED_AUTH_TYPE
+    
+
+    token = get_access_token(auth_type, TENANT_ID, AUTH_ID, ENC_KEY, TOKEN_RETRIEVAL_URL)
     headers = {
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json',
