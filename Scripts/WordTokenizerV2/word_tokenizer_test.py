@@ -13,14 +13,15 @@ def get_args():
 
 demistomock.args = get_args
 
-from WordTokenizer import remove_line_breaks, clean_html, tokenize_text, word_tokenize  # noqa
+from WordTokenizer import remove_line_breaks, clean_html, tokenize_text, word_tokenize,\
+    remove_multiple_whitespaces  # noqa
 
 
 def test_remove_line_breaks():
     text = """this text
     with line break
     """
-    assert remove_line_breaks(text) == "this text with line break"
+    assert remove_multiple_whitespaces(remove_line_breaks(text)) == "this text with line break"
 
 
 def test_clean_html():
