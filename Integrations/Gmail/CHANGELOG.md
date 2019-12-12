@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [19.12.0] - 2019-12-10
+-
+
 ## [19.10.2] - 2019-10-29
   - Added page-token parameter to ***gmail-list-users*** to get further results.
   - ***gmail-search-all-mailboxes*** now runs on all users.
