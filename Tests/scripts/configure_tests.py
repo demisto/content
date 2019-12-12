@@ -430,8 +430,9 @@ def exclude_deprecated_entities(script_set, script_names,
 
         if deprecated_entities_strings_dict[entity_type]:
             deprecated_messages_dict[entity_type] = '  The following {} are deprecated ' \
-                                                    'and are not taken into account in the test collection:\n' \
-                                                    '{}\n'.format(entity_type, deprecated_messages_dict[entity_type])
+                                                    'and are not taken into account in the test collection:' \
+                                                    '\n{}\n'.format(entity_type,
+                                                                    deprecated_entities_strings_dict[entity_type])
 
     return deprecated_messages_dict
 
