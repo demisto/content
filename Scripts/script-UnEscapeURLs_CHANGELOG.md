@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.12.0] - 2019-12-10
 Fixed an issue where special characters in URLs were parsed incorrectly.
 
 
