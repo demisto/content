@@ -222,8 +222,8 @@ def test_get_email_reputation(mocker, requests_mock):
 
     assert 'Search results for email foo@demisto.com' in results[0]['HumanReadable']
     assert entry_context[0]['Value'] == 'foo@demisto.com'
-    assert generic_context['Address'] == 'foo@demisto.com'
-    assert generic_context['Malicious']['Vendor'] == 'ThreatQ v2'  # indicator should be marked a malicious
+    assert generic_context[0]['Address'] == 'foo@demisto.com'
+    assert generic_context[0]['Malicious']['Vendor'] == 'ThreatQ v2'  # indicator should be marked a malicious
     assert results[0]['EntryContext']['DBotScore']['Score'] == 3
 
 
