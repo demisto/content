@@ -353,7 +353,7 @@ def __print_investigation_error(client, playbook_id, investigation_id, color=LOG
                     print_color('\t- Command: ' + entry['parentContent'].encode('utf-8'), color)
                 print_color('\t- Body: ' + entry['contents'].encode('utf-8'), color)
             if entry.get('brand'):
-            info = 'brand: ' + entry['brand'].encode('utf-8') + '/n'
+                info = 'brand: ' + entry['brand'].encode('utf-8') + '/n'
             if entry.get('contents'):
                 info += 'contents: ' + entry['contents'].encode('utf-8') + '/n'
             if entry.get('type'):
