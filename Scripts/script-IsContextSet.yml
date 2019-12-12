@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: IsContextSet
 script: |
+
   contextValue = demisto.get(demisto.context(), demisto.args()['key'])
   compareValue = demisto.get(demisto.args(), 'value')
   if contextValue and (not compareValue or contextValue == compareValue):
