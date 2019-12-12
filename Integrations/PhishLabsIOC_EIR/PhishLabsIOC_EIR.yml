@@ -35,7 +35,7 @@ configuration:
   required: false
   type: 8
 description: Get live feeds of IOC data from PhishLabs.
-display: PhishLabs IOC EIR
+display: PhishLabs IOC EIR v2
 name: PhishLabs IOC EIR
 script:
   commands:
