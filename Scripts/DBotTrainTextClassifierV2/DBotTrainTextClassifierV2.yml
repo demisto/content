@@ -120,6 +120,16 @@ args:
   required: false
   secret: false
   deprecated: true
+- default: false
+  defaultValue: 'true'
+  description: Whether to extract keyworks for model.
+  isArray: false
+  name: findKeywords
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
 comment: Train a machine learning text classifier.
 commonfields:
   id: DBotTrainTextClassifierV2
