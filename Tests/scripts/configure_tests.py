@@ -262,8 +262,8 @@ def get_integration_commands(integration_ids, integration_set):
             integration_to_command[integration_id] = relevant_commands
 
     if deprecated_commands_string:
-        deprecated_message = 'The following integration commands are deprecated and are not taken ' \
-                             'into account in the test collection:\n{}\n\n'.format(deprecated_commands_string)
+        deprecated_message = '  The following integration commands are deprecated and are not taken ' \
+                             'into account in the test collection:\n  {}\n\n'.format(deprecated_commands_string)
 
     return integration_to_command, deprecated_message
 
@@ -395,12 +395,6 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     return tests_set, catched_scripts, catched_playbooks
 
 
-def print_deprecated_messages(*args):
-    for message in args:
-        if message:
-            print_color(message, LOG_COLORS.YELLOW)
-
-
 def exclude_deprecated_scripts(script_set, script_names):
     """Removes deprecated scripts from the affected scripts list.
 
@@ -417,11 +411,11 @@ def exclude_deprecated_scripts(script_set, script_names):
         if script_name in script_names:
             script_data = list(script.values())[0]
             if script_data.get('deprecated', False):
-                deprecated_scripts_string += script_name + '\n'
+                deprecated_scripts_string += '   ' + script_name + '\n'
                 script_names.remove(script_name)
 
     if deprecated_scripts_string:
-        deprecated_message = 'The following scripts are deprecated and are not taken ' \
+        deprecated_message = '  The following scripts are deprecated and are not taken ' \
                              'into account in the test collection:\n{}\n'.format(deprecated_scripts_string)
 
     return deprecated_message
@@ -443,11 +437,11 @@ def exclude_deprecated_playbooks(playbook_set, playbook_names):
         if playbook_name in playbook_names:
             playbook_data = list(playbook.values())[0]
             if playbook_data.get('deprecated', False):
-                deprecated_playbooks_string += playbook_name + '\n'
+                deprecated_playbooks_string += '   ' + playbook_name + '\n'
                 playbook_names.remove(playbook_name)
 
     if deprecated_playbooks_string:
-        deprecated_message = 'The following playbooks are deprecated and are not taken ' \
+        deprecated_message = '  The following playbooks are deprecated and are not taken ' \
                              'into account in the test collection:\n{}\n'.format(deprecated_playbooks_string)
 
     return deprecated_message
@@ -469,11 +463,11 @@ def exclude_deprecated_integrations(integration_set, integration_ids):
         if integration_id in integration_ids:
             integration_data = list(integration.values())[0]
             if integration_data.get('deprecated', False):
-                deprecated_integrations_string += integration_id + '\n'
+                deprecated_integrations_string += '   ' + integration_id + '\n'
                 integration_ids.remove(integration_id)
 
     if deprecated_integrations_string:
-        deprecated_message = 'The following integrations are deprecated and are not taken ' \
+        deprecated_message = '  The following integrations are deprecated and are not taken ' \
                              'into account in the test collection:\n{}\n'.format(deprecated_integrations_string)
 
     return deprecated_message
