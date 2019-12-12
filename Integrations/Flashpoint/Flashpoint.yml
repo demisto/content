@@ -26,36 +26,174 @@ script:
     - name: ip
       required: true
       description: Enter ip address
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: IP.Flashpoint.href
+      description: List of reference link of the indicator.
+      type: unknown
+    - contextPath: IP.Malicious.Description
+      description: Description of malicious ip.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: Vandor of malicious ip.
+      type: string
     description: Lookup the "IP" type indicator details
   - name: domain
     arguments:
     - name: domain
       required: true
       description: Enter domain name
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: Domain.Flashpoint.href
+      description: List of reference of indicators.
+    - contextPath: Domain.Malicious.Description
+      description: Description of malicious indicator.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor of malicious indicator.
+      type: string
+    - contextPath: Domain.Name
+      description: Name of domain.
+      type: string
     description: Lookup the "Domain" type indicator details
   - name: filename
     arguments:
     - name: filename
       required: true
       description: Enter file-name
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
     description: Lookup the "Filename" type indicator details
   - name: url
     arguments:
     - name: url
       required: true
       description: Enter url
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: URL.Flashpoint.href
+      description: List of reference of url.
+    - contextPath: URL.Malicious.Description
+      description: Description of malicious url.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: Vendor of malicious url.
+      type: string
     description: Lookup the "URL" type indicator details
   - name: file
     arguments:
     - name: file
       required: true
       description: Enter file. It may sha1, md5, sha256 etc.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: File.Flashpoint.href
+      description: List of indicators reference.
+      type: unknown
+    - contextPath: File.Malicious.Description
+      description: Description of malicious file.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: Vendor of malicious file.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 type file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 type file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 type file.
+      type: string
     description: Lookup the "File" type indicator details
   - name: email
     arguments:
     - name: email
       required: true
       description: Enter valid email
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: Account.Email.Flashpoint.href
+      description: List of email references.
+    - contextPath: Account.Email.Malicious.Description
+      description: Description of Malicious email account.
+      type: string
+    - contextPath: Account.Email.Malicious.Vendor
+      description: Vendor of Malicious email.
+      type: string
+    - contextPath: Account.Email.Name
+      description: Name of indicator.
+      type: string
     description: Lookup the "Email" type indicator details
   - name: flashpoint-search-intelligence-reports
     arguments:
@@ -68,6 +206,25 @@ script:
     - name: report_id
       required: true
       description: Search report by report fpid
+    outputs:
+    - contextPath: Flashpoint.Report.notified_at
+      description: Notify date of report.
+      type: string
+    - contextPath: Flashpoint.Report.platform_url
+      description: Platform url of report.
+      type: string
+    - contextPath: Flashpoint.Report.posted_at
+      description: posted date of report.
+      type: number
+    - contextPath: Flashpoint.Report.summary
+      description: Summary of report.
+      type: string
+    - contextPath: Flashpoint.Report.title
+      description: Title of the report.
+      type: string
+    - contextPath: Flashpoint.Report.updated_at
+      description: Last updated date of report.
+      type: string
     description: Get a single report by its ID
   - name: flashpoint-get-related-reports
     arguments:
@@ -80,6 +237,17 @@ script:
     - name: event_id
       required: true
       description: The UUID or FPID that identifies a particular event.
+    outputs:
+    - contextPath: Flashpoint.event.date
+      description: Date of event triggered.
+      type: string
+    - contextPath: Flashpoint.event.event_creator_email
+      description: Event creator email.
+      type: string
+    - contextPath: Flashpoint.event.href
+      description: Display event reference.
+    - contextPath: Flashpoint.event.tag
+      description: Display event tag.
     description: For getting single event
   - name: flashpoint-get-events
     arguments:
@@ -99,30 +267,97 @@ script:
     - name: indicator
       required: true
       description: Specify indicator value like any domain, ip, email, url etc.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
     description: Lookup any type of indicator
   - name: flashpoint-get-forum-details
     arguments:
     - name: forum_id
       required: true
       description: Specify forum id
+    outputs:
+    - contextPath: Flashpoint.forum.description
+      description: Description of forum.
+      type: string
+    - contextPath: Flashpoint.forum.hostname
+      description: Display hostname of forum.
+      type: string
+    - contextPath: Flashpoint.forum.name
+      description: Display name of forum.
+      type: string
+    - contextPath: Flashpoint.forum.stats
+      description: Display stats like posts, rooms, threads and users details.
+    - contextPath: Flashpoint.forum.tags
+      description: Display list of tags which includes id, name, parent_tag and uuid.
     description: Get forum details
   - name: flashpoint-get-forum-room-details
     arguments:
     - name: room_id
       required: true
       description: Specify room id
+    outputs:
+    - contextPath: flashpoint.forum.room.forum
+      description: Display all forum details like forum name, hostname, platform url,
+        stats and tags etc.
+    - contextPath: flashpoint.forum.room.title
+      description: Title of the room
+      type: string
+    - contextPath: flashpoint.forum.room.url
+      description: url of the room
+      type: string
     description: Get room details
   - name: flashpoint-get-forum-user-details
     arguments:
     - name: user_id
       required: true
       description: Specify user id
+    outputs:
+    - contextPath: flashpoint.forum.user.forum
+      description: Display all forum details like id, hostname, description, stats,
+        tags etc.
+    - contextPath: flashpoint.forum.user.name
+      description: Name of author.
+      type: string
+    - contextPath: flashpoint.forum.user.platform_url
+      description: platform url of user.
+      type: string
+    - contextPath: flashpoint.forum.user.url
+      description: URL of user.
+      type: string
     description: Get user details
   - name: flashpoint-get-forum-post-details
     arguments:
     - name: post_id
       required: true
       description: Specify post id
+    outputs:
+    - contextPath: flashpoint.forum.post.forum
+      description: Display all forum details of post like id, hostname, stats, description,
+        tags etc.
+    - contextPath: flashpoint.forum.post.room
+      description: Display room details of post like room title, id, url, platform
+        url etc.
+    - contextPath: flashpoint.forum.post.user
+      description: Display user details of post like user id, name, url, platform
+        url etc.
+    - contextPath: flashpoint.forum.post.platform_url
+      description: platform url of post.
+      type: string
+    - contextPath: flashpoint.forum.post.published_at
+      description: published date of post.
+    - contextPath: flashpoint.forum.post.url
+      description: Display url of post.
     description: Get post details
   - name: flashpoint-search-forum-sites
     arguments:

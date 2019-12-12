@@ -37,27 +37,23 @@ class Client:
 
         status_code = resp.status_code
 
-        try:
-            resp_json = resp.json()
-            if status_code != 200:
-                if status_code == 400:
-                    demisto.log(
-                        "Invalid argument value while trying to get information from Flashpoint: " + resp_json.get(
-                            'detail', 'N/A'))
-                    sys.exit(1)
-                elif status_code == 401:
-                    demisto.log(
-                        "Encountered error while trying to get information from Flashpoint: Invalid API Key is "
-                        "configured")
-                    sys.exit(1)
-                else:
-                    resp.raise_for_status()
-        except Exception:
-            if status_code in (521, 403):
-                demisto.log("Test connectivity failed. Please provide valid input parameters.")
-                sys.exit(1)
-            demisto.log("Failed to parse http response to JSON format. Original response body: \n{}".format(resp.text))
-            sys.exit(1)
+        resp_json = resp.json()
+
+        if status_code != 200:
+            if status_code == 400:
+                raise ValueError(
+                    "Invalid argument value while trying to get information from Flashpoint: " + resp_json.get(
+                        'detail', 'N/A'))
+            elif status_code == 401:
+                raise ValueError(
+                    "Encountered error while trying to get information from Flashpoint: Invalid API Key is "
+                    "configured")
+            elif status_code == 404:
+                raise ValueError("No record found for given argument(s): Not Found")
+            elif status_code in (521, 403):
+                raise ValueError("Test connectivity failed. Please provide valid input parameters.")
+            else:
+                resp.raise_for_status()
 
         return resp_json
 
@@ -70,24 +66,6 @@ def get_apikey():
     api_key = demisto.params()["api_key"]
 
     return api_key
-
-
-def print_result(result):
-    """
-    Print result in the war-room
-
-    :param result: command result to be printed
-    :return: None
-    """
-    response, human_readable, entry_context = result
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': entry_context
-    })
 
 
 def get_url_suffix(query):
@@ -171,7 +149,7 @@ def ip_lookup(client, ip):
     :param ip: ip-address
     :return: command output
     """
-    query = r'+type:("ip-src","ip-dst") +value.\*:"' + ip + '"'
+    query = r'+type:("ip-src","ip-dst") +value.\*:"' + urllib.parse.quote(ip.encode('utf-8')) + '"'
     resp = client.http_request("GET", url_suffix=get_url_suffix(query))
 
     if isinstance(resp, list):
@@ -209,12 +187,13 @@ def ip_lookup(client, ip):
             'Description': 'Found in malicious indicators dataset'
         }
 
-        return resp, hr, ec
+        return hr, ec, resp
 
     else:
 
         torrent_search_url_suffix = '/all/search?query=+basetypes:(+torrent) +is_verified:true ' \
-                                    '+ip_address:("' + ip + '")&limit=10&_source_includes=ip_address'
+                                    '+ip_address:("' + urllib.parse.quote(ip.encode('utf-8')) + \
+                                    '")&limit=10&_source_includes=ip_address'
         torrent_resp = client.http_request("GET", url_suffix=torrent_search_url_suffix)
         torrent_result = torrent_resp.get('hits').get('hits', [])
 
@@ -235,7 +214,7 @@ def ip_lookup(client, ip):
             }
         else:
 
-            forum_search_url_suffix = '/forums/visits?ip_address=' + ip
+            forum_search_url_suffix = '/forums/visits?ip_address=' + urllib.parse.quote(ip.encode('utf-8'))
             forum_resp = client.http_request("GET", url_suffix=forum_search_url_suffix)
             forum_result = forum_resp.get('data', [])
 
@@ -267,7 +246,7 @@ def ip_lookup(client, ip):
                     }
                 }
 
-        return resp, hr, ec
+        return hr, ec, resp
 
 
 def domain_lookup(client, domain):
@@ -316,7 +295,7 @@ def domain_lookup(client, domain):
             'Description': 'Found in malicious indicators dataset'
         }
 
-        return resp, hr, ec
+        return hr, ec, resp
 
     else:
         hr = '### Flashpoint Domain reputation for ' + domain + '\n'
@@ -330,7 +309,7 @@ def domain_lookup(client, domain):
             }
         }
 
-        return resp, hr, ec
+        return hr, ec, resp
 
 
 def get_events_from_ioc_resp(indicators):
@@ -401,7 +380,7 @@ def filename_lookup(client, filename):
             'Score': 3
         }}
 
-        return resp, hr, ec
+        return hr, ec, resp
 
     else:
         hr = '### Flashpoint Filename reputation for ' + filename + '\n'
@@ -415,7 +394,7 @@ def filename_lookup(client, filename):
             }
         }
 
-        return resp, hr, ec
+        return hr, ec, resp
 
 
 def url_lookup(client, url):
@@ -466,7 +445,7 @@ def url_lookup(client, url):
             'Description': 'Found in malicious indicators dataset'
         }
 
-        return resp, hr, ec
+        return hr, ec, resp
 
     else:
         hr = '### Flashpoint URL reputation for ' + url + '\n'
@@ -480,7 +459,7 @@ def url_lookup(client, url):
             }
         }
 
-        return resp, hr, ec
+        return hr, ec, resp
 
 
 def file_lookup(client, file):
@@ -532,7 +511,7 @@ def file_lookup(client, file):
             'Description': 'Found in malicious indicators dataset'
         }
 
-        return resp, hr, ec
+        return hr, ec, resp
 
     else:
         hr = '### Flashpoint File reputation for ' + file + '\n'
@@ -546,7 +525,7 @@ def file_lookup(client, file):
             }
         }
 
-        return resp, hr, ec
+        return hr, ec, resp
 
 
 def email_lookup(client, email):
@@ -597,7 +576,7 @@ def email_lookup(client, email):
             'Description': 'Found in malicious indicators dataset'
         }
 
-        return resp, hr, ec
+        return hr, ec, resp
 
     else:
         hr = '### Flashpoint Email reputation for ' + email + '\n'
@@ -611,7 +590,7 @@ def email_lookup(client, email):
             }
         }
 
-        return resp, hr, ec
+        return hr, ec, resp
 
 
 def common_lookup(client, indicator_value):
@@ -663,14 +642,14 @@ def common_lookup(client, indicator_value):
             'Score': 3
         }}
 
-        return resp, hr, ec
+        return hr, ec, resp
 
     else:
         hr = '### Flashpoint reputation for ' + indicator_value + '\n'
         hr += 'Reputation: Unknown\n\n'
         ec = {}
 
-        return resp, hr, ec
+        return hr, ec, resp
 
 
 def get_reports(client, report_search):
@@ -706,7 +685,7 @@ def get_reports(client, report_search):
         hr += 'No reports found for the search.'
         ec = {}
 
-    return resp, hr, ec
+    return hr, ec, resp
 
 
 def get_report_by_id(client, report_id):
@@ -717,13 +696,17 @@ def get_report_by_id(client, report_id):
     :param report_id: report's fpid
     :return: command output
     """
-    url_suffix = '/reports/' + report_id
+    url_suffix = '/reports/' + urllib.parse.quote(report_id.encode('utf-8'))
     resp = client.http_request("GET", url_suffix=url_suffix)
     report = resp
 
     hr = '### Flashpoint Intelligence Report details\n'
 
     if report:
+
+        if report.get('tags') is None:
+            raise ValueError("No record found for given argument(s): Not Found")
+
         timestamp = None
         try:
             time_str = report.get('posted_at', '')[:-10] + 'UTC'
@@ -768,7 +751,7 @@ def get_report_by_id(client, report_id):
         hr += 'No report found for the given ID.'
         ec = {}
 
-    return resp, hr, ec
+    return hr, ec, resp
 
 
 def get_related_reports(client, report_id):
@@ -779,7 +762,7 @@ def get_related_reports(client, report_id):
     :param client:
     :return: command output
     """
-    url_suffix = '/reports/' + report_id + '/related?limit=5'
+    url_suffix = '/reports/' + urllib.parse.quote(report_id.encode('utf-8')) + '/related?limit=5'
     resp = client.http_request("GET", url_suffix=url_suffix)
     reports = resp.get("data", [])
 
@@ -801,7 +784,7 @@ def get_related_reports(client, report_id):
         hr += 'No related reports found for the search.'
         ec = {}
 
-    return resp, hr, ec
+    return hr, ec, resp
 
 
 def get_event_by_id(client, event_id):
@@ -812,7 +795,7 @@ def get_event_by_id(client, event_id):
     :param event_id: event's fpid
     :return: command output
     """
-    url_suffix = '/indicators/event/' + event_id
+    url_suffix = '/indicators/event/' + urllib.parse.quote(event_id.encode('utf-8'))
     resp = client.http_request("GET", url_suffix=url_suffix)
 
     hr = '### Flashpoint Event details\n'
@@ -820,7 +803,7 @@ def get_event_by_id(client, event_id):
 
     if len(resp) <= 0:
         hr += 'No event found for the given ID.'
-        return resp, hr, ec
+        return hr, ec, resp
 
     event = resp[0].get('Event', '')
 
@@ -839,7 +822,7 @@ def get_event_by_id(client, event_id):
             }
         }
 
-    return resp, hr, ec
+    return hr, ec, resp
 
 
 def get_events(client, limit, report_fpid, attack_ids, time_period):
@@ -895,7 +878,7 @@ def get_events(client, limit, report_fpid, attack_ids, time_period):
         hr += 'No event found for the argument.'
         ec = {}
 
-    return resp, hr, ec
+    return hr, ec, resp
 
 
 def get_forum_details_by_id(client, forum_id):
@@ -906,7 +889,7 @@ def get_forum_details_by_id(client, forum_id):
     :param forum_id: forum's fpid
     :return: command output
     """
-    url_suffix = '/forums/sites/' + forum_id
+    url_suffix = '/forums/sites/' + urllib.parse.quote(forum_id.encode('utf-8'))
     resp = client.http_request("GET", url_suffix=url_suffix)
 
     hr = '### Flashpoint Forum details\n'
@@ -930,7 +913,7 @@ def get_forum_details_by_id(client, forum_id):
     else:
         hr += 'No forum detail found for given forum id.'
 
-    return resp, hr, ec
+    return hr, ec, resp
 
 
 def get_room_details_by_id(client, room_id):
@@ -941,7 +924,7 @@ def get_room_details_by_id(client, room_id):
     :param room_id: room's fpid
     :return: command output
     """
-    url_suffix = '/forums/rooms/' + room_id + '?embed=forum'
+    url_suffix = '/forums/rooms/' + urllib.parse.quote(room_id.encode('utf-8')) + '?embed=forum'
     resp = client.http_request("GET", url_suffix=url_suffix)
 
     hr = '### Flashpoint Room details\n'
@@ -974,7 +957,7 @@ def get_room_details_by_id(client, room_id):
     else:
         hr += 'No room details found for given room id'
 
-    return resp, hr, ec
+    return hr, ec, resp
 
 
 def get_user_details_by_id(client, user_id):
@@ -985,7 +968,7 @@ def get_user_details_by_id(client, user_id):
     :param user_id: user's fpid
     :return: command output
     """
-    url_suffix = '/forums/users/' + user_id + '?embed=forum'
+    url_suffix = '/forums/users/' + urllib.parse.quote(user_id.encode('utf-8')) + '?embed=forum'
     resp = client.http_request("GET", url_suffix=url_suffix)
 
     hr = '### Flashpoint User details\n'
@@ -1019,7 +1002,7 @@ def get_user_details_by_id(client, user_id):
     else:
         hr += 'No user details found for given user id'
 
-    return resp, hr, ec
+    return hr, ec, resp
 
 
 def get_post_details_by_id(client, post_id):
@@ -1030,7 +1013,8 @@ def get_post_details_by_id(client, post_id):
     :param post_id: fpid of post
     :return: command output
     """
-    url_suffix = '/forums/posts/' + post_id + '?body_html=stripped&embed=author,room,forum,thread'
+    url_suffix = '/forums/posts/' + urllib.parse.quote(
+        post_id.encode('utf-8')) + '?body_html=stripped&embed=author,room,forum,thread'
     resp = client.http_request("GET", url_suffix=url_suffix)
 
     hr = '### Flashpoint Post details\n'
@@ -1076,7 +1060,7 @@ def get_post_details_by_id(client, post_id):
     else:
         hr += 'No post details found for given post id'
 
-    return resp, hr, ec
+    return hr, ec, resp
 
 
 def get_forum_sites(client, site_search):
@@ -1112,7 +1096,7 @@ def get_forum_sites(client, site_search):
     else:
         hr += 'No forum sites found for the search'
 
-    return resp, hr, ec
+    return hr, ec, resp
 
 
 def get_forum_posts(client, post_search):
@@ -1157,7 +1141,7 @@ def get_forum_posts(client, post_search):
     else:
         hr += 'No forum posts found for the search'
 
-    return resp, hr, ec
+    return hr, ec, resp
 
 
 def main():
@@ -1172,91 +1156,86 @@ def main():
 
         if demisto.command() == 'test-module':
             _ = ip_lookup(client, '8.8.8.8')
-
             demisto.results('ok')
-            sys.exit(0)
 
         elif demisto.command() == 'ip':
             ip = demisto.args()['ip']
-            print_result(ip_lookup(client, ip))
+            return_outputs(*ip_lookup(client, ip))
 
         elif demisto.command() == 'domain':
             domain = demisto.args()['domain']
-            print_result(domain_lookup(client, domain))
+            return_outputs(*domain_lookup(client, domain))
 
         elif demisto.command() == 'filename':
             filename = demisto.args()['filename']
-            print_result(filename_lookup(client, filename))
+            return_outputs(*filename_lookup(client, filename))
 
         elif demisto.command() == 'url':
             url = demisto.args()['url']
-            print_result(url_lookup(client, url))
+            return_outputs(*url_lookup(client, url))
 
         elif demisto.command() == 'file':
             file = demisto.args()['file']
-            print_result(file_lookup(client, file))
-
+            return_outputs(*file_lookup(client, file))
         elif demisto.command() == 'email':
             email = demisto.args()['email']
-            print_result(email_lookup(client, email))
-
+            return_outputs(*email_lookup(client, email))
         elif demisto.command() == 'flashpoint-common-lookup':
             indicator_value = demisto.args()['indicator']
-            print_result(common_lookup(client, indicator_value))
-
+            return_outputs(*common_lookup(client, indicator_value))
         elif demisto.command() == 'flashpoint-search-intelligence-reports':
             report_search = demisto.args()['report_search']
-            print_result(get_reports(client, report_search))
-
+            return_outputs(*get_reports(client, report_search))
         elif demisto.command() == 'flashpoint-get-single-intelligence-report':
             report_id = demisto.args()['report_id']
-            print_result(get_report_by_id(client, report_id))
-
+            return_outputs(*get_report_by_id(client, report_id))
         elif demisto.command() == 'flashpoint-get-related-reports':
             report_id = demisto.args()['report_id']
-            print_result(get_related_reports(client, report_id))
-
+            return_outputs(*get_related_reports(client, report_id))
         elif demisto.command() == 'flashpoint-get-single-event':
             event_id = demisto.args()['event_id']
-            print_result(get_event_by_id(client, event_id))
-
+            return_outputs(*get_event_by_id(client, event_id))
         elif demisto.command() == 'flashpoint-get-events':
-
             args = demisto.args()
-
             limit = args.get('limit', 10)
             report_fpid = args.get('report_fpid')
             attack_ids = args.get('attack_ids')
             time_period = args.get('time_period')
 
-            print_result(get_events(client, limit, report_fpid, attack_ids, time_period))
+            return_outputs(*get_events(client, limit, report_fpid, attack_ids, time_period))
 
         elif demisto.command() == 'flashpoint-get-forum-details':
             forum_id = demisto.args()['forum_id']
-            print_result(get_forum_details_by_id(client, forum_id))
+            return_outputs(*get_forum_details_by_id(client, forum_id))
 
         elif demisto.command() == 'flashpoint-get-forum-room-details':
             room_id = demisto.args()['room_id']
-            print_result(get_room_details_by_id(client, room_id))
+            return_outputs(*get_room_details_by_id(client, room_id))
 
         elif demisto.command() == 'flashpoint-get-forum-user-details':
             user_id = demisto.args()['user_id']
-            print_result(get_user_details_by_id(client, user_id))
+            return_outputs(*get_user_details_by_id(client, user_id))
 
         elif demisto.command() == 'flashpoint-get-forum-post-details':
             post_id = demisto.args()['post_id']
-            print_result(get_post_details_by_id(client, post_id))
+            return_outputs(*get_post_details_by_id(client, post_id))
 
         elif demisto.command() == 'flashpoint-search-forum-sites':
             site_search = demisto.args()['site_search']
-            print_result(get_forum_sites(client, site_search))
+            return_outputs(*get_forum_sites(client, site_search))
 
         elif demisto.command() == 'flashpoint-search-forum-posts':
             post_search = demisto.args()['post_search']
-            print_result(get_forum_posts(client, post_search))
+            return_outputs(*get_forum_posts(client, post_search))
 
+    except ValueError as v_err:
+        return_error(str(v_err))
+    except requests.exceptions.ConnectionError as c:
+        """ Caused mostly when URL is altered."""
+        demisto.debug(str(c))
+        return_error(f'Failed to execute {demisto.command()} command.')
     except Exception as e:
-        return_error(str(e))
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

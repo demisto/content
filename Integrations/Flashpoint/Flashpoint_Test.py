@@ -1,7 +1,8 @@
-import unittest
 import json
+import unittest
+from unittest.mock import patch
+
 import demistomock as demisto
-from mock import patch
 from Flashpoint import Client
 
 API_KEY = demisto.getParam('api_key')
@@ -36,7 +37,7 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        resp, hr, ec = domain_lookup(self.client, TEST_SCAN_DOMAIN)
+        hr, ec, resp = domain_lookup(self.client, TEST_SCAN_DOMAIN)
         result = self.get_result(resp)
 
         with open("./TestData/domain_ec.json", encoding='utf-8') as f:
@@ -56,7 +57,7 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        resp, hr, ec = ip_lookup(self.client, TEST_SCAN_IP)
+        hr, ec, resp = ip_lookup(self.client, TEST_SCAN_IP)
         result = self.get_result(resp)
 
         with open("./TestData/ip_ec.json", encoding='utf-8') as f:
@@ -76,7 +77,7 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        resp, hr, ec = filename_lookup(self.client, TEST_SCAN_FILENAME)
+        hr, ec, resp = filename_lookup(self.client, TEST_SCAN_FILENAME)
         result = self.get_result(resp)
 
         with open("./TestData/filename_ec.json", encoding='utf-8') as f:
@@ -96,7 +97,7 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        resp, hr, ec = url_lookup(self.client, TEST_SCAN_URL)
+        hr, ec, resp = url_lookup(self.client, TEST_SCAN_URL)
         result = self.get_result(resp)
 
         with open("./TestData/url_ec.json", encoding='utf-8') as f:
@@ -116,7 +117,7 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        resp, hr, ec = file_lookup(self.client, TEST_SCAN_FILE)
+        hr, ec, resp = file_lookup(self.client, TEST_SCAN_FILE)
         result = self.get_result(resp)
 
         with open("./TestData/file_ec.json", encoding='utf-8') as f:
@@ -136,7 +137,7 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        resp, hr, ec = email_lookup(self.client, TEST_SCAN_EMAIL)
+        hr, ec, resp = email_lookup(self.client, TEST_SCAN_EMAIL)
         result = self.get_result(resp)
 
         with open("./TestData/email_ec.json", encoding='utf-8') as f:
@@ -156,7 +157,7 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        resp, hr, ec = get_reports(self.client, TEST_SCAN_REPORT_KEYWORD)
+        hr, ec, resp = get_reports(self.client, TEST_SCAN_REPORT_KEYWORD)
 
         assert resp['data'][0]['title'] == TEST_SCAN_REPORT_KEYWORD
         assert expected == resp
@@ -169,7 +170,7 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        resp, hr, ec = get_report_by_id(self.client, TEST_SCAN_REPORT_ID)
+        hr, ec, resp = get_report_by_id(self.client, TEST_SCAN_REPORT_ID)
 
         with open("./TestData/report_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -186,7 +187,7 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        resp, hr, ec = get_event_by_id(self.client, TEST_SCAN_EVENT_ID)
+        hr, ec, resp = get_event_by_id(self.client, TEST_SCAN_EVENT_ID)
 
         with open("./TestData/event_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -203,7 +204,7 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        resp, hr, ec = get_forum_details_by_id(self.client, TEST_SCAN_FORUM_ID)
+        hr, ec, resp = get_forum_details_by_id(self.client, TEST_SCAN_FORUM_ID)
 
         with open("./TestData/forum_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -220,7 +221,7 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        resp, hr, ec = get_room_details_by_id(self.client, TEST_SCAN_FORUM_ROOM_ID)
+        hr, ec, resp = get_room_details_by_id(self.client, TEST_SCAN_FORUM_ROOM_ID)
 
         with open("./TestData/forum_room_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -237,7 +238,7 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        resp, hr, ec = get_user_details_by_id(self.client, TEST_SCAN_FORUM_USER_ID)
+        hr, ec, resp = get_user_details_by_id(self.client, TEST_SCAN_FORUM_USER_ID)
 
         with open("./TestData/forum_user_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -254,7 +255,7 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        resp, hr, ec = get_post_details_by_id(self.client, TEST_SCAN_FORUM_POST_ID)
+        hr, ec, resp = get_post_details_by_id(self.client, TEST_SCAN_FORUM_POST_ID)
 
         with open("./TestData/forum_post_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -276,7 +277,7 @@ class MyTestCase(unittest.TestCase):
         attack_id = None
         time_period = None
 
-        resp, hr, ec = get_events(self.client, limit, report_fpid, attack_id, time_period)
+        hr, ec, resp = get_events(self.client, limit, report_fpid, attack_id, time_period)
 
         assert expected == resp
 
@@ -289,7 +290,7 @@ class MyTestCase(unittest.TestCase):
 
         mocker.return_value = expected
 
-        resp, hr, ec = get_forum_sites(self.client, TEST_SITE_SEARCH_KEYWORD)
+        hr, ec, resp = get_forum_sites(self.client, TEST_SITE_SEARCH_KEYWORD)
 
         assert expected == resp
 
@@ -302,7 +303,7 @@ class MyTestCase(unittest.TestCase):
 
         mocker.return_value = expected
 
-        resp, hr, ec = get_forum_posts(self.client, TEST_POST_SEARCH_KEYWORD)
+        hr, ec, resp = get_forum_posts(self.client, TEST_POST_SEARCH_KEYWORD)
 
         assert expected == resp
 
