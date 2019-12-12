@@ -67,7 +67,7 @@ def parse_events(raw_events: Union[Dict, List[Dict]]) -> Tuple[List[Dict], List[
     :param raw_events: raw events data
     """
     # Fields to filter, dropping to not bloat the incident context.
-    fields_to_drop = ['@odata.etag', 'body', 'bodyPreview', 'seriesMasterId', 'showAs']
+    fields_to_drop = ['@odata.etag', 'color']
     if not isinstance(raw_events, list):
         raw_events = [raw_events]
 
@@ -120,7 +120,7 @@ def parse_calendar(raw_calendars: Union[Dict, List[Dict]]) -> Tuple[List[Dict], 
 
 
 def process_event_params(body: str = '', start: str = '', end: str = '', time_zone: str = '',
-                            attendees: str = '', location: str = '', **other_params) -> Dict:
+                         attendees: str = '', location: str = '', **other_params) -> Dict:
     # some parameters don't need any processing
     event_params: Dict[str, Union[str, Dict, List[Dict]]] = other_params
 
@@ -184,13 +184,14 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, tenant: str, auth_and_token_url: str, auth_id: str, token_retrieval_url: str,
-                 enc_key: str, verify: bool, proxy: bool):
+                 enc_key: str, verify: bool, proxy: bool, default_user: str):
         super().__init__(base_url, verify, proxy)
         self.tenant = tenant
         self.auth_and_token_url = auth_and_token_url
         self.auth_id = auth_id
         self.token_retrieval_url = token_retrieval_url
         self.enc_key = enc_key
+        self.default_user = default_user
 
     def get_access_token(self):
         """
@@ -322,7 +323,12 @@ class Client(BaseClient):
         :argument user: the user id | userPrincipalName
         :argument calendar_id: calendar id  | name
         """
-        calendar_raw = self.http_request('GET', f'users/{user}/calendar' + f's/{calendar_id}' if calendar_id else '')
+        if not user and not self.default_user:
+            return_error('No user was provided. Please make sure to enter the use either in the instance setting,'
+                         ' or in the command parameter.')
+        calendar_raw = self.http_request(
+            method='GET',
+            url_suffix=f'users/{user}/calendar' + f's/{calendar_id}' if calendar_id else '')
 
         return calendar_raw
 
@@ -341,12 +347,20 @@ class Client(BaseClient):
         """
         params = {'$orderby': order_by} if order_by else {}
         if next_link:  # pagination
-            calendars = self.http_request(url_suffix=f'users/{user}/calendars', next_link=next_link)
+            calendars = self.http_request(
+                url_suffix=f'users/{user}/calendars',
+                next_link=next_link
+            )
         elif filter_by:
-            calendars = self.http_request(url_suffix=f'users/{user}/calendars?$filter={filter_by}&$top={top}',
-                                          params=params)
+            calendars = self.http_request(
+                url_suffix=f'users/{user}/calendars?$filter={filter_by}&$top={top}',
+                params=params
+            )
         else:
-            calendars = self.http_request(url_suffix=f'users/{user}/calendars?$top={top}', params=params)
+            calendars = self.http_request(
+                url_suffix=f'users/{user}/calendars?$top={top}',
+                params=params
+            )
 
         return calendars
 
@@ -382,7 +396,7 @@ class Client(BaseClient):
         :argument user: the user id | userPrincipalName
         :argument event_id: the event id
         """
-        event = self.http_request('GET', f'users/{user}/calendar/events/{event_id}')
+        event = self.http_request('GET', url_suffix=f'users/{user}/calendar/events/{event_id}')
 
         return event
 
@@ -406,10 +420,17 @@ class Client(BaseClient):
         :keyword originalStartTimeZone: The start time zone that was set when the event was created.
         """
         if calendar_id:
-            event = self.http_request('POST', f'/users/{user}/calendars/{calendar_id}/events',
-                                      params=json.dumps(kwargs))
+            event = self.http_request(
+                method='POST',
+                url_suffix=f'/users/{user}/calendars/{calendar_id}/events',
+                body=json.dumps(kwargs)
+            )
         else:
-            event = self.http_request('POST', f'users/{user}/calendar/events', body=json.dumps(kwargs))
+            event = self.http_request(
+                method='POST',
+                url_suffix=f'users/{user}/calendar/events',
+                body=json.dumps(kwargs)
+            )
         return event
 
     def update_event(self, user: str, event_id: str, **kwargs) -> Dict:
@@ -432,7 +453,11 @@ class Client(BaseClient):
          For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'
         :keyword originalStartTimeZone: The start time zone that was set when the event was created.
         """
-        event = self.http_request('PATCH', f'users/{user}/calendar/events/{event_id}', body=json.dumps(kwargs))
+        event = self.http_request(
+            method='PATCH',
+            url_suffix=f'users/{user}/calendar/events/{event_id}',
+            body=json.dumps(kwargs)
+        )
         return event
 
     def delete_event(self, user: str, event_id: str):
@@ -445,7 +470,10 @@ class Client(BaseClient):
         """
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
-        self.http_request('DELETE', f'users/{user}/calendar/events/{event_id}')
+        self.http_request(
+            method='DELETE',
+            url_suffix=f'users/{user}/calendar/events/{event_id}'
+        )
 
 
 def list_events_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -538,9 +566,9 @@ def update_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         client: Client object with request
         args: Usually demisto.args()
     """
-    event_id = str(args.get('event_id'))
-    params: Dict = process_event_params(snakecase_to_camelcase(args, fields_to_drop=['user', 'calendar_id']))  # type: ignore
-
+    event_id = args.get('event_id', '')
+    args = process_event_params(**args)
+    params: Dict = snakecase_to_camelcase(args, fields_to_drop=['user', 'calendar_id', 'event_id'])  # type: ignore
 
     # update the event
     event = client.update_event(user=args.get('user', ''), event_id=args.get('event_id', ''), **params)
@@ -643,20 +671,21 @@ def module_test_function_command(client: Client, args: Dict) -> Tuple[str, Dict,
 
 
 def main():
-    base_url = demisto.params().get('url').rstrip('/') + '/v1.0/'
+    url = demisto.params().get('url').rstrip('/') + '/v1.0/'
     tenant = demisto.params().get('tenant_id')
     auth_and_token_url = demisto.params().get('auth_id').split('@')
     auth_id = auth_and_token_url[0]
     enc_key = demisto.params().get('enc_key')
     verify = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
+    default_user = demisto.params().get('default_user')
 
     if len(auth_and_token_url) != 2:
         # token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
-        token_retrieval_url = \
+        token_retrieval = \
             'https://us-central1-oproxy-dev.cloudfunctions.net/calendar_graph_ProvideAccessTokenFunction'  # todo: prod
     else:
-        token_retrieval_url = auth_and_token_url[1]
+        token_retrieval = auth_and_token_url[1]
 
     commands = {
         'test-module': module_test_function_command,
@@ -672,7 +701,9 @@ def main():
     LOG(f'Command being called is {command}')
 
     try:
-        client = Client(base_url, tenant, auth_and_token_url, auth_id, token_retrieval_url, enc_key, verify, proxy)
+        client = Client(url, tenant, auth_and_token_url, auth_id, token_retrieval, enc_key, verify, proxy, default_user)
+        if 'user' not in demisto.args():
+            demisto.args()['user'] = client.default_user
         # Run the command
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
         # create a war room entry
