@@ -21,6 +21,10 @@ configuration:
     name: enc_key
     required: true
     type: 4
+  - display: Default user
+    name: default_user
+    required: false
+    type: 0
   - display: Trust any certificate (not secure)
     name: insecure
     required: false
@@ -44,7 +48,7 @@ script:
         default: false
         description: User ID or userPrincipalName.
         isArray: false
-        required: true
+        required: false
         secret: false
       - name: order_by
         default: false
@@ -99,7 +103,7 @@ script:
         default: false
         description: User ID or userPrincipalName.
         isArray: false
-        required: true
+        required: false
         secret: false
       - name: calendar_id
         default: false
@@ -140,7 +144,7 @@ script:
         default: false
         description: User ID or userPrincipalName.
         isArray: false
-        required: true
+        required: false
         secret: false
       - name: calendar_id
         default: false
@@ -216,7 +220,7 @@ script:
         default: false
         description: User ID or userPrincipalName.
         isArray: false
-        required: true
+        required: false
         secret: false
       - name: event_id
         default: false
@@ -319,7 +323,7 @@ script:
         default: false
         description: User ID or userPrincipalName.
         isArray: false
-        required: true
+        required: false
         secret: false
       - name: calendar_id
         default: false
@@ -486,7 +490,7 @@ script:
         default: false
         description: User ID or userPrincipalName.
         isArray: false
-        required: true
+        required: false
         secret: false
       - name: event_id
         default: false
@@ -653,7 +657,7 @@ script:
         default: false
         description: User ID or userPrincipalName.
         isArray: false
-        required: true
+        required: false
         secret: false
       - name: event_id
         default: false

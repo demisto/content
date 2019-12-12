@@ -82,7 +82,7 @@ tasks:
       order_by: {}
       top: {}
       user:
-        simple: avishai@demistodev.onmicrosoft.com
+        simple: oren@demistodev.onmicrosoft.com
     separatecontext: false
     view: |-
       {
@@ -111,24 +111,31 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      attendees: {}
+      attendees:
+        simple: oren@demistodev.onmicrosoft.com
       body:
-        simple: test - delete
+        simple: This event was created by MSGraph integration
       calendar_id:
         complex:
           root: MSGraphCalendar
           accessor: Calendar.Name
           transformers:
           - operator: FirstArrayElement
-      end: {}
-      location: {}
+      end:
+        simple: 2022-12-11T17:30:00
+      location:
+        simple: Tel Aviv
       original_end_time_zone: {}
       original_start: {}
       original_start_time_zone: {}
+      start:
+        simple: 2022-12-11T17:00:00
       subject:
         simple: test - delete
+      time_zone:
+        simple: Asia/Jerusalem
       user:
-        simple: avishai@demistodev.onmicrosoft.com
+        simple: oren@demistodev.onmicrosoft.com
     separatecontext: false
     view: |-
       {
@@ -160,7 +167,7 @@ tasks:
       event_id:
         simple: ${MSGraphCalendar.Event.ID}
       user:
-        simple: avishai@demistodev.onmicrosoft.com
+        simple: oren@demistodev.onmicrosoft.com
     separatecontext: false
     view: |-
       {
@@ -198,10 +205,12 @@ tasks:
       original_end_time_zone: {}
       original_start: {}
       original_start_time_zone: {}
+      start: {}
       subject:
         simple: updated
+      time_zone: {}
       user:
-        simple: avishai@demistodev.onmicrosoft.com
+        simple: oren@demistodev.onmicrosoft.com
     separatecontext: false
     view: |-
       {
@@ -230,13 +239,14 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
+      calendar_id: {}
       filter_by:
-        simple: startswith(subject,'updated')
+        simple: startswith(subject,'test')
       next_link: {}
       order_by: {}
       top: {}
       user:
-        simple: avishai@demistodev.onmicrosoft.com
+        simple: oren@demistodev.onmicrosoft.com
     separatecontext: false
     view: |-
       {
@@ -268,7 +278,7 @@ tasks:
       event_id:
         simple: ${MSGraphCalendar.ID}
       user:
-        simple: avishai@demistodev.onmicrosoft.com
+        simple: oren@demistodev.onmicrosoft.com
     separatecontext: false
     view: |-
       {
