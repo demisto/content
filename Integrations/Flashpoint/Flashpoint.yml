@@ -371,7 +371,7 @@ script:
       required: true
       description: Search by post keyword or text.
     description: Search forum posts using a keyword
-  dockerimage: demisto/python3:3.7.5.4328
+  dockerimage: demisto/python3:3.7.5.4583
   runonce: false
   subtype: python3
 
