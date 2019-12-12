@@ -1823,7 +1823,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: gmail get role
+    description: Get details of a specific role.
     execution: false
     name: gmail-get-role
     outputs:
