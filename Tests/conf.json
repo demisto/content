@@ -1,2149 +1,2012 @@
-{
-    "testTimeout": 160,
-    "testInterval": 20,
-    "tests": [
-        {
-            "integrations": "Digital Shadows",
-            "playbookID": "Digital Shadows - Test"
-        },
-        {
-            "integrations": "Azure Compute v2",
-            "playbookID": "Azure Compute - Test",
-            "instance_names": "ms_azure_compute_dev"
-        },
-        {
-            "integrations": "Azure Compute v2",
-            "playbookID": "Azure Compute - Test",
-            "instance_names": "ms_azure_compute_prod"
-        },
-        {
-            "integrations": "Symantec Data Loss Prevention",
-            "playbookID": "Symantec Data Loss Prevention - Test",
-            "fromversion": "4.5.0"
-        },
-        {
-            "integrations": "Azure Security Center v2",
-            "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_prod"
-        },
-        {
-            "integrations": "Azure Security Center v2",
-            "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_prod"
-        },
-        {
-            "integrations": "JsonWhoIs",
-            "playbookID": "JsonWhoIs-Test"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_dev"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_prod"
-        },
-        {
-            "integrations": "nmap",
-            "playbookID": "Nmap - Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "AutoFocus V2",
-            "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
-            "fromversion": "4.5.0",
-            "timeout": 500
-        },
-        {
-            "integrations": "HelloWorld",
-            "playbookID": "TestHelloWorld"
-        },
-        {
-            "integrations": "ThreatQ v2",
-            "playbookID": "ThreatQ - Test"
-        },
-        {
-            "integrations": "AttackIQFireDrill",
-            "playbookID": "AttackIQ - Test"
-        },
-        {
-            "integrations": "PhishLabs IOC EIR",
-            "playbookID": "PhishlabsIOC_EIR-Test"
-        },
-        {
-            "playbookID": "Create Phishing Classifier V2 ML Test",
-            "timeout" : 60000,
-            "fromversion": "4.5.0"
-
-        },
-        {
-            "integrations": "ZeroFox",
-            "playbookID": "ZeroFox-Test",
-            "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "AlienVault OTX v2",
-            "playbookID": "Alienvault_OTX_v2 - Test"
-        },
-        {
-            "integrations": "AWS - SQS",
-            "playbookID": "fd93f620-9a2d-4fb6-85d1-151a6a72e46d"
-        },
-        {
-            "integrations": "SlackV2",
-            "playbookID": "Slack Test Playbook",
-            "timeout" : 2400,
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Cortex XDR - IR",
-            "playbookID": "Test XDR Playbook",
-            "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "Cloaken",
-            "playbookID": "Cloaken-Test"
-        },
-        {
-            "integrations": "Uptycs",
-            "playbookID": "TestUptycs"
-        },
-        {
-            "integrations": "ThreatX",
-            "playbookID": "ThreatX-test"
-        },
-        {
-            "integrations": "AlienVault OTX",
-            "playbookID": "AlienVaultOTX Test"
-        },
-        {
-            "integrations": "Cofense Triage",
-            "playbookID": "Cofense Triage Test"
-        },
-        {
-            "integrations": "Minerva Labs Anti-Evasion Platform",
-            "playbookID": "Minerva Test playbook"
-        },
-        {
-            "integrations": "CheckPhish",
-            "playbookID": "CheckPhish-Test"
-        },
-        {
-            "integrations": "Symantec Management Center",
-            "playbookID": "SymantecMC_TestPlaybook"
-        },
-        {
-            "integrations": "Tufin",
-            "playbookID": "Tufin Test"
-        },
-        {
-            "integrations": "Looker",
-            "playbookID": "Test-Looker"
-        },
-        {
-            "integrations": "Vertica",
-            "playbookID": "Vertica Test"
-        },
-        {
-            "integrations": "Server Message Block (SMB)",
-            "playbookID": "SMB test"
-        },
-        {
-            "playbookID": "ConvertFile-Test",
-            "fromversion": "4.5.0"
-        },
-        {
-            "playbookID": "TestAwsEC2GetPublicSGRules-Test"
-        },
-        {
-            "playbookID": "TestParseEmailHeaders"
-        },
-        {
-            "playbookID": "TestParseEmailFile-deprecated-script"
-        },
-        {
-            "integrations": "RSA NetWitness Packets and Logs",
-            "playbookID": "rsa_packets_and_logs_test"
-        },
-        {
-            "playbookID": "test_similar_incidents"
-        },
-        {
-            "playbookID": "autofocus_test",
-            "integrations": "Autofocus"
-        },
-        {
-            "playbookID": "CheckpointFW-test",
-            "integrations": "Check Point"
-        },
-        {
-            "playbookID": "RegPathReputationBasicLists_test"
-        },
-        {
-            "playbookID": "EmailDomainSquattingReputation-Test"
-        },
-        {
-            "playbookID": "RandomStringGenerateTest"
-        },
-        {
-            "playbookID": "DocumentationTest",
-            "integrations": "ipinfo"
-        },
-        {
-            "playbookID": "playbook-checkEmailAuthenticity-test"
-        },
-        {
-            "playbookID": "HighlightWords_Test"
-
-        },
-        {
-            "playbookID": "StringContainsArray_test"
-        },
-        {
-            "integrations": "Fidelis Elevate Network",
-            "playbookID": "Fidelis-Test"
-        },
-        {
-            "integrations": "AWS - ACM",
-            "playbookID": "ACM-Test"
-        },
-        {
-            "integrations": "Thinkst Canary",
-            "playbookID": "CanaryTools Test"
-        },
-        {
-            "integrations": "ThreatMiner",
-            "playbookID": "ThreatMiner-Test"
-        },
-        {
-            "playbookID": "StixCreator-Test"
-        },
-        {
-            "playbookID": "CompareIncidentsLabels-test-playbook"
-        },
-        {
-            "integrations": "Have I Been Pwned? V2",
-            "playbookID": "Pwned v2 test"
-        },
-        {
-            "integrations": "Alexa Rank Indicator",
-            "playbookID": "Alexa Test Playbook"
-        },
-        {
-            "playbookID": "UnEscapeURL-Test"
-        },
-        {
-            "playbookID": "UnEscapeIPs-Test"
-        },
-        {
-            "playbookID": "ExtractDomainFromUrlAndEmail-Test"
-        },
-        {
-            "playbookID": "ConvertKeysToTableFieldFormat_Test"
-        },
-        {
-            "integrations": "CVE Search",
-            "playbookID": "cveReputation Test"
-        },
-        {
-            "integrations": "HashiCorp Vault",
-            "playbookID": "hashicorp_test"
-        },
-        {
-            "integrations": "AWS - Athena - Beta",
-            "playbookID": "Beta-Athena-Test"
-        },
-        {
-            "integrations": "BeyondTrust Password Safe",
-            "playbookID": "BeyondTrust-Test"
-        },
-        {
-            "integrations": "Dell Secureworks",
-            "playbookID": "secureworks_test"
-        },
-        {
-            "integrations": "ServiceNow",
-            "playbookID": "servicenow_test_new"
-        },
-        {
-            "integrations": "ExtraHop",
-            "playbookID": "ExtraHop-Test"
-        },
-        {
-            "integrations": "ExtraHop v2",
-            "playbookID": "ExtraHop_v2-Test"
-        },
-        {
-            "playbookID": "Test CommonServer"
-        },
-        {
-            "integrations": "CIRCL",
-            "playbookID": "CirclIntegrationTest"
-        },
-        {
-            "integrations": "MISP V2",
-            "playbookID": "MISP V2 Test"
-        },
-        {
-            "playbookID": "test-LinkIncidentsWithRetry"
-        },
-        {
-            "playbookID": "CopyContextToFieldTest"
-        },
-        {
-            "integrations": "OTRS",
-            "playbookID": "OTRS Test",
-            "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "Attivo Botsink",
-            "playbookID": "AttivoBotsinkTest"
-        },
-        {
-            "playbookID": "CreatePhishingClassifierMLTest",
-            "timeout": 2400
-        },
-        {
-            "integrations": "Cymon",
-            "playbookID": "playbook-Cymon_Test"
-        },
-        {
-            "integrations": "FortiGate",
-            "playbookID": "Fortigate Test"
-        },
-        {
-            "playbookID": "FormattedDateToEpochTest"
-        },
-        {
-            "integrations": "SNDBOX",
-            "playbookID": "SNDBOX_Test"
-        },
-        {
-            "integrations": "SNDBOX",
-            "playbookID": "Detonate File - SNDBOX - Test",
-            "timeout": 2400,
-            "nightly": true
-        },
-        {
-            "integrations": "VxStream",
-            "playbookID": "Detonate File - HybridAnalysis - Test",
-            "timeout": 2400
-        },
-        {
-            "playbookID": "WordTokenizeTest"
-        },
-        {
-            "integrations": "Awake Security",
-            "playbookID": "awake_security_test_pb"
-        },
-        {
-            "integrations": "Tenable.sc",
-            "playbookID": "tenable-sc-test",
-            "timeout": 240,
-            "nightly": true
-        },
-        {
-            "integrations": "MimecastV2",
-            "playbookID": "Mimecast test"
-        },
-        {
-            "playbookID": "CreateEmailHtmlBody_test_pb",
-            "fromversion": "4.1.0"
-        },
-        {
-            "playbookID": "ReadPDFFile-Test"
-        },
-        {
-            "playbookID": "ReadPDFFileV2-Test",
-            "timeout": 1000
-        },
-        {
-            "playbookID": "JSONtoCSV-Test"
-        },
-        {
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall",
-            "playbookID": "palo_alto_firewall_test_pb",
-            "timeout": 1000,
-            "nightly": true
-        },
-        {
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "playbookID": "palo_alto_panorama_test_pb",
-            "timeout": 1000,
-            "nightly": true
-        },
-        {
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "playbookID": "Panorama Query Logs - Test",
-            "timeout": 1000,
-            "nightly": true
-        },
-        {
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.0",
-            "playbookID": "palo_alto_firewall_test_pb",
-            "timeout": 1000,
-            "nightly": true
-        },
-        {
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.0",
-            "playbookID": "palo_alto_panorama_test_pb",
-            "timeout": 1000,
-            "nightly": true
-        },
-        {
-            "integrations": "Tenable.io",
-            "playbookID": "Tenable.io test"
-        },
-        {
-            "playbookID": "URLDecode-Test"
-        },
-        {
-            "playbookID": "GetTime-Test"
-        },
-        {
-            "integrations": "Tenable.io",
-            "playbookID": "Tenable.io Scan Test",
-            "nightly": true,
-            "timeout": 900
-        },
-        {
-            "integrations": "Tenable.sc",
-            "playbookID": "tenable-sc-scan-test",
-            "nightly": true,
-            "timeout": 600
-        },
-        {
-            "integrations": "google-vault",
-            "playbookID": "Google-Vault-Generic-Test",
-            "nightly": true,
-            "timeout": 3600
-        },
-        {
-            "integrations": "google-vault",
-            "playbookID": "Google_Vault-Search_And_Display_Results_test",
-            "nightly": true,
-            "timeout": 3600
-        },
-        {
-            "playbookID": "Luminate-TestPlaybook",
-            "integrations": "Luminate"
-        },
-        {
-            "playbookID": "Palo Alto Networks - Malware Remediation Test",
-            "integrations": "Palo Alto Minemeld",
-            "fromversion": "4.5.0"
-        },
-        {
-            "playbookID": "SumoLogic-Test",
-            "integrations": "SumoLogic",
-            "fromversion": "4.1.0"
-        },
-        {
-            "playbookID": "ParseEmailFiles-test"
-        },
-        {
-            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test",
-            "integrations": "palo_alto_networks_pan_os_edl_management",
-            "fromversion": "4.0.0"
-
-        },
-        {
-            "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "fromversion": "4.0.0"
-        },
-        {
-            "playbookID": "PAN-OS - Block IP - Static Address Group Test",
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "fromversion": "4.0.0"
-        },
-        {
-            "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "fromversion": "4.0.0"
-        },
-        {
-            "playbookID": "Endpoint Malware Investigation - Generic - Test",
-            "integrations": [
-                "Traps",
-                "Cylance Protect v2",
-                "Demisto REST API"
-            ],
-            "fromversion": "5.0.0",
-            "timeout": 1200
-        },
-        {
-            "playbookID": "ParseExcel-test"
-        },
-        {
-            "playbookID": "Detonate File - No Files test"
-        },
-        {
-            "integrations": [
-                "Panorama",
-                "Check Point"
-            ],
-            "instance_names": "palo_alto_firewall",
-            "playbookID": "blockip_test_playbook"
-        },
-        {
-            "integrations": "Palo Alto Minemeld",
-            "playbookID": "minemeld_test"
-        },
-        {
-            "integrations": "SentinelOne V2",
-            "playbookID": "SentinelOne V2 - test"
-        },
-        {
-            "integrations": "InfoArmor VigilanteATI",
-            "playbookID": "InfoArmorVigilanteATITest"
-        },
-        {
-            "integrations": "IntSights",
-            "instance_names": "intsights_standard_account",
-            "playbookID": "IntSights Test",
-            "nightly": true,
-            "timeout": 500
-        },
-        {
-            "integrations": "IntSights",
-            "playbookID": "IntSights Mssp Test",
-            "instance_names": "intsights_mssp_account",
-            "nightly": true,
-            "timeout": 500
-        },
-        {
-            "integrations": "dnstwist",
-            "playbookID": "dnstwistTest"
-        },
-        {
-            "integrations": "BitDam",
-            "playbookID": "Detonate File - BitDam Test"
-        },
-        {
-            "integrations": "Threat Grid",
-            "playbookID": "Test-Detonate URL - ThreatGrid",
-            "timeout": 600
-        },
-        {
-            "integrations": "Threat Grid",
-            "playbookID": "ThreatGridTest",
-            "timeout": 600
-        },
-        {
-            "integrations": [
-                "Palo Alto Minemeld",
-                "Panorama"
-            ],
-            "instance_names": "palo_alto_firewall",
-            "playbookID": "block_indicators_-_generic_-_test"
-        },
-        {
-            "integrations": "Signal Sciences WAF",
-            "playbookID": "SignalSciences-Test"
-        },
-        {
-            "integrations": "RTIR",
-            "playbookID": "RTIR Test"
-        },
-        {
-            "integrations": "RedCanary",
-            "playbookID": "RedCanaryTest",
-            "nightly": true
-        },
-        {
-            "integrations": "Devo",
-            "playbookID": "devo_test_playbook",
-            "timeout" : 500
-        },
-        {
-            "playbookID": "URL Enrichment - Generic v2 - Test",
-            "integrations": [
-                "Rasterize",
-                "VirusTotal - Private API"
-            ],
-            "instance_names": "virus_total_private_api_general",
-            "timeout": 500
-        },
-        {
-            "playbookID": "CutTransformerTest"
-        },
-        {
-            "integrations": "SCADAfence CNM",
-            "playbookID": "SCADAfence_test"
-        },
-        {
-            "integrations": "ProtectWise",
-            "playbookID": "Protectwise-Test"
-        },
-        {
-            "integrations": "WhatsMyBrowser",
-            "playbookID": "WhatsMyBrowser-Test"
-        },
-        {
-
-            "integrations": "BigFix",
-            "playbookID": "BigFixTest"
-        },
-        {
-            "integrations": "Lastline",
-            "playbookID": "Lastline - testplaybook",
-            "nightly": true
-        },
-        {
-            "integrations": "epo",
-            "playbookID": "Test Playbook McAfee ePO"
-        },
-        {
-            "integrations": "activedir",
-            "playbookID": "calculate_severity_-_critical_assets_-_test"
-        },
-        {
-            "playbookID": "TextFromHTML_test_playbook"
-        },
-        {
-            "playbookID": "PortListenCheck-test"
-        },
-        {
-            "integrations": "ThreatExchange",
-            "playbookID": "ThreatExchange-test"
-        },
-        {
-            "integrations": "ThreatExchange",
-            "playbookID": "extract_indicators_-_generic_-_test",
-            "timeout": 240
-        },
-        {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestPlaybook",
-            "timeout": 500,
-            "nightly": true
-        },
-        {
-            "integrations": "Joe Security",
-            "playbookID": "JoeSecurityTestDetonation",
-            "timeout": 2000,
-            "nightly": true
-        },
-        {
-            "integrations": "WildFire-v2",
-            "playbookID": "Wildfire Test"
-        },
-        {
-            "integrations": "WildFire-v2",
-            "playbookID": "Detonate URL - WildFire-v2 - Test"
-        },
-        {
-            "integrations": "GRR",
-            "playbookID": "grr_test",
-            "nightly": true
-        },
-        {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "virusTotal-test-playbook",
-            "timeout": 1400,
-            "nightly": true
-        },
-        {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_preferred_vendors",
-            "playbookID": "virusTotaI-test-preferred-vendors",
-            "timeout": 1400,
-            "nightly": true
-        },
-        {
-            "integrations": "Preempt",
-            "playbookID": "Preempt Test"
-        },
-        {
-            "integrations": "Gmail",
-            "playbookID": "get_original_email_-_gmail_-_test"
-        },
-        {
-            "integrations": ["Gmail Single User", "Gmail"],
-            "playbookID": "Gmail Single User - Test",
-            "fromversion": "4.5.0"
-        },
-        {
-            "integrations": "EWS v2",
-            "playbookID": "get_original_email_-_ews-_test"
-        },
-        {
-            "integrations": ["EWS v2", "EWS Mail Sender"],
-            "playbookID": "EWS search-mailbox test",
-            "timeout": 300
-        },
-        {
-            "integrations": "PagerDuty v2",
-            "playbookID": "PagerDuty Test"
-        },
-        {
-            "playbookID": "test_delete_context"
-        },
-        {
-            "playbookID": "DeleteContext-auto-test"
-        },
-        {
-            "playbookID": "GmailTest",
-            "integrations": "Gmail"
-        },
-        {
-            "playbookID": "Gmail Convert Html Test",
-            "integrations": "Gmail"
-        },
-        {
-            "playbookID": "reputations.json Test"
-        },
-        {
-            "playbookID": "Test IP Indicator Fields",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Shodan",
-            "playbookID": "ShodanTest"
-        },
-        {
-            "playbookID": "dedup_-_generic_-_test"
-        },
-        {
-            "playbookID": "TestDedupIncidentsPlaybook"
-        },
-        {
-            "playbookID": "TestDedupIncidentsByName"
-        },
-        {
-            "integrations": "McAfee Advanced Threat Defense",
-            "playbookID": "Test Playbook McAfee ATD",
-            "timeout": 700
-        },
-        {
-            "playbookID": "stripChars - Test"
-        },
-        {
-            "integrations": "McAfee Advanced Threat Defense",
-            "playbookID": "Test Playbook McAfee ATD Upload File"
-        },
-        {
-            "playbookID": "exporttocsv_script_test"
-        },
-        {
-            "integrations": "Intezer v2",
-            "playbookID": "Intezer Testing v2",
-            "fromversion": "4.1.0",
-            "timeout": 700
-        },
-        {
-            "integrations": "FalconIntel",
-            "playbookID": "CrowdStrike Falcon Intel v2"
-        },
-        {
-            "playbookID": "ContextGetters_Test"
-        },
-        {
-            "integrations": [
-                "Mail Sender (New)",
-                "google"
-            ],
-            "playbookID": "Mail Sender (New) Test"
-        },
-        {
-            "playbookID": "buildewsquery_test"
-        },
-        {
-            "integrations": "Rapid7 Nexpose",
-            "playbookID": "nexpose_test",
-            "timeout": 240
-        },
-        {
-            "playbookID": "GetIndicatorDBotScore Test"
-        },
-        {
-            "integrations": "EWS Mail Sender",
-            "playbookID": "EWS Mail Sender Test"
-        },
-        {
-            "integrations": [
-                "EWS Mail Sender",
-                "Rasterize"
-            ],
-            "playbookID": "EWS Mail Sender Test 2"
-        },
-        {
-            "playbookID": "decodemimeheader_-_test"
-        },
-        {
-            "integrations": "CVE Search",
-            "playbookID": "cve_enrichment_-_generic_-_test"
-        },
-        {
-            "playbookID": "test_url_regex"
-        },
-        {
-            "integrations": "Skyformation",
-            "playbookID": "TestSkyformation"
-        },
-        {
-            "integrations": "okta",
-            "playbookID": "okta_test_playbook",
-            "timeout": 240
-        },
-        {
-            "playbookID": "Test filters & transformers scripts"
-        },
-        {
-            "integrations": "Salesforce",
-            "playbookID": "SalesforceTestPlaybook"
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "instance_names": "v10.2.0",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "instance_names": "v10.3.0",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "instance_names": "v11.1.3",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
-            "integrations": "GoogleSafeBrowsing",
-            "playbookID": "Google Safe Browsing Test",
-            "timeout": 240
-        },
-        {
-            "integrations": "EWS v2",
-            "playbookID": "EWSv2_empty_attachment_test"
-        },
-        {
-            "integrations": "EWS v2",
-            "playbookID": "EWS Public Folders Test"
-        },
-        {
-            "playbookID": "TestWordFileToIOC",
-            "timeout": 300
-        },
-        {
-            "integrations": "Symantec Endpoint Protection V2",
-            "playbookID": "SymantecEndpointProtection_Test"
-        },
-        {
-            "integrations": "carbonblackprotection",
-            "playbookID": "search_endpoints_by_hash_-_carbon_black_protection_-_test",
-            "timeout": 500
-        },
-        {
-            "playbookID": "process_email_-_generic_-_test",
-            "integrations": "Rasterize",
-            "timeout": 240
-        },
-        {
-            "integrations": "activedir",
-            "playbookID": "account_enrichment_-_generic_test"
-        },
-        {
-            "integrations": "FalconHost",
-            "playbookID": "search_endpoints_by_hash_-_crowdstrike_-_test",
-            "timeout": 500
-        },
-        {
-            "integrations": "FalconHost",
-            "playbookID": "CrowdStrike Endpoint Enrichment - Test"
-        },
-        {
-            "integrations": "FalconHost",
-            "playbookID": "crowdstrike_falconhost_test"
-        },
-        {
-            "integrations": "CrowdstrikeFalcon",
-            "playbookID": "Test - CrowdStrike Falcon",
-            "fromversion": "4.1.0"
-        },
-        {
-            "playbookID": "ExposeIncidentOwner-Test"
-        },
-        {
-            "integrations": "PostgreSQL",
-            "playbookID": "PostgreSQL Test"
-        },
-        {
-            "integrations": "google",
-            "playbookID": "GsuiteTest"
-        },
-        {
-            "integrations": "OpenPhish",
-            "playbookID": "OpenPhish Test Playbook"
-        },
-        {
-            "integrations": "RSA Archer",
-            "playbookID": "Archer-Test-Playbook",
-            "nightly": true
-        },
-        {
-            "integrations": "jira",
-            "playbookID": "Jira-Test"
-        },
-        {
-            "integrations": "jira-v2",
-            "playbookID": "Jira-v2-Test"
-        },
-        {
-            "integrations": "ipinfo",
-            "playbookID": "IPInfoTest"
-        },
-        {
-            "integrations": "jira",
-            "playbookID": "VerifyHumanReadableFormat"
-        },
-        {
-            "playbookID": "ExtractURL Test"
-        },
-        {
-            "playbookID": "strings-test"
-        },
-        {
-            "playbookID": "TestCommonPython"
-        },
-        {
-            "playbookID": "TestFileCreateAndUpload"
-        },
-        {
-            "playbookID": "TestIsValueInArray"
-        },
-        {
-            "playbookID": "TestStringReplace"
-        },
-        {
-            "playbookID": "TestHttpPlaybook"
-        },
-        {
-            "integrations": "SplunkPy",
-            "playbookID": "Splunk-Test"
-        },
-        {
-            "integrations": "SplunkPy",
-            "playbookID": "SplunkPySearch_Test"
-        },
-        {
-            "integrations": "McAfee NSM",
-            "playbookID": "McAfeeNSMTest",
-            "timeout": 400,
-            "nightly": true
-        },
-        {
-            "integrations": "PhishTank",
-            "playbookID": "PhishTank Testing"
-        },
-        {
-            "integrations": "McAfee Web Gateway",
-            "playbookID": "McAfeeWebGatewayTest",
-            "timeout": 500
-        },
-        {
-            "integrations": "TCPIPUtils",
-            "playbookID": "TCPUtils-Test"
-        },
-        {
-            "playbookID": "ProofpointDecodeURL-Test",
-            "timeout": 300
-        },
-        {
-            "playbookID": "listExecutedCommands-Test"
-        },
-        {
-            "integrations": "AWS - Lambda",
-            "playbookID": "AWS-Lambda-Test (Read-Only)"
-        },
-        {
-            "integrations": "Service Manager",
-            "playbookID": "TestHPServiceManager",
-            "timeout": 400
-        },
-        {
-            "playbookID": "LanguageDetect-Test",
-            "timeout": 300
-        },
-        {
-            "integrations": "Forcepoint",
-            "playbookID": "forcepoint test",
-            "timeout": 500,
-            "nightly": true
-        },
-        {
-            "playbookID": "GeneratePassword-Test"
-        },
-        {
-            "playbookID": "ZipFile-Test"
-        },
-        {
-            "playbookID": "ExtractDomainTest"
-        },
-        {
-            "playbookID": "Test-IsMaliciousIndicatorFound",
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "TestExtractHTMLTables"
-        },
-        {
-            "integrations": "carbonblackliveresponse",
-            "playbookID": "CarbonBlackLiveResponseTest",
-            "nightly": true
-        },
-        {
-            "playbookID": "TestSafeBreach",
-            "integrations": "SafeBreach"
-        },
-        {
-            "integrations": "urlscan.io",
-            "playbookID": "urlscan_malicious_Test",
-            "timeout": 500
-        },
-        {
-            "integrations": "EWS v2",
-            "playbookID": "pyEWS_Test"
-        },
-        {
-            "integrations": "remedy_sr_beta",
-            "playbookID": "remedy_sr_test_pb"
-        },
-        {
-
-            "integrations": "Netskope",
-            "playbookID": "Netskope Test"
-        },
-        {
-            "integrations": "Cylance Protect v2",
-            "playbookID": "Cylance Protect v2 Test"
-        },
-        {
-            "integrations": "ReversingLabs Titanium Cloud",
-            "playbookID": "ReversingLabsTCTest"
-        },
-        {
-            "integrations": "ReversingLabs A1000",
-            "playbookID": "ReversingLabsA1000Test"
-        },
-        {
-            "integrations": "Demisto Lock",
-            "playbookID": "DemistoLockTest"
-        },
-        {
-            "playbookID": "test-domain-indicator",
-            "timeout": 400
-        },
-        {
-            "playbookID": "Cybereason Test",
-            "integrations": "Cybereason",
-            "timeout": 1200,
-            "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "VirusTotal - Private API",
-            "instance_names": "virus_total_private_api_general",
-            "playbookID": "File Enrichment - Virus Total Private API Test",
-            "nightly": true
-        },
-        {
-            "integrations": "VirusTotal - Private API",
-            "instance_names": "virus_total_private_api_general",
-            "playbookID": "virusTotalPrivateAPI-test-playbook",
-            "timeout": 1400,
-            "nightly": true
-        },
-        {
-            "integrations": "VirusTotal - Private API",
-            "instance_names": "virus_total_private_api_preferred_vendors",
-            "playbookID": "virusTotalPrivateAPI-test-preferred-vendors",
-            "timeout": 1400,
-            "nightly": true
-        },
-        {
-            "integrations": "Cisco Meraki",
-            "playbookID": "Cisco-Meraki-Test"
-        },
-        {
-            "integrations": "Windows Defender Advanced Threat Protection",
-            "playbookID": "Test - Windows Defender Advanced Threat Protection",
-            "instance_names": "windows_defender_atp_dev"
-        },
-        {
-            "integrations": "Windows Defender Advanced Threat Protection",
-            "playbookID": "Test - Windows Defender Advanced Threat Protection",
-            "instance_names": "windows_defender_atp_prod"
-        },
-        {
-            "integrations": "Tanium",
-            "playbookID": "Tanium Test Playbook",
-            "nightly": true,
-            "timeout": 1200
-        },
-        {
-            "integrations": "Recorded Future",
-            "playbookID": "Recorded Future Test",
-            "nightly": true
-        },
-        {
-            "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Test",
-            "instance_names": "ms_graph_security_dev"
-        },
-        {
-            "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Test",
-            "instance_names": "ms_graph_security_prod"
-        },
-        {
-            "integrations": "Microsoft Graph User",
-            "playbookID": "Microsoft Graph - Test",
-            "instance_names": "ms_graph_user_dev"
-        },
-        {
-            "integrations": "Microsoft Graph User",
-            "playbookID": "Microsoft Graph - Test",
-            "instance_names": "ms_graph_user_prod"
-        },
-        {
-            "integrations": "Microsoft Graph Groups",
-            "playbookID": "Microsoft Graph Groups - Test",
-            "instance_names": "ms_graph_groups_dev"
-        },
-        {
-            "integrations": "Microsoft Graph Groups",
-            "playbookID": "Microsoft Graph Groups - Test",
-            "instance_names": "ms_graph_groups_prod"
-        },
-        {
-            "integrations": "RedLock",
-            "playbookID": "RedLockTest",
-            "nightly": true
-        },
-        {
-            "integrations": "Symantec Messaging Gateway",
-            "playbookID": "Symantec Messaging Gateway Test"
-        },
-        {
-            "integrations": "ThreatConnect",
-            "playbookID": "test-ThreatConnect"
-        },
-        {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test",
-            "nightly": true
-        },
-        {
-            "integrations": "Cylance Protect",
-            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
-            "timeout": 240
-        },
-        {
-            "integrations": "Cylance Protect",
-            "playbookID": "endpoint_enrichment_-_generic_test"
-        },
-        {
-            "integrations": "QRadar",
-            "playbookID": "test_Qradar"
-        },
-        {
-            "integrations": "VMware",
-            "playbookID": "VMWare Test"
-        },
-        {
-            "integrations": "Anomali ThreatStream",
-            "playbookID": "Anomali_ThreatStream_Test"
-        },
-        {
-            "integrations": "Farsight DNSDB",
-            "playbookID": "DNSDBTest"
-        },
-        {
-            "integrations": "carbonblack-v2",
-            "playbookID": "CarbonBlackResponseTest"
-        },
-        {
-            "integrations": "Cisco Umbrella Investigate",
-            "playbookID": "Cisco Umbrella Test"
-        },
-        {
-            "integrations": "icebrg",
-            "playbookID": "Icebrg Test",
-            "timeout": 500
-        },
-        {
-            "integrations": "Symantec MSS",
-            "playbookID": "SymantecMSSTest"
-        },
-        {
-            "integrations": "Remedy AR",
-            "playbookID": "Remedy AR Test"
-        },
-        {
-            "integrations": "AWS - IAM",
-            "playbookID": "d5cb69b1-c81c-4f27-8a40-3106c0cb2620"
-        },
-        {
-            "integrations": "McAfee Active Response",
-            "playbookID": "McAfee-MAR_Test",
-            "timeout": 700
-        },
-        {
-            "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "McAfee-TIE Test",
-            "timeout": 700
-        },
-        {
-            "integrations": "ArcSight Logger",
-            "playbookID": "ArcSight Logger test"
-        },
-        {
-            "integrations": "ArcSight ESM v2",
-            "playbookID": "ArcSight ESM v2 Test"
-        },
-        {
-            "integrations": "ArcSight ESM v2",
-            "playbookID": "test Arcsight - Get events related to the Case"
-        },
-        {
-            "integrations": "XFE",
-            "playbookID": "XFE Test",
-            "timeout": 140,
-            "nightly": true
-        },
-        {
-            "integrations": "McAfee Threat Intelligence Exchange",
-            "playbookID": "search_endpoints_by_hash_-_tie_-_test",
-            "timeout": 500
-        },
-        {
-            "integrations": "iDefense",
-            "playbookID": "iDefenseTest",
-            "timeout": 300
-        },
-        {
-            "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB Test",
-            "nightly": true
-        },
-        {
-            "integrations": "AbuseIPDB",
-            "playbookID": "AbuseIPDB PopulateIndicators Test",
-            "nightly": true
-        },
-        {
-            "integrations": "jira",
-            "playbookID": "JiraCreateIssue-example-test"
-        },
-        {
-            "integrations": "LogRhythm",
-            "playbookID": "LogRhythm-Test-Playbook",
-            "timeout": 200
-        },
-        {
-            "integrations": "FireEye HX",
-            "playbookID": "FireEye HX Test"
-        },
-        {
-            "integrations": "Phish.AI",
-            "playbookID": "PhishAi-Test"
-        },
-        {
-            "integrations": "Phish.AI",
-            "playbookID": "Test-Detonate URL - Phish.AI"
-        },
-        {
-            "integrations": "Centreon",
-            "playbookID": "Centreon-Test-Playbook"
-        },
-        {
-            "playbookID": "ReadFile test"
-        },
-        {
-            "integrations": "TruSTAR",
-            "playbookID": "TruSTAR Test"
-        },
-        {
-            "integrations": "AlphaSOC Wisdom",
-            "playbookID": "AlphaSOC-Wisdom-Test"
-        },
-        {
-            "integrations": "carbonblack-v2",
-            "playbookID": "CBFindIP - Test"
-        },
-        {
-            "integrations": "Jask",
-            "playbookID": "Jask_Test",
-            "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "Qualys",
-            "playbookID": "Qualys-Test"
-        },
-        {
-            "integrations": "Whois",
-            "playbookID": "whois_test",
-            "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "RSA NetWitness Endpoint",
-            "playbookID": "NetWitness Endpoint Test"
-        },
-        {
-            "integrations": "Check Point Sandblast",
-            "playbookID": "Sandblast_malicious_test"
-        },
-        {
-            "playbookID": "TestMatchRegex"
-        },
-        {
-            "integrations": "ActiveMQ",
-            "playbookID": "ActiveMQ Test"
-        },
-        {
-            "playbookID": "RegexGroups Test"
-        },
-        {
-            "integrations": "Cisco ISE",
-            "playbookID": "cisco-ise-test-playbook"
-        },
-        {
-            "integrations": "RSA NetWitness v11.1",
-            "playbookID": "RSA NetWitness Test"
-        },
-        {
-            "playbookID": "ExifReadTest"
-        },
-        {
-            "integrations": "Cuckoo Sandbox",
-            "playbookID": "CuckooTest",
-            "timeout": 700
-        },
-        {
-            "integrations": "VxStream",
-            "playbookID": "Test-Detonate URL - Crowdstrike",
-            "timeout": 1200
-        },
-        {
-            "playbookID": "Detonate File - Generic Test",
-            "timeout": 500
-        },
-        {
-            "integrations": [
-                "Lastline",
-                "WildFire-v2",
-                "SNDBOX",
-                "VxStream",
-                "McAfee Advanced Threat Defense"
-            ],
-            "playbookID": "Detonate File - Generic Test",
-            "timeout": 2400,
-            "nightly": true
-        },
-        {
-            "playbookID": "detonate_file_-_generic_test",
-            "toversion": "3.6.0"
-        },
-        {
-            "playbookID": "STIXParserTest"
-        },
-        {
-            "playbookID": "Detonate URL - Generic Test",
-            "timeout": 2000,
-            "nightly": true,
-            "integrations": [
-                "McAfee Advanced Threat Defense",
-                "VxStream",
-                "Lastline"
-            ]
-        },
-        {
-            "playbookID": "ReadPDFFile-Test"
-        },
-        {
-            "integrations": [
-                "FalconHost",
-                "McAfee Threat Intelligence Exchange",
-                "carbonblackprotection",
-                "carbonblack"
-            ],
-            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 500
-        },
-        {
-            "integrations": "Zscaler",
-            "playbookID": "Zscaler Test",
-            "nightly": true,
-            "timeout": 500
-        },
-        {
-            "playbookID": "DemistoUploadFileToIncident Test",
-            "integrations": "Demisto REST API"
-        },
-        {
-            "playbookID": "DemistoUploadFile Test",
-            "integrations": "Demisto REST API"
-        },
-        {
-            "playbookID": "MaxMind Test",
-            "integrations": "MaxMind GeoIP2"
-
-        },
-        {
-            "playbookID": "Test_Sagemaker",
-            "integrations": "AWS Sagemaker"
-
-        },
-        {
-            "playbookID": "C2sec-Test",
-            "integrations": "C2sec irisk",
-            "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "Phishing v2 Test - Attachment",
-            "timeout": 1200,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Have I Been Pwned? V2",
-                "Demisto REST API",
-                "Palo Alto Minemeld",
-                "Rasterize"
-            ]
-        },
-        {
-            "playbookID": "Phishing v2 Test - Inline",
-            "timeout": 1200,
-            "nightly": true,
-            "integrations": [
-                "EWS Mail Sender",
-                "Have I Been Pwned? V2",
-                "Demisto REST API",
-                "Palo Alto Minemeld",
-                "Rasterize"
-            ]
-        },
-        {
-            "integrations": "duo",
-            "playbookID": "DUO Test Playbook"
-        },
-        {
-            "playbookID": "SLA Scripts - Test",
-            "fromversion": "4.1.0"
-        },
-        {
-            "playbookID": "PcapHTTPExtractor-Test"
-        },
-        {
-            "playbookID": "Ping Test Playbook"
-        },
-        {
-            "playbookID": "Active Directory Test",
-            "instance_names": "active_directory_query_v2",
-            "integrations": "Active Directory Query v2"
-        },
-        {
-            "playbookID": "AD v2 - debug-mode - Test",
-            "instance_names": "active_directory_query_v2",
-            "integrations": "Active Directory Query v2",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_query_v2_with_port_configuration",
-            "playbookID": "Active Directory Query V2 configuration with port"
-        },
-        {
-            "integrations": "mysql",
-            "playbookID": "MySQL Test"
-        },
-        {
-            "playbookID": "Email Address Enrichment - Generic v2 - Test"
-        },
-        {
-            "playbookID": "Email Address Enrichment - Generic v2.1 - Test",
-            "integrations": "Active Directory Query v2"
-        },
-        {
-            "integrations": "Cofense Intelligence",
-            "playbookID": "Test - Cofense Intelligence",
-            "timeout": 500
-        },
-        {
-            "playbookID": "GDPRContactAuthorities Test"
-        },
-        {
-            "integrations": "Google Resource Manager",
-            "playbookID": "GoogleResourceManager-Test",
-            "timeout": 500,
-            "nightly": true
-        },
-        {
-            "integrations": "SlashNext Phishing Incident Response",
-            "playbookID": "SlashNextPhishingIncidentResponse-Test",
-            "timeout": 500,
-            "nightly": true
-        },
-        {
-            "integrations": "Google Cloud Storage",
-            "playbookID": "GCS - Test",
-            "timeout": 500,
-            "nightly": true
-        },
-        {
-            "playbookID": "Calculate Severity - Generic v2 - Test",
-            "integrations": [
-                "Palo Alto Minemeld",
-                "Active Directory Query v2"
-            ],
-            "fromversion": "4.5.0"
-        },
-        {
-            "integrations": "Freshdesk",
-            "playbookID": "Freshdesk-Test",
-            "timeout": 500,
-            "nightly": true
-        },
-        {
-            "playbookID": "Autoextract - Test",
-            "fromversion": "4.1.0"
-        },
-        {
-            "playbookID": "FilterByList - Test",
-            "fromversion": "4.5.0"
-        },
-            {
-            "playbookID": "Impossible Traveler - Test",
-            "integrations": [
-                "Ipstack",
-                "ipinfo",
-                "Rasterize",
-                "Active Directory Query v2",
-                "Demisto REST API"
-            ],
-            "fromversion": "5.0.0",
-            "timeout": 700
-        },
-        {
-            "integrations": "Kafka V2",
-            "playbookID": "Kafka Test"
-        },
-        {
-            "playbookID": "File Enrichment - Generic v2 - Test",
-            "instance_names": "virus_total_private_api_general",
-            "integrations": [
-                "VirusTotal - Private API",
-                "Cylance Protect v2"
-            ]
-        },
-        {
-            "integrations": "McAfee Active Response",
-            "playbookID": "Endpoint data collection test",
-            "timeout": 500
-        },
-        {
-            "playbookID": "Phishing - Core - Test",
-            "integrations": [
-                "EWS Mail Sender",
-                "Demisto REST API",
-                "Palo Alto Minemeld",
-                "Rasterize"
-            ],
-            "fromversion": "4.5.0",
-            "timeout": 1700
-        },
-        {
-            "integrations": "McAfee Active Response",
-            "playbookID": "MAR - Endpoint data collection test",
-            "timeout": 500
-        },
-        {
-
-            "integrations": "DUO Admin",
-            "playbookID": "DuoAdmin API test playbook"
-        },
-        {
-            "integrations": "Traps",
-            "playbookID": "Traps test",
-            "timeout": 600
-        },
-        {
-            "playbookID": "TestShowScheduledEntries"
-        },
-        {
-            "playbookID": "Calculate Severity - Standard - Test",
-            "integrations": "Palo Alto Minemeld",
-            "fromversion": "4.5.0"
-        },
-        {
-            "integrations": "Symantec Advanced Threat Protection",
-            "playbookID": "Symantec ATP Test"
-
-        },
-        {
-            "playbookID": "HTTPListRedirects - Test SSL"
-        },
-        {
-            "playbookID": "HTTPListRedirects Basic Test"
-        },
-        {
-            "playbookID": "CheckDockerImageAvailableTest"
-        },
-        {
-            "playbookID": "ExtractDomainFromEmailTest"
-        },
-        {
-            "playbookID": "Account Enrichment - Generic v2 - Test",
-            "integrations": "activedir"
-        },
-        {
-            "playbookID": "Extract Indicators From File - Generic v2 - Test",
-            "integrations": "Image OCR",
-            "timeout": 300,
-            "fromversion": "4.1.0",
-            "toversion": "4.4.9"
-        },
-        {
-            "playbookID": "Extract Indicators From File - Generic v2 - Test",
-            "integrations": "Image OCR",
-            "timeout": 350,
-            "fromversion": "4.5.0"
-        },
-        {
-            "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
-            "integrations": [
-                "FalconHost",
-                "Cylance Protect v2",
-                "carbonblack-v2",
-                "epo",
-                "Active Directory Query v2"
-            ]
-        },
-        {
-            "playbookID": "EmailReputationTest",
-            "integrations": "Have I Been Pwned? V2"
-        },
-        {
-            "integrations": "Symantec Deepsight Intelligence",
-            "playbookID": "Symantec Deepsight Test"
-        },
-        {
-            "playbookID": "ExtractDomainFromEmailTest"
-        },
-        {
-            "playbookID": "PAN OS EDL Management - Test",
-            "integrations": "palo_alto_networks_pan_os_edl_management"
-        },
-        {
-            "playbookID": "PAN-OS DAG Configuration Test",
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "timeout": 1000
-        },
-        {
-            "playbookID": "PAN-OS Create Or Edit Rule Test",
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "timeout": 1000
-        },
-        {
-            "playbookID": "PAN-OS EDL Setup Test",
-            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
-            "instance_names": "palo_alto_panorama",
-            "timeout": 1000
-        },
-        {
-            "integrations": "Snowflake",
-            "playbookID": "Snowflake-Test"
-        },
-        {
-            "playbookID": "Account Enrichment - Generic v2.1 - Test",
-            "integrations": "Active Directory Query v2"
-        },
-        {
-            "integrations": "Cisco Umbrella Investigate",
-            "playbookID": "Domain Enrichment - Generic v2 - Test"
-        },
-        {
-            "integrations": "Google BigQuery",
-            "playbookID": "Google BigQuery Test"
-        },
-        {
-            "integrations": "Zoom",
-            "playbookID": "Zoom_Test"
-        },
-        {
-            "integrations": "Palo Alto Networks Cortex",
-            "playbookID": "Palo Alto Networks Cortex Test",
-            "fromversion": "4.1.0"
-        },
-        {
-            "playbookID": "IP Enrichment - Generic v2 - Test",
-            "integrations": "Threat Crowd",
-            "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "Cherwell",
-            "playbookID": "Cherwell Example Scripts - test"
-        },
-        {
-            "integrations": "Cherwell",
-            "playbookID": "Cherwell - test"
-        },
-        {
-            "integrations": "CarbonBlackProtectionV2",
-            "playbookID": "Carbon Black Enterprise Protection V2 Test"
-        },
-        {
-            "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_query_v2",
-            "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
-        },
-        {
-            "integrations": "ANYRUN",
-            "playbookID": "ANYRUN-Test"
-        },
-        {
-            "integrations": "ANYRUN",
-            "playbookID": "Detonate File - ANYRUN - Test"
-        },
-        {
-            "integrations": "ANYRUN",
-            "playbookID": "Detonate URL - ANYRUN - Test"
-        },
-        {
-            "integrations": "Netcraft",
-            "playbookID": "Netcraft test"
-        },
-        {
-            "integrations": "EclecticIQ Platform",
-            "playbookID": "EclecticIQ Test"
-        },
-        {
-            "playbookID": "FormattingPerformance - Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "AWS - EC2",
-            "playbookID": "2142f8de-29d5-4288-8426-0db39abe988b"
-        },
-        {
-            "integrations": "AWS - EC2",
-            "playbookID": "d66e5f86-e045-403f-819e-5058aa603c32"
-        },
-        {
-            "integrations": "ANYRUN",
-            "playbookID": "Detonate File From URL - ANYRUN - Test"
-        },
-        {
-            "integrations": "AWS - CloudWatchLogs",
-            "playbookID": "2cddaacb-4e4c-407e-8ef5-d924867b810c"
-        },
-        {
-            "integrations": "AWS - CloudTrail",
-            "playbookID": "3da2e31b-f114-4d7f-8702-117f3b498de9"
-        },
-        {
-            "integrations": "carbonblackprotection",
-            "playbookID": "67b0f25f-b061-4468-8613-43ab13147173"
-        },
-        {
-            "integrations": "DomainTools",
-            "playbookID": "DomainTools-Test"
-        },
-        {
-            "integrations": "Exabeam",
-            "playbookID": "Exabeam - Test"
-        },
-        {
-            "integrations": "DomainTools Iris",
-            "playbookID": "DomainTools Iris - Test",
-            "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "Cisco Spark",
-            "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
-        },
-        {
-            "playbookID": "get_file_sample_from_path_-_d2_-_test"
-        },
-        {
-            "integrations": "Remedy On-Demand",
-            "playbookID": "Remedy-On-Demand-Test"
-        },
-        {
-            "playbookID": "ssdeepreputationtest"
-        },
-        {
-            "playbookID": "TestIsEmailAddressInternal"
-        },
-        {
-            "integrations": "Google Cloud Compute",
-            "playbookID": "GoogleCloudCompute-Test"
-        },
-        {
-            "integrations": "AWS - S3",
-            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
-        },
-        {
-            "integrations": "Image OCR",
-            "playbookID": "TestImageOCR"
-        },
-        {
-            "integrations": "fireeye",
-            "playbookID": "Detonate File - FireEye AX - Test"
-        },
-        {
-            "integrations": ["Rasterize","Image OCR"],
-            "playbookID": "Rasterize Test"
-        },
-        {
-            "integrations": "Rasterize",
-            "playbookID": "RasterizeImageTest"
-        },
-        {
-            "integrations": "Ipstack",
-            "playbookID": "Ipstack_Test"
-        },
-        {
-
-            "integrations": "Perch",
-            "playbookID": "Perch-Test"
-        },
-        {
-            "integrations": "Forescout",
-            "playbookID": "Forescout-Test"
-        },
-        {
-            "integrations": "GitHub",
-            "playbookID": "Git_Integration-Test"
-        },
-        {
-            "integrations": "LogRhythmRest",
-            "playbookID": "LogRhythm REST test"
-        },
-        {
-            "integrations": "AlienVault USM Anywhere",
-            "playbookID": "AlienVaultUSMAnywhereTest"
-        },
-        {
-            "playbookID": "PhishLabsTestPopulateIndicators"
-        },
-        {
-            "integrations": "PhishLabs IOC",
-            "playbookID": "PhishLabsIOC TestPlaybook",
-            "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "vmray",
-            "playbookID": "VMRay-Test"
-        },
-        {
-            "integrations": "PerceptionPoint",
-            "playbookID": "PerceptionPoint Test",
-            "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "AutoFocus V2",
-            "playbookID": "AutoFocus V2 test"
-        },
-        {
-            "playbookID": "Process Email - Generic for Rasterize"
-        },
-        {
-            "playbookID": "Send Investigation Summary Reports - Test",
-            "integrations": "EWS Mail Sender",
-            "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "Anomali ThreatStream v2",
-            "playbookID": "ThreatStream-Test"
-        },
-        {
-            "integrations": "BluecatAddressManager",
-            "playbookID": "Bluecat Address Manager test"
-        },
-        {
-            "integrations": "MailListener - POP3 Beta",
-            "playbookID": "MailListener-POP3 - Test"
-        },
-        {
-            "playbookID": "sumList - Test"
-        },
-        {
-            "integrations": "VulnDB",
-            "playbookID": "Test-VulnDB"
-        },
-        {
-            "integrations": "Shodan_v2",
-            "playbookID": "Test-Shodan_v2",
-            "timeout": 1000
-        },
-        {
-            "integrations": "Threat Crowd",
-            "playbookID": "ThreatCrowd - Test"
-        },
-        {
-            "integrations": "GoogleDocs",
-            "playbookID": "GoogleDocs-test"
-        },
-        {
-            "playbookID": "Request Debugging - Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "Test Convert file hash to corresponding hashes",
-            "fromversion": "4.5.0",
-            "integrations": "VirusTotal - Private API"
-        },
-        {
-            "playbookID": "PAN-OS Query Logs For Indicators Test",
-            "fromversion": "4.5.0",
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama"
-        },
-        {
-            "integrations": "Hybrid Analysis",
-            "playbookID": "HybridAnalysis-Test",
-            "timeout": 500,
-            "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "Elasticsearch v2",
-            "instance_names": "es_v7",
-            "playbookID": "Elasticsearch_v2_test"
-        },
-        {
-            "integrations": "Elasticsearch v2",
-            "instance_names": "es_v6",
-            "playbookID": "Elasticsearch_v2_test-v6"
-        },
-        {
-            "integrations": "IronDefense",
-            "playbookID": "IronDefenseTest"
-        },
-        {
-            "integrations": "PolySwarm",
-            "playbookID": "PolySwarm-Test"
-        },
-        {
-            "integrations": "Kenna",
-            "playbookID": "Kenna Test"
-        },
-        {
-            "integrations": "SecurityAdvisor",
-            "playbookID": "SecurityAdvisor-Test",
-            "fromversion": "4.5.0"
-        },
-        {
-            "integrations": "QRadar",
-            "playbookID": "QRadar Indicator Hunting Test",
-            "fromversion": "4.5.0"
-        },
-        {
-            "integrations": "Google Key Management Service",
-            "playbookID": "Google-KMS-test"
-        },
-        {
-            "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
-        },
-        {
-          "integrations": "EWS v2",
-          "playbookID": "Get EWS Folder Test",
-          "fromversion": "4.5.0"
-        },
-        {
-            "integrations": "Tanium v2",
-            "playbookID": "Tanium v2 - Test"
+id: QRadar Indicator Hunting
+version: -1
+fromversion: 4.5.0
+name: QRadar Indicator Hunting
+description: 'The Playbook queries QRadar SIEM for indicators such as file hashes,
+  IP addresses, Domains or urls. '
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 11fd0d4b-314c-44cd-8e44-838b3841c5dc
+    type: start
+    task:
+      id: 11fd0d4b-314c-44cd-8e44-838b3841c5dc
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '55'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -240
         }
-    ],
-    "skipped_tests": {
-        "Test-Detonate URL - Crowdstrike": "Issue 19439",
-        "Git_Integration-Test": "Issue 20029",
-        "Symantec Data Loss Prevention - Test": "Issue 20134",
-        "Request Debugging - Test": "Issue 20337",
-        "LogRhythm-Test-Playbook": "Issue 20331",
-        "rsa_packets_and_logs_test": "Issue 20262",
-        "Cloaken-Test": "Issue 20036",
-        "Extract Indicators From File - Generic v2": "Issue 20143",
-        "PAN-OS Create Or Edit Rule Test":"Issue 20037",
-        "NetWitness Endpoint Test": "Issue 19878",
-        "CuckooTest": "Issue 19425",
-        "TestParseEmailHeaders": "Issue 18815",
-        "TestUptycs": "Issue 19750",
-        "InfoArmorVigilanteATITest": "Test issue 17358",
-        "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
-        "ArcSight Logger test": "Issue 19117",
-        "TruSTAR Test": "Issue 19777",
-        "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
-        "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
-        "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
-        "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
-        "Carbon Black Enterprise Protection V2 Test": "Issue 19838",
-        "get_file_sample_from_path_-_d2_-_test": "Issue 19844",
-        "Cofense Triage Test": "Creds only works on demo4",
-        "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
-        "nexpose_test": "Issue 18694",
-        "Recorded Future Test": "Issue 18922",
-        "IntSights Mssp Test": "Issue #16351",
-        "CheckPhish-Test": "Issue 19188",
-        "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
-        "PAN-OS DAG Configuration Test": "Issue #19205",
-        "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
-        "Test Playbook TrendMicroDDA": "Manual test"
-    },
-    "skipped_integrations": {
-        "_comment": "~~~ NO INSTANCE ~~~",
-        "FortiGate": "License expired, and not going to get one (issue 14723)",
-        "IronDefense": "Test depends on making requests to a non-public API",
-        "Attivo Botsink": "no instance, not going to get it",
-        "VMware": "no License, and probably not going to get it",
-        "AWS Sagemaker": "License expired, and probably not going to get it",
-        "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
-        "Google Cloud Compute": "Can't test yet",
-        "Cymon": "The service was discontinued since April 30th, 2019.",
-        "FireEye ETP": "No instance",
-        "ProofpointTAP_v2": "No instance",
-        "remedy_sr_beta": "No instance",
-        "ExtraHop v2": "No instance",
-        "Minerva Labs Anti-Evasion Platform": "Issue 18835",
-        "PolySwarm": "contribution",
-        "fireeye": "Issue 19839",
-        "DomainTools": "Issue 8298",
-        "Remedy On-Demand": "Issue 19835",
-        "ProtectWise": "Issue 20486",
-        "ThreatMiner": "Issue 20469",
-        "DomainTools Iris": "Issue 20433",
-        "ThreatQ v2": "Issue 19468",
-        "Check Point": "Issue 18643",
-        "RSA Archer": "Issue 20335",
-        "Preempt": "Issue 20268",
-        "iDefense": "Issue 20095",
-        "Joe Security": "Issue 17996",
-        "CrowdstrikeFalcon": "Issue 19833",
-        "ZeroFox": "Issue 19161",
-        "Jask": "Issue 18879",
-        "vmray": "Issue 18752",
-        "Anomali ThreatStream v2": "Issue 18561",
-        "Anomali ThreatStream": "Issue 19182",
-        "SCADAfence CNM": "Issue 18376",
-        "Cortex XDR - IR": "Issue #18377",
-        "ArcSight ESM v2": "Issue #18328",
-        "AlienVault USM Anywhere": "Issue #18273",
-        "Tufin": "Issue 16441",
-        "Dell Secureworks": "Instance locally installed on @liorblob PC",
-        "MimecastV2": "Issue 14593",
-        "Netskope": "instance is down",
-        "Farsight DNSDB": "Issue 15512",
-        "Service Manager": "Expired license",
-        "carbonblackprotection": "License expired",
-        "icebrg": "Issue 14312",
-        "Freshdesk": "Trial account expired",
-        "Threat Grid": "Issue 16197",
-        "Kafka V2": "Can not connect to instance from remote",
-        "Check Point Sandblast": "Issue 15948",
-        "Remedy AR": "getting 'Not Found' in test button",
-        "Salesforce": "Issue 15901",
-        "Zscaler": "Issue 17784",
-        "RedCanary": "License expired",
-        "ANYRUN": "No instance",
-        "Snowflake": "Looks like account expired, needs looking into",
-        "Cisco Spark": "Issue 18940",
-        "Phish.AI": "Issue 17291",
-        "QRadar": "Issue 17794",
-        "MaxMind GeoIP2": "Issue 18932.",
-        "Exabeam": "Issue 19371",
-        "McAfee ESM-v10": "Issue 20225",
-
-        "_comment": "~~~ UNSTABLE ~~~",
-        "ServiceNow": "Instance goes to hibernate every few hours",
-        "Tanium": "issue 15497",
-        "Tenable.sc": "unstable instance",
-        "Tenable.io": "Issue 16115",
-
-
-        "_comment": "~~~ OTHER ~~~",
-        "EclecticIQ Platform": "Issue 8821",
-        "BitDam": "Issue #17247",
-        "Zoom": "Issue 19832",
-        "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
-        "HelloWorldSimple": "This is just an example integration - no need for test",
-
-        "_comment": "~~~ QUOTA ISSUES ~~~",
-        "AWS - Athena - Beta": "Issue 19834",
-        "Lastline": "issue 20323",
-        "VirusTotal - Private API": "reached api alloted quota.",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
-        "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
-    },
-    "nightly_integrations": [
-        "Lastline",
-        "TruSTAR",
-        "SlackV2"
-    ],
-    "unmockable_integrations": {
-        "Google Key Management Service": "The API requires an SSL secure connection to work.",
-        "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
-        "mysql": "Does not use http",
-        "SlackV2": "Integration requires SSL",
-        "Whois": "Mocks does not support sockets",
-        "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
-        "Image OCR": "Does not perform network traffic",
-        "Server Message Block (SMB)": "Does not perform http communication",
-        "Active Directory Query v2": "Does not perform http communication",
-        "dnstwist": "Does not peform http communication",
-        "VxStream": "Issue 15544",
-        "PagerDuty v2": "Integration requires SSL",
-        "TCPIPUtils": "Integration requires SSL",
-        "Luminate": "Integration has no proxy checkbox",
-        "Shodan": "Integration has no proxy checkbox",
-        "Google BigQuery": "Integration has no proxy checkbox",
-        "ReversingLabs A1000": "Checking",
-        "Check Point": "Checking",
-        "okta": "Test Module failing, suspect it requires SSL",
-        "Awake Security": "Checking",
-        "ArcSight ESM v2": "Checking",
-        "Phish.AI": "Checking",
-        "Intezer": "Nightly - Checking",
-        "ProtectWise": "Nightly - Checking",
-        "google-vault": "Nightly - Checking",
-        "RSA Archer": "Nightly - Checking",
-        "McAfee NSM": "Nightly - Checking",
-        "Forcepoint": "Nightly - Checking",
-        "palo_alto_firewall": "Need to check test module",
-        "Signal Sciences WAF": "error with certificate",
-        "google": "'unsecure' parameter not working",
-        "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
-        "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
-        "Anomali ThreatStream": "'proxy' parameter not working",
-        "Palo Alto Networks Cortex": "SDK",
-        "Recorded Future": "might be dynamic test",
-        "AlphaSOC Wisdom": "Test module issue",
-        "RedLock": "SSL Issues",
-        "Microsoft Graph": "Test direct access to oproxy",
-        "MicrosoftGraphMail": "Test direct access to oproxy",
-        "Microsoft Graph User": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
-        "Microsoft Graph Groups": "Test direct access to oproxy",
-        "SafeBreach": "SSL Issues",
-        "Gmail Single User" : "googleclient sdk has time based challenge exchange",
-        "Gmail": "googleclient sdk has time based challenge exchange"
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: c65c2d96-ddec-4e30-84d7-64c86ed0d755
+    type: title
+    task:
+      id: c65c2d96-ddec-4e30-84d7-64c86ed0d755
+      version: -1
+      name: Hash Search
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -670,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: faf1a222-77d5-44a7-8a2a-64ae0fa938ee
+    type: playbook
+    task:
+      id: faf1a222-77d5-44a7-8a2a-64ae0fa938ee
+      version: -1
+      name: QRadarFullSearch
+      description: ''
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: '1'
+      query_expression:
+        complex:
+          root: .
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=function(val){var fields = Array.isArray(val.DomainURLFields)
+                    ? val.DomainURLFields : [val.DomainURLFields]; var domainurls
+                    = Array.isArray(val.DomainURL) ? val.DomainURL : [val.DomainURL];
+                    return fields.map(field => domainurls.map(domainurl => "\"" +
+                    field + "\" ILIKE " + "''%" + domainurl + "%''").join('' OR ''))}(val)'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+      range: {}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 2610,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: eb5c14ba-4082-4242-89f3-8e0121f48b10
+    type: title
+    task:
+      id: eb5c14ba-4082-4242-89f3-8e0121f48b10
+      version: -1
+      name: IP Search
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 0b3037a1-cfca-41d6-8820-0c3e776a1912
+    type: title
+    task:
+      id: 0b3037a1-cfca-41d6-8820-0c3e776a1912
+      version: -1
+      name: Domain/Url Search
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 489133b9-4e76-4d41-89d5-964f94bb86ba
+    type: condition
+    task:
+      id: 489133b9-4e76-4d41-89d5-964f94bb86ba
+      version: -1
+      name: Is there an IP to search?
+      description: Is there an IP to search?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '48'
+      'yes':
+      - '49'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IPAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: 7fe7ef38-53c1-49ce-82d0-069d0f5c3cb8
+    type: condition
+    task:
+      id: 7fe7ef38-53c1-49ce-82d0-069d0f5c3cb8
+      version: -1
+      name: Is there a hash to search?
+      description: Is there a hash to search?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '26'
+      - '27'
+      - '38'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MD5
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA1
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -670,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '9':
+    id: '9'
+    taskid: ae02e4ba-1497-4fbb-8ba5-629e7b85d9fb
+    type: condition
+    task:
+      id: ae02e4ba-1497-4fbb-8ba5-629e7b85d9fb
+      version: -1
+      name: Is there an Domain/Url to search?
+      description: Is there an Domain/Url to search?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '15'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.URLDomain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '10':
+    id: '10'
+    taskid: ccc36777-6654-4f47-8b78-2335017fc05b
+    type: title
+    task:
+      id: ccc36777-6654-4f47-8b78-2335017fc05b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '11':
+    id: '11'
+    taskid: c920b249-2758-4563-872b-2514ba03905e
+    type: condition
+    task:
+      id: c920b249-2758-4563-872b-2514ba03905e
+      version: -1
+      name: Was there a custom domain/url field?
+      description: Was there a custom domain/url field?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '17'
+      'yes':
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.URLDomainField
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2810,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: deaf1570-6faa-4b83-8335-d517c35ffa44
+    type: regular
+    task:
+      id: deaf1570-6faa-4b83-8335-d517c35ffa44
+      version: -1
+      name: Set DomainUrl to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: DomainURL
+      value:
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2810,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '16':
+    id: '16'
+    taskid: 059a4a6a-b627-40f3-8f99-95e05394d40c
+    type: regular
+    task:
+      id: 059a4a6a-b627-40f3-8f99-95e05394d40c
+      version: -1
+      name: Set DomainUrlFields to Array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: DomainURLFields
+      value:
+        complex:
+          root: inputs.URLDomainField
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2610,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '17':
+    id: '17'
+    taskid: 027ed83d-931b-4a6c-8ba9-a9c5d41ec0ab
+    type: playbook
+    task:
+      id: 027ed83d-931b-4a6c-8ba9-a9c5d41ec0ab
+      version: -1
+      name: QRadarFullSearch
+      description: ''
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: '1'
+      query_expression:
+        complex:
+          root: DomainURL
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: UTF8(payload) ILIKE  '%$1%'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+      range: {}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 3140,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '20':
+    id: '20'
+    taskid: a9657626-965c-4daa-8e15-11c5b03fda66
+    type: regular
+    task:
+      id: a9657626-965c-4daa-8e15-11c5b03fda66
+      version: -1
+      name: Set MD5 to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: File.MD5
+      value:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '21':
+    id: '21'
+    taskid: 5ae1e84f-5851-4043-8b97-84aadd7e6087
+    type: condition
+    task:
+      id: 5ae1e84f-5851-4043-8b97-84aadd7e6087
+      version: -1
+      name: Was there a custom MD5 field?
+      description: Was there a custom MD5 field?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '23'
+      'yes':
+      - '36'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.QradarMD5Field
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '22':
+    id: '22'
+    taskid: 53f28265-7caf-45be-88ab-e3fdc48f8dcc
+    type: condition
+    task:
+      id: 53f28265-7caf-45be-88ab-e3fdc48f8dcc
+      version: -1
+      name: Is there an MD5 to search?
+      description: Is there an MD5 to search?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1930,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '23':
+    id: '23'
+    taskid: cc8b421f-92bd-49a2-80df-dc5445d2f24d
+    type: playbook
+    task:
+      id: cc8b421f-92bd-49a2-80df-dc5445d2f24d
+      version: -1
+      name: QRadarFullSearch
+      description: ''
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: '1'
+      query_expression:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: UTF8(payload) LIKE  '$1'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+      range: {}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -2620,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '25':
+    id: '25'
+    taskid: 2f253420-222c-4f67-82d4-39a1509cca03
+    type: title
+    task:
+      id: 2f253420-222c-4f67-82d4-39a1509cca03
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -670,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '26':
+    id: '26'
+    taskid: dda895b8-450a-49cc-8551-d8cc0bc646ee
+    type: title
+    task:
+      id: dda895b8-450a-49cc-8551-d8cc0bc646ee
+      version: -1
+      name: MD5 Search
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1930,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '27':
+    id: '27'
+    taskid: 0adbc131-487a-4d43-8d93-8b981714a1be
+    type: title
+    task:
+      id: 0adbc131-487a-4d43-8d93-8b981714a1be
+      version: -1
+      name: SHA1 Search
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1520,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '29':
+    id: '29'
+    taskid: 508ad137-900b-42a4-89ae-68b921db82cb
+    type: condition
+    task:
+      id: 508ad137-900b-42a4-89ae-68b921db82cb
+      version: -1
+      name: Is there an SHA1 to search?
+      description: Is there an SHA1 to search?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1520,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '30':
+    id: '30'
+    taskid: 3c3f860f-f633-4839-8235-9b2c800274fe
+    type: regular
+    task:
+      id: 3c3f860f-f633-4839-8235-9b2c800274fe
+      version: -1
+      name: Set SHA1 to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: File.SHA1
+      value:
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1170,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '31':
+    id: '31'
+    taskid: 1cc5d94d-f2c7-465d-8c12-7050ce5fc143
+    type: condition
+    task:
+      id: 1cc5d94d-f2c7-465d-8c12-7050ce5fc143
+      version: -1
+      name: Was there a custom SHA1 field?
+      description: Was there a custom SHA1 field?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '35'
+      'yes':
+      - '44'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.QradarSHA1Field
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1170,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '34':
+    id: '34'
+    taskid: e03160a2-8d17-4a1d-885d-b5228e3fa76e
+    type: playbook
+    task:
+      id: e03160a2-8d17-4a1d-885d-b5228e3fa76e
+      version: -1
+      name: QRadarFullSearch
+      description: ''
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: '1'
+      query_expression:
+        complex:
+          root: .
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=function(val){var fields = Array.isArray(val.SHA1Fields)
+                    ? val.SHA1Fields : [val.SHA1Fields]; var sha1s = Array.isArray(val.File.SHA1)
+                    ? val.File.SHA1 : [val.File.SHA1]; return fields.map(field =>
+                    sha1s.map(sha1 => "\"" + field + "\"  = " + "''" + sha1 + "''").join(''
+                    OR ''))}(val)'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+      range: {}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '35':
+    id: '35'
+    taskid: 385b6f43-01f8-4b93-8ba4-8752e81ec646
+    type: playbook
+    task:
+      id: 385b6f43-01f8-4b93-8ba4-8752e81ec646
+      version: -1
+      name: QRadarFullSearch
+      description: ''
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: '1'
+      query_expression:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: UTF8(payload) LIKE  '$1'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+      range: {}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -1290,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '36':
+    id: '36'
+    taskid: 2a8cbd53-1f58-417b-8537-c99c2f95446a
+    type: regular
+    task:
+      id: 2a8cbd53-1f58-417b-8537-c99c2f95446a
+      version: -1
+      name: Set MD5Fields to Array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '37'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: MD5Fields
+      value:
+        complex:
+          root: inputs.QradarMD5Field
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2150,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '37':
+    id: '37'
+    taskid: 1967221e-abe7-4306-828f-3450e762a2fa
+    type: playbook
+    task:
+      id: 1967221e-abe7-4306-828f-3450e762a2fa
+      version: -1
+      name: QRadarFullSearch
+      description: ''
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: '1'
+      query_expression:
+        complex:
+          root: .
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=function(val){var fields = Array.isArray(val.MD5Fields)
+                    ? val.MD5Fields : [val.MD5Fields]; var md5s = Array.isArray(val.File.MD5)
+                    ? val.File.MD5 : [val.File.MD5]; return fields.map(field => md5s.map(md5
+                    => "\"" + field + "\"  = " + "''" + md5 + "''").join('' OR ''))}(val)'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+      range: {}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -2150,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '38':
+    id: '38'
+    taskid: 05a453f8-894c-40cc-8819-9e730340b485
+    type: title
+    task:
+      id: 05a453f8-894c-40cc-8819-9e730340b485
+      version: -1
+      name: SHA256 Search
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '39'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '39':
+    id: '39'
+    taskid: a7e95226-d38d-4b22-827b-e1e83e3edaf3
+    type: condition
+    task:
+      id: a7e95226-d38d-4b22-827b-e1e83e3edaf3
+      version: -1
+      name: Is there an SHA256 to search?
+      description: Is there an SHA256 to search?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '40'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '40':
+    id: '40'
+    taskid: ae26ff38-de73-4223-8b2e-2d88ef738777
+    type: regular
+    task:
+      id: ae26ff38-de73-4223-8b2e-2d88ef738777
+      version: -1
+      name: Set SHA256 to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '41'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: File.SHA256
+      value:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '41':
+    id: '41'
+    taskid: d6fd61b9-c6e4-4781-8cde-d5978597cb32
+    type: condition
+    task:
+      id: d6fd61b9-c6e4-4781-8cde-d5978597cb32
+      version: -1
+      name: Was there a custom SHA256 field?
+      description: Was there a custom SHA256 field?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '47'
+      'yes':
+      - '45'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.QradarSHA256Field
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '44':
+    id: '44'
+    taskid: 03a566d6-af4a-4b61-8546-95174cdf4f65
+    type: regular
+    task:
+      id: 03a566d6-af4a-4b61-8546-95174cdf4f65
+      version: -1
+      name: Set SHA1Fields to Array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: SHA1Fields
+      value:
+        complex:
+          root: inputs.QradarSHA1Field
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '45':
+    id: '45'
+    taskid: 3d8f9a29-1344-436a-8c4f-3cfe1c42075c
+    type: regular
+    task:
+      id: 3d8f9a29-1344-436a-8c4f-3cfe1c42075c
+      version: -1
+      name: Set SHA256Fields to Array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: SHA256Fields
+      value:
+        complex:
+          root: inputs.QradarSHA256Field
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '46':
+    id: '46'
+    taskid: 55b39738-d6d3-4580-82af-66d5f3bf547e
+    type: playbook
+    task:
+      id: 55b39738-d6d3-4580-82af-66d5f3bf547e
+      version: -1
+      name: QRadarFullSearch
+      description: ''
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: '1'
+      query_expression:
+        complex:
+          root: .
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=function(val){var fields = Array.isArray(val.SHA256Fields)
+                    ? val.SHA256Fields : [val.SHA256Fields]; var sha256s = Array.isArray(val.File.SHA256)
+                    ? val.File.SHA256 : [val.File.SHA256]; return fields.map(field
+                    => sha256s.map(sha256 => "\"" + field + "\" = " + "''" + sha256
+                    + "''").join('' OR ''))}(val)'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+      range: {}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '47':
+    id: '47'
+    taskid: a9c0e063-8ed6-4cd0-81ca-9abd768cad52
+    type: playbook
+    task:
+      id: a9c0e063-8ed6-4cd0-81ca-9abd768cad52
+      version: -1
+      name: QRadarFullSearch
+      description: ''
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: '1'
+      query_expression:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: UTF8(payload) ILIKE  '$1'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+      range: {}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '48':
+    id: '48'
+    taskid: fc6a9fb5-82b5-4c69-825d-da8c1b78dcb5
+    type: title
+    task:
+      id: fc6a9fb5-82b5-4c69-825d-da8c1b78dcb5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '49':
+    id: '49'
+    taskid: 1c3122db-727e-473d-87ff-ec6346f840f1
+    type: regular
+    task:
+      id: 1c3122db-727e-473d-87ff-ec6346f840f1
+      version: -1
+      name: Set IP to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '50'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: IP
+      value:
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '50':
+    id: '50'
+    taskid: 9876a1b6-710d-4c95-8655-730b81330513
+    type: condition
+    task:
+      id: 9876a1b6-710d-4c95-8655-730b81330513
+      version: -1
+      name: Was there a custom IP field?
+      description: Was there a custom IP field?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '53'
+      'yes':
+      - '51'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.QradarIPfield
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '51':
+    id: '51'
+    taskid: 7f569d8a-1c5f-48d9-8625-3ad9a7cf207c
+    type: regular
+    task:
+      id: 7f569d8a-1c5f-48d9-8625-3ad9a7cf207c
+      version: -1
+      name: Set IPFields to Array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '52'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: IPFields
+      value:
+        complex:
+          root: inputs.QradarIPfield
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '52':
+    id: '52'
+    taskid: 89385b46-2183-42af-8e70-8b714a4ed1e2
+    type: playbook
+    task:
+      id: 89385b46-2183-42af-8e70-8b714a4ed1e2
+      version: -1
+      name: QRadarFullSearch
+      description: ''
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '48'
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: '1'
+      query_expression:
+        complex:
+          root: .
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: '.=function(val){var fields = Array.isArray(val.IPFields)
+                    ? val.IPFields : [val.IPFields]; var ips = Array.isArray(val.IP)
+                    ? val.IP : [val.IP]; return fields.map(field => ips.map(ip =>
+                    "\"" + field + "\" = " + "''" + ip + "''").join('' OR ''))}(val)'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+      range: {}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '53':
+    id: '53'
+    taskid: 4fe83f80-55c1-4d0b-80b4-0e06b80bc549
+    type: playbook
+    task:
+      id: 4fe83f80-55c1-4d0b-80b4-0e06b80bc549
+      version: -1
+      name: QRadarFullSearch
+      description: ''
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '48'
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: '1'
+      query_expression:
+        complex:
+          root: IP
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: UTF8(payload) LIKE  '$1'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+      range: {}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '55':
+    id: '55'
+    taskid: 1456427e-d871-4303-836a-b4cf9876b189
+    type: condition
+    task:
+      id: 1456427e-d871-4303-836a-b4cf9876b189
+      version: -1
+      name: Is Qradar enabled?
+      description: Is Qradar enabled?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '48'
+      'yes':
+      - '2'
+      - '5'
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: QRadar
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2305,
+        "width": 6140,
+        "x": -2620,
+        "y": -240
+      }
     }
-}
+  }
+inputs:
+- key: MD5
+  value: {}
+  required: false
+  description: MD5 hash file or an array of hashes to search.
+- key: QradarMD5Field
+  value: {}
+  required: false
+  description: MD5 field to search in QRadar. If non are specified the search will
+    use quick filter.
+- key: SHA1
+  value: {}
+  required: false
+  description: SHA1 hash file or an array of hashes to search.
+- key: QradarSHA1Field
+  value: {}
+  required: false
+  description: SHA1 field to search in QRadar. If non are specified the search will
+    use quick filter.
+- key: SHA256
+  value: {}
+  required: false
+  description: SHA256 hash file or an array of hashes to search.
+- key: QradarSHA256Field
+  value: {}
+  required: false
+  description: SHA256 field to search in QRadar. If non are specified the search will
+    use quick filter.
+- key: IPAddress
+  value: {}
+  required: false
+  description: |
+    Source or destination IP to search. Can be a single address or an array of addresses.
+- key: QradarIPfield
+  value:
+    simple: sourceip,destinationip
+  required: false
+  description: IP field to search in QRadar. If non are specified the search will
+    use sourceip or destinationip (combined).
+- key: URLDomain
+  value: {}
+  required: false
+  description: |
+    Domain or Url can be single or an array of domain/urls to search. By default the LIKE clause is used.
+- key: URLDomainField
+  value: {}
+  required: false
+  description: URL/Domain field to search in QRadar. If non are specified the search
+    will use quick filter.
+- key: SelectFields
+  value:
+    simple: '*'
+  required: true
+  description: The fields to be used in the select. Use comma delimited field names
+    as they appear in AQL. * is an acceptable value.
+- key: TimeFrame
+  value:
+    simple: LAST 7 DAYS
+  required: false
+  description: |-
+    Time frame as used in AQL
+    Examples can be
+    LAST 7 DAYS
+    START '2019-09-25 15:51' STOP '2019-09-25 17:51'
+    For more examples review IBM's AQL documentation.
+outputs:
+- contextPath: QRadar.Search.Result
+  type: string
+
+tests:
+- QRadar Indicator Hunting Test
