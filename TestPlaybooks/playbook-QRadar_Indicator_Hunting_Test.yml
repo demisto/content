@@ -2,21 +2,22 @@ id: QRadar Indicator Hunting Test
 version: -1
 name: QRadar Indicator Hunting Test
 fromversion: 4.5.0
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: e85881b9-a5a8-439b-8b1e-fc232c41d6fa
     type: start
     task:
       id: e85881b9-a5a8-439b-8b1e-fc232c41d6fa
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '2'
     separatecontext: false
     view: |-
       {
@@ -28,53 +29,87 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 5fff04ab-b065-4fdd-8bb4-3d70cc30fab6
+  '2':
+    id: '2'
+    taskid: c1815fd6-bb3b-493f-8271-1fcbcd5bfae8
+    type: regular
+    task:
+      id: c1815fd6-bb3b-493f-8271-1fcbcd5bfae8
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: d0768b12-0a74-46cd-8aa3-4cdbae748bcd
     type: playbook
     task:
-      id: 5fff04ab-b065-4fdd-8bb4-3d70cc30fab6
+      id: d0768b12-0a74-46cd-8aa3-4cdbae748bcd
       version: -1
       name: QRadar Indicator Hunting
+      description: ''
       playbookName: QRadar Indicator Hunting
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       IPAddress:
-        simple: 8.8.8.8,9.9.9.9
+        simple: 66.196.219.2,54.238.142.98
       MD5:
-        simple: ababababababa,cdcdcdcdcdcdcdcd
+        simple: avavavavavavavavavavav,bcbcbcbcbcbcbcb
       QradarIPfield:
         simple: sourceip,destinationip
-      QradarMD5Field:
-        simple: md5,md5test
+      QradarMD5Field: {}
       QradarSHA1Field:
-        simple: sha1,sha1test
+        simple: file hash
       QradarSHA256Field:
-        simple: sha256,sha256test
+        simple: file hash,root hash
       SHA1:
-        simple: qaqaqaqaqaqaqaqaqaqa,wswswswswswswswswswsws
+        simple: avavavavavavavavavavav,bcbcbcbcbcbcbcb
       SHA256:
-        simple: lklklklklklklklklklklklklklklklklklklk,jhjhjhjhjhjhjhjhjhjhjhjhjhjhjhjhjhjhjhjh
+        simple: avavavavavavavavavavav,bcbcbcbcbcbcbcb
       SelectFields:
         simple: '*'
       TimeFrame:
-        simple: LAST 7 DAYS
+        simple: LAST 1 DAYS
       URLDomain:
-        simple: google.com,walla.com
+        simple: google,walla.com
       URLDomainField:
-        simple: url,domain
+        simple: url
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 250
+          "y": 360
         }
       }
     note: false
@@ -85,7 +120,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 295,
+        "height": 405,
         "width": 380,
         "x": 450,
         "y": 50
