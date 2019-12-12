@@ -67,7 +67,6 @@ For information about content release notes conventions, refer to our [release n
 
 | Link | Description |
 | --- | ---|
-| [Tutorial Video](docs/tutorial-video) | A step-by-step introduction to creating an integration |
 | [Package directory](docs/package_directory_structure) | Explanation of Python integration / automation script package directory structure |
 | [Code Conventions](docs/code_conventions) | Our Code Conventions |
 | [Integration Parameter Types](docs/parameter_types) | Description of the various integration parameter types |
