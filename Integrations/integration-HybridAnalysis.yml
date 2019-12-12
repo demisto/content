@@ -189,7 +189,7 @@ script:
     }
 
     function scan(hash) {
-       return sendRequest('POST', '/api/v2/search/hash', 'hash='+hash);
+       return sendRequest('POST', '/api/v2/search/hashjhgjghjgh', 'hash='+hash);
 
     }
     function scanToEntry(res, hash, maliciousThreatLevels) {
