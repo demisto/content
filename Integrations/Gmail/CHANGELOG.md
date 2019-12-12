@@ -1,6 +1,7 @@
 ## [Unreleased]
--
-
+  - Added 1 command:
+    - ***gmail-get-role***
+  - Fixed context output paths. 
 
 ## [19.12.0] - 2019-12-10
 -
