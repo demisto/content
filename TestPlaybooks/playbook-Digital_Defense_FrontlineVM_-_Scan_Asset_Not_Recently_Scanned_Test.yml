@@ -1,16 +1,16 @@
-id: Frontline.Cloud - Scan Asset Not Recently Scanned Test
+id: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test
 version: -1
-fromversion: 5.0.0
-name: Frontline.Cloud - Scan Asset Not Recently Scanned Test
-description: Test playbook for "Frontline.Cloud - Scan Asset Not Recently Scanned"
+name: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test
+description: Test playbook for "Digital Defense FrontlineVM - Scan Asset Not Recently
+  Scanned"
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 949f2774-525b-41ee-8c99-27343f08d4ca
+    taskid: 1a52d07f-7dac-48ff-8ca4-3cfe3b9492d8
     type: start
     task:
-      id: 949f2774-525b-41ee-8c99-27343f08d4ca
+      id: 1a52d07f-7dac-48ff-8ca4-3cfe3b9492d8
       version: -1
       name: ''
       iscommand: false
@@ -32,12 +32,12 @@ tasks:
     ignoreworker: false
   '1':
     id: '1'
-    taskid: 825c303c-f2d7-4ea3-8be7-b2a38b91275d
+    taskid: fd0c9d4d-2499-4b75-8e52-74b79a1c7e4d
     type: regular
     task:
-      id: 825c303c-f2d7-4ea3-8be7-b2a38b91275d
+      id: fd0c9d4d-2499-4b75-8e52-74b79a1c7e4d
       version: -1
-      name: DeleteContext
+      name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -58,7 +58,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 230
+          "y": 200
         }
       }
     note: false
@@ -66,13 +66,13 @@ tasks:
     ignoreworker: false
   '2':
     id: '2'
-    taskid: 1899b669-799d-4bd8-8b93-4650bb668864
+    taskid: a94bfb16-5648-4e0f-8244-425973df8546
     type: playbook
     task:
-      id: 1899b669-799d-4bd8-8b93-4650bb668864
+      id: a94bfb16-5648-4e0f-8244-425973df8546
       version: -1
-      name: Frontline.Cloud - Scan Asset Not Recently Scanned
-      playbookName: Frontline.Cloud - Scan Asset Not Recently Scanned
+      name: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned
+      playbookName: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned
       type: playbook
       iscommand: false
       brand: ''
@@ -85,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 410
+          "y": 580
         }
       }
     note: false
@@ -93,10 +93,10 @@ tasks:
     ignoreworker: false
   '3':
     id: '3'
-    taskid: 5609be36-d2bd-4fff-85f6-93583eaa3c27
+    taskid: 702a374b-7856-4183-81ff-489d1edaad42
     type: regular
     task:
-      id: 5609be36-d2bd-4fff-85f6-93583eaa3c27
+      id: 702a374b-7856-4183-81ff-489d1edaad42
       version: -1
       name: Close Investigation
       description: Closes the current incident.
@@ -117,7 +117,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 570
+          "y": 800
         }
       }
     note: false
@@ -128,7 +128,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 615,
+        "height": 845,
         "width": 380,
         "x": 450,
         "y": 50
