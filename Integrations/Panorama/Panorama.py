@@ -3952,7 +3952,7 @@ def panorama_get_logs_command():
                 message = '. Reason is: ' + result['response']['msg']['line']
                 return_error('Query logs failed' + message)
             else:
-                return_error('Query logs failed')
+                return_error('Query logs failed.')
 
         query_logs_output = {
             'JobID': job_id,
@@ -3961,7 +3961,7 @@ def panorama_get_logs_command():
 
         if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
                 or 'status' not in result['response']['result']['job']:
-            return_error('Missing JobID status in response')
+            return_error('Missing JobID status in response.')
 
         if result['response']['result']['job']['status'] != 'FIN':
             demisto.results({
@@ -3977,25 +3977,26 @@ def panorama_get_logs_command():
             query_logs_output['Status'] = 'Completed'
             if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result'] \
                     or 'logs' not in result['response']['result']['log']:
-                return_error('Missing logs in response')
+                return_error('Missing logs in response.')
 
             logs = result['response']['result']['log']['logs']
             if logs['@count'] == '0':
-                demisto.results('No ' + log_type + ' logs matched the query')
+                human_readable = f'No {log_type} logs matched the query.'
             else:
                 pretty_logs = prettify_logs(logs['entry'])
                 query_logs_output['Logs'] = pretty_logs
-                demisto.results({
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['json'],
-                    'Contents': result,
-                    'ReadableContentsFormat': formats['markdown'],
-                    'HumanReadable': tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
-                                                     ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
-                                                      'Action', 'Rule', 'URLOrFilename'], removeNull=True),
-                    'IgnoreAutoExtract': ignore_auto_extract,
-                    'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
-                })
+                human_readable = tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
+                                                 ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
+                                                  'Action', 'Rule', 'URLOrFilename'], removeNull=True)
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': result,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': human_readable,
+                'IgnoreAutoExtract': ignore_auto_extract,
+                'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
+            })
 
 
 ''' Security Policy Match'''
