@@ -70,7 +70,6 @@ For information about content release notes conventions, refer to our [release n
 | [Tutorial Video](docs/tutorial-video) | A step-by-step introduction to creating an integration |
 | [Package directory](docs/package_directory_structure) | Explanation of Python integration / automation script package directory structure |
 | [Code Conventions](docs/code_conventions) | Our Code Conventions |
-| [Unit Testing](docs/tests/unit-testing) | Explanation of How to Perform Unit Testing on Integrations/Scripts |
 | [Integration Parameter Types](docs/parameter_types) | Description of the various integration parameter types |
 | [Context and Outputs](docs/context_and_ouputs) | Brief overview of Context and Outputs |
 | [Context Conventions](docs/context_standards) | Conventions for the Demisto Standard Context |
