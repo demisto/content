@@ -5,7 +5,6 @@ import requests
 import os
 import csv
 
-
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
