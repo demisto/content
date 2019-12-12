@@ -1,6 +1,5 @@
 from AutofocusV2 import *
 import json
-import demistomock as demisto
 
 IP_ADDRESS = '127.0.0.1'
 
@@ -39,7 +38,7 @@ IP_RES_JSON = {
             "tag_definition_status_id": 1,
             "count": 7692947,
             "lasthit": "2019-12-11 02:29:45",
-            "description": "The Upatre Trojan typically arrives as an e-mail attachment or through an e-mail with a link to the malware. Upatre's function is to download additional malware onto the system, in most cases when the malware was initially observed downloading the Dyre banking Trojan which then attempts to steal the users online banking credentials which may may be used for fraud.\n\nSince then, the operators have diversified, with Upatre frequently seen downloading other banking trojans.\n",
+            "description": "The Upatre Trojan typically arrives as an e-mail attachment or through an e-mail with a link to the malware. Upatre's function is to download additional malware onto the system, in most cases when the malware was initially observed downloading the Dyre banking Trojan which then attempts to steal the users online banking credentials which may may be used for fraud.\n\nSince then, the operators have diversified, with Upatre frequently seen downloading other banking trojans.\n",  # noqa: E501
             "customer_name": "Palo Alto Networks Unit42",
             "customer_industry": "High Tech",
             "upVotes": 2,
@@ -51,7 +50,7 @@ IP_RES_JSON = {
             "tagGroups": [
                 {
                     "tag_group_name": "Downloader",
-                    "description": "This type of malware secretly downloads malicious files from a remote server, then installs and executes the files."
+                    "description": "This type of malware secretly downloads malicious files from a remote server, then installs and executes the files."  # noqa: E501
                 }
             ],
             "aliases": [
@@ -87,7 +86,7 @@ INDICATOR_RES = {
             "TagClassID": 3,
             "Count": 7692947,
             "Lasthit": "2019-12-11 02:29:45",
-            "Description": "The Upatre Trojan typically arrives as an e-mail attachment or through an e-mail with a link to the malware. Upatre's function is to download additional malware onto the system, in most cases when the malware was initially observed downloading the Dyre banking Trojan which then attempts to steal the users online banking credentials which may may be used for fraud.\n\nSince then, the operators have diversified, with Upatre frequently seen downloading other banking trojans.\n"
+            "Description": "The Upatre Trojan typically arrives as an e-mail attachment or through an e-mail with a link to the malware. Upatre's function is to download additional malware onto the system, in most cases when the malware was initially observed downloading the Dyre banking Trojan which then attempts to steal the users online banking credentials which may may be used for fraud.\n\nSince then, the operators have diversified, with Upatre frequently seen downloading other banking trojans.\n"  # noqa: E501
         }
     ]
 }
@@ -97,13 +96,16 @@ def test_parse_indicator_response():
     indicator = parse_indicator_response(IP_RES_JSON, 'IP')
     assert json.dumps(indicator) == json.dumps(INDICATOR_RES)
 
+
 def test_calculate_dbot_score():
     score = calculate_dbot_score(IP_RES_JSON, 'IP')
     assert score == 3
 
+
 def test_calculate_dbot_score_file():
     score = calculate_dbot_score(FILE_RES_JSON, 'File')
     assert score == 3
+
 
 def test_get_indicator_outputs(mocker):
     return_outputs_mock = mocker.patch('AutofocusV2.return_outputs')
