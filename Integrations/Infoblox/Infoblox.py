@@ -401,7 +401,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
 
     if new_next_page_id:
         demisto.setContext(
-            f'{INTEGRATION_CONTEXT_NAME}.NextPageID(val.NextPageID && val.NextPageID === 'f'obj.NextPageID)',
+            f'{INTEGRATION_CONTEXT_NAME}.NextPageID(val.NextPageID && val.NextPageID === obj.NextPageID)',
             new_next_page_id)
     rules_list = raw_response.get('result')
     if not rules_list:
