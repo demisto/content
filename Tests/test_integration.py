@@ -347,19 +347,20 @@ def __print_investigation_error(client, playbook_id, investigation_id, color=LOG
         resp_json = ast.literal_eval(res[0])
         entries = resp_json['entries']
         print_color('Playbook ' + playbook_id + ' has failed:', color)
+        print_color('\n\n' + str(entries) + '\n\n', LOG_COLORS.GREEN)
         for entry in entries:
             if entry['type'] == ENTRY_TYPE_ERROR:
                 if entry['parentContent']:
                     print_color('\t- Command: ' + entry['parentContent'].encode('utf-8'), color)
                 print_color('\t- Body: ' + entry['contents'].encode('utf-8'), color)
             if entry.get('brand'):
-                info = 'brand: ' + entry['brand'].encode('utf-8') + '/n'
+                info = 'brand: ' + entry['brand'].encode('utf-8') + '\n'
             if entry.get('contents'):
-                info += 'contents: ' + entry['contents'].encode('utf-8') + '/n'
+                info += 'contents: ' + entry['contents'].encode('utf-8') + '\n'
             if entry.get('type'):
-                info += 'type: ' + str(entry['type']) + '/n'
+                info += 'type: ' + str(entry['type']) + '\n'
             if entry.get('parentContent'):
-                info += 'parentContent: ' + entry['parentContent'].encode('utf-8') + '/n'
+                info += 'parentContent: ' + entry['parentContent'].encode('utf-8') + '\n'
             print_color(info, LOG_COLORS.YELLOW)
 
 
