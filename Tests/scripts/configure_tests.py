@@ -379,11 +379,11 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
         playbook_names.add(new_playbook)
 
     affected_ids_string = ""
-    if script_names:
+    if script_names or deprecated_scripts_message:
         affected_ids_string += 'Scripts:\n' + '\n'.join(script_names) + '\n' + deprecated_scripts_message + '\n'
-    if playbook_names:
+    if playbook_names or deprecated_playbooks_message:
         affected_ids_string += 'Playbooks:\n' + '\n'.join(playbook_names) + '\n' + deprecated_playbooks_message + '\n'
-    if integration_ids:
+    if integration_ids or deprecated_integrations_message:
         affected_ids_string += 'Integrations:\n' + '\n'.join(integration_ids) + '\n' + \
                                deprecated_integrations_message + '\n'
 
