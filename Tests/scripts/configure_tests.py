@@ -493,6 +493,8 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
     """
     for playbook in playbook_set:
         playbook_data = list(playbook.values())[0]
+        if playbook_data.get('deprecated', False):
+            continue
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
@@ -516,13 +518,15 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
 
     for script in script_set:
         script_data = list(script.values())[0]
+        if script_data.get('deprecated', False):
+            continue
         script_name = script_data.get('name')
         script_file_path = script_data.get('file_path')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
         command_to_integration = script_data.get('command_to_integration', {})
         for integration_command in integration_commands:
-            if integration_command in script_data.get('depends_on', []) and not script_data.get('deprecated'):
+            if integration_command in script_data.get('depends_on', []):
                 if integration_command in command_to_integration.keys() and \
                         command_to_integration[integration_command] == integration_id and \
                         script_toversion >= given_version[1]:
@@ -549,6 +553,8 @@ def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, scr
                            updated_playbook_names, catched_playbooks, tests_set):
     for playbook in playbook_set:
         playbook_data = list(playbook.values())[0]
+        if playbook_data.get('deprecated', False):
+            continue
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
@@ -571,12 +577,13 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                          updated_script_names, updated_playbook_names, catched_scripts, catched_playbooks, tests_set):
     for script in script_set:
         script_data = list(script.values())[0]
+        if script_name.get('deprecated', False):
+            continue
         script_name = script_data.get('name')
         script_file_path = script_data.get('file_path')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
-        if given_script_id in script_data.get('script_executions', []) and not script_data.get('deprecated') and \
-                script_toversion >= given_version[1]:
+        if given_script_id in script_data.get('script_executions', []) and script_toversion >= given_version[1]:
             if script_name not in script_names and script_name not in updated_script_names:
                 tests = set(script_data.get('tests', []))
                 if tests:
@@ -596,6 +603,8 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
 
     for playbook in playbook_set:
         playbook_data = list(playbook.values())[0]
+        if playbook_data.get('deprecated', False):
+            continue
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
