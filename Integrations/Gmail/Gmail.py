@@ -92,6 +92,7 @@ def html_to_text(html):
     return parser.get_text()
 
 
+# disable-secrets-detection-start
 def get_http_client_with_proxy():
     proxies = handle_proxy()
     if not proxies or not proxies['https']:
@@ -107,6 +108,7 @@ def get_http_client_with_proxy():
         proxy_user=parsed_proxy.username,
         proxy_pass=parsed_proxy.password)
     return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=DISABLE_SSL)
+# disable-secrets-detection-end
 
 
 def get_credentials(additional_scopes=None, delegated_user=None):
@@ -513,7 +515,7 @@ def roles_to_entry(title, response):
             'Kind': role_data['kind'],
             'OrgUnitId': role_data.get('orgUnitId', ''),
         })
-    headers = ['ID', 'AssignedTo', 'RoleAssignmentId',
+    headers = ['ID', 'RoleAssignmentId',
                'ScopeType', 'Kind', 'OrgUnitId']
 
     return {
@@ -567,7 +569,8 @@ def filters_to_entry(title, mailbox, response):
         'Contents': context,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
-        'EntryContext': {'GmailFilter(val.ID && val.ID == obj.ID)': context}
+        'EntryContext': {'GmailFilter(val.ID && val.ID == obj.ID)': context,
+                         'Gmail.Filter(val.ID && val.ID == obj.ID)': context}
     }
 
 

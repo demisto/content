@@ -140,24 +140,24 @@ script:
       description: The user's email address. The "me" special value can be used to indicate
         the authenticated user.
     outputs:
-    - contextPath: GoogleApps.Role.RoleAssignmentId
+    - contextPath: Gmail.Role.RoleAssignmentId
       description: The unique ID of the role assignment.
-      type: string
-    - contextPath: GoogleApps.Role.ScopeType
+      type: String
+    - contextPath: Gmail.Role.ScopeType
       description: The scope type of the role.
-      type: string
-    - contextPath: GoogleApps.Role.Kind
+      type: String
+    - contextPath: Gmail.Role.Kind
       description: The kind of the Role.
-      type: string
-    - contextPath: GoogleApps.Role.OrgUnitId
+      type: String
+    - contextPath: Gmail.Role.OrgUnitId
       description: Organization in which user was assigned.
-      type: string
-    - contextPath: GoogleApps.Role.ID
+      type: String
+    - contextPath: Gmail.Role.ID
       description: The inner role ID.
-      type: string
-    - contextPath: GoogleApps.Role.AssignedTo
+      type: String
+    - contextPath: Gmail.Role.AssignedTo
       description: User ID who was assigned to the role.
-      type: string
+      type: String
     description: Retrieves a list of all Google roles for a specified user.
   - name: gmail-get-attachments
     arguments:
@@ -1017,13 +1017,25 @@ script:
     - contextPath: GmailFilter.ID
       description: Filter ID.
       type: string
+    - contextPath: Gmail.Filter.ID
+      description: Filter ID.
+      type: String
     - contextPath: GmailFilter.Mailbox
       description: Mailbox containing the filter.
       type: string
+    - contextPath: Gmail.Filter.Mailbox
+      description: Mailbox containing the filter.
+      type: String
     - contextPath: GmailFilter.Criteria
       description: Filter Criteria.
       type: Unknown
+    - contextPath: Gmail.Filter.Criteria
+      description: Filter Criteria.
+      type: Unknown
     - contextPath: GmailFilter.Action
+      description: Filter Action.
+      type: Unknown
+    - contextPath: Gmail.Filter.Action
       description: Filter Action.
       type: Unknown
     description: Add a new filter.
@@ -1041,13 +1053,25 @@ script:
     - contextPath: GmailFilter.ID
       description: Filter ID.
       type: string
+    - contextPath: Gmail.Filter.ID
+      description: Filter ID.
+      type: String
     - contextPath: GmailFilter.Mailbox
       description: Mailbox containing the filter.
       type: string
+    - contextPath: Gmail.Filter.Mailbox
+      description: Mailbox containing the filter.
+      type: String
     - contextPath: GmailFilter.Criteria
       description: Filter Criteria.
       type: Unknown
+    - contextPath: Gmail.Filter.Criteria
+      description: Filter Criteria.
+      type: Unknown
     - contextPath: GmailFilter.Action
+      description: Filter Action.
+      type: Unknown
+    - contextPath: Gmail.Filter.Action
       description: Filter Action.
       type: Unknown
     description: List all filters in a user's mailbox.
