@@ -52,7 +52,6 @@ class TestsGraph:
                     first_test_vertex.add_neighbor(second_test_vertex)
                     second_test_vertex.add_neighbor(first_test_vertex)
 
-
     def get_clusters(self):
         clusters = []
         for test_name in self.test_vertices:
@@ -62,14 +61,12 @@ class TestsGraph:
                 clusters.append(test_connected_component)
         self.clusters = clusters
 
-
-
-    def build_tests_graph_from_conf_json(self):
-        with open('conf.json', 'r') as myfile:
+    def build_tests_graph_from_conf_json(self, tests_file_path):
+        with open(tests_file_path, 'r') as myfile:
             conf_json_string = myfile.read()
 
         tests_data = json.loads(conf_json_string)["tests"]
-        dependent_tests = get_test_dependencies()[0]
+        dependent_tests = get_test_dependencies(tests_file_path)[0]
 
         dependent_tests_data = [test_record for test_record in tests_data if test_record.get("playbookID") in dependent_tests]
 
@@ -121,10 +118,10 @@ def get_integration_dependencies():
     return dependent_integrations, independent_integrations
 
 
-def get_test_dependencies():
+def get_test_dependencies(tests_file_path):
     dependent_integrations = get_integration_dependencies()[0]
 
-    with open('conf.json', 'r') as myfile:
+    with open(tests_file_path, 'r') as myfile:
         conf_json_string = myfile.read()
     conf_json_obj = json.loads(conf_json_string)
 
@@ -144,15 +141,15 @@ def get_test_dependencies():
     return dependent_tests, independent_tests, all_tests
 
 
-def get_dependent_integrations_clusters_data():
+def get_dependent_integrations_clusters_data(tests_file_path):
     tests_graph = TestsGraph()
-    tests_graph.build_tests_graph_from_conf_json()
+    tests_graph.build_tests_graph_from_conf_json(tests_file_path)
     return tests_graph.clusters
 
 
-def get_tests_allocation(number_of_instances):
-    dependent_tests, independent_tests, all_tests = get_test_dependencies()
-    dependent_tests_clusters = get_dependent_integrations_clusters_data()
+def get_tests_allocation(number_of_instances, tests_file_path):
+    dependent_tests, independent_tests, all_tests = get_test_dependencies(tests_file_path)
+    dependent_tests_clusters = get_dependent_integrations_clusters_data(tests_file_path)
     dependent_tests_clusters.sort(key=len, reverse=True) # Sort the clusters from biggest to smallest
     tests_allocation = []
     number_of_tests_left = len(all_tests)
@@ -204,28 +201,8 @@ def get_tests_allocation(number_of_instances):
     return tests_allocation
 
 
-
-
-
-
-
-
-
-
-def run_nightly_tests(desired_number_of_demisto_machines):
-    nightly_instances = get_nightly_instances()
-    tests_allocation_list = get_tests_allocation()
-    for machine_index in range(desired_number_of_demisto_machines):
-        current_instance = nightly_instances[machine_index]
-        tests_to_execute = tests_allocation_list[machine_index]
-        _thread.start_new_thread(execute_tests, (current_instance, tests_to_execute))
-
-
-
-
-get_test_dependencies()
-tests_graph = TestsGraph()
-clusters = get_dependent_integrations_clusters_data()
-cluster_size_arr = [len(cluster) for cluster in clusters]
-print(clusters)
+#get_test_dependencies()
+#tests_graph = TestsGraph()
+#clusters = get_dependent_integrations_clusters_data()
+#cluster_size_arr = [len(cluster) for cluster in clusters]
 
