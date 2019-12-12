@@ -11,6 +11,7 @@ import demisto_client
 
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 from Tests.scripts.constants import PB_Status
+from Tests.test_content import ParallelPrintsManager
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -25,7 +26,7 @@ ENTRY_TYPE_ERROR = 4
 
 
 # get integration configuration
-def __get_integration_config(client, integration_name):
+def __get_integration_config(client, integration_name, thread_index=0, prints_manager=None):
     body = {
         'page': 0, 'size': 100, 'query': 'name:' + integration_name
     }
@@ -33,7 +34,7 @@ def __get_integration_config(client, integration_name):
         res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
                                                       method='POST', body=body)
     except ApiException as conn_error:
-        print(conn_error)
+        prints_manager.add_print_job(conn_error, print, thread_index)
         return None
 
     res = ast.literal_eval(res_raw[0])
@@ -42,8 +43,9 @@ def __get_integration_config(client, integration_name):
     total_sleep = 0
     while 'configurations' not in res:
         if total_sleep == TIMEOUT:
-            print_error("Timeout - failed to get integration {} configuration. Error: {}".format(
-                integration_name, res))
+            error_message = "Timeout - failed to get integration {} configuration. Error: {}".format(integration_name,
+                                                                                                     res)
+            prints_manager.add_print_job(error_message, print_error, thread_index)
             return None
 
         time.sleep(SLEEP_INTERVAL)
@@ -53,33 +55,33 @@ def __get_integration_config(client, integration_name):
     match_configurations = [x for x in all_configurations if x['name'] == integration_name]
 
     if not match_configurations or len(match_configurations) == 0:
-        print_error('integration was not found')
+        prints_manager.add_print_job('integration was not found', print_error, thread_index)
         return None
 
     return match_configurations[0]
 
 
 # __test_integration_instance
-def __test_integration_instance(client, module_instance):
+def __test_integration_instance(client, module_instance, thread_index=0, prints_manager=None):
     try:
         response_data, response_code, _ = demisto_client.generic_request_func(self=client, method='POST',
                                                                               path='/settings/integration/test',
                                                                               body=module_instance)
     except ApiException as conn_err:
-        print_error(
-            'Failed to test integration instance, error trying to communicate with demisto '
-            'server: {} '.format(
-                conn_err))
+        error_message = 'Failed to test integration instance, error trying to communicate with demisto '\
+            'server: {} '.format(conn_err)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         return False
     if int(response_code) != 200:
-        print_error('Integration-instance test ("Test" button) failed.\nBad status code: ' + str(
-            response_code))
+        error_message = 'Integration-instance test ("Test" button) failed.\nBad status code: ' + str(response_code)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         return False
 
     result_object = ast.literal_eval(response_data)
     success = result_object['success']
     if not success:
-        print_error('Test integration failed.\n Failure message: ' + result_object['message'])
+        error_message = 'Test integration failed.\n Failure message: ' + result_object['message']
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         return False
 
     return True
@@ -87,11 +89,14 @@ def __test_integration_instance(client, module_instance):
 
 # return instance name if succeed, None otherwise
 def __create_integration_instance(client, integration_name, integration_instance_name,
-                                  integration_params, is_byoi):
-    print('Configuring instance for {} (instance name: {})'.format(integration_name,
-                                                                   integration_instance_name))
+                                  integration_params, is_byoi, thread_index=0,
+                                  prints_manager=None):
+    start_message = 'Configuring instance for {} (instance name: {})'.format(integration_name, integration_instance_name)
+    prints_manager.add_print_job(start_message, print, thread_index)
+
     # get configuration config (used for later rest api
-    configuration = __get_integration_config(client, integration_name)
+    configuration = __get_integration_config(client, integration_name, thread_index=thread_index,
+                                             prints_manager=prints_manager)
     if not configuration:
         return None
 
@@ -143,30 +148,32 @@ def __create_integration_instance(client, integration_name, integration_instance
                                                   path='/settings/integration',
                                                   body=module_instance)
     except ApiException as conn_err:
-        print_error(
-            'Error trying to create instance for integration: {0}:\n {1}'.format(integration_name,
-                                                                                 conn_err))
+        error_message = 'Error trying to create instance for integration: {0}:\n {1}'.format(integration_name, conn_err)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         return None
 
     if res[1] != 200:
-        print_error('create instance failed with status code ' + str(res[1]))
-        print_error(pformat(res[0]))
+        error_message = 'create instance failed with status code ' + str(res[1])
+        prints_manager.add_print_job(error_message, print_error, thread_index)
+        prints_manager.add_print_job(pformat(res[0]), print_error, thread_index)
         return None
 
     integration_config = ast.literal_eval(res[0])
     module_instance['id'] = integration_config['id']
 
     # test integration
-    test_succeed = __test_integration_instance(client, module_instance)
+    test_succeed = __test_integration_instance(client, module_instance, thread_index=thread_index,
+                                               prints_manager=prints_manager)
 
     if not test_succeed:
-        __disable_integrations_instances(client, [module_instance])
+        __disable_integrations_instances(client, [module_instance], thread_index=thread_index,
+                                         prints_manager=prints_manager)
         return None
 
     return module_instance
 
 
-def __disable_integrations_instances(client, module_instances):
+def __disable_integrations_instances(client, module_instances, thread_index=0, prints_manager=None):
     for configured_instance in module_instances:
         # tested with POSTMAN, this is the minimum required fields for the request.
         module_instance = {
@@ -180,18 +187,18 @@ def __disable_integrations_instances(client, module_instances):
                                                       path='/settings/integration',
                                                       body=module_instance)
         except ApiException as conn_err:
-            print_error(
-                'Failed to disable integration instance, error trying to communicate with demisto '
-                'server: {} '.format(
-                    conn_err))
+            error_message = 'Failed to disable integration instance, error trying to communicate with demisto ' \
+                'server: {} '.format(conn_err)
+            prints_manager.add_print_job(error_message, print_error, thread_index)
 
         if res[1] != 200:
-            print_error('disable instance failed with status code ' + str(res[1]))
-            print_error(pformat(res))
+            error_message = 'disable instance failed with status code ' + str(res[1])
+            prints_manager.add_print_job(error_message, print_error, thread_index)
+            prints_manager.add_print_job(pformat(res), print_error, thread_index)
 
 
 # create incident with given name & playbook, and then fetch & return the incident
-def __create_incident_with_playbook(client, name, playbook_id, integrations):
+def __create_incident_with_playbook(client, name, playbook_id, integrations, thread_index=0, prints_manager=None):
     # create incident
     create_incident_request = demisto_client.demisto_api.CreateIncidentRequest()
     create_incident_request.create_investigation = True
@@ -211,11 +218,12 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
     if inc_id == 'incCreateErr':
         integration_names = [integration['name'] for integration in integrations if
                              'name' in integration]
-        print_error('Failed to create incident for integration names: {} and playbookID: {}.'
-                    'Possible reasons are:\nMismatch between playbookID in conf.json and '
-                    'the id of the real playbook you were trying to use,'
+        error_message = 'Failed to create incident for integration names: {} and playbookID: {}.' \
+                        'Possible reasons are:\nMismatch between playbookID in conf.json and ' \
+                    'the id of the real playbook you were trying to use,' \
                     'or schema problems in the TestPlaybook.'.format(str(integration_names),
-                                                                     playbook_id))
+                                                                     playbook_id)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         return False, -1
 
     # get incident
@@ -236,10 +244,11 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
         try:
             incidents = client.search_incidents(filter=search_filter)
         except ApiException as err:
-            print(err)
+            prints_manager.add_print_job(err, print, thread_index)
         if time.time() > timeout:
-            print_error('Got timeout for searching incident with id {}, '
-                        'got {} incidents in the search'.format(inc_id, incidents['total']))
+            error_message = 'Got timeout for searching incident with id {}, ' \
+                        'got {} incidents in the search'.format(inc_id, incidents['total'])
+            prints_manager.add_print_job(error_message, print_error, thread_index)
             return False, -1
 
         time.sleep(1)
@@ -248,16 +257,15 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
 
 
 # returns current investigation playbook state - 'inprogress'/'failed'/'completed'
-def __get_investigation_playbook_state(client, inv_id):
+def __get_investigation_playbook_state(client, inv_id, thread_index=0, prints_manager=None):
     try:
         investigation_playbook_raw = demisto_client.generic_request_func(self=client, method='GET',
                                                                          path='/inv-playbook/' + inv_id)
         investigation_playbook = ast.literal_eval(investigation_playbook_raw[0])
     except requests.exceptions.RequestException as conn_err:
-        print_error(
-            'Failed to get investigation playbook state, error trying to communicate with demisto '
-            'server: {} '.format(
-                conn_err))
+        error_message = 'Failed to get investigation playbook state, error trying to communicate with demisto '\
+            'server: {} '.format(conn_err)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         return PB_Status.FAILED
 
     try:
@@ -268,7 +276,7 @@ def __get_investigation_playbook_state(client, inv_id):
 
 
 # return True if delete-incident succeeded, False otherwise
-def __delete_incident(client, incident):
+def __delete_incident(client, incident, thread_index=0, prints_manager=None):
     try:
         body = {
             'ids': [incident['id']],
@@ -278,15 +286,15 @@ def __delete_incident(client, incident):
         res = demisto_client.generic_request_func(self=client, method='POST',
                                                   path='/incident/batchDelete', body=body)
     except requests.exceptions.RequestException as conn_err:
-        print_error(
-            'Failed to delete incident, error trying to communicate with demisto server: {} '
-            ''.format(
-                conn_err))
+        error_message = 'Failed to delete incident, error trying to communicate with demisto server: {} '\
+            ''.format(conn_err)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         return False
 
     if int(res[1]) != 200:
-        print_error('delete incident failed\nStatus code' + str(res[1]))
-        print_error(pformat(res))
+        error_message = 'delete incident failed\nStatus code' + str(res[1])
+        prints_manager.add_print_job(error_message, print_error, thread_index)
+        prints_manager.add_print_job(pformat(res), print_error, thread_index)
         return False
 
     return True
@@ -319,26 +327,31 @@ def __delete_integrations_instances(client, module_instances):
     return succeed
 
 
-def __print_investigation_error(client, playbook_id, investigation_id, color=LOG_COLORS.RED):
+def __print_investigation_error(client, playbook_id, investigation_id, color=LOG_COLORS.RED,
+                                thread_index=0, prints_manager=None):
     try:
         empty_json = {"pageSize": 1}
         res = demisto_client.generic_request_func(self=client, method='POST',
                                                   path='/investigation/' + urllib.quote(
                                                       investigation_id), body=empty_json)
     except requests.exceptions.RequestException as conn_err:
-        print_error(
-            'Failed to print investigation error, error trying to communicate with demisto '
-            'server: {} '.format(
-                conn_err))
+        error_message = 'Failed to print investigation error, error trying to communicate with demisto ' \
+            'server: {} '.format(conn_err)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
     if res and int(res[1]) == 200:
         resp_json = ast.literal_eval(res[0])
         entries = resp_json['entries']
-        print_color('Playbook ' + playbook_id + ' has failed:', color)
+        prints_manager.add_print_job('Playbook ' + playbook_id + ' has failed:', print_color, thread_index,
+                                     message_color=color)
         for entry in entries:
             if entry['type'] == ENTRY_TYPE_ERROR:
                 if entry['parentContent']:
-                    print_color('\t- Command: ' + entry['parentContent'].encode('utf-8'), color)
-                print_color('\t- Body: ' + entry['contents'].encode('utf-8'), color)
+                    prints_manager.add_print_job('\t- Command: ' + entry['parentContent'].encode('utf-8'), print_color, thread_index,
+                                                 message_color=color)
+
+                prints_manager.add_print_job('\t- Body: ' + entry['contents'].encode('utf-8'), print_color,
+                                             thread_index,
+                                             message_color=color)
 
 
 # Configure integrations to work with mock
@@ -361,7 +374,8 @@ def configure_proxy_unsecure(integration_params):
 # 3. wait for playbook to finish run
 # 4. if test pass - delete incident & instance
 # return playbook status
-def test_integration(client, integrations, playbook_id, options=None, is_mock_run=False):
+def test_integration(client, integrations, playbook_id, options=None, is_mock_run=False, thread_index=0,
+                     prints_manager=None):
     options = options if options is not None else {}
     # create integrations instances
     module_instances = []
@@ -376,27 +390,33 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
 
         module_instance = __create_integration_instance(client, integration_name,
                                                         integration_instance_name,
-                                                        integration_params, is_byoi)
+                                                        integration_params, is_byoi,
+                                                        thread_index=thread_index,
+                                                        prints_manager=prints_manager
+                                                        )
         if module_instance is None:
-            print_error('Failed to create instance')
+            prints_manager.add_print_job('Failed to create instance', print_error, thread_index)
             __delete_integrations_instances(client, module_instances)
             return False, -1
 
         module_instances.append(module_instance)
-        print('Create integration {} succeed'.format(integration_name, ''))
+        prints_manager.add_print_job('Create integration {} succeed'.format(integration_name, ''), print, thread_index)
 
     # create incident with playbook
     incident, inc_id = __create_incident_with_playbook(client, 'inc_{}'.format(playbook_id,),
-                                                       playbook_id, integrations)
+                                                       playbook_id, integrations, thread_index=thread_index,
+                                                       prints_manager=prints_manager)
 
     if not incident:
         return False, -1
 
     investigation_id = incident['investigationId']
     if investigation_id is None or len(investigation_id) == 0:
-        print_error('Failed to get investigation id of incident:' + incident)
+        prints_manager.add_print_job('Failed to get investigation id of incident:' + incident,
+                                     print_error, thread_index)
         return False, -1
-    print('Investigation ID: {}'.format(investigation_id))
+
+    prints_manager.add_print_job('Investigation ID: {}'.format(investigation_id), print, thread_index)
 
     timeout_amount = options['timeout'] if 'timeout' in options else DEFAULT_TIMEOUT
     timeout = time.time() + timeout_amount
@@ -408,26 +428,30 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         time.sleep(1)
 
         # fetch status
-        playbook_state = __get_investigation_playbook_state(client, investigation_id)
+        playbook_state = __get_investigation_playbook_state(client, investigation_id, thread_index=thread_index,
+                                                            prints_manager=prints_manager)
 
         if playbook_state == PB_Status.COMPLETED or playbook_state == \
                 PB_Status.NOT_SUPPORTED_VERSION:
             break
         if playbook_state == PB_Status.FAILED:
             if is_mock_run:
-                print_warning(playbook_id + ' failed with error/s')
+                prints_manager.add_print_job(playbook_id + ' failed with error/s', print_warning, thread_index)
                 __print_investigation_error(client, playbook_id, investigation_id,
-                                            LOG_COLORS.YELLOW)
+                                            LOG_COLORS.YELLOW, thread_index=thread_index, prints_manager=prints_manager)
             else:
-                print_error(playbook_id + ' failed with error/s')
-                __print_investigation_error(client, playbook_id, investigation_id)
+                prints_manager.add_print_job(playbook_id + ' failed with error/s', print_error, thread_index)
+                __print_investigation_error(client, playbook_id, investigation_id, thread_index=thread_index,
+                                            prints_manager=prints_manager)
             break
         if time.time() > timeout:
-            print_error(playbook_id + ' failed on timeout')
+            prints_manager.add_print_job(playbook_id + ' failed on timeout', print_error, thread_index)
             break
 
         if i % DEFAULT_INTERVAL == 0:
-            print('loop no. {}, playbook state is {}'.format(i / DEFAULT_INTERVAL, playbook_state))
+            loop_number_message = 'loop no. {}, playbook state is {}'.format(
+                i / DEFAULT_INTERVAL, playbook_state)
+            prints_manager.add_print_job(loop_number_message, print, thread_index)
         i = i + 1
 
     __disable_integrations_instances(client, module_instances)
@@ -435,7 +459,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
     test_pass = playbook_state == PB_Status.COMPLETED or playbook_state == PB_Status.NOT_SUPPORTED_VERSION
     if test_pass:
         # delete incident
-        __delete_incident(client, incident)
+        __delete_incident(client, incident, thread_index=thread_index, prints_manager=prints_manager)
 
         # delete integration instance
         __delete_integrations_instances(client, module_instances)
@@ -443,7 +467,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
     return playbook_state, inc_id
 
 
-def disable_all_integrations(demisto_api_key, server):
+def disable_all_integrations(demisto_api_key, server, thread_index=0, prints_manager=None):
     """
     Disable all enabled integrations. Should be called at start of test loop to start out clean
 
@@ -458,23 +482,23 @@ def disable_all_integrations(demisto_api_key, server):
                                                        body=body)
         int_instances = ast.literal_eval(int_resp[0])
     except requests.exceptions.RequestException as conn_err:
-        print_error(
-            'Failed to disable all integrations, error trying to communicate with demisto server: '
-            '{} '.format(
-                conn_err))
+        error_message = 'Failed to disable all integrations, error trying to communicate with demisto server: ' \
+            '{} '.format(conn_err)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         return
     if int(int_resp[1]) != 200:
-        print_error(
-            'Get all integration instances failed with status code: {}'.format(int_resp[1]))
+        error_message = 'Get all integration instances failed with status code: {}'.format(int_resp[1])
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         return
     if 'instances' not in int_instances:
-        print("No integrations instances found to disable all")
+        prints_manager.add_print_job("No integrations instances found to disable all", print, thread_index)
         return
     to_disable = []
     for instance in int_instances['instances']:
         if instance.get('enabled') == 'true' and instance.get("isIntegrationScript"):
-            print("Adding to disable list. Name: {}. Brand: {}".format(instance.get("name"),
-                                                                       instance.get("brand")))
+            add_to_disable_message = "Adding to disable list. Name: {}. Brand: {}".format(instance.get("name"),
+                                                                                          instance.get("brand"))
+            prints_manager.add_print_job(add_to_disable_message, print, thread_index)
             to_disable.append(instance)
     if len(to_disable) > 0:
-        __disable_integrations_instances(client, to_disable)
+        __disable_integrations_instances(client, to_disable, thread_index=thread_index, prints_manager=prints_manager)
