@@ -45,8 +45,11 @@ def clean_html(text):
 def remove_line_breaks(text):
     if not REMOVE_LINE_BREAKS:
         return text
+    return text.replace("\r", " ").replace("\n", " ")
 
-    return re.sub(r"\s+", " ", text.replace("\r", " ").replace("\n", " ")).strip()
+
+def remove_multiple_whitespaces(text):
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def hash_word(word):
@@ -104,10 +107,16 @@ def tokenize_text(text):
 
 def map_indices_to_words(unicode_text):
     original_text_indices_to_words = {}
-    for word in set(unicode_text.split()):
-        for word_occurrence in re.finditer(re.escape(word), unicode_text):
-            for i in range(len(word)):
-                original_text_indices_to_words[word_occurrence.start() + i] = word
+    word_start = 0
+    while word_start < len(unicode_text) and unicode_text[word_start].isspace():
+        word_start += 1
+    for word in unicode_text.split():
+        for char_idx, char in enumerate(word):
+            original_text_indices_to_words[word_start + char_idx] = word
+        # find beginning of next word
+        word_start += len(word)
+        while word_start < len(unicode_text) and unicode_text[word_start].isspace():
+            word_start += 1
     return original_text_indices_to_words
 
 
@@ -126,6 +135,7 @@ def word_tokenize(text):
         original_text = t
         t = remove_line_breaks(t)
         t = clean_html(t)
+        t = remove_multiple_whitespaces(t)
         tokenized_text, hash_tokenized_text, original_words_to_tokens, words_to_hashed_tokens = tokenize_text(t)
         text_result = {
             'originalText': original_text,
