@@ -21,9 +21,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Infoblox connects to your NIOS appliance. It allows getting metadata about IPs in your network and managing
-  the DNS Firewall by configuring RPZs and defining RPZ rules to block DNS resolution for malicious or unauthorized
-  hostnames, or redirect clients to a walled garden by substituting responses.
+description: Infoblox connects to your NIOS appliance. It allows getting metadata
+  about IPs in your network and managing the DNS Firewall by configuring RPZs and
+  defining RPZ rules to block DNS resolution for malicious or unauthorized hostnames,
+  or redirect clients to a walled garden by substituting responses.
 display: Infoblox
 name: Infoblox
 script:
@@ -56,7 +57,8 @@ script:
       description: The current status of the address.
       type: string
     - contextPath: Infoblox.IP.IsConflict
-      description: If set to True, the IP address has either a MAC address conflict or a DHCP lease conflict detected through a network discovery.
+      description: If set to True, the IP address has either a MAC address conflict
+        or a DHCP lease conflict detected through a network discovery.
       type: string
     - contextPath: Infoblox.IP. Objects
       description: The objects associated with the IP address.
@@ -65,7 +67,8 @@ script:
       description: The current status of the address.
       type: string
     - contextPath: Infoblox.IP. Names
-      description: The DNS names. For example, if the IP address belongs to a host record, this field contains the hostname.
+      description: The DNS names. For example, if the IP address belongs to a host
+        record, this field contains the hostname.
       type: string
     - contextPath: Infoblox.IP. Extattrs
       description: Extra attributes relevant for this object
@@ -148,7 +151,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Maximum results to return.
+      description: Maximum results to return. (default is 50)
       isArray: false
       name: max_results
       required: false
