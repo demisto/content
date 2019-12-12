@@ -1,5 +1,5 @@
 id: GmailTest
-version: -1
+version: 15
 contentitemfields:
   propagationLabels: []
 name: GmailTest
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": -200
+          "y": -570
         }
       }
     note: false
@@ -53,7 +53,7 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": -35
+          "y": -405
         }
       }
     note: false
@@ -91,7 +91,7 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 145
+          "y": -235
         }
       }
     note: false
@@ -144,7 +144,7 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 330
+          "y": -50
         }
       }
     note: false
@@ -179,7 +179,7 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 865
+          "y": 845
         }
       }
     note: false
@@ -1791,7 +1791,7 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 510
+          "y": 130
         }
       }
     note: false
@@ -1810,7 +1810,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "5"
+      - "60"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1861,7 +1861,131 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 675
+          "y": 295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "60":
+    id: "60"
+    taskid: ec14dac4-797d-449e-87a7-0fa4dbea4005
+    type: regular
+    task:
+      id: ec14dac4-797d-449e-87a7-0fa4dbea4005
+      version: -1
+      name: Get Role
+      description: gmail get role
+      script: '|||gmail-get-role'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      customer-id: {}
+      role-id:
+        complex:
+          root: Gmail
+          accessor: Role.[0].ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "61":
+    id: "61"
+    taskid: 3ced040d-4968-48e6-86d6-755b5db6e7fd
+    type: condition
+    task:
+      id: 3ced040d-4968-48e6-86d6-755b5db6e7fd
+      version: -1
+      name: Verify Get Role Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.ETag
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.IsSuperAdminRole
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.IsSystemRole
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.Kind
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.Description
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.Privilege.ServiceID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: Role.Privilege.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 650
         }
       }
     note: false
@@ -1874,10 +1998,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5985,
+        "height": 6355,
         "width": 2110,
         "x": 50,
-        "y": -200
+        "y": -570
       }
     }
   }

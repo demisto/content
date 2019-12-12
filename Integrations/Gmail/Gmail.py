@@ -170,7 +170,13 @@ def parse_mail_parts(parts):
 
 
 def parse_privileges(privileges_list):
-    return [{'ServiceID': prvlg.get('serviceId'), 'Name': prvlg.get('privilegeName')} for prvlg in privileges_list]
+    privileges = []
+    for prvlg in privileges_list:
+        service_id = prvlg.get('serviceId')
+        name = prvlg.get('privilegeName')
+        if name and service_id:
+            privileges.append({'ServiceID': service_id, 'Name': name})
+    return privileges
 
 
 def localization_extract(time_from_mail):
@@ -592,16 +598,19 @@ def role_to_entry(title, role):
 
     headers = ['ETag', 'IsSuperAdminRole', 'IsSystemRole', 'Kind', 'Description',
                'ID', 'Name']
+    details_hr = tableToMarkdown(title, context, headers, removeNull=True)
 
     privileges = context.get('Privilege', [])
+    privileges_headers = ['ServiceID', 'Name']
+    privileges_title = 'Role {} privileges:'.format(context.get('ID'))
+    privileges_hr = tableToMarkdown(privileges_title, privileges, privileges_headers, removeNull=True)
 
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
         'Contents': context,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True) +
-        tableToMarkdown(title.split('details')[0] + 'privileges:', privileges, ['ServiceID', 'Name'], removeNull=True),
+        'HumanReadable': details_hr + privileges_hr,
         'EntryContext': {'Gmail.Role(val.ID && val.ID == obj.ID)': context}
     }
 
