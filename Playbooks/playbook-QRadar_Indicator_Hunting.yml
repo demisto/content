@@ -2006,6 +2006,7 @@ inputs:
     For more examples review IBM's AQL documentation.
 outputs:
 - contextPath: QRadar.Search.Result
+  description: Qradar's search results.
   type: string
 
 tests:
