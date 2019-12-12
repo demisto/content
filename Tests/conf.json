@@ -4,19 +4,19 @@
     "tests": [
         {
             "integrations": "Digital Defense FrontlineVM",
-            "playbookID": "Frontline.Cloud - 90 Day Old Critical Vulnerabilities Found Test"
+            "playbookID": "Digital Defense FrontlineVM - Old Vulnerabilities Found Test"
         },
         {
             "integrations": "Digital Defense FrontlineVM",
-            "playbookID": "Frontline.Cloud - PAN-OS block assets Test"
+            "playbookID": "Digital Defense FrontlineVM - PAN-OS block assets Test"
         },
         {
             "integrations": "Digital Defense FrontlineVM",
-            "playbookID": "Frontline.Cloud - Scan Asset Not Recently Scanned Test"
+            "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
         },
         {
             "integrations": "Digital Defense FrontlineVM",
-            "playbookID": "Frontline.Cloud-Test"
+            "playbookID": "Digital Defense FrontlineVM - Test Playbook"
         },
         {
             "integrations": "JsonWhoIs",

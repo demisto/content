@@ -1,7 +1,6 @@
-id: Frontline.Cloud-Test
+id: Digital Defense FrontlineVM - Test Playbook
 version: -1
-fromversion: 5.0.0
-name: Frontline.Cloud-Test
+name: Digital Defense FrontlineVM - Test Playbook
 description: This is a test playbook for the Digital Defense Inc. FrontlineVM Integration
 starttaskid: '0'
 tasks:
@@ -23,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 285,
           "y": 50
         }
       }
@@ -57,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 285,
           "y": 195
         }
       }
@@ -90,7 +89,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 285,
           "y": 370
         }
       }
@@ -111,8 +110,10 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
+      '#default#':
+      - '15'
       'yes':
-      - '8'
+      - '10'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -125,40 +126,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 285,
           "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '4':
-    id: '4'
-    taskid: 8d64bb4d-a506-4eed-8730-7547144a6599
-    type: regular
-    task:
-      id: 8d64bb4d-a506-4eed-8730-7547144a6599
-      version: -1
-      name: Close the Investigation
-      description: Closing investigation.
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
-      id:
-        simple: ${incident.id}
-      phishingsubtype: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
         }
       }
     note: false
@@ -191,8 +160,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1090
+          "x": 60,
+          "y": 1420
         }
       }
     note: false
@@ -211,8 +180,10 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
+      '#default#':
+      - '15'
       'yes':
-      - '4'
+      - '12'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -225,8 +196,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1255
+          "x": 60,
+          "y": 1595
         }
       }
     note: false
@@ -257,8 +228,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 172.5,
+          "y": 895
         }
       }
     note: false
@@ -278,8 +249,10 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
+      '#default#':
+      - '15'
       'yes':
-      - '5'
+      - '11'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -292,8 +265,198 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 172.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '10':
+    id: '10'
+    taskid: 8c0d4052-3680-4ebf-8d3e-0e21e4f56d52
+    type: regular
+    task:
+      id: 8c0d4052-3680-4ebf-8d3e-0e21e4f56d52
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '11':
+    id: '11'
+    taskid: 4dc1d943-fc4e-4a37-8f17-6bbc4027f656
+    type: regular
+    task:
+      id: 4dc1d943-fc4e-4a37-8f17-6bbc4027f656
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '12':
+    id: '12'
+    taskid: 290b29f0-1437-4273-83e7-4524410e7bd5
+    type: regular
+    task:
+      id: 290b29f0-1437-4273-83e7-4524410e7bd5
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
           "x": 50,
-          "y": 905
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '13':
+    id: '13'
+    taskid: 0980908a-2d95-4d1d-8048-2cb95cfef373
+    type: regular
+    task:
+      id: 0980908a-2d95-4d1d-8048-2cb95cfef373
+      version: -1
+      name: Success
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      value:
+        simple: Test Playbook returned successful.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: 82333f1a-e6e9-4e3c-874a-75cc6a4cc51e
+    type: regular
+    task:
+      id: 82333f1a-e6e9-4e3c-874a-75cc6a4cc51e
+      version: -1
+      name: Unsuccessful
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      value:
+        simple: Unsuccessful results for verifying Digital Defense FrontlineVM commands.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: df479bab-092e-4952-8960-8f96ec5f2ea6
+    type: regular
+    task:
+      id: df479bab-092e-4952-8960-8f96ec5f2ea6
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1770
         }
       }
     note: false
@@ -301,11 +464,15 @@ tasks:
     ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "3_10_yes": 0.89,
+      "6_12_yes": 0.89,
+      "9_11_yes": 0.83
+    },
     "paper": {
       "dimensions": {
-        "height": 1465,
-        "width": 380,
+        "height": 1990,
+        "width": 820,
         "x": 50,
         "y": 50
       }

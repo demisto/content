@@ -17,7 +17,7 @@ INCIDENT_FREQUENCY = demisto.params().get('incidentFrequency')
 
 
 def get_base_url():
-    ''' Removes forward slash from end of input '''
+    ''' Removes forward slash from end of url input '''
     url = demisto.params().get('frontlineURL')
     url = re.sub(r'\/$', '', url)
     return url
@@ -218,7 +218,7 @@ def fetch_vulnerabilities(last_start_time_str):
 def fetch_incidents():
     ''' Method to fetch Demisto incidents by pulling any new vulnerabilities found.   '''
     try:
-        new_start_time = datetime.utcnow()    # may be used to update new start_time
+        new_start_time = datetime.utcnow()    # may be used to update new start_time if no incidents found.
         new_start_time_str = new_start_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         incidents: List[Dict[str, Any]] = []
         last_run = demisto.getLastRun()
@@ -288,9 +288,7 @@ def get_assets(ip_address, hostname, label_name, max_days_since_scan):
 def get_asset_output(host_list):
     ''' Get and prepare output from list of raw host data '''
     # Condensing Host data for HumanReadable and EntryContext:
-    asset_output = {}
     host_obj_list = []
-    ip_list = []
     for host in host_list:
         host_obj = {}
         host_obj['ID'] = host.get('id', None)
@@ -302,15 +300,13 @@ def get_asset_output(host_list):
         host_obj['OSType'] = host.get('os_type')
         host_obj['CriticalVulnCount'] = host['active_view_vulnerability_severity_counts']['weighted']['ddi']['counts']['critical']
         host_obj_list.append(host_obj)
-        ip_list.append(host.get('ip_address'))
-    asset_output['Hosts'] = host_obj_list
-    asset_output['IPList'] = ip_list
-    return asset_output
+    return host_obj_list
 
 
 def get_assets_command():
     ''' Pulls host information from Frontline.Cloud '''
     # Get Arguments:
+
     ip_address = demisto.args().get('ip_address')
     hostname = demisto.args().get('hostname')
     label_name = demisto.args().get('label_name')
@@ -319,7 +315,8 @@ def get_assets_command():
     hosts = get_assets(ip_address, hostname, label_name, max_days_since_scan)
     asset_output = get_asset_output(hosts)
 
-    asset_entry_context = {'FrontlineVM(val.Hosts && val.Hosts == obj.Hosts)': asset_output}
+    asset_entry_context = {'FrontlineVM.Hosts(val.ID && val.ID == obj.ID)': asset_output}
+
     asset_output_tablename = 'FrontlineVM: Assets Found'
     demisto.results({
         # indicates entry type to the War room
@@ -333,7 +330,7 @@ def get_assets_command():
 
         # content that displays in the War Room:
         'HumanReadable': tableToMarkdown(asset_output_tablename,
-                                         asset_output.get('Hosts'),
+                                         asset_output,
                                          headers=HOST_HEADERS,
                                          removeNull=True),
 
@@ -350,8 +347,10 @@ def get_vulns(severity, min_severity, max_days_since_created, min_days_since_cre
     # Prepare parameters for Frontline API request:
     req_params = {}
     if min_severity and severity:
-        debug_msg = "Selecting both \'min_severity\' and \'severity\' will yield to the minimum severity."
-        demisto.debug("FrontlineVM get_vulns -- " + debug_msg)
+        msg = "Selecting both \'min_severity\' and \'severity\' will yield to the minimum severity."
+        demisto.debug("FrontlineVM get_vulns -- " + msg)
+        # Warning user that selecting both min_severity & severity args will yeild to min_severity only:
+        print("Warning: " + msg)
     if min_severity:
         req_params['lte_vuln_severity_ddi'] = str(min_severity)
     elif severity:
@@ -396,13 +395,10 @@ def create_vuln_obj(vuln):
 
 def get_vuln_outputs(vuln_list):
     ''' Get and prepare output from list of raw vulnerability data '''
-    vuln_data_output = {}   # type: Dict
-    vuln_stat_output = {}   # type: Dict
 
-    vuln_stat_output = {}
+    vuln_stat_output = {}   # type: Dict
     vuln_stat_output['Vulnerabilities'] = len(vuln_list)
     vuln_data_list = []
-    ip_list = []
 
     # Condensing Vulns for HumanReadable and EntryContext:
     for vuln in vuln_list:
@@ -413,13 +409,9 @@ def get_vuln_outputs(vuln_list):
         else:
             vuln_stat_output[vuln_severity] = 1
         vuln_data_list.append(vuln_obj)
-        ip_list.append(vuln.get('ip_address'))
-
-    vuln_data_output['Vulns'] = vuln_data_list
-    vuln_data_output['IPList'] = ip_list
 
     return {
-        'data_output': vuln_data_output,    # condensed vuln data pulled from Frontline.Cloud
+        'data_output': vuln_data_list,    # condensed vuln data pulled from Frontline.Cloud
         'stat_output': vuln_stat_output,    # statistical vulnerability data
     }
 
@@ -458,7 +450,6 @@ def get_vulns_command():
     # Vuln Data Output:
     vuln_data_table_name = "FrontlineVM: Vulnerabilities Found"
     vuln_data_output = output.get('data_output')
-    vuln_data_list = vuln_data_output.get('Vulns')
 
     # Vuln Statistical Output:
     vuln_stat_table_name = "FrontlineVM: Vulnerability Statisctics"
@@ -471,11 +462,11 @@ def get_vulns_command():
             'Contents': vulns,
             'ContentsFormat': formats['json'],
             'HumanReadable': tableToMarkdown(vuln_data_table_name,
-                                             vuln_data_list,
+                                             vuln_data_output,
                                              headers=VULN_DATA_HEADERS,
                                              removeNull=True),
             'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': {'FrontlineVM(val.Vulns && val.Vulns == obj.Vulns)': vuln_data_output}
+            'EntryContext': {'FrontlineVM.Vulns(val.ID && val.ID == obj.ID)': vuln_data_output}
         },
         {
             'Type': entryTypes['note'],
@@ -484,15 +475,19 @@ def get_vulns_command():
             'HumanReadable': tableToMarkdown(vuln_stat_table_name,
                                              vuln_stat_output,
                                              headers=vuln_stat_headers),
-            'EntryContext': {'FrontlineVM(val.Object && val.Object == obj.Object)': vuln_stat_output}
+            'EntryContext': {'FrontlineVM.VulnStats(val.ID && val.ID == obj.ID)': vuln_stat_output}
         }
     ])
 
 
 def ip_address_to_number(ip_address):
     '''
+        This is used sp explain this is used for our API
         Convert an IPv4 address from dotted-quad string format to 32-bit packed binary format,
         as a bytes object four characters in length.
+
+        This is specifically used for creating scan payloads when sending POST requests using
+        our FrontlineVM API within the build_scan method.
     '''
     return struct.unpack("!L", socket.inet_aton(ip_address))[0]
 
@@ -501,6 +496,9 @@ def ip_number_to_address(ip_number):
     '''
         Convert a 32-bit packed IPv4 address (a bytes-like object four bytes in length)
         to its standard dotted-quad string representation.
+
+        This is specifically used for creating scan payloads when sending POST requests using
+        our FrontlineVM API within the build_scan method.
     '''
     return socket.inet_ntoa(struct.pack("!L", ip_number))
 
@@ -609,10 +607,8 @@ def build_scan(low_ip_address, high_ip_address, scan_policy):
     # Scan name will change if user is scanning range (low ip address not equal to high ip address)
     if low_ip_address == high_ip_address:
         scan['name'] = ("Demisto Scan " + " [" + str(low_ip_address) + "]")
-    elif low_ip_address != high_ip_address:
-        scan['name'] = ("Demisto Scan " + "[" + str(low_ip_address) + "-" + str(high_ip_address) + "]")
     else:
-        scan['name'] = ("Demisto Scan")
+        scan['name'] = ("Demisto Scan " + "[" + str(low_ip_address) + "-" + str(high_ip_address) + "]")
 
     scan['description'] = "New network device auto scan launch from Demisto."
 
@@ -661,28 +657,40 @@ def build_scan(low_ip_address, high_ip_address, scan_policy):
     return scan
 
 
-def scan_asset(ip_address, scan_policy):
+def scan_asset(ip_address, scan_policy, ip_range_start, ip_range_end):
     ''' Build scan payload and make POST request to perform scan. '''
-    # Check if user inputs either a range of addresses to scan or a single asset to scan:
-    if "-" in ip_address:
-        low_ip_address = ip_address.split("-")[0].strip()
-        high_ip_address = ip_address.split("-")[1].strip()
-    else:
-        low_ip_address = ip_address
-        high_ip_address = ip_address
-    scan_payload = build_scan(low_ip_address, high_ip_address, scan_policy)
-    header = {}
-    header['Authorization'] = 'Token ' + str(API_TOKEN)
-    header['Content-Type'] = "application/json;charset=utf-8"
-    resp = requests.post(SCAN_ENDPOINT, data=json.dumps(scan_payload), headers=header)
-    if resp.ok:
-        scan_data = json.loads(resp.text)
-    else:
-        scan_data = None
-        msg = ("ERROR: Scan request returned with status code: " + str(resp.status_code))
-        demisto.debug("FrontlineVM scan_asset -- " + msg)
-        return_error(msg)
-    return scan_data
+    try:
+        if ip_address:
+            low_ip_address = ip_address
+            high_ip_address = ip_address
+        elif ip_range_start and ip_range_end:
+            low_ip_address = ip_range_start
+            high_ip_address = ip_range_end
+        else:
+            msg = "Invalid arguments. Must input either a single ip_address or range of ip addresses to scan."
+            demisto.debug(msg)
+            return_error(msg)
+        if ip_address and ip_range_start or ip_range_end:
+            msg = "Inputting a single \'ip_address\' and a range of addresses will yield to the single ip_address to scan"
+            demisto.debug("FrontlineVM scan_asset -- " + msg)
+            # Warning user that selecting a single asset and a range of assets will yield to scanning a single asset:
+            print("Warning: " + msg)
+
+        scan_payload = build_scan(low_ip_address, high_ip_address, scan_policy)
+        header = {}
+        header['Authorization'] = 'Token ' + str(API_TOKEN)
+        header['Content-Type'] = "application/json;charset=utf-8"
+        resp = requests.post(SCAN_ENDPOINT, data=json.dumps(scan_payload), headers=header)
+        if resp.ok:
+            scan_data = json.loads(resp.text)
+        else:
+            scan_data = None
+            msg = ("ERROR: Scan request returned with status code: " + str(resp.status_code))
+            demisto.debug("FrontlineVM scan_asset -- " + msg)
+            return_error(msg)
+        return scan_data
+    except Exception as err:
+        return_error("Error: FrontlineVM scan_asset failed " + str(err))
 
 
 def scan_policy_exists(policy_selected):
@@ -718,11 +726,13 @@ def scan_asset_command():
     ''' Peform scan on Frontline.Cloud '''
     ip_address = demisto.args().get('ip_address')
     policy_name = str(demisto.args().get('scan_policy'))
+    ip_range_start = demisto.args().get('ip_range_start')
+    ip_range_end = demisto.args().get('ip_range_end')
     if not scan_policy_exists(policy_name):
         return_error("Error: Scan Policy entered '" + policy_name + "' does not exist.")
 
     try:
-        scan_response = scan_asset(ip_address, policy_name)
+        scan_response = scan_asset(ip_address, policy_name, ip_range_start, ip_range_end)
         # Gather IP addresses from scan response data:
         ip_addresses = get_ip_addresses_from_scan_data(scan_response)
         low_ip = ip_addresses.get('low')
@@ -744,7 +754,7 @@ def scan_asset_command():
 
         # Linking Context
         entry_context = {
-            'FrontlineVM(val.ID && val.ID == obj.ID)': {
+            'FrontlineVM.Scans(val.ID && val.ID == obj.ID)': {
                 'Scan': scan_output
             }
         }
