@@ -77,7 +77,6 @@ For information about content release notes conventions, refer to our [release n
 | [Fetching Incidents](docs/fetching_incidents) | How to Fetch Incidents |
 | [Fetching Credentials](docs/fetching_credentials) | How to Fetch Credentials |
 | [Integration Documentation](docs/integration_documentation) | How to generate documentation for an integration |
-| [YAML File](docs/yaml-file-integration) | Explanation of the Demisto YAML structure |
 | [Testing](docs/tests) | The Demisto Content Repo Testing Methods |
 | [CircleCI](docs/tests/circleci) | How we test using CircleCI |
 | [Mocks](docs/tests/mocks) | Explanation of how to test using mocked data |
