@@ -2674,36 +2674,34 @@ script:
     - name: session
       description: The session ID.
     - name: sensor
-      description: The sensor ID.  Provided the sensor ID to run the command with
+      description: The sensor ID.  Provide the sensor ID to run the command with
         a new session. The session will be created and closed automatically.
     - name: path
       required: true
-      description: 'The full path, including file name, to save the resulting memory dump on the endpoint
-      (example - c:\\temp\\dump_file.dmp).'
+      description: 'The full path, including file name, to save the resulting memory dump on the endpoint, for example, 
+      c:\\temp\\dump_file.dmp).'
     - name: compress
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: An optional parameter to specify whether to compress resulting
-        memory dump.
+      description: Whether to compress resulting memory dump. Can be "rue" or "false".
     - name: wait-timeout
       description: Time to wait (in seconds) for Cb command to be executed (change
-        status from 'pending' to 'in-progress'/'complete').
+        status from "pending" to "in-progress" or "complete").
     - name: cancel-on-timeout
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
-      description: Cancel the command if still 'pending' after timeout.
+      description: Whether to cancel the command if still in "pending" status after timeout. Can be "yes" or "no".
     outputs:
     - contextPath: CbLiveResponse.Commands.CbCommandID
       description: Unique command identifier.
     - contextPath: CbLiveResponse.Commands.CommandName
       description: The command name.
     - contextPath: CbLiveResponse.Commands.Status
-      description: The command Status ('pending', 'in progress', 'complete', 'error',
-        'canceled').
+      description: The command status.
     - contextPath: CbLiveResponse.Commands.CommandCompletionTime
       description: The command completion time (0 if not complete).
     - contextPath: CbLiveResponse.Commands.OperandObject
@@ -2711,17 +2709,17 @@ script:
     - contextPath: CbLiveResponse.Commands.ReturnCode
       description: Return code of the memory dump process.
     - contextPath: CbLiveResponse.Commands.CompressingEnabled
-      description: Boolean flag indicating if compression is enabled.
+      description: Whether compression is enabled.
       type: boolean
     - contextPath: CbLiveResponse.Commands.Complete
-      description: Boolean flag indicating if memory dump is completed.
+      description: Whether the memory dump completed.
       type: boolean
     - contextPath: CbLiveResponse.Commands.PercentDone
       description: Percent of the process completed.
     - contextPath: CbLiveResponse.Commands.DumpingInProgress
-      description: Boolean flag indicating if memory dump is in progress.
+      description: Whether the memory dump is in progress.
       type: boolean
-    description: Endpoint memory dump.
+    description: Executes an endpoint memory dump.
   runonce: false
 tests:
   - CarbonBlackLiveResponseTest
