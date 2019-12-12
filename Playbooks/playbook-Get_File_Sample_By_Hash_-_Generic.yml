@@ -144,3 +144,5 @@ outputs:
 - contextPath: File
   description: File sample object
   type: unknown
+tests:
+- No tests
