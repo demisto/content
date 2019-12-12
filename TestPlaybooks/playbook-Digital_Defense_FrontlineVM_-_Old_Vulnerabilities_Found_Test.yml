@@ -1,16 +1,16 @@
-id: Frontline.Cloud - PAN-OS block assets Test
+id: Digital Defense FrontlineVM - Old Vulnerabilities Found Test
 version: -1
-fromversion: 5.0.0
-name: Frontline.Cloud - PAN-OS block assets Test
-description: Test playbook for "Frontline.Cloud - PAN-OS block assets"
+name: Digital Defense FrontlineVM - Old Vulnerabilities Found Test
+description: Test playbook for "Digital Defense FrontlineVM - Old Vulnerabilities
+  Found"
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 0de1048a-ea98-4faa-82d2-8ede07dc73cc
+    taskid: 5abb1ed1-d6e2-463d-82bb-6221bedcf630
     type: start
     task:
-      id: 0de1048a-ea98-4faa-82d2-8ede07dc73cc
+      id: 5abb1ed1-d6e2-463d-82bb-6221bedcf630
       version: -1
       name: ''
       iscommand: false
@@ -32,12 +32,12 @@ tasks:
     ignoreworker: false
   '1':
     id: '1'
-    taskid: b5484541-2af9-47a7-85b2-207c33e2d794
+    taskid: 21ddb6f4-336a-460a-8d39-994db2d86fe9
     type: regular
     task:
-      id: b5484541-2af9-47a7-85b2-207c33e2d794
+      id: 21ddb6f4-336a-460a-8d39-994db2d86fe9
       version: -1
-      name: DeleteContext
+      name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -66,13 +66,13 @@ tasks:
     ignoreworker: false
   '2':
     id: '2'
-    taskid: 71f3895d-fc2e-42a1-8793-f27909d59f7a
+    taskid: 8c99588b-027d-4dbc-822b-7d309c8a4f88
     type: playbook
     task:
-      id: 71f3895d-fc2e-42a1-8793-f27909d59f7a
+      id: 8c99588b-027d-4dbc-822b-7d309c8a4f88
       version: -1
-      name: Frontline.Cloud - PAN-OS block assets
-      playbookName: Frontline.Cloud - PAN-OS block assets
+      name: Digital Defense FrontlineVM - Old Vulnerabilities Found
+      playbookName: Digital Defense FrontlineVM - Old Vulnerabilities Found
       type: playbook
       iscommand: false
       brand: ''
@@ -93,13 +93,13 @@ tasks:
     ignoreworker: false
   '3':
     id: '3'
-    taskid: 8644a0ec-cc8a-47de-81a5-f94741ece166
+    taskid: 16c872a6-8fdb-48c6-83f3-cc12570eb590
     type: regular
     task:
-      id: 8644a0ec-cc8a-47de-81a5-f94741ece166
+      id: 16c872a6-8fdb-48c6-83f3-cc12570eb590
       version: -1
       name: Close Investigation
-      description: Closes the current incident.
+      description: Close the current Incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -117,7 +117,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 580
+          "y": 590
         }
       }
     note: false
@@ -128,7 +128,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 625,
+        "height": 635,
         "width": 380,
         "x": 450,
         "y": 50

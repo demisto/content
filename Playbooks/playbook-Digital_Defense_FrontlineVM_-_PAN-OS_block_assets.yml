@@ -1,7 +1,6 @@
-id: Frontline.Cloud - PAN-OS block assets
+id: Digital Defense FrontlineVM - PAN-OS block assets
 version: -1
-fromversion: 5.0.0
-name: Frontline.Cloud - PAN-OS block assets
+name: Digital Defense FrontlineVM - PAN-OS block assets
 description: This playbook will pull Panorama queried threat logs and check for any
   correlating assets that are found to have a minimum of high level vulnerabilities.
   If so, it will block the the IP using Panorama's PAN-OS - Block IP and URL - External
@@ -21,12 +20,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - '14'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 265,
           "y": 50
         }
       }
@@ -48,7 +47,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - '10'
+      - '16'
     scriptarguments:
       action: {}
       addr-dst: {}
@@ -68,77 +67,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '2':
-    id: '2'
-    taskid: ef885479-a9e0-4725-888f-43c7aab13861
-    type: regular
-    task:
-      id: ef885479-a9e0-4725-888f-43c7aab13861
-      version: -1
-      name: panorama-check-logs-status
-      description: Checks the status of a logs query.
-      script: Panorama|||panorama-check-logs-status
-      type: regular
-      iscommand: true
-      brand: Panorama
-    nexttasks:
-      '#none#':
-      - '3'
-    scriptarguments:
-      job_id:
-        simple: ${Panorama.Monitor.JobID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '3':
-    id: '3'
-    taskid: b42e2ad6-6bf9-4b68-8871-8cead4050c12
-    type: condition
-    task:
-      id: b42e2ad6-6bf9-4b68-8871-8cead4050c12
-      version: -1
-      name: Log has completed
-      description: Query log status is complete.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '5'
-      'yes':
-      - '4'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Panorama.Monitor.Status
-            iscontext: true
-          right:
-            value:
-              simple: Completed
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
+          "x": 265,
+          "y": 370
         }
       }
     note: false
@@ -169,35 +99,6 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '5':
-    id: '5'
-    taskid: 0f43ed3d-046f-4a29-8cfa-92444d812941
-    type: regular
-    task:
-      id: 0f43ed3d-046f-4a29-8cfa-92444d812941
-      version: -1
-      name: Queried logs have not completed.
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ''
-    scriptarguments:
-      value:
-        simple: 'Query log status: ${Panorama.Monitor.Status}'
-    separatecontext: false
-    defaultassigneecomplex:
-      simple: admin
-    view: |-
-      {
-        "position": {
-          "x": 695,
           "y": 895
         }
       }
@@ -271,7 +172,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1230
+          "y": 1245
         }
       }
     note: false
@@ -302,7 +203,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1420
         }
       }
@@ -330,38 +231,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '10':
-    id: '10'
-    taskid: a0e11307-329a-44ed-8e1d-3d87f464e7f0
-    type: regular
-    task:
-      id: a0e11307-329a-44ed-8e1d-3d87f464e7f0
-      version: -1
-      name: Wait for query logs to complete (30 sec)
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '2'
-    scriptarguments:
-      seconds:
-        simple: '30'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
           "x": 480,
-          "y": 370
+          "y": 1420
         }
       }
     note: false
@@ -404,8 +275,117 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1580
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: 9c42b1ba-25c9-4ead-8287-274187e4b6c0
+    type: regular
+    task:
+      id: 9c42b1ba-25c9-4ead-8287-274187e4b6c0
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '16':
+    id: '16'
+    taskid: 40ffabd8-fed9-4b39-8b85-37bf66787161
+    type: regular
+    task:
+      id: 40ffabd8-fed9-4b39-8b85-37bf66787161
+      version: -1
+      name: GenericPolling
+      description: Called by the GenericPolling playbook, schedules the polling task.
+      scriptName: ScheduleGenericPolling
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      additionalPollingCommandArgNames: {}
+      additionalPollingCommandArgValues: {}
+      dt:
+        simple: Panorama.Monitor(val.Status != 'Pending').JobID
+      ids:
+        simple: ${Panorama.Monitor.JobID}
+      interval:
+        simple: '1'
+      playbookId: {}
+      pollingCommand:
+        simple: panorama-check-logs-status
+      pollingCommandArgName:
+        simple: job_id
+      tag: {}
+      timeout:
+        simple: '60'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '17':
+    id: '17'
+    taskid: 15f1f59b-a7a2-4abe-879d-e562e1ae0933
+    type: regular
+    task:
+      id: 15f1f59b-a7a2-4abe-879d-e562e1ae0933
+      version: -1
+      name: panorama-check-logs-status
+      description: Command to check panorama log status.
+      script: '|||panorama-check-logs-status'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      job_id:
+        simple: ${Panorama.Monitor.JobID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
         }
       }
     note: false
@@ -416,8 +396,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1625,
-        "width": 1025,
+        "height": 1640,
+        "width": 810,
         "x": 50,
         "y": 50
       }

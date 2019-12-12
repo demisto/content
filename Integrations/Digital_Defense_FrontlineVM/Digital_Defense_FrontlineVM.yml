@@ -30,7 +30,7 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Min vulnerability severity for fetching incidents.
+- display: Min vulnerability severity for fetching incidents
   name: incidentSeverity
   defaultvalue: medium
   type: 15
@@ -42,7 +42,7 @@ configuration:
   - low
   - trivial
   - info
-- display: Rate at which to check vulnerability events when fetching incidents.
+- display: Rate at which to check vulnerability events when fetching incidents
   name: incidentFrequency
   defaultvalue: 3 hr
   type: 15
@@ -76,9 +76,6 @@ script:
     - contextPath: FrontlineVM.Hosts
       description: Returned host data pulled from Frontline.Cloud
       type: unknown
-    - contextPath: FrontlineVM.IPList
-      description: IP address list of found hosts.
-      type: unknown
     - contextPath: FrontlineVM.Hosts.ID
       description: Host ID number
     - contextPath: FrontlineVM.Hosts.Hostname
@@ -108,8 +105,8 @@ script:
       - trivial
       - info
       description: Select a minimum severity level of vulnerabilities to pull from
-        Frontline. E.g. setting the min_severity=medium will pull all vulnerabilities
-        with severity levels of medium, high, and critical.
+        Frontline. Selecting this argument along with the severity argument will yield
+        only to min_severity.
     - name: severity
       auto: PREDEFINED
       predefined:
@@ -134,22 +131,36 @@ script:
     - contextPath: FrontlineVM.Vulns
       description: Returned vulnerability data pulled from Frontline.Cloud
       type: unknown
-    - contextPath: FrontlineVM.IPList
-      description: IP address list of found vulnerabilities.
-      type: unknown
     - contextPath: FrontlineVM.Stat
       description: Statistic overview of vulnerabilities pulled.
+    - contextPath: FrontlineVM.Vulns.vuln-id
+      description: DDI Vulnerability ID
+    - contextPath: FrontlineVM.Vulns.hostname
+      description: Asset hostname
+    - contextPath: FrontlineVM.Vulns.ip-address
+      description: IP address of asset
+    - contextPath: FrontlineVM.Vulns.vuln-title
+      description: Title name of vulnerability
+    - contextPath: FrontlineVM.Vulns.date-created
+      description: Vulnerability date created
+    - contextPath: FrontlineVM.Vulns.ddi-severity
+      description: Digital Defense Inc. severity of vulnerability
+    - contextPath: FrontlineVM.Vulns.vuln-info
+      description: Vulnerability information
     description: Pull vulnerability information from FrontlineVM
   - name: frontline-scan-asset
     arguments:
     - name: ip_address
-      required: true
       description: IP address of asset to perform scan. To scan a range of ip addresses,
         first enter the low ip address and then a high ip address separated by a hyphen.
         E.g. 192.168.1.1-192.168.1.10
     - name: scan_policy
       description: Policy of scan (case sensitive)
       defaultValue: Default
+    - name: ip_range_start
+      description: Starting ip address range of asset to scan
+    - name: ip_range_end
+      description: Ending ip address range of asset to scan
     outputs:
     - contextPath: FrontlineVM.Scan.ID
       description: Scan ID number
