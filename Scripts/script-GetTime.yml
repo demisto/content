@@ -110,3 +110,4 @@ scripttarget: 0
 runonce: false
 tests:
 - GetTime-Test
+- GetTime-ObjectVsStringTest
