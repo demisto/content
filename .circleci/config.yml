@@ -180,7 +180,7 @@ jobs:
               then
                 if [ -n "${NIGHTLY}" ] ;
                   then
-                    export IFRA_ENV_TYPE=Content-Master
+                    export IFRA_ENV_TYPE=Nightly
 
                   else
                     export IFRA_ENV_TYPE=Content-Env
