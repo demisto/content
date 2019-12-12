@@ -349,9 +349,9 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     playbook_set = id_set['playbooks']
     integration_set = id_set['integrations']
 
-    deprecated_scripts_message = exclude_deprecated_scripts(script_set, script_names)
-    deprecated_playbooks_message = exclude_deprecated_playbooks(playbook_set, playbook_names)
-    deprecated_integrations_message = exclude_deprecated_integrations(integration_set, integration_ids)
+    deprecated_msgs = exclude_deprecated_entities(script_set, script_names,
+                                                  playbook_set, playbook_names,
+                                                  integration_set, integration_ids)
 
     for script_id in script_names:
         enrich_for_script_id(script_id, script_to_version[script_id], script_names, script_set, playbook_set,
@@ -375,13 +375,13 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
         playbook_names.add(new_playbook)
 
     affected_ids_string = ""
-    if script_names or deprecated_scripts_message:
-        affected_ids_string += 'Scripts:\n' + '\n'.join(script_names) + '\n' + deprecated_scripts_message + '\n'
-    if playbook_names or deprecated_playbooks_message:
-        affected_ids_string += 'Playbooks:\n' + '\n'.join(playbook_names) + '\n' + deprecated_playbooks_message + '\n'
-    if integration_ids or deprecated_integrations_message:
+    if script_names or deprecated_msgs['scripts']:
+        affected_ids_string += 'Scripts:\n' + '\n'.join(script_names) + '\n' + deprecated_msgs['scripts'] + '\n'
+    if playbook_names or deprecated_msgs['playbooks']:
+        affected_ids_string += 'Playbooks:\n' + '\n'.join(playbook_names) + '\n' + deprecated_msgs['playbooks'] + '\n'
+    if integration_ids or deprecated_msgs['integrations']:
         affected_ids_string += 'Integrations:\n' + '\n'.join(integration_ids) + '\n' + \
-                               deprecated_integrations_message + '\n'
+                               deprecated_msgs['integrations'] + '\n'
 
     print('The following ids are affected due to the changes you made:\n{}'.format(affected_ids_string))
 
@@ -391,82 +391,49 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     return tests_set, catched_scripts, catched_playbooks
 
 
-def exclude_deprecated_scripts(script_set, script_names):
-    """Removes deprecated scripts from the affected scripts list.
+def exclude_deprecated_entities(script_set, script_names,
+                                playbook_set, playbook_names,
+                                integration_set, integration_ids):
+    """Removes deprecated entities from the affected entities sets.
 
     :param script_set: The set of existing scripts within Content repo.
     :param script_names: The names of the affected scripts in your change set.
-
-    :return: deprecated_message - A message specifying of all the deprecated scripts.
-    """
-    deprecated_message = ''
-    deprecated_scripts_string = ''
-
-    for script in script_set:
-        script_name = list(script.values())[0].get('name', '')
-        if script_name in script_names:
-            script_data = list(script.values())[0]
-            if script_data.get('deprecated', False):
-                deprecated_scripts_string += '   ' + script_name + '\n'
-                script_names.remove(script_name)
-
-    if deprecated_scripts_string:
-        deprecated_message = '  The following scripts are deprecated and are not taken ' \
-                             'into account in the test collection:\n{}\n'.format(deprecated_scripts_string)
-
-    return deprecated_message
-
-
-def exclude_deprecated_playbooks(playbook_set, playbook_names):
-    """Removes deprecated playbooks from the affected playbooks list.
-
     :param playbook_set: The set of existing playbooks within Content repo.
     :param playbook_names: The ids of the affected playbooks in your change set.
-
-    :return: deprecated_message - A message specifying of all the deprecated playbooks.
-    """
-    deprecated_message = ''
-    deprecated_playbooks_string = ''
-
-    for playbook in playbook_set:
-        playbook_name = list(playbook.values())[0].get('name', '')
-        if playbook_name in playbook_names:
-            playbook_data = list(playbook.values())[0]
-            if playbook_data.get('deprecated', False):
-                deprecated_playbooks_string += '   ' + playbook_name + '\n'
-                playbook_names.remove(playbook_name)
-
-    if deprecated_playbooks_string:
-        deprecated_message = '  The following playbooks are deprecated and are not taken ' \
-                             'into account in the test collection:\n{}\n'.format(deprecated_playbooks_string)
-
-    return deprecated_message
-
-
-def exclude_deprecated_integrations(integration_set, integration_ids):
-    """Removes deprecated integrations from the affected integrations list.
-
     :param integration_set: The set of existing integrations within Content repo.
     :param integration_ids: The ids of the affected integrations in your change set.
 
-    :return: deprecated_message - A message specifying of all the deprecated integrations.
+    :return: deprecated_messages_dict - A dict of messages specifying of all the deprecated entities.
     """
-    deprecated_message = ''
-    deprecated_integrations_string = ''
+    deprecated_messages_dict = {
+        'scripts': '',
+        'playbooks': '',
+        'integrations': ''
+    }
 
-    for integration in integration_set:
-        integration_id = list(integration.keys())[0]
-        if integration_id in integration_ids:
-            integration_data = list(integration.values())[0]
-            if integration_data.get('deprecated', False):
-                deprecated_integrations_string += '   ' + integration_id + '\n'
-                integration_ids.remove(integration_id)
+    deprecated_entities_strings_dict = {
+        'scripts': '',
+        'playbooks': '',
+        'integrations': ''
+    }
 
-    if deprecated_integrations_string:
-        deprecated_message = '  The following integrations are deprecated and are not taken ' \
-                             'into account in the test collection:\n{}\n'.format(deprecated_integrations_string)
+    for entity_set, entity_names, entity_type in [(script_set, script_names, 'scripts'),
+                                                  (playbook_set, playbook_names, 'playbooks'),
+                                                  (integration_set, integration_ids, 'integrations')]:
+        for entity in entity_set:
+            entity_name = list(entity.values())[0].get('name', '')
+            if entity_name in entity_names:
+                entity_data = list(entity.values())[0]
+                if entity_data.get('deprecated', False):
+                    deprecated_entities_strings_dict[entity_type] += '   ' + entity_name + '\n'
+                    entity_names.remove(entity_name)
 
-    return deprecated_message
+        if deprecated_entities_strings_dict[entity_type]:
+            deprecated_messages_dict[entity_type] = '  The following {} are deprecated ' \
+                                                    'and are not taken into account in the test collection:\n' \
+                                                    '{}\n'.format(entity_type, deprecated_messages_dict[entity_type])
+
+    return deprecated_messages_dict
 
 
 def enrich_for_integration_id(integration_id, given_version, integration_commands, script_set, playbook_set,
