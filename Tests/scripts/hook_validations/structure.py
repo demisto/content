@@ -68,6 +68,7 @@ class StructureValidator(object):
         CLASSIFIER_REGEX: "classifier",
         LAYOUT_REGEX: "layout",
         INCIDENT_FIELD_REGEX: "incidentfield",
+        INDICATOR_FIELDS_REGEX: "incidentfield",
     }
 
     SCHEMAS_PATH = "Tests/schemas/"
