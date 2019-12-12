@@ -67,8 +67,6 @@ For information about content release notes conventions, refer to our [release n
 
 | Link | Description |
 | --- | ---|
-| [Package directory](docs/package_directory_structure) | Explanation of Python integration / automation script package directory structure |
-| [Code Conventions](docs/code_conventions) | Our Code Conventions |
 | [Integration Parameter Types](docs/parameter_types) | Description of the various integration parameter types |
 | [Context and Outputs](docs/context_and_ouputs) | Brief overview of Context and Outputs |
 | [Context Conventions](docs/context_standards) | Conventions for the Demisto Standard Context |
