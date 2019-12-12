@@ -15,6 +15,7 @@ import email
 from requests.exceptions import ConnectionError
 from collections import deque
 
+
 import exchangelib
 from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
     ErrorInvalidIdMalformed, \
