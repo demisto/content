@@ -400,11 +400,9 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     new_next_page_id = raw_response.get('next_page_id')
 
     if new_next_page_id:
-        return_outputs('New next page ID was added to context', {
-            f'{INTEGRATION_CONTEXT_NAME}.ListResponsePolicyZoneRules.Pages(val.NextPageID && val.NextPageID === '
-            f'obj.NextPageID)': {
-                'NextPageID': new_next_page_id}}, {'NextPageID': new_next_page_id})
-
+        demisto.setContext(
+            f'{INTEGRATION_CONTEXT_NAME}.NextPageID(val.NextPageID && val.NextPageID === 'f'obj.NextPageID)',
+            new_next_page_id)
     rules_list = raw_response.get('result')
     if not rules_list:
         return f'{INTEGRATION_NAME} - No rules associated to zone: {zone} were found', {}, {}
@@ -417,7 +415,8 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     zone_name = zone.capitalize() if zone else fixed_keys_rule_list[0].get('Name')
     title = f'{INTEGRATION_NAME} - Zone: {zone_name} rule list.'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ListResponsePolicyZoneRules.List(val.Name && val.Name === obj.Name)': fixed_keys_rule_list}
+        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRulesList.(val.Name && val.Name === obj.Name)': fixed_keys_rule_list
+    }
     human_readable = tableToMarkdown(title, fixed_keys_rule_list,
                                      headerTransform=pascalToSpace)
     return human_readable, context, raw_response
@@ -443,7 +442,7 @@ def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str,
                            zone.items()}
         fixed_keys_zone_list.append(fixed_keys_zone)
     display_first_x_results = f'(first {max_results} results)' if max_results else ''
-    title = f'{INTEGRATION_NAME} - Response Policy Zones list{display_first_x_results}:'
+    title = f'{INTEGRATION_NAME} - Response Policy Zones list {display_first_x_results}:'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)': fixed_keys_zone_list}
     human_readable = tableToMarkdown(title, fixed_keys_zone_list, headerTransform=pascalToSpace)
