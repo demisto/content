@@ -1,5 +1,6 @@
 id: Digital Defense FrontlineVM - Test Playbook
 version: -1
+fromversion: 5.0.0
 name: Digital Defense FrontlineVM - Test Playbook
 description: This is a test playbook for the Digital Defense Inc. FrontlineVM Integration
 starttaskid: '0'

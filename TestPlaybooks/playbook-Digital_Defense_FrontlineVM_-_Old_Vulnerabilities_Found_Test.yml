@@ -1,5 +1,6 @@
 id: Digital Defense FrontlineVM - Old Vulnerabilities Found Test
 version: -1
+fromversion: 5.0.0
 name: Digital Defense FrontlineVM - Old Vulnerabilities Found Test
 description: Test playbook for "Digital Defense FrontlineVM - Old Vulnerabilities
   Found"
