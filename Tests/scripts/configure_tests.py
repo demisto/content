@@ -417,13 +417,16 @@ def exclude_deprecated_entities(script_set, script_names,
         'integrations': ''
     }
 
+    # Iterates over three types of entities: scripts, playbooks and integrations and removes deprecated entities
     for entity_set, entity_names, entity_type in [(script_set, script_names, 'scripts'),
                                                   (playbook_set, playbook_names, 'playbooks'),
                                                   (integration_set, integration_ids, 'integrations')]:
         for entity in entity_set:
-            entity_name = list(entity.values())[0]
-            if entity_type == 'scripts' or entity_type == 'playbooks':
-                entity_name = entity_name.get('name', '')
+            # integrations are defined by their ids while playbooks and scripts and scripts are defined by names
+            if entity_type == 'integrations':
+                entity_name = list(entity.keys())[0]
+            else:
+                entity_name = list(entity.values())[0].get('name', '')
 
             if entity_name in entity_names:
                 entity_data = list(entity.values())[0]
