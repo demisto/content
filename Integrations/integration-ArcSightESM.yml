@@ -57,6 +57,7 @@ configuration:
   required: false
 script:
   script: |-
+
     var server = params.server.replace(/[\/]+$/, '') + ':' + params.port + '/';
 
     // Arcsight field names
