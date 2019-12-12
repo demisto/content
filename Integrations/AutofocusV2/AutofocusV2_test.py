@@ -1,4 +1,3 @@
-from AutofocusV2 import *
 import json
 
 IP_ADDRESS = '127.0.0.1'
@@ -93,21 +92,25 @@ INDICATOR_RES = {
 
 
 def test_parse_indicator_response():
+    from AutofocusV2 import parse_indicator_response
     indicator = parse_indicator_response(IP_RES_JSON, 'IP')
     assert json.dumps(indicator) == json.dumps(INDICATOR_RES)
 
 
 def test_calculate_dbot_score():
+    from AutofocusV2 import calculate_dbot_score
     score = calculate_dbot_score(IP_RES_JSON, 'IP')
     assert score == 3
 
 
 def test_calculate_dbot_score_file():
+    from AutofocusV2 import calculate_dbot_score
     score = calculate_dbot_score(FILE_RES_JSON, 'File')
     assert score == 3
 
 
 def test_get_indicator_outputs(mocker):
+    from AutofocusV2 import get_indicator_outputs
     return_outputs_mock = mocker.patch('AutofocusV2.return_outputs')
 
     indicator = [{'raw_response': IP_RES_JSON, 'value': IP_ADDRESS, 'score': 3, 'response': INDICATOR_RES}]
