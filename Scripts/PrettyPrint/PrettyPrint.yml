@@ -8,7 +8,7 @@ tags: []
 comment: |-
   Pretty-print data using Python's pprint library.  This is useful for seeing the structure of incident and context data.  Use like so:
 
-  !pprint value=${incident}
+  !PrettyPrint value=${incident}
 enabled: true
 args:
 - name: value
