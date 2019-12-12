@@ -129,7 +129,7 @@ def get_integration_data(file_path):
     id = data_dictionary.get('commonfields', {}).get('id', '-')
     name = data_dictionary.get('name', '-')
 
-    deprecated = data_dictionary.get('deprecated')
+    deprecated = data_dictionary.get('deprecated', False)
     tests = data_dictionary.get('tests')
     toversion = data_dictionary.get('toversion')
     fromversion = data_dictionary.get('fromversion')
@@ -165,7 +165,7 @@ def get_playbook_data(file_path):
     id = data_dictionary.get('id', '-')
     name = data_dictionary.get('name', '-')
 
-    deprecated = data_dictionary.get('deprecated')
+    deprecated = data_dictionary.get('deprecated', False)
     tests = data_dictionary.get('tests')
     toversion = data_dictionary.get('toversion')
     fromversion = data_dictionary.get('fromversion')
@@ -204,7 +204,7 @@ def get_script_data(file_path, script_code=None):
 
     tests = data_dictionary.get('tests')
     toversion = data_dictionary.get('toversion')
-    deprecated = data_dictionary.get('deprecated')
+    deprecated = data_dictionary.get('deprecated', False)
     fromversion = data_dictionary.get('fromversion')
     depends_on, command_to_integration = get_depends_on(data_dictionary)
     script_executions = sorted(list(set(re.findall(r"demisto.executeCommand\(['\"](\w+)['\"].*", script_code))))
