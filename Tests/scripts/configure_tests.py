@@ -84,10 +84,6 @@ def get_modified_files(files_string):
         file_path = file_data[1]
         file_status = file_data[0]
 
-        # todo: delete the next if!!!!!!
-        if 'configure_tests.py' in file_path or 'constants.py' in file_path or 'update_id_set.py' in file_path:
-            continue
-
         # ignoring renamed and deleted files.
         # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
