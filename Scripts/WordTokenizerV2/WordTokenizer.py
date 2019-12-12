@@ -29,7 +29,7 @@ HTML_PATTERNS = [
 
 # define global parsers
 html_parser = HTMLParser()
-nlp = spacy.load('en_core_web_sm')
+nlp = spacy.load('en_core_web_sm', disable=['tagger', 'parser', 'ner', 'textcat'])
 
 
 def clean_html(text):
