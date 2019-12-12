@@ -68,10 +68,8 @@ For information about content release notes conventions, refer to our [release n
 | Link | Description |
 | --- | ---|
 | [Tutorial Video](docs/tutorial-video) | A step-by-step introduction to creating an integration |
-| [Getting Started](docs/getting_started) | Environment setup and a brief explanation of the Demisto IDE |
 | [Package directory](docs/package_directory_structure) | Explanation of Python integration / automation script package directory structure |
 | [Code Conventions](docs/code_conventions) | Our Code Conventions |
-| [Linting](docs/linting) | How to run linting on Demisto integrations/scripts |
 | [Unit Testing](docs/tests/unit-testing) | Explanation of How to Perform Unit Testing on Integrations/Scripts |
 | [Integration Parameter Types](docs/parameter_types) | Description of the various integration parameter types |
 | [Context and Outputs](docs/context_and_ouputs) | Brief overview of Context and Outputs |
@@ -80,7 +78,6 @@ For information about content release notes conventions, refer to our [release n
 | [Creating Playbooks](docs/creating_playbooks) | How to create a Playbook |
 | [DBot Score](docs/dbot) | How the DBot Score works |
 | [Demisto Transform Language (DT)](docs/DT) | Understanding Demisto Transform Language (DT) |
-| [Docker](docs/docker) | How to use Docker |
 | [Fetching Incidents](docs/fetching_incidents) | How to Fetch Incidents |
 | [Fetching Credentials](docs/fetching_credentials) | How to Fetch Credentials |
 | [Integration Documentation](docs/integration_documentation) | How to generate documentation for an integration |
