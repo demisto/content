@@ -2186,14 +2186,14 @@ script:
     arguments:
     - name: query
       required: true
-      description: Search query
+      description: The search query.
     - name: limit
-      description: The maximum number of results to retrieve.
+      description: The maximum number of results to return. Default is 10.
       defaultValue: "10"
     - name: indicator_type
       required: true
-      description: The indicator type to search (can be either the name or the ID)
-    description: Runs an advanced indicator search
+      description: The indicator type for which to search. Can be either the name or the ID.
+    description: Runs an advanced indicator search.
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
