@@ -249,8 +249,8 @@ if PARAMS.get('mark_as_malicious'):
 def parse_response(resp, err_operation):
     try:
         # Handle error responses gracefully
-        resp.raise_for_status()
         res_json = resp.json()
+        resp.raise_for_status()
         return res_json
     # Errors returned from AutoFocus
     except requests.exceptions.HTTPError:
