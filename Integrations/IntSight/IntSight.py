@@ -452,9 +452,9 @@ def close_alert():
 
     if free_text:
         json_data['FreeText'] = free_text
-    if free_text:
+    if is_hidden:
         json_data['IsHidden'] = is_hidden
-    if free_text:
+    if rate:
         json_data['Rate'] = rate
 
     req('PATCH', url, json_data)
