@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Added 1 command:
+  - Added a new command:
     - ***gmail-get-role***
   - Fixed context output paths. 
 

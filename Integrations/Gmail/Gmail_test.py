@@ -163,4 +163,4 @@ def test_parse_privileges():
     from Gmail import parse_privileges
     privileges = [{'serviceId': '', 'privilegeName': 'name_no_id'}, {'serviceId': '', 'privilegeName': ''},
                   {'serviceId': 'id', 'privilegeName': 'name'}]
-    assert parse_privileges(privileges) == [{'ServiceID': 'id', 'Name': 'name'}]
+    assert sorted(parse_privileges(privileges)) == sorted([{'ServiceID': 'id', 'Name': 'name'}, {'Name': 'name_no_id'}])

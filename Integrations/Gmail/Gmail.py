@@ -169,14 +169,8 @@ def parse_mail_parts(parts):
     return body, html, attachments
 
 
-def parse_privileges(privileges_list):
-    privileges = []
-    for prvlg in privileges_list:
-        service_id = prvlg.get('serviceId')
-        name = prvlg.get('privilegeName')
-        if name and service_id:
-            privileges.append({'ServiceID': service_id, 'Name': name})
-    return privileges
+def parse_privileges(privileges):
+    return [assign_params(**{'ServiceID': p.get('serviceId'), 'Name': p.get('privilegeName')}) for p in privileges]
 
 
 def localization_extract(time_from_mail):
@@ -593,7 +587,7 @@ def role_to_entry(title, role):
         'Description': role.get('roleDescription'),
         'ID': role.get('roleId'),
         'Name': role.get('roleName'),
-        'Privilege': parse_privileges(role.get('rolePrivileges'))
+        'Privilege': parse_privileges(role.get('rolePrivileges'), [])
     }
 
     headers = ['ETag', 'IsSuperAdminRole', 'IsSystemRole', 'Kind', 'Description',
@@ -925,11 +919,11 @@ def get_role_command():
     role_id = args['role-id']
     customer = args['customer-id'] if args.get('customer-id') else GAPPS_ID
 
-    if not GAPPS_ID and not customer:
+    if not customer:
         raise ValueError('Must provide Immutable GoogleApps Id')
 
     role = get_role(role_id, customer)
-    return role_to_entry('Role %s details:' % (role_id,), role)
+    return role_to_entry('Role {} details:'.format(role_id), role)
 
 
 def revoke_user_roles_command():
