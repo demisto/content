@@ -169,8 +169,13 @@ def parse_mail_parts(parts):
     return body, html, attachments
 
 
-def parse_privileges(privileges):
-    return [assign_params(**{'ServiceID': p.get('serviceId'), 'Name': p.get('privilegeName')}) for p in privileges]
+def parse_privileges(raw_privileges):
+    privileges = []
+    for p in raw_privileges:
+        privilege = assign_params(**{'ServiceID': p.get('serviceId'), 'Name': p.get('privilegeName')})
+        if privilege:
+            privileges.append(privilege)
+    return privileges
 
 
 def localization_extract(time_from_mail):
