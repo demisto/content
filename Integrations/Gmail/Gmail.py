@@ -587,7 +587,7 @@ def role_to_entry(title, role):
         'Description': role.get('roleDescription'),
         'ID': role.get('roleId'),
         'Name': role.get('roleName'),
-        'Privilege': parse_privileges(role.get('rolePrivileges'), [])
+        'Privilege': parse_privileges(role.get('rolePrivileges', []))
     }
 
     headers = ['ETag', 'IsSuperAdminRole', 'IsSystemRole', 'Kind', 'Description',
