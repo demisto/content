@@ -408,6 +408,9 @@
             "playbookID": "GetTime-Test"
         },
         {
+            "playbookID": "GetTime-ObjectVsStringTest"
+        },
+        {
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io Scan Test",
             "nightly": true,
