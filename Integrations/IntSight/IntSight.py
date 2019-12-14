@@ -441,7 +441,7 @@ def close_alert():
     alert_id = demisto.getArg('alert-id')
     reason = demisto.getArg('reason')
     free_text = demisto.getArg('free-text')
-    is_hidden = demisto.getArg('is-hidden')
+    is_hidden = demisto.getArg('is-hidden') == 'True'
     rate = demisto.getArg('rate')
     close_details = {'ID': alert_id, 'Close Reason': reason, 'Closed FreeText': free_text, 'Closed Rate': rate,
                      'IsHidden': is_hidden}
