@@ -47,7 +47,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Get live feeds of IOC DRP data from PhishLabs.
+description: Get live feeds of DRP from PhishLabs.
 display: PhishLabs IOC DRP
 name: PhishLabs IOC DRP
 script:
@@ -125,7 +125,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get cases of Phishlabs DRP service by filters
+    description: Get cases by filters
     execution: false
     name: phishlabs-ioc-drp-get-cases
     outputs:
@@ -305,7 +305,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get case by ID of Phishlabs DRP service
+    description: Get case by ID
     execution: false
     name: phishlabs-ioc-drp-get-case-by-id
     outputs:
@@ -540,7 +540,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get open cases of Phishlabs DRP service by filters
+    description: Get open cases by filters
     execution: false
     name: phishlabs-ioc-drp-get-open-cases
     outputs:
@@ -775,7 +775,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get closed cases of Phishlabs DRP service by filters
+    description: Get closed cases by filters
     execution: false
     name: phishlabs-ioc-drp-get-closed-cases
     outputs:

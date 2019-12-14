@@ -105,18 +105,18 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
     After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
-    <li><a href="#phishlabs-ioc-drp-get-cases" target="_self">Get cases of Phishlabs DRP service by filters:
+    <li><a href="#phishlabs-ioc-drp-get-cases" target="_self">Get cases by filters:
         phishlabs-ioc-drp-get-cases</a></li>
-    <li><a href="#phishlabs-ioc-drp-get-case-by-id" target="_self">Get case by ID of Phishlabs DRP service:
+    <li><a href="#phishlabs-ioc-drp-get-case-by-id" target="_self">Get case by ID:
         phishlabs-ioc-drp-get-case-by-id</a></li>
-    <li><a href="#phishlabs-ioc-drp-get-open-cases" target="_self">Get open cases of Phishlabs DRP service by filters:
+    <li><a href="#phishlabs-ioc-drp-get-open-cases" target="_self">Get open cases filters:
         phishlabs-ioc-drp-get-open-cases</a></li>
-    <li><a href="#phishlabs-ioc-drp-get-closed-cases" target="_self">Get closed cases of Phishlabs DRP service by
+    <li><a href="#phishlabs-ioc-drp-get-closed-cases" target="_self">Get closed cases by
         filters: phishlabs-ioc-drp-get-closed-cases</a></li>
 </ol>
 <h3 id="phishlabs-ioc-drp-get-cases">1. phishlabs-ioc-drp-get-cases</h3>
 <hr>
-<p>Get cases of Phishlabs DRP service by filters</p>
+<p>Get cases by filters</p>
 <h5>Base Command</h5>
 <p>
     <code>phishlabs-ioc-drp-get-cases</code>
