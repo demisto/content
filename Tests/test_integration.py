@@ -345,6 +345,7 @@ def __print_investigation_error(client, playbook_id, investigation_id, color=LOG
                 conn_err))
     if res and int(res[1]) == 200:
         resp_json = ast.literal_eval(res[0])
+        print_color('\n\n' + str(resp_json) + '\n\n', LOG_COLORS.GREEN)
         entries = resp_json['entries']
         print_color('Playbook ' + playbook_id + ' has failed:', color)
         print_color('\n\n' + str(entries) + '\n\n', LOG_COLORS.GREEN)
