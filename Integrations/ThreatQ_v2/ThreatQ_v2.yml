@@ -80,7 +80,7 @@ script:
       name: ip
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Checks the reputation of an IP address in ThreatQ.
     execution: false
     name: ip
