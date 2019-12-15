@@ -172,10 +172,14 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
         <td>Date query endining date</td>
         <td>Optional</td>
     </tr>
+    <tr>
+        <td>period</td>
+        <td>timestamp (<number> <time unit>, e.g., 12 hours, 7 days)</td>
+        <td>Optional</td>
+    </tr>
     </tbody>
 </table>
 
-<p>&nbsp;</p>
 <h5>Context Output</h5>
 <table style="width:750px" border="2" cellpadding="6">
     <thead>
@@ -611,7 +615,7 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
     <tbody>
     <tr>
         <td>case_id</td>
-        <td>ID of case</td>
+        <td>ID of case, for expample ID from previous command</td>
         <td>Required</td>
     </tr>
     </tbody>
@@ -1051,6 +1055,11 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
         <td>Date query beginning date</td>
         <td>Optional</td>
     </tr>
+    <tr>
+        <td>period</td>
+        <td>timestamp (<number> <time unit>, e.g., 12 hours, 7 days)</td>
+        <td>Optional</td>
+    </tr>
     </tbody>
 </table>
 
@@ -1484,6 +1493,11 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
     <tr>
         <td>end_date</td>
         <td>Date query beginning date</td>
+        <td>Optional</td>
+    </tr>
+    <tr>
+        <td>period</td>
+        <td>timestamp (<number> <time unit>, e.g., 12 hours, 7 days)</td>
         <td>Optional</td>
     </tr>
     </tbody>

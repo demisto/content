@@ -131,7 +131,7 @@ class Client(BaseClient):
     def get_cases(self, status: Optional[str] = None, case_type: Optional[str] = None,
                   max_records: Union[str, int] = 20, offset: Union[str, int] = 0,
                   date_field: str = 'dateModified', begin_date: Optional[str] = None,
-                  end_date: Optional[str] = None, query_type: str = '') -> Dict:
+                  end_date: Optional[str] = None, query_type: str = '', period: Optional[str] = None) -> Dict:
         """
         Query the specified kwargs with default parameters if not defined
 
@@ -144,10 +144,14 @@ class Client(BaseClient):
             begin_date: Date query beginning date
             end_date: Date query beginning date
             query_type: query type influence on suffix - all/open/closed
+            period: timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
 
         Returns:
             Response JSON as dictionary
         """
+        if period:
+            begin_date, end_date = parse_date_range(date_range=period,
+                                                    date_format='%Y-%m-%dT%H:%M:%SZ')
         suffix: str = f'/cases/{query_type}' if query_type else '/cases'
         params: Dict = {
             'status': status,
