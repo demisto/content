@@ -625,6 +625,10 @@ def timestamp_length_equalization(timestamp1, timestamp2):
     """
     diff_len = len(str(timestamp1)) - len(str(timestamp2))
 
+    # no difference in length
+    if diff_len == 0:
+        return int(timestamp1), int(timestamp2)
+
     # length of timestamp1 > timestamp2
     if diff_len > 0:
         ten_times = pow(10, diff_len)
