@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue with the fetch incidents function in which failed jobs raised an exception.
 
 ## [19.11.0] - 2019-11-12
 Fixed an issue with the Test module.
