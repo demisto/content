@@ -1,8 +1,8 @@
 from CommonServerPython import *
 import demistomock as demisto
-
 import requests
 import base64
+from typing import Union, Dict, List
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 OPROXY_AUTH_TYPE = 'oproxy'
@@ -12,10 +12,10 @@ SELF_DEPLOYED_AUTH_TYPE = 'self_deployed'
 class MicrosoftClient(BaseClient):
 
     def __init__(self, auth_type: str, tenant_id: str = '', auth_id: str = '', enc_key: str = '',
-                 token_retrieval_url: str = '',  app_name: str = '', refresh_token: str = '',
+                 token_retrieval_url: str = '', app_name: str = '', refresh_token: str = '',
                  client_id: str = '', client_secret: str = '', scope: str = '', resource: str = '', app_url: str = '',
                  verify: bool = True, *args, **kwargs):
-        super().__init__(verify=verify, *args, **kwargs)
+        super().__init__(verify=verify, *args, **kwargs)  # type: ignore
         self.auth_type = auth_type
         self.app_url = app_url
         self.tenant_id = tenant_id
@@ -34,14 +34,15 @@ class MicrosoftClient(BaseClient):
     def from_oproxy(cls, auth_id: str, enc_key: str, token_retrieval_url: str, app_name: str,
                     tenant_id: str = '', refresh_token: str = '', *args, **kwargs):
 
-        return cls(OPROXY_AUTH_TYPE, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key,
+        return cls(OPROXY_AUTH_TYPE, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key,  # type: ignore
                    token_retrieval_url=token_retrieval_url,
                    app_name=app_name, refresh_token=refresh_token, *args, **kwargs)
 
     @classmethod
     def from_self_deployed(cls, tenant_id: str, client_id: str, client_secret: str, scope: str = '', resource: str = '',
                            app_url: str = '', *args, **kwargs):
-        return cls(SELF_DEPLOYED_AUTH_TYPE, tenant_id=tenant_id, client_id=client_id, client_secret=client_secret,
+        return cls(SELF_DEPLOYED_AUTH_TYPE, tenant_id=tenant_id, client_id=client_id,  # type: ignore
+                   client_secret=client_secret,
                    scope=scope, resource=resource, app_url=app_url, *args, **kwargs)
 
     def http_request(self, *args, **kwargs):
@@ -55,6 +56,52 @@ class MicrosoftClient(BaseClient):
             'Accept': 'application/json'
         }
         return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore
+
+    @staticmethod
+    def camel_case_to_readable(cc: Union[str, Dict], fields_to_drop: List[str] = None) -> Union[str, Dict]:
+        """
+        'camelCase' -> 'Camel Case' (text or dictionary keys)
+
+        Args:
+            cc: either a dictionary or a text to transform
+            fields_to_drop: keys to drop from input dictionary
+
+        Returns:
+            A Camel Cased string of Dict.
+        """
+        if fields_to_drop is None:
+            fields_to_drop = []
+        if isinstance(cc, str):
+            if cc == 'id':
+                return 'ID'
+            return ''.join(' ' + char if char.isupper() else char.strip() for char in cc).strip().title()
+
+        elif isinstance(cc, Dict):
+            return {MicrosoftClient.camel_case_to_readable(field): value for field, value in cc.items()
+                    if field not in fields_to_drop}
+        return cc
+
+    @staticmethod
+    def snakecase_to_camelcase(sc: Union[str, Dict], fields_to_drop: List[str] = None) -> Union[str, Dict]:
+        """
+        'snake_case' -> 'snakeCase' (text or dictionary keys)
+
+        Args:
+            sc: either a dictionary or a text to transform
+            fields_to_drop: keys to drop from input dictionary
+
+        Returns:
+            A connectedCamelCased string of Dict.
+        """
+        if fields_to_drop is None:
+            fields_to_drop = []
+        if isinstance(sc, str):
+            return ''.join([word.title() for word in sc.split('_')])
+
+        elif isinstance(sc, Dict):
+            return {MicrosoftClient.snakecase_to_camelcase(field): value for field, value in sc.items()
+                    if field not in fields_to_drop}
+        return sc
 
     def _get_access_token(self):
         """
@@ -90,7 +137,7 @@ class MicrosoftClient(BaseClient):
         }
 
         if refresh_token:
-            integration_context['current_refresh_token']: refresh_token
+            integration_context['current_refresh_token'] = refresh_token
         demisto.setIntegrationContext(integration_context)
         return access_token
 
@@ -152,7 +199,7 @@ class MicrosoftClient(BaseClient):
         else:
             data['resource'] = self.resource
 
-        body = {}
+        body: dict = {}
         try:
             response = requests.post(url, data, verify=self.use_ssl)
             if response.status_code != 200:
@@ -180,11 +227,11 @@ class MicrosoftClient(BaseClient):
         """
         try:
             response = error.json()
-            error = response.get('error', {})
+            inner_error = response.get('error', {})
             if isinstance(error, dict):
-                err_str = f"{error.get('code')}: {error.get('message')}"
+                err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
             else:
-                err_str = error
+                err_str = inner_error
             if err_str:
                 return err_str
             # If no error message
