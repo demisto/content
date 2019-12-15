@@ -258,8 +258,8 @@ def get_integration_commands(integration_ids, integration_set):
             integration_to_command[integration_id] = relevant_commands
 
     if deprecated_commands_string:
-        deprecated_message = '  The following integration commands are deprecated and are not taken ' \
-                             'into account in the test collection:\n  {}\n\n'.format(deprecated_commands_string)
+        deprecated_message = 'The following integration commands are deprecated and are not taken ' \
+                             'into account in the test collection:\n{}'.format(deprecated_commands_string)
 
     return integration_to_command, deprecated_message
 
@@ -379,17 +379,17 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
         'playbooks': '',
         'integrations': ''
     }
-    if script_names or deprecated_msgs['scripts']:
-        affected_ids_strings['scripts'] += 'Scripts:\n' + '\n'.join(script_names) + '\n'
-    if playbook_names or deprecated_msgs['playbooks']:
-        affected_ids_strings['playbooks'] += 'Playbooks:\n' + '\n'.join(playbook_names) + '\n'
-    if integration_ids or deprecated_msgs['integrations']:
-        affected_ids_strings['integrations'] += 'Integrations:\n' + '\n'.join(integration_ids) + '\n'
+    if script_names:
+        affected_ids_strings['scripts'] += 'Scripts:\n' + '\n'.join(script_names)
+    if playbook_names:
+        affected_ids_strings['playbooks'] += 'Playbooks:\n' + '\n'.join(playbook_names)
+    if integration_ids:
+        affected_ids_strings['integrations'] += 'Integrations:\n' + '\n'.join(integration_ids)
 
-    print('The following ids are affected due to the changes you made:\n')
+    print('The following ids are affected due to the changes you made:')
     for entity in ['scripts', 'playbooks', 'integrations']:
         print(affected_ids_strings[entity])
-        print_color(deprecated_msgs[entity] + '\n', LOG_COLORS.YELLOW)
+        print_color(deprecated_msgs[entity], LOG_COLORS.YELLOW)
 
     if deprecated_commands_message:
         print_color(deprecated_commands_message, LOG_COLORS.YELLOW)
@@ -437,13 +437,13 @@ def exclude_deprecated_entities(script_set, script_names,
             if entity_name in entity_names:
                 entity_data = list(entity.values())[0]
                 if entity_data.get('deprecated', False):
-                    deprecated_entities_strings_dict[entity_type] += '   ' + entity_name + '\n'
+                    deprecated_entities_strings_dict[entity_type] += entity_name + '\n'
                     entity_names.remove(entity_name)
 
         if deprecated_entities_strings_dict[entity_type]:
-            deprecated_messages_dict[entity_type] = '  The following {} are deprecated ' \
+            deprecated_messages_dict[entity_type] = 'The following {} are deprecated ' \
                                                     'and are not taken into account in the test collection:' \
-                                                    '\n{}\n'.format(entity_type,
+                                                    '\n{}'.format(entity_type,
                                                                     deprecated_entities_strings_dict[entity_type])
 
     return deprecated_messages_dict
