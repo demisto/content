@@ -1,6 +1,6 @@
 ## [Unreleased]
-  - Fixed an issue with ***fetch incidents*** which caused incident duplication.
-  - Added the following Real Time Response API commands:
+  - Fixed an issue with ***Fetch incidents***, which caused incident duplication.
+  - Added the following real-time response API commands:
     - ***cs-falcon-run-command***
     - ***cs-falcon-upload-script***
     - ***cs-falcon-get-script***

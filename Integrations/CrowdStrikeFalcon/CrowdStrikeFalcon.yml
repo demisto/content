@@ -61,7 +61,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of device IDs to limit by which to limit the results.
+      description: A comma separated list of device IDs to limit by which to limit the results.
       isArray: false
       name: ids
       required: false
@@ -88,7 +88,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Returns devices that match the specified platform name.
+      description: 'Returns devices that match the specified platform name. Can be: "Windows","Mac", or "Linux".'
       isArray: false
       name: platform_name
       predefined:
@@ -334,20 +334,20 @@ script:
     name: cs-falcon-lift-host-containment
   - arguments:
     - default: false
-      description: CSV list of host agent ID’s to run commands on (can be retrieved
+      description: A comma separated list of host agent ID’s for which to run commands (can be retrieved
         by running cs-falcon-search-device command).
       isArray: false
       name: host_ids
       required: true
       secret: false
     - default: false
-      description: Command type to run
+      description: The command type to run.
       isArray: false
       name: command_type
       required: true
       secret: false
     - default: false
-      description: Full command to run
+      description: The full command to run.
       isArray: false
       name: full_command
       required: true
@@ -355,7 +355,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: read
-      description: Scope to run the command in.
+      description: The scope for which to run the command.
       isArray: false
       name: scope
       predefined:
@@ -365,28 +365,28 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Send commands to hosts.
+    description: Sends commands to hosts.
     execution: false
     name: cs-falcon-run-command
     outputs:
     - contextPath: CrowdStrike.Command.HostID
-      description: The ID of host the command was running on.
+      description: The ID of the host for which the command was running.
       type: String
     - contextPath: CrowdStrike.Command.Stdout
-      description: Command standard output.
+      description: The standard output of the command.
       type: String
     - contextPath: CrowdStrike.Command.Stderr
-      description: Command standard error.
+      description: The standard error of the command.
       type: String
     - contextPath: CrowdStrike.Command.BaseCommand
-      description: Base command given.
+      description: The base command.
       type: String
     - contextPath: CrowdStrike.Command.FullCommand
-      description: Full command given.
+      description: The full command.
       type: String
   - arguments:
     - default: false
-      description: Script name to upload
+      description: The script name to upload.
       isArray: false
       name: name
       required: true
@@ -394,9 +394,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: private
-      description: 'Permission for the custom-script. Valid permission values: private
-        - usable by only the user who uploaded it, group - usable by all RTR Admins,
-        public - usable by all active-responders and RTR admins.'
+      description: 'The permission type for the custom script. Can be: "private",
+        which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and
+        "public", which is used by all active-responders and RTR admins.'
       isArray: false
       name: permission_type
       predefined:
@@ -406,7 +406,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Contents of the PowerShell script
+      description: The Contents of the PowerShell script.
       isArray: false
       name: content
       required: true
@@ -417,26 +417,26 @@ script:
     name: cs-falcon-upload-script
   - arguments:
     - default: false
-      description: File entry ID to upload
+      description: The file entry ID to upload.
       isArray: false
       name: entry_id
       required: true
       secret: false
     deprecated: false
-    description: Upload a file to the CrowdStrike cloud (can be later used for the
+    description: Uploads a file to the CrowdStrike cloud (can be used for the
       RTR `put` command).
     execution: false
     name: cs-falcon-upload-file
   - arguments:
     - default: false
-      description: File ID to delete (can be retrieved by running cs-falcon-list-files
+      description: The file ID to delete (can be retrieved by running cs-falcon-list-files
         command).
       isArray: false
       name: file_id
       required: true
       secret: false
     deprecated: false
-    description: Delete a file based on the ID given. Can only delete one file at
+    description: Deletes a file based on the ID given. Can delete only one file at
       a time.
     execution: false
     name: cs-falcon-delete-file
@@ -449,7 +449,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get files based on the ID's given. These are used for the RTR `put`
+    description: Returns files based on the IDs given. These are used for the RTR `put`
       command.
     execution: false
     name: cs-falcon-get-file
@@ -458,28 +458,28 @@ script:
         description: The ID of the file.
         type: String
       - contextPath: CrowdStrike.File.CreatedBy
-        description: Email of the user who created the file.
+        description: The email of the user who created the file.
         type: String
       - contextPath: CrowdStrike.File.CreatedTime
-        description: Creation date of the file.
+        description: The creation date of the file.
         type: Date
       - contextPath: CrowdStrike.File.Description
-        description: Description of the file.
+        description: The description of the file.
         type: String
       - contextPath: CrowdStrike.File.Type
-        description: Type of the file, e.g. script.
+        description: The type of the file. For example, script.
         type: String
       - contextPath: CrowdStrike.File.ModifiedBy
-        description: Email of the user who modified the file.
+        description: The email of the user who modified the file.
         type: String
       - contextPath: CrowdStrike.File.ModifiedTime
-        description: Modification date of the file.
+        description: The modification date of the file.
         type: Date
       - contextPath: CrowdStrike.File.Name
         description: The full file name.
         type: String
       - contextPath: CrowdStrike.File.Permission
-        description: 'Permission type of the file, can be one of: public, group or private.'
+        description: 'The permission type of the file. Can be: "public", "group" or "private".'
         type: String
       - contextPath: CrowdStrike.File.SHA256
         description: The SHA-256 hash of the file.
@@ -497,7 +497,7 @@ script:
         description: The size of the file in bytes.
         type: Number
   - deprecated: false
-    description: Get a list of put-file ID's that are available to the user for the
+    description: Returns a list of put-file ID's that are available for the user in the
       `put` command.
     execution: false
     name: cs-falcon-list-files
@@ -506,28 +506,28 @@ script:
       description: The ID of the file.
       type: String
     - contextPath: CrowdStrike.File.CreatedBy
-      description: Email of the user who created the file.
+      description: The email of the user who created the file.
       type: String
     - contextPath: CrowdStrike.File.CreatedTime
-      description: Creation date of the file.
+      description: The creation date of the file.
       type: Date
     - contextPath: CrowdStrike.File.Description
-      description: Description of the file.
+      description: The description of the file.
       type: String
     - contextPath: CrowdStrike.File.Type
-      description: Type of the file, e.g. script.
+      description: The type of the file. For example, script.
       type: String
     - contextPath: CrowdStrike.File.ModifiedBy
-      description: Email of the user who modified the file.
+      description: The email of the user who modified the file.
       type: String
     - contextPath: CrowdStrike.File.ModifiedTime
-      description: Modification date of the file.
+      description: The modification date of the file.
       type: Date
     - contextPath: CrowdStrike.File.Name
       description: The full file name.
       type: String
     - contextPath: CrowdStrike.File.Permission
-      description: 'Permission type of the file, can be one of: public, group or private.'
+      description: 'Permission type of the file. Can be "public", "group" or "private".'
       type: String
     - contextPath: CrowdStrike.File.SHA256
       description: The SHA-256 hash of the file.
@@ -546,14 +546,14 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: CSV list of script IDs to get (can be retrieved by running cs-falcon-list-scripts
+      description: A comma separated list of script IDs to return (can be retrieved by running cs-falcon-list-scripts
         command).
       isArray: false
       name: script_id
       required: true
       secret: false
     deprecated: false
-    description: Get custom-scripts based on the ID's given. These are used for the
+    description: Return custom scripts based on the ID. Used for the
       RTR `runscript` command.
     execution: false
     name: cs-falcon-get-script
@@ -562,37 +562,37 @@ script:
       description: The ID of the script.
       type: String
     - contextPath: CrowdStrike.Script.CreatedBy
-      description: Email of the user who created the script.
+      description: The email of the user who created the script.
       type: String
     - contextPath: CrowdStrike.Script.CreatedTime
-      description: Creation date of the script.
+      description: The creation date of the script.
       type: Date
     - contextPath: CrowdStrike.Script.ModifiedBy
-      description: Email of the user who modified the script.
+      description: The email of the user who modified the script.
       type: String
     - contextPath: CrowdStrike.Script.ModifiedTime
-      description: Modification date of the script.
+      description: The modification date of the script.
       type: Date
     - contextPath: CrowdStrike.Script.Name
       description: The script name.
       type: String
     - contextPath: CrowdStrike.Script.Permission
-      description: 'Permission type of the script, can be one of: public, group or private.'
+      description: 'Permission type of the script. Can be: "public", "group" or "private".'
       type: String
     - contextPath: CrowdStrike.Script.SHA256
       description: The SHA-256 hash of the script file.
       type: String
     - contextPath: CrowdStrike.Script.RunAttemptCount
-      description: Number of the script run attempts.
+      description: The number of the script run attempts.
       type: Number
     - contextPath: CrowdStrike.Script.RunSuccessCount
-      description: Number of the script successful runs
+      description: The number of the successful script runs.
       type: Number
     - contextPath: CrowdStrike.Script.Platform
-      description: List of platforms OS on which the script can run, e.g. windows.
+      description: List of platforms OS for which the script can run. For example, windows.
       type: String
     - contextPath: CrowdStrike.Script.WriteAccess
-      description: Whether the user has write access to the script or not.
+      description: Whether the user has write access to the script.
       type: Boolean
   - arguments:
     - default: false
@@ -603,12 +603,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a custom-script based on the ID given. Can only delete one
+    description: Deletes a custom-script based on the ID given. Can delete only one
       script at a time.
     execution: false
     name: cs-falcon-delete-script
   - deprecated: false
-    description: Get a list of custom-script ID's that are available to the user for
+    description: Returns a list of custom script IDs that are available for the user in
       the `runscript` command.
     execution: false
     name: cs-falcon-list-scripts
@@ -617,77 +617,77 @@ script:
         description: The ID of the script.
         type: String
       - contextPath: CrowdStrike.Script.CreatedBy
-        description: Email of the user who created the script.
+        description: The email of the user who created the script.
         type: String
       - contextPath: CrowdStrike.Script.CreatedTime
-        description: Creation date of the script.
+        description: The creation date of the script.
         type: Date
       - contextPath: CrowdStrike.Script.ModifiedBy
-        description: Email of the user who modified the script.
+        description: The email of the user who modified the script.
         type: String
       - contextPath: CrowdStrike.Script.ModifiedTime
-        description: Modification date of the script.
+        description: The modification date of the script.
         type: Date
       - contextPath: CrowdStrike.Script.Name
         description: The script name.
         type: String
       - contextPath: CrowdStrike.Script.Permission
-        description: 'Permission type of the script, can be one of: public, group or private.'
+        description: 'Permission type of the script. Can be: "public", "group" or "private".'
         type: String
       - contextPath: CrowdStrike.Script.SHA256
         description: The SHA-256 hash of the script file.
         type: String
       - contextPath: CrowdStrike.Script.RunAttemptCount
-        description: Number of the script run attempts.
+        description: The number of the script run attempts.
         type: Number
       - contextPath: CrowdStrike.Script.RunSuccessCount
-        description: Number of the script successful runs
+        description: The number of the script successful runs.
         type: Number
       - contextPath: CrowdStrike.Script.Platform
-        description: List of platforms OS on which the script can run, e.g. windows.
+        description: The list of OS platforms on which the script can run. For example, Windows.
         type: String
       - contextPath: CrowdStrike.Script.WriteAccess
-        description: Whether the user has write access to the script or not.
+        description: Whether the user has write access to the script.
         type: Boolean
   - arguments:
     - default: false
-      description: Script name to run.
+      description: The name of the script to run.
       isArray: false
       name: script_name
       required: false
       secret: false
     - default: false
-      description: CSV list of host agent ID’s to run commands on (can be retrieved
+      description: A comma separated list of host agent IDs to run commands (can be retrieved
         by running cs-falcon-search-device command).
       isArray: false
       name: host_ids
       required: true
       secret: false
     - default: false
-      description: PowerShell script code to run.
+      description: The PowerShell script code to run.
       isArray: false
       name: raw
       required: false
       secret: false
     deprecated: false
-    description: Run a script on agent host.
+    description: Runs a script on the agent host.
     execution: false
     name: cs-falcon-run-script
     outputs:
     - contextPath: CrowdStrike.Command.HostID
-      description: The ID of host the command was running on.
+      description: The ID of the host for which the command was running.
       type: String
     - contextPath: CrowdStrike.Command.Stdout
-      description: Command standard output.
+      description: The standard output of the command.
       type: String
     - contextPath: CrowdStrike.Command.Stderr
-      description: Command standard error.
+      description: The standard error of the command.
       type: String
     - contextPath: CrowdStrike.Command.BaseCommand
-      description: Base command given.
+      description: The base command.
       type: String
     - contextPath: CrowdStrike.Command.FullCommand
-      description: Full command given.
+      description: The full command.
       type: String
   dockerimage: demisto/python3:3.7.2.200
   isfetch: true
