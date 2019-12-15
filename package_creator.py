@@ -214,6 +214,12 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
     with io.open(script_path, mode='r', encoding='utf-8') as script_file:
         script_code = script_file.read()
 
+    microsoft_import = 'from Utils.microsoft_api import MicrosoftClient'
+
+    if script_code.find(microsoft_import) != -1:
+        client_code = get_microsoft_client_code()
+        script_code = script_code.replace(microsoft_import, client_code)
+
     clean_code = clean_python_code(script_code)
 
     lines = ['|-']
@@ -251,11 +257,6 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
 
 def clean_python_code(script_code, remove_print_future=True):
     script_code = remove_imports(script_code)
-    microsoft_import = 'from Utils.microsoft_api import MicrosoftClient'
-
-    if script_code.find(microsoft_import) != -1:
-        client_code = get_microsoft_client_code()
-        script_code = script_code.replace(microsoft_import, client_code)
 
     # print function is imported in python loop
     if remove_print_future:  # docs generation requires to leave this
@@ -271,12 +272,12 @@ def remove_imports(script_code):
 
 
 def get_microsoft_client_code():
+
     client_path = './Utils/microsoft_api.py'
     try:
         with open(client_path, 'r') as file:
             client_code = file.read()
 
-        client_code = remove_imports(client_code)
         client_code = '\n### GENERATED CODE ###\n{}\n'.format(client_code)
 
     except Exception as e:
