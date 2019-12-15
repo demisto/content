@@ -208,7 +208,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, thr
     try:
         response = client.create_incident(create_incident_request=create_incident_request)
     except RuntimeError as err:
-        print_error(str(err))
+        prints_manager.add_print_job(str(err), print_error, thread_index)
 
     try:
         inc_id = response.id
@@ -220,9 +220,8 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, thr
                              'name' in integration]
         error_message = 'Failed to create incident for integration names: {} and playbookID: {}.' \
                         'Possible reasons are:\nMismatch between playbookID in conf.json and ' \
-                    'the id of the real playbook you were trying to use,' \
-                    'or schema problems in the TestPlaybook.'.format(str(integration_names),
-                                                                     playbook_id)
+                        'the id of the real playbook you were trying to use,' \
+                        'or schema problems in the TestPlaybook.'.format(str(integration_names), playbook_id)
         prints_manager.add_print_job(error_message, print_error, thread_index)
         return False, -1
 
@@ -236,7 +235,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, thr
     try:
         incidents = client.search_incidents(filter=search_filter)
     except ApiException as err:
-        print(err)
+        prints_manager.add_print_job(err, print, thread_index)
 
     # poll the incidents queue for a max time of 25 seconds
     timeout = time.time() + 25
@@ -301,29 +300,30 @@ def __delete_incident(client, incident, thread_index=0, prints_manager=None):
 
 
 # return True if delete-integration-instance succeeded, False otherwise
-def __delete_integration_instance(client, instance_id):
+def __delete_integration_instance(client, instance_id, thread_index=0, prints_manager=None):
     try:
         res = demisto_client.generic_request_func(self=client, method='DELETE',
                                                   path='/settings/integration/' + urllib.quote(
                                                       instance_id))
     except requests.exceptions.RequestException as conn_err:
-        print_error(
-            'Failed to delete integration instance, error trying to communicate with demisto '
-            'server: {} '.format(
-                conn_err))
+        error_message = 'Failed to delete integration instance, error trying to communicate with demisto ' \
+            'server: {} '.format(conn_err)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         return False
     if int(res[1]) != 200:
-        print_error('delete integration instance failed\nStatus code' + str(res[1]))
-        print_error(pformat(res))
+        error_message = 'delete integration instance failed\nStatus code' + str(res[1])
+        prints_manager.add_print_job(error_message, print_error, thread_index)
+        prints_manager.add_print_job(pformat(res), print_error, thread_index)
         return False
     return True
 
 
 # delete all integration instances, return True if all succeed delete all
-def __delete_integrations_instances(client, module_instances):
+def __delete_integrations_instances(client, module_instances, thread_index=0, prints_manager=None):
     succeed = True
     for module_instance in module_instances:
-        succeed = __delete_integration_instance(client, module_instance['id']) and succeed
+        succeed = __delete_integration_instance(client, module_instance['id'], thread_index=thread_index,
+                                                prints_manager=prints_manager) and succeed
     return succeed
 
 
@@ -396,7 +396,8 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
                                                         )
         if module_instance is None:
             prints_manager.add_print_job('Failed to create instance', print_error, thread_index)
-            __delete_integrations_instances(client, module_instances)
+            __delete_integrations_instances(client, module_instances, thread_index=thread_index,
+                                            prints_manager=prints_manager)
             return False, -1
 
         module_instances.append(module_instance)
@@ -454,7 +455,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
             prints_manager.add_print_job(loop_number_message, print, thread_index)
         i = i + 1
 
-    __disable_integrations_instances(client, module_instances)
+    __disable_integrations_instances(client, module_instances, thread_index=thread_index, prints_manager=prints_manager)
 
     test_pass = playbook_state == PB_Status.COMPLETED or playbook_state == PB_Status.NOT_SUPPORTED_VERSION
     if test_pass:
@@ -462,7 +463,8 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         __delete_incident(client, incident, thread_index=thread_index, prints_manager=prints_manager)
 
         # delete integration instance
-        __delete_integrations_instances(client, module_instances)
+        __delete_integrations_instances(client, module_instances, thread_index=thread_index,
+                                        prints_manager=prints_manager)
 
     return playbook_state, inc_id
 
