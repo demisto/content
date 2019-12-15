@@ -260,7 +260,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: ' A CSV list of one or more IDs to resolve.'
+      description: A comma separated list of one or more IDs to resolve.
       isArray: false
       name: ids
       required: false
@@ -442,7 +442,7 @@ script:
     name: cs-falcon-delete-file
   - arguments:
     - default: false
-      description: CSV list of file IDs to get (can be retrieved by running cs-falcon-list-files
+      description: A comma separated list of file IDs to get (can be retrieved by running cs-falcon-list-files
         command).
       isArray: false
       name: file_id
