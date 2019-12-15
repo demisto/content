@@ -27,8 +27,8 @@ COPY_CONTENT_COMMAND="sudo rm -f /usr/local/demisto/res/playbook-Test Playbook T
 
 if [[ "$CIRCLE_BRANCH" != "master" ]]; then
   # when triggered on non master branch sideload like we used to do
-  scp content_new.zip ${USER}@${PUBLIC_IP}:~/content
-  scp content_test.zip ${USER}@${PUBLIC_IP}:~/content
+  scp artifacts/content_new.zip ${USER}@${PUBLIC_IP}:~/content
+  scp artifacts/content_test.zip ${USER}@${PUBLIC_IP}:~/content
   COPY_CONTENT_COMMAND="$COPY_CONTENT_COMMAND && sudo unzip -q -o ~/content/content_new.zip -d /usr/local/demisto/res \
   && sudo unzip -q -o ~/content/content_test.zip -d /usr/local/demisto/res"
 fi

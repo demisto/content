@@ -489,7 +489,7 @@ script:
       description: The IP address.
       type: String
     - contextPath: Domain.Name
-      description: 'The domain name. For example, "google.com".'
+      description: The domain name. For example, "google.com".
       type: String
     - contextPath: Domain.Malicious.Vendor
       description: The vendor reporting the domain as malicious.
@@ -500,7 +500,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The type of the IOC. Can be: "Urls", "Hashes", "IpAddresses", or "domains".'
+      description: 'The type of the IOC. Can be: "Urls", "Hashes", "IpAddresses",
+        or "domains".'
       isArray: false
       name: type
       predefined:
@@ -511,7 +512,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The maximum number of results from 1-1000. Default is 1000.'
+      description: The maximum number of results from 1-1000. Default is 1000.
       isArray: false
       name: limit
       required: false
@@ -534,25 +535,29 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Beginning of the date range when the IOC was first seen (MM/DD/YYYY). Default is 0.'
+      description: Beginning of the date range when the IOC was first seen (MM/DD/YYYY).
+        Default is 0.
       isArray: false
       name: first-seen-from
       required: false
       secret: false
     - default: false
-      description: 'End of the date range when the IOC was first seen (MM/DD/YYYY). Default is 0.'
+      description: End of the date range when the IOC was first seen (MM/DD/YYYY).
+        Default is 0.
       isArray: false
       name: first-seen-to
       required: false
       secret: false
     - default: false
-      description: 'Beginning of the date range when the IOC was last seen (MM/DD/YYYY). Default is 0.'
+      description: Beginning of the date range when the IOC was last seen (MM/DD/YYYY).
+        Default is 0.
       isArray: false
       name: last-seen-from
       required: false
       secret: false
     - default: false
-      description: 'End of the date range when the IOC was last seen (MM/DD/YYYY). Default is 0.'
+      description: End of the date range when the IOC was last seen (MM/DD/YYYY).
+        Default is 0.
       isArray: false
       name: last-seen-to
       required: false
@@ -656,7 +661,7 @@ script:
       description: IP address.
       type: String
     - contextPath: Domain.Name
-      description: 'The domain name. For example, "google.com".'
+      description: The domain name. For example, "google.com".
       type: String
     - contextPath: Domain.Malicious.Vendor
       description: The vendor reporting the domain as malicious.
@@ -667,7 +672,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The type of the alert. Can be: "AttackIndication", "DataLeakage", "Phishing", "BrandSecurity", "ExploitableData", "VIP".'
+      description: 'The type of the alert. Can be: "AttackIndication", "DataLeakage",
+        "Phishing", "BrandSecurity", "ExploitableData", "VIP".'
       isArray: false
       name: alert-type
       predefined:
@@ -692,7 +698,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The source type of the alert. Can be: "ApplicationStores", "BlackMarkets", "HackingForums", "SocialMedia", "PasteSites", or "Others".'
+      description: 'The source type of the alert. Can be: "ApplicationStores", "BlackMarkets",
+        "HackingForums", "SocialMedia", "PasteSites", or "Others".'
       isArray: false
       name: source-type
       predefined:
@@ -862,7 +869,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A comma separated list of each type of IOC. Options: Domains, IPs, URLs'
+      description: 'A comma separated list of each type of IOC. Options: Domains,
+        IPs, URLs'
       isArray: false
       name: type
       required: true
@@ -889,7 +897,7 @@ script:
       description: The ID of the alert.
       type: string
     - contextPath: IntSights.Alerts.Status
-      description: 'The status of the blocklist.'
+      description: The status of the blocklist.
       type: string
   - arguments:
     - default: true
@@ -918,8 +926,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The reason to close the alert. Can be: "ProblemSolved", "InformationalOnly", 
-        "ProblemWeAreAlreadyAwareOf", "CompanyOwnedDomain", "LegitimateApplication/Profile", "NotRelatedToMyCompany", "FalsePositive", or "Other".'
+      description: 'The reason to close the alert. Can be: "ProblemSolved", "InformationalOnly",
+        "ProblemWeAreAlreadyAwareOf", "CompanyOwnedDomain", "LegitimateApplication/Profile",
+        "NotRelatedToMyCompany", "FalsePositive", or "Other".'
       isArray: false
       name: reason
       predefined:
@@ -939,12 +948,16 @@ script:
       name: free-text
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'False'
-      description: The hidden status of the alert. Deletes an alert from the account instance
-        - only when reason is a FalsePositive).
+      description: The hidden status of the alert. Deletes an alert from the account
+        instance - only when reason is a FalsePositive).
       isArray: false
       name: is-hidden
+      predefined:
+      - 'True'
+      - 'False'
       required: false
       secret: false
     - default: false
@@ -976,7 +989,7 @@ script:
       description: The enabled status of IntSights MSSP sub account
       type: String
     - contextPath: IntSights.MsspAccount.AssetsCount
-      description: The assets count of IntSights MSSP sub account. 
+      description: The assets count of IntSights MSSP sub account.
       type: Number
     - contextPath: IntSights.MsspAccount.AssetLimit
       description: The asset limit of IntSights MSSP sub account.
@@ -985,6 +998,8 @@ script:
       description: The company name of IntSights MSSP sub account.
       type: String
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
