@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added required permissions for each command
 
 
 ## [19.11.0] - 2019-11-12
