@@ -3,6 +3,7 @@ set +e
 
 #download awsinstancetool
 echo "Getting conf from branch $CIRCLE_BRANCH (fallback to master)"
+CIRCLE_BRANCH_WITHOUT_SPECIAL_CHARS=`echo "$CIRCLE_BRANCH" | tr / -`
 
 SECRET_CONF_PATH="./conf_secret.json"
 echo ${SECRET_CONF_PATH} > secret_conf_path

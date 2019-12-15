@@ -1,5 +1,10 @@
 ## [Unreleased]
-
+- Implemented the new XDR API v2. Added the following Traps commands.
+    - ***xdr-isolate-endpoint***
+    - ***xdr-unisolate-endpoint***
+    - ***xdr-get-endpoints***
+    - ***xdr-insert-alerts***
+    
 
 ## [19.9.0] - 2019-09-04
 Return a meaningful error when no query args are given for the !xdr-get-incidents command 
