@@ -21,7 +21,6 @@ script: |-
           }
       }
   }
-
   var ec = {};
   ec[outputPaths.ip] = []
   var uniqueMatches = Object.keys(matches);
