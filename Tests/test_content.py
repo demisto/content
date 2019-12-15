@@ -93,7 +93,7 @@ class PrintJob:
 
 class ParallelPrintsManager:
     def __init__(self, number_of_threads):
-        self.threads_print_jobs: List[List[PrintJob]] = [[] for i in range(number_of_threads)]
+        self.threads_print_jobs = [[] for i in range(number_of_threads)]
         self.print_lock = _thread.allocate_lock()
 
     def add_print_job(self, message_to_print, print_function_to_execute, thread_index, message_color=None):
