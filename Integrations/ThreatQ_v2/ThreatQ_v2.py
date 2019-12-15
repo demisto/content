@@ -308,8 +308,11 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
             res = tq_request('GET', url_suffix)
             indicators.append(indicator_data_to_demisto_format(res['data']))
 
-    dbot_context = [create_dbot_context(i.get('Value'), indicator_type, i.get('TQScore', -1)) for i in indicators]
-    entry_context = set_indicator_entry_context(indicator_type, indicators, dbot_context, generic_context)
+    entry_context = set_indicator_entry_context(
+        indicator_type=indicator_type,
+        indicators=indicators,
+        generic_context=generic_context
+    )
 
     readable = build_readable(
         readable_title=f'Search results for {indicator_type} {value}',
@@ -561,25 +564,24 @@ def add_malicious_data(generic_context, tq_score):
     }
 
 
-def set_indicator_entry_context(indicator_type, raws, dbots, generic):
-    if not isinstance(dbots, list):
-        dbots = [dbots]
-    if not isinstance(raws, list):
-        raws = [raws]
+def set_indicator_entry_context(indicator_type, indicators, generic_context):
+    if not isinstance(indicators, list):
+        indicators = [indicators]
+    dbot_context = [create_dbot_context(i.get('Value'), indicator_type, i.get('TQScore', -1)) for i in indicators]
 
     ec: Dict = {
         outputPaths.get(indicator_type, 'Indicator(val.ID && val.ID == obj.ID)'): [],
         CONTEXT_PATH['indicator']: [],
         'DBotScore': []
     }
-    for dbot, raw in zip(dbots, raws):
+    for dbot, indicator in zip(dbot_context, indicators):
         if dbot.get('Score') == 3:
-            add_malicious_data(generic, raw.get('TQScore', -1))
+            add_malicious_data(generic_context, indicator.get('TQScore', -1))
 
-        ec[outputPaths[indicator_type]].append(generic)
+        ec[outputPaths[indicator_type]].append(generic_context)
         ec['DBotScore'].append(dbot)
-        if raw:
-            ec[CONTEXT_PATH['indicator']].append(raw)
+        if indicator:
+            ec[CONTEXT_PATH['indicator']].append(indicator)
 
     # backwards compatibility
     ec['DBotScore'] = ec['DBotScore'][0] if len(ec['DBotScore']) == 1 else ec['DBotScore']
@@ -676,7 +678,8 @@ def get_indicator_type_id(indicator_name: str) -> str:
 
         raise ValueError(f'Could not find indicator')
     except ValueError:
-        raise ValueError(f'Could not parse data from ThreatQ [Status code: {indicator_types_res.status_code}]')
+        raise ValueError(f'Could not parse data from ThreatQ [Status code: {indicator_types_res.status_code}]'
+                         f'\n[Error Message: {indicator_types_res.text}]')
 
 
 def advance_search_command():
@@ -713,7 +716,8 @@ def advance_search_command():
     try:
         search_results = res.json().get('data')
     except ValueError:
-        raise ValueError(f'Could not parse data from ThreatQ [Status code: {res.status_code}]')
+        raise ValueError(f'Could not parse data from ThreatQ [Status code: {res.status_code}]'
+                         f'\n[Error Message: {res.text}]')
 
     if not isinstance(search_results, list):
         search_results = [search_results]
@@ -725,8 +729,11 @@ def advance_search_command():
         res = tq_request('GET', url_suffix)
         indicators.append(indicator_data_to_demisto_format(res.get('data')))
 
-    dbot_context = [create_dbot_context(i.get('Value'), indicator_type, i.get('TQScore', -1)) for i in indicators]
-    entry_context = set_indicator_entry_context(indicator_type.lower(), indicators, dbot_context, {'Data': '{}'})
+    entry_context = set_indicator_entry_context(
+        indicator_type=indicator_type,
+        indicators=indicators,
+        generic_context={'Data': '{}'}
+    )
 
     readable = build_readable(
         readable_title=f'Search results for "{query}":',
