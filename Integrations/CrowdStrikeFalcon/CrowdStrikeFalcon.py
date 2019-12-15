@@ -1263,6 +1263,7 @@ def get_file_command():
 
     resources: list = response.get('resources', [])
     if resources and isinstance(resources, list):
+        # will always be a list of one resource
         resource = resources[0]
         file_ = {
             'ID': resource.get('id'),
