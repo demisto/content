@@ -394,9 +394,7 @@ def update_content_on_demisto_instance(client, username, password, server):
         password (str): The password to pass to Tests/update_content_data.py
         server (str): The server url to pass to Tests/update_content_data.py
     '''
-    # TODO: need to add support for content packs
-    # Upload content_new.zip + content_test.zip as all_content.zip to demisto server (aka upload new content)
-    content_zip_path = 'all_content.zip'
+    content_zip_path = 'artifacts/all_content.zip'
     cmd_str = 'python Tests/update_content_data.py -u {} -p {} -s {} --content_zip {}'.format(username, password,
                                                                                               server, content_zip_path)
     run_command(cmd_str, is_silenced=False)
