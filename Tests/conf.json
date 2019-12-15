@@ -1865,7 +1865,8 @@
         },
         {
             "integrations": "AutoFocus V2",
-            "playbookID": "AutoFocus V2 test"
+            "playbookID": "AutoFocus V2 test",
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "Process Email - Generic for Rasterize"
