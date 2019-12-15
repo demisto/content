@@ -1914,7 +1914,7 @@
         {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
-            "integrations": "VirusTotal - Private API"
+            "integrations": "VirusTotal"
         },
         {
             "playbookID": "PANW - Hunting and threat detection by indicator type Test",
