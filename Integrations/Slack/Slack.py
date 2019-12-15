@@ -39,7 +39,11 @@ INCIDENT_NOTIFICATION_CHANNEL = 'incidentNotificationChannel'
 PLAYGROUND_INVESTIGATION_TYPE = 9
 WARNING_ENTRY_TYPE = 11
 ENDPOINT_URL = 'https://oproxy.demisto.ninja/slack-poll'
-POLL_INTERVAL_MINUTES = 1
+POLL_INTERVAL_MINUTES: Dict[Tuple, float] = {
+    (0, 15): 1,
+    (15, 60): 2,
+    (60, ): 5
+}
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 ''' GLOBALS '''
@@ -96,6 +100,13 @@ def test_module():
     send_slack_request_sync(CLIENT, 'chat.postMessage', body=body)
 
     demisto.results('ok')
+
+
+def get_current_utc_time() -> datetime:
+    """
+    :return: The current UTC time.
+    """
+    return datetime.utcnow()
 
 
 def get_user_by_name(user_to_search: str) -> dict:
@@ -556,7 +567,7 @@ def long_running_loop():
         error = ''
         try:
             check_for_mirrors()
-            check_for_answers(datetime.utcnow())
+            check_for_answers()
         except requests.exceptions.ConnectionError as e:
             error = 'Could not connect to the Slack endpoint: {}'.format(str(e))
         except Exception as e:
@@ -568,10 +579,9 @@ def long_running_loop():
             time.sleep(5)
 
 
-def check_for_answers(now: datetime):
+def check_for_answers():
     """
     Checks for answered questions
-    :param now: The current date.
     """
 
     integration_context = demisto.getIntegrationContext()
@@ -581,6 +591,7 @@ def check_for_answers(now: datetime):
         questions = json.loads(questions)
     if users:
         users = json.loads(users)
+    now = get_current_utc_time()
     now_string = datetime.strftime(now, DATE_FORMAT)
 
     for question in questions:
@@ -596,7 +607,10 @@ def check_for_answers(now: datetime):
             last_poll_time = datetime.strptime(question['last_poll_time'], DATE_FORMAT)
             delta = now - last_poll_time
             minutes = delta.total_seconds() / 60
-            if minutes < POLL_INTERVAL_MINUTES:
+            sent = question.get('sent')
+            poll_time_minutes = get_poll_minutes(now, sent)
+
+            if minutes < poll_time_minutes:
                 continue
         demisto.info('Slack - polling for an answer for entitlement {}'.format(question.get('entitlement')))
         question['last_poll_time'] = now_string
@@ -649,16 +663,42 @@ def check_for_answers(now: datetime):
     set_to_latest_integration_context('questions', questions)
 
 
+def get_poll_minutes(current_time: datetime, sent: Optional[str]) -> float:
+    """
+    Get the interval to wait before polling again in minutes.
+    :param current_time: The current time.
+    :param sent: The time when the polling request was sent.
+    :return: Total minutes to wait before polling.
+    """
+    poll_time_minutes = 1.0
+    if sent:
+        sent_time = datetime.strptime(sent, DATE_FORMAT)
+        total_delta = current_time - sent_time
+        total_minutes = total_delta.total_seconds() / 60
+
+        for minute_range, interval in POLL_INTERVAL_MINUTES.items():
+            if len(minute_range) > 1 and total_minutes > minute_range[1]:
+                continue
+            poll_time_minutes = interval
+            break
+
+    return poll_time_minutes
+
+
 def add_info_headers(headers, expiry):
     # pylint: disable=no-member
     try:
         calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
+        brand_name = calling_context.get('IntegrationBrand', '')
         instance_name = calling_context.get('IntegrationInstance', '')
         auth = send_slack_request_sync(CLIENT, 'auth.test')
         team = auth.get('team', '')
-        headers['X-Content-Name'] = instance_name
+        headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
+        headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
         headers['X-Content-TeamName'] = team
         headers['X-Content-Expiry'] = expiry if expiry else 'No expiry'
+        if hasattr(demisto, 'demistoVersion'):
+            headers['X-Content-Server-Version'] = demisto.demistoVersion().get('version')
     except Exception as e:
         demisto.error('Failed getting integration info: {}'.format(str(e)))
 
@@ -1250,6 +1290,7 @@ def save_entitlement(entitlement, thread, reply, expiry, default_response):
         'entitlement': entitlement,
         'reply': reply,
         'expiry': expiry,
+        'sent': datetime.strftime(get_current_utc_time(), DATE_FORMAT),
         'default_response': default_response
     })
 

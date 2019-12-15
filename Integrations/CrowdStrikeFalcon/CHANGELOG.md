@@ -1,5 +1,4 @@
 ## [Unreleased]
-  - Fixed an issue with ***Fetch incidents***, which caused incident duplication.
   - Added the following real-time response API commands:
     - ***cs-falcon-run-command***
     - ***cs-falcon-upload-script***
@@ -12,3 +11,7 @@
     - ***cs-falcon-list-files***
     - ***cs-falcon-run-script***
   - Added the *email* argument to the ***cs-falcon-resolve-detection*** command, which can be used instead of the *ids* argument. 
+
+
+## [19.12.0] - 2019-12-10
+Fixed an issue with ***fetch incidents*** which caused incident duplication.
