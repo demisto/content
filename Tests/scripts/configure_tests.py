@@ -374,19 +374,25 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     for new_playbook in updated_playbook_names:
         playbook_names.add(new_playbook)
 
-    affected_ids_string = ""
+    affected_ids_strings = {
+        'scripts': '',
+        'playbooks': '',
+        'integrations': ''
+    }
     if script_names or deprecated_msgs['scripts']:
-        affected_ids_string += 'Scripts:\n' + '\n'.join(script_names) + '\n' + deprecated_msgs['scripts'] + '\n'
+        affected_ids_strings['scripts'] += 'Scripts:\n' + '\n'.join(script_names) + '\n'
     if playbook_names or deprecated_msgs['playbooks']:
-        affected_ids_string += 'Playbooks:\n' + '\n'.join(playbook_names) + '\n' + deprecated_msgs['playbooks'] + '\n'
+        affected_ids_strings['playbooks'] += 'Playbooks:\n' + '\n'.join(playbook_names) + '\n'
     if integration_ids or deprecated_msgs['integrations']:
-        affected_ids_string += 'Integrations:\n' + '\n'.join(integration_ids) + '\n' + \
-                               deprecated_msgs['integrations'] + '\n'
+        affected_ids_strings['integrations'] += 'Integrations:\n' + '\n'.join(integration_ids) + '\n'
 
-    print('The following ids are affected due to the changes you made:\n{}'.format(affected_ids_string))
+    print('The following ids are affected due to the changes you made:\n')
+    for entity in ['scripts', 'playbooks', 'integrations']:
+        print(affected_ids_strings[entity])
+        print_color(deprecated_msgs[entity] + '\n', LOG_COLORS.YELLOW)
 
     if deprecated_commands_message:
-        print(deprecated_commands_message)
+        print_color(deprecated_commands_message, LOG_COLORS.YELLOW)
 
     return tests_set, catched_scripts, catched_playbooks
 
