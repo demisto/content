@@ -498,13 +498,14 @@ def main():
 
         # set params for new integrations and [modified + unchanged] integrations, then add the new ones
         # to brand_new_integrations list for later use
-        ni_params_set = set_integration_params(new_integrations, secret_params, instance_names_conf)
-        ti_params_set = set_integration_params(integrations_to_configure, secret_params, instance_names_conf)
-        if not ni_params_set:
+        new_ints_params_set = set_integration_params(new_integrations, secret_params, instance_names_conf)
+        ints_to_configure_params_set = set_integration_params(integrations_to_configure, secret_params,
+                                                              instance_names_conf)
+        if not new_ints_params_set:
             print_error('failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)))
-        if not ti_params_set:
+        if not ints_to_configure_params_set:
             print_error('failed setting parameters for integrations "{}"'.format('\n'.join(integrations_to_configure)))
-        if not (ni_params_set and ti_params_set):
+        if not (new_ints_params_set and ints_to_configure_params_set):
             continue
 
         brand_new_integrations.extend(new_integrations)
