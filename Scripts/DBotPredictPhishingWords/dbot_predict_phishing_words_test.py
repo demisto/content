@@ -1,7 +1,9 @@
-from CommonServerPython import *
 from collections import defaultdict
-from DBotPredictPhishingWords import get_model_data, predict_phishing_words
+
 import pytest
+
+from CommonServerPython import *
+from DBotPredictPhishingWords import get_model_data, predict_phishing_words
 
 
 def get_args():
@@ -46,11 +48,25 @@ def test_predict_phishing_words(mocker):
                                                                  'PositiveWords': ['word1'],
                                                                  'NegativeWords': ['word2']},
                  create=True)
-    res = predict_phishing_words("modelName", "list", "subject", "body")
+    res = predict_phishing_words("modelName", "list", "subject", "body", 0, 0, 0, 10, True)
     assert res['Contents'] == {'OriginalText': 'word1 word2 word3',
                                'Probability': 0.7, 'NegativeWords': ['word2'],
                                'TextTokensHighlighted': 'word1 word2 word3',
                                'PositiveWords': ['word1'], 'Label': 'Valid'}
+
+
+def test_predict_phishing_words_low_threshold(mocker):
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10})
+    mocker.patch('demisto_ml.decode_model', return_value="Model", create=True)
+    mocker.patch('demisto_ml.filter_model_words', return_value=("text", 2), create=True)
+    mocker.patch('demisto_ml.explain_model_words', return_value={"Label": 'Valid',
+                                                                 'Probability': 0.7,
+                                                                 'PositiveWords': ['word1'],
+                                                                 'NegativeWords': ['word2']},
+                 create=True)
+    with pytest.raises(SystemExit):
+        predict_phishing_words("modelName", "list", "subject", "body", 0, 0.8, 0, 10, True)
 
 
 def test_predict_phishing_words_no_words(mocker):
@@ -59,7 +75,10 @@ def test_predict_phishing_words_no_words(mocker):
     mocker.patch('demisto_ml.decode_model', return_value="Model", create=True)
     mocker.patch('demisto_ml.filter_model_words', return_value=("", 0), create=True)
     with pytest.raises(SystemExit):
-        predict_phishing_words("modelName", "list", "subject", "body")
+        predict_phishing_words("modelName", "list", "subject", "body", 0, 0, 0, 10, True)
+    mocker.patch('demisto_ml.filter_model_words', return_value=("", 10), create=True)
+    with pytest.raises(SystemExit):
+        predict_phishing_words("modelName", "list", "subject", "body", 20, 0, 0, 10, True)
 
 
 def test_predict_phishing_words_hashed(mocker):
@@ -72,7 +91,7 @@ def test_predict_phishing_words_hashed(mocker):
                                                                  'PositiveWords': ['23423'],
                                                                  'NegativeWords': ['432432']},
                  create=True)
-    res = predict_phishing_words("modelName", "list", "subject", "body")
+    res = predict_phishing_words("modelName", "list", "subject", "body", 0, 0, 0, 10, True)
     assert res['Contents'] == {'OriginalText': 'word1 word2 word3',
                                'Probability': 0.7, 'NegativeWords': ['word2'],
                                'TextTokensHighlighted': 'word1 word2 word3',
