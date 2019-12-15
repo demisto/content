@@ -113,50 +113,59 @@ class ParallelPrintsManager:
 
 
 def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration,
-                       unmocklable_integrations, proxy, is_ami=True):
+                       unmocklable_integrations, proxy, is_ami=True, thread_index=0,  prints_manager=None):
     succeed_count = len(succeed_playbooks)
     failed_count = len(failed_playbooks)
     skipped_count = len(skipped_tests)
     rerecorded_count = len(proxy.rerecorded_tests) if is_ami else 0
     empty_mocks_count = len(proxy.empty_files) if is_ami else 0
     unmocklable_integrations_count = len(unmocklable_integrations)
-
-    print('\nTEST RESULTS:')
-    print('\t Number of playbooks tested - ' + str(succeed_count + failed_count))
-    print_color('\t Number of succeeded tests - ' + str(succeed_count), LOG_COLORS.GREEN)
+    prints_manager.add_print_job('\nTEST RESULTS:', print, thread_index)
+    tested_playbooks_message = '\t Number of playbooks tested - ' + str(succeed_count + failed_count)
+    prints_manager.add_print_job(tested_playbooks_message, print, thread_index)
+    succeeded_playbooks_message = '\t Number of succeeded tests - ' + str(succeed_count)
+    prints_manager.add_print_job(succeeded_playbooks_message, print_color, thread_index, LOG_COLORS.GREEN)
 
     if failed_count > 0:
-        print_error('\t Number of failed tests - ' + str(failed_count) + ':')
+        failed_tests_message = '\t Number of failed tests - ' + str(failed_count) + ':'
+        prints_manager.add_print_job(failed_tests_message, print_error, thread_index)
         for playbook_id in failed_playbooks:
-            print_error('\t - ' + playbook_id)
+            prints_manager.add_print_job('\t - ' + playbook_id, print_error, thread_index)
 
     if rerecorded_count > 0:
-        print_warning('\t Tests with failed playback and successful re-recording - ' + str(rerecorded_count) + ':')
+        recording_warning = '\t Tests with failed playback and successful re-recording - ' + str(rerecorded_count) + ':'
+        prints_manager.add_print_job(recording_warning, print_warning, thread_index)
         for playbook_id in proxy.rerecorded_tests:
-            print_warning('\t - ' + playbook_id)
+            prints_manager.add_print_job('\t - ' + playbook_id, print_warning, thread_index)
 
     if empty_mocks_count > 0:
-        print('\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':')
-        print('\t (either there were no http requests or no traffic is passed through the proxy.\n'
-              '\t Investigate the playbook and the integrations.\n'
-              '\t If the integration has no http traffic, add to unmockable_integrations in conf.json)')
+        empty_mock_successes_msg = '\t Successful tests with empty mock files - ' + str(empty_mocks_count) + ':'
+        prints_manager.add_print_job(empty_mock_successes_msg, print, thread_index)
+        proxy_explanation = '\t (either there were no http requests or no traffic is passed through the proxy.\n'\
+                            '\t Investigate the playbook and the integrations.\n'\
+                            '\t If the integration has no http traffic, add to unmockable_integrations in conf.json)'
+        prints_manager.add_print_job(proxy_explanation, print, thread_index)
         for playbook_id in proxy.empty_files:
-            print('\t - ' + playbook_id)
+            prints_manager.add_print_job('\t - ' + playbook_id, print, thread_index)
 
     if len(skipped_integration) > 0:
-        print_warning('\t Number of skipped integration - ' + str(len(skipped_integration)) + ':')
+        skipped_integrations_warning = '\t Number of skipped integration - ' + str(len(skipped_integration)) + ':'
+        prints_manager.add_print_job(skipped_integrations_warning, print_warning, thread_index)
         for playbook_id in skipped_integration:
-            print_warning('\t - ' + playbook_id)
+            prints_manager.add_print_job('\t - ' + playbook_id, print_warning, thread_index)
 
     if skipped_count > 0:
-        print_warning('\t Number of skipped tests - ' + str(skipped_count) + ':')
+        skipped_tests_warning = '\t Number of skipped tests - ' + str(skipped_count) + ':'
+        prints_manager.add_print_job(skipped_tests_warning, print_warning, thread_index)
         for playbook_id in skipped_tests:
-            print_warning('\t - ' + playbook_id)
+            prints_manager.add_print_job('\t - ' + playbook_id, print_warning, thread_index)
 
     if unmocklable_integrations_count > 0:
-        print_warning('\t Number of unmockable integrations - ' + str(unmocklable_integrations_count) + ':')
+        unmockable_warning = '\t Number of unmockable integrations - ' + str(unmocklable_integrations_count) + ':'
+        prints_manager.add_print_job(unmockable_warning, print_warning, thread_index)
+        print_warning()
         for playbook_id, reason in unmocklable_integrations.items():
-            print_warning('\t - ' + playbook_id + ' - ' + reason)
+            prints_manager.add_print_job('\t - ' + playbook_id + ' - ' + reason, print_warning, thread_index)
 
 
 def update_test_msg(integrations, test_message):
@@ -210,19 +219,20 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
                    thread_index=0, prints_manager=None):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run, thread_index=0,
                                       prints_manager=prints_manager)
-    # Executing prints from test_integration
-    prints_manager.execute_thread_prints(thread_index)
     # c.api_client.pool.close()
     if status == PB_Status.COMPLETED:
-        prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index, message_color=LOG_COLORS.GREEN)
+        prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
+                                     message_color=LOG_COLORS.GREEN)
         succeed_playbooks.append(playbook_id)
 
     elif status == PB_Status.NOT_SUPPORTED_VERSION:
-        print('PASS: {} skipped - not supported version'.format(test_message))
+        not_supported_version_message = 'PASS: {} skipped - not supported version'.format(test_message)
+        prints_manager.add_print_job(not_supported_version_message, print, thread_index)
         succeed_playbooks.append(playbook_id)
 
     else:
-        print_error('Failed: {} failed'.format(test_message))
+        error_message = 'Failed: {} failed'.format(test_message)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         playbook_id_with_mock = playbook_id
         if not is_mock_run:
             playbook_id_with_mock += " (Mock Disabled)"
@@ -235,11 +245,13 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
 
 # run the test using a real instance, record traffic.
 def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                   test_message, test_options, slack, circle_ci, build_number, server_url, build_name):
+                   test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
+                   thread_index=0, prints_manager=None):
     proxy.set_tmp_folder()
     proxy.start(playbook_id, record=True)
     succeed = run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
-                             test_options, slack, circle_ci, build_number, server_url, build_name, is_mock_run=True)
+                             test_options, slack, circle_ci, build_number, server_url, build_name, is_mock_run=True,
+                             thread_index=thread_index, prints_manager=prints_manager)
     proxy.stop()
     if succeed:
         proxy.move_mock_file_to_repo(playbook_id)
@@ -249,43 +261,53 @@ def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succee
 
 
 def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message):
+             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message,
+             thread_index=0, prints_manager=None):
     rerecord = False
 
     if proxy.has_mock_file(playbook_id):
-        print('{} (Mock: Playback)'.format(start_message))
+        start_mock_message = '{} (Mock: Playback)'.format(start_message)
+        prints_manager.add_print_job(start_mock_message, print, thread_index)
         proxy.start(playbook_id)
         # run test
         status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run=True)
         # use results
         proxy.stop()
         if status == PB_Status.COMPLETED:
-            print_color('PASS: {} succeed'.format(test_message), LOG_COLORS.GREEN)
+            succeed_message = 'PASS: {} succeed'.format(test_message)
+            prints_manager.add_print_job(succeed_message, print_color, thread_index, LOG_COLORS.GREEN)
             succeed_playbooks.append(playbook_id)
-            print('------ Test {} end ------\n'.format(test_message))
+            end_mock_message = '------ Test {} end ------\n'.format(test_message)
+            prints_manager.add_print_job(end_mock_message, print, thread_index)
 
             return
 
         elif status == PB_Status.NOT_SUPPORTED_VERSION:
-            print('PASS: {} skipped - not supported version'.format(test_message))
+            not_supported_version_messagr = 'PASS: {} skipped - not supported version'.format(test_message)
+            prints_manager.add_print_job(not_supported_version_messagr, print, thread_index)
             succeed_playbooks.append(playbook_id)
-            print('------ Test {} end ------\n'.format(test_message))
+            end_mock_message = '------ Test {} end ------\n'.format(test_message)
+            prints_manager.add_print_job(end_mock_message, print, thread_index)
 
             return
 
         else:
-            print("Test failed with mock, recording new mock file. (Mock: Recording)")
+            mock_failed_message = "Test failed with mock, recording new mock file. (Mock: Recording)"
+            prints_manager.add_print_job(mock_failed_message, print, thread_index)
             rerecord = True
     else:
-        print(start_message + ' (Mock: Recording)')
+        mock_recording_message = start_message + ' (Mock: Recording)'
+        prints_manager.add_print_job(mock_recording_message, print, thread_index)
 
     # Mock recording - no mock file or playback failure.
     succeed = run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                             test_message, test_options, slack, circle_ci, build_number, server_url, build_name)
+                             test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
+                             thread_index=thread_index, prints_manager=prints_manager)
 
     if rerecord and succeed:
         proxy.rerecorded_tests.append(playbook_id)
-    print('------ Test {} end ------\n'.format(test_message))
+    test_end_message = '------ Test {} end ------\n'.format(test_message)
+    prints_manager.add_print_job(test_end_message, print, thread_index)
 
 
 def run_test(demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
@@ -300,12 +322,12 @@ def run_test(demisto_api_key, proxy, failed_playbooks, integrations, unmockable_
                        test_options, slack, circle_ci, build_number, server_url, build_name, thread_index=thread_index,
                        prints_manager=prints_manager)
         prints_manager.add_print_job('------ Test %s end ------\n' % (test_message,), print, thread_index)
-        prints_manager.execute_thread_prints(thread_index)
 
         return
 
     mock_run(client, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message)
+             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message,
+             thread_index=thread_index, prints_manager=prints_manager)
 
 
 def http_request(url, params_dict=None):
@@ -482,7 +504,6 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
         prints_manager.add_print_job('\n------ Test {} start ------'.format(test_message), print, thread_index)
         prints_manager.add_print_job('Skip test', print, thread_index)
         prints_manager.add_print_job('------ Test {} end ------\n'.format(test_message), print, thread_index)
-        prints_manager.execute_thread_prints(thread_index)
 
         return
 
@@ -511,7 +532,6 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
                                                                                                   test_to_version)
         prints_manager.add_print_job(warning_message, print_warning, thread_index)
         prints_manager.add_print_job('------ Test {} end ------\n'.format(test_message), print, thread_index)
-        prints_manager.execute_thread_prints(thread_index)
         return
 
     are_params_set = set_integration_params(demisto_api_key, integrations,
@@ -535,7 +555,7 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
              build_number, server, build_name, is_ami, thread_index=thread_index, prints_manager=prints_manager)
 
 
-def restart_demisto_service(ami, demisto_api_key, server):
+def restart_demisto_service(ami, demisto_api_key, server, thread_index=0,  prints_manager=None):
     client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
     ami.check_call(['sudo', 'service', 'demisto', 'restart'])
     exit_code = 1
@@ -544,15 +564,19 @@ def restart_demisto_service(ami, demisto_api_key, server):
         if exit_code != 0:
             exit_code = ami.call(['/usr/sbin/service', 'demisto', 'status', '--lines', '0'])
         if exit_code == 0:
-            print("{}: Checking login to the server... ".format(datetime.now()))
+            check_login_message = "{}: Checking login to the server... ".format(datetime.now())
+            prints_manager.add_print_job(check_login_message, print, thread_index)
             try:
                 res = demisto_client.generic_request_func(self=client, path='/health', method='GET')
                 if int(res[1]) == 200:
                     return
                 else:
-                    print("Failed verifying login (will retry). status: {}. text: {}".format(res.status_code, res.text))
+                    failed_verify_login_message = "Failed verifying login (will retry). status: {}. " \
+                                                  "text: {}".format(res.status_code, res.text)
+                    prints_manager.add_print_job(failed_verify_login_message, print, thread_index)
             except Exception as ex:
-                print_error("Failed verifying server start via login: {}".format(ex))
+                error_message = "Failed verifying server start via login: {}".format(ex)
+                prints_manager.add_print_job(error_message, print_error, thread_index)
 
     raise Exception('Timeout waiting for demisto service to restart')
 
@@ -597,7 +621,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     server = SERVER_URL.format(server_ip)
     server_version = tests_settings.serverVersion
     server_numeric_version = tests_settings.serverNumericVersion
-    print("Executing tests with the server {} - and the server ip {}".format(server, server_ip))
+    start_message = "Executing tests with the server {} - and the server ip {}".format(server, server_ip)
+    prints_manager.add_print_job(start_message, print, thread_index)
     # GGG - verify that there is no good reason we were calling options_handler() again
     is_nightly = tests_settings.nightly
     is_memory_check = tests_settings.memCheck
@@ -624,7 +649,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         is_nightly = True
 
     if not tests or len(tests) == 0:
-        print('no integrations are configured for test')
+        prints_manager.add_print_job('no integrations are configured for test', print, thread_index)
         return
 
     proxy = None
@@ -663,9 +688,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         prints_manager.add_print_job("\nRunning mock-disabled tests", print, thread_index)
         proxy.configure_proxy_in_demisto(demisto_api_key, server, '')
         prints_manager.add_print_job("Restarting demisto service", print, thread_index)
-        restart_demisto_service(ami, demisto_api_key, server)
+        restart_demisto_service(ami, demisto_api_key, server, thread_index=thread_index,  prints_manager=prints_manager)
         prints_manager.add_print_job("Demisto service restarted\n", print, thread_index)
-        prints_manager.execute_thread_prints(thread_index)
     for t in unmockable_tests:
         run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
@@ -676,16 +700,18 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                           thread_index=thread_index,  prints_manager=prints_manager)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
-                       proxy, is_ami)
+                       proxy, is_ami, thread_index=thread_index,  prints_manager=prints_manager)
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
     if is_ami and build_name == 'master':
-        print("Pushing new/updated mock files to mock git repo.")
+        updating_mocks_msg = "Pushing new/updated mock files to mock git repo."
+        prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
         ami.upload_mock_files(build_name, build_number)
 
     if len(failed_playbooks):
-        print("Some tests have failed. Not destroying instances.")
+        tests_failed_msg = "Some tests have failed. Not destroying instances."
+        prints_manager.add_print_job(tests_failed_msg, print, thread_index)
         sys.exit(1)
     else:
         file_path = "./Tests/is_build_passed_{}.txt".format(server_version.replace(' ', ''))
@@ -716,13 +742,6 @@ def get_all_tests(tests_settings):
         if test_name:
             all_tests.append(test_name)
     return all_tests
-
-
-def parallel_print(string_to_print, thread_index, should_print=False):
-    PARALLEL_PRINTS_MESSAGES[thread_index] += string_to_print
-    if should_print:
-        print(PARALLEL_PRINTS_MESSAGES[thread_index])
-        PARALLEL_PRINTS_MESSAGES[thread_index] = ""
 
 
 def manage_tests(tests_settings):
