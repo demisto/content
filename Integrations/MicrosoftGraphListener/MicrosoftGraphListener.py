@@ -857,8 +857,9 @@ def main():
     except Exception as e:
         return_error(str(e))
 
-from Utils.microsoft_api import MicrosoftClient
+
+from microsoft_api import MicrosoftClient  # noqa: E402
+
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
-
