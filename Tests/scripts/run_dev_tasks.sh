@@ -46,7 +46,7 @@ fi
 
 pytest_return=0
 if [ -z "${PYTEST_SKIP}" ]; then
-    python -m pytest -v -n="${CPU_NUM}"
+    python -m pytest -vv -v -n="${CPU_NUM}"
     pytest_return=$?
     echo "Pytest completed with status code: $pytest_return"
 fi
