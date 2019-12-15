@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added required permissions for each command
 
 ## [19.12.0] - 2019-12-10
 Fixed an issue where the ***msgraph-user-create*** command did not work if the optional argument *other_properties* was not supplied. You can now run this command without supplying the *other_properties* argument.
