@@ -1979,7 +1979,6 @@
         "Request Debugging - Test": "Issue 20337",
         "LogRhythm-Test-Playbook": "Issue 20331",
         "rsa_packets_and_logs_test": "Issue 20262",
-        "Cloaken-Test": "Issue 20036",
         "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
