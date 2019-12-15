@@ -15,8 +15,6 @@ IP_RES_JSON = {
         "indicatorValue": IP_ADDRESS,
         "indicatorType": "IPV4_ADDRESS",
         "summaryGenerationTs": 1576077539906,
-        "firstSeenTsGlobal": 1566261495000,
-        "lastSeenTsGlobal": 1573832298000,
         "latestPanVerdicts": {
             "PAN_DB": "MALWARE"
         },
@@ -72,8 +70,6 @@ INDICATOR_RES = {
     "SeenBy": [
         "WF_SAMPLE"
     ],
-    "FirstSeen": "2019-08-20T03:38:15.000Z",
-    "LastSeen": "2019-11-15T17:38:18.000Z",
     "Tags": [
         {
             "PublicTagName": "Unit42.Upatre",
