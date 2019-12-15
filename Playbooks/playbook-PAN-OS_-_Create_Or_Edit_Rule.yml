@@ -1,6 +1,7 @@
 id: PAN-OS - Create Or Edit Rule
 version: -1
 name: PAN-OS - Create Or Edit Rule
+fromversion: 4.0.0
 description: Creates or edits a Panorama rule and moves it into the desired position
 starttaskid: "0"
 tasks:
@@ -12,6 +13,7 @@ tasks:
       id: e69fbe1a-056a-4929-8dbe-d535f61246e6
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -397,6 +399,7 @@ tasks:
       id: 4cb1e4d5-8722-4b7b-825a-9742e42f8344
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
