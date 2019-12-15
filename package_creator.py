@@ -198,6 +198,7 @@ def get_code_file(package_path, script_type):
 
     ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|' \
                    r'demistomock\.py|test_.*\.py|_test\.py|conftest\.py'
+
     if not package_path.endswith('/'):
         package_path += '/'
     if package_path.endswith('Scripts/CommonServerPython/'):
@@ -249,13 +250,39 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
 
 
 def clean_python_code(script_code, remove_print_future=True):
-    script_code = script_code.replace("import demistomock as demisto", "")
-    script_code = script_code.replace("from CommonServerPython import *", "")
-    script_code = script_code.replace("from CommonServerUserPython import *", "")
+    script_code = remove_imports(script_code)
+    microsoft_import = 'from Utils.microsoft_api import MicrosoftClient'
+
+    if script_code.find(microsoft_import) != -1:
+        client_code = get_microsoft_client_code()
+        script_code = script_code.replace(microsoft_import, client_code)
+
     # print function is imported in python loop
     if remove_print_future:  # docs generation requires to leave this
         script_code = script_code.replace("from __future__ import print_function", "")
     return script_code
+
+
+def remove_imports(script_code):
+    script_code = script_code.replace("import demistomock as demisto", "")
+    script_code = script_code.replace("from CommonServerPython import *", "")
+    script_code = script_code.replace("from CommonServerUserPython import *", "")
+    return script_code
+
+
+def get_microsoft_client_code():
+    client_path = './Utils/microsoft_api.py'
+    try:
+        with open(client_path, 'r') as file:
+            client_code = file.read()
+
+        client_code = remove_imports(client_code)
+        client_code = '\n### GENERATED CODE ###\n{}\n'.format(client_code)
+
+    except Exception as e:
+        raise ValueError('Could not retrieve the Microsoft client code: {}'.format(str(e)))
+
+    return client_code
 
 
 def get_package_path():
