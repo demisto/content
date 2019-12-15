@@ -101,7 +101,7 @@ def http_request(url_suffix: str, params=None, body=None, raw_response=False) ->
         return {}
 
 
-def get_fetch_reponse():
+def get_fetch_response():
     start_date, _ = parse_date_range(demisto.getParam('date_range'), date_format=TIME_FORMAT)
     max_fetch = int(demisto.getParam('max_fetch'))  # type: int
     params = {
@@ -132,7 +132,7 @@ def test_function() -> None:
         if response.ok:
             # test fetching mechanism
             if demisto.params().get('isFetch'):
-                get_fetch_reponse()
+                get_fetch_response()
 
             demisto.results('ok')
 
@@ -143,7 +143,7 @@ def test_function() -> None:
 
 def fetch_reports() -> None:
     # parameters importing
-    reports, max_fetch = get_fetch_reponse()
+    reports, max_fetch = get_fetch_response()
 
     # loading last_run
     last_run = json.loads(demisto.getLastRun().get('value', '{}'))
