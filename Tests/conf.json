@@ -408,6 +408,9 @@
             "playbookID": "GetTime-Test"
         },
         {
+            "playbookID": "GetTime-ObjectVsStringTest"
+        },
+        {
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io Scan Test",
             "nightly": true,
@@ -736,12 +739,6 @@
         },
         {
             "playbookID": "exporttocsv_script_test"
-        },
-        {
-            "integrations": "Intezer",
-            "playbookID": "Intezer Testing",
-            "nightly": true,
-            "timeout": 500
         },
         {
             "integrations": "Intezer v2",
@@ -1995,8 +1992,6 @@
         "NetWitness Endpoint Test": "Issue 19878",
         "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
-        "search_endpoints_by_hash_-_tie_-_test": "Issue #18350",
-        "McAfee-TIE Test": "Issue #18350",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
@@ -2044,7 +2039,6 @@
         "ThreatQ v2": "Issue 19468",
         "Check Point": "Issue 18643",
         "RSA Archer": "Issue 20335",
-        "LogRhythmRest": "Issue 19870",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "Joe Security": "Issue 17996",
@@ -2088,6 +2082,7 @@
         "Tanium": "issue 15497",
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Issue 16115",
+
 
         "_comment": "~~~ OTHER ~~~",
         "EclecticIQ Platform": "Issue 8821",
@@ -2151,9 +2146,8 @@
         "Microsoft Graph User": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
-        "RedLock": "SSL Issues",
         "SafeBreach": "SSL Issues",
-        "Gmail Single User" : "checking"
+        "Gmail Single User" : "googleclient sdk has time based challenge exchange",
+        "Gmail": "googleclient sdk has time based challenge exchange"
     }
 }
