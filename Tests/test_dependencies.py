@@ -1,5 +1,4 @@
 import json
-import _thread
 import math
 
 class TestVertex:
