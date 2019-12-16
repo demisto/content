@@ -45,7 +45,7 @@ tasks:
       - "2"
     scriptarguments:
       UserEmail:
-        simple: ivandijk@demisto.local
+        simple: remove_me@demistodev.coms
       Username: {}
     separatecontext: true
     loop:
