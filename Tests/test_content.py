@@ -8,7 +8,7 @@ import subprocess
 import urllib3
 from time import sleep
 from datetime import datetime
-from Tests.test_dependencies import get_test_dependencies, get_tested_integrations, get_tests_allocation
+from Tests.test_dependencies import get_tested_integrations, get_tests_allocation
 import demisto_client.demisto_api
 from slackclient import SlackClient
 import threading
@@ -114,7 +114,7 @@ class ParallelPrintsManager:
 
 
 def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration,
-                       unmocklable_integrations, proxy, is_ami=True, thread_index=0,  prints_manager=None):
+                       unmocklable_integrations, proxy, is_ami=True, thread_index=0, prints_manager=None):
     succeed_count = len(succeed_playbooks)
     failed_count = len(failed_playbooks)
     skipped_count = len(skipped_tests)
@@ -555,7 +555,7 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
              build_number, server, build_name, is_ami, thread_index=thread_index, prints_manager=prints_manager)
 
 
-def restart_demisto_service(ami, demisto_api_key, server, thread_index=0,  prints_manager=None):
+def restart_demisto_service(ami, demisto_api_key, server, thread_index=0, prints_manager=None):
     client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
     ami.check_call(['sudo', 'service', 'demisto', 'restart'])
     exit_code = 1
@@ -688,7 +688,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         prints_manager.add_print_job("\nRunning mock-disabled tests", print, thread_index)
         proxy.configure_proxy_in_demisto(demisto_api_key, server, '')
         prints_manager.add_print_job("Restarting demisto service", print, thread_index)
-        restart_demisto_service(ami, demisto_api_key, server, thread_index=thread_index,  prints_manager=prints_manager)
+        restart_demisto_service(ami, demisto_api_key, server, thread_index=thread_index, prints_manager=prints_manager)
         prints_manager.add_print_job("Demisto service restarted\n", print, thread_index)
     for t in unmockable_tests:
         run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
@@ -697,10 +697,10 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                           filtered_tests, skipped_tests, secret_params, failed_playbooks,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name, server_numeric_version, demisto_api_key, is_ami,
-                          thread_index=thread_index,  prints_manager=prints_manager)
+                          thread_index=thread_index, prints_manager=prints_manager)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
-                       proxy, is_ami, thread_index=thread_index,  prints_manager=prints_manager)
+                       proxy, is_ami, thread_index=thread_index, prints_manager=prints_manager)
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
