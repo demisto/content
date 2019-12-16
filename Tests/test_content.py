@@ -11,7 +11,7 @@ from datetime import datetime
 from Tests.test_dependencies import get_test_dependencies, get_tested_integrations, get_tests_allocation
 import demisto_client.demisto_api
 from slackclient import SlackClient
-import _thread
+import threading
 # from typing import List, Any
 
 
@@ -27,7 +27,7 @@ urllib3.disable_warnings()
 SERVER_URL = "https://{}"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
-FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the " \
+FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
                             "instance_name argument in conf.json. The options are:\n{}"
 
 AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
@@ -36,8 +36,6 @@ SERVICE_RESTART_TIMEOUT = 300
 SERVICE_RESTART_POLLING_INTERVAL = 5
 
 SLACK_MEM_CHANNEL_ID = 'CM55V7J8K'
-
-PARALLEL_PRINTS_MESSAGES = [] # This will be used to avoid confusing prints scrambling between threads.
 
 
 def options_handler():
@@ -97,7 +95,7 @@ class ParallelPrintsManager:
 
     def __init__(self, number_of_threads):
         self.threads_print_jobs = [[] for i in range(number_of_threads)]
-        self.print_lock = _thread.allocate_lock()
+        self.print_lock = threading.Lock()
 
     def add_print_job(self, message_to_print, print_function_to_execute, thread_index, message_color=None):
         if print_color:
@@ -166,7 +164,6 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
     if unmocklable_integrations_count > 0:
         unmockable_warning = '\t Number of unmockable integrations - ' + str(unmocklable_integrations_count) + ':'
         prints_manager.add_print_job(unmockable_warning, print_warning, thread_index)
-        print_warning()
         for playbook_id, reason in unmocklable_integrations.items():
             prints_manager.add_print_job('\t - ' + playbook_id + ' - ' + reason, print_warning, thread_index)
 
@@ -730,7 +727,8 @@ def get_unmockable_tests(tests_settings):
     for test_record in tests:
         test_name = test_record.get("playbookID")
         integrations_used_in_test = get_tested_integrations(test_record)
-        unmockable_integrations_used = [integration_name for integration_name in integrations_used_in_test if integration_name in unmockable_integrations]
+        unmockable_integrations_used = [integration_name for integration_name in integrations_used_in_test if
+                                        integration_name in unmockable_integrations]
         if test_name and (not integrations_used_in_test or unmockable_integrations_used):
             unmockable_tests.append(test_name)
     return unmockable_tests
@@ -788,7 +786,8 @@ def manage_tests(tests_settings):
                 "thread_index": current_thread_index,
                 "prints_manager": prints_manager
             }
-            _thread.start_new_thread(execute_testing, thread_args, thread_kwargs)
+            t = threading.Thread(target=execute_testing, args=thread_args, kwargs=thread_kwargs)
+            t.start()
             current_thread_index += 1
 
     else:
