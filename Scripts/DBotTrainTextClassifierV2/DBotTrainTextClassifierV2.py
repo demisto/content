@@ -205,11 +205,13 @@ def output_model_evaluation(model_name, train_tag_data, train_text_data, y_test,
     demisto.results(result_entry)
 
 
-def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall):
+def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=False):
     res = demisto.executeCommand('GetMLModelEvaluation', {'yTrue': json.dumps(y_test),
                                                           'yPred': json.dumps(y_pred),
                                                           'targetPrecision': str(target_accuracy),
-                                                          'targetRecall': str(target_recall)})
+                                                          'targetRecall': str(target_recall),
+                                                          'detailedOutput': 'true' if detailed else 'false'
+                                                          })
     if is_error(res):
         return_error(get_error(res))
     return res
@@ -286,7 +288,7 @@ def main():
         target_recall = 1 - float(demisto.args()['maxBelowThreshold'])
     else:
         target_recall = 0
-    res_threshold = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall)
+    res_threshold = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=True)
     # show results if no threshold (threhsold=0) was used. Following code is reached only if a legal thresh was found:
     res = get_ml_model_evaluation(y_test, y_pred, target_accuracy=0, target_recall=0)
     human_readable = '\n'.join(['## Results for No Threshold',
