@@ -8,7 +8,7 @@ usage: pkg_dev_test_tasks.py [-h] -d DIR [--no-pylint] [--no-mypy]
                              [--no-flake8] [--no-test] [-k] [-v]
                              [--cpu-num CPU_NUM]
 
-Run lintings (flake8, mypy, pylint) and pytest. pylint and pytest will run
+Run lintings (flake8, mypy, pylint), security checks (bandit) and pytest. pylint and pytest will run
 within the docker image of an integration/script. Meant to be used with
 integrations/scripts that use the folder (package) structure. Will lookup up
 what docker image to use and will setup the dev dependencies and file in the
@@ -22,6 +22,8 @@ optional arguments:
   --no-mypy             Do NOT run mypy static type checking (default: False)
   --no-flake8           Do NOT run flake8 linter (default: False)
   --no-test             Do NOT test (skip pytest) (default: False)
+  --no-bandit           Do NOT run bandit security checks (default: False)
+  -r, --root            Run pytest container with root user (default: False)
   -k, --keep-container  Keep the test container (default: False)
   -v, --verbose         Verbose output (default: False)
   --cpu-num CPU_NUM     Number of CPUs to run pytest on (can set to `auto` for
@@ -111,3 +113,8 @@ my_list: List[str] = []
 **Note:** When using type constructors such as `List` or `Dict` there is need to import the type from the typing module in python 3. In python 2 as part of running mypy our wrapper script will include the typing module.
 
 More info at: https://mypy.readthedocs.io/en/latest/index.html
+
+## Bandit
+[Bandit](https://github.com/PyCQA/bandit) is a tool designed to find common security issues in Python code. 
+
+We run `bandit` with a confidence level of HIGH. In the rare case that it reports a false positive, you can execlude the code by adding a comment of the sort: `# nosec`. See: https://github.com/PyCQA/bandit#exclusions . 

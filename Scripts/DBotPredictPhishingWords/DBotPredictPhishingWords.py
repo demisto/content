@@ -76,8 +76,8 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         highlighted_text_markdown = res['Contents']
         explain_result['TextTokensHighlighted'] = highlighted_text_markdown
     explain_result_hr = dict(explain_result)
-    explain_result_hr['PositiveWords'] = ", ".join(explain_result_hr['PositiveWords'])
-    explain_result_hr['NegativeWords'] = ", ".join(explain_result_hr['NegativeWords'])
+    explain_result_hr['PositiveWords'] = ", ".join(positive_tokens)
+    explain_result_hr['NegativeWords'] = ", ".join(negative_tokens)
     explain_result_hr['Probability'] = "%.2f" % explain_result_hr['Probability']
     return {
         'Type': entryTypes['note'],
