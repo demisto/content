@@ -561,6 +561,13 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
 
         print("\nRunning mock-disabled tests")
         proxy.configure_proxy_in_demisto(demisto_api_key, server, '')
+        print('Resetting containers')
+        client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
+        body, status_code, headers = demisto_client.generic_request_func(self=client, method='POST',
+                                                                         path='/containers/reset')
+        if status_code != 200:
+            print_error('Request to reset containers failed with status code "{}"\n{}'.format(status_code, body))
+            sys.exit(1)
         sleep(10)
     for t in mockless_tests:
         run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
