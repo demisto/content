@@ -1,5 +1,5 @@
-from CommonServerPython import *  # TODO: remove
-import demistomock as demisto  # TODO: remove
+from CommonServerPython import *
+import demistomock as demisto
 import requests
 import base64
 from typing import Union, Dict, List
@@ -16,7 +16,7 @@ class MicrosoftClient(BaseClient):
                  client_id: str = '', client_secret: str = '', scope: str = '', resource: str = '', app_url: str = '',
                  verify: bool = True, auth_type: str = OPROXY_AUTH_TYPE, *args, **kwargs):
         """
-        ￿Microsoft Client class that implements logic to authentiate with oproxy or self deployed applications.
+        Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
         It also provides common logic to handle responses from Microsoft.
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]

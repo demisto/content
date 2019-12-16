@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Union, Optional
+from typing import Union, Optional, Any
 
 ''' IMPORTS '''
 import requests
@@ -15,7 +15,6 @@ PARAMS = demisto.params()
 NO_OPROXY = demisto.params().get('no_oproxy', False)
 TENANT_ID = PARAMS.get('tenant_id')
 AUTH_AND_TOKEN_URL = PARAMS.get('auth_id', '')
-AUTH_ID = AUTH_AND_TOKEN_URL[0]
 ENC_KEY = PARAMS.get('enc_key')
 
 # Remove trailing slash to prevent wrong URL path to service
@@ -42,31 +41,31 @@ FOLDER_MAPPING = {
 }
 
 
-MS_CLIENT = None
+MS_CLIENT: Any
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def get_client(base_url, auth_id, tenant_id, enc_key, proxy, ok_codes, use_ssl, no_oproxy):
+def get_client(base_url, auth_id_and_url, tenant_id, enc_key, proxy, ok_codes, use_ssl, no_oproxy):
     if no_oproxy:
         tenant_id = tenant_id
         app_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
-        ms_client = MicrosoftClient.from_self_deployed(tenant_id, auth_id,
+        ms_client = MicrosoftClient.from_self_deployed(tenant_id, auth_id_and_url,
                                                        enc_key, app_url=app_url,
                                                        scope='https://graph.microsoft.com/.default',
                                                        base_url=base_url, verify=use_ssl, proxy=proxy,
                                                        ok_codes=ok_codes)
     else:
         # params related to oproxy
-        auth_id_and_token_retrieval_url = auth_id.split('@')
-        auth_id = auth_id_and_token_retrieval_url[0]
+        auth_id_and_token_retrieval_url = auth_id_and_url.split('@')
+        auth_id_and_url = auth_id_and_token_retrieval_url[0]
         if len(auth_id_and_token_retrieval_url) != 2:
             token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
         else:
             token_retrieval_url = auth_id_and_token_retrieval_url[1]
         app_name = 'ms-graph-mail'
-        ms_client = MicrosoftClient.from_oproxy(auth_id, enc_key, token_retrieval_url, app_name,
+        ms_client = MicrosoftClient.from_oproxy(auth_id_and_url, enc_key, token_retrieval_url, app_name,
                                                 tenant_id=tenant_id, base_url=base_url, verify=use_ssl,
                                                 proxy=proxy, ok_codes=ok_codes)
 
@@ -264,7 +263,7 @@ def parse_folders_list(folders_list):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def list_mails(user_id: str, folder_id: str = '', search: str = None, odata: str = None) -> Union[dict, list]:
+def list_mails(user_id: str, folder_id: str = '', search: str = '', odata: str = '') -> Union[dict, list]:
     """Returning all mails from given user
 
     Args:
@@ -283,7 +282,9 @@ def list_mails(user_id: str, folder_id: str = '', search: str = None, odata: str
     if search:
         odata = f'?{odata}$search={search}' if odata else f'?$search={search}'
     suffix = with_folder if folder_id else no_folder
-    response = MS_CLIENT.http_request('GET', suffix + odata)
+    if odata:
+        suffix += odata
+    response = MS_CLIENT.http_request('GET', suffix)
     return pages_puller(response, assert_pages(pages_to_pull))
 
 
@@ -376,7 +377,7 @@ def get_attachment_command(args):
     demisto.results(entry_context)
 
 
-def get_message(user_id: str, message_id: str, folder_id: str = None, odata: str = None) -> dict:
+def get_message(user_id: str, message_id: str, folder_id: str = '', odata: str = '') -> dict:
     """
 
     Args:
@@ -393,7 +394,9 @@ def get_message(user_id: str, message_id: str, folder_id: str = None, odata: str
                    f'/messages/{message_id}/')
 
     suffix = with_folder if folder_id else no_folder
-    response = MS_CLIENT.http_request('GET', suffix + odata)
+    if odata:
+        suffix += odata
+    response = MS_CLIENT.http_request('GET', suffix)
 
     # Add user ID
     response['userId'] = user_id
@@ -672,9 +675,6 @@ def get_email_as_eml_command(args):
     demisto.results(file_result)
 
 
-from microsoft_api import MicrosoftClient  # noqa: E402
-
-
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     command = demisto.command()
@@ -682,7 +682,7 @@ def main():
     LOG(f'Command being called is {command}')
 
     global MS_CLIENT
-    MS_CLIENT = get_client(BASE_URL, AUTH_ID, TENANT_ID, ENC_KEY, PROXY, (200, 201, 202), USE_SSL, NO_OPROXY)
+    MS_CLIENT = get_client(BASE_URL, AUTH_AND_TOKEN_URL, TENANT_ID, ENC_KEY, PROXY, (200, 201, 202), USE_SSL, NO_OPROXY)
 
     try:
         if command == 'test-module':
@@ -714,6 +714,9 @@ def main():
     # Log exceptions
     except Exception as e:
         return_error(str(e))
+
+
+from microsoft_api import MicrosoftClient  # noqa: E402
 
 
 if __name__ in ["builtins", "__main__"]:
