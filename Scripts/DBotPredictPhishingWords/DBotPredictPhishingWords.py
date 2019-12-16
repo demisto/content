@@ -60,8 +60,8 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         words_to_token_maps = tokenized_text_result['wordsToHashedTokens']
     else:
         words_to_token_maps = tokenized_text_result['originalWordsToTokens']
-    positive_tokens = set(explain_result['PositiveWords'])
-    negative_tokens = set(explain_result['NegativeWords'])
+    positive_tokens = set([''.join(c for c in word if c.isalnum()) for word in explain_result['PositiveWords']])
+    negative_tokens = set([''.join(c for c in word if c.isalnum()) for word in explain_result['NegativeWords']])
     positive_words = find_words_contain_tokens(positive_tokens, words_to_token_maps)
     negative_words = find_words_contain_tokens(negative_tokens, words_to_token_maps)
     explain_result['PositiveWords'] = positive_words
