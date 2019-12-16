@@ -43,7 +43,7 @@ script:
     - contextPath: URL.Data
       description: URL to the capture on CloudShark
       type: string
-    - contextPath: CloudShark.CaptureId
+    - contextPath: CloudShark.CaptureID
       description: Capture id of the capture on CloudShark
       type: string
     description: Upload a capture file to CloudShark

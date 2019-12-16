@@ -11,12 +11,6 @@ INSECURE = demisto.params().get('check_certificate')
 PROXY = demisto.params().get('proxy')
 API_KEY = demisto.params().get('apikey')
 
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
 '''HELPER FUNCTIONS'''
 # Allows nested keys to be accesible
 
@@ -26,17 +20,30 @@ def makehash():
 
 
 def http(method, url_suffix, params=None, data=None, files=None):
-    response = requests.request(
-        method,
-        BASE_URL + '/api/v1/' + API_KEY + url_suffix,
-        verify=INSECURE,
-        params=params,
-        data=data,
-        files=files)
-    if response.status_code != 200:
-        return_error('Error in API call [%d] - %s: %s ' % (response.status_code, response.reason, response.content))
-    return response
-
+    try:
+        response = requests.request(
+            method,
+            BASE_URL + '/api/v1/' + API_KEY + url_suffix,
+            verify=INSECURE,
+            params=params,
+            data=data,
+            files=files)
+        if response.status_code == 200:
+            return response
+        elif (response.status_code == 403) and (url_suffix == "/search/"):
+            # API Token cannot execute API method.
+            # If testing toekn is valid using the /search/ endpoint this is ok
+            return response
+        elif response.status_code == 404:
+            return_error("Server responded with 404. Check to make sure API token is correct")
+        else:
+            return_error('Error in API call [%d] - %s: %s ' % (response.status_code, response.reason, response.content))
+    except requests.exceptions.ConnectionError as err:
+        return_error("Could not connect to CloudShark URL ", str(err))
+    except requests.exceptions.MissingSchema as err:
+        return_error("Invalid Schema. URL must start with http:// or https://")
+    except requests.exceptions.InvalidSchema as err:
+        return_error("Invalid Schema. URL must start with http:// or https://")
 
 '''MAIN FUNCTIONS'''
 
@@ -75,11 +82,11 @@ def upload_command():
 
     # Set Demisto Context
     contxt['URL']['Data'] = url
-    contxt['CloudShark']['CaptureId'] = capture_id
+    contxt['CloudShark']['CaptureID'] = capture_id
     ec = contxt
 
     # Create markdown link to capture
-    markdown_url = "[Open Capture in CloudShark](" + url + ")"
+    markdown_url = "CaptureID: " + capture_id + " - [Open Capture in CloudShark](" + url + ")"
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -178,6 +185,7 @@ def delete_command():
 ''' EXECUTION CODE '''
 LOG('command is %s' % (demisto.command(),))
 try:
+    handle_proxy()
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'cloudshark-upload':
         upload_command()
@@ -189,11 +197,10 @@ try:
         delete_command()
     elif demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
-        response = requests.request(
-            'GET',
-            BASE_URL + '/monitor',
-            verify=INSECURE)
-        if response.status_code == 200:
+        if API_KEY is "":
+            return_error("Must enter API Token")
+        response = http("GET", "/search/")
+        if response.status_code == 200 or response.status_code == 403:
             demisto.results('ok')
         else:
             demisto.results('Error: Server returned %s: %s' % (response.status_code, response.reason))

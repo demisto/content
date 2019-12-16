@@ -108,7 +108,7 @@ CloudShark with upload, info, download, and delete permissions enabled</li>
       <td>URL to the capture on CloudShark</td>
     </tr>
     <tr>
-      <td>CloudShark.CaptureId</td>
+      <td>CloudShark.CaptureID</td>
       <td>string</td>
       <td>Capture id of the capture on CloudShark</td>
     </tr>
@@ -124,7 +124,7 @@ CloudShark with upload, info, download, and delete permissions enabled</li>
 <pre>
 {
     "CloudShark": {
-        "CaptureId": "5277a3a64076"
+        "CaptureID": "5277a3a64076"
     },
     "URL": {
         "Data": "CLOUDSHARK_URL/captures/5277a3a64076"

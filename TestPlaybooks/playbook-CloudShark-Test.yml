@@ -81,7 +81,7 @@ tasks:
       - "6"
     scriptarguments:
       value:
-        simple: ${CloudShark.CaptureId}
+        simple: ${CloudShark.CaptureID}
     separatecontext: false
     view: |-
       {
@@ -192,7 +192,7 @@ tasks:
       - "10"
     scriptarguments:
       capture_id:
-        simple: ${CloudShark.CaptureId}
+        simple: ${CloudShark.CaptureID}
     separatecontext: false
     view: |-
       {
@@ -278,7 +278,7 @@ tasks:
       - "12"
     scriptarguments:
       capture_id:
-        simple: ${CloudShark.CaptureId}
+        simple: ${CloudShark.CaptureID}
       filename: {}
     separatecontext: false
     view: |-
@@ -365,7 +365,7 @@ tasks:
       - "15"
     scriptarguments:
       capture_id:
-        simple: ${CloudShark.CaptureId}
+        simple: ${CloudShark.CaptureID}
     separatecontext: false
     view: |-
       {
