@@ -92,7 +92,6 @@ class PrintJob:
 
 
 class ParallelPrintsManager:
-    threads_print_jobs: List[List[PrintJob]]
 
     def __init__(self, number_of_threads):
         self.threads_print_jobs = [[] for i in range(number_of_threads)]
