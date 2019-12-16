@@ -12,7 +12,7 @@ import demisto_client
 
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 from Tests.scripts.constants import PB_Status
-from Tests.test_content import ParallelPrintsManager
+# from Tests.test_content import ParallelPrintsManager
 
 # Disable insecure warnings
 urllib3.disable_warnings()
