@@ -40,7 +40,7 @@ SLACK_MEM_CHANNEL_ID = 'CM55V7J8K'
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
-    parser.add_argument('-a', '--apiKey', help='The Demisto API key for the server', required=True)
+    parser.add_argument('-k', '--apiKey', help='The Demisto API key for the server', required=True)
     parser.add_argument('-s', '--server', help='The server URL to connect to')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file')
@@ -395,7 +395,8 @@ def create_result_files(failed_playbooks, skipped_integration, skipped_tests):
         skipped_integrations_file.write('\n'.join(skipped_integration))
 
 
-def set_integration_params(demisto_api_key, integrations, secret_params, instance_names, playbook_id):
+def set_integration_params(demisto_api_key, integrations, secret_params, instance_names, playbook_id,
+                           thread_index=0, prints_manager=None):
     for integration in integrations:
         integration_params = [item for item in secret_params if item['name'] == integration['name']]
 
@@ -411,9 +412,10 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
                 if not found_matching_instance:
                     optional_instance_names = [optional_integration.get('instance_name', 'None')
                                                for optional_integration in integration_params]
-                    print_error(FAILED_MATCH_INSTANCE_MSG.format(playbook_id, len(integration_params),
+                    error_msg = FAILED_MATCH_INSTANCE_MSG.format(playbook_id, len(integration_params),
                                                                  integration['name'],
-                                                                 '\n'.join(optional_instance_names)))
+                                                                 '\n'.join(optional_instance_names))
+                    prints_manager.add_print_job(error_msg, print_error, thread_index)
                     return False
 
             integration['params'] = matched_integration_params.get('params', {})
@@ -534,8 +536,8 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
         prints_manager.add_print_job('------ Test {} end ------\n'.format(test_message), print, thread_index)
         return
 
-    are_params_set = set_integration_params(demisto_api_key, integrations,
-                                            secret_params, instance_names_conf, playbook_id)
+    are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf,
+                                            playbook_id, thread_index=thread_index, prints_manager=prints_manager)
     if not are_params_set:
         failed_playbooks.append(playbook_id)
         return
