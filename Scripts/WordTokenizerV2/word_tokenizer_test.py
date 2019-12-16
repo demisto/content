@@ -14,7 +14,7 @@ def get_args():
 demistomock.args = get_args
 
 from WordTokenizer import remove_line_breaks, clean_html, tokenize_text, word_tokenize,\
-    remove_multiple_whitespaces  # noqa
+    remove_multiple_whitespaces, map_indices_to_words  # noqa
 
 
 def test_remove_line_breaks():
@@ -51,3 +51,10 @@ def test_word_tokenize_words_to_tokens():
             continue
         tokens_list_output = original_words_to_tokens[w]
         assert all(t in tokens_list_output for t in tokens_list) and all(t in tokens_list for t in tokens_list_output)
+
+
+def test_inclusion():
+    text = 'a aa  aaa'
+    indices_to_words = map_indices_to_words(text)
+    assert indices_to_words == {0: 'a', 2: 'aa', 3: 'aa', 6: 'aaa', 7: 'aaa', 8: 'aaa'}
+
