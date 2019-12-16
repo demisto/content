@@ -1,3 +1,4 @@
+from __future__ import print_function
 import re
 import sys
 import json
@@ -12,7 +13,7 @@ import demisto_client.demisto_api
 from slackclient import SlackClient
 import _thread
 # from typing import List, Any
-from __future__ import print_function
+
 
 from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.mock_server import MITMProxy, AMIConnection
