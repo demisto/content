@@ -1,5 +1,5 @@
-id: McAfee DXL - test
-version: 4
+id: McAfee DXL - Test
+version: -1
 contentitemfields:
   propagationLabels: []
 name: McAfee DXL - test
@@ -14,7 +14,6 @@ tasks:
       version: -1
       name: ""
       iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
       - "1"
@@ -45,7 +44,6 @@ tasks:
       script: McAfee DXL|||dxl-push-ip
       type: regular
       iscommand: true
-      brand: McAfee DXL
     nexttasks:
       '#none#':
       - "2"
@@ -75,7 +73,6 @@ tasks:
       name: done
       type: title
       iscommand: false
-      brand: ""
     separatecontext: false
     view: |-
       {
@@ -99,7 +96,6 @@ tasks:
       script: McAfee DXL|||dxl-push-hash
       type: regular
       iscommand: true
-      brand: McAfee DXL
     nexttasks:
       '#none#':
       - "2"
@@ -131,7 +127,6 @@ tasks:
       script: McAfee DXL|||dxl-push-domain
       type: regular
       iscommand: true
-      brand: McAfee DXL
     nexttasks:
       '#none#':
       - "2"
@@ -163,7 +158,6 @@ tasks:
       script: McAfee DXL|||dxl-push-url
       type: regular
       iscommand: true
-      brand: McAfee DXL
     nexttasks:
       '#none#':
       - "2"
@@ -195,7 +189,6 @@ tasks:
       script: McAfee DXL|||dxl-send-event
       type: regular
       iscommand: true
-      brand: McAfee DXL
     nexttasks:
       '#none#':
       - "2"

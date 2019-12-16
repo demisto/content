@@ -609,7 +609,7 @@
         },
         {
             "integrations": "McAfee DXL",
-            "playbookID": "McAfee DXL - test"
+            "playbookID": "McAfee DXL - Test"
         },
         {
             "integrations": "activedir",
