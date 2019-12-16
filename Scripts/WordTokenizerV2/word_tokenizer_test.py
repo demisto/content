@@ -57,4 +57,3 @@ def test_inclusion():
     text = 'a aa  aaa'
     indices_to_words = map_indices_to_words(text)
     assert indices_to_words == {0: 'a', 2: 'aa', 3: 'aa', 6: 'aaa', 7: 'aaa', 8: 'aaa'}
-
