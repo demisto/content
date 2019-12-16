@@ -41,7 +41,7 @@ def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, thre
         above_thresh = sum(1 for i, y_true_i in enumerate(y_true_class) if y_true_i == 1
                            and any(y_pred_per_class[c][i] >= threshold for c in y_pred_per_class))
         fp = sum(1 for i, y_true_i in enumerate(y_true_class) if y_true_i == 0
-                 and any(y_pred_per_class[c][i] >= threshold for c in y_pred_per_class))
+                 and any(c != class_ and y_pred_per_class[c][i] >= threshold for c in y_pred_per_class))
         total = int(sum(y_true_class))
         df = df.append({'Class': class_,
                         'Precision': precision,
