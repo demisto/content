@@ -414,8 +414,8 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
 
     investigation_id = incident['investigationId']
     if investigation_id is None or len(investigation_id) == 0:
-        prints_manager.add_print_job('Failed to get investigation id of incident:' + incident,
-                                     print_error, thread_index) # disable-secrets-detection
+        incident_id_not_found_msg = 'Failed to get investigation id of incident:' + incident
+        prints_manager.add_print_job(incident_id_not_found_msg, print_error, thread_index) # disable-secrets-detection
         return False, -1
 
     prints_manager.add_print_job('Investigation ID: {}'.format(investigation_id), print, thread_index)
