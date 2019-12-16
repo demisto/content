@@ -1,5 +1,5 @@
 ## [Unreleased]
-    - Highlighting is changed to be performed on the original text, unlike the previous version which used the tokenized text.
+    - Added Support for highlighting in the text.
     - Support min text length argument
     - Add argument that allows not to return error when there is no prediction
 
