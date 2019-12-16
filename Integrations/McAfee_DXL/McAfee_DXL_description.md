@@ -4,6 +4,3 @@
        * Client certificate (`client.crt` file)
        * Client private key (`client.key` file)
        * Broker list properties file (`brokerlist.properties` file)
-
-  ### Dependencies (Python packages) - No need to install, already installed in docker image :
-  dxlclient [docs](https://opendxl.github.io/opendxl-client-python/pydoc/index.html)
