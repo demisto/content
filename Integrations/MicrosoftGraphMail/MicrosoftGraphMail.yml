@@ -1,6 +1,6 @@
 category: Email Gateway
 commonfields:
-  id: MicrosoftGraphMail
+  id: MicrosoftGraphMail_copy
   version: -1
 configuration:
 - defaultvalue: https://graph.microsoft.com
@@ -31,13 +31,12 @@ configuration:
   type: 8
 - display: Use self deployed Azure Application
   name: no_oproxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 description: Microsoft Graph lets your app get authorized access to a user's Outlook
   mail data in a personal or organization account.
-display: Microsoft Graph Mail
-name: MicrosoftGraphMail
+display: MicrosoftGraphMail_copy
+name: MicrosoftGraphMail_copy
 script:
   commands:
   - arguments:
@@ -68,8 +67,8 @@ script:
       secret: false
     - default: true
       defaultValue: '1'
-      description: 'The number of pages of emails to pull (maximum is 10 emails per
-        page).'
+      description: The number of pages of emails to pull (maximum is 10 emails per
+        page).
       isArray: false
       name: pages_to_pull
       required: false
@@ -369,7 +368,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID. This is generally an email address in
+        the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
@@ -406,7 +406,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID. This is generally an email address in
+        the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
@@ -449,7 +450,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID. This is generally an email address in
+        the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
@@ -491,7 +493,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID. This is generally an email address in
+        the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
@@ -533,7 +536,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID. This is generally an email address in
+        the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
@@ -562,7 +566,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID. This is generally an email address in
+        the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
@@ -583,7 +588,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User ID or principal ID. This is generally an email address in the format someuser@example.com.
+      description: User ID or principal ID. This is generally an email address in
+        the format someuser@example.com.
       isArray: false
       name: user_id
       required: true
@@ -595,7 +601,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves an email message by message ID and uploads the content as an EML file.
+    description: Retrieves an email message by message ID and uploads the content
+      as an EML file.
     execution: false
     name: msgraph-mail-get-email-as-eml
     outputs:
@@ -638,7 +645,6 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
   type: python
 tests:
 - MicrosoftGraphMail-Test
