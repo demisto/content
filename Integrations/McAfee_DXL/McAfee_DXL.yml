@@ -5,108 +5,144 @@ commonfields:
 configuration:
 - display: Broker CA certificates content (see `brokercerts.crt` in instructions)
   name: broker_ca_bundle
-  defaultvalue: ""
-  type: 12
   required: true
+  type: 12
 - display: Client certificates content (see `client.crt` in instructions)
   name: cert_file
-  defaultvalue: ""
-  type: 12
   required: true
-- display: Client private key content (e.g. client.key)
+  type: 12
+- display: Client private key content (e.g. `client.key`)
   name: private_key
-  defaultvalue: ""
-  type: 12
   required: true
+  type: 14
 - display: Brokers urls (comma separated list in the form of - [ssl://]<hostname>[:port])
     - get hostname & port from `brokerlist.properties` file in instructions. Note
     that the broker should be reachable from demisto server
   name: broker_urls
-  defaultvalue: ""
-  type: 0
   required: true
-- display: The topic to publish the 'dxl-push-ip' to
+  type: 0
+- defaultvalue: DXL_PUSH_IP
+  display: The topic to publish the 'dxl-push-ip' to
   name: push_ip_topic
-  defaultvalue: DXL_PUSH_IP
+  required: false
   type: 0
-  required: true
-- display: The topic to publish the 'dxl-push-url' to
+- defaultvalue: DXL_PUSH_URL
+  display: The topic to publish the 'dxl-push-url' to
   name: push_url_topic
-  defaultvalue: DXL_PUSH_URL
+  required: false
   type: 0
-  required: true
-- display: The topic to publish the 'dxl-push-domain' to
+- defaultvalue: DXL_PUSH_DOMAIN
+  display: The topic to publish the 'dxl-push-domain' to
   name: push_domain_topic
-  defaultvalue: DXL_PUSH_DOMAIN
+  required: false
   type: 0
-  required: true
-- display: The topic to publish the 'dxl-push-hash' to
+- defaultvalue: DXL_PUSH_HASH
+  display: The topic to publish the 'dxl-push-hash' to
   name: push_hash_topic
-  defaultvalue: DXL_PUSH_HASH
+  required: false
   type: 0
-  required: true
 description: McAfee DXL client
 display: McAfee DXL
 name: McAfee DXL
 script:
   commands:
-  - name: dxl-send-event
-    arguments:
-    - name: topic
-      required: true
+  - arguments:
+    - default: false
       description: The topic to publish the message to
-    - name: payload
+      isArray: false
+      name: topic
       required: true
+      secret: false
+    - default: false
       description: Event payload
+      isArray: false
+      name: payload
+      required: true
+      secret: false
+    deprecated: false
     description: Deliver the specified event to the DXL fabric
-  - name: dxl-push-ip
-    arguments:
-    - name: ip
-      required: true
+    execution: false
+    name: dxl-send-event
+  - arguments:
+    - default: false
       description: IP to push to the DXL fabric
-    - name: trust_level
+      isArray: false
+      name: ip
       required: true
-      auto: PREDEFINED
-      predefined:
-      - NOT_SET
-      - KNOWN_MALICIOUS
-      - MOST_LIKELY_MALICIOUS
-      - MIGHT_BE_MALICIOUS
-      - UNKNOWN
-      - MIGHT_BE_TRUSTED
-      - MOST_LIKELY_TRUSTED
-      - KNOWN_TRUSTED
-      - KNOWN_TRUSTED_INSTALLER
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: The new trust level for the IP
+      isArray: false
+      name: trust_level
+      predefined:
+      - NOT_SET
+      - KNOWN_MALICIOUS
+      - MOST_LIKELY_MALICIOUS
+      - MIGHT_BE_MALICIOUS
+      - UNKNOWN
+      - MIGHT_BE_TRUSTED
+      - MOST_LIKELY_TRUSTED
+      - KNOWN_TRUSTED
+      - KNOWN_TRUSTED_INSTALLER
+      required: true
+      secret: false
+    - default: false
+      description: The topic to publish the 'dxl-push-ip' to
+      isArray: false
+      name: topic
+      required: false
+      secret: false
+    deprecated: false
     description: Push given IP  to the DXL fabric
-  - name: dxl-push-url
-    arguments:
-    - name: url
-      required: true
+    execution: false
+    name: dxl-push-ip
+  - arguments:
+    - default: false
       description: URL to push to the DXL fabric
-    - name: trust_level
+      isArray: false
+      name: url
       required: true
-      auto: PREDEFINED
-      predefined:
-      - NOT_SET
-      - KNOWN_MALICIOUS
-      - MOST_LIKELY_MALICIOUS
-      - MIGHT_BE_MALICIOUS
-      - UNKNOWN
-      - MIGHT_BE_TRUSTED
-      - MOST_LIKELY_TRUSTED
-      - KNOWN_TRUSTED
-      - KNOWN_TRUSTED_INSTALLER
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: The new trust level for the URL
+      isArray: false
+      name: trust_level
+      predefined:
+      - NOT_SET
+      - KNOWN_MALICIOUS
+      - MOST_LIKELY_MALICIOUS
+      - MIGHT_BE_MALICIOUS
+      - UNKNOWN
+      - MIGHT_BE_TRUSTED
+      - MOST_LIKELY_TRUSTED
+      - KNOWN_TRUSTED
+      - KNOWN_TRUSTED_INSTALLER
+      required: true
+      secret: false
+    - default: false
+      description: The topic to publish the 'dxl-push-url' to
+      isArray: false
+      name: topic
+      required: false
+      secret: false
+    deprecated: false
     description: Push given url  to the DXL fabric
-  - name: dxl-push-domain
-    arguments:
-    - name: domain
-      required: true
+    execution: false
+    name: dxl-push-url
+  - arguments:
+    - default: false
       description: Domain to push to the DXL fabric
-    - name: trust_level
+      isArray: false
+      name: domain
       required: true
-      auto: PREDEFINED
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The new trust level for the domain
+      isArray: false
+      name: trust_level
       predefined:
       - NOT_SET
       - KNOWN_MALICIOUS
@@ -117,16 +153,30 @@ script:
       - MOST_LIKELY_TRUSTED
       - KNOWN_TRUSTED
       - KNOWN_TRUSTED_INSTALLER
-      description: The new trust level for the domain
+      required: true
+      secret: false
+    - default: false
+      description: The topic to publish the 'dxl-push-domain' to
+      isArray: false
+      name: topic
+      required: false
+      secret: false
+    deprecated: false
     description: Push given domain  to the DXL fabric
-  - name: dxl-push-hash
-    arguments:
-    - name: hash
-      required: true
+    execution: false
+    name: dxl-push-domain
+  - arguments:
+    - default: false
       description: Hash to push to the DXL fabric
-    - name: trust_level
+      isArray: false
+      name: hash
       required: true
-      auto: PREDEFINED
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The new trust level for the domain
+      isArray: false
+      name: trust_level
       predefined:
       - NOT_SET
       - KNOWN_MALICIOUS
@@ -137,15 +187,25 @@ script:
       - MOST_LIKELY_TRUSTED
       - KNOWN_TRUSTED
       - KNOWN_TRUSTED_INSTALLER
-      description: The new trust level for the domain
+      required: true
+      secret: false
+    - default: false
+      description: The topic to publish the 'dxl-push-hash' to
+      isArray: false
+      name: topic
+      required: false
+      secret: false
+    deprecated: false
     description: Push given hash  to the DXL fabric
+    execution: false
+    name: dxl-push-hash
+  dockerimage: demisto/dxl:1.0.0.4989
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/dxl:1.0.0.4989
+  type: python
 tests:
-  - McAfee DXL - test
+- McAfee DXL - Test
