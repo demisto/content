@@ -180,10 +180,10 @@ jobs:
               then
                 if [ -n "${NIGHTLY}" ] ;
                   then
-                    export IFRA_ENV_TYPE=Nightly
+                    export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
 
                   else
-                    export IFRA_ENV_TYPE=Content-Env
+                    export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
                 fi
                 python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE -outfile ./env_results.json
 
