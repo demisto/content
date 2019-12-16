@@ -31,13 +31,13 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_domain(self, mocker):
-        from Flashpoint import domain_lookup
+        from Flashpoint import domain_lookup_command
 
         with open("./TestData/domain_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = domain_lookup(self.client, TEST_SCAN_DOMAIN)
+        hr, ec, resp = domain_lookup_command(self.client, TEST_SCAN_DOMAIN)
         result = self.get_result(resp)
 
         with open("./TestData/domain_ec.json", encoding='utf-8') as f:
@@ -51,13 +51,13 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_ip(self, mocker):
-        from Flashpoint import ip_lookup
+        from Flashpoint import ip_lookup_command
 
         with open("./TestData/ip_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = ip_lookup(self.client, TEST_SCAN_IP)
+        hr, ec, resp = ip_lookup_command(self.client, TEST_SCAN_IP)
         result = self.get_result(resp)
 
         with open("./TestData/ip_ec.json", encoding='utf-8') as f:
@@ -71,13 +71,13 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_filename(self, mocker):
-        from Flashpoint import filename_lookup
+        from Flashpoint import filename_lookup_command
 
         with open("./TestData/filename_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = filename_lookup(self.client, TEST_SCAN_FILENAME)
+        hr, ec, resp = filename_lookup_command(self.client, TEST_SCAN_FILENAME)
         result = self.get_result(resp)
 
         with open("./TestData/filename_ec.json", encoding='utf-8') as f:
@@ -91,13 +91,13 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_url(self, mocker):
-        from Flashpoint import url_lookup
+        from Flashpoint import url_lookup_command
 
         with open("./TestData/url_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = url_lookup(self.client, TEST_SCAN_URL)
+        hr, ec, resp = url_lookup_command(self.client, TEST_SCAN_URL)
         result = self.get_result(resp)
 
         with open("./TestData/url_ec.json", encoding='utf-8') as f:
@@ -111,13 +111,13 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_file(self, mocker):
-        from Flashpoint import file_lookup
+        from Flashpoint import file_lookup_command
 
         with open("./TestData/file_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = file_lookup(self.client, TEST_SCAN_FILE)
+        hr, ec, resp = file_lookup_command(self.client, TEST_SCAN_FILE)
         result = self.get_result(resp)
 
         with open("./TestData/file_ec.json", encoding='utf-8') as f:
@@ -131,13 +131,13 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_email(self, mocker):
-        from Flashpoint import email_lookup
+        from Flashpoint import email_lookup_command
 
         with open("./TestData/email_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = email_lookup(self.client, TEST_SCAN_EMAIL)
+        hr, ec, resp = email_lookup_command(self.client, TEST_SCAN_EMAIL)
         result = self.get_result(resp)
 
         with open("./TestData/email_ec.json", encoding='utf-8') as f:
@@ -151,26 +151,26 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_report_search_by_keyword(self, mocker):
-        from Flashpoint import get_reports
+        from Flashpoint import get_reports_command
 
         with open("./TestData/report_search_by_keyword_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = get_reports(self.client, TEST_SCAN_REPORT_KEYWORD)
+        hr, ec, resp = get_reports_command(self.client, TEST_SCAN_REPORT_KEYWORD)
 
         assert resp['data'][0]['title'] == TEST_SCAN_REPORT_KEYWORD
         assert expected == resp
 
     @patch("Flashpoint.Client.http_request")
     def test_report_search_by_id(self, mocker):
-        from Flashpoint import get_report_by_id
+        from Flashpoint import get_report_by_id_command
 
         with open("./TestData/report_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = get_report_by_id(self.client, TEST_SCAN_REPORT_ID)
+        hr, ec, resp = get_report_by_id_command(self.client, TEST_SCAN_REPORT_ID)
 
         with open("./TestData/report_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -181,13 +181,13 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_event_search_by_id(self, mocker):
-        from Flashpoint import get_event_by_id
+        from Flashpoint import get_event_by_id_command
 
         with open("./TestData/event_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = get_event_by_id(self.client, TEST_SCAN_EVENT_ID)
+        hr, ec, resp = get_event_by_id_command(self.client, TEST_SCAN_EVENT_ID)
 
         with open("./TestData/event_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -198,13 +198,13 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_forum_search_by_id(self, mocker):
-        from Flashpoint import get_forum_details_by_id
+        from Flashpoint import get_forum_details_by_id_command
 
         with open("./TestData/forum_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = get_forum_details_by_id(self.client, TEST_SCAN_FORUM_ID)
+        hr, ec, resp = get_forum_details_by_id_command(self.client, TEST_SCAN_FORUM_ID)
 
         with open("./TestData/forum_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -215,13 +215,13 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_forum_room_search_by_id(self, mocker):
-        from Flashpoint import get_room_details_by_id
+        from Flashpoint import get_room_details_by_id_command
 
         with open("./TestData/forum_room_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = get_room_details_by_id(self.client, TEST_SCAN_FORUM_ROOM_ID)
+        hr, ec, resp = get_room_details_by_id_command(self.client, TEST_SCAN_FORUM_ROOM_ID)
 
         with open("./TestData/forum_room_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -232,13 +232,13 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_forum_user_search_by_id(self, mocker):
-        from Flashpoint import get_user_details_by_id
+        from Flashpoint import get_user_details_by_id_command
 
         with open("./TestData/forum_user_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = get_user_details_by_id(self.client, TEST_SCAN_FORUM_USER_ID)
+        hr, ec, resp = get_user_details_by_id_command(self.client, TEST_SCAN_FORUM_USER_ID)
 
         with open("./TestData/forum_user_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -249,13 +249,13 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_forum_post_search_by_id(self, mocker):
-        from Flashpoint import get_post_details_by_id
+        from Flashpoint import get_post_details_by_id_command
 
         with open("./TestData/forum_post_search_by_id_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
-        hr, ec, resp = get_post_details_by_id(self.client, TEST_SCAN_FORUM_POST_ID)
+        hr, ec, resp = get_post_details_by_id_command(self.client, TEST_SCAN_FORUM_POST_ID)
 
         with open("./TestData/forum_post_search_by_id_ec.json", encoding='utf-8') as f:
             expected_ec = json.load(f)
@@ -266,7 +266,7 @@ class MyTestCase(unittest.TestCase):
 
     @patch("Flashpoint.Client.http_request")
     def test_search_events(self, mocker):
-        from Flashpoint import get_events
+        from Flashpoint import get_events_command
 
         with open("./TestData/events_search_response.json", encoding='utf-8') as f:
             expected = json.load(f)
@@ -277,33 +277,33 @@ class MyTestCase(unittest.TestCase):
         attack_id = None
         time_period = None
 
-        hr, ec, resp = get_events(self.client, limit, report_fpid, attack_id, time_period)
+        hr, ec, resp = get_events_command(self.client, limit, report_fpid, attack_id, time_period)
 
         assert expected == resp
 
     @patch("Flashpoint.Client.http_request")
     def test_forum_site_search(self, mocker):
-        from Flashpoint import get_forum_sites
+        from Flashpoint import get_forum_sites_command
 
         with open("./TestData/forum_site_search_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
 
-        hr, ec, resp = get_forum_sites(self.client, TEST_SITE_SEARCH_KEYWORD)
+        hr, ec, resp = get_forum_sites_command(self.client, TEST_SITE_SEARCH_KEYWORD)
 
         assert expected == resp
 
     @patch("Flashpoint.Client.http_request")
     def test_forum_post_search(self, mocker):
-        from Flashpoint import get_forum_posts
+        from Flashpoint import get_forum_posts_command
 
         with open("./TestData/forum_post_search_response.json", encoding='utf-8') as f:
             expected = json.load(f)
 
         mocker.return_value = expected
 
-        hr, ec, resp = get_forum_posts(self.client, TEST_POST_SEARCH_KEYWORD)
+        hr, ec, resp = get_forum_posts_command(self.client, TEST_POST_SEARCH_KEYWORD)
 
         assert expected == resp
 

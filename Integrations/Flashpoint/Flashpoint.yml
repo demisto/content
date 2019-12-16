@@ -24,8 +24,10 @@ script:
   - name: ip
     arguments:
     - name: ip
-      required: true
-      description: Enter ip address
+      default: true
+      required: false
+      description: The IP to check.
+      isArray: true
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -44,7 +46,6 @@ script:
       type: string
     - contextPath: IP.Flashpoint.href
       description: List of reference link of the indicator.
-      type: unknown
     - contextPath: IP.Malicious.Description
       description: Description of malicious ip.
       type: string
@@ -55,8 +56,10 @@ script:
   - name: domain
     arguments:
     - name: domain
-      required: true
-      description: Enter domain name
+      required: false
+      default: true
+      description: The domain name to check.
+      isArray: true
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -85,8 +88,10 @@ script:
   - name: filename
     arguments:
     - name: filename
-      required: true
-      description: Enter file-name
+      required: false
+      default: true
+      description: The file name to check.
+      isArray: true
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -104,8 +109,10 @@ script:
   - name: url
     arguments:
     - name: url
-      required: true
-      description: Enter url
+      required: false
+      default: true
+      description: The url to check.
+      isArray: true
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -131,8 +138,10 @@ script:
   - name: file
     arguments:
     - name: file
-      required: true
-      description: Enter file. It may sha1, md5, sha256 etc.
+      required: false
+      default: true
+      description: The file to check. It may sha1, md5, sha256 etc.
+      isArray: true
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -148,28 +157,29 @@ script:
       type: string
     - contextPath: File.Flashpoint.href
       description: List of indicators reference.
-      type: unknown
     - contextPath: File.Malicious.Description
       description: Description of malicious file.
       type: string
     - contextPath: File.Malicious.Vendor
       description: Vendor of malicious file.
       type: string
-    - contextPath: File.MD5
+    - contextPath: File.md5
       description: MD5 type file.
       type: string
-    - contextPath: File.SHA1
+    - contextPath: File.sha1
       description: SHA1 type file.
       type: string
-    - contextPath: File.SHA256
+    - contextPath: File.sha256
       description: SHA256 type file.
       type: string
     description: Lookup the "File" type indicator details
   - name: email
     arguments:
     - name: email
-      required: true
-      description: Enter valid email
+      required: false
+      default: true
+      description: The email to check.
+      isArray: true
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -200,18 +210,21 @@ script:
     - name: report_search
       required: true
       description: Search report using keyword or text
+    outputs:
+    - contextPath: Flashpoint.Reports
+      description: Display list of reports based on specify search query or keyword.
     description: Search for the Intelligence Reports using a keyword
   - name: flashpoint-get-single-intelligence-report
     arguments:
     - name: report_id
       required: true
-      description: Search report by report fpid
+      description: Search report by report id. It is known by fp user or it is found in response as fpid.
     outputs:
     - contextPath: Flashpoint.Report.notified_at
       description: Notify date of report.
       type: string
     - contextPath: Flashpoint.Report.platform_url
-      description: Platform url of report.
+      description: Platform url of report. It helps to redirect flashpoint platform.
       type: string
     - contextPath: Flashpoint.Report.posted_at
       description: posted date of report.
@@ -230,7 +243,10 @@ script:
     arguments:
     - name: report_id
       required: true
-      description: Search related report by report fpid.
+      description: Search related report by report id.
+    outputs:
+    - contextPath: Flashpoint.Reports
+      description: Display list of related report based on report fpid.
     description: Get related reports for a given report id
   - name: flashpoint-get-single-event
     arguments:
@@ -248,25 +264,34 @@ script:
       description: Display event reference.
     - contextPath: Flashpoint.event.tag
       description: Display event tag.
+    - contextPath: Flashpoint.event.event_id
+      description: Display event id (event fpid)
+      type: string
     description: For getting single event
   - name: flashpoint-get-events
     arguments:
     - name: time_period
       description: Specified time period. Search events based on time period.
     - name: report_fpid
-      description: Search events by report fpid.
+      description: Search events by report fpid.User can get report fpid from output of report-search or related-reports
+        commands and use it in this command to get events for specific Flashpoint report.
     - name: limit
       description: Specify limit of the record.
       defaultValue: "10"
     - name: attack_ids
       description: Search events by attack ids. Multiple ids are acceptable using
-        comma separated values.
+        comma separated values. attack_ids can be found in event information.
+    outputs:
+    - contextPath: Flashpoint.events
+      description: Display the list of multiple events.
     description: Get all event details
   - name: flashpoint-common-lookup
     arguments:
     - name: indicator
-      required: true
+      required: false
+      default: true
       description: Specify indicator value like any domain, ip, email, url etc.
+      isArray: true
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -307,13 +332,13 @@ script:
       required: true
       description: Specify room id
     outputs:
-    - contextPath: flashpoint.forum.room.forum
+    - contextPath: Flashpoint.forum.room.forum
       description: Display all forum details like forum name, hostname, platform url,
         stats and tags etc.
-    - contextPath: flashpoint.forum.room.title
+    - contextPath: Flashpoint.forum.room.title
       description: Title of the room
       type: string
-    - contextPath: flashpoint.forum.room.url
+    - contextPath: Flashpoint.forum.room.url
       description: url of the room
       type: string
     description: Get room details
@@ -323,16 +348,16 @@ script:
       required: true
       description: Specify user id
     outputs:
-    - contextPath: flashpoint.forum.user.forum
+    - contextPath: Flashpoint.forum.user.forum
       description: Display all forum details like id, hostname, description, stats,
         tags etc.
-    - contextPath: flashpoint.forum.user.name
+    - contextPath: Flashpoint.forum.user.name
       description: Name of author.
       type: string
-    - contextPath: flashpoint.forum.user.platform_url
+    - contextPath: Flashpoint.forum.user.platform_url
       description: platform url of user.
       type: string
-    - contextPath: flashpoint.forum.user.url
+    - contextPath: Flashpoint.forum.user.url
       description: URL of user.
       type: string
     description: Get user details
@@ -342,21 +367,21 @@ script:
       required: true
       description: Specify post id
     outputs:
-    - contextPath: flashpoint.forum.post.forum
+    - contextPath: Flashpoint.forum.post.forum
       description: Display all forum details of post like id, hostname, stats, description,
         tags etc.
-    - contextPath: flashpoint.forum.post.room
+    - contextPath: Flashpoint.forum.post.room
       description: Display room details of post like room title, id, url, platform
         url etc.
-    - contextPath: flashpoint.forum.post.user
+    - contextPath: Flashpoint.forum.post.user
       description: Display user details of post like user id, name, url, platform
         url etc.
-    - contextPath: flashpoint.forum.post.platform_url
+    - contextPath: Flashpoint.forum.post.platform_url
       description: platform url of post.
       type: string
-    - contextPath: flashpoint.forum.post.published_at
+    - contextPath: Flashpoint.forum.post.published_at
       description: published date of post.
-    - contextPath: flashpoint.forum.post.url
+    - contextPath: Flashpoint.forum.post.url
       description: Display url of post.
     description: Get post details
   - name: flashpoint-search-forum-sites
@@ -364,14 +389,25 @@ script:
     - name: site_search
       required: true
       description: Search by site keyword or text.
+    outputs:
+    - contextPath: Flashpoint.forum.sites
+      description: Display list of forum site details based on search keyword.
     description: Search forum sites using a keyword
   - name: flashpoint-search-forum-posts
     arguments:
     - name: post_search
       required: true
       description: Search by post keyword or text.
+    outputs:
+    - contextPath: Flashpoint.forum.posts
+      description: Display list of forum posts based on specified search keyword.
     description: Search forum posts using a keyword
   dockerimage: demisto/python3:3.7.5.4583
   runonce: false
   subtype: python3
+tests:
+- Flashpoint_event-Test
+- Flashpoint_forum-Test
+- Flashpoint_report-Test
+- Flaspoint_reputation-Test
 

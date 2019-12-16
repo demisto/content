@@ -1,10 +1,11 @@
 {
-  "flashpoint": {
+  "Flashpoint": {
     "event": {
-      "tag": "tag1",
       "date": "Jun 18, 2019  22:08",
       "event_creator_email": "fake@test.com",
-      "href": "http://123-fake-api.com/api/v4/indicators/event/test_scan_id"
+      "event_id": "test_scan_id",
+      "href": "http://123-fake-api.com/api/v4/indicators/event/test_scan_id",
+      "tag": "tag1"
     }
   }
 }

@@ -8,6 +8,17 @@ import urllib.parse
 
 
 class Client:
+    """
+    Client to use in integration with powerful http_request.
+    :type api_key: ``str``
+    :param api_key: Use to authenticate request in header
+
+    :type url: ``str``
+    :param url: Base server address with suffix, for example: https://example.com.
+
+    :return response of request
+    :rtype ``dict``
+    """
 
     def __init__(self, api_key, url):
         self.url = url
@@ -78,7 +89,38 @@ def get_url_suffix(query):
     return r'/indicators/simple?query=' + urllib.parse.quote(query.encode('utf8'))
 
 
-def convert_event(client, event):
+def get_events_from_ioc_resp(indicators):
+    """
+    Extract event details and href values from each of the indicator in an indicator list
+
+    :param indicators: list of indicators
+    :return: dict containing event details and href
+    """
+    events = []
+    hrefs = []
+    for indicator in indicators:
+        hrefs.append(indicator.get('Attribute', {}).get('href', ''))
+
+        event = indicator.get('Attribute', {}).get('Event', {})
+
+        tags_value = ''
+        for tag in event['Tags']:
+            tags_value = tags_value + tag + ', '
+        if tags_value:
+            tags_value = tags_value[:-2]
+
+        observed_time = time.strftime('%b %d, %Y  %H:%M', time.gmtime(float(event['timestamp'])))
+
+        events.append({
+            'Date Observed (UTC)': observed_time,
+            'Name': event.get('info', ''),
+            'Tags': tags_value,
+        })
+
+    return {'events': events, 'href': hrefs}
+
+
+def convert_event(client, event, fpid):
     """
     Prepare required event jason object from event response
 
@@ -107,7 +149,8 @@ def convert_event(client, event):
         'Observed time (UTC)': observed_time,
         'Name': name_str,
         'Tags': tags_value,
-        'event_creator_email': event_creator_email
+        'event_creator_email': event_creator_email,
+        'event_id': fpid
     }
 
     return event
@@ -138,10 +181,25 @@ def convert_forum(resp):
     return forum_details
 
 
+def reputation_operation_command(client, indicator, func):
+    """
+    Common method for reputation commands to accept argument as a comma-separated values and converted into list
+    and call specific function for all values.
+
+    :param client:
+    :param indicator: comma-separated values or single value
+    :param func: reputation command function. i.e file_lookup, domain_lookup etc.
+    :return: output of all value according to specified function.
+    """
+    args = argToList(indicator, ',')
+    for arg in args:
+        return_outputs(*func(client, arg))
+
+
 ''' FUNCTIONS '''
 
 
-def ip_lookup(client, ip):
+def ip_lookup_command(client, ip):
     """
     'ip' command to lookup a particular ip-address
 
@@ -249,7 +307,7 @@ def ip_lookup(client, ip):
         return hr, ec, resp
 
 
-def domain_lookup(client, domain):
+def domain_lookup_command(client, domain):
     """
     'domain' command to lookup a particular domain
 
@@ -312,38 +370,7 @@ def domain_lookup(client, domain):
         return hr, ec, resp
 
 
-def get_events_from_ioc_resp(indicators):
-    """
-    Extract event details and href values from each of the indicator in an indicator list
-
-    :param indicators: list of indicators
-    :return: dict containing event details and href
-    """
-    events = []
-    hrefs = []
-    for indicator in indicators:
-        hrefs.append(indicator.get('Attribute', {}).get('href', ''))
-
-        event = indicator.get('Attribute', {}).get('Event', {})
-
-        tags_value = ''
-        for tag in event['Tags']:
-            tags_value = tags_value + tag + ', '
-        if tags_value:
-            tags_value = tags_value[:-2]
-
-        observed_time = time.strftime('%b %d, %Y  %H:%M', time.gmtime(float(event['timestamp'])))
-
-        events.append({
-            'Date Observed (UTC)': observed_time,
-            'Name': event.get('info', ''),
-            'Tags': tags_value,
-        })
-
-    return {'events': events, 'href': hrefs}
-
-
-def filename_lookup(client, filename):
+def filename_lookup_command(client, filename):
     """
     'filename' command to lookup a particular filename
 
@@ -397,7 +424,7 @@ def filename_lookup(client, filename):
         return hr, ec, resp
 
 
-def url_lookup(client, url):
+def url_lookup_command(client, url):
     """
     'url' command to lookup a particular url
 
@@ -462,7 +489,7 @@ def url_lookup(client, url):
         return hr, ec, resp
 
 
-def file_lookup(client, file):
+def file_lookup_command(client, file):
     """
     'file' command to lookup a particular file hash (md5, sha1, sha256, sha512)
 
@@ -528,7 +555,7 @@ def file_lookup(client, file):
         return hr, ec, resp
 
 
-def email_lookup(client, email):
+def email_lookup_command(client, email):
     """
     'email' command to lookup a particular email address or subject
 
@@ -593,7 +620,7 @@ def email_lookup(client, email):
         return hr, ec, resp
 
 
-def common_lookup(client, indicator_value):
+def common_lookup_command(client, indicator_value):
     """
     Command to lookup all types of the indicators
 
@@ -652,7 +679,7 @@ def common_lookup(client, indicator_value):
         return hr, ec, resp
 
 
-def get_reports(client, report_search):
+def get_reports_command(client, report_search):
     """
     Get reports matching the given search term or query
 
@@ -668,18 +695,35 @@ def get_reports(client, report_search):
 
     if reports:
         hr += 'Top 5 reports:\n\n'
+        report_details = []
         index = 0
         for report in reports:
+            title = report.get('title', 'N/A')
+            platform_url = report.get('platform_url', '')
+            summary = report.get('summary', 'N/A')
             index += 1
-            hr += '' + str(index) + ') [{}]({})'.format(report.get('title', 'N/A'),
-                                                        report.get('platform_url', '')) + '\n'
+            hr += '' + str(index) + ') [{}]({})'.format(title, platform_url) + '\n'
             if report.get('summary'):
-                hr += '   Summary: ' + report.get('summary', 'N/A') + '\n\n\n'
+                hr += '   Summary: ' + str(summary) + '\n\n\n'
             else:
                 hr += '   Summary: N/A\n\n\n'
+
+            report_detail = {
+                'updated_at': report.get('updated_at', ''),
+                'posted_at': report.get('posted_at', ''),
+                'notified_at': report.get('notified_at', ''),
+                'platform_url': platform_url,
+                'title': title,
+                'summary': summary
+            }
+            report_details.append(report_detail)
+
         fp_url = client.url + '/home/search/reports?query=' + urllib.parse.quote(report_search)
         hr += 'Link to Report-search on Flashpoint platform: [{}]({})\n'.format(fp_url, fp_url)
-        ec: Dict[Any, Any] = {}  # Create empty dictionary.
+
+        ec: Dict[Any, Any] = {
+            "Flashpoint.Reports": report_details
+        }
 
     else:
         hr += 'No reports found for the search.'
@@ -688,7 +732,7 @@ def get_reports(client, report_search):
     return hr, ec, resp
 
 
-def get_report_by_id(client, report_id):
+def get_report_by_id_command(client, report_id):
     """
     Get specific report using its fpid
 
@@ -754,7 +798,7 @@ def get_report_by_id(client, report_id):
     return hr, ec, resp
 
 
-def get_related_reports(client, report_id):
+def get_related_reports_command(client, report_id):
     """
     Get reports related to given report
 
@@ -770,15 +814,30 @@ def get_related_reports(client, report_id):
 
     if reports:
         hr += 'Top 5 related reports:\n\n'
+        report_details = []
         index = 0
         for report in reports:
+            title = report.get('title', 'N/A')
+            platform_url = report.get('platform_url', '')
+            summary = report.get('summary', 'N/A')
             index += 1
-            hr += '' + str(index) + ') [{}]({})'.format(report.get('title', 'N/A'),
-                                                        report.get('platform_url', '')) + '\n'
-            hr += '   Summary: ' + str(report.get('summary', 'N/A')) + '\n\n\n'
+            hr += '' + str(index) + ') [{}]({})'.format(title, platform_url) + '\n'
+            hr += '   Summary: ' + str(summary) + '\n\n\n'
+            report_detail = {
+                'updated_at': report.get('updated_at', ''),
+                'posted_at': report.get('posted_at', ''),
+                'notified_at': report.get('notified_at', ''),
+                'platform_url': platform_url,
+                'title': title,
+                'summary': summary
+            }
+            report_details.append(report_detail)
+
         fp_url = client.url + '/home/intelligence/reports/report/' + report_id + '#detail'
         hr += 'Link to the given Report on Flashpoint platform: [{}]({})\n'.format(fp_url, fp_url)
-        ec: Dict[Any, Any] = {}
+        ec: Dict[Any, Any] = {
+            "Flashpoint.Reports": report_details
+        }
 
     else:
         hr += 'No related reports found for the search.'
@@ -787,7 +846,7 @@ def get_related_reports(client, report_id):
     return hr, ec, resp
 
 
-def get_event_by_id(client, event_id):
+def get_event_by_id_command(client, event_id):
     """
     Get specific event using its event id
 
@@ -806,15 +865,17 @@ def get_event_by_id(client, event_id):
         return hr, ec, resp
 
     event = resp[0].get('Event', '')
+    fpid = resp[0].get('fpid', '')
 
     events = []
     if event:
-        event = convert_event(client, event)
+        event = convert_event(client, event, fpid)
         events.append(event)
         hr += tableToMarkdown('Below are the detail found:', events, ['Observed time (UTC)', 'Name', 'Tags'])
 
-        ec['flashpoint'] = {
+        ec['Flashpoint'] = {
             'event': {
+                'event_id': events[0]['event_id'],
                 'tag': events[0]['Tags'],
                 'date': events[0]['Observed time (UTC)'],
                 'event_creator_email': event['event_creator_email'],
@@ -825,7 +886,7 @@ def get_event_by_id(client, event_id):
     return hr, ec, resp
 
 
-def get_events(client, limit, report_fpid, attack_ids, time_period):
+def get_events_command(client, limit, report_fpid, attack_ids, time_period):
     """
     Get events matching the given parameters
 
@@ -860,11 +921,11 @@ def get_events(client, limit, report_fpid, attack_ids, time_period):
 
         events = []
         hrefs = []
-        # indicators.append(indicators[0])
         for indicator in indicators:
             hrefs.append(indicator.get('href', ''))
             event = indicator.get('Event', {})
-            event = convert_event(client, event)
+            fpid = indicator.get('fpid', '')
+            event = convert_event(client, event, fpid)
             events.append(event)
 
         hr += tableToMarkdown('Below are the detail found:', events, ['Observed time (UTC)', 'Name', 'Tags'])
@@ -873,7 +934,10 @@ def get_events(client, limit, report_fpid, attack_ids, time_period):
         if attack_ids:
             fp_link = fp_link + '?attack_ids=' + urllib.parse.quote(attack_ids)
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
-        ec: Dict[Any, Any] = {}
+        ec: Dict[Any, Any] = {'Flashpoint': {
+            'events': events
+        }}
+
     else:
         hr += 'No event found for the argument.'
         ec = {}
@@ -881,7 +945,7 @@ def get_events(client, limit, report_fpid, attack_ids, time_period):
     return hr, ec, resp
 
 
-def get_forum_details_by_id(client, forum_id):
+def get_forum_details_by_id_command(client, forum_id):
     """
     Get specific forum details by its fpid
 
@@ -916,7 +980,7 @@ def get_forum_details_by_id(client, forum_id):
     return hr, ec, resp
 
 
-def get_room_details_by_id(client, room_id):
+def get_room_details_by_id_command(client, room_id):
     """
     Get room details by its room id
 
@@ -944,7 +1008,7 @@ def get_room_details_by_id(client, room_id):
         hr += tableToMarkdown('Below are the detail found:', room_details, ['Forum Name', 'Title', 'URL'])
         hr += '\n'
 
-        ec['flashpoint'] = {
+        ec['Flashpoint'] = {
             'forum': {
                 'room': {
                     'title': title,
@@ -960,7 +1024,7 @@ def get_room_details_by_id(client, room_id):
     return hr, ec, resp
 
 
-def get_user_details_by_id(client, user_id):
+def get_user_details_by_id_command(client, user_id):
     """
     Get user details by user's fpid
 
@@ -988,7 +1052,7 @@ def get_user_details_by_id(client, user_id):
         hr += tableToMarkdown('Below are the detail found:', user_details, ['Forum Name', 'Name', 'URL'])
         hr += '\n'
 
-        ec['flashpoint'] = {
+        ec['Flashpoint'] = {
             'forum': {
                 'user': {
                     'name': name,
@@ -1005,7 +1069,7 @@ def get_user_details_by_id(client, user_id):
     return hr, ec, resp
 
 
-def get_post_details_by_id(client, post_id):
+def get_post_details_by_id_command(client, post_id):
     """
     Get forum post details by post's fpid
 
@@ -1044,7 +1108,7 @@ def get_post_details_by_id(client, post_id):
                                'Platform url'])
         hr += '\n'
 
-        ec['flashpoint'] = {
+        ec['Flashpoint'] = {
             'forum': {
                 'post': {
                     'published_at': published_at,
@@ -1063,7 +1127,7 @@ def get_post_details_by_id(client, post_id):
     return hr, ec, resp
 
 
-def get_forum_sites(client, site_search):
+def get_forum_sites_command(client, site_search):
     """
     Get forum sites matching search keyword or query
 
@@ -1093,13 +1157,17 @@ def get_forum_sites(client, site_search):
         hr += tableToMarkdown('Below are the detail found:', site_details, ['Name', 'Hostname', 'Description'])
         hr += '\n'
 
+        ec = {
+            "Flashpoint.forum.sites": site_details
+        }
+
     else:
         hr += 'No forum sites found for the search'
 
     return hr, ec, resp
 
 
-def get_forum_posts(client, post_search):
+def get_forum_posts_command(client, post_search):
     """
     Get forum posts details matching given keyword or query
 
@@ -1138,6 +1206,10 @@ def get_forum_posts(client, post_search):
         fp_url = client.url + '/home/search/forums?query=' + urllib.parse.quote(post_search.encode('utf8'))
         hr += 'Link to forum post-search on Flashpoint platform: [{}]({})\n'.format(fp_url, fp_url)
 
+        ec = {
+            "Flashpoint.forum.posts": post_details
+        }
+
     else:
         hr += 'No forum posts found for the search'
 
@@ -1155,84 +1227,91 @@ def main():
         client = Client(api_key, url)
 
         if demisto.command() == 'test-module':
-            _ = ip_lookup(client, '8.8.8.8')
+            # This is the call made when pressing the integration Test button.
+            ip_lookup_command(client, "8.8.8.8")
             demisto.results('ok')
 
         elif demisto.command() == 'ip':
             ip = demisto.args()['ip']
-            return_outputs(*ip_lookup(client, ip))
+            reputation_operation_command(client, ip, ip_lookup_command)
 
         elif demisto.command() == 'domain':
             domain = demisto.args()['domain']
-            return_outputs(*domain_lookup(client, domain))
+            reputation_operation_command(client, domain, domain_lookup_command)
 
         elif demisto.command() == 'filename':
             filename = demisto.args()['filename']
-            return_outputs(*filename_lookup(client, filename))
+            reputation_operation_command(client, filename, filename_lookup_command)
 
         elif demisto.command() == 'url':
             url = demisto.args()['url']
-            return_outputs(*url_lookup(client, url))
+            reputation_operation_command(client, url, url_lookup_command)
 
         elif demisto.command() == 'file':
             file = demisto.args()['file']
-            return_outputs(*file_lookup(client, file))
+            reputation_operation_command(client, file, file_lookup_command)
+
         elif demisto.command() == 'email':
             email = demisto.args()['email']
-            return_outputs(*email_lookup(client, email))
+            reputation_operation_command(client, email, email_lookup_command)
+
         elif demisto.command() == 'flashpoint-common-lookup':
             indicator_value = demisto.args()['indicator']
-            return_outputs(*common_lookup(client, indicator_value))
+            reputation_operation_command(client, indicator_value, common_lookup_command)
+
         elif demisto.command() == 'flashpoint-search-intelligence-reports':
             report_search = demisto.args()['report_search']
-            return_outputs(*get_reports(client, report_search))
+            return_outputs(*get_reports_command(client, report_search))
+
         elif demisto.command() == 'flashpoint-get-single-intelligence-report':
             report_id = demisto.args()['report_id']
-            return_outputs(*get_report_by_id(client, report_id))
+            return_outputs(*get_report_by_id_command(client, report_id))
+
         elif demisto.command() == 'flashpoint-get-related-reports':
             report_id = demisto.args()['report_id']
-            return_outputs(*get_related_reports(client, report_id))
+            return_outputs(*get_related_reports_command(client, report_id))
+
         elif demisto.command() == 'flashpoint-get-single-event':
             event_id = demisto.args()['event_id']
-            return_outputs(*get_event_by_id(client, event_id))
+            return_outputs(*get_event_by_id_command(client, event_id))
+
         elif demisto.command() == 'flashpoint-get-events':
             args = demisto.args()
             limit = args.get('limit', 10)
             report_fpid = args.get('report_fpid')
             attack_ids = args.get('attack_ids')
             time_period = args.get('time_period')
-
-            return_outputs(*get_events(client, limit, report_fpid, attack_ids, time_period))
+            return_outputs(*get_events_command(client, limit, report_fpid, attack_ids, time_period))
 
         elif demisto.command() == 'flashpoint-get-forum-details':
             forum_id = demisto.args()['forum_id']
-            return_outputs(*get_forum_details_by_id(client, forum_id))
+            return_outputs(*get_forum_details_by_id_command(client, forum_id))
 
         elif demisto.command() == 'flashpoint-get-forum-room-details':
             room_id = demisto.args()['room_id']
-            return_outputs(*get_room_details_by_id(client, room_id))
+            return_outputs(*get_room_details_by_id_command(client, room_id))
 
         elif demisto.command() == 'flashpoint-get-forum-user-details':
             user_id = demisto.args()['user_id']
-            return_outputs(*get_user_details_by_id(client, user_id))
+            return_outputs(*get_user_details_by_id_command(client, user_id))
 
         elif demisto.command() == 'flashpoint-get-forum-post-details':
             post_id = demisto.args()['post_id']
-            return_outputs(*get_post_details_by_id(client, post_id))
+            return_outputs(*get_post_details_by_id_command(client, post_id))
 
         elif demisto.command() == 'flashpoint-search-forum-sites':
             site_search = demisto.args()['site_search']
-            return_outputs(*get_forum_sites(client, site_search))
+            return_outputs(*get_forum_sites_command(client, site_search))
 
         elif demisto.command() == 'flashpoint-search-forum-posts':
             post_search = demisto.args()['post_search']
-            return_outputs(*get_forum_posts(client, post_search))
+            return_outputs(*get_forum_posts_command(client, post_search))
 
     except ValueError as v_err:
         return_error(str(v_err))
     except requests.exceptions.ConnectionError as c:
         """ Caused mostly when URL is altered."""
-        demisto.debug(str(c))
+        demisto.error(str(c))
         return_error(f'Failed to execute {demisto.command()} command.')
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
@@ -1240,7 +1319,3 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
-
-# You can use demisto.args()[argName] to get a specific arg. args are strings.
-# You can use demisto.params()[paramName] to get a specific params.
-# Params are of the type given in the integration page creation.
