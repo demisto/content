@@ -197,7 +197,7 @@ def get_code_file(package_path, script_type):
     """
 
     ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|' \
-                   r'demistomock\.py|test_.*\.py|_test\.py|conftest\.py'
+                   r'demistomock\.py|test_.*\.py|_test\.py|conftest\.py|microsoft_api\.py'
 
     if not package_path.endswith('/'):
         package_path += '/'
@@ -214,11 +214,7 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
     with io.open(script_path, mode='r', encoding='utf-8') as script_file:
         script_code = script_file.read()
 
-    microsoft_import = 'from Utils.microsoft_api import MicrosoftClient'
-
-    if script_code.find(microsoft_import) != -1:
-        client_code = get_microsoft_client_code()
-        script_code = script_code.replace(microsoft_import, client_code)
+    script_code = check_microsoft(script_code)
 
     clean_code = clean_python_code(script_code)
 
@@ -271,8 +267,19 @@ def remove_imports(script_code):
     return script_code
 
 
-def get_microsoft_client_code():
+def check_microsoft(script_code):
+    microsoft_import_no_qa = 'from microsoft_api import MicrosoftClient  # noqa: E402'
+    microsoft_import = 'from microsoft_api import MicrosoftClient'
+    if script_code.find(microsoft_import_no_qa) != -1:
+        client_code = get_microsoft_client_code()
+        script_code = script_code.replace(microsoft_import_no_qa, client_code)
+    elif script_code.find(microsoft_import) != -1:
+        client_code = get_microsoft_client_code()
+        script_code = script_code.replace(microsoft_import, client_code)
+    return script_code
 
+
+def get_microsoft_client_code():
     client_path = './Utils/microsoft_api.py'
     try:
         with open(client_path, 'r') as file:
