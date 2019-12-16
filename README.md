@@ -62,31 +62,6 @@ Demisto Platform support flexible reports written in JSON. All of our standard r
 ## Release Notes
 For information about content release notes conventions, refer to our [release notes documentation](docs/release_notes).
 
-
-# Documentation Directory
-
-| Link | Description |
-| --- | ---|
-| [Integration Parameter Types](docs/parameter_types) | Description of the various integration parameter types |
-| [Context and Outputs](docs/context_and_ouputs) | Brief overview of Context and Outputs |
-| [Context Conventions](docs/context_standards) | Conventions for the Demisto Standard Context |
-| [Contributing](CONTRIBUTING.md) | How to contribute to the Content Repo |
-| [Creating Playbooks](docs/creating_playbooks) | How to create a Playbook |
-| [DBot Score](docs/dbot) | How the DBot Score works |
-| [Demisto Transform Language (DT)](docs/DT) | Understanding Demisto Transform Language (DT) |
-| [Fetching Incidents](docs/fetching_incidents) | How to Fetch Incidents |
-| [Fetching Credentials](docs/fetching_credentials) | How to Fetch Credentials |
-| [Integration Documentation](docs/integration_documentation) | How to generate documentation for an integration |
-| [Testing](docs/tests) | The Demisto Content Repo Testing Methods |
-| [CircleCI](docs/tests/circleci) | How we test using CircleCI |
-| [Mocks](docs/tests/mocks) | Explanation of how to test using mocked data |
-| [GenericPolling Playbook](docs/genericpolling) | Explanation of how and when to use the GenericPolling playbook |
-| [Release Notes](docs/release_notes) | Explanation of our content release notes conventions |
-| [Debugging](docs/Debugging)| Explanation of how best to debug Demisto integrations and scripts|
-| [Long Running Containers](docs/long_running_containers)|Explanation of using long running containers to run specific processes in an integration forever
-| [Test Playbook](docs/test_playbook)| Explanation of how to test your integration using a playbook
-| [Playbook Conventions](docs/playbook_conventions)|Conventions and standards for our playbooks
-
 ---
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com).
 
