@@ -681,9 +681,7 @@ def main():
     default_user = demisto.params().get('default_user')
 
     if len(auth_and_token_url) != 2:
-        # token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
-        token_retrieval = \
-            'https://us-central1-oproxy-dev.cloudfunctions.net/calendar_graph_ProvideAccessTokenFunction'  # todo: prod
+        token_retrieval = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
     else:
         token_retrieval = auth_and_token_url[1]
 
