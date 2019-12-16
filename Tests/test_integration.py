@@ -396,7 +396,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
                                                         prints_manager=prints_manager
                                                         )
         if module_instance is None:
-            prints_manager.add_print_job('Failed to create instance', print_error, thread_index)
+            prints_manager.add_print_job('Failed to create instance', print_error, thread_index) # disable-secrets-detection
             __delete_integrations_instances(client, module_instances, thread_index=thread_index,
                                             prints_manager=prints_manager)
             return False, -1
@@ -415,7 +415,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
     investigation_id = incident['investigationId']
     if investigation_id is None or len(investigation_id) == 0:
         prints_manager.add_print_job('Failed to get investigation id of incident:' + incident,
-                                     print_error, thread_index)
+                                     print_error, thread_index) # disable-secrets-detection
         return False, -1
 
     prints_manager.add_print_job('Investigation ID: {}'.format(investigation_id), print, thread_index)
