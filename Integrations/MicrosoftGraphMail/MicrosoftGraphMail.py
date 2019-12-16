@@ -1,11 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Union, Optional, Any
+from typing import Union, Optional
 
 ''' IMPORTS '''
 import requests
-import os
 import binascii
 
 # Disable insecure warnings
@@ -15,13 +14,10 @@ requests.packages.urllib3.disable_warnings()
 PARAMS = demisto.params()
 NO_OPROXY = demisto.params().get('no_oproxy', False)
 TENANT_ID = PARAMS.get('tenant_id')
-AUTH_AND_TOKEN_URL = PARAMS.get('auth_id', '').split('@')
+AUTH_AND_TOKEN_URL = PARAMS.get('auth_id', '')
 AUTH_ID = AUTH_AND_TOKEN_URL[0]
 ENC_KEY = PARAMS.get('enc_key')
-if len(AUTH_AND_TOKEN_URL) != 2:
-    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
-else:
-    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
+
 # Remove trailing slash to prevent wrong URL path to service
 URL = PARAMS.get('url', '')
 SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
@@ -31,11 +27,7 @@ APP_NAME = 'ms-graph-mail'
 
 USE_SSL = not PARAMS.get('insecure', False)
 # Remove proxy if not set to true in params
-if not PARAMS.get('proxy'):
-    os.environ.pop('HTTP_PROXY', '')
-    os.environ.pop('HTTPS_PROXY', '')
-    os.environ.pop('http_proxy', '')
-    os.environ.pop('https_proxy', '')
+PROXY = handle_proxy()
 
 CONTEXT_FOLDER_PATH = 'MSGraphMail.Folders(val.ID && val.ID === obj.ID)'
 CONTEXT_COPIED_EMAIL = 'MSGraphMail.MovedEmails(val.ID && val.ID === obj.ID)'
@@ -49,62 +41,36 @@ FOLDER_MAPPING = {
     'totalItemCount': 'TotalItemCount'
 }
 
+
+MS_CLIENT = None
+
+
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method: str, url_suffix: str = '', params: dict = None, data: dict = None, odata: str = None,
-                 url: str = None, resp_type: str = 'json', json_data: dict = None) -> Any:
-    """
-    A wrapper for requests lib to send our requests and handle requests and responses better
-    Headers to be sent in requests
+def get_client(base_url, auth_id, tenant_id, enc_key, proxy, ok_codes, use_ssl, no_oproxy):
+    if no_oproxy:
+        tenant_id = tenant_id
+        app_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
+        ms_client = MicrosoftClient.from_self_deployed(tenant_id, auth_id,
+                                                       enc_key, app_url=app_url,
+                                                       scope='https://graph.microsoft.com/.default',
+                                                       base_url=base_url, verify=use_ssl, proxy=proxy,
+                                                       ok_codes=ok_codes)
+    else:
+        # params related to oproxy
+        auth_id_and_token_retrieval_url = auth_id.split('@')
+        auth_id = auth_id_and_token_retrieval_url[0]
+        if len(auth_id_and_token_retrieval_url) != 2:
+            token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+        else:
+            token_retrieval_url = auth_id_and_token_retrieval_url[1]
+        app_name = 'ms-graph-mail'
+        ms_client = MicrosoftClient.from_oproxy(auth_id, enc_key, token_retrieval_url, app_name,
+                                                tenant_id=tenant_id, base_url=base_url, verify=use_ssl,
+                                                proxy=proxy, ok_codes=ok_codes)
 
-    Args:
-        method (str): any restful method
-        url_suffix (str): suffix to add to BASE_URL
-        params (str): http params
-        data (dict): http body
-        resp_type (str): response type, json or text
-        json_data (dict) : http json
-        odata (str): odata query format
-        url (str): url to replace if need a new api call
-
-    Returns:
-        dict or str: requests.json() or string
-    """
-    auth_type = OPROXY_AUTH_TYPE if not NO_OPROXY else SELF_DEPLOYED_AUTH_TYPE
-    
-
-    token = get_access_token(auth_type, TENANT_ID, AUTH_ID, ENC_KEY, TOKEN_RETRIEVAL_URL)
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
-
-    if odata:
-        url_suffix += odata
-    res = requests.request(
-        method,
-        url if url else BASE_URL + url_suffix,
-        verify=USE_SSL,
-        params=params,
-        data=data,
-        headers=headers,
-        json=json_data,
-    )
-    # Handle error responses gracefully
-    if not (199 < res.status_code < 299):
-        error = error_parser(res)
-        return_error(f'Error in API call to Microsoft Graph Mail Integration [{res.status_code}] - {error}')
-    try:
-        if method.lower() != 'delete' and resp_type == 'json':  # the DELETE request returns nothing in response
-            return res.json()
-        elif resp_type == 'text':
-            return res.text  # noqa
-        return {}
-    except ValueError:
-        return_error('Could not decode response from API')
-        return {}  # return_error will exit
+    return ms_client
 
 
 def assert_pages(pages: Union[str, int]) -> int:
@@ -163,7 +129,7 @@ def pages_puller(response: dict, page_count: int) -> list:
         next_link = response.get('@odata.nextLink')
         if next_link:
             responses.append(
-                http_request('GET', url=next_link)
+                MS_CLIENT.http_request('GET', next_link)
             )
 
         else:
@@ -317,7 +283,7 @@ def list_mails(user_id: str, folder_id: str = '', search: str = None, odata: str
     if search:
         odata = f'?{odata}$search={search}' if odata else f'?$search={search}'
     suffix = with_folder if folder_id else no_folder
-    response = http_request('GET', suffix, odata=odata)
+    response = MS_CLIENT.http_request('GET', suffix + odata)
     return pages_puller(response, assert_pages(pages_to_pull))
 
 
@@ -354,7 +320,7 @@ def delete_mail(user_id: str, message_id: str, folder_id: str = None) -> bool:
     with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}'  # type: ignore
     no_folder = f'/users/{user_id}/messages/{message_id}'
     suffix = with_folder if folder_id else no_folder
-    http_request('DELETE', suffix)
+    MS_CLIENT.http_request('DELETE', suffix)
     return True
 
 
@@ -396,7 +362,7 @@ def get_attachment(message_id: str, user_id: str, attachment_id: str, folder_id:
     with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
                    f'messages/{message_id}/attachments/{attachment_id}')
     suffix = with_folder if folder_id else no_folder
-    response = http_request('GET', suffix)
+    response = MS_CLIENT.http_request('GET', suffix)
     return response
 
 
@@ -427,7 +393,7 @@ def get_message(user_id: str, message_id: str, folder_id: str = None, odata: str
                    f'/messages/{message_id}/')
 
     suffix = with_folder if folder_id else no_folder
-    response = http_request('GET', suffix, odata=odata)
+    response = MS_CLIENT.http_request('GET', suffix + odata)
 
     # Add user ID
     response['userId'] = user_id
@@ -469,7 +435,7 @@ def list_attachments(user_id: str, message_id: str, folder_id: str) -> dict:
     no_folder = f'/users/{user_id}/messages/{message_id}/attachments/'
     with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/attachments/'
     suffix = with_folder if folder_id else no_folder
-    return http_request('GET', suffix)
+    return MS_CLIENT.http_request('GET', suffix)
 
 
 def list_attachments_command(args):
@@ -511,7 +477,7 @@ def list_folders(user_id: str, limit: str = '20') -> dict:
         dict: Collection of folders under root folder
     """
     suffix = f'/users/{user_id}/mailFolders?$top={limit}'
-    return http_request('GET', suffix)
+    return MS_CLIENT.http_request('GET', suffix)
 
 
 def list_folders_command(args):
@@ -540,7 +506,7 @@ def list_child_folders(user_id: str, parent_folder_id: str, limit: str = '20') -
     """
     # for additional info regarding OData query https://docs.microsoft.com/en-us/graph/query-parameters
     suffix = f'/users/{user_id}/mailFolders/{parent_folder_id}/childFolders?$top={limit}'
-    return http_request('GET', suffix)
+    return MS_CLIENT.http_request('GET', suffix)
 
 
 def list_child_folders_command(args):
@@ -574,7 +540,7 @@ def create_folder(user_id: str, new_folder_name: str, parent_folder_id: str = No
         suffix += f'/{parent_folder_id}/childFolders'
 
     json_data = {'displayName': new_folder_name}
-    return http_request('POST', suffix, json_data=json_data)
+    return MS_CLIENT.http_request('POST', suffix, json_data=json_data)
 
 
 def create_folder_command(args):
@@ -606,7 +572,7 @@ def update_folder(user_id: str, folder_id: str, new_display_name: str) -> dict:
 
     suffix = f'/users/{user_id}/mailFolders/{folder_id}'
     json_data = {'displayName': new_display_name}
-    return http_request('PATCH', suffix, json_data=json_data)
+    return MS_CLIENT.http_request('PATCH', suffix, json_data=json_data)
 
 
 def update_folder_command(args):
@@ -632,7 +598,7 @@ def delete_folder(user_id: str, folder_id: str):
     """
 
     suffix = f'/users/{user_id}/mailFolders/{folder_id}'
-    return http_request('DELETE', suffix)
+    return MS_CLIENT.http_request('DELETE', suffix)
 
 
 def delete_folder_command(args):
@@ -657,7 +623,7 @@ def move_email(user_id: str, message_id: str, destination_folder_id: str) -> dic
 
     suffix = f'/users/{user_id}/messages/{message_id}/move'
     json_data = {'destinationId': destination_folder_id}
-    return http_request('POST', suffix, json_data=json_data)
+    return MS_CLIENT.http_request('POST', suffix, json_data=json_data)
 
 
 def move_email_command(args):
@@ -690,7 +656,7 @@ def get_email_as_eml(user_id: str, message_id: str) -> str:
     """
 
     suffix = f'/users/{user_id}/messages/{message_id}/$value'
-    return http_request('GET', suffix, resp_type='text')
+    return MS_CLIENT.http_request('GET', suffix, resp_type='text')
 
 
 def get_email_as_eml_command(args):
@@ -706,15 +672,20 @@ def get_email_as_eml_command(args):
     demisto.results(file_result)
 
 
+from microsoft_api import MicrosoftClient  # noqa: E402
+
+
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     command = demisto.command()
     args = demisto.args()
     LOG(f'Command being called is {command}')
 
+    global MS_CLIENT
+    MS_CLIENT = get_client(BASE_URL, AUTH_ID, TENANT_ID, ENC_KEY, PROXY, (200, 201, 202), USE_SSL, NO_OPROXY)
+
     try:
         if command == 'test-module':
-            get_token()
             demisto.results('ok')
         elif command in ('msgraph-mail-list-emails', 'msgraph-mail-search-email'):
             list_mails_command(args)

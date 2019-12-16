@@ -1,5 +1,5 @@
-from CommonServerPython import *
-import demistomock as demisto
+from CommonServerPython import *  # TODO: remove
+import demistomock as demisto  # TODO: remove
 import requests
 import base64
 from typing import Union, Dict, List
@@ -11,11 +11,15 @@ SELF_DEPLOYED_AUTH_TYPE = 'self_deployed'
 
 class MicrosoftClient(BaseClient):
 
-    def __init__(self, auth_type: str, tenant_id: str = '', auth_id: str = '', enc_key: str = '',
+    def __init__(self, tenant_id: str = '', auth_id: str = '', enc_key: str = '',
                  token_retrieval_url: str = '', app_name: str = '', refresh_token: str = '',
                  client_id: str = '', client_secret: str = '', scope: str = '', resource: str = '', app_url: str = '',
-                 verify: bool = True, *args, **kwargs):
-        super().__init__(verify=verify, *args, **kwargs)  # type: ignore
+                 verify: bool = True, auth_type: str = OPROXY_AUTH_TYPE, *args, **kwargs):
+        """
+        ￿Microsoft Client class that implements logic to authentiate with oproxy or self deployed applications.
+        It also provides common logic to handle responses from Microsoft.
+        """
+        super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
         self.auth_type = auth_type
         self.app_url = app_url
         self.tenant_id = tenant_id
@@ -28,26 +32,50 @@ class MicrosoftClient(BaseClient):
         self.client_secret = client_secret
         self.scope = scope
         self.resource = resource
-        self.use_ssl = verify
+        self.verify = verify
 
     @classmethod
     def from_oproxy(cls, auth_id: str, enc_key: str, token_retrieval_url: str, app_name: str,
                     tenant_id: str = '', refresh_token: str = '', *args, **kwargs):
-
-        return cls(OPROXY_AUTH_TYPE, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key,  # type: ignore
-                   token_retrieval_url=token_retrieval_url,
+        """
+        Args:
+            auth_id: Authentication ID
+            enc_key: Encryption key
+            token_retrieval_url: The oproxy url to use
+            app_name: The application name in oproxy
+            tenant_id: The tenant ID
+            refresh_token: The current refresh token
+        Returns:
+            An instance of Microsoft Client with oproxy authentication.
+        """
+        return cls(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key,  # type: ignore[misc]
+                   token_retrieval_url=token_retrieval_url, auth_type=OPROXY_AUTH_TYPE,
                    app_name=app_name, refresh_token=refresh_token, *args, **kwargs)
 
     @classmethod
     def from_self_deployed(cls, tenant_id: str, client_id: str, client_secret: str, scope: str = '', resource: str = '',
                            app_url: str = '', *args, **kwargs):
-        return cls(SELF_DEPLOYED_AUTH_TYPE, tenant_id=tenant_id, client_id=client_id,  # type: ignore
-                   client_secret=client_secret,
+        """
+        Args:
+            tenant_id: The self deployed tenant ID
+            client_id: The self deployed client ID
+            client_secret: The self deployed client secret
+            scope: The self deployed application scope
+            resource: The self deployed application resource
+            app_url: The self deployed application request URL
+        Returns:
+            An instance of Microsoft Client with self deployed application authentication.
+        """
+        return cls(tenant_id=tenant_id, client_id=client_id,  # type: ignore[misc]
+                   client_secret=client_secret, auth_type=SELF_DEPLOYED_AUTH_TYPE,
                    scope=scope, resource=resource, app_url=app_url, *args, **kwargs)
 
     def http_request(self, *args, **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
+
+        Returns:
+            requests.Response: The http response
         """
         token = self._get_access_token()
         headers = {
@@ -55,7 +83,7 @@ class MicrosoftClient(BaseClient):
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
-        return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore
+        return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
 
     @staticmethod
     def camel_case_to_readable(cc: Union[str, Dict], fields_to_drop: List[str] = None) -> Union[str, Dict]:
@@ -67,7 +95,7 @@ class MicrosoftClient(BaseClient):
             fields_to_drop: keys to drop from input dictionary
 
         Returns:
-            A Camel Cased string of Dict.
+            union: A Camel Cased string of Dict.
         """
         if fields_to_drop is None:
             fields_to_drop = []
@@ -91,7 +119,7 @@ class MicrosoftClient(BaseClient):
             fields_to_drop: keys to drop from input dictionary
 
         Returns:
-            A connectedCamelCased string of Dict.
+            union: A connectedCamelCased string of Dict.
         """
         if fields_to_drop is None:
             fields_to_drop = []
@@ -105,12 +133,13 @@ class MicrosoftClient(BaseClient):
 
     def _get_access_token(self):
         """
-        Obtains access and refresh token from Oproxy server. Access token is used and stored in the integration context
+        Obtains access and refresh token from oproxy server or just a token from a self deployed app.
+        Access token is used and stored in the integration context
         until expiration time. After expiration, new refresh token and access token are obtained and stored in the
         integration context.
 
-        :return: Access token that will be added to authorization header
-        :rtype: ``str``
+        Returns:
+            str: Access token that will be added to authorization header.
         """
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get('access_token')
@@ -142,6 +171,12 @@ class MicrosoftClient(BaseClient):
         return access_token
 
     def _oproxy_authorize(self):
+        """
+        Gets a token by authorizing with oproxy.
+
+        Returns:
+            tuple: An access token, its expiry and refresh token.
+        """
         content = self.refresh_token or self.tenant_id
         oproxy_response = requests.post(
             self.token_retrieval_url,
@@ -150,7 +185,7 @@ class MicrosoftClient(BaseClient):
                 'registration_id': self.auth_id,
                 'encrypted_token': self.get_encrypted(content, self.enc_key)
             },
-            verify=self.use_ssl
+            verify=self.verify
         )
 
         if oproxy_response.status_code not in {200, 201}:
@@ -184,6 +219,12 @@ class MicrosoftClient(BaseClient):
                 parsed_response.get('refresh_token'))
 
     def _get_self_deployed_token(self):
+        """
+        Gets a token by authorizing a self deployed Azure application.
+
+        Returns:
+            tuple: An access token and its expiry.
+        """
         if not self.app_url:
             url = f'https://login.windows.net/{self.tenant_id}/oauth2/token'
         else:
@@ -196,13 +237,13 @@ class MicrosoftClient(BaseClient):
 
         if self.scope:
             data['scope'] = self.scope
-        else:
+        if self.resource:
             data['resource'] = self.resource
 
         body: dict = {}
         try:
-            response = requests.post(url, data, verify=self.use_ssl)
-            if response.status_code != 200:
+            response = requests.post(url, data, verify=self.verify)
+            if response.status_code not in {200, 201}:
                 return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
                              f' body: {self.error_parser(response)}')
             body = response.json()
@@ -228,7 +269,7 @@ class MicrosoftClient(BaseClient):
         try:
             response = error.json()
             inner_error = response.get('error', {})
-            if isinstance(error, dict):
+            if isinstance(inner_error, dict):
                 err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
             else:
                 err_str = inner_error
@@ -257,15 +298,12 @@ class MicrosoftClient(BaseClient):
     def get_encrypted(content: str, key: str) -> str:
         """
         Encrypts content with encryption key.
+        Args:
+            content: Content to encrypt
+            key: encryption key from oproxy
 
-        :type content: ``str``
-        :param content: Content to encrypt
-
-        :type key: ``str``
-        :param key: encryption key from Oproxy
-
-        :return: Encrypted content
-        :rtype: ``timestamp``
+        Returns:
+            timestamp: Encrypted content
         """
 
         def create_nonce():
@@ -274,15 +312,12 @@ class MicrosoftClient(BaseClient):
         def encrypt(string, enc_key):
             """
             Encrypts string input with encryption key.
+            Args:
+                string: String to encrypt
+                enc_key: Encryption key
 
-            :type string: ``str``
-            :param string: String to encrypt
-
-            :type enc_key: ``str``
-            :param enc_key: Encryption key
-
-            :return: Encrypted value
-            :rtype: ``bytes``
+            Returns:
+                bytes: Encrypted value
             """
             # String to bytes
             enc_key = base64.b64decode(enc_key)

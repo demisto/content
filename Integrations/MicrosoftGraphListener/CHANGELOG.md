@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Allow authenticating with a self deployed Azure application.
 
 ## [19.11.1] - 2019-11-26
 #### New Integration
