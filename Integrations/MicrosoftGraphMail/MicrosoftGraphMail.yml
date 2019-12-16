@@ -1,6 +1,6 @@
 category: Email Gateway
 commonfields:
-  id: MicrosoftGraphMail_copy
+  id: MicrosoftGraphMail
   version: -1
 configuration:
 - defaultvalue: https://graph.microsoft.com
@@ -35,8 +35,8 @@ configuration:
   type: 8
 description: Microsoft Graph lets your app get authorized access to a user's Outlook
   mail data in a personal or organization account.
-display: MicrosoftGraphMail_copy
-name: MicrosoftGraphMail_copy
+display: MicrosoftGraphMail
+name: MicrosoftGraphMail
 script:
   commands:
   - arguments:
