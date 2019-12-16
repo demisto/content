@@ -11,7 +11,7 @@ from Tests.test_dependencies import get_test_dependencies, get_tested_integratio
 import demisto_client.demisto_api
 from slackclient import SlackClient
 import _thread
-from typing import List
+from typing import List, Any
 
 from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.mock_server import MITMProxy, AMIConnection
@@ -92,6 +92,8 @@ class PrintJob:
 
 
 class ParallelPrintsManager:
+    threads_print_jobs: List[List[PrintJob]]
+
     def __init__(self, number_of_threads):
         self.threads_print_jobs = [[] for i in range(number_of_threads)]
         self.print_lock = _thread.allocate_lock()
