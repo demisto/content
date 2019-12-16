@@ -11,7 +11,8 @@ from Tests.test_dependencies import get_test_dependencies, get_tested_integratio
 import demisto_client.demisto_api
 from slackclient import SlackClient
 import _thread
-from typing import List, Any
+# from typing import List, Any
+from __future__ import print_function
 
 from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.mock_server import MITMProxy, AMIConnection
