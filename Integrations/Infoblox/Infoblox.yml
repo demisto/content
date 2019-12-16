@@ -21,9 +21,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Infoblox connects to your NIOS appliance. It allows getting metadata
-  about IPs in your network and managing the DNS Firewall by configuring RPZs and
-  defining RPZ rules to block DNS resolution for malicious or unauthorized hostnames,
+description: Infoblox enables you to receive metadata
+  about IPs in your network and manages the DNS Firewall by configuring RPZs. It
+  defines RPZ rules to block DNS resolution for malicious or unauthorized hostnames,
   or redirect clients to a walled garden by substituting responses.
 display: Infoblox
 name: Infoblox
