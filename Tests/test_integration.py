@@ -61,16 +61,25 @@ def __get_integration_config(client, integration_name):
 
 # __test_integration_instance
 def __test_integration_instance(client, module_instance):
-    try:
-        response_data, response_code, _ = demisto_client.generic_request_func(self=client, method='POST',
-                                                                              path='/settings/integration/test',
-                                                                              body=module_instance)
-    except ApiException as conn_err:
-        print_error(
-            'Failed to test integration instance, error trying to communicate with demisto '
-            'server: {} '.format(
-                conn_err))
-        return False
+    connection_retries = 3
+    response_code = 0
+    print_warning("trying to connect.")
+    for i in range(connection_retries):
+        try:
+            response_data, response_code, _ = demisto_client.generic_request_func(self=client, method='POST',
+                                                                                  path='/settings/integration/test',
+                                                                                  body=module_instance,
+                                                                                  _request_timeout=120)
+            break
+        except ApiException as conn_err:
+            print_error(
+                'Failed to test integration instance, error trying to communicate with demisto '
+                'server: {} '.format(
+                    conn_err))
+            return False
+        except urllib3.exceptions.ReadTimeoutError:
+            print_warning("Could not connect. Trying to connect for the {} time".format(i + 1))
+
     if int(response_code) != 200:
         print_error('Integration-instance test ("Test" button) failed.\nBad status code: ' + str(
             response_code))

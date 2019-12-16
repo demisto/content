@@ -33,13 +33,13 @@ def get_integrations(secret_conf_path):
 
 
 def test_instances(secret_conf_path, server, username, password):
-    c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
     integrations = get_integrations(secret_conf_path)
 
     instance_ids = []
     failed_integration = []
     integrations_counter = 0
     for integration in integrations:
+        c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
         integrations_counter += 1
         integration_name = integration.get('name')
         integration_instance_name = integration.get('instance_name', '')
