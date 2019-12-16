@@ -247,7 +247,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations, thr
             prints_manager.add_print_job(err, print, thread_index)
         if time.time() > timeout:
             error_message = 'Got timeout for searching incident with id {}, ' \
-                        'got {} incidents in the search'.format(inc_id, incidents['total'])
+                            'got {} incidents in the search'.format(inc_id, incidents['total'])
             prints_manager.add_print_job(error_message, print_error, thread_index)
             return False, -1
 
@@ -347,8 +347,8 @@ def __print_investigation_error(client, playbook_id, investigation_id, color=LOG
         for entry in entries:
             if entry['type'] == ENTRY_TYPE_ERROR:
                 if entry['parentContent']:
-                    prints_manager.add_print_job('\t- Command: ' + entry['parentContent'].encode('utf-8'), print_color, thread_index,
-                                                 message_color=color)
+                    prints_manager.add_print_job('\t- Command: ' + entry['parentContent'].encode('utf-8'), print_color,
+                                                 thread_index, message_color=color)
 
                 prints_manager.add_print_job('\t- Body: ' + entry['contents'].encode('utf-8'), print_color,
                                              thread_index,
@@ -396,7 +396,8 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
                                                         prints_manager=prints_manager
                                                         )
         if module_instance is None:
-            prints_manager.add_print_job('Failed to create instance', print_error, thread_index) # disable-secrets-detection
+            msg = 'Failed to create instance'
+            prints_manager.add_print_job(msg, print_error, thread_index)  # disable-secrets-detection
             __delete_integrations_instances(client, module_instances, thread_index=thread_index,
                                             prints_manager=prints_manager)
             return False, -1
@@ -415,7 +416,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
     investigation_id = incident['investigationId']
     if investigation_id is None or len(investigation_id) == 0:
         incident_id_not_found_msg = 'Failed to get investigation id of incident:' + incident
-        prints_manager.add_print_job(incident_id_not_found_msg, print_error, thread_index) # disable-secrets-detection
+        prints_manager.add_print_job(incident_id_not_found_msg, print_error, thread_index)  # disable-secrets-detection
         return False, -1
 
     prints_manager.add_print_job('Investigation ID: {}'.format(investigation_id), print, thread_index)

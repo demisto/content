@@ -1,6 +1,7 @@
 import json
 import math
 
+
 class TestVertex:
     def __init__(self, test_name):
         self.neighbors = {}
@@ -22,7 +23,6 @@ class TestVertex:
         return tests_in_component
 
 
-
 class TestsGraph:
     def __init__(self):
         self.test_vertices = {}
@@ -35,7 +35,6 @@ class TestsGraph:
                 new_test_vertex = TestVertex(playbook_name_in_record)
                 self.test_vertices[playbook_name_in_record] = new_test_vertex
 
-
     def add_test_graph_neighbors(self, tests_data):
         integration_to_tests_mapping = get_integration_to_tests_mapping(tests_data)
         for integration_name in integration_to_tests_mapping:
@@ -44,7 +43,7 @@ class TestsGraph:
                 first_test_name = tests_using_integration[i]
                 first_test_vertex = self.test_vertices[first_test_name]
 
-                for j in range(i+1, len(tests_using_integration)):
+                for j in range(i + 1, len(tests_using_integration)):
                     second_test_name = tests_using_integration[j]
                     second_test_vertex = self.test_vertices[second_test_name]
 
@@ -67,7 +66,8 @@ class TestsGraph:
         tests_data = json.loads(conf_json_string)["tests"]
         dependent_tests = get_test_dependencies(tests_file_path)[0]
 
-        dependent_tests_data = [test_record for test_record in tests_data if test_record.get("playbookID") in dependent_tests]
+        dependent_tests_data = [test_record for test_record in tests_data
+                                if test_record.get("playbookID") in dependent_tests]
 
         self.add_test_graph_vertices(dependent_tests_data)
         self.add_test_graph_neighbors(dependent_tests_data)
@@ -81,7 +81,7 @@ def get_integration_to_tests_mapping(tests_data):
         record_integrations = get_tested_integrations(test_playbook_record)
         for integration_name in record_integrations:
             if integration_name in integration_to_tests_mapping:
-                if not record_playbook_name in integration_to_tests_mapping[integration_name]:
+                if record_playbook_name not in integration_to_tests_mapping[integration_name]:
                     integration_to_tests_mapping[integration_name].append(record_playbook_name)
             else:
                 integration_to_tests_mapping[integration_name] = [record_playbook_name]
@@ -111,9 +111,10 @@ def get_integration_dependencies():
             else:
                 integration_tests_count[integration_name] = 1
 
-    dependent_integrations = [integration_name for integration_name in integration_tests_count if integration_tests_count[integration_name] > 1]
-    independent_integrations = [integration_name for integration_name in integration_tests_count if integration_tests_count[integration_name] <= 1]
-    print("Number of dependent integrations is: {0}, number of independent is: {1}".format(len(dependent_integrations), len(independent_integrations)))
+    dependent_integrations = [integration_name for integration_name in integration_tests_count
+                              if integration_tests_count[integration_name] > 1]
+    independent_integrations = [integration_name for integration_name in integration_tests_count
+                                if integration_tests_count[integration_name] <= 1]
     return dependent_integrations, independent_integrations
 
 
@@ -131,12 +132,12 @@ def get_test_dependencies(tests_file_path):
         playbook = test_record.get("playbookID", None)
         if playbook not in all_tests:
             all_tests.append(playbook)
-        dependent_integrations_used = [integration for integration in integrations_used if integration in dependent_integrations]
+        dependent_integrations_used = [integration for integration in integrations_used
+                                       if integration in dependent_integrations]
         if dependent_integrations_used and playbook not in dependent_tests:
             dependent_tests.append(playbook)
 
     independent_tests = [test for test in all_tests if test not in dependent_tests]
-    print("Number of dependent tests: {0}, number of total tests: {1}".format(len(dependent_tests), len(all_tests)))
     return dependent_tests, independent_tests, all_tests
 
 
@@ -149,7 +150,7 @@ def get_dependent_integrations_clusters_data(tests_file_path):
 def get_tests_allocation(number_of_instances, tests_file_path):
     dependent_tests, independent_tests, all_tests = get_test_dependencies(tests_file_path)
     dependent_tests_clusters = get_dependent_integrations_clusters_data(tests_file_path)
-    dependent_tests_clusters.sort(key=len, reverse=True) # Sort the clusters from biggest to smallest
+    dependent_tests_clusters.sort(key=len, reverse=True)  # Sort the clusters from biggest to smallest
     tests_allocation = []
     number_of_tests_left = len(all_tests)
 
@@ -198,10 +199,3 @@ def get_tests_allocation(number_of_instances, tests_file_path):
         tests_allocation.append(current_allocation)
 
     return tests_allocation
-
-
-#get_test_dependencies()
-#tests_graph = TestsGraph()
-#clusters = get_dependent_integrations_clusters_data()
-#cluster_size_arr = [len(cluster) for cluster in clusters]
-
