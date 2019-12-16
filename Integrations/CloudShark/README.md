@@ -46,7 +46,7 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
 </ol>
 <h3>1. cloudshark-upload</h3>
 <hr>
-<p>Upload a capture file to CloudShark</p>
+<p>Upload a capture file into CS Enterprise</p>
 <h5>Base Command</h5>
 <p>
   <code>cloudshark-upload</code>
@@ -80,7 +80,7 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
     </tr>
     <tr>
       <td>filename</td>
-      <td>Specify the filename of the capture in CloudShark</td>
+      <td>The filename of the capture in CS Enterprise</td>
       <td>Optional</td>
     </tr>
   </tbody>
@@ -106,12 +106,12 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
     <tr>
       <td>URL.Data</td>
       <td>string</td>
-      <td>URL to the capture on CloudShark</td>
+      <td>URL of the capture file in CS Enterprise</td>
     </tr>
     <tr>
       <td>CloudShark.CaptureID</td>
       <td>string</td>
-      <td>Capture id of the capture on CloudShark</td>
+      <td>Capture ID of the capture in CS Enterprise</td>
     </tr>
   </tbody>
 </table>
@@ -146,7 +146,7 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
 
 <h3>2. cloudshark-info</h3>
 <hr>
-<p>Retrieve meta-infomation of capture on CloudShark</p>
+<p>Retrieve meta-information about a capture file from CS Enterprise</p>
 <h5>Base Command</h5>
 <p>
   <code>cloudshark-info</code>
@@ -170,7 +170,7 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
   <tbody>
     <tr>
       <td>capture_id</td>
-      <td>Capture id of the capture on CloudShark</td>
+      <td>Capture ID of the capture in CS Enterprise</td>
       <td>Required</td>
     </tr>
   </tbody>
@@ -322,7 +322,7 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
 
 <h3>3. cloudshark-download</h3>
 <hr>
-<p>Download a capture file from CloudShark</p>
+<p>Download a capture file from CS Enterprise</p>
 <h5>Base Command</h5>
 <p>
   <code>cloudshark-download</code>
@@ -346,7 +346,7 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
   <tbody>
     <tr>
       <td>capture_id</td>
-      <td>Capture id of the capture on CloudShark</td>
+      <td>Capture ID of the capture in CS Enterprise</td>
       <td>Optional</td>
     </tr>
   </tbody>
@@ -395,7 +395,7 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
 
 <h3>4. cloudshark-delete</h3>
 <hr>
-<p>Delete capture file from CloudShark</p>
+<p>Delete a capture file from CS Enterprise</p>
 <h5>Base Command</h5>
 <p>
   <code>cloudshark-delete</code>
@@ -419,7 +419,7 @@ CloudShark with upload, info, download, and delete permissions enabled on it</li
   <tbody>
     <tr>
       <td>capture_id</td>
-      <td>Capture id of the capture on CloudShark</td>
+      <td>Delete a capture file from CS Enterprise</td>
       <td>Optional</td>
     </tr>
   </tbody>
