@@ -1,36 +1,37 @@
 <h2>Overview</h2>
 <p>
-CloudShark is a collaboration platform focused on PCAP analysis for networking
-and security teams, CS Enterprise delivers secure storage, organization, access
-control, and powerful analysis tools in an elegant, responsive web interface.
+Designed for networking and security teams, CS Enterprise is a collaboration
+platform focused on network packet capture (PCAP) analysis. CS Enterprise
+delivers secure storage, organization, access control, and powerful analysis
+tools in an elegant, responsive browser-based interface.
 </p>
 <h2>Use Cases</h2>
 <ul>
-<li>Upload capture to analyze on web platform</li>
-<li>Collaborate on analysis with others</li>
-<li>Collect meta-information about capture file</li>
-<li>Manage capture files on CloudShark</li>
+<li>Upload a network capture for analysis in your browser</li>
+<li>Collaborate on network pcap analysis by easily sharing captures with others via a URL</li>
+<li>Collect meta-information about a capture file</li>
+<li>Manage and organize capture files in CS Enterprise</li>
 </ul>
-<h2>To set up CloudShark to work with Demisto</h2>
-You will need the following before setting up the CloudShark integration on
+<h2>To set up CS Enterprise to work with Demisto</h2>
+You will need the following before setting up the CS Enterprise integration on
 Demisto:
 <ul>
-<li><b>CloudShark URL:</b> The URL of the CloudShark instance</li>
-<li><b><a href="https://support.cloudshark.io/api/">API Token</a>:</b> API Token from
-CloudShark with upload, info, download, and delete permissions enabled</li>
+<li><b>CS Enterprise URL</b> The URL of your CS Enterprise instance</li>
+<li><b><a href="https://support.cloudshark.io/api/">API Token</a>:</b> An API Token from
+CloudShark with upload, info, download, and delete permissions enabled on it</li>
 </ul>
-<h2> Configure the CloudShark Integration on Demisto</h2>
+<h2> Configure the CS Enterprise Integration on Demisto</h2>
 <ol type="1">
-  <li>Go to <b>Settings > Integrations > Servers & Services.</b></li>
+  <li>Go to <b>Settings > Integrations > Servers & Services</b></li>
   <li>Search for CloudShark</li>
   <li>Click Add instance to create and configure a new integration
-  instance.</li>
+  instance</li>
   <ul>
-    <li><b>Name:</b> a textual name for the integration instance.</li>
-    <li><b>CloudShark URL:</b> The URL of the CloudShark Instance</li>
-    <li><b>API Token:</b> CloudShark API token</li>
+    <li><b>Name:</b> a textual name for the integration instance</li>
+    <li><b>CS Enterprise URL:</b> The URL of your CS Enterprise Instance</li>
+    <li><b>API Token:</b> Your API token</li>
   </ul>
-  <li>Click <b>Test</b> to validate the CloudShark URL</li>
+  <li>Click <b>Test</b> to validate the URL</li>
 </ol>
 <h2>Commands</h2>
 <p>

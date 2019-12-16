@@ -1,8 +1,8 @@
-CloudShark is a web-based packet capture analysis platform built for collaboration. This integration allows customers to upload, open and manage pcap files using CloudShark.
+CS Enterprise is a browser-based packet capture analysis platform built for collaboration and organization. This integration provides the ability to upload, manage, and share pcap files with your team using CS Enterprise.
 
-To use this all of the commands in this integration you will need an  [API Token](https://support.cloudshark.io/api/) # disable-secrets-detection with the following permisstions enabled:
+To use all the commands provided by this integration you will need to create an  [API Token](https://support.cloudshark.io/api/) with the following permissions enabled: <!-- #disable-secrets-detection -->
 
 * Get Info/Annotations
-* Delete captures files
+* Delete capture files
 * Download original
 * Upload capture files

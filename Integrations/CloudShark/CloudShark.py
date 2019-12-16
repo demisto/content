@@ -39,7 +39,7 @@ def http(method, url_suffix, params=None, data=None, files=None):
         else:
             return_error('Error in API call [%d] - %s: %s ' % (response.status_code, response.reason, response.content))
     except requests.exceptions.ConnectionError as err:
-        return_error("Could not connect to CloudShark URL ", str(err))
+        return_error("Could not connect to CS Enterprise URL ", str(err))
     except requests.exceptions.MissingSchema as err:
         return_error("Invalid Schema. URL must start with http:// or https://")
     except requests.exceptions.InvalidSchema as err:
@@ -201,6 +201,7 @@ try:
             return_error("Must enter API Token")
         response = http("GET", "/search/")
         if response.status_code == 200 or response.status_code == 403:
+            # Token is valid but search method not allowed
             demisto.results('ok')
         else:
             demisto.results('Error: Server returned %s: %s' % (response.status_code, response.reason))
