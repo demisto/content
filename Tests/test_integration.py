@@ -8,6 +8,7 @@ import ast
 import requests.exceptions
 from demisto_client.demisto_api.rest import ApiException
 import demisto_client
+from __future__ import print_function
 
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 from Tests.scripts.constants import PB_Status
