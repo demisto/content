@@ -1,0 +1,1 @@
+[Akamai’s security](https://www.akamai.com/us/en/products/security/) solutions provide protection for your websites, applications, APIs, and users.

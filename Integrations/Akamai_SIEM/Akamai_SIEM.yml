@@ -1,0 +1,185 @@
+category: Analytics & SIEM
+commonfields:
+  id: Akamai WAF SIEM
+  version: -1
+configuration:
+- defaultvalue: https://akab-hnanog6ge5or6biz-ukavvo4zvqliqhlw.cloudsecurity.akamaiapis.net
+  display: Server URL (e.g. https://example.net)
+  name: host
+  required: true
+  type: 0
+- display: Client token
+  name: clientToken
+  required: true
+  type: 4
+- display: Access token
+  name: accessToken
+  required: true
+  type: 4
+- display: Client secret
+  name: clientSecret
+  required: true
+  type: 4
+- defaultvalue: '50170'
+  display: Config ids to fetch
+  name: configIds
+  required: true
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 1 hours
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetchTime
+  required: false
+  type: 0
+- defaultvalue: '20'
+  display: Fetch limit (min 20)
+  name: fetchLimit
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Get security event from Akamai Web Application Firewall (WAF) service.
+display: Akamai WAF SIEM
+name: Akamai WAF SIEM
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Unique identifier for each security configuration. To report on
+        more than one configuration, separate integer identifiers with semicolons,
+        e.g. 12892;29182;82912.
+      isArray: false
+      name: config_ids
+      required: true
+      secret: false
+    - default: false
+      description: This token denotes the last message. If specified, this operation
+        fetches only security events that have occurred from offset. This is a required
+        parameter for offset mode and you can’t use it in time-based requests.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Defines the approximate maximum number of security events each
+        fetch returns
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The start of a specified time range, expressed in Unix epoch seconds.
+      isArray: false
+      name: from_epoch
+      required: false
+      secret: false
+    - default: false
+      description: The end of a specified time range, expressed in Unix epoch seconds.
+      isArray: false
+      name: to_epoch
+      required: false
+      secret: false
+    - default: false
+      description: period timestamp (<number> <time unit>, e.g., 12 hours, 7 days
+        of events
+      isArray: false
+      name: period
+      required: false
+      secret: false
+    deprecated: false
+    description: Get security events from Akamai WAF
+    execution: false
+    name: akamai-siem-get-events
+    outputs:
+    - contextPath: Akamai.SIEM.AttackData.clientIP
+      description: IP involved in the attack.
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.ConfigID
+      description: Unique identifier of security configuration involved
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.PolicyID
+      description: Unique identifier of Policy configuration involved
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.PolicyID
+      description: Policy ID trigered
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.Geo.Asn
+      description: Geographic ASN location of involved IP
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.Geo.City
+      description: City of involved IP
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.Geo.Continent
+      description: Continent of involved IP
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.Geo.Country
+      description: Country of involved IP
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.Geo.RegionCode
+      description: Region code of involved IP
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.HttpMessage.Bytes
+      description: HTTP messege size in bytes
+      type: Number
+    - contextPath: Akamai.SIEM.AttackData.HttpMessage.Host
+      description: HTTP messege host
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.HttpMessage.Method
+      description: HTTP messege method
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.HttpMessage.Path
+      description: HTTP messege path
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.HttpMessage.Port
+      description: HTTP messege port
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.HttpMessage.Protocol
+      description: HTTP messege protocol
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.HttpMessage.Query
+      description: HTTP messege query
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.HttpMessage.RequestHeaders
+      description: HTTP messege request headers
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.HttpMessage.RequestID
+      description: HTTP messege request ID
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.HttpMessage.ResponseHeaders
+      description: HTTP messege respose headers
+      type: String
+    - contextPath: Akamai.SIEM.AttackData.HttpMessage.Start
+      description: HTTP messege epoch start time
+      type: Date
+    - contextPath: Akamai.SIEM.AttackData.HttpMessage.Status
+      description: HTTP messege status code
+      type: Number
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948"."'
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located
+      type: String
+  dockerimage: demisto/akamai:1.0.0.5063
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- Akamai_WAF_SIEM-Test
