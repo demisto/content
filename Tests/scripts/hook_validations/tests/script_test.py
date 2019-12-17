@@ -10,7 +10,7 @@ def test_removed_docker_image_on_existing_script():
         'no': 'dockerimage'
     }
 
-    assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
+    assert not validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
 
 
 def test_updated_docker_image_on_existing_script():
