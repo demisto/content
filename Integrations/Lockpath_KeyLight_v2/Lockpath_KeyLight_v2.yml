@@ -3,19 +3,32 @@ commonfields:
   id: Lockpath KeyLight v2
   version: -1
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- display: Server URL in the form of https://server:<port> (e.g. https://192.168.0.1:4443)
   name: server
-  required: true
-  type: 0
-- defaultvalue: '4443'
-  display: Port
-  name: port
   required: true
   type: 0
 - display: Credentials
   name: credentials
   required: true
   type: 9
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Name of component to fetch from
+  name: component_name
+  required: false
+  type: 0
+- defaultvalue: Created At
+  display: Name of field to fetch by
+  name: filter_field
+  required: false
+  type: 0
+- defaultvalue: '50'
+  display: Fetch Limit
+  name: fetch_limit
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -28,23 +41,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- display: Name of component to fetch from
-  name: component_name
-  required: false
-  type: 0
-- display: Name of field to fetch by
-  name: filter_field
-  required: false
-  type: 0
-- display: Fetch Limit
-  name: fetch_limit
-  required: false
-  type: 0
-description: Use LockPath KeyLight to manage tickets
+description: Use LockPath KeyLight to manage tickets.
 display: Lockpath KeyLight v2
 name: Lockpath KeyLight v2
 script:
@@ -112,7 +109,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: The ID of the component.
+      description: The ID of the component. Get ID from `kl-get-coponent`.
       isArray: false
       name: component_id
       required: true
@@ -148,7 +145,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The component ID.
+      description: The component ID. Get ID from `kl-get-coponent`.
       isArray: false
       name: component_id
       required: true
@@ -163,7 +160,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The record ID.
+      description: The record ID. Can get from Keylight itself or from `kl-get-records`.
       isArray: false
       name: record_id
       required: true
@@ -198,7 +195,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the desired component.
+      description: The ID of the desired component. Get ID from `kl-get-coponent`.
       isArray: false
       name: component_id
       required: true
@@ -290,7 +287,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The ID of the desired component.
+      description: The ID of the desired component.Get ID from `kl-get-coponent`.
       isArray: false
       name: component_id
       required: true
@@ -335,13 +332,13 @@ script:
     name: kl-get-record-count
   - arguments:
     - default: false
-      description: The ID of the desired component.
+      description: The ID of the desired component. Get ID from `kl-get-coponent`.
       isArray: false
       name: component_id
       required: true
       secret: false
     - default: false
-      description: The record ID.
+      description: The record ID. Can get from Keylight itself or from `kl-get-records`.
       isArray: false
       name: record_id
       required: true
@@ -375,13 +372,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the desired component.
+      description: The ID of the desired component. Get ID from `kl-get-coponent`.
       isArray: false
       name: component_id
       required: true
       secret: false
     - default: false
-      description: The record ID.
+      description: The record ID. Can get from Keylight itself or from `kl-get-records`.
       isArray: false
       name: record_id
       required: true
@@ -406,7 +403,7 @@ script:
     name: kl-get-record-attachment
   - arguments:
     - default: false
-      description: The component ID.
+      description: The component ID. Get ID from `kl-get-coponent`.
       isArray: false
       name: component_id
       required: true
@@ -423,7 +420,7 @@ script:
     name: kl-delete-record
   - arguments:
     - default: false
-      description: The ID of the component.
+      description: The ID of the component. Get ID from `kl-get-coponent`.
       isArray: false
       name: component_id
       required: true
@@ -485,7 +482,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the component the record should be created in.
+      description: The ID of the component the record should be created in. Get ID
+        from `kl-get-coponent`.
       isArray: false
       name: component_id
       required: true
@@ -518,13 +516,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the component.
+      description: The ID of the component. Get ID from `kl-get-coponent`.
       isArray: false
       name: component_id
       required: true
       secret: false
     - default: false
-      description: The Id of the record to be updated.
+      description: The Id of the record to be updated. Can get from Keylight itself
+        or from `kl-get-records`.
       isArray: false
       name: record_id
       required: true
