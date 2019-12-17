@@ -1,0 +1,321 @@
+id: Prisma Cloud Remediation - AWS Default Security Group Does Not Restrict All
+  Traffic
+version: -1
+fromversion: 5.0.0
+name: Prisma Cloud Remediation - AWS Default Security Group Does Not Restrict All
+  Traffic
+description: |-
+  This playbook remediates the following Prisma Cloud AWS EC2 alerts.
+
+  Prisma Cloud policies remediated:
+
+    - AWS Default Security Group does not restrict all traffic
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 92a448cc-b058-4323-8821-bd598d893d29
+    type: start
+    task:
+      id: 92a448cc-b058-4323-8821-bd598d893d29
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: aea9bfe3-2b4b-46d0-885d-26d731dd0abd
+    type: regular
+    task:
+      id: aea9bfe3-2b4b-46d0-885d-26d731dd0abd
+      version: -1
+      name: Get the latest security group
+      description: Describes one or more of your security groups.
+      script: '|||aws-ec2-describe-security-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      filters: {}
+      groupIds:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: data
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: groupId
+      groupNames: {}
+      region:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: regionId
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 0230bcae-d54d-4174-8db1-791e74fb4be5
+    type: regular
+    task:
+      id: 0230bcae-d54d-4174-8db1-791e74fb4be5
+      version: -1
+      name: Revoke security group ingress rules
+      description: Removes egress rule from a security group. To remove a rule, the
+        values that you specify (for example, ports) must match the existing rule's
+        values exactly.
+      script: '|||aws-ec2-revoke-security-group-ingress-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      cidrIp:
+        complex:
+          root: AWS
+          accessor: EC2.SecurityGroups.IpPermissions.IpRanges.CidrIp
+      fromPort:
+        complex:
+          root: AWS
+          accessor: EC2.SecurityGroups.IpPermissions.FromPort
+      groupId:
+        complex:
+          root: AWS
+          accessor: EC2.SecurityGroups.GroupId
+      ipProtocol:
+        complex:
+          root: AWS
+          accessor: EC2.SecurityGroups.IpPermissions.IpProtocol
+      region:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: regionId
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      sourceSecurityGroupName:
+        complex:
+          root: AWS
+          accessor: EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.GroupName
+      toPort:
+        complex:
+          root: AWS
+          accessor: EC2.SecurityGroups.IpPermissions.ToPort
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 1cf94ac2-9dfe-48c6-8fef-8deabb65238a
+    type: title
+    task:
+      id: 1cf94ac2-9dfe-48c6-8fef-8deabb65238a
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 2b097320-704b-42c4-88c1-36c447129097
+    type: condition
+    task:
+      id: 2b097320-704b-42c4-88c1-36c447129097
+      version: -1
+      name: Was there an error?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "9"
+      "yes":
+      - "13"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: dff916b6-fd66-487e-83a5-2a89db75ed6c
+    type: regular
+    task:
+      id: dff916b6-fd66-487e-83a5-2a89db75ed6c
+      version: -1
+      name: Manually update default security group
+      description: |-
+        1. Sign into the AWS console
+        2. Select the specific region from the region drop down on the top right corner
+        3. Navigate to the VPC Dashboard
+        4. Click on Security Groups in the left window pane
+        5. Click on the security group in question
+        6. Select the Inbound Rules tab and remove all entries, then choose Save rules
+        7. Select the Outbound Rules tab and remove all entries, then click Save rules
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 32726344-b234-4dcf-8681-820cf19b284e
+    type: condition
+    task:
+      id: 32726344-b234-4dcf-8681-820cf19b284e
+      version: -1
+      name: Check default security group?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AWS
+                accessor: EC2.SecurityGroups.GroupName
+            iscontext: true
+          right:
+            value:
+              simple: default
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_13_yes": 0.55,
+      "12_9_no": 0.51,
+      "14_13_#default#": 0.52,
+      "14_3_yes": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1055,
+        "width": 680,
+        "x": 150,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No Test

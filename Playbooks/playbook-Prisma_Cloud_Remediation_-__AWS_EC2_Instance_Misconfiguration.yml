@@ -1,0 +1,576 @@
+id: Prisma Cloud Remediation -  AWS EC2 Instance Misconfiguration
+version: -1
+fromversion: 5.0.0
+name: Prisma Cloud Remediation -  AWS EC2 Instance Misconfiguration
+description: |-
+  This playbook remediates Prisma Cloud AWS EC2 alerts.  It calls sub-playbooks that perform the actual remediation steps.
+
+  Remediation sub-playbooks:
+  - Prisma Cloud Remediation - AWS Default Security Group Does Not Restrict All Traffic
+  - Prisma Cloud Remediation - AWS Security Groups Allow Internet Traffic
+  - Prisma Cloud Remediation - AWS Security Groups With Inbound Rule Overly Permissive To All Traffic
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 972c2cba-e9e8-4b4e-8f92-407ca7fb7917
+    type: start
+    task:
+      id: 972c2cba-e9e8-4b4e-8f92-407ca7fb7917
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 9089a365-5d5e-44fe-8d37-d0ef1bb270bd
+    type: condition
+    task:
+      id: 9089a365-5d5e-44fe-8d37-d0ef1bb270bd
+      version: -1
+      name: Is AWS - EC2 integration enabled?
+      description: Verifies that AWS - EC2 integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - EC2
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: AWS - EC2
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 77885611-1518-41c5-8929-0da5c8de85cb
+    type: condition
+    task:
+      id: 77885611-1518-41c5-8929-0da5c8de85cb
+      version: -1
+      name: Update EC2 automatically?
+      description: Should we auto-remediate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoUpdateEC2
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: a1526b70-d9ce-4d1c-8e36-4aaa1cf5d850
+    type: condition
+    task:
+      id: a1526b70-d9ce-4d1c-8e36-4aaa1cf5d850
+      version: -1
+      name: Auto remediate?
+      description: Determine whether or not to auto-remediate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "Yes":
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: ${incident.id} Autoremediate?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+  "6":
+    id: "6"
+    taskid: f8dfdf9c-3271-4644-89ce-2fdfd9f25e9f
+    type: regular
+    task:
+      id: f8dfdf9c-3271-4644-89ce-2fdfd9f25e9f
+      version: -1
+      name: Manually remediate EC2
+      description: Follow the steps outlined in the appropriate sub-playbook to remediate
+        the issue.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 599730fe-9f1e-4a63-89c5-e941732683b6
+    type: regular
+    task:
+      id: 599730fe-9f1e-4a63-89c5-e941732683b6
+      version: -1
+      name: Close investigation
+      description: Close the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 5bfb7869-0a96-4ca5-875c-1ec4c9072953
+    type: title
+    task:
+      id: 5bfb7869-0a96-4ca5-875c-1ec4c9072953
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: bd2eb7f2-5e30-4623-8e11-ea91b99c23d8
+    type: regular
+    task:
+      id: bd2eb7f2-5e30-4623-8e11-ea91b99c23d8
+      version: -1
+      name: Dismiss Prisma Cloud alert
+      description: Dismiss the alerts matching the given filter. Must provide either
+        policy IDs or alert IDs.
+      script: RedLock|||redlock-dismiss-alerts
+      type: regular
+      iscommand: true
+      brand: RedLock
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      alert-id:
+        complex:
+          root: incident
+          accessor: labels
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      alert-rule-name: {}
+      alert-status: {}
+      cloud-account: {}
+      cloud-region: {}
+      cloud-type: {}
+      dismissal-note:
+        simple: ${incident.labels.id} has been remediated by Demisto.
+      policy-compliance-standard: {}
+      policy-id:
+        complex:
+          root: incident
+          accessor: labels.policy
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: policyId
+      policy-label: {}
+      policy-name: {}
+      policy-severity: {}
+      policy-type: {}
+      resource-id: {}
+      resource-name: {}
+      resource-type: {}
+      risk-grade: {}
+      time-range-date-from: {}
+      time-range-date-to: {}
+      time-range-unit: {}
+      time-range-value: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: b010ca3a-7862-441c-80f7-5cd19232a0ab
+    type: condition
+    task:
+      id: b010ca3a-7862-441c-80f7-5cd19232a0ab
+      version: -1
+      name: Execute sub-playbook remediation
+      description: Execute the appropriate sub-playbook to perform the actual remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      defaultSG:
+      - "11"
+      internetSG:
+      - "12"
+      permissive:
+      - "13"
+    separatecontext: false
+    defaultassigneecomplex: {}
+    conditions:
+    - label: defaultSG
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 2378dbf4-b104-4bda-9b05-7417affbba3f
+    - label: internetSG
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 2dbda57f-33d4-459a-97ae-dec7e81f9ec4
+    - label: permissive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 566686e8-0581-4df5-ae22-5a901ed37b58
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 2dbb11d4-d03f-4fd1-8443-a473f6e08b69
+    type: playbook
+    task:
+      id: 2dbb11d4-d03f-4fd1-8443-a473f6e08b69
+      version: -1
+      name: Prisma Cloud Remediation - AWS Default Security Group Does Not Restrict
+      description: ""
+        All Traffic
+      playbookName: Prisma Cloud Remediation - AWS Default Security Group Does Not
+        Restrict All Traffic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: b5bb69a9-8357-43bf-8011-684df13d909b
+    type: playbook
+    task:
+      id: b5bb69a9-8357-43bf-8011-684df13d909b
+      version: -1
+      name: Prisma Cloud Remediation - AWS Security Groups Allow Internet Traffic
+      description: ""
+      playbookName: Prisma Cloud Remediation - AWS Security Groups Allow Internet
+        Traffic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: a6884264-3205-49aa-8e2b-6165bed77101
+    type: playbook
+    task:
+      id: a6884264-3205-49aa-8e2b-6165bed77101
+      version: -1
+      name: Prisma Cloud Remediation - AWS Security Groups With Inbound Rule Overly
+      description: ""
+        Permissive To All Traffic
+      playbookName: Prisma Cloud Remediation - AWS Security Groups With Inbound Rule
+        Overly Permissive To All Traffic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 0d732bc3-22a0-4b2e-8b03-4d8aa68b9389
+    type: condition
+    task:
+      id: 0d732bc3-22a0-4b2e-8b03-4d8aa68b9389
+      version: -1
+      name: Is there a policy to remediate?
+      description: Verify that a Prisma Cloud policy ID exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    separatecontext: false
+    defaultassigneecomplex: {}
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_defaultSG": 0.7,
+      "10_12_internetSG": 0.39,
+      "10_13_permissive": 0.69,
+      "14_3_yes": 0.49,
+      "14_6_#default#": 0.26,
+      "1_14_yes": 0.5,
+      "1_8_#default#": 0.18,
+      "3_10_yes": 0.48,
+      "3_5_#default#": 0.48,
+      "5_10_Yes": 0.51,
+      "5_6_#default#": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1595,
+        "width": 1750,
+        "x": -440,
+        "y": -400
+      }
+    }
+  }
+inputs:
+- key: AutoUpdateEC2
+  value:
+    simple: "no"
+  required: false
+  description: Update AWS EC2 instance automatically?
+- key: policyId
+  value:
+    complex:
+      root: incident
+      accessor: labels.policy
+      transformers:
+      - operator: ParseJSON
+      - operator: getField
+        args:
+          field:
+            value:
+              simple: policyId
+  required: false
+  description: Get the Prisma Cloud policy ID.
+outputs: []
+tests:
+- No Test

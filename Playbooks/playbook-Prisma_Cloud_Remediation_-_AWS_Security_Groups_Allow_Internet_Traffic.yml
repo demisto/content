@@ -1,0 +1,373 @@
+id: Prisma Cloud Remediation - AWS Security Groups Allow Internet Traffic
+version: -1
+fromversion: 5.0.0
+name: Prisma Cloud Remediation - AWS Security Groups Allow Internet Traffic
+description: |-
+  This playbook remediates the following Prisma Cloud AWS EC2 alerts.
+
+  Prisma Cloud policies remediated:
+
+    - AWS Security groups allow internet traffic
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 71d4aa73-20de-444e-8e36-37a1f01e8507
+    type: start
+    task:
+      id: 71d4aa73-20de-444e-8e36-37a1f01e8507
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: f6ded8e8-b687-4a9c-81d6-e473477ed29c
+    type: regular
+    task:
+      id: f6ded8e8-b687-4a9c-81d6-e473477ed29c
+      version: -1
+      name: Revoke public ingress rules
+      description: Revoke all public security group rules.
+      script: AWS - EC2|||aws-ec2-revoke-security-group-ingress-rule
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      cidrIp:
+        simple: 0.0.0.0/0
+      fromPort:
+        complex:
+          root: AWS
+          accessor: EC2.SecurityGroups.IpPermissions.FromPort
+      groupId:
+        complex:
+          root: AWS
+          accessor: EC2.SecurityGroups.GroupId
+      ipProtocol:
+        complex:
+          root: AWS
+          accessor: EC2.SecurityGroups.IpPermissions.IpProtocol
+      region:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: regionId
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      sourceSecurityGroupName: {}
+      toPort:
+        complex:
+          root: AWS
+          accessor: EC2.SecurityGroups.IpPermissions.ToPort
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: a5708c90-226c-4d1e-896c-68d0321f506f
+    type: regular
+    task:
+      id: a5708c90-226c-4d1e-896c-68d0321f506f
+      version: -1
+      name: Manually remove public ingress rules
+      description: |-
+        1. Sign into the AWS console
+        2. Select the specific region from the region drop down on the top right corner
+        3. Navigate to the VPC Dashboard
+        4. Click on Security Groups in the left window pane
+        5. Click on the security group in question
+        6. Select the Inbound Rules tab and remove entries containing the CIDR; 0.0.0.0/0 and/or ::/0
+        7. Click Save rules
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 0a4e1ec3-92a9-4d4f-8601-7eb98cb9e909
+    type: regular
+    task:
+      id: 0a4e1ec3-92a9-4d4f-8601-7eb98cb9e909
+      version: -1
+      name: Get security group IP permissions
+      description: 'Obtain the latest/current ipPermission to make sure that the automation
+        uses the latest ipPermissions. '
+      script: AWS - EC2|||aws-ec2-describe-security-groups
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      filters: {}
+      groupIds:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      groupNames: {}
+      region:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: regionId
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: ebb9e96f-2401-4c4e-8567-c134b01e2438
+    type: title
+    task:
+      id: ebb9e96f-2401-4c4e-8567-c134b01e2438
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: a1c2cf0d-fa0e-45d9-8203-cf4aa8c44fbf
+    type: condition
+    task:
+      id: a1c2cf0d-fa0e-45d9-8203-cf4aa8c44fbf
+      version: -1
+      name: Any public rules?
+      description: Check the security group for any remaining public rules.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AWS
+                accessor: EC2.SecurityGroups.IpPermissions.IpRanges.CidrIp
+            iscontext: true
+          right:
+            value:
+              simple: 0.0.0.0/0
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AWS
+                accessor: EC2.SecurityGroups.IpPermissions.Ipv6Ranges.CidrIpv6
+            iscontext: true
+          right:
+            value:
+              simple: ::/0
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: ebe61cb4-3da0-4271-8b94-a2259c734d1d
+    type: condition
+    task:
+      id: ebe61cb4-3da0-4271-8b94-a2259c734d1d
+      version: -1
+      name: Was there an error?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "21"
+      "yes":
+      - "25"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: c5be9188-7ada-4942-82e8-675b6415a982
+    type: regular
+    task:
+      id: c5be9188-7ada-4942-82e8-675b6415a982
+      version: -1
+      name: Get the latest security group IP permissions
+      description: 'Obtain the latest/current ipPermission to make sure that the automation
+        uses the latest ipPermissions. '
+      script: AWS - EC2|||aws-ec2-describe-security-groups
+      type: regular
+      iscommand: true
+      brand: AWS - EC2
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      filters: {}
+      groupIds:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      groupNames: {}
+      region:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: regionId
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "23_12_yes": 0.56,
+      "23_21_#default#": 0.32,
+      "24_21_no": 0.24,
+      "24_25_yes": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1235,
+        "width": 830,
+        "x": -130,
+        "y": 350
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No Test
