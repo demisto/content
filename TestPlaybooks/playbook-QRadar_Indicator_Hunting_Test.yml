@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: e85881b9-a5a8-439b-8b1e-fc232c41d6fa
+    taskid: 903f7dea-47d4-4877-87f6-1800865a9262
     type: start
     task:
-      id: e85881b9-a5a8-439b-8b1e-fc232c41d6fa
+      id: 903f7dea-47d4-4877-87f6-1800865a9262
       version: -1
       name: ''
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     ignoreworker: false
   '2':
     id: '2'
-    taskid: c1815fd6-bb3b-493f-8271-1fcbcd5bfae8
+    taskid: 150c7225-37e8-4de7-8608-df524271e32e
     type: regular
     task:
-      id: c1815fd6-bb3b-493f-8271-1fcbcd5bfae8
+      id: 150c7225-37e8-4de7-8608-df524271e32e
       version: -1
       name: Delete context
       description: Delete field from context
@@ -65,10 +65,10 @@ tasks:
     ignoreworker: false
   '3':
     id: '3'
-    taskid: d0768b12-0a74-46cd-8aa3-4cdbae748bcd
+    taskid: 667d7acb-f0dc-422b-8e3b-9a926bfe7e17
     type: playbook
     task:
-      id: d0768b12-0a74-46cd-8aa3-4cdbae748bcd
+      id: 667d7acb-f0dc-422b-8e3b-9a926bfe7e17
       version: -1
       name: QRadar Indicator Hunting
       description: ''
@@ -77,25 +77,28 @@ tasks:
       iscommand: false
       brand: ''
     scriptarguments:
+      DetectedFIelds:
+        simple: sourceip,destinationip,username
       IPAddress:
         simple: 66.196.219.2,54.238.142.98
       MD5:
-        simple: avavavavavavavavavavav,bcbcbcbcbcbcbcb
+        simple: 7D930D55986DF5C69CF1A9C2DE7E33B3
       QradarIPfield:
         simple: sourceip,destinationip
       QradarMD5Field: {}
       QradarSHA1Field:
-        simple: file hash
+        simple: SHA1 Hash
       QradarSHA256Field:
-        simple: file hash,root hash
+        simple: file hash,SHA256 Hash
       SHA1:
-        simple: avavavavavavavavavavav,bcbcbcbcbcbcbcb
+        simple: D4ABAC114DBE28BAD8855C10D37F2B727177C9CA,5B624FEA6F08124DD0444168F9146EE55822BF26
       SHA256:
-        simple: avavavavavavavavavavav,bcbcbcbcbcbcbcb
+        simple: "BEBB0D2229700C6A62B7811985061DC75F6279AB0FF8747C47CCADB6CC2CC462,\t\
+          70C9616C026266BB3A1213BCC50E3A9A24238703FB7745746628D11163905D2F"
       SelectFields:
         simple: '*'
       TimeFrame:
-        simple: LAST 1 DAYS
+        simple: LAST 7 DAYS
       URLDomain:
         simple: google,walla.com
       URLDomainField:
