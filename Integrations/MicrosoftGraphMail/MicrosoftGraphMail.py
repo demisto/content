@@ -23,10 +23,10 @@ SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
 # Service base URL
 BASE_URL = SERVER + '/v1.0'
 APP_NAME = 'ms-graph-mail'
-
 USE_SSL = not PARAMS.get('insecure', False)
 # Remove proxy if not set to true in params
 PROXY = handle_proxy()
+MS_CLIENT: Any
 
 CONTEXT_FOLDER_PATH = 'MSGraphMail.Folders(val.ID && val.ID === obj.ID)'
 CONTEXT_COPIED_EMAIL = 'MSGraphMail.MovedEmails(val.ID && val.ID === obj.ID)'
@@ -41,13 +41,10 @@ FOLDER_MAPPING = {
 }
 
 
-MS_CLIENT: Any
-
-
 ''' HELPER FUNCTIONS '''
 
 
-def get_client(base_url, auth_id_and_url, tenant_id, enc_key, proxy, ok_codes, use_ssl, no_oproxy):
+def get_client(base_url, auth_id_and_url, tenant_id, enc_key, proxy, ok_codes, use_ssl, no_oproxy, app_name):
     if no_oproxy:
         app_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
         ms_client = MicrosoftClient.from_self_deployed(tenant_id, auth_id_and_url,
@@ -63,7 +60,6 @@ def get_client(base_url, auth_id_and_url, tenant_id, enc_key, proxy, ok_codes, u
             token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
         else:
             token_retrieval_url = auth_id_and_token_retrieval_url[1]
-        app_name = 'ms-graph-mail'
         ms_client = MicrosoftClient.from_oproxy(auth_id_and_url, enc_key, token_retrieval_url, app_name,
                                                 tenant_id=tenant_id, base_url=base_url, verify=use_ssl,
                                                 proxy=proxy, ok_codes=ok_codes)
@@ -681,10 +677,12 @@ def main():
     LOG(f'Command being called is {command}')
 
     global MS_CLIENT
-    MS_CLIENT = get_client(BASE_URL, AUTH_AND_TOKEN_URL, TENANT_ID, ENC_KEY, PROXY, (200, 201, 202), USE_SSL, NO_OPROXY)
+    MS_CLIENT = get_client(BASE_URL, AUTH_AND_TOKEN_URL, TENANT_ID, ENC_KEY, PROXY, (200, 201, 202), USE_SSL,
+                           NO_OPROXY, APP_NAME)
 
     try:
         if command == 'test-module':
+            MS_CLIENT.get_access_token()
             demisto.results('ok')
         elif command in ('msgraph-mail-list-emails', 'msgraph-mail-search-email'):
             list_mails_command(args)

@@ -2,7 +2,7 @@ from CommonServerPython import *
 import demistomock as demisto
 import requests
 import base64
-from typing import Union, Dict, List
+from typing import Union, Dict, List, Tuple, Optional
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 OPROXY_AUTH_TYPE = 'oproxy'
@@ -70,20 +70,59 @@ class MicrosoftClient(BaseClient):
                    client_secret=client_secret, auth_type=SELF_DEPLOYED_AUTH_TYPE,
                    scope=scope, resource=resource, app_url=app_url, *args, **kwargs)
 
-    def http_request(self, *args, **kwargs):
+    def http_request(self, *args, **kwargs) -> requests.Response:
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
 
         Returns:
             requests.Response: The http response
         """
-        token = self._get_access_token()
+        token = self.get_access_token()
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
         return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
+
+    def get_access_token(self):
+        """
+        Obtains access and refresh token from oproxy server or just a token from a self deployed app.
+        Access token is used and stored in the integration context
+        until expiration time. After expiration, new refresh token and access token are obtained and stored in the
+        integration context.
+
+        Returns:
+            str: Access token that will be added to authorization header.
+        """
+        integration_context = demisto.getIntegrationContext()
+        access_token = integration_context.get('access_token')
+        valid_until = integration_context.get('valid_until')
+        if access_token and valid_until:
+            if self.epoch_seconds() < valid_until:
+                return access_token
+
+        auth_type = self.auth_type
+        refresh_token = ''
+        if auth_type == OPROXY_AUTH_TYPE:
+            access_token, expires_in, refresh_token = self._oproxy_authorize()
+        else:
+            access_token, expires_in = self._get_self_deployed_token()
+        time_now = self.epoch_seconds()
+        time_buffer = 5  # seconds by which to shorten the validity period
+        if expires_in - time_buffer > 0:
+            # err on the side of caution with a slightly shorter access token validity period
+            expires_in = expires_in - time_buffer
+
+        integration_context = {
+            'access_token': access_token,
+            'valid_until': time_now + expires_in,
+        }
+
+        if refresh_token:
+            integration_context['current_refresh_token'] = refresh_token
+        demisto.setIntegrationContext(integration_context)
+        return access_token
 
     @staticmethod
     def camel_case_to_readable(cc: Union[str, Dict], fields_to_drop: List[str] = None) -> Union[str, Dict]:
@@ -131,57 +170,16 @@ class MicrosoftClient(BaseClient):
                     if field not in fields_to_drop}
         return sc
 
-    def _get_access_token(self):
-        """
-        Obtains access and refresh token from oproxy server or just a token from a self deployed app.
-        Access token is used and stored in the integration context
-        until expiration time. After expiration, new refresh token and access token are obtained and stored in the
-        integration context.
-
-        Returns:
-            str: Access token that will be added to authorization header.
-        """
-        integration_context = demisto.getIntegrationContext()
-        access_token = integration_context.get('access_token')
-        valid_until = integration_context.get('valid_until')
-        if access_token and valid_until:
-            if self.epoch_seconds() < valid_until:
-                return access_token
-
-        auth_type = self.auth_type
-        refresh_token = ''
-        if auth_type == OPROXY_AUTH_TYPE:
-            access_token, expires_in, refresh_token = self._oproxy_authorize()
-        else:
-            access_token, expires_in = self._get_self_deployed_token()
-        time_now = self.epoch_seconds()
-        time_buffer = 5  # seconds by which to shorten the validity period
-        if expires_in - time_buffer > 0:
-            # err on the side of caution with a slightly shorter access token validity period
-            expires_in = expires_in - time_buffer
-
-        integration_context = {
-            'access_token': access_token,
-            'valid_until': time_now + expires_in,
-        }
-
-        if refresh_token:
-            integration_context['current_refresh_token'] = refresh_token
-        demisto.setIntegrationContext(integration_context)
-        return access_token
-
-    def _oproxy_authorize(self):
+    def _oproxy_authorize(self) -> Tuple[str, int, Optional[str]]:
         """
         Gets a token by authorizing with oproxy.
 
         Returns:
             tuple: An access token, its expiry and refresh token.
         """
-        headers = self._add_info_headers()
         content = self.refresh_token or self.tenant_id
         oproxy_response = requests.post(
             self.token_retrieval_url,
-            headers=headers,
             json={
                 'app_name': self.app_name,
                 'registration_id': self.auth_id,
@@ -220,7 +218,7 @@ class MicrosoftClient(BaseClient):
         return (parsed_response.get('access_token'), parsed_response.get('expires_in', 3595),
                 parsed_response.get('refresh_token'))
 
-    def _get_self_deployed_token(self):
+    def _get_self_deployed_token(self) -> Tuple[str, int]:
         """
         Gets a token by authorizing a self deployed Azure application.
 
@@ -335,26 +333,3 @@ class MicrosoftClient(BaseClient):
         now = MicrosoftClient.epoch_seconds()
         encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
         return encrypted
-
-    @staticmethod
-    def _add_info_headers():
-        # pylint: disable=no-member
-        """
-        Adds information headers to an oproxy request.
-
-        Returns:
-            dict: Integration information headers.
-        """
-        headers = {}
-        try:
-            calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
-            brand_name = calling_context.get('IntegrationBrand', '')
-            instance_name = calling_context.get('IntegrationInstance', '')
-            headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
-            headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
-            if hasattr(demisto, 'demistoVersion'):
-                headers['X-Content-Server-Version'] = demisto.demistoVersion().get('version')
-        except Exception as e:
-            demisto.error('Failed getting integration info: {}'.format(str(e)))
-
-        return headers
