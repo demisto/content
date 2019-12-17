@@ -271,21 +271,22 @@ def run_bandit(project_dir, py_num):
     print("bandit completed")
 
 
-def setup_dev_files(project_dir):
+def setup_dev_files(project_dir, py_num):
     # copy demistomock and common server
     shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
     open(project_dir + '/CommonServerUserPython.py', 'a').close()  # create empty file
     shutil.rmtree(project_dir + '/__pycache__', ignore_errors=True)
     shutil.copy(CONTENT_DIR + '/Tests/scripts/dev_envs/pytest/conftest.py', project_dir)
-    check_microsoft(project_dir)
+    check_microsoft(project_dir, py_num)
     if "/Scripts/CommonServerPython" not in project_dir:  # Otherwise we already have the CommonServerPython.py file
         shutil.copy(CONTENT_DIR + '/Scripts/CommonServerPython/CommonServerPython.py', project_dir)
 
 
-def check_microsoft(project_dir):
-    ms_regex = r'microsoft|azure|windows'
-    if re.findall(ms_regex, project_dir.lower()):
-        shutil.copy(CONTENT_DIR + '/Utils/microsoft_api.py', project_dir)
+def check_microsoft(project_dir, py_num):
+    if py_num > 3:
+        ms_regex = r'microsoft|azure|windows'
+        if re.findall(ms_regex, project_dir.lower()):
+            shutil.copy(CONTENT_DIR + '/Utils/microsoft_api.py', project_dir)
 
 
 def main():
@@ -338,7 +339,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
         for try_num in (1, 2):
             print_v("Using docker image: {}".format(docker))
             py_num = get_python_version(docker)
-            setup_dev_files(project_dir)
+            setup_dev_files(project_dir, py_num)
             try:
                 if not args.no_flake8:
                     run_flake8(project_dir, py_num)
