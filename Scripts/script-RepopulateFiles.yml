@@ -5,7 +5,7 @@ name: RepopulateFiles
 script: |
   import os
 
-  entries = demisto.executeCommand('getEntries', {})
+  entries = demisto.executeCommand('getEntries', {'filter': {'categories': ['attachments']}})
   ec = []
   for e in entries:
       if e.get('File') and e.get('FileMetadata'):
