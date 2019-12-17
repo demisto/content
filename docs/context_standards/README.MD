@@ -114,7 +114,7 @@ The following is the format for a ticket.
 }
 ```
 
-## Email
+## Email Object
 The following is the format for an Email.
 ```python
 "Email": {
