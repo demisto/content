@@ -98,7 +98,7 @@ tasks:
       SelectFields:
         simple: '*'
       TimeFrame:
-        simple: LAST 7 DAYS
+        simple: LAST 1 DAYS
       URLDomain:
         simple: google,walla.com
       URLDomainField:
