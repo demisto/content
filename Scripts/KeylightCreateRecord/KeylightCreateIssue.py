@@ -15,8 +15,10 @@ Fill out the args below and add arguments accordingly.
 
 Output - you can find the json to create/update your records in `Keylight.JSON`
 """
+
+
 def main():
-##############################################################
+    ##############################################################
     args = {
         # 'field_name': 'field_value',
         'Task ID': demisto.args().get('task_id'),            # Example
@@ -28,8 +30,7 @@ def main():
         'Audit Project': 'Audit Projects'       # Example
     }
 
-
-##############################################################
+    ##############################################################
     components = demisto.executeCommand("kl-get-component", {})[0].get('Contents', {})
 
     final_json = []
@@ -71,4 +72,3 @@ def get_component_id_by_name(component_name, components):
 
 if __name__ == "__builtin__" or __name__ == "builtins":
     main()
-
