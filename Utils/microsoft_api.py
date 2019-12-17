@@ -177,9 +177,11 @@ class MicrosoftClient(BaseClient):
         Returns:
             tuple: An access token, its expiry and refresh token.
         """
+        headers = self._add_info_headers()
         content = self.refresh_token or self.tenant_id
         oproxy_response = requests.post(
             self.token_retrieval_url,
+            headers=headers,
             json={
                 'app_name': self.app_name,
                 'registration_id': self.auth_id,
@@ -333,3 +335,26 @@ class MicrosoftClient(BaseClient):
         now = MicrosoftClient.epoch_seconds()
         encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
         return encrypted
+
+    @staticmethod
+    def _add_info_headers():
+        # pylint: disable=no-member
+        """
+        Adds information headers to an oproxy request.
+
+        Returns:
+            dict: Integration information headers.
+        """
+        headers = {}
+        try:
+            calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
+            brand_name = calling_context.get('IntegrationBrand', '')
+            instance_name = calling_context.get('IntegrationInstance', '')
+            headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
+            headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
+            if hasattr(demisto, 'demistoVersion'):
+                headers['X-Content-Server-Version'] = demisto.demistoVersion().get('version')
+        except Exception as e:
+            demisto.error('Failed getting integration info: {}'.format(str(e)))
+
+        return headers
