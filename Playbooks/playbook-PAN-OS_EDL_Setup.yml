@@ -2,9 +2,9 @@ id: PAN-OS EDL Setup
 version: -1
 name: PAN-OS EDL Setup
 fromversion: 4.0.0
-description: Sets up external dynamic list in PAN-OS.\nin case file exists in web
+description: "Sets up external dynamic list in PAN-OS.\nin case file exists in web
   server it will sync it to demisto. then it will create an EDL object and a matching
-  rule.
+  rule."
 starttaskid: "0"
 tasks:
   "0":
@@ -555,6 +555,12 @@ tasks:
       rule-position:
         complex:
           root: inputs.rule-position
+          transformers:
+          - operator: d8d43bef-f48a-47ad-8502-b191d615158c
+            args:
+              defaultValue:
+                value:
+                  simple: top
       rule_name:
         complex:
           root: inputs.rule-name
@@ -616,6 +622,12 @@ tasks:
       rule-position:
         complex:
           root: inputs.rule-position
+          transformers:
+          - operator: d8d43bef-f48a-47ad-8502-b191d615158c
+            args:
+              defaultValue:
+                value:
+                  simple: top
       rule_name:
         complex:
           root: inputs.rule-name
@@ -699,7 +711,7 @@ inputs:
       * Before
       * After
 
-    The default position will be 'Bottom'
+    The default position will be 'Top'
 - key: relative-rule-name
   value: {}
   required: false

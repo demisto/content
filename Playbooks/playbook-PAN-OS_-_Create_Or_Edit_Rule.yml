@@ -372,11 +372,8 @@ tasks:
         complex:
           root: inputs.rule-position
           transformers:
-          - operator: SetIfEmpty
+          - operator: d8d43bef-f48a-47ad-8502-b191d615158c
             args:
-              applyIfEmpty:
-                value:
-                  simple: "true"
               defaultValue:
                 value:
                   simple: bottom

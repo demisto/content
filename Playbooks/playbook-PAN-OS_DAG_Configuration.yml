@@ -398,6 +398,12 @@ tasks:
       rule-position:
         complex:
           root: inputs.rule-position
+          transformers:
+          - operator: d8d43bef-f48a-47ad-8502-b191d615158c
+            args:
+              defaultValue:
+                value:
+                  simple: top
       rule_name:
         complex:
           root: inputs.rule_name
@@ -471,7 +477,7 @@ inputs:
       * Before
       * After
 
-    The default position is 'Bottom'
+    The default position is 'Top'
 - key: relative-rule-name
   value: {}
   required: false
