@@ -45,7 +45,7 @@ def http(method, url_suffix, params=None, data=None, files=None):
     except requests.exceptions.InvalidSchema:
         return_error("Invalid Schema. URL must start with http:// or https://")
 
-        
+
 '''MAIN FUNCTIONS'''
 
 
