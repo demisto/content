@@ -49,7 +49,6 @@ MS_CLIENT: Any
 
 def get_client(base_url, auth_id_and_url, tenant_id, enc_key, proxy, ok_codes, use_ssl, no_oproxy):
     if no_oproxy:
-        tenant_id = tenant_id
         app_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
         ms_client = MicrosoftClient.from_self_deployed(tenant_id, auth_id_and_url,
                                                        enc_key, app_url=app_url,
