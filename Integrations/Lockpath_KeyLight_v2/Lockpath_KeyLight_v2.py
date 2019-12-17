@@ -449,10 +449,9 @@ def get_record_count_command(client: Client, args: dict) -> None:
             raise ValueError('Could not find the field name.')
         data['filters'] = [create_filter(filter_type, filter_value, filter_field_id)]
     res = client._http_request('POST', '/ComponentService/GetRecordCount', json_data=data)
-    title = f'## There are __**{res}**__ records'
+    title = f'## There are **{res}** records in component {component_id}.\n'
     if filter_type:
-        title += f' with filter: "{filter_type} {filter_value}" on field {filter_field_id}'
-    title += f' in component {component_id}.'
+        title += f'### with filter: "{filter_type} {filter_value}" on field `{filter_field_name}`'
     return_outputs(title)
 
 
@@ -566,13 +565,13 @@ def update_record_command(client: Client, args: dict) -> None:
 def fetch_incidents(client: Client, args: dict) -> None:
     name = demisto.params().get('component_name', '')
     filter_field = demisto.params().get('filter_field', '')
-    page_size = str(min(int(demisto.params().get('fetch_limit', '100')), 100))
+    page_size = str(min(int(demisto.params().get('fetch_limit', '50')), 50))
     if not name or not filter_field:
         raise ValueError("No component alias or field to filter by specified.")
     last_fetch_time = demisto.getLastRun().get('last_fetch_time')
     if not last_fetch_time:
         now = datetime.now()
-        last_fetch = now - timedelta(days=90)
+        last_fetch = now - timedelta(days=120)
         last_fetch_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S")
 
     # Find component ID
@@ -613,8 +612,7 @@ def main():
     params = demisto.params()
     proxy = params.get('proxy')
     verify = not params.get('insecure')
-    address = params.get('server', '')
-    address = address.rstrip('/') + ":" + params.get('port', '4443')
+    address = params.get('server', '').rstrip('/')
     username = params.get('credentials', {}).get('identifier', '')
     password = params.get('credentials', {}).get('password', '')
     client = Client(address, verify, proxy, headers={'Accept': 'application/json'})
@@ -639,15 +637,13 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     logged_in = False
     try:
-        if demisto.command() == 'test-module':
-            client.login(username, password)
-            demisto.results('ok')
-
         logged_in = client.login(username, password)
         if logged_in:
-            commands[demisto.command()](client, demisto.args())
+            if demisto.command() == 'test-module':
+                demisto.results('ok')
+            else:
+                commands[demisto.command()](client, demisto.args())
     except Exception as e:
-        LOG.print_log()
         if demisto.command() == 'test-module':
             return_error(f'Could not connect to instance. Error: {str(e)}')
         else:
