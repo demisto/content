@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from datetime import datetime, timedelta
-from typing import Union, Dict
+from typing import Union
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -156,21 +156,14 @@ class Client(BaseClient):
             result['ComponentID'] = component_id
         return res
 
-    def change_record(self, component_id: str, field_string: str, record_id: Union[str, None] = None,
+    def change_record(self, component_id: str, record_id: Union[str, None] = None,
                       record_json: dict = None) -> None:
-        json_data = {}  # type: Dict[str, Union[str, dict]]
-        if field_string:
-            json_data = {
-                'componentId': component_id,
-                'dynamicRecord': {
-                    'FieldValues': self.string_to_FieldValues(field_string, component_id)
-                }
+        json_data = {
+            'componentId': component_id,
+            'dynamicRecord': {
+                'FieldValues': self.string_to_FieldValues(record_json, component_id)
             }
-
-        if record_json:
-            json_data = record_json
-        if not json_data:
-            raise ValueError("No record string or record json.")
+        }
         suffix = '/ComponentService/CreateRecord'
         if record_id:
             json_data['dynamicRecord']['Id'] = record_id  # type: ignore
@@ -302,31 +295,28 @@ class Client(BaseClient):
         return final_fields
 
     @logger
-    def string_to_FieldValues(self, string: str, component_id: str) -> list:
-        '''
-
+    def string_to_FieldValues(self, fields_json: Union[dict, list], component_id: str) -> list:
+        """
         Args:
-            string: A string in the format Field_Name;FieldValue;Is_reference(optional)#....#...
-            component_id: The component ID
+            field_json in the format:
+            [{
+                "fieldName": "Task ID",
+                "value": "1",
+                "isLookup": false
+                },
+                ...
+            ]
 
         Returns:
             returns the for right format (dynamicRecord) for creating and updating a record.
-        '''
-        key_value_list = string.split('#')
+        """
         key_val_return = []
-        for key_value in key_value_list:
-            if key_value.count(';') == 1:
-                field_name, value = key_value.split(';')
-                reference = False
-            elif key_value.count(';') == 2:
-                field_name, value, ref = key_value.split(';')
-                reference = True if ref == '1' else False
-            else:
-                raise ValueError("Input not in the correct format.")
-            field_id = self.field_id_from_name(field_name, component_id)
+        for field in fields_json:
+            field_id = self.field_id_from_name(field.get('fieldName', ''), component_id)
+            value = field.get('value', '')
             if not field_id:
-                raise ValueError(f'Could not find the field "{field_name}" in component {component_id}.')
-            if reference:
+                raise ValueError(f'Could not find the field "{field.get("fieldName", "")}" in component {component_id}.')
+            if field.get('isLookup', ''):
                 key_val_return.append(
                     {
                         'Key': field_id,
@@ -559,20 +549,18 @@ def get_lookup_report_column_fields_command(client: Client, args: dict) -> None:
 
 
 def create_record_command(client: Client, args: dict) -> None:
-    field_string = args.get('record_string', '')
     component_id = args.get('component_id', '')
     record_json = args.get('record_json', '{}').replace("'", '"')
     record_json = json.loads(record_json)
-    client.change_record(component_id, field_string, record_json=record_json)
+    client.change_record(component_id, record_json=record_json)
 
 
 def update_record_command(client: Client, args: dict) -> None:
-    field_string = args.get('record_string', '')
     component_id = args.get('component_id', '')
     record_id = args.get('record_id', '')
     record_json = args.get('record_json', '{}').replace("'", '"')
     record_json = json.loads(record_json)
-    client.change_record(component_id, field_string, record_id, record_json)
+    client.change_record(component_id, record_id, record_json)
 
 
 def fetch_incidents(client: Client, args: dict) -> None:

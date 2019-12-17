@@ -68,7 +68,8 @@ script: |+
               }
           final_json.append(field)
 
-  return_outputs(json.dumps(final_json, indent=4),{'Keylight.JSON':final_json},final_json)
+  return_outputs(json.dumps(final_json, indent=4),{'Keylight.JSON':json.dumps(final_json)},final_json)
+
 
 type: python
 tags: []
