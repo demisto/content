@@ -1,14 +1,16 @@
 id: TruSTAR Test
 version: -1
+contentitemfields:
+  propagationLabels: []
 name: TruSTAR Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4a41ee2c-daa1-4b04-87d1-d1175a907c63
+    taskid: 837b6056-f6e5-44a4-890a-2870506c79c7
     type: start
     task:
-      id: 4a41ee2c-daa1-4b04-87d1-d1175a907c63
+      id: 837b6056-f6e5-44a4-890a-2870506c79c7
       version: -1
       name: ""
       iscommand: false
@@ -25,12 +27,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 243bc1c2-fd3f-4c07-884a-993d5b9d5b56
+    taskid: b139ff93-1628-4c02-86b5-40642c571a3f
     type: regular
     task:
-      id: 243bc1c2-fd3f-4c07-884a-993d5b9d5b56
+      id: b139ff93-1628-4c02-86b5-40642c571a3f
       version: -1
       name: Trending Indicators
       description: Returns the 10 indicators that have recently appeared in the most
@@ -42,7 +46,7 @@ tasks:
       brand: TruSTAR
     nexttasks:
       '#none#':
-      - "2"
+      - "17"
     scriptarguments:
       days-back: {}
       type: {}
@@ -55,47 +59,14 @@ tasks:
         }
       }
     note: false
-  "2":
-    id: "2"
-    taskid: 43e16ce6-3a2b-49ad-83aa-d61c9fc16f6d
-    type: regular
-    task:
-      id: 43e16ce6-3a2b-49ad-83aa-d61c9fc16f6d
-      version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: File
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 2dbd6137-845b-47d1-8792-bf6fd9a50cb6
+    taskid: 7122c19f-b494-4b75-8f4c-673dc2a5a57e
     type: regular
     task:
-      id: 2dbd6137-845b-47d1-8792-bf6fd9a50cb6
+      id: 7122c19f-b494-4b75-8f4c-673dc2a5a57e
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -119,12 +90,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 585ff705-62dd-4f42-8c10-ecc4f161a84d
+    taskid: 422bc58b-9835-4659-8a26-12b933e9905c
     type: regular
     task:
-      id: 585ff705-62dd-4f42-8c10-ecc4f161a84d
+      id: 422bc58b-9835-4659-8a26-12b933e9905c
       version: -1
       name: Search Indicators with the term http
       description: Searches for all indicators that contain the given search term.
@@ -150,12 +123,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 906ed14d-6893-4877-8fe6-3245fc3333cf
+    taskid: 2d8fb1db-33ac-4d17-89d7-d10aeddd39dc
     type: regular
     task:
-      id: 906ed14d-6893-4877-8fe6-3245fc3333cf
+      id: 2d8fb1db-33ac-4d17-89d7-d10aeddd39dc
       version: -1
       name: Get correlated reports of a URL indicator
       description: Returns a paginated list of all reports that contain any of the
@@ -183,12 +158,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: 8650a974-09e1-4501-858c-76a58526493d
+    taskid: d7631929-293d-4ced-873d-e635d8ac5fba
     type: title
     task:
-      id: 8650a974-09e1-4501-858c-76a58526493d
+      id: d7631929-293d-4ced-873d-e635d8ac5fba
       version: -1
       name: Done
       type: title
@@ -203,12 +180,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 7cbb11b0-44a7-447e-8f10-71a84affe068
+    taskid: fdc7ee6f-4de7-4bb4-88ec-66477248cb36
     type: regular
     task:
-      id: 7cbb11b0-44a7-447e-8f10-71a84affe068
+      id: fdc7ee6f-4de7-4bb4-88ec-66477248cb36
       version: -1
       name: Search for URL using url
       description: Returns url maliciousness details
@@ -232,12 +211,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: 899bd499-98c1-4e53-8c9c-ccd92102cbfa
+    taskid: cf997137-f65a-46d3-8f1d-b46d7ffec56b
     type: regular
     task:
-      id: 899bd499-98c1-4e53-8c9c-ccd92102cbfa
+      id: cf997137-f65a-46d3-8f1d-b46d7ffec56b
       version: -1
       name: Search for Domain using domain
       description: Returns domain maliciousness details
@@ -261,12 +242,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: 3f31994d-a8f4-4f98-89e4-7939defcbbd9
+    taskid: 837b71a5-0bf2-4fa7-88ae-f46bc25609dc
     type: regular
     task:
-      id: 3f31994d-a8f4-4f98-89e4-7939defcbbd9
+      id: 837b71a5-0bf2-4fa7-88ae-f46bc25609dc
       version: -1
       name: Search for File using file
       description: Returns file maliciousness details
@@ -290,12 +273,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: 4bd45ed1-60e4-4b51-8896-c48b076dc928
+    taskid: fc76e371-d44f-44ee-8e59-46e083d2fe6d
     type: regular
     task:
-      id: 4bd45ed1-60e4-4b51-8896-c48b076dc928
+      id: fc76e371-d44f-44ee-8e59-46e083d2fe6d
       version: -1
       name: Search for IP using ip
       description: Returns ip maliciousness details
@@ -308,7 +293,7 @@ tasks:
       - "16"
     scriptarguments:
       ip:
-        simple: 8.8.8.8
+        simple: 8.8.4.4
       threshold: {}
     separatecontext: false
     view: |-
@@ -319,12 +304,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: 790cc70a-620b-4871-8281-0ad6ee766222
+    taskid: bd210e82-1605-4480-8420-9c7be9b8e388
     type: condition
     task:
-      id: 790cc70a-620b-4871-8281-0ad6ee766222
+      id: bd210e82-1605-4480-8420-9c7be9b8e388
       version: -1
       name: Verify Context
       type: condition
@@ -337,14 +324,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: URL.Data
             iscontext: true
-          right:
-            value:
-              simple: www.google.com
     view: |-
       {
         "position": {
@@ -353,12 +337,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: 5790cd03-828d-499e-87ee-cd3c365abcd5
+    taskid: c0c6df55-f737-4095-8b42-dc02b65e505e
     type: condition
     task:
-      id: 5790cd03-828d-499e-87ee-cd3c365abcd5
+      id: c0c6df55-f737-4095-8b42-dc02b65e505e
       version: -1
       name: Verify Context
       type: condition
@@ -371,14 +357,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: Domain.Name
             iscontext: true
-          right:
-            value:
-              simple: www.google.com
     view: |-
       {
         "position": {
@@ -387,12 +370,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: 0fb11a99-d2d9-473c-8ea0-2f0bc3702c49
+    taskid: e98a02b0-13c2-4308-879f-893cfef38fd0
     type: condition
     task:
-      id: 0fb11a99-d2d9-473c-8ea0-2f0bc3702c49
+      id: e98a02b0-13c2-4308-879f-893cfef38fd0
       version: -1
       name: Verify Context
       type: condition
@@ -421,12 +406,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: f6fe353e-0bc4-419c-86cc-59a8d92d4bca
+    taskid: 1d6865af-8d82-4fed-8843-709384cc076d
     type: condition
     task:
-      id: f6fe353e-0bc4-419c-86cc-59a8d92d4bca
+      id: 1d6865af-8d82-4fed-8843-709384cc076d
       version: -1
       name: Verify Context
       type: condition
@@ -446,7 +433,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 8.8.8.8
+              simple: 8.8.4.4
     view: |-
       {
         "position": {
@@ -455,6 +442,51 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 3b061876-ef4e-4612-8642-500b4dfe0b58
+    type: condition
+    task:
+      id: 3b061876-ef4e-4612-8642-500b4dfe0b58
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: IP
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},

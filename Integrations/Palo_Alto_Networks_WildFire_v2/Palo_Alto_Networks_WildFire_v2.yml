@@ -3,7 +3,7 @@ commonfields:
   id: WildFire-v2
   version: -1
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- display: Server base URL (e.g. https://192.168.0.1/publicapi)
   name: server
   defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
   type: 0
@@ -75,7 +75,7 @@ script:
       description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
       description: The actual score.

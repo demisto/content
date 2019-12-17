@@ -509,6 +509,7 @@ log_handler = None
 def start_logging():
     global log_stream
     global log_handler
+    logging.raiseExceptions = False
     if log_stream is None:
         log_stream = StringIO()
         log_handler = logging.StreamHandler(stream=log_stream)
@@ -2084,6 +2085,15 @@ def main():
                 {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
     finally:
+        try:
+            if isinstance(config, Configuration):
+                # Sometimes new threads are created but never killed, so killing them manually.
+                if "thread_pool" in config.protocol.__dict__:
+                    config.protocol.thread_pool.terminate()
+                    del config.protocol.__dict__["thread_pool"]
+        except Exception:
+            demisto.debug("Error was found in terminating threads in config.protocol, ignoring.")
+        exchangelib.close_connections()
         if log_stream:
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
@@ -2093,5 +2103,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ("__builtin__", "builtins"):
     main()
