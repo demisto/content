@@ -145,9 +145,10 @@ def test_string_to_key_value(mocker, requests_mock):
             "MatrixRows": []
         }])
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'10359': {
-        'fields': {'1': 'Assignee', '2': 'Task ID', '3': 'Updated At'}}})
-    field_value = client.string_to_FieldValues('Assignee;6;1#Task ID;This is a task#'
-                                               'Updated At;2019-11-20T11:40:49.4109934;0', '10359')
-    assert field_value == [{'Key': '1', 'Value': {'Id': '6'}},
-                           {'Key': '2', 'Value': 'This is a task'},
-                           {'Key': '3', 'Value': '2019-11-20T11:40:49.4109934'}]
+        'fields': {'1': 'Audit Project', '2': 'Task ID', '3': 'Updated At'}}})
+
+    json = [{"fieldName": "Task ID", "value": "Updated by Demisto Test Playbook", "isLookup": False},
+            {"fieldName": "Audit Project", "value": 3, "isLookup": True}]
+    field_value = client.string_to_FieldValues(json, '10359')
+    assert field_value == [{'Key': '2', 'Value': 'Updated by Demisto Test Playbook'},
+                           {'Key': '1', 'Value': {'Id': 3}}]
