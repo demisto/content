@@ -40,11 +40,12 @@ def http(method, url_suffix, params=None, data=None, files=None):
             return_error('Error in API call [%d] - %s: %s ' % (response.status_code, response.reason, response.content))
     except requests.exceptions.ConnectionError as err:
         return_error("Could not connect to CS Enterprise URL ", str(err))
-    except requests.exceptions.MissingSchema as err:
+    except requests.exceptions.MissingSchema:
         return_error("Invalid Schema. URL must start with http:// or https://")
-    except requests.exceptions.InvalidSchema as err:
+    except requests.exceptions.InvalidSchema:
         return_error("Invalid Schema. URL must start with http:// or https://")
 
+        
 '''MAIN FUNCTIONS'''
 
 
@@ -197,7 +198,7 @@ try:
         delete_command()
     elif demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
-        if API_KEY is "":
+        if API_KEY == "":
             return_error("Must enter API Token")
         response = http("GET", "/search/")
         if response.status_code == 200 or response.status_code == 403:
