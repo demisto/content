@@ -3,6 +3,7 @@ from collections import defaultdict
 from io import BytesIO, StringIO
 
 import demisto_ml
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 
@@ -290,13 +291,14 @@ def main():
         target_recall = 0
     res_threshold = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=True)
     # show results if no threshold (threhsold=0) was used. Following code is reached only if a legal thresh was found:
-    res = get_ml_model_evaluation(y_test, y_pred, target_accuracy=0, target_recall=0)
-    human_readable = '\n'.join(['## Results for No Threshold',
-                                'The following results were achieved by using no threshold (threshold equals 0)'])
-    output_model_evaluation(model_name=model_name, train_tag_data=train_tag_data, train_text_data=train_text_data,
-                            y_test=y_test, y_pred=y_pred, res=res, store_model=False,
-                            model_override=model_override, context_field='DBotPhishingClassifierNoThresh',
-                            human_readable_title=human_readable)
+    if not np.isclose(float(res_threshold['Contents']['threshold']), 0):
+        res = get_ml_model_evaluation(y_test, y_pred, target_accuracy=0, target_recall=0)
+        human_readable = '\n'.join(['## Results for No Threshold',
+                                    'The following results were achieved by using no threshold (threshold equals 0)'])
+        output_model_evaluation(model_name=model_name, train_tag_data=train_tag_data, train_text_data=train_text_data,
+                                y_test=y_test, y_pred=y_pred, res=res, store_model=False,
+                                model_override=model_override, context_field='DBotPhishingClassifierNoThresh',
+                                human_readable_title=human_readable)
     # show results for the threshold found - last result so it will appear first
     output_model_evaluation(model_name=model_name, train_tag_data=train_tag_data, train_text_data=train_text_data,
                             y_test=y_test, y_pred=y_pred, res=res_threshold, store_model=store_model,
