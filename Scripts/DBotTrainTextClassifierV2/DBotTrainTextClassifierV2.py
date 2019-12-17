@@ -291,7 +291,7 @@ def main():
         target_recall = 0
     res_threshold = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=True)
     # show results if no threshold (threhsold=0) was used. Following code is reached only if a legal thresh was found:
-    if not np.isclose(float(res_threshold['Contents']['threshold']), 0):
+    if not np.isclose(float(res_threshold[0]['Contents']['threshold']), 0):
         res = get_ml_model_evaluation(y_test, y_pred, target_accuracy=0, target_recall=0)
         human_readable = '\n'.join(['## Results for No Threshold',
                                     'The following results were achieved by using no threshold (threshold equals 0)'])
