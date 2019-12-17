@@ -1,5 +1,6 @@
 id: Active Directory - Get User Manager Email - Test
 version: -1
+fromversion: 4.5.0
 name: Active Directory - Get User Manager Email - Test
 description: A test playbook for the Active Directory - Get User Manager Email playbook.
 starttaskid: "0"
