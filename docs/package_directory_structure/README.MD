@@ -1,4 +1,4 @@
-# Package directory structure
+# Package Directory Structure
 Content code entities in Demisto are presented by YAML files.
 
 Automation scripts and integrations [YAML files](https://github.com/demisto/content/blob/master/docs/yaml-file-integration) include Javascript/Python code.
