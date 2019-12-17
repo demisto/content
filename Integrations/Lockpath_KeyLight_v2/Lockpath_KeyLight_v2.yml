@@ -3,7 +3,7 @@ commonfields:
   id: Lockpath KeyLight v2
   version: -1
 configuration:
-- display: Server URL in the form of https://server:<port> (e.g. https://192.168.0.1:4443)
+- display: Server URL in the form of https://[server]:<port> (e.g. https://192.168.0.1:4443)
   name: server
   required: true
   type: 0
@@ -559,3 +559,4 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
