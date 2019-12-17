@@ -2,171 +2,48 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
-import base64
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from typing import Any
 requests.packages.urllib3.disable_warnings()
-
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 ''' GLOBAL VARS '''
 
 SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
 BASE_URL = SERVER + '/api'
+NO_OPROXY = demisto.params().get('no_oproxy', False)
 TENANT_ID = demisto.params()['tenant_id']
 AUTH_AND_TOKEN_URL = demisto.params()['auth_id'].split('@')
-AUTH_ID = AUTH_AND_TOKEN_URL[0]
 ENC_KEY = demisto.params()['enc_key']
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_SEVERITY = demisto.params()['fetch_severity'].split(',')
 FETCH_STATUS = demisto.params().get('fetch_status').split(',')
-if len(AUTH_AND_TOKEN_URL) != 2:
-    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
-else:
-    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 APP_NAME = 'ms-defender-atp'
+PROXY = handle_proxy()
+MS_CLIENT: Any
 
 ''' HELPER FUNCTIONS '''
 
 
-def epoch_seconds(d=None):
-    """
-    Return the number of seconds for given date. If no date, return current.
-    """
-    if not d:
-        d = datetime.utcnow()
-    return int((d - datetime.utcfromtimestamp(0)).total_seconds())
+def get_client(base_url, auth_id_and_url, tenant_id, enc_key, proxy, ok_codes, use_ssl, no_oproxy, app_name):
+    if no_oproxy:
+        app_url = f'https://login.windows.net/{tenant_id}/oauth2/token'
+        ms_client = MicrosoftClient.from_self_deployed(tenant_id, auth_id_and_url,
+                                                       enc_key, app_url=app_url,
+                                                       resource='https://api.securitycenter.windows.com',
+                                                       base_url=base_url, verify=use_ssl, proxy=proxy,
+                                                       ok_codes=ok_codes)
+    else:
+        # params related to oproxy
+        auth_id_and_token_retrieval_url = auth_id_and_url.split('@')
+        auth_id_and_url = auth_id_and_token_retrieval_url[0]
+        if len(auth_id_and_token_retrieval_url) != 2:
+            token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+        else:
+            token_retrieval_url = auth_id_and_token_retrieval_url[1]
+        ms_client = MicrosoftClient.from_oproxy(auth_id_and_url, enc_key, token_retrieval_url, app_name,
+                                                tenant_id=tenant_id, base_url=base_url, verify=use_ssl,
+                                                proxy=proxy, ok_codes=ok_codes)
 
-
-def get_encrypted(content: str, key: str) -> str:
-    """
-
-    Args:
-        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
-            the tenant id
-        key (str): encryption key from Demistobot
-
-    Returns:
-        encrypted timestamp:content
-    """
-    def create_nonce() -> bytes:
-        return os.urandom(12)
-
-    def encrypt(string: str, enc_key: str) -> bytes:
-        """
-
-        Args:
-            enc_key (str):
-            string (str):
-
-        Returns:
-            bytes:
-        """
-        # String to bytes
-        enc_key = base64.b64decode(enc_key)
-        # Create key
-        aes_gcm = AESGCM(enc_key)
-        # Create nonce
-        nonce = create_nonce()
-        # Create ciphered data
-        data = string.encode()
-        ct = aes_gcm.encrypt(nonce, data, None)
-        return base64.b64encode(nonce + ct)
-    now = epoch_seconds()
-    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
-    return encrypted
-
-
-def get_access_token():
-    integration_context = demisto.getIntegrationContext()
-    access_token = integration_context.get('access_token')
-    valid_until = integration_context.get('valid_until')
-    if access_token and valid_until:
-        if epoch_seconds() < valid_until:
-            return access_token
-    headers = {'Accept': 'application/json'}
-
-    dbot_response = requests.post(
-        TOKEN_RETRIEVAL_URL,
-        headers=headers,
-        data=json.dumps({
-            'app_name': APP_NAME,
-            'registration_id': AUTH_ID,
-            'encrypted_token': get_encrypted(TENANT_ID, ENC_KEY)
-        }),
-        verify=USE_SSL
-    )
-    if dbot_response.status_code not in {200, 201}:
-        msg = 'Error in authentication. Try checking the credentials you entered.'
-        try:
-            demisto.info('Authentication failure from server: {} {} {}'.format(
-                dbot_response.status_code, dbot_response.reason, dbot_response.text))
-            err_response = dbot_response.json()
-            server_msg = err_response.get('message')
-            if not server_msg:
-                title = err_response.get('title')
-                detail = err_response.get('detail')
-                if title:
-                    server_msg = f'{title}. {detail}'
-            if server_msg:
-                msg += ' Server message: {}'.format(server_msg)
-        except Exception as ex:
-            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
-        raise Exception(msg)
-    try:
-        gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
-        demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
-        parsed_response = dbot_response.json()
-    except ValueError:
-        raise Exception(
-            'There was a problem in retrieving an updated access token.\n'
-            'The response from the Demistobot server did not contain the expected content.'
-        )
-    access_token = parsed_response.get('access_token')
-    expires_in = parsed_response.get('expires_in', 3595)
-    time_now = epoch_seconds()
-    time_buffer = 5  # seconds by which to shorten the validity period
-    if expires_in - time_buffer > 0:
-        # err on the side of caution with a slightly shorter access token validity period
-        expires_in = expires_in - time_buffer
-
-    demisto.setIntegrationContext({
-        'access_token': access_token,
-        'valid_until': time_now + expires_in
-    })
-    return access_token
-
-
-def http_request(method, url_suffix, json=None, params=None):
-
-    token = get_access_token()
-    r = requests.request(
-        method,
-        BASE_URL + url_suffix,
-        json=json,
-        headers={
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        },
-        verify=USE_SSL
-    )
-    if r.status_code not in {200, 201}:
-        try:
-            error = r.json().get('error')
-            msg = error['message'] if 'message' in error else r.reason
-            return_error('Error in API call to ATP [%d] - %s' % (r.status_code, msg))
-        except ValueError:
-            msg = r.text if r.text else r.reason
-            return_error('Error in API call to ATP [%d] - %s' % (r.status_code, msg))
-    if not r.text:
-        return {}
-    try:
-        return r.json()
-    except ValueError:
-        return {}
+    return ms_client
 
 
 def alert_to_incident(alert):
@@ -219,7 +96,7 @@ def isolate_machine(machine_id, comment, isolation_type):
     }
     if isolation_type:
         json['IsolationType'] = isolation_type
-    response = http_request('POST', cmd_url, json=json)
+    response = MS_CLIENT.http_request('POST', cmd_url, json_data=json)
     return response
 
 
@@ -256,7 +133,7 @@ def unisolate_machine(machine_id, comment):
     json = {
         'Comment': comment
     }
-    response = http_request('POST', cmd_url, json=json)
+    response = MS_CLIENT.http_request('POST', cmd_url, json_data=json)
     return response
 
 
@@ -337,7 +214,7 @@ def get_machines_command():
 def get_machines():
 
     cmd_url = '/machines'
-    response = http_request('GET', cmd_url)
+    response = MS_CLIENT.http_request('GET', cmd_url)
     return response
 
 
@@ -406,7 +283,7 @@ def get_file_related_machines_command():
 def get_file_related_machines(file):
 
     cmd_url = '/files/{}/machines'.format(file)
-    response = http_request('GET', cmd_url)
+    response = MS_CLIENT.http_request('GET', cmd_url)
     return response
 
 
@@ -472,7 +349,7 @@ def get_machine_details_command():
 def get_machine_details(machine_id):
 
     cmd_url = '/machines/{}'.format(machine_id)
-    response = http_request('GET', cmd_url)
+    response = MS_CLIENT.http_request('GET', cmd_url)
     return response
 
 
@@ -501,14 +378,14 @@ def block_file(file_sha1, comment, title, expiration_time, severity, recommended
         'description': comment,
         'recommendedActions': recommended_actions
     }
-    response = http_request('POST', cmd_url, json=json)
+    response = MS_CLIENT.http_request('POST', cmd_url, json_data=json)
     return response
 
 
 def get_user_related_machines(user_id):
 
     cmd_url = '/users/{}/machines'.format(user_id)
-    response = http_request('GET', cmd_url)
+    response = MS_CLIENT.http_request('GET', cmd_url)
     return response
 
 
@@ -528,7 +405,7 @@ def stop_and_quarantine_file(machine_id, file_sha1, comment):
         'Comment': comment,
         'Sha1': file_sha1
     }
-    response = http_request('POST', cmd_url, json=json)
+    response = MS_CLIENT.http_request('POST', cmd_url, json_data=json)
     return response
 
 
@@ -550,7 +427,7 @@ def run_antivirus_scan(machine_id, comment, scan_type):
         'Comment': comment,
         'ScanType': scan_type
     }
-    response = http_request('POST', cmd_url, json=json)
+    response = MS_CLIENT.http_request('POST', cmd_url, json_data=json)
     return response
 
 
@@ -595,7 +472,7 @@ def list_alerts_command():
 
 def list_alerts():
     cmd_url = '/alerts'
-    response = http_request('GET', cmd_url)
+    response = MS_CLIENT.http_request('GET', cmd_url)
     return response
 
 
@@ -647,25 +524,25 @@ def update_alert_command():
 
 def update_alert(alert_id, json):
     cmd_url = '/alerts/' + alert_id
-    response = http_request('PATCH', cmd_url, json=json)
+    response = MS_CLIENT.http_request('PATCH', cmd_url, json_data=json)
     return response
 
 
 def get_alert_related_domains(alert_id):
     cmd_url = '/alerts/{}/domains'.format(alert_id)
-    response = http_request('GET', cmd_url)
+    response = MS_CLIENT.http_request('GET', cmd_url)
     return response
 
 
 def get_alert_related_files(alert_id):
     cmd_url = '/alerts/{}/files'.format(alert_id)
-    response = http_request('GET', cmd_url)['value']
+    response = MS_CLIENT.http_request('GET', cmd_url)['value']
     return response
 
 
 def get_alert_related_ips(alert_id):
     cmd_url = '/alerts/{}/ips'.format(alert_id)
-    response = http_request('GET', cmd_url)
+    response = MS_CLIENT.http_request('GET', cmd_url)
     return response
 
 
@@ -699,7 +576,7 @@ def get_advanced_hunting(query):
     json = {
         'Query': query
     }
-    response = http_request('POST', cmd_url, json=json)
+    response = MS_CLIENT.http_request('POST', cmd_url, json_data=json)
     return response
 
 
@@ -758,7 +635,7 @@ def create_alert(machine_id, severity, title, description, event_time, report_id
         json['recommendedAction'] = rec_action
     if category:
         json['category'] = category
-    response = http_request('POST', cmd_url, json=json)
+    response = MS_CLIENT.http_request('POST', cmd_url, json_data=json)
     return response
 
 
@@ -795,7 +672,7 @@ def get_alert_related_user_command():
 
 def get_alert_related_user(alert_id):
     cmd_url = '/alerts/{}/user'.format(alert_id)
-    response = http_request('GET', cmd_url)
+    response = MS_CLIENT.http_request('GET', cmd_url)
     return response
 
 
@@ -840,82 +717,69 @@ def fetch_incidents():
     demisto.incidents(incidents)
 
 
-def test_function():
-    token = get_access_token()
-    response = requests.get(
-        BASE_URL + '/alerts',
-        headers={
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        params={'$top': '1'},
-        verify=USE_SSL
-    )
-    try:
-        _ = response.json() if response.text else {}
-        if not response.ok:
-            return_error(f'API call to Windows Advanced Threat Protection. '
-                         f'Please check authentication related parameters. '
-                         f'[{response.status_code}] - {response.reason}')
-
-        demisto.results('ok')
-
-    except TypeError as ex:
-        demisto.debug(str(ex))
-        return_error(f'API call to Windows Advanced Threat Protection failed, could not parse result. '
-                     f'Please check authentication related parameters. [{response.status_code}]')
-
-
 ''' EXECUTION CODE '''
 
-LOG('command is %s' % (demisto.command(), ))
 
-try:
-    if demisto.command() == 'test-module':
-        test_function()
+def main():
+    LOG('command is %s' % (demisto.command(), ))
 
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
+    global MS_CLIENT
+    MS_CLIENT = get_client(BASE_URL, AUTH_AND_TOKEN_URL, TENANT_ID, ENC_KEY, PROXY, (200, 201, 202), USE_SSL,
+                           NO_OPROXY, APP_NAME)
 
-    elif demisto.command() == 'microsoft-atp-isolate-machine':
-        isolate_machine_command()
+    try:
+        if demisto.command() == 'test-module':
+            MS_CLIENT.get_access_token()
+            demisto.results('ok')
 
-    elif demisto.command() == 'microsoft-atp-unisolate-machine':
-        unisolate_machine_command()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
 
-    elif demisto.command() == 'microsoft-atp-get-machines':
-        get_machines_command()
+        elif demisto.command() == 'microsoft-atp-isolate-machine':
+            isolate_machine_command()
 
-    elif demisto.command() == 'microsoft-atp-get-file-related-machines':
-        get_file_related_machines_command()
+        elif demisto.command() == 'microsoft-atp-unisolate-machine':
+            unisolate_machine_command()
 
-    elif demisto.command() == 'microsoft-atp-get-machine-details':
-        get_machine_details_command()
+        elif demisto.command() == 'microsoft-atp-get-machines':
+            get_machines_command()
 
-    elif demisto.command() == 'microsoft-atp-block-file':
-        block_file_command()
+        elif demisto.command() == 'microsoft-atp-get-file-related-machines':
+            get_file_related_machines_command()
 
-    elif demisto.command() == 'microsoft-atp-stop-and-quarantine-file':
-        stop_and_quarantine_file_command()
+        elif demisto.command() == 'microsoft-atp-get-machine-details':
+            get_machine_details_command()
 
-    elif demisto.command() == 'microsoft-atp-run-antivirus-scan':
-        run_antivirus_scan_command()
+        elif demisto.command() == 'microsoft-atp-block-file':
+            block_file_command()
 
-    elif demisto.command() == 'microsoft-atp-list-alerts':
-        list_alerts_command()
+        elif demisto.command() == 'microsoft-atp-stop-and-quarantine-file':
+            stop_and_quarantine_file_command()
 
-    elif demisto.command() == 'microsoft-atp-update-alert':
-        update_alert_command()
+        elif demisto.command() == 'microsoft-atp-run-antivirus-scan':
+            run_antivirus_scan_command()
 
-    elif demisto.command() == 'microsoft-atp-advanced-hunting':
-        get_advanced_hunting_command()
+        elif demisto.command() == 'microsoft-atp-list-alerts':
+            list_alerts_command()
 
-    elif demisto.command() == 'microsoft-atp-create-alert':
-        create_alert_command()
+        elif demisto.command() == 'microsoft-atp-update-alert':
+            update_alert_command()
 
-    elif demisto.command() == 'microsoft-atp-get-alert-related-user':
-        get_alert_related_user_command()
+        elif demisto.command() == 'microsoft-atp-advanced-hunting':
+            get_advanced_hunting_command()
 
-except Exception as e:
-    return_error(str(e))
+        elif demisto.command() == 'microsoft-atp-create-alert':
+            create_alert_command()
+
+        elif demisto.command() == 'microsoft-atp-get-alert-related-user':
+            get_alert_related_user_command()
+
+    except Exception as e:
+        return_error(str(e))
+
+
+from microsoft_api import MicrosoftClient  # noqa: E402
+
+
+if __name__ in ["builtins", "__main__"]:
+    main()
