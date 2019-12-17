@@ -660,7 +660,7 @@ def fetch_incidents():
 
     last_fetch_timestamp = int(parse(last_fetch).timestamp() * 1000)
 
-    last_detection_id = last_run.get('last_detection_id')
+    last_detection_id = str(last_run.get('last_detection_id'))
 
     fetch_query = demisto.params().get('fetch_query')
 
@@ -682,6 +682,7 @@ def fetch_incidents():
             if len(detections_ids) == 1:
                 return incidents
 
+        # if the first detection in this pull is different than the last detection fetched we bring it as well
         else:
             first_index_to_fetch = 0
 
