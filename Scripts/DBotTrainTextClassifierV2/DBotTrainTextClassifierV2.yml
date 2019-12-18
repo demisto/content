@@ -35,7 +35,7 @@ args:
   secret: false
 - default: false
   defaultValue: '0.8'
-  description: The target accuracy, between 0 and 1.
+  description: The target accuracy, between 0 and 1. Default is 0.8.
   isArray: false
   name: targetAccuracy
   required: false
@@ -78,7 +78,7 @@ args:
   secret: false
 - default: false
   defaultValue: '0.8'
-  description: The rario of the training set out of the entire data. Used for model evaluation
+  description: The ratio of the training set to the entire data set, which is used for model evaluation.
   isArray: false
   name: trainSetRatio
   required: false
@@ -122,7 +122,7 @@ args:
   deprecated: true
 - default: false
   defaultValue: 'true'
-  description: Whether to extract keyworks for model.
+  description: Whether to extract keywords for the model. Can be "true" or "false". Default is "true".
   isArray: false
   name: findKeywords
   predefined:
