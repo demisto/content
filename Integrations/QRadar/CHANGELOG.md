@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+ - Fixed an issue in which the ***qradar-get-assets*** failed when a user would enter *fields* parameter. 
 
 ## [19.11.1] - 2019-11-26
 Fixed an issue in ***get-search-results*** command output.
