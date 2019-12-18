@@ -983,4 +983,135 @@ External file updated successfully.
  alt="image" width="749" height="412"></a>
  -->
 </p>
+
+<h3 id="pan-os-edl-update-internal-list">12. pan-os-edl-update-internal-list</h3>
+<hr>
+<p>Updates the instance context with the specified list name and list items.</p>
+<h5>Base Command</h5>
+<p>
+  <code>pan-os-edl-update-internal-list</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>list_name</td>
+      <td>The list from the instance context to update.</td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>list_items</td>
+      <td>An array of list items.</td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>verbose</td>
+      <td>Whether to print the updated remote file to the War Room. Can ve "true" or "false". Default is "false".</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>add_or_remove</td>
+      <td>Whether to add to, or remove from the list. Can be "add" or "remove". Default is "add".</td>
+      <td>Required</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!pan-os-edl-update-internal-list add_or_remove=add list_items=3.4.2.3 list_name=kili1</code>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+<p>
+Instance context updated successfully.
+</p>
+<!-- remove the following comments to manually add an image: -->
+<!--
+<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
+ alt="image" width="749" height="412"></a>
+ -->
+</p>
+
+<h3 id="pan-os-edl-update-external-file">13. pan-os-edl-update-external-file</h3>
+<hr>
+<p>Updates a remote file with the contents of an internal list.</p>
+<h5>Base Command</h5>
+<p>
+  <code>pan-os-edl-update-external-file</code>
+</p>
+
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>file_path</td>
+      <td>Unique path to the file on a remote server.</td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>list_name</td>
+      <td>List name.</td>
+      <td>Required</td>
+    </tr>
+    <tr>
+      <td>verbose</td>
+      <td>Whether to add to, or remove from the list. Can be "add" or "remove". Default is "add".</td>
+      <td>Optional</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!pan-os-edl-update-external-file file_path=kili1.txt list_name=kili1 verbose=false</code>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+<p>
+External file updated successfully.
+</p>
+<!-- remove the following comments to manually add an image: -->
+<!--
+<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
+ alt="image" width="749" height="412"></a>
+ -->
+</p>
 <h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2>
