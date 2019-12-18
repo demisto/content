@@ -1,6 +1,6 @@
-id: SecBI-Test
+id: SecBI - Test
 version: -1
-name: SecBI-Test
+name: SecBI - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -45,8 +45,6 @@ tasks:
     scriptarguments:
       limit:
         simple: "3"
-      query:
-        simple: ${inputs.Query}
     separatecontext: false
     view: |-
       {
@@ -195,10 +193,5 @@ view: |-
       }
     }
   }
-inputs:
-- key: Query
-  value:
-    simple: severity:62
-  required: true
-  description: ""
+inputs: []
 outputs: []
