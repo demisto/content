@@ -290,8 +290,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: "Retrieves the properties and relationships of user object. for more
-      information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)
+    description: "Retrieves the properties and relationships of a user object. For more
+      information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
 
       Permissions:
     - User.Read (Delegated)
