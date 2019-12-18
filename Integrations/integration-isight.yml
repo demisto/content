@@ -4,7 +4,7 @@ commonfields:
 name: FireEye iSIGHT
 display: FireEye iSIGHT
 category: Data Enrichment & Threat Intelligence
-image: data:image/png;base64,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
+image: data:image/png;base64,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
 description: FireEye cyber threat intelligence
 configuration:
 - display: Public Key
@@ -22,7 +22,7 @@ configuration:
   defaultvalue: "2.5"
   type: 0
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -183,7 +183,8 @@ script:
         var res = createContextReportsAndScore(records);
         var context = {
             DBotScore: {Indicator: ip, Type: 'IP', Vendor: VENDOR_NAME, Score: res.dbotScore},
-            'Report(val.ID && val.ID == obj.ID)': res.reports
+            'Report(val.ID && val.ID == obj.ID)': res.reports,
+            'IP.Address': ip
         };
 
         if (res.dbotScore > 2) {
@@ -218,7 +219,8 @@ script:
         var res = createContextReportsAndScore(records);
         var context = {
             DBotScore: {Indicator: domain, Type: 'domain', Vendor: VENDOR_NAME, Score: res.dbotScore},
-            'Report(val.ID && val.ID == obj.ID)': res.reports
+            'Report(val.ID && val.ID == obj.ID)': res.reports,
+            'Domain.Name': domain
         };
 
         if (res.dbotScore > 2) {
@@ -377,6 +379,8 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
+    - contextPath: IP.Address
+      description: The IP address
     - contextPath: Report.ID
       description: Report ID
     - contextPath: Report.title
@@ -401,6 +405,8 @@ script:
       description: Vendor used to calculate the score
     - contextPath: DBotScore.Score
       description: The actual score
+    - contextPath: Domain.Name
+      description: The domain name.
     - contextPath: Report.ID
       description: Report ID
     - contextPath: Report.title

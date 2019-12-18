@@ -2,25 +2,25 @@ type: map
 mapping:
   id:
     type: str
-    required: yes
+    required: True
   version:
     type: int
-    required: yes
+    required: True
   sourceplaybookid:
     type: str
     required: no
   name:
     type: str
-    required: yes
+    required: True
   description:
     type: str
-    required: yes
+    required: True
   starttaskid:
     type: str
-    required: yes
+    required: True
   view:
     type: str
-    required: yes
+    required: True
   outputs:
       type: seq
       sequence:
@@ -35,7 +35,7 @@ mapping:
       - type: str
   tasks:
     type: map
-    required: yes
+    required: True
     matching-rule: 'all'
     mapping:
       regex;(^[0-9]+$):
@@ -43,13 +43,13 @@ mapping:
         mapping:
           id:
             type: text
-            required: yes
+            required: True
           taskid:
             type: str
-            required: yes
+            required: True
           type:
             type: str
-            required: yes
+            required: True
             enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard', 'collection']
           form:
             type: map
@@ -72,11 +72,11 @@ mapping:
             type: bool
           task:
             type: map
-            required: yes
+            required: True
             mapping:
               id:
                 type: text
-                required: yes
+                required: True
               version:
                 type: int
                 required: true
@@ -100,10 +100,10 @@ mapping:
                 enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard', 'collection']
               iscommand:
                 type: bool
-                required: yes
+                required: True
               brand:
                 type: text
-                required: yes
+                required: True
               issystemtask:
                 type: bool
               clonedfrom:
@@ -141,7 +141,7 @@ mapping:
               - include: condition_schema
           view:
             type: str
-            required: yes
+            required: True
           results:
             type: seq
             sequence:
@@ -156,7 +156,7 @@ mapping:
     type: bool
   fromversion:
     type: text
-    required: yes
+    required: True
   toversion:
     type: text
   tests:
@@ -180,12 +180,12 @@ schema;input_schema:
   mapping:
     key:
       type: str
-      required: yes
+      required: True
     value:
       type: any
     description:
       type: str
-      required: yes
+      required: True
     required:
       type: bool
 
@@ -195,12 +195,12 @@ schema;output_schema:
   mapping:
     contextPath:
       type: str
-      required: yes
+      required: True
     type:
       type: text
     description:
       type: str
-      required: yes
+      required: True
 
 # playbook->tasks->conditions
 schema;condition_schema:
@@ -208,7 +208,7 @@ schema;condition_schema:
   mapping:
     label:
       type: str
-      required: yes
+      required: True
     condition:
       type: seq
       sequence:
@@ -225,25 +225,25 @@ schema;arg_filter_schema:
   mapping:
     operator:
       type: str
-      required: yes
+      required: True
     ignorecase:
       type: bool
     left:
       type: map
-      required: yes
+      required: True
       mapping:
         value:
           type: any
-          required: yes
+          required: True
         iscontext:
           type: bool
-          required: yes
+          required: True
     right:
       type: map
       mapping:
         value:
           type: any
-          required: yes
+          required: True
         iscontext:
           type: bool
 

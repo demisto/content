@@ -138,9 +138,9 @@ def http_request(uri: str, method: str, headers: Dict = {},
                     'Object was not found, verify that the name is correct and that the instance was committed.')
 
             #  catch urlfiltering error and display a meaningful message
-            elif str(json_result['response']['msg']['line']).find('test -> url  is unexpected') != -1:
+            elif str(json_result['response']['msg']['line']).find('test -> url') != -1:
                 return_error('The URL filtering license is either expired or not active.'
-                             'Please contact your PAN-OS representative.')
+                             ' Please contact your PAN-OS representative.')
 
             # catch non valid jobID errors and display a meaningful message
             elif isinstance(json_result['response']['msg']['line'], str) and \
@@ -2067,21 +2067,28 @@ def panorama_edit_custom_url_category_command():
 
 
 @logger
-def panorama_get_url_category(url):
+def panorama_get_url_category(url_cmd, url):
     params = {
         'action': 'show',
         'type': 'op',
         'key': API_KEY,
-        'cmd': '<test><url>' + url + '</url></test>'
+        'cmd': f'<test><{url_cmd}>{url}</{url_cmd}></test>'
     }
-    result = http_request(
+    raw_result = http_request(
         URL,
         'POST',
         params=params,
     )
-
-    s = result['response']['result'].splitlines()[1]
-    return s.split(' ')[1]
+    result = raw_result['response']['result']
+    if url_cmd == 'url-info-host':
+        category = result.split(': ')[1]
+    else:
+        result = result.splitlines()[1]
+        if url_cmd == 'url':
+            category = result.split(' ')[1]
+        else:  # url-info-cloud
+            category = result.split(',')[3]
+    return category
 
 
 def populate_url_filter_category_from_context(category):
@@ -2099,7 +2106,7 @@ def populate_url_filter_category_from_context(category):
             return context_urls
 
 
-def panorama_get_url_category_command():
+def panorama_get_url_category_command(url_cmd: str):
     """
     Get the url category from Palo Alto URL Filtering
     """
@@ -2107,7 +2114,7 @@ def panorama_get_url_category_command():
 
     categories_dict: Dict[str, list] = {}
     for url in urls:
-        category = panorama_get_url_category(url)
+        category = panorama_get_url_category(url_cmd, url)
         if category in categories_dict:
             categories_dict[category].append(url)
         else:
@@ -2121,17 +2128,26 @@ def panorama_get_url_category_command():
             'Category': key,
             'URL': value
         })
+    title = 'URL Filtering'
+    if url_cmd == 'url-info-cloud':
+        title += f' from cloud'
+    elif url_cmd == 'url-info-host':
+        title += f' from host'
+    human_readable = tableToMarkdown(f'{title}:', url_category_output, ['URL', 'Category'], removeNull=True)
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': categories_dict,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('URL Filtering:', url_category_output, ['URL', 'Category'], removeNull=True),
+        'HumanReadable': human_readable,
         'EntryContext': {
             "Panorama.URLFilter(val.Category === obj.Category)": url_category_output
         }
     })
+
+
+''' URL Filter '''
 
 
 def prettify_get_url_filter(url_filter):
@@ -3936,7 +3952,7 @@ def panorama_get_logs_command():
                 message = '. Reason is: ' + result['response']['msg']['line']
                 return_error('Query logs failed' + message)
             else:
-                return_error('Query logs failed')
+                return_error('Query logs failed.')
 
         query_logs_output = {
             'JobID': job_id,
@@ -3945,7 +3961,7 @@ def panorama_get_logs_command():
 
         if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
                 or 'status' not in result['response']['result']['job']:
-            return_error('Missing JobID status in response')
+            return_error('Missing JobID status in response.')
 
         if result['response']['result']['job']['status'] != 'FIN':
             demisto.results({
@@ -3961,25 +3977,26 @@ def panorama_get_logs_command():
             query_logs_output['Status'] = 'Completed'
             if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result'] \
                     or 'logs' not in result['response']['result']['log']:
-                return_error('Missing logs in response')
+                return_error('Missing logs in response.')
 
             logs = result['response']['result']['log']['logs']
             if logs['@count'] == '0':
-                demisto.results('No ' + log_type + ' logs matched the query')
+                human_readable = f'No {log_type} logs matched the query.'
             else:
                 pretty_logs = prettify_logs(logs['entry'])
                 query_logs_output['Logs'] = pretty_logs
-                demisto.results({
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['json'],
-                    'Contents': result,
-                    'ReadableContentsFormat': formats['markdown'],
-                    'HumanReadable': tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
-                                                     ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
-                                                      'Action', 'Rule', 'URLOrFilename'], removeNull=True),
-                    'IgnoreAutoExtract': ignore_auto_extract,
-                    'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
-                })
+                human_readable = tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
+                                                 ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
+                                                  'Action', 'Rule', 'URLOrFilename'], removeNull=True)
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': result,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': human_readable,
+                'IgnoreAutoExtract': ignore_auto_extract,
+                'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
+            })
 
 
 ''' Security Policy Match'''
@@ -4217,8 +4234,15 @@ def main():
 
         # URL Filtering capabilities
         elif demisto.command() == 'panorama-get-url-category':
-            panorama_get_url_category_command()
+            panorama_get_url_category_command(url_cmd='url')
 
+        elif demisto.command() == 'panorama-get-url-category-from-cloud':
+            panorama_get_url_category_command(url_cmd='url-info-cloud')
+
+        elif demisto.command() == 'panorama-get-url-category-from-host':
+            panorama_get_url_category_command(url_cmd='url-info-host')
+
+        # URL Filter
         elif demisto.command() == 'panorama-get-url-filter':
             panorama_get_url_filter_command()
 
