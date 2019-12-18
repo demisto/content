@@ -10,7 +10,8 @@ import pytest
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs
+    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
+    encode_string_results
 
 try:
     from StringIO import StringIO
@@ -958,6 +959,15 @@ def test_parse_date_range():
     # testing local datetime and range of 73 minutes
     assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
     assert abs(local_start_time - local_end_time).seconds / 60 == 73
+
+
+def test_encode_string_results():
+    s = "test"
+    assert s == encode_string_results(s)
+    s2 = u"בדיקה"
+    assert s2.encode("utf-8") == encode_string_results(s2)
+    not_string = [1, 2, 3]
+    assert not_string == encode_string_results(not_string)
 
 
 class TestReturnOutputs:
