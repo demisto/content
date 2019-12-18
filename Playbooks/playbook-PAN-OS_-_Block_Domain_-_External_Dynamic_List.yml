@@ -207,10 +207,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: eccab26b-ebbf-42ba-84b1-b5bce9805d8e
+    taskid: fcd76346-8f56-4df1-82cd-9bb40e24abda
     type: playbook
     task:
-      id: eccab26b-ebbf-42ba-84b1-b5bce9805d8e
+      id: fcd76346-8f56-4df1-82cd-9bb40e24abda
       version: -1
       name: PAN-OS EDL Setup
       description: Sets up an external dynamic list in PAN-OS.\n If the file exists on
@@ -246,11 +246,13 @@ tasks:
                   simple: inputs.LogForwarding
                 iscontext: true
       pre-post-rulebase:
-        simple: pre-rulebase
+        complex:
+          root: inputs.pre-post-rulebase
       relative-rule-name: {}
       rule-name: {}
       rule-position:
-        simple: Top
+        complex:
+          root: inputs.rule-position
       web-server-ip:
         complex:
           root: inputs.EDLServerIP
@@ -377,6 +379,20 @@ inputs:
     This input establishes whether to commit the configuration automatically.
     Yes - Commit automatically.
     No - Commit manually.
+- key: pre-post-rulebase
+  value:
+    simple: pre-rulebase
+  required: false
+  description: Enter pre-rulebase or post-rulebase, according to the rule structure.
+- key: rule-position
+  value: {}
+  required: false
+  description: |-
+    The position of the rule in the ruleset. Valid values are:
+      * Top
+      * Bottom
+      * Before
+      * After
 outputs: []
 tests:
   - No test

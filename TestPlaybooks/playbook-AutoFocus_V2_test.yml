@@ -1,5 +1,6 @@
 id: AutoFocus V2 test
 version: -1
+fromversion: 5.0.0
 name: AutoFocus V2 test
 starttaskid: "0"
 tasks:
@@ -444,8 +445,9 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+      - "39"
       - "29"
+      - "26"
     scriptarguments:
       all:
         simple: "yes"
@@ -1558,14 +1560,388 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 7652fce5-6395-4b53-8635-120b60b4ac1b
+    type: title
+    task:
+      id: 7652fce5-6395-4b53-8635-120b60b4ac1b
+      version: -1
+      name: Indicators Reputation
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 532d7219-32b1-46b4-8136-0967a76ad3e5
+    type: regular
+    task:
+      id: 532d7219-32b1-46b4-8136-0967a76ad3e5
+      version: -1
+      name: Check URL Reputation
+      description: Checks the reputation of the url in Autofocus.
+      script: AutoFocus V2|||url
+      type: regular
+      iscommand: true
+      brand: AutoFocus V2
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      long: {}
+      retries: {}
+      retry-count:
+        simple: "5"
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        simple: www.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: 7cdaa3e9-a006-4822-8310-8e60be7bff82
+    type: condition
+    task:
+      id: 7cdaa3e9-a006-4822-8310-8e60be7bff82
+      version: -1
+      name: Validate URL Reputation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AutoFocus.URL.IndicatorValue
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: ed85b580-f156-47ef-8db3-6c3f89a2271e
+    type: title
+    task:
+      id: ed85b580-f156-47ef-8db3-6c3f89a2271e
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: 5bf7ff66-a662-4d30-8dbd-ce61d618239a
+    type: regular
+    task:
+      id: 5bf7ff66-a662-4d30-8dbd-ce61d618239a
+      version: -1
+      name: Check IP Reputation
+      description: Checks the reputation of an IP address in Autofocus.
+      script: AutoFocus V2|||ip
+      type: regular
+      iscommand: true
+      brand: AutoFocus V2
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 8.8.8.8
+      long: {}
+      retries: {}
+      retry-count:
+        simple: "5"
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: 793911a6-7093-4bf6-8282-9486b9ebdf93
+    type: condition
+    task:
+      id: 793911a6-7093-4bf6-8282-9486b9ebdf93
+      version: -1
+      name: Validate IP Reputation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AutoFocus.IP.IndicatorValue
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: bc5c95d7-f955-4ddf-83bb-adcc76f6f2de
+    type: regular
+    task:
+      id: bc5c95d7-f955-4ddf-83bb-adcc76f6f2de
+      version: -1
+      name: Check File Reputation
+      description: Checks the reputation of a file in Autofocus.
+      script: AutoFocus V2|||file
+      type: regular
+      iscommand: true
+      brand: AutoFocus V2
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      codeItemType: {}
+      delay: {}
+      file:
+        simple: 9040e9fda52931c9472c90ecad5b74295cdb9cf7b68e2b89219700f6a8bff5ac
+      long: {}
+      maxRetries: {}
+      md5: {}
+      retries: {}
+      retry-count:
+        simple: "5"
+      sha256: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: ca7b0799-8158-4d01-844b-b0c8997dbaf1
+    type: condition
+    task:
+      id: ca7b0799-8158-4d01-844b-b0c8997dbaf1
+      version: -1
+      name: Validate File Reputation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AutoFocus.File.IndicatorValue
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: 4d5d2f4a-275a-495c-8b0d-44371ec380d3
+    type: regular
+    task:
+      id: 4d5d2f4a-275a-495c-8b0d-44371ec380d3
+      version: -1
+      name: Check Domain Reputation
+      description: Checks the reputation of a domain in Autofocus.
+      script: AutoFocus V2|||domain
+      type: regular
+      iscommand: true
+      brand: AutoFocus V2
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      domain:
+        simple: dropwellsfargo.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      retry-count:
+        simple: "5"
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: 7c7a21bd-2710-4c7c-82e7-6630f600a3e9
+    type: condition
+    task:
+      id: 7c7a21bd-2710-4c7c-82e7-6630f600a3e9
+      version: -1
+      name: Validate Domain Reputation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AutoFocus.Domain.IndicatorValue
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 3885,
-        "width": 810,
-        "x": 50,
+        "width": 1420,
+        "x": -560,
         "y": 50
       }
     }
