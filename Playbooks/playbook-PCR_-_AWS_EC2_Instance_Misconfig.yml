@@ -393,6 +393,161 @@ tasks:
           right:
             value:
               simple: 566686e8-0581-4df5-ae22-5a901ed37b58
+    - label: internetPorts
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 520308c5-57e3-4061-b9bf-1ce5325a2d61
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 6eaf6455-1659-4c4b-bff5-c8c7b0fda201
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 14d10ad2-51df-4b07-be69-e94951cc7067
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: cdcd663c-e9c9-4472-9779-e5f38751524a
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: ab7f8eda-18ab-457c-b5d3-fd4f53c722bc
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 65daa6a0-e040-434e-aca3-9d5765c96e7c
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 5599b97c-2965-4fd2-9370-927c368abd2d
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: a9f1b983-f216-486e-b8ea-7259764fc420
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 3b642d25-4534-487a-9399-c2622754ecb5
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: b82f90ce-ed8b-4b49-970c-2268b0a6c2e5
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: c2074d5a-aa28-4dde-90c1-82f528cec55e
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 760f2823-997e-495f-a538-5fb073c0ee78
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: ee03a420-89d6-4745-a0ac-98878cb56cf4
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 519456f2-f9eb-407b-b32d-064f1ac7f0ca
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 8dd9e369-0c09-4477-97a2-ff0d50507fe2
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 89cbc2f1-fcb0-48b9-be71-4cbe2d18a5f7
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: ab8b6bb8-a730-4bdf-a4d5-080c01e97335
     view: |-
       {
         "position": {
