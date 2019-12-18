@@ -411,8 +411,8 @@ tasks:
       id: 2dbb11d4-d03f-4fd1-8443-a473f6e08b69
       version: -1
       name: Prisma Cloud Remediation - AWS Default Security Group Does Not Restrict
-      description: ""
         All Traffic
+      description: ""
       playbookName: Prisma Cloud Remediation - AWS Default Security Group Does Not
         Restrict All Traffic
       type: playbook
@@ -468,8 +468,8 @@ tasks:
       id: a6884264-3205-49aa-8e2b-6165bed77101
       version: -1
       name: Prisma Cloud Remediation - AWS Security Groups With Inbound Rule Overly
-      description: ""
         Permissive To All Traffic
+      description: ""
       playbookName: Prisma Cloud Remediation - AWS Security Groups With Inbound Rule
         Overly Permissive To All Traffic
       type: playbook
