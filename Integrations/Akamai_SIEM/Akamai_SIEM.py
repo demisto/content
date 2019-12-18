@@ -125,6 +125,7 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
     """
     events_ec: List[Dict] = []
     ip_ec: List[Dict] = []
+    events_human_readable: List[Dict] = []
 
     for event in raw_response:
         events_ec.append(
@@ -165,7 +166,18 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
             }
         })
 
-    events_human_readable = [event.get('AttackData', {}) for event in events_ec]
+        events_human_readable.append({
+            'Attacking IP': event.get('attackData', {}).get('clientIP'),
+            "Config ID triggered": event.get('attackData', {}).get('configId'),
+            "Policy ID trigered": event.get('attackData', {}).get('policyId'),
+            'Date occured': date_format_converter(from_format='epoch',
+                                                  date_before=event.get('httpMessage', {}).get('start')),
+            "Location": {
+                'Country': event.get('geo', {}).get('country'),
+                'City': event.get('geo', {}).get('city')
+            }
+
+        })
 
     return events_ec, ip_ec, events_human_readable
 
@@ -286,7 +298,7 @@ def get_events_command(client: Client, config_ids: str, offset: Optional[str] = 
             "Akamai.SIEM(val.HttpMessage.RequestId && val.HttpMessage.RequestId == obj.HttpMessage.RequestId)": events_ec,
             outputPaths.get('ip'): ip_ec
         }
-        title = f'{INTEGRATION_NAME} - security events'
+        title = f'{INTEGRATION_NAME} - Attacks data'
 
         human_readable = tableToMarkdown(name=title,
                                          t=events_human_readable,

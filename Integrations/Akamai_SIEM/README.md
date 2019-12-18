@@ -1,9 +1,8 @@
 <p>
-    Get security event from [Akamai Web Application Firewall (WAF)](https://www.akamai.com/us/en/resources/waf.jsp)
+    Get security event from <a href="https://www.akamai.com/us/en/resources/waf.jsp">Akamai Web Application Firewall (WAF)</a>
     service.
-
-    This integration was integrated and tested with [version 1.0 of Akamai WAF
-    SIEM](https://developer.akamai.com/api/cloud_security/siem/v1.html)
+    This integration was integrated and tested with <a href="https://developer.akamai.com/api/cloud_security/siem/v1.html"> version 1.0 of Akamai WAF
+    SIEM</a>
 </p>
 
 <h2>Use Cases</h2>
@@ -11,7 +10,6 @@
     <li>Get security events from Akamai WAF.</li>
     <li>analyze security events generated on the Akamai platform and correlate them with security events generated from
         other sources in Demisto</li>
-
 </ul>
 
 <h2>Detailed Description</h2>
@@ -461,29 +459,34 @@
   ]
 }
 </pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Akamai SIEM - security events</h3>
+
+<h3>Akamai SIEM - Attacks list</h3>
 <table style="width:750px" border="2" cellpadding="6">
-    <thead>
+  <thead>
     <tr>
-        <th><strong>ClientIP</strong></th>
-        <th><strong>ConfigID</strong></th>
-        <th><strong>PolicyID</strong></th>
+      <th><strong>Attacking IP</strong></th>
+      <th><strong>Config ID triggered</strong></th>
+      <th><strong>Date occured</strong></th>
+      <th><strong>Location</strong></th>
+      <th><strong>Policy ID trigered</strong></th>
     </tr>
-    </thead>
-    <tbody>
+  </thead>
+  <tbody>
     <tr>
-        <td> 8.8.8.8</td>
-        <td> 50170</td>
-        <td> 1234</td>
+      <td> 8.8.8.8 </td>
+      <td> 50170 </td>
+      <td> 2019-12-18T06:43:33Z </td>
+      <td> Country: DE<br>City: FRANKFURT </td>
+      <td> 1234_89452 </td>
     </tr>
     <tr>
-        <td> 8.8.8.8</td>
-        <td> 50170</td>
-        <td> 1234</td>
+      <td> 8.8.8.8 </td>
+      <td> 50170 </td>
+      <td> 2019-12-18T06:44:33Z </td>
+      <td> Country: DE<br>City: FRANKFURT </td>
+      <td> 1234_89452 </td>
     </tr>
-    </tbody>
+  </tbody>
 </table>
 
 <!-- remove the following comments to manually add an image: -->
