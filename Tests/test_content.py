@@ -6,7 +6,6 @@ import requests
 import subprocess
 import urllib3
 from time import sleep
-from datetime import datetime
 
 import demisto_client.demisto_api
 from slackclient import SlackClient
@@ -335,6 +334,7 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
             integration['params'] = matched_integration_params.get('params', {})
             integration['byoi'] = matched_integration_params.get('byoi', True)
             integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
+            integration['validate_test'] = matched_integration_params.get('validate_test', True)
         elif 'Demisto REST API' == integration['name']:
             integration['params'] = {
                 'url': 'https://localhost',
@@ -489,28 +489,6 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
              build_number, server, build_name, is_ami)
 
 
-def restart_demisto_service(ami, demisto_api_key, server):
-    client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
-    ami.check_call(['sudo', 'service', 'demisto', 'restart'])
-    exit_code = 1
-    for _ in range(0, SERVICE_RESTART_TIMEOUT, SERVICE_RESTART_POLLING_INTERVAL):
-        sleep(SERVICE_RESTART_POLLING_INTERVAL)
-        if exit_code != 0:
-            exit_code = ami.call(['/usr/sbin/service', 'demisto', 'status', '--lines', '0'])
-        if exit_code == 0:
-            print("{}: Checking login to the server... ".format(datetime.now()))
-            try:
-                res = demisto_client.generic_request_func(self=client, path='/health', method='GET')
-                if int(res[1]) == 200:
-                    return
-                else:
-                    print("Failed verifying login (will retry). status: {}. text: {}".format(res.status_code, res.text))
-            except Exception as ex:
-                print_error("Failed verifying server start via login: {}".format(ex))
-
-    raise Exception('Timeout waiting for demisto service to restart')
-
-
 def execute_testing(server, server_ip, server_version, server_numeric_version, is_ami=True):
     print("Executing tests with the server {} - and the server ip {}".format(server, server_ip))
 
@@ -583,9 +561,14 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
 
         print("\nRunning mock-disabled tests")
         proxy.configure_proxy_in_demisto(demisto_api_key, server, '')
-        print("Restarting demisto service")
-        restart_demisto_service(ami, demisto_api_key, server)
-        print("Demisto service restarted\n")
+        print('Resetting containers')
+        client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
+        body, status_code, headers = demisto_client.generic_request_func(self=client, method='POST',
+                                                                         path='/containers/reset')
+        if status_code != 200:
+            print_error('Request to reset containers failed with status code "{}"\n{}'.format(status_code, body))
+            sys.exit(1)
+        sleep(10)
     for t in mockless_tests:
         run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,

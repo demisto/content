@@ -116,7 +116,7 @@ class Client(BaseClient):
     Client to use in the MS Graph Groups integration. Overrides BaseClient
     """
     def __init__(self, base_url: str, tenant: str, auth_and_token_url: str, auth_id: str, token_retrieval_url: str,
-                 enc_key: str, verify: bool, proxy: dict):
+                 enc_key: str, verify: bool, proxy: bool):
         super().__init__(base_url, verify, proxy)
         self.tenant = tenant
         self.auth_and_token_url = auth_and_token_url
@@ -567,7 +567,7 @@ def main():
     auth_id = auth_and_token_url[0]
     enc_key = demisto.params().get('enc_key')
     verify = not demisto.params().get('insecure', False)
-    proxy = handle_proxy()
+    proxy = demisto.params().get('proxy') == 'true'
     if len(auth_and_token_url) != 2:
         token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
     else:
