@@ -10,6 +10,14 @@ def test_when_value_is_a_valid_string_should_return_value():
     assert expectedOutput == result
 
 
+def test_when_value_is_a_number_should_return_value():
+    number = 0
+    expectedOutput = number
+    result = get_value_to_set({'value': number, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'true'})
+
+    assert expectedOutput == result
+
+
 def test_when_value_is_a_dictionary_should_return_value():
     dictionary = {'name': "John", 'lastName': 'Doe'}
     expectedOutput = dictionary
