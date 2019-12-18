@@ -76,7 +76,9 @@ filePath = "/Users/olichter/Downloads/http-site.pcap"       # HTTP
 # filePath = "/Users/olichter/Downloads/dns.cap"            # DNS
 # filePath = "/Users/olichter/Downloads/tftp_rrq.pcap"       # tftp
 conversation_number_to_display = 15
-is_flows = True
+is_flows = False
+is_dns = True
+is_http = False
 pcap_filter = '' # 'ip.addr == 172.217.16.206'
 pcap_filter_new_file = '' # '/Users/olichter/Downloads/try.pcap'
 
@@ -91,13 +93,14 @@ conversations = {}
 flows = {}
 unique_source_ip = set([])
 unique_dest_ip = set([])
+dns_data = []
 
-
-cap = pyshark.FileCapture(filePath, display_filter=pcap_filter, output_file=pcap_filter_new_file, use_json=True)
-print(cap[1])
+cap = pyshark.FileCapture(filePath, display_filter=pcap_filter, output_file=pcap_filter_new_file)
     # cap = pyshark.FileCapture(filePath) #, use_json=True
+
 try:
     for packet in cap:
+
 
         # Set hierarchy for layers
         layers = str(packet.layers)
@@ -112,6 +115,7 @@ try:
         # count packets
         num_of_packets += 1
 
+
         # count num of streams + get src/dest ports
         tcp = packet.get_multiple_layers('tcp')
 
@@ -125,6 +129,19 @@ try:
             udp_streams = max(int(udp[0].get('stream', 0)),udp_streams)
             src_port = int(udp[0].get('srcport', 0))
             dest_port = int(udp[0].get('dstport', 0))
+
+        # extract DNS layer
+        if is_dns:
+            dns_layer = packet.get_multiple_layers('dns')
+            if dns_layer:
+                if int(dns_layer[0].get('flags_response')):
+                    temp_dns = {
+                        'ID': dns_layer[0].get('id'),
+                        'Request': dns_layer[0].get('qry_name'),
+                        'Response': dns_layer[0].get('a'),
+                        'Type': dns_layer[0].get('resp_type')
+                    }
+                    dns_data.append(temp_dns)
 
         # add conversations
         ip_layer = packet.get_multiple_layers('ip')
@@ -148,10 +165,26 @@ try:
                 flow_data['counter'] += 1
                 flows[flow] = flow_data
 
+            # gather http data
+            if is_http:
+                http_layer = packet.get_multiple_layers('http')
+                if http_layer:
+                    all_fields = http_layer[0]._all_fields
+                    more_data = http_layer[0].get('1\\r\\n', {})
+                    agent = all_fields.get("http.user_agent")
+                    host = all_fields.get('http.host')
+                    source_ip = a
+                    full_uri = all_fields.get('http.request.full_uri')
+                    uri = more_data.get('uri')
+                    method = more_data.get('method')
+                    version = more_data.get('version')
+
             if str([b, a]) in conversations.keys():
                 a, b = b, a
             hosts = str([a, b])
             conversations[hosts] = conversations.get(hosts, 0) + 1
+
+
 
     tcp_streams += 1
     udp_streams += 1
@@ -174,6 +207,9 @@ try:
     if is_flows:
         ec['PcapResults.Flows(val.SourceIP == obj.SourceIP && val.DestIP == obj.DestIP && ' \
            'val.SourcePort == obj.SourcePort && val.DestPort == obj.DestPort)'] = flows_to_ec(flows)
+    if is_dns:
+        ec['PcapResults.DNS(val.ID == obj.ID)'] = dns_data
+    print (ec)
 except pyshark.capture.capture.TSharkCrashException as e:
     raise ValueError("Filter could not be applied to file. Please make sure it is of correct syntax.")
 
