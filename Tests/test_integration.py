@@ -377,28 +377,6 @@ def __print_investigation_error(client, playbook_id, investigation_id, color=LOG
                 print_color('\t  Body: ' + entry['contents'].encode('utf-8'), color)
 
 
-def __print_investigation_error(client, playbook_id, investigation_id, color=LOG_COLORS.RED):
-    try:
-        empty_json = {"pageSize": 1000}
-        res = demisto_client.generic_request_func(self=client, method='POST',
-                                                  path='/investigation/' + str(
-                                                      investigation_id), body=empty_json)
-    except requests.exceptions.RequestException as conn_err:
-        print_error(
-            'Failed to print investigation error, error trying to communicate with demisto '
-            'server: {} '.format(
-                conn_err))
-    if res and int(res[1]) == 200:
-        resp_json = ast.literal_eval(res[0])
-        entries = resp_json['entries']
-        print_color('Playbook ' + playbook_id + ' has failed:', color)
-        for entry in entries:
-            if entry['parentContent'] and entry['type'] == ENTRY_TYPE_ERROR:
-                print_color('\t- Task ID: ' + entry['taskId'], color)
-                print_color('\t  Command: ' + entry['parentContent'], color)
-                print_color('\t  Body: ' + entry['contents'] + '\n', color)
-
-
 # Configure integrations to work with mock
 def configure_proxy_unsecure(integration_params):
     """Copies the integration parameters dictionary.
