@@ -23,11 +23,11 @@
 
 <h2>API keys generating steps</h2>
 <ol>
-    <li>[Open Control panel](https://control.akamai.com/) and login with admin account.</li>
-    <li>Open identity and access management menu.</li>
+    <li><a href="https://control.akamai.com/">Open Control panel</a> and login with admin account.</li>
+    <li>Open <code>identity and access management</code> menu.</li>
     <li>Create user with assign roles <code>Manage SIEM</code> or make sure the admin has rights for manage SIEM.</li>
     <li>Log in to new account you created in the last step.</li>
-    <li>Open identity and access management menu.</li>
+    <li>Open <code>identity and access management</code> menu.</li>
     <li>Create <code>new api client for me</code></li>
     <li>Assign API key to the relevant users group, and assign on next page <code>Read/Write</code> access for <code>SIEM</code>.</li>
     <li>Save configuration and go to API detail you created.</li>
