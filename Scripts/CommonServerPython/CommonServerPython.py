@@ -590,6 +590,15 @@ def b64_encode(text):
     return res
 
 
+def encode_string_results(s):
+    if not isinstance(s, STRING_OBJ_TYPES):
+        return s
+    try:
+        return str(s)
+    except UnicodeEncodeError as exception:
+        return s.encode("utf8", "replace")
+
+
 class IntegrationLogger(object):
     """
       a logger for python integrations:

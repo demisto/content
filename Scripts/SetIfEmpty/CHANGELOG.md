@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+- Add support to unicode default value
+- Consider "None" string as empty
 
 ## [19.11.1] - 2019-11-26
 #### New Script

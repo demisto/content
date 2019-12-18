@@ -1,3 +1,4 @@
+from CommonServerPython import *
 import demistomock as demisto
 
 
@@ -8,14 +9,14 @@ def get_value_to_set(args):
     if value is None or (apply_if_empty and is_value_empty(value)):
         value = args.get('defaultValue')
 
-    return value
+    return encode_string_results(value)
 
 
 def is_value_empty(value):
     if len(value) == 1:
         value = value[0]
 
-    return value is None or len(value) == 0
+    return value is None or len(value) == 0 or value.lower() == "none" or value.lower() == "null"
 
 
 def main(args):
