@@ -97,7 +97,7 @@ tasks:
       id: 077714b6-f53e-4ab4-8679-d2c172e67a59
       version: -1
       name: Block IP with Check Point Firewall
-      description: Block the IPs using Check Point Firewall.
+      description: Block the IPs using Check Point Firewall
       script: '|||checkpoint-block-ip'
       type: regular
       iscommand: true
