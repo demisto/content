@@ -23,8 +23,8 @@ class LOG_COLORS:
 
 
 # print srt in the given color
-def print_color(str, color):
-    print(color + str + LOG_COLORS.NATIVE)
+def print_color(obj, color):
+    print('{}{}{}'.format(color, obj, LOG_COLORS.NATIVE))
 
 
 def print_error(error_str):
@@ -160,7 +160,7 @@ def get_file(method, file_path, type_of_file):
             except Exception as e:
                 print_error(
                     "{} has a structure issue of file type{}. Error was: {}".format(file_path, type_of_file, str(e)))
-                return []
+                return {}
     if type(data_dictionary) is dict:
         return data_dictionary
     return {}
