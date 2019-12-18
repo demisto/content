@@ -223,7 +223,6 @@ def fetch_incidents_command(
                                                  from_epoch=datetime_new_last_run,
                                                  limit=fetch_limit)
     else:
-        datetime_new_last_run = last_run
         raw_response, offset = client.get_events(config_ids=config_ids,
                                                  offset=last_run,
                                                  limit=fetch_limit)
