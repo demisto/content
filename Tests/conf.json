@@ -1141,6 +1141,11 @@
             "instance_names": "ms_graph_calendar_dev"
         },
         {
+            "integrations": "Microsoft Graph Calendar",
+            "playbookID": "Microsoft Graph Calendar - Test",
+            "instance_names": "ms_graph_calendar_prod"
+        },
+        {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
