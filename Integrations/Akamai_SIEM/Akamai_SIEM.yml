@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://akab-hnanog6ge5or6biz-ukavvo4zvqliqhlw.cloudsecurity.akamaiapis.net
-  display: Server URL (e.g. https://example.net)
+  display: Server URL (e.g., https://example.net)
   name: host
   required: true
   type: 0
@@ -21,7 +21,7 @@ configuration:
   required: true
   type: 4
 - defaultvalue: '50170'
-  display: Config ids to fetch
+  display: Config IDs to fetch
   name: configIds
   required: true
   type: 0
@@ -29,13 +29,13 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 1 hours
+- defaultvalue: 1 hour
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetchTime
   required: false
   type: 0
 - defaultvalue: '20'
-  display: Fetch limit (min 20)
+  display: Fetch limit (minimum is 20)
   name: fetchLimit
   required: false
   type: 0
@@ -47,23 +47,23 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Get security event from Akamai Web Application Firewall (WAF) service.
+description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
 display: Akamai WAF SIEM
 name: Akamai WAF SIEM
 script:
   commands:
   - arguments:
     - default: false
-      description: Unique identifier for each security configuration. To report on
-        more than one configuration, separate integer identifiers with semicolons,
-        e.g. 12892;29182;82912.
+      description: 'Unique identifier for each security configuration. To report on
+        more than one configuration, separate the integer identifiers with semicolons (;),
+        for example: 12892;29182;82912.'
       isArray: false
       name: config_ids
       required: true
       secret: false
     - default: false
       description: This token denotes the last message. If specified, this operation
-        fetches only security events that have occurred from offset. This is a required
+        fetches only security events that have occurred from the offset. This is a required
         parameter for offset mode and you can’t use it in time-based requests.
       isArray: false
       name: offset
@@ -71,8 +71,7 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Defines the approximate maximum number of security events each
-        fetch returns
+      description: Defines the maximum number of security events returned per fetch.
       isArray: false
       name: limit
       required: false
@@ -90,8 +89,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: period timestamp (<number> <time unit>, e.g., 12 hours, 7 days
-        of events
+      description: Period timestamp of events (<number> <time unit>. For example, 12 hours, 7 days.
       isArray: false
       name: period
       required: false
@@ -102,76 +100,76 @@ script:
     name: akamai-siem-get-events
     outputs:
     - contextPath: Akamai.SIEM.AttackData.clientIP
-      description: IP involved in the attack.
+      description: IP address involved in the attack.
       type: String
     - contextPath: Akamai.SIEM.AttackData.ConfigID
-      description: Unique identifier of security configuration involved
+      description: Unique identifier of the security configuration involved.
       type: String
     - contextPath: Akamai.SIEM.AttackData.PolicyID
-      description: Unique identifier of Policy configuration involved
+      description: Unique identifier of the policy configuration involved.
       type: String
     - contextPath: Akamai.SIEM.AttackData.PolicyID
-      description: Policy ID trigered
+      description: The policy ID that was triggered.
       type: String
     - contextPath: Akamai.SIEM.AttackData.Geo.Asn
-      description: Geographic ASN location of involved IP
+      description: Geographic ASN location of the IP address involved in the attack.
       type: String
     - contextPath: Akamai.SIEM.AttackData.Geo.City
-      description: City of involved IP
+      description: City of the IP address involved in the attack.
       type: String
     - contextPath: Akamai.SIEM.AttackData.Geo.Continent
-      description: Continent of involved IP
+      description: Continent of the IP address involved in the attack.
       type: String
     - contextPath: Akamai.SIEM.AttackData.Geo.Country
-      description: Country of involved IP
+      description: Country of the IP address involved in the attack.
       type: String
     - contextPath: Akamai.SIEM.AttackData.Geo.RegionCode
-      description: Region code of involved IP
+      description: Region code of the IP address involved in the attack.
       type: String
     - contextPath: Akamai.SIEM.AttackData.HttpMessage.Bytes
-      description: HTTP messege size in bytes
+      description: HTTP messege size in bytes.
       type: Number
     - contextPath: Akamai.SIEM.AttackData.HttpMessage.Host
-      description: HTTP messege host
+      description: HTTP messege host.
       type: String
     - contextPath: Akamai.SIEM.AttackData.HttpMessage.Method
-      description: HTTP messege method
+      description: HTTP messege method.
       type: String
     - contextPath: Akamai.SIEM.AttackData.HttpMessage.Path
-      description: HTTP messege path
+      description: HTTP messege path.
       type: String
     - contextPath: Akamai.SIEM.AttackData.HttpMessage.Port
-      description: HTTP messege port
+      description: HTTP messege port.
       type: String
     - contextPath: Akamai.SIEM.AttackData.HttpMessage.Protocol
-      description: HTTP messege protocol
+      description: HTTP messege protocol.
       type: String
     - contextPath: Akamai.SIEM.AttackData.HttpMessage.Query
-      description: HTTP messege query
+      description: HTTP messege query.
       type: String
     - contextPath: Akamai.SIEM.AttackData.HttpMessage.RequestHeaders
-      description: HTTP messege request headers
+      description: HTTP messege request headers.
       type: String
     - contextPath: Akamai.SIEM.AttackData.HttpMessage.RequestID
-      description: HTTP messege request ID
+      description: HTTP messege request ID.
       type: String
     - contextPath: Akamai.SIEM.AttackData.HttpMessage.ResponseHeaders
-      description: HTTP messege respose headers
+      description: HTTP message response headers.
       type: String
     - contextPath: Akamai.SIEM.AttackData.HttpMessage.Start
-      description: HTTP messege epoch start time
+      description: HTTP messege epoch start time.
       type: Date
     - contextPath: Akamai.SIEM.AttackData.HttpMessage.Status
-      description: HTTP messege status code
+      description: HTTP messege status code.
       type: Number
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: IP.ASN
       description: 'The autonomous system name for the IP address, for example: "AS8948"."'
       type: String
     - contextPath: IP.Geo.Country
-      description: The country in which the IP address is located
+      description: The country in which the IP address is located.
       type: String
   dockerimage: demisto/akamai:1.0.0.5063
   isfetch: true
