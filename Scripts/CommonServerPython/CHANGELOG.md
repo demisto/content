@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added encode string results - safe handle unicode strings to demisto results
 
 ## [19.12.0] - 2019-12-10
 -
