@@ -162,7 +162,7 @@ script:
     }
 
     function sendRequest(method, endpoint, body) {
-        var requestUrl = serverUrl + endpoint + 'sdfsdfdsfefsf';
+        var requestUrl = serverUrl + endpoint;
         var res = http(
             requestUrl,
             {
@@ -299,7 +299,7 @@ script:
                     }
                 }
             }
-        var res = sendRequest('POST', '/api/v2/search/terms', body);
+        var res = sendRequest('POST', '/api/v2/search/termssssss', body);
 
         var result = res.result;
 
