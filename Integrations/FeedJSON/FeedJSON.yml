@@ -1,0 +1,99 @@
+category: Vulnerability Management
+commonfields:
+  id: FeedJSON
+  version: -1
+configuration:
+  - display: URL
+    name: url
+    required: true
+    type: 0
+  - display: Username
+    name: credentials
+    required: false
+    type: 9
+  - defaultvalue: 'true'
+    display: Trust any certificate (insecure)
+    name: insecure
+    required: false
+    type: 8
+  - display: Use system proxy
+    name: proxy
+    required: false
+    type: 8
+  - display: Indicator Type
+    name: indicator_type
+    required: true
+    type: 0
+  - defaultvalue: F - Reliability cannot be judged
+    display: Reliability
+    name: feedInstanceReliability
+    options:
+      - A - Completely reliable
+      - B - Usually reliable
+      - C - Fairly reliable
+      - D - Not usually reliable
+      - E - Unreliable
+      - F - Reliability cannot be judged
+    required: true
+    type: 15
+  - name: expiration
+    required: false
+    type: 17
+  - defaultvalue: indicatorType
+    name: expirationPolicy
+    required: false
+    type: 0
+  - name: expirationInterval
+    required: false
+    type: 1
+  - display: Fetch indicators
+    name: feed
+    required: false
+    type: 8
+  - display: Extractor (JMESPath expression, for further details see (?))
+    name: extractor
+    required: true
+    type: 0
+  - display: JSON attribute to use as an indicator
+    defaultvalue: indicator
+    name: indicator
+    required: false
+    type: 0
+  - display: additional JSON attributes to include in the indicator value.
+    name: fields
+    required: false
+    type: 0
+  - display: Source Name
+    defaultvalue: json
+    name: source_name
+    required: false
+    hidden: 'true'
+    type: 0
+  - display: cert_file
+    name: cert_file
+    required: false
+    hidden: 'true'
+    type: 0
+  - display: key_file
+    name: key_file
+    required: false
+    hidden: 'true'
+    type: 0
+  - display: headers
+    name: headers
+    required: false
+    hidden: 'true'
+    type: 0
+description: Json Feed Integration
+display: JSON Feed
+name: FeedJSON
+script:
+  dockerimage: demisto/  # todo:
+  isfetch: false
+  feed: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
