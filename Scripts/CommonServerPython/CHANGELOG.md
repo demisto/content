@@ -1,4 +1,10 @@
 ## [Unreleased]
+
+
+## [19.12.0] - 2019-12-10
+-
+
+## [19.11.1] - 2019-11-26
 BaseClient now uses the session function to maintain an open session with the server.
 
 ## [19.11.0] - 2019-11-12

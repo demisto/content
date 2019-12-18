@@ -2357,14 +2357,11 @@ tasks:
             value:
               simple: ThreatQ.Indicator
             iscontext: true
-      - - operator: hasLength
+      - - operator: isNotEmpty
           left:
             value:
               simple: ThreatQ.Event
             iscontext: true
-          right:
-            value:
-              simple: "10"
       - - operator: isNotEmpty
           left:
             value:

@@ -1,14 +1,16 @@
 id: Slack Test Playbook
 version: -1
+contentitemfields:
+  propagationLabels: []
 name: Slack Test Playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c25af2be-e919-4909-830e-09fcc9ebd572
+    taskid: 4b382ce3-460f-40d8-8974-0c0ca4f7a621
     type: start
     task:
-      id: c25af2be-e919-4909-830e-09fcc9ebd572
+      id: 4b382ce3-460f-40d8-8974-0c0ca4f7a621
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +31,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 83d770a5-084f-431d-8dc4-09ec73d297ac
+    taskid: 06e92f68-4398-4f72-8dfe-83da422bb00f
     type: regular
     task:
-      id: 83d770a5-084f-431d-8dc4-09ec73d297ac
+      id: 06e92f68-4398-4f72-8dfe-83da422bb00f
       version: -1
       name: Mirror investigation
       description: Mirrors the investigation between Slack and the Demisto War Room.
@@ -65,10 +67,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: c297407e-05ce-4146-88fd-18b925807602
+    taskid: 5c694c03-a04d-4a30-84af-9cfbff2231c7
     type: regular
     task:
-      id: c297407e-05ce-4146-88fd-18b925807602
+      id: 5c694c03-a04d-4a30-84af-9cfbff2231c7
       version: -1
       name: Send a message
       description: Sends a message to a user, group, or channel.
@@ -78,7 +80,7 @@ tasks:
       brand: SlackV2
     nexttasks:
       '#none#':
-      - "6"
+      - "21"
     scriptarguments:
       channel:
         simple: incident-${incident.id}
@@ -100,10 +102,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: c83f267e-157b-47ed-8ee1-ece93a26bc6b
+    taskid: 84f4d921-3925-42ac-8ab3-3fcb0df8bc21
     type: regular
     task:
-      id: c83f267e-157b-47ed-8ee1-ece93a26bc6b
+      id: 84f4d921-3925-42ac-8ab3-3fcb0df8bc21
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -126,7 +128,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -134,10 +136,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: db60916b-89a2-4d8f-8fdd-22147295db5e
+    taskid: ce3e3d4d-1e35-45a8-8e39-7590361ce7d1
     type: regular
     task:
-      id: db60916b-89a2-4d8f-8fdd-22147295db5e
+      id: ce3e3d4d-1e35-45a8-8e39-7590361ce7d1
       version: -1
       name: Send a file
       description: Sends a file in Slack to a user, channel, or group. If a user,
@@ -163,7 +165,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -171,10 +173,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 804e23f9-d616-405f-8516-7a0696a26b93
+    taskid: cccfa785-7b37-4275-8922-05fb3a367076
     type: regular
     task:
-      id: 804e23f9-d616-405f-8516-7a0696a26b93
+      id: cccfa785-7b37-4275-8922-05fb3a367076
       version: -1
       name: Close the channel
       description: Archives the mirrored channel for this incident.
@@ -190,7 +192,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -198,10 +200,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 353b78ef-5ccd-4703-865a-aad9be67377a
+    taskid: bb2d454e-588e-44aa-86d3-3544847291a5
     type: regular
     task:
-      id: 353b78ef-5ccd-4703-865a-aad9be67377a
+      id: bb2d454e-588e-44aa-86d3-3544847291a5
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -222,7 +224,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -230,10 +232,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: ed3d7ac8-0cf5-45de-82cd-674e1989b49d
+    taskid: 6d336ef5-2c58-4df5-8816-5c047a877d2b
     type: regular
     task:
-      id: ed3d7ac8-0cf5-45de-82cd-674e1989b49d
+      id: 6d336ef5-2c58-4df5-8816-5c047a877d2b
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -254,7 +256,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -262,10 +264,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 53ba130f-9e4d-4423-896d-82a35ac489f0
+    taskid: 314e9603-3a95-4d14-82ba-73a5f8f2d2c0
     type: regular
     task:
-      id: 53ba130f-9e4d-4423-896d-82a35ac489f0
+      id: 314e9603-3a95-4d14-82ba-73a5f8f2d2c0
       version: -1
       name: GetTime
       description: |
@@ -297,10 +299,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 508aa793-fb07-4f44-8cef-49dde8b4bdd8
+    taskid: 4424a1cf-b3ac-4454-8d33-853efc141146
     type: regular
     task:
-      id: 508aa793-fb07-4f44-8cef-49dde8b4bdd8
+      id: 4424a1cf-b3ac-4454-8d33-853efc141146
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -331,10 +333,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: bfe98ff6-b147-4002-85ec-3388e7b39e1c
+    taskid: 10cb1964-e79c-445c-8d84-94bfa8cc2c0b
     type: regular
     task:
-      id: bfe98ff6-b147-4002-85ec-3388e7b39e1c
+      id: 10cb1964-e79c-445c-8d84-94bfa8cc2c0b
       version: -1
       name: GetTime
       description: |
@@ -358,7 +360,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
@@ -366,10 +368,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 3a716ee5-8154-456d-8ee3-f82f6f1bd989
+    taskid: 11280cd8-b42f-48b9-88e6-b29acab78ddf
     type: regular
     task:
-      id: 3a716ee5-8154-456d-8ee3-f82f6f1bd989
+      id: 11280cd8-b42f-48b9-88e6-b29acab78ddf
       version: -1
       name: Create a channel
       description: Create a channel in Slack.
@@ -403,7 +405,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2295
         }
       }
     note: false
@@ -411,10 +413,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 03f683df-032a-4e8a-8e5e-2628b9b90fd8
+    taskid: 9697a280-6e79-4498-8805-f2e02b69b15d
     type: regular
     task:
-      id: 03f683df-032a-4e8a-8e5e-2628b9b90fd8
+      id: 9697a280-6e79-4498-8805-f2e02b69b15d
       version: -1
       name: Close the channel
       description: Archives the mirrored channel for this incident.
@@ -459,7 +461,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3520
         }
       }
     note: false
@@ -467,10 +469,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: c0db924e-26a2-43d5-8c05-d978b77cb82c
+    taskid: ceb72a77-2d63-4d8e-81c7-8249f84a6b45
     type: regular
     task:
-      id: c0db924e-26a2-43d5-8c05-d978b77cb82c
+      id: ceb72a77-2d63-4d8e-81c7-8249f84a6b45
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -493,7 +495,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -501,10 +503,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 2481b899-5d41-4136-8c58-14c6eb1ba8ee
+    taskid: db58eca4-66d7-4452-838d-003119b08931
     type: regular
     task:
-      id: 2481b899-5d41-4136-8c58-14c6eb1ba8ee
+      id: db58eca4-66d7-4452-838d-003119b08931
       version: -1
       name: Invite to the channel
       description: Invite a user to a channel in Slack.
@@ -554,7 +556,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2645
         }
       }
     note: false
@@ -562,10 +564,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 19921f66-03ac-4604-8bde-7f85d5c9fa7a
+    taskid: f2a9d129-0e1d-488b-8bff-fe2d34c33ec5
     type: regular
     task:
-      id: 19921f66-03ac-4604-8bde-7f85d5c9fa7a
+      id: f2a9d129-0e1d-488b-8bff-fe2d34c33ec5
       version: -1
       name: Kick from the channel
       description: KIck a user from a channel in Slack.
@@ -615,7 +617,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3345
         }
       }
     note: false
@@ -623,10 +625,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 0c5f77a4-14b1-4183-801d-9496f734aa84
+    taskid: f7b2adeb-d682-43d1-88cf-16fb7b7d0dd4
     type: regular
     task:
-      id: 0c5f77a4-14b1-4183-801d-9496f734aa84
+      id: f7b2adeb-d682-43d1-88cf-16fb7b7d0dd4
       version: -1
       name: GetTime
       description: |
@@ -651,7 +653,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2820
         }
       }
     note: false
@@ -659,10 +661,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: a41eef8d-b7d9-47c5-8f12-def68491f946
+    taskid: 9e7d366a-2510-423c-8ff0-e3eed03d0f24
     type: regular
     task:
-      id: a41eef8d-b7d9-47c5-8f12-def68491f946
+      id: 9e7d366a-2510-423c-8ff0-e3eed03d0f24
       version: -1
       name: Rename the channel
       description: Rename a channel in Slack.
@@ -739,7 +741,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2995
         }
       }
     note: false
@@ -747,10 +749,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: ae745dba-101a-47ee-8c4b-7ad85b31c2b8
+    taskid: 6bf562da-fe6f-44b4-8f7e-9dea6e0b3bd0
     type: regular
     task:
-      id: ae745dba-101a-47ee-8c4b-7ad85b31c2b8
+      id: 6bf562da-fe6f-44b4-8f7e-9dea6e0b3bd0
       version: -1
       name: Get user
       description: Get details for a given Slack user.
@@ -769,7 +771,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2470
         }
       }
     note: false
@@ -777,10 +779,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 00922f44-c87c-475d-8e3b-6115ac4ec628
+    taskid: f80401d1-faa1-49f8-88b4-183cbd03f1d5
     type: regular
     task:
-      id: 00922f44-c87c-475d-8e3b-6115ac4ec628
+      id: f80401d1-faa1-49f8-88b4-183cbd03f1d5
       version: -1
       name: Invite to the channel
       description: Invite a user to a channel in Slack.
@@ -830,7 +832,48 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 200dafc2-b399-4329-888e-372f1a2ce189
+    type: regular
+    task:
+      id: 200dafc2-b399-4329-888e-372f1a2ce189
+      version: -1
+      name: Send a message with blocks
+      description: Sends a message to a user, group, or channel.
+      script: SlackV2|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      blocks:
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\":
+          \"mrkdwn\",\n\t\t\t\t\"text\": \"This is a test. \"\n\t\t\t},\n\t\t\t\"accessory\":
+          {\n\t\t\t\t\"type\": \"button\",\n\t\t\t\t\"text\": {\n\t\t\t\t\t\"type\":
+          \"plain_text\",\n\t\t\t\t\t\"text\": \"Button\",\n\t\t\t\t\t\"emoji\": true\n\t\t\t\t},\n\t\t\t\t\"value\":
+          \"testing\"\n\t\t\t}\n\t\t}\n\t]"
+      channel:
+        simple: incident-${incident.id}
+      entry: {}
+      ignoreAddURL: {}
+      message: {}
+      threadID: {}
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -841,7 +884,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3390,
+        "height": 3565,
         "width": 380,
         "x": 50,
         "y": 50

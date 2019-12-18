@@ -14,7 +14,7 @@ def test_removed_docker_image_on_existing_integration():
         }
     }
 
-    assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
+    assert not validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
 
 
 def test_updated_docker_image_on_existing_integration():
@@ -674,6 +674,62 @@ def test_is_default_arguments_ok():
 
     assert validator.is_default_arguments() is True, \
         "The integration validator found an invalid command arg while it is valid"
+
+
+def test_is_isarray_arguments_valid():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "email",
+                    "arguments": [
+                        {
+                            "name": "email",
+                            "required": True,
+                            "default": True,
+                            "isArray": True
+                        },
+                        {
+                            "name": "verbose"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_isarray_arguments() is True, \
+        "The integration validator found an invalid command arg configuration while it is valid"
+
+
+def test_is_isarray_arguments_invalid():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "file",
+                    "arguments": [
+                        {
+                            "name": "file",
+                            "required": True,
+                            "default": True,
+                            "isArray": False
+                        },
+                        {
+                            "name": "verbose"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_isarray_arguments() is False, \
+        "The integration validator did not find invalid arg configuration (needed to be isArray)"
 
 
 def test_is_outputs_for_reputations_commands_valid():

@@ -1,0 +1,125 @@
+id: Test Convert file hash to corresponding hashes
+version: -1
+name: Test Convert file hash to corresponding hashes
+fromversion: 4.5.0
+description: Test playbook for the "Convert file hash to corresponding hashes" playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8e58d94c-d612-4a09-834b-e0a6d44a5055
+    type: start
+    task:
+      id: 8e58d94c-d612-4a09-834b-e0a6d44a5055
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 2fd612aa-4287-4576-89d2-e76416ea5602
+    type: playbook
+    task:
+      id: 2fd612aa-4287-4576-89d2-e76416ea5602
+      version: -1
+      name: Convert file hash to corresponding hashes
+      description: |
+        The playbook allows to get all of the relevant file hash even if there is only one hash type available
+        For example if we have only the SHA256 hash the playbook will get the SHA1 and MD5 hashes
+      playbookName: Convert file hash to corresponding hashes
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA1:
+        complex:
+          root: inputs.SHA1
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 6d22fedd-3a2c-4360-8c46-dd6cf54ba135
+    type: title
+    task:
+      id: 6d22fedd-3a2c-4360-8c46-dd6cf54ba135
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 465,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: SHA256
+  value:
+    simple: 4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0
+  required: false
+  description: Test SHA256 hash.
+- key: SHA1
+  value:
+    simple: 5a0d2c73d4bdda6267f85e2530fe43b18ccb888e
+  required: false
+  description: Test SHA1 hash.
+- key: MD5
+  value:
+    simple: 024cdc5a095c3698edd978e4564e42b6
+  required: false
+  description: Test MD5 hash.
+outputs: []
