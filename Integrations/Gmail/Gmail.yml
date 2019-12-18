@@ -150,6 +150,16 @@ script:
     - contextPath: Account.OrganizationUnit
       description: The Organization Unit (OU) of the account.
       type: String
+    - contextPath: Account.Group
+      description: Groups to which the account belongs (integration specific). For
+        example, for AD, these are the groups in which the account is a member.
+      type: String
+    - contextPath: Account.VisibleInDirectory
+      description: Is the account is visible in the directory
+      type: Boolean
+    - contextPath: Account.CustomerId
+      description: The customer unique ID.
+      type: String
   - arguments:
     - default: true
       description: The user's email address. The "me" special value can be used to
@@ -1836,7 +1846,6 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
   type: python
 tests:
 - Gmail Convert Html Test
