@@ -162,7 +162,7 @@ script:
     }
 
     function sendRequest(method, endpoint, body) {
-        var requestUrl = serverUrl + endpoint;
+        var requestUrl = serverUrl + endpoint + 'sdfsdfdsfefsf';
         var res = http(
             requestUrl,
             {
