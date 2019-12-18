@@ -6,7 +6,7 @@ script: ''
 type: python
 tags: []
 comment: |-
-  Pretty-print data using Python's pprint library.  This is useful for seeing the structure of incident and context data.  Use like so:
+  Pretty-print data using Python's pprint library.  This is useful for seeing the structure of incident and context data.  Here's how to use it:
 
   !PrettyPrint value=${incident}
 enabled: true
@@ -14,7 +14,7 @@ args:
 - name: value
   required: true
   default: true
-  description: The value to pretty-print
+  description: The value to pretty-print.
 scripttarget: 0
 subtype: python3
 runonce: false
