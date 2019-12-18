@@ -158,10 +158,10 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
         )
 
         ip_ec.append({
-            "Address": "8.8.8.8",
-            "ASN": "5650",
+            "Address": event.get('attackData', {}).get('clientIP'),
+            "ASN": event.get('geo', {}).get('asn'),
             "Geo": {
-                "Country": "US"
+                "Country": event.get('geo', {}).get('country')
             }
         })
 
