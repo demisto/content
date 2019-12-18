@@ -74,11 +74,13 @@ def test_parse_event():
          'Start': '2019-11-25T15:00:00.0000000', 'End': '2019-11-25T15:30:00.0000000'}]
     expected_outputs = [{'Attendees': [{'emailAddress': {'address': 'somemail@test.com', 'name': 'somemail@test.com'},
                                         'status': {'response': 'none', 'time': '0001-01-01T00:00:00Z'},
-                                        'type': 'required'}], 'Categories': [], 'ChangeKey': '',
+                                        'type': 'required'}], 'Body': {'content': '<html>', 'contentType': 'html'},
+                         'BodyPreview': '', 'Categories': [], 'ChangeKey': '',
                          'CreatedDateTime': '2019-11-25T14:20:50.7017675Z',
                          'End': {'dateTime': '2019-11-25T15:30:00.0000000', 'timeZone': 'UTC'}, 'HasAttachments': False,
                          'ICalUId': '', 'ID': 'some_id', 'Importance': 'normal', 'IsAllDay': False,
-                         'IsCancelled': False, 'IsOrganizer': True, 'IsReminderOn': True,
+                         'IsCancelled': False,
+                         'IsOrganizer': True, 'IsReminderOn': True,
                          'LastModifiedDateTime': '2019-11-25T19:17:12.9656678Z',
                          'Location': {'address': {}, 'coordinates': {}, 'displayName': '', 'locationType': 'default',
                                       'uniqueIdType': 'unknown'}, 'Locations': [], 'OnlineMeetingUrl': None,
@@ -86,7 +88,7 @@ def test_parse_event():
                          'OriginalEndTimeZone': 'Israel Standard Time', 'OriginalStartTimeZone': 'Israel Standard Time',
                          'Recurrence': None, 'ReminderMinutesBeforeStart': 15, 'ResponseRequested': True,
                          'ResponseStatus': {'response': 'organizer', 'time': '0001-01-01T00:00:00Z'},
-                         'Sensitivity': 'normal',
+                         'Sensitivity': 'normal', 'SeriesMasterId': None, 'ShowAs': 'busy',
                          'Start': {'dateTime': '2019-11-25T15:00:00.0000000', 'timeZone': 'UTC'},
                          'Subject': 'Some Subject ', 'Type': 'singleInstance', 'WebLink': ''}]
     assert parsed_readable == expected_readable
