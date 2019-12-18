@@ -380,22 +380,22 @@ inputs:
   value:
     simple: pickle
   required: false
-  description: The files output format, choose between json \ pickle.
+  description: The output file format. Can be "json" or "pickle".
 outputs:
 - contextPath: DBotPhishingClassifier.EvaluationScores.Precision.All
-  description: Average binary precision over all classes (0-1)
+  description: Average binary precision over all classes (0-1).
   type: number
 - contextPath: DBotPhishingClassifier.EvaluationScores.TP.All
-  description: Number of instances of all classes which were predicted correctly
+  description: The number of instances of all classes that were predicted correctly.
   type: number
 - contextPath: DBotPhishingClassifier.EvaluationScores.Coverage.All
-  description: Number of instances which were predicted at a probability greater than threshold
+  description: The number of instances that were predicted at a probability greater than the threshold.
   type: number
 - contextPath: DBotPhishingClassifier.EvaluationScores.Total.All
-  description: Total number of instances
+  description: The total number of instances.
   type: number
 - contextPath: DBotPhishingClassifier.ModelName
-  description: Model name in Demisto
+  description: The name of the model in Demisto.
   type: string
 fromversion: "4.5.0"
 tests:
