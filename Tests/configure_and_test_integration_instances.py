@@ -428,6 +428,60 @@ def update_content_on_demisto_instance(client, username, password, server):
             sys.exit(1)
 
 
+def report_tests_status(preupdate_fails, postupdate_fails, new_integrations_names):
+    '''Prints errors and/or warnings if there are any and returns whether whether testing was successful or not.
+
+    Args:
+        preupdate_fails (list): List of tuples of integrations that failed the "Test" button prior to content
+            being updated on the demisto instance where each tuple is comprised of the integration name and the
+            name of the instance that was configured for that integration which failed.
+        postupdate_fails (list): List of tuples of integrations that failed the "Test" button after content was
+            updated on the demisto instance where each tuple is comprised of the integration name and the name
+            of the instance that was configured for that integration which failed.
+        new_integrations_names (list): List of the names of integrations that are new since the last official
+            content release and that will only be present on the demisto instance after the content update is
+            performed.
+
+    Returns:
+        (bool): False if there were integration instances that succeeded prior to the content update and then
+            failed after content was updated, otherwise True.
+    '''
+    testing_status = True
+    failed_pre_and_post = preupdate_fails.intersection(postupdate_fails)
+    mismatched_statuses = preupdate_fails.symmetric_difference(postupdate_fails)
+    failed_only_after_update = []
+    failed_but_is_new = []
+    for instance_name, integration_of_instance in mismatched_statuses:
+        if integration_of_instance in new_integrations_names:
+            failed_but_is_new.append((instance_name, integration_of_instance))
+        else:
+            failed_only_after_update.append((instance_name, integration_of_instance))
+
+    # warnings but won't fail the build step
+    if failed_but_is_new:
+        print_warning('New Integrations ("Test" Button) Failures')
+        for instance_name, integration_of_instance in failed_but_is_new:
+            print_warning('Integration: "{}", Instance: "{}"'.format(integration_of_instance, instance_name))
+    if failed_pre_and_post:
+        failure_category = '\nIntegration instances that had ("Test" Button) failures' \
+                           ' both before and after the content update'
+        print_warning(failure_category)
+        for instance_name, integration_of_instance in failed_pre_and_post:
+            print_warning('Integration: "{}", Instance: "{}"'.format(integration_of_instance, instance_name))
+
+    # fail the step if there are instances that only failed after content was updated
+    if failed_only_after_update:
+        testing_status = False
+        failure_category = '\nIntegration instances that had ("Test" Button) failures' \
+                           ' only after content was updated. This indicates that your' \
+                           'updates introduced breaking changes to the integration.'
+        print_error(failure_category)
+        for instance_name, integration_of_instance in failed_only_after_update:
+            print_error('Integration: "{}", Instance: "{}"'.format(integration_of_instance, instance_name))
+
+    return testing_status
+
+
 def main():
     options = options_handler()
     username = options.user
@@ -513,6 +567,9 @@ def main():
             module_instances.append(configure_integration_instance(integration, client))
         all_module_instances.extend(module_instances)
 
+    preupdate_fails = set()
+    postupdate_fails = set()
+
     # Test all module instances (of modified + unchanged integrations) pre-updating content
     if all_module_instances:
         # only print start message if there are instances to configure
@@ -528,7 +585,7 @@ def main():
         # If there is a failure, __test_integration_instance will print it
         success = __test_integration_instance(client, instance)
         if not success:
-            sys.exit(1)
+            preupdate_fails.add((instance_name, integration_of_instance))
 
     update_content_on_demisto_instance(client, username, password, server)
 
@@ -553,9 +610,13 @@ def main():
         # If there is a failure, __test_integration_instance will print it
         success = __test_integration_instance(client, instance)
         if not success:
-            sys.exit(1)
+            postupdate_fails.add((instance_name, integration_of_instance))
 
     __disable_integrations_instances(client, all_module_instances)
+
+    success = report_tests_status(preupdate_fails, postupdate_fails, new_integrations_names)
+    if not success:
+        sys.exit(1)
 
 
 if __name__ == '__main__':
