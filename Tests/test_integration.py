@@ -372,9 +372,9 @@ def __print_investigation_error(client, playbook_id, investigation_id, color=LOG
         print_color('Playbook ' + playbook_id + ' has failed:', color)
         for entry in entries:
             if entry['type'] == ENTRY_TYPE_ERROR and entry['parentContent']:
-                print_color('\t- Task ID: ' + entry['taskId'].encode('utf-8'), color)
-                print_color('\t  Command: ' + entry['parentContent'].encode('utf-8'), color)
-                print_color('\t  Body: ' + entry['contents'].encode('utf-8'), color)
+                print_color('- Task ID: ' + entry['taskId'].encode('utf-8'), color)
+                print_color('  Command: ' + entry['parentContent'].encode('utf-8'), color)
+                print_color('  Body: ' + entry['contents'].encode('utf-8'), color)
 
 
 # Configure integrations to work with mock
