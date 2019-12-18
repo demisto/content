@@ -14,7 +14,9 @@ def main():
     text_pre_process_args['inputType'] = 'json_b64_string'
     text_pre_process_args['input'] = base64.b64encode(incidents.encode('utf-8'))
     text_pre_process_args['preProcessType'] = 'nlp'
-    text_pre_process_args['textFields'] = text_pre_process_args['emailContentFields']
+    email_body_fields = [text_pre_process_args.get("emailbody"), text_pre_process_args.get("emailbodyhtml")]
+    email_body = "|".join([x for x in email_body_fields if x])
+    text_pre_process_args['textFields'] = "%s,%s" % (text_pre_process_args['emailsubject'], email_body)
     text_pre_process_args['whitelistFields'] = "{0},{1}".format('dbot_processed_text',
                                                                 text_pre_process_args['tagField'])
     res = demisto.executeCommand("DBotPreProcessTextData", text_pre_process_args)
