@@ -198,8 +198,6 @@ def output_model_evaluation(model_name, train_tag_data, train_text_data, y_test,
                 'ModelName': model_name,
                 'EvaluationScores': metrics_df,
                 'ConfusionMatrix': confusion_matrix,
-                'YTrue': y_test,
-                'YPred': y_pred,
             }
         }
     }

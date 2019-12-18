@@ -5,11 +5,22 @@ from tabulate import tabulate
 
 from CommonServerPython import *
 
-
 # pylint: disable=no-member
 
+METRICS = {}
+METRICS['Precision'] = 'The precision of the class in the evaluation set that were classified as this class by the ' \
+                       'model. Precision is calculated by dividing the TPs of the class by the number of mails that ' \
+                       'the model predicted as this class.'
+METRICS['TP (true positive)'] = 'The number of mails from the class in the evaluation set that were predicted ' \
+                                'correctly. '
+METRICS['FP (false positive)'] = 'The number of mails from other classes that were predicted incorrectly as this class.'
+METRICS['Coverage'] = 'The number of mails from the class in the evaluation set for which the confidence level of ' \
+                      'the model exceeded the threshold in the prediction.'
+METRICS['Total'] = 'The total number of mails from the class in the evaluation set.'
+
+
 def bold_hr(s):
-    return '**{}** '.format(s)
+    return '**{}:**'.format(s)
 
 
 def binarize(arr, threshold):
@@ -61,17 +72,8 @@ def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, thre
                     'Coverage': df["Coverage"].sum(),
                     'Total': df["Total"].sum()}, ignore_index=True)
     df = df[['Class', 'Precision', 'TP', 'FP', 'Coverage', 'Total']]
-    explanation = [
-        bold_hr('Precision:') + 'The precision of the class in the evaluation set that were classified as this class by the model. Precision is calculated by dividing the TPs of the class by the number of mails that the model predicted. '
-        + 'in the evaluation set that were classified as this class by the model.',
-        bold_hr('TP (true positive):') + 'The number of mails from the class in the evaluation set that were predicted correctly. '
-        + 'classifications',
-        bold_hr('FP (false positive):') + 'The number of mails from other classes that were predicted incorrectly as this class.',
-        bold_hr('Coverage:') + 'The number of mails from the class in the evaluation set for which the confidence level of the model exceeded the threshold in the prediction. '
-        + 'higher confidence than threshold',
-        bold_hr('Total:') + 'The total number of mails from the class in the evaluation set. ',
-
-    ]
+    explained_metrics = ['Precision', 'TP (true positive)', 'FP (false positive)', 'Coverage', 'Total']
+    explanation = ['{} {}'.format(bold_hr(metric), METRICS[metric]) for metric in explained_metrics]
     df.set_index('Class', inplace=True)
     return df, explanation
 
