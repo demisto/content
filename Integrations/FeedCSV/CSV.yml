@@ -1,0 +1,103 @@
+category: Threat Intelligence Feeds
+commonfields:
+  id: CSVFeed
+  version: -1
+configuration:
+- display: URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Indicator Type
+  name: indicator_type
+  required: true
+  type: 0
+- defaultvalue: F - Reliability cannot be judged
+  display: Reliability
+  name: feedInstanceReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- name: expiration
+  required: false
+  type: 17
+- defaultvalue: indicatorType
+  name: expirationPolicy
+  required: false
+  type: 0
+  hidden: true
+- name: expirationInterval
+  required: false
+  type: 1
+  hidden: true
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- display: Ignore Regex
+  name: ignore_regex
+  required: false
+  type: 0
+- defaultvalue: indicator
+  display: Field Names
+  name: fieldnames
+  required: false
+  type: 0
+- defaultvalue: ','
+  display: Delimiter
+  name: delimiter
+  required: false
+  type: 0
+- display: Doublequote
+  name: doublequote
+  required: false
+  type: 8
+- display: Escape character
+  name: escapechar
+  required: false
+  type: 0
+- defaultvalue: '"'
+  display: Quote Character
+  name: quotechar
+  required: false
+  type: 0
+- display: Skip Initial Space
+  name: skipinitialspace
+  required: false
+  type: 8
+- defaultvalue: CSV
+  name: source_name
+  required: false
+  type: 0
+  hidden: true
+description: CSV Feed Integration
+display: CSV Feed
+name: CSVFeed
+script:
+  dockerimage: demisto/python:2.7.17.4324
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
