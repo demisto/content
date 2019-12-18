@@ -62,14 +62,14 @@ def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, thre
                     'Total': df["Total"].sum()}, ignore_index=True)
     df = df[['Class', 'Precision', 'TP', 'FP', 'Coverage', 'Total']]
     explanation = [
-        bold_hr('Precision:') + 'binary precision of the class (TPs of the class, divided by number of mails '
-        + 'in the evaluation set which were classified as this class by the model',
-        bold_hr('TP:') + 'number of mails from the class in the evaluation set which were correct '
+        bold_hr('Precision:') + 'The precision of the class in the evaluation set that were classified as this class by the model. Precision is calculated by dividing the TPs of the class by the number of mails that the model predicted. '
+        + 'in the evaluation set that were classified as this class by the model.',
+        bold_hr('TP (true positive):') + 'The number of mails from the class in the evaluation set that were predicted correctly. '
         + 'classifications',
-        bold_hr('FP:') + 'number of mails from other classes which were predicted wrongly as this class',
-        bold_hr('Coverage:') + 'number of mails from the class in the evaluation set which their prediction was at a '
+        bold_hr('FP (false positive):') + 'The number of mails from other classes that were predicted incorrectly as this class.',
+        bold_hr('Coverage:') + 'The number of mails from the class in the evaluation set for which the confidence level of the model exceeded the threshold in the prediction. '
         + 'higher confidence than threshold',
-        bold_hr('Total:') + 'number of mails from the class in the evaluation set (above and below threshold)',
+        bold_hr('Total:') + 'The total number of mails from the class in the evaluation set. ',
 
     ]
     df.set_index('Class', inplace=True)
@@ -97,13 +97,13 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold,
     test_set_size = metrics_df.loc[['All']]['Total'][0]
     human_readable_threshold = [
         '## Summary',
-        '- Probability threshold of {:.2f} meets the conditions of required precision and recall.'.format(threshold),
-        '- {}/{} mails of the evaluation set were predicted with a higher confidence than this threshold.'.format(
+        '- A confidence threshold of {:.2f} meets the conditions of required precision.'.format(threshold),
+        '- {}/{} mails of the evaluation set were predicted with higher confidence than this threshold.'.format(
             int(coverage), int(test_set_size)),
-        '- The rest {}/{} mails of the evaluation set were predicted with a lower confidence than this threshold '
-        '(thus these predictions were ignored).'.format(
+        '- The remainder, {}/{} mails of the evaluation set, were predicted with lower confidence than this threshold '
+        '(these predictions were ignored).'.format(
             int(test_set_size - coverage), int(test_set_size)),
-        '- Expected coverage ratio: the model will be able to provide a prediction for {:.2f}% of mails in traffic '
+        '- Expected coverage ratio: The model will attempt to provide a prediction for {:.2f}% of mails. '
         '({}/{})'.format(
             coverage / test_set_size * 100, int(coverage), int(test_set_size)),
         '- Evaluation of the model performance using this probability threshold can be found below:']
@@ -113,8 +113,8 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold,
     class_metrics_human_readable = ['## Metrics per Class', tablualted_csr]
     class_metrics_explanation_human_readable = ['### Metrics Explanation'] + ['- ' + row for row in metrics_explanation]
     csr_matrix_readable = ['## Confusion Matrix',
-                           'The following table presents the predictions of the model on the evaluation set per each '
-                           + 'label:',
+                           'This table displays the predictions of the model on the evaluation set per each '
+                           + 'class:',
                            tabulate(csr_matrix_at_threshold,
                                     tablefmt="pipe",
                                     headers="keys").replace("True", "True \\ Predicted"),
@@ -123,7 +123,7 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold,
     if detailed_output:
         human_readable += human_readable_threshold + ['\n']
     else:
-        human_readable += ['## Results for threshold = {:.2f}'.format(threshold)] + ['\n']
+        human_readable += ['## Results for confidence threshold = {:.2f}'.format(threshold)] + ['\n']
     human_readable += class_metrics_human_readable + ['\n']
     human_readable += class_metrics_explanation_human_readable
     human_readable += csr_matrix_readable
