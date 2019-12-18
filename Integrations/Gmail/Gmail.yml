@@ -137,10 +137,6 @@ script:
     - contextPath: Account.Email.Address
       description: The email address of the account.
       type: String
-    - contextPath: Account.Groups
-      description: Groups to which the account belongs (integration specific). For
-        example, for AD, these are the groups in which the account is a member.
-      type: String
     - contextPath: Account.Domain
       description: The domain of the account.
       type: String
@@ -1846,6 +1842,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
+  subtype: python2
   type: python
 tests:
 - Gmail Convert Html Test
