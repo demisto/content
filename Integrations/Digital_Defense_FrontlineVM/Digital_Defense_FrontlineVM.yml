@@ -15,6 +15,11 @@ configuration:
   defaultvalue: https://vm.frontline.cloud
   type: 0
   required: true
+- display: Allow any cert
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
 - display: API Token to access FrontlineVM
   name: apiToken
   defaultvalue: ""
@@ -151,9 +156,7 @@ script:
   - name: frontline-scan-asset
     arguments:
     - name: ip_address
-      description: IP address of asset to perform scan. To scan a range of ip addresses,
-        first enter the low ip address and then a high ip address separated by a hyphen.
-        E.g. 192.168.1.1-192.168.1.10
+      description: IP address of asset to scan.
     - name: scan_policy
       description: Policy of scan (case sensitive)
       defaultValue: Default

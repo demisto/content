@@ -21,7 +21,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '14'
+      - '18'
     separatecontext: false
     view: |-
       {
@@ -35,10 +35,10 @@ tasks:
     ignoreworker: false
   '1':
     id: '1'
-    taskid: 8d0120d0-657c-49ff-8552-ada9b349d9b1
+    taskid: e7f4ce47-bc3e-498c-8fc8-0c18ef98e988
     type: regular
     task:
-      id: 8d0120d0-657c-49ff-8552-ada9b349d9b1
+      id: e7f4ce47-bc3e-498c-8fc8-0c18ef98e988
       version: -1
       name: panorama-query-logs (query threat logs)
       description: Query logs in Panorama.
@@ -54,6 +54,7 @@ tasks:
       addr-dst: {}
       addr-src: {}
       filedigest: {}
+      ip: {}
       log-type:
         simple: threat
       number_of_logs: {}
@@ -108,12 +109,12 @@ tasks:
     ignoreworker: false
   '6':
     id: '6'
-    taskid: c3573fa6-14b2-4d52-8bba-81bc68cdd7ca
+    taskid: ba8ae7be-71f8-445a-83e6-bc9e78260c97
     type: regular
     task:
-      id: c3573fa6-14b2-4d52-8bba-81bc68cdd7ca
+      id: ba8ae7be-71f8-445a-83e6-bc9e78260c97
       version: -1
-      name: frontline-get-vulns (pull high severity vulns from threat source)
+      name: frontline-get-vulns (pull high & critical severity vulns from threat source)
       description: Query FrontlineVM for vulnerabilities with a minimum severity of
         'high' found from Panorama's queried log threat source.
       script: Digital Defense FrontlineVM|||frontline-get-vulns
@@ -145,10 +146,10 @@ tasks:
     ignoreworker: false
   '7':
     id: '7'
-    taskid: d2483fcc-2591-4d14-8b50-5c3830c24496
+    taskid: 58e4cfa8-fbb0-4b22-8a1f-8f85327df1ff
     type: condition
     task:
-      id: d2483fcc-2591-4d14-8b50-5c3830c24496
+      id: 58e4cfa8-fbb0-4b22-8a1f-8f85327df1ff
       version: -1
       name: Check if vulns found.
       description: Check results of previous task.
@@ -181,13 +182,12 @@ tasks:
     ignoreworker: false
   '8':
     id: '8'
-    taskid: 2b4e44d3-d2f7-4fa8-8747-d333567a389c
+    taskid: fc2f8a58-f508-476c-82d4-141a3a9be2ff
     type: regular
     task:
-      id: 2b4e44d3-d2f7-4fa8-8747-d333567a389c
+      id: fc2f8a58-f508-476c-82d4-141a3a9be2ff
       version: -1
-      name: Critical vulnerabilities exist within Frontline.Cloud from PAN OS threat
-        logs.
+      name: Vulnerabilities exist within Frontline.Cloud from PAN OS threat logs.
       description: Prints text to war room (Markdown supported)
       scriptName: Print
       type: regular
@@ -195,11 +195,11 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '11'
+      - '19'
     scriptarguments:
       value:
-        simple: 'Asset found to have critical level vulnerabilities within Frontline.Cloud:
-          ${Panorama.Monitor.Logs.SourceAddress}'
+        simple: 'Asset found to have high level and/or critical level vulnerabilities
+          within Frontline.Cloud: ${Panorama.Monitor.Logs.SourceAddress}'
     separatecontext: false
     view: |-
       {
@@ -213,12 +213,12 @@ tasks:
     ignoreworker: false
   '9':
     id: '9'
-    taskid: a66a80d3-82d2-4c28-815b-06de2c64525d
+    taskid: d39eca07-099d-49c2-8553-a202c39ee088
     type: regular
     task:
-      id: a66a80d3-82d2-4c28-815b-06de2c64525d
+      id: d39eca07-099d-49c2-8553-a202c39ee088
       version: -1
-      name: No critical vulnerabilities found from PAN OS threat logs.
+      name: No vulnerabilities found from PAN OS threat logs.
       description: Prints text to war room (Markdown supported)
       scriptName: Print
       type: regular
@@ -226,8 +226,8 @@ tasks:
       brand: ''
     scriptarguments:
       value:
-        simple: 'Critical vulnerabilities not found within Frontline.Cloud for given
-          asset: ${Panorama.Monitor.Logs.SourceAddress}'
+        simple: 'High and/or critical level vulnerabilities not found within Frontline.Cloud
+          for given asset: ${Panorama.Monitor.Logs.SourceAddress}'
     separatecontext: false
     view: |-
       {
@@ -241,10 +241,10 @@ tasks:
     ignoreworker: false
   '11':
     id: '11'
-    taskid: 92380cc5-adee-4bc5-8d15-7b25da58d431
+    taskid: 963529eb-2f34-4072-801f-9eed161669d1
     type: playbook
     task:
-      id: 92380cc5-adee-4bc5-8d15-7b25da58d431
+      id: 963529eb-2f34-4072-801f-9eed161669d1
       version: -1
       name: PAN-OS - Block IP and URL - External Dynamic List
       description: ''
@@ -259,7 +259,7 @@ tasks:
       IP:
         complex:
           root: FrontlineVM
-          accessor: IPList
+          accessor: Vulns.ip-address
           transformers:
           - operator: uniq
       IPListName:
@@ -277,41 +277,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '14':
-    id: '14'
-    taskid: 9c42b1ba-25c9-4ead-8287-274187e4b6c0
-    type: regular
-    task:
-      id: 9c42b1ba-25c9-4ead-8287-274187e4b6c0
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '1'
-    scriptarguments:
-      all:
-        simple: 'yes'
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
+          "y": 1790
         }
       }
     note: false
@@ -319,10 +285,10 @@ tasks:
     ignoreworker: false
   '16':
     id: '16'
-    taskid: 40ffabd8-fed9-4b39-8b85-37bf66787161
+    taskid: 9338a75e-30fd-404a-8dfb-a68fced09741
     type: regular
     task:
-      id: 40ffabd8-fed9-4b39-8b85-37bf66787161
+      id: 9338a75e-30fd-404a-8dfb-a68fced09741
       version: -1
       name: GenericPolling
       description: Called by the GenericPolling playbook, schedules the polling task.
@@ -392,12 +358,95 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  '18':
+    id: '18'
+    taskid: e538ae89-f731-403c-8811-59bf5fa8fc24
+    type: regular
+    task:
+      id: e538ae89-f731-403c-8811-59bf5fa8fc24
+      version: -1
+      name: Delete previous Queries in Context Data
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: |
+          Panorama.Monitor
+      keysToKeep: {}
+      subplaybook: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '19':
+    id: '19'
+    taskid: bf804048-4e41-416e-8070-3f728f4b4c7a
+    type: condition
+    task:
+      id: bf804048-4e41-416e-8070-3f728f4b4c7a
+      version: -1
+      name: Block Asset(s)
+      description: Asks user before blocking assets.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'Yes':
+      - '11'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Administrator
+      subject:
+        simple: Block Asset(s)
+      body:
+        simple: Block assets found to have vulnerabilities?
+      methods:
+      - email
+      format: ''
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - 'Yes'
+      - 'No'
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "19_11_Yes": 0.48
+    },
     "paper": {
       "dimensions": {
-        "height": 1640,
+        "height": 1835,
         "width": 810,
         "x": 50,
         "y": 50
