@@ -1981,6 +1981,12 @@
           "fromversion": "4.5.0"
         },
         {
+          "integrations": "QRadar",
+          "playbookID": "QRadar Indicator Hunting Test",
+          "timeout": 1200,
+          "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
         }
