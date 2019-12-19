@@ -2,7 +2,7 @@
 	"Domain(val.Name && val.Name == obj.Name)": {
 		"Name": "fakedomain.com",
 		"Flashpoint": {
-			"href": ["http://123-fake-api.com/api/v4/indicators/attribute/aaaaaaaaaaabbbbbbbbbbb"]
+			"Href": ["http://123-fake-api.com/api/v4/indicators/attribute/aaaaaaaaaaabbbbbbbbbbb"]
 		},
 		 "Malicious": {
 			"Vendor": "Flashpoint",

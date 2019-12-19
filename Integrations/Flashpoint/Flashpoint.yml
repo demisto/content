@@ -4,8 +4,7 @@ commonfields:
 name: Flashpoint
 display: Flashpoint
 category: Data Enrichment & Threat Intelligence
-description: "Use flashpoint integration for reduce business risk. \nThe integration\
-  \ was integrated and tested with demisto 5.0"
+description: Use flashpoint integration for reduced business risk.
 configuration:
 - display: URL
   name: url
@@ -17,6 +16,16 @@ configuration:
   defaultvalue: ""
   type: 12
   required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: ''
   type: python
@@ -26,7 +35,7 @@ script:
     - name: ip
       default: true
       required: false
-      description: The IP to check.
+      description: The IP to check the given ip is malicious or suspicious.
       isArray: true
     outputs:
     - contextPath: DBotScore.Indicator
@@ -44,7 +53,7 @@ script:
     - contextPath: IP.Address
       description: IP address
       type: string
-    - contextPath: IP.Flashpoint.href
+    - contextPath: IP.Flashpoint.Href
       description: List of reference link of the indicator.
     - contextPath: IP.Malicious.Description
       description: Description of malicious ip.
@@ -73,7 +82,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
-    - contextPath: Domain.Flashpoint.href
+    - contextPath: Domain.Flashpoint.Href
       description: List of reference of indicators.
     - contextPath: Domain.Malicious.Description
       description: Description of malicious indicator.
@@ -126,7 +135,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
-    - contextPath: URL.Flashpoint.href
+    - contextPath: URL.Flashpoint.Href
       description: List of reference of url.
     - contextPath: URL.Malicious.Description
       description: Description of malicious url.
@@ -155,7 +164,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
-    - contextPath: File.Flashpoint.href
+    - contextPath: File.Flashpoint.Href
       description: List of indicators reference.
     - contextPath: File.Malicious.Description
       description: Description of malicious file.
@@ -163,13 +172,13 @@ script:
     - contextPath: File.Malicious.Vendor
       description: Vendor of malicious file.
       type: string
-    - contextPath: File.md5
+    - contextPath: File.MD5
       description: MD5 type file.
       type: string
-    - contextPath: File.sha1
+    - contextPath: File.SHA1
       description: SHA1 type file.
       type: string
-    - contextPath: File.sha256
+    - contextPath: File.SHA256
       description: SHA256 type file.
       type: string
     description: Lookup the "File" type indicator details
@@ -193,7 +202,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
-    - contextPath: Account.Email.Flashpoint.href
+    - contextPath: Account.Email.Flashpoint.Href
       description: List of email references.
     - contextPath: Account.Email.Malicious.Description
       description: Description of Malicious email account.
@@ -211,80 +220,89 @@ script:
       required: true
       description: Search report using keyword or text
     outputs:
-    - contextPath: Flashpoint.Reports
-      description: Display list of reports based on specify search query or keyword.
+    - contextPath: Flashpoint.Report
+      description: List of reports based on specified search query or keyword
     description: Search for the Intelligence Reports using a keyword
   - name: flashpoint-get-single-intelligence-report
     arguments:
     - name: report_id
       required: true
-      description: Search report by report id. It is known by fp user or it is found in response as fpid.
+      description: The report id of the report for which the details are to be fetched.
     outputs:
-    - contextPath: Flashpoint.Report.notified_at
+    - contextPath: Flashpoint.Report.NotifiedAt
       description: Notify date of report.
       type: string
-    - contextPath: Flashpoint.Report.platform_url
+    - contextPath: Flashpoint.Report.PlatformUrl
       description: Platform url of report. It helps to redirect flashpoint platform.
       type: string
-    - contextPath: Flashpoint.Report.posted_at
+    - contextPath: Flashpoint.Report.PostedAt
       description: posted date of report.
       type: number
-    - contextPath: Flashpoint.Report.summary
+    - contextPath: Flashpoint.Report.Summary
       description: Summary of report.
       type: string
-    - contextPath: Flashpoint.Report.title
+    - contextPath: Flashpoint.Report.Title
       description: Title of the report.
       type: string
-    - contextPath: Flashpoint.Report.updated_at
+    - contextPath: Flashpoint.Report.UpdatedAt
       description: Last updated date of report.
       type: string
-    description: Get a single report by its ID
+    - contextPath: Flashpoint.Report.ReportId
+      description: Unique id of the report.
+      type: string
+    description: Get single report details using the report id. 
+      The id can be known from report-search command response or some other investigation.
   - name: flashpoint-get-related-reports
     arguments:
     - name: report_id
       required: true
-      description: Search related report by report id.
+      description: The report-id of the report of which the related reports are to be fetched.
     outputs:
-    - contextPath: Flashpoint.Reports
+    - contextPath: Flashpoint.Report
       description: Display list of related report based on report fpid.
-    description: Get related reports for a given report id
+    description: Get related reports for a particular report using the report-id. 
+      The id can be known from report-search command response or some other investigation.
   - name: flashpoint-get-single-event
     arguments:
     - name: event_id
       required: true
       description: The UUID or FPID that identifies a particular event.
     outputs:
-    - contextPath: Flashpoint.event.date
+    - contextPath: Flashpoint.Event.ObservedTime
       description: Date of event triggered.
       type: string
-    - contextPath: Flashpoint.event.event_creator_email
+    - contextPath: Flashpoint.Event.EventCreatorEmail
       description: Event creator email.
       type: string
-    - contextPath: Flashpoint.event.href
+    - contextPath: Flashpoint.Event.Href
       description: Display event reference.
-    - contextPath: Flashpoint.event.tag
-      description: Display event tag.
-    - contextPath: Flashpoint.event.event_id
+    - contextPath: Flashpoint.Event.Tags
+      description: Display event tags.
+    - contextPath: Flashpoint.Event.EventId
       description: Display event id (event fpid)
       type: string
-    description: For getting single event
+    - contextPath: Flashpoint.Event.Name
+      description: Name of the event
+      type: string
+    description: Get single event details using its UUID or FPID. The id can be fetched from get-events command or 
+      indicator reputation command response or some other investigation.
   - name: flashpoint-get-events
     arguments:
     - name: time_period
-      description: Specified time period. Search events based on time period.
+      description: Search events based on time period.
     - name: report_fpid
-      description: Search events by report fpid.User can get report fpid from output of report-search or related-reports
+      description: Search events by report fpid. Get report fpid from output of report-search or related-reports
         commands and use it in this command to get events for specific Flashpoint report.
     - name: limit
-      description: Specify limit of the record.
+      description: Specify the limit on the no. of record.
       defaultValue: "10"
     - name: attack_ids
-      description: Search events by attack ids. Multiple ids are acceptable using
+      description: Search events by attack ids. Multiple ids are accepted using
         comma separated values. attack_ids can be found in event information.
     outputs:
-    - contextPath: Flashpoint.events
+    - contextPath: Flashpoint.Event
       description: Display the list of multiple events.
-    description: Get all event details
+    description: Search events using time-period, Report fpid or Attack-ids.
   - name: flashpoint-common-lookup
     arguments:
     - name: indicator
@@ -310,96 +328,114 @@ script:
     arguments:
     - name: forum_id
       required: true
-      description: Specify forum id
+      description: Specify forum id of the forum for which the details are to be fetched.
     outputs:
-    - contextPath: Flashpoint.forum.description
-      description: Description of forum.
+    - contextPath: Flashpoint.Forum.Description
+      description: Detail information of supplied forum id.
       type: string
-    - contextPath: Flashpoint.forum.hostname
-      description: Display hostname of forum.
+    - contextPath: Flashpoint.Forum.Hostname
+      description: Host detail of supplied forum id.
       type: string
-    - contextPath: Flashpoint.forum.name
-      description: Display name of forum.
+    - contextPath: Flashpoint.Forum.Name
+      description: Name of forum.
       type: string
-    - contextPath: Flashpoint.forum.stats
-      description: Display stats like posts, rooms, threads and users details.
-    - contextPath: Flashpoint.forum.tags
+    - contextPath: Flashpoint.Forum.Stats
+      description: Display stats information like number of posts, rooms, threads and users details.
+    - contextPath: Flashpoint.Forum.Tags
       description: Display list of tags which includes id, name, parent_tag and uuid.
-    description: Get forum details
+    - contextPath: Flashpoint.Forum.ForumId
+      description: Forum's unique id.
+      type: string
+    description: Get forum details using the forum-id. The id can be known from 
+      flashpoint-search-forum-posts command response or some other investigation.
   - name: flashpoint-get-forum-room-details
     arguments:
     - name: room_id
       required: true
-      description: Specify room id
+      description: Specify room id which is used to retrieve room information in forum.
     outputs:
-    - contextPath: Flashpoint.forum.room.forum
-      description: Display all forum details like forum name, hostname, platform url,
+    - contextPath: Flashpoint.Forum.Room.Forum
+      description: Displays all forum details like forum name, hostname, platform url,
         stats and tags etc.
-    - contextPath: Flashpoint.forum.room.title
-      description: Title of the room
+    - contextPath: Flashpoint.Forum.Room.Title
+      description: Room title. User can use same title in forum search command.
       type: string
-    - contextPath: Flashpoint.forum.room.url
-      description: url of the room
+    - contextPath: Flashpoint.Forum.Room.Url
+      description: Room url.
       type: string
-    description: Get room details
+    - contextPath: Flashpoint.Forum.Room.RoomId
+      description: Unique id of forum room.
+      type: string
+    description: Get forum-room details using the room-id. The id can be known from 
+      flashpoint-search-forum-posts command response or some other investigation.
   - name: flashpoint-get-forum-user-details
     arguments:
     - name: user_id
       required: true
-      description: Specify user id
+      description: Specify user id which is used to retrieve user's information.
     outputs:
-    - contextPath: Flashpoint.forum.user.forum
+    - contextPath: Flashpoint.Forum.User.Forum
       description: Display all forum details like id, hostname, description, stats,
         tags etc.
-    - contextPath: Flashpoint.forum.user.name
-      description: Name of author.
+    - contextPath: Flashpoint.Forum.User.Name
+      description: Name of user.
       type: string
-    - contextPath: Flashpoint.forum.user.platform_url
-      description: platform url of user.
+    - contextPath: Flashpoint.Forum.User.PlatformUrl
+      description: platform url of user which is redirect to Flashpoint platform.
       type: string
-    - contextPath: Flashpoint.forum.user.url
+    - contextPath: Flashpoint.Forum.User.Url
       description: URL of user.
       type: string
-    description: Get user details
+    - contextPath: Flashpoint.Forum.User.UserId
+      description: Unique id of forum user.
+      type: string
+    description: Get user details using the user-id. The id can be known from 
+      flashpoint-search-forum-posts command response or some other investigation.
   - name: flashpoint-get-forum-post-details
     arguments:
     - name: post_id
       required: true
-      description: Specify post id
+      description: Specify post id which gives post information embeded with forum, room, user etc.
     outputs:
-    - contextPath: Flashpoint.forum.post.forum
+    - contextPath: Flashpoint.Forum.Post.Forum
       description: Display all forum details of post like id, hostname, stats, description,
         tags etc.
-    - contextPath: Flashpoint.forum.post.room
+    - contextPath: Flashpoint.Forum.Post.Room
       description: Display room details of post like room title, id, url, platform
         url etc.
-    - contextPath: Flashpoint.forum.post.user
+    - contextPath: Flashpoint.Forum.Post.User
       description: Display user details of post like user id, name, url, platform
         url etc.
-    - contextPath: Flashpoint.forum.post.platform_url
-      description: platform url of post.
+    - contextPath: Flashpoint.Forum.Post.PlatformUrl
+      description: Using platform url user can redirect to Flashpoint platform.
       type: string
-    - contextPath: Flashpoint.forum.post.published_at
+    - contextPath: Flashpoint.Forum.Post.PublishedAt
       description: published date of post.
-    - contextPath: Flashpoint.forum.post.url
+    - contextPath: Flashpoint.Forum.Post.Url
       description: Display url of post.
-    description: Get post details
+    - contextPath: Flashpoint.Forum.Post.PostId
+      description: Unique id of forum post.
+      type: string
+    description: Get post details using the post-id. The id can be known from 
+      flashpoint-search-forum-posts command response or some other investigation.
   - name: flashpoint-search-forum-sites
     arguments:
     - name: site_search
       required: true
-      description: Search by site keyword or text.
+      description: Search by site keyword or text. This keyword is used for search information in forum sites.
+        This keyword or text is known by fp user.
     outputs:
-    - contextPath: Flashpoint.forum.sites
-      description: Display list of forum site details based on search keyword.
-    description: Search forum sites using a keyword
+    - contextPath: Flashpoint.Forum.Site
+      description: List of forum site details based on search keyword.
+    description: Search forum sites using a keyword. it will search in site content like name, title, descripion etc.
   - name: flashpoint-search-forum-posts
     arguments:
     - name: post_search
       required: true
-      description: Search by post keyword or text.
+      description: Search by post keyword or text which is used for search information in forum posts and it is known by
+        fp user.
     outputs:
-    - contextPath: Flashpoint.forum.posts
+    - contextPath: Flashpoint.Forum.Post
       description: Display list of forum posts based on specified search keyword.
     description: Search forum posts using a keyword
   dockerimage: demisto/python3:3.7.5.4583
@@ -409,5 +445,5 @@ tests:
 - Flashpoint_event-Test
 - Flashpoint_forum-Test
 - Flashpoint_report-Test
-- Flaspoint_reputation-Test
+- Flashpoint_reputation-Test
 

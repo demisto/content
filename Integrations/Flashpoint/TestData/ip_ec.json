@@ -2,7 +2,7 @@
   "IP(val.Address && val.Address == obj.Address)": {
     "Address": "0.0.0.0",
     "Flashpoint": {
-      "href": [
+      "Href": [
         "http://123-fake-api.com/api/v4/indicators/attribute/hdjfhdjfhdjhfjdhdf"
       ]
     },

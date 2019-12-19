@@ -2,7 +2,7 @@
   "URL(val.Data && val.Data == obj.Data)": {
     "Name": "http://123-fake-api.com",
     "Flashpoint": {
-      "href": [
+      "Href": [
         "http://123-fake-api.com/api/v4/indicators/attribute/hdjkfhdjkhfdjfhd"
       ]
     },

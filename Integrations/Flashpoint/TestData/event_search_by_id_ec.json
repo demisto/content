@@ -1,11 +1,10 @@
 {
-  "Flashpoint": {
-    "event": {
-      "date": "Jun 18, 2019  22:08",
-      "event_creator_email": "fake@test.com",
-      "event_id": "test_scan_id",
-      "href": "http://123-fake-api.com/api/v4/indicators/event/test_scan_id",
-      "tag": "tag1"
-    }
+  "Flashpoint.Event(val.EventId == obj.EventId)": {
+    "EventId": "test_scan_id",
+    "Name": "[testing info](url/home/technical_data/iocs/items/5d0960cc-6128-4416-9996-05d20a640c05)",
+    "Tags": "tag1",
+    "ObservedTime": "Jun 18, 2019  22:08",
+    "EventCreatorEmail": "fake@test.com",
+    "Href": "http://123-fake-api.com/api/v4/indicators/event/test_scan_id"
   }
 }

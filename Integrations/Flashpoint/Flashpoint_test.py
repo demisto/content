@@ -1,8 +1,8 @@
+import demistomock as demisto
+
 import json
 import unittest
 from unittest.mock import patch
-
-import demistomock as demisto
 from Flashpoint import Client
 
 API_KEY = demisto.getParam('api_key')
@@ -27,7 +27,7 @@ TEST_POST_SEARCH_KEYWORD = 'testing'
 
 
 class MyTestCase(unittest.TestCase):
-    client = Client(API_KEY, "url")
+    client = Client(API_KEY, "url", False, None)
 
     @patch("Flashpoint.Client.http_request")
     def test_domain(self, mocker):

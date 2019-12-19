@@ -15,7 +15,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "1"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -42,7 +42,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "2"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -76,7 +76,7 @@ tasks:
       brand: Flashpoint
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     scriptarguments:
       forum_id:
         simple: ifY5BsXeXQqdTx3fafZbIg
@@ -93,10 +93,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 4090476c-b511-4723-8cb6-3a242113fd68
+    taskid: 700e1f6a-d2a1-447c-8699-b88ef2a0fed0
     type: condition
     task:
-      id: 4090476c-b511-4723-8cb6-3a242113fd68
+      id: 700e1f6a-d2a1-447c-8699-b88ef2a0fed0
       version: -1
       name: Verify forum
       type: condition
@@ -104,28 +104,28 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "4"
+      - "4"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  complex:
-                    root: ${Flashpoint
-                    accessor: forum.name}
-                iscontext: true
-              right:
-                value:
-                  simple: 0hack
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: ${Flashpoint
-                    accessor: forum.hostname}
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.Name}
+            iscontext: true
+          right:
+            value:
+              simple: 0hack
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.Hostname}
+            iscontext: true
     view: |-
       {
         "position": {
@@ -149,7 +149,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "5"
+      - "5"
     separatecontext: false
     view: |-
       {
@@ -176,7 +176,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "6"
+      - "6"
     scriptarguments:
       all:
         simple: "yes"
@@ -210,7 +210,7 @@ tasks:
       brand: Flashpoint
     nexttasks:
       '#none#':
-        - "7"
+      - "7"
     scriptarguments:
       post_id:
         simple: PDo1xGiKXDebHGc8fZme6g
@@ -227,10 +227,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 6b65b342-8557-447d-8473-7c5fcd88b633
+    taskid: 1d73e159-89aa-4ecf-814c-f3a8b3cbc00b
     type: condition
     task:
-      id: 6b65b342-8557-447d-8473-7c5fcd88b633
+      id: 1d73e159-89aa-4ecf-814c-f3a8b3cbc00b
       version: -1
       name: Verify forum post detail
       type: condition
@@ -238,18 +238,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "8"
+      - "8"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: ${Flashpoint
-                    accessor: forum.post.forum}
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.Post.Forum}
+            iscontext: true
     view: |-
       {
         "position": {
@@ -273,7 +273,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "9"
+      - "9"
     separatecontext: false
     view: |-
       {
@@ -300,7 +300,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "10"
+      - "10"
     scriptarguments:
       all:
         simple: "yes"
@@ -334,7 +334,7 @@ tasks:
       brand: Flashpoint
     nexttasks:
       '#none#':
-        - "11"
+      - "11"
     scriptarguments:
       user_id:
         simple: P3au_EzEX4-uctmRfdUYeA
@@ -351,10 +351,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: c752cad7-e23f-48d7-82d0-bdfd5b38138d
+    taskid: b0e7a7fb-0f5e-4f24-8b6d-021b9acfa5aa
     type: condition
     task:
-      id: c752cad7-e23f-48d7-82d0-bdfd5b38138d
+      id: b0e7a7fb-0f5e-4f24-8b6d-021b9acfa5aa
       version: -1
       name: verify forum user detail
       type: condition
@@ -362,28 +362,28 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "12"
+      - "12"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  complex:
-                    root: ${Flashpoint
-                    accessor: forum.user.name}
-                iscontext: true
-              right:
-                value:
-                  simple: IllWillPub
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: ${Flashpoint
-                    accessor: forum.user.platform_url}
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.User.Name}
+            iscontext: true
+          right:
+            value:
+              simple: IllWillPub
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.User.PlatformUrl}
+            iscontext: true
     view: |-
       {
         "position": {
@@ -407,7 +407,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "17"
+      - "17"
     separatecontext: false
     view: |-
       {
@@ -434,7 +434,7 @@ tasks:
       brand: Flashpoint
     nexttasks:
       '#none#':
-        - "14"
+      - "14"
     scriptarguments:
       room_id:
         simple: dBoQqur5XmGGYLxSrc8C9A
@@ -451,10 +451,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: a0bdab54-b95a-4837-80ac-0d0065a5bfff
+    taskid: 0db6aa02-bdbf-4de7-8d4f-7c554bb3ce69
     type: condition
     task:
-      id: a0bdab54-b95a-4837-80ac-0d0065a5bfff
+      id: 0db6aa02-bdbf-4de7-8d4f-7c554bb3ce69
       version: -1
       name: Verify forum room detail
       type: condition
@@ -462,28 +462,28 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "15"
+      - "15"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  complex:
-                    root: ${Flashpoint
-                    accessor: forum.room.title}
-                iscontext: true
-              right:
-                value:
-                  simple: Bank Carding
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: ${Flashpoint
-                    accessor: forum.room.url}
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.Room.Title}
+            iscontext: true
+          right:
+            value:
+              simple: Bank Carding
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.Room.Url}
+            iscontext: true
     view: |-
       {
         "position": {
@@ -507,7 +507,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "18"
+      - "18"
     separatecontext: false
     view: |-
       {
@@ -534,7 +534,7 @@ tasks:
       brand: Flashpoint
     nexttasks:
       '#none#':
-        - "19"
+      - "19"
     scriptarguments:
       site_search:
         simple: 0hack
@@ -564,7 +564,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "13"
+      - "13"
     scriptarguments:
       all:
         simple: "yes"
@@ -598,7 +598,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "16"
+      - "16"
     scriptarguments:
       all:
         simple: "yes"
@@ -619,10 +619,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: ed9727da-26d5-40f4-84b7-cc8967e1a522
+    taskid: 2efc1d6c-da6d-46d1-859c-8d92c26e732a
     type: condition
     task:
-      id: ed9727da-26d5-40f4-84b7-cc8967e1a522
+      id: 2efc1d6c-da6d-46d1-859c-8d92c26e732a
       version: -1
       name: Verify search result
       type: condition
@@ -630,18 +630,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "20"
+      - "20"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: ${Flashpoint
-                    accessor: forum.sites}
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.Site}
+            iscontext: true
     view: |-
       {
         "position": {
@@ -665,7 +665,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "24"
+      - "24"
     separatecontext: false
     view: |-
       {
@@ -692,7 +692,7 @@ tasks:
       brand: Flashpoint
     nexttasks:
       '#none#':
-        - "22"
+      - "22"
     scriptarguments:
       post_search:
         simple: The Courtyard Café
@@ -709,10 +709,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 9e3626b7-ad9b-49de-8191-496439c685c4
+    taskid: 8a16a01f-ac99-4418-803a-920d944151ee
     type: condition
     task:
-      id: 9e3626b7-ad9b-49de-8191-496439c685c4
+      id: 8a16a01f-ac99-4418-803a-920d944151ee
       version: -1
       name: Verify post search
       type: condition
@@ -720,18 +720,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "23"
+      - "23"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: ${Flashpoint
-                    accessor: forum.posts}
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ${Flashpoint
+                accessor: Forum.Post}
+            iscontext: true
     view: |-
       {
         "position": {
@@ -789,7 +789,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "21"
+      - "21"
     scriptarguments:
       all:
         simple: "yes"

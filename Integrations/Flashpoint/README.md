@@ -11,6 +11,8 @@ Configure Flashpoint on Demisto
     -   **Name**: a textual name for the integration instance.
     -   **URL**
     -   **API Key**
+    -   **Trust any certificate (not secure)**
+    -   **Use system proxy settings**
 
 4.  Click **Test** to validate the new instance.
 
@@ -47,7 +49,8 @@ a DBot message appears in the War Room with the command details.
     flashpoint-get-forum-user-details](#flashpoint-get-forum-user-details)
 16. [Get post details:
     flashpoint-get-forum-post-details](#flashpoint-get-forum-post-details)
-17. [Search forum sites using a keyword:
+17. [Search forum sites using a keyword. it will search in site content
+    like name, title, descripion etc:
     flashpoint-search-forum-sites](#flashpoint-search-forum-sites)
 18. [Search forum posts using a keyword:
     flashpoint-search-forum-posts](#flashpoint-search-forum-posts)
@@ -64,24 +67,24 @@ Lookup the "IP" type indicator details
 
 ##### Input
 
-  **Argument Name**   |**Description**   | **Required**
-  ------------------- |------------------| --------------
-  ip                  |Enter ip address  | Required
+  **Argument Name**   |**Description**                                            |**Required**
+  ------------------- |---------------------------------------------------------- |--------------
+  ip                  |The IP to check the given ip is malicious or suspicious.   |Optional
 
  
 
 ##### Context Output
 
-  **Path**                  | **Type**  | **Description**
-  --------------------------| ----------| ------------------------------------------
-  DBotScore.Indicator       | string    | The indicator that was tested.
-  DBotScore.Score           | number    | The indicator score.
-  DBotScore.Type            | string    | The indicator type.
-  DBotScore.Vendor          | string    | The vendor used to calculate the score.
-  IP.Address                | string    | IP address
-  IP.Flashpoint.href        | unknown   | List of reference link of the indicator.
-  IP.Malicious.Description  | string    | Description of malicious ip.
-  IP.Malicious.Vendor       | string    | Vandor of malicious ip.
+  **Path**                   |**Type**   |**Description**
+  -------------------------- |---------- |------------------------------------------
+  DBotScore.Indicator        |string     |The indicator that was tested.
+  DBotScore.Score            |number     |The indicator score.
+  DBotScore.Type             |string     |The indicator type.
+  DBotScore.Vendor           |string     |The vendor used to calculate the score.
+  IP.Address                 |string     |IP address
+  IP.Flashpoint.Href         |Unknown    |List of reference link of the indicator.
+  IP.Malicious.Description   |string     |Description of malicious ip.
+  IP.Malicious.Vendor        |string     |Vandor of malicious ip.
 
  
 
@@ -101,7 +104,7 @@ Lookup the "IP" type indicator details
         "IP": {
             "Address": "210.122.7.129",
             "Flashpoint": {
-                "href": [
+                "Href": [
                     "https://fp.tools/api/v4/indicators/attribute/KyhpGHc2XYKp2iUESO7ejA"
                 ]
             },
@@ -120,9 +123,9 @@ Reputation: Malicious
 
 ### Events in which this IOC observed
 
-  **Date Observed (UTC)**  | **Name**                                                    | **Tags**
-  -------------------------| ------------------------------------------------------------| --------------
-  Feb 12, 2018 21:46       | Lazarus Resurfaces, Targets Global Banks and Bitcoin Users  | source:OSINT
+  **Date Observed (UTC)**   |**Name**                                                     |**Tags**
+  ------------------------- |------------------------------------------------------------ |--------------
+  Feb 12, 2018 21:46        |Lazarus Resurfaces, Targets Global Banks and Bitcoin Users   |source:OSINT
 
 All events and details (fp-tools):
 [https://fp.tools/home/search/iocs?group=indicator&ioc\_type=ip-dst%2Cip-src&ioc\_value=210.122.7.129](https://fp.tools/home/search/iocs?group=indicator&ioc\_type=ip-dst%2Cip-src&ioc\_value=210.122.7.129)
@@ -139,24 +142,24 @@ Lookup the "Domain" type indicator details
 
 ##### Input
 
-  **Argument Name**  | **Description**     | **Required**
-  -------------------| ------------------- | --------------
-  domain             | Enter domain name   | Required
+  **Argument Name**   |**Description**             |**Required**
+  ------------------- |--------------------------- |--------------
+  domain              |The domain name to check.   |Optional
 
  
 
 ##### Context Output
 
-  **Path**                      | **Type**  | **Description**
-  ------------------------------| ----------| -----------------------------------------
-  DBotScore.Indicator           | string    | The indicator that was tested.
-  DBotScore.Score               | number    | The indicator score.
-  DBotScore.Type                | string    | The indicator type.
-  DBotScore.Vendor              | string    | The vendor used to calculate the score.
-  Domain.Flashpoint.href        | Unknown   | List of reference of indicators.
-  Domain.Malicious.Description  | string    | Description of malicious indicator.
-  Domain.Malicious.Vendor       | string    | Vendor of malicious indicator.
-  Domain.Name                   | string    | Name of domain.
+  **Path**                       |**Type**   |**Description**
+  ------------------------------ |---------- |-----------------------------------------
+  DBotScore.Indicator            |string     |The indicator that was tested.
+  DBotScore.Score                |number     |The indicator score.
+  DBotScore.Type                 |string     |The indicator type.
+  DBotScore.Vendor               |string     |The vendor used to calculate the score.
+  Domain.Flashpoint.Href         |Unknown    |List of reference of indicators.
+  Domain.Malicious.Description   |string     |Description of malicious indicator.
+  Domain.Malicious.Vendor        |string     |Vendor of malicious indicator.
+  Domain.Name                    |string     |Name of domain.
 
  
 
@@ -175,7 +178,7 @@ Lookup the "Domain" type indicator details
         },
         "Domain": {
             "Flashpoint": {
-                "href": [
+                "Href": [
                     "https://fp.tools/api/v4/indicators/attribute/ua5eL6q5W5CTmYcmAhS0XQ"
                 ]
             },
@@ -215,20 +218,20 @@ Lookup the "Filename" type indicator details
 
 ##### Input
 
-  **Argument Name**  | **Description**  | **Required**
-  -------------------| -----------------| --------------
-  filename           | Enter file-name  | Required
+  **Argument Name**   |**Description**           |**Required**
+  ------------------- |------------------------- |--------------
+  filename            |The file name to check.   |Optional
 
  
 
 ##### Context Output
 
-  **Path**             | **Type**   | **Description**
-  ---------------------| ---------- | -----------------------------------------
-  DBotScore.Indicator  | string     | The indicator that was tested.
-  DBotScore.Score      | number     | The indicator score.
-  DBotScore.Type       | string     | The indicator type.
-  DBotScore.Vendor     | string     | The vendor used to calculate the score.
+  **Path**              |**Type**   |**Description**
+  --------------------- |---------- |-----------------------------------------
+  DBotScore.Indicator   |string     |The indicator that was tested.
+  DBotScore.Score       |number     |The indicator score.
+  DBotScore.Type        |string     |The indicator type.
+  DBotScore.Vendor      |string     |The vendor used to calculate the score.
 
  
 
@@ -274,23 +277,23 @@ Lookup the "URL" type indicator details
 
 ##### Input
 
-  **Argument Name**  | **Description**  | **Required**
-  -------------------| -----------------| --------------
-  url                | Enter url        | Required
+  **Argument Name**   |**Description**     |**Required**
+  ------------------- |------------------- |--------------
+  url                 |The url to check.   |Optional
 
  
 
 ##### Context Output
 
-  **Path**                   | **Type**  | **Description**
-  ---------------------------| ----------| -----------------------------------------
-  DBotScore.Indicator        | string    | The indicator that was tested.
-  DBotScore.Score            | number    | The indicator score.
-  DBotScore.Type             | string    | The indicator type.
-  DBotScore.Vendor           | string    | The vendor used to calculate the score.
-  URL.Flashpoint.href        | Unknown   | List of reference of url.
-  URL.Malicious.Description  | string    | Description of malicious url.
-  URL.Malicious.Vendor       | string    | Vendor of malicious url.
+  **Path**                    |**Type**  |**Description**
+  --------------------------- |----------|-----------------------------------------
+  DBotScore.Indicator         |string    |The indicator that was tested.
+  DBotScore.Score             |number    |The indicator score.
+  DBotScore.Type              |string    |The indicator type.
+  DBotScore.Vendor            |string    |The vendor used to calculate the score.
+  URL.Flashpoint.Href         |Unknown   |List of reference of url.
+  URL.Malicious.Description   |string    |Description of malicious url.
+  URL.Malicious.Vendor        |string    |Vendor of malicious url.
 
  
 
@@ -309,7 +312,7 @@ Lookup the "URL" type indicator details
         },
         "URL": {
             "Flashpoint": {
-                "href": [
+                "Href": [
                     "https://fp.tools/api/v4/indicators/attribute/XEAP2wmHVqaHERj7E23gTg"
                 ]
             },
@@ -329,9 +332,9 @@ Reputation: Malicious
 
 ### Events in which this IOC observed
 
-  **Date Observed (UTC)**  | **Name**       | **Tags**
-  -------------------------| ---------------| --------------------------------------------------------------------------------------------
-  Oct 24, 2019 16:30       | GandCrab 2019  | malware:ransomware:GandCrab, report:lKyimEX1TWS8x6AtdiJ\_vA, report:7t-BsuFKTL-HJWbid8nupg
+  **Date Observed (UTC)**   |**Name**        |**Tags**
+  ------------------------- |--------------- |--------------------------------------------------------------------------------------------
+  Oct 24, 2019 16:30        |GandCrab 2019   |malware:ransomware:GandCrab, report:lKyimEX1TWS8x6AtdiJ\_vA, report:7t-BsuFKTL-HJWbid8nupg
 
 All events and details (fp-tools):
 [https://fp.tools/home/search/iocs?group=indicator&ioc\_type=url&ioc\_value=92.63.197.153/krabaldento.exe](https://fp.tools/home/search/iocs?group=indicator&ioc\_type=url&ioc\_value=92.63.197.153/krabaldento.exe)
@@ -348,26 +351,26 @@ Lookup the "File" type indicator details
 
 ##### Input
 
-  **Argument Name**  | **Description**                            | **Required**
-  -------------------| -------------------------------------------| --------------
-  file               | Enter file. It may sha1, md5, sha256 etc.  | Required
+  **Argument Name**   |**Description**                                    |**Required**
+  ------------------- |-------------------------------------------------- |--------------
+  file                |The file to check. It may sha1, md5, sha256 etc.   |Optional
 
  
 
 ##### Context Output
 
-  **Path**                    | **Type**  | **Description**
-  ----------------------------| ----------| -----------------------------------------
-  DBotScore.Indicator         | string    | The indicator that was tested.
-  DBotScore.Score             | number    | The indicator score.
-  DBotScore.Type              | string    | The indicator type.
-  DBotScore.Vendor            | string    | The vendor used to calculate the score.
-  File.Flashpoint.href        | unknown   | List of indicators reference.
-  File.Malicious.Description  | string    | Description of malicious file.
-  File.Malicious.Vendor       | string    | Vendor of malicious file.
-  File.md5                    | string    | MD5 type file.
-  File.sha1                   | string    | SHA1 type file.
-  File.sha256                 | string    | SHA256 type file.
+  **Path**                     |**Type**   |**Description**
+  ---------------------------- |---------- |-----------------------------------------
+  DBotScore.Indicator          |string     |The indicator that was tested.
+  DBotScore.Score              |number     |The indicator score.
+  DBotScore.Type               |string     |The indicator type.
+  DBotScore.Vendor             |string     |The vendor used to calculate the score.
+  File.Flashpoint.Href         |Unknown    |List of indicators reference.
+  File.Malicious.Description   |string     |Description of malicious file.
+  File.Malicious.Vendor        |string     |Vendor of malicious file.
+  File.MD5                     |string     |MD5 type file.
+  File.SHA1                    |string     |SHA1 type file.
+  File.SHA256                  |string     |SHA256 type file.
 
  
 
@@ -381,12 +384,12 @@ Lookup the "File" type indicator details
         "DBotScore": {
             "Indicator": "ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5",
             "Score": 3,
-            "Type": "sha256",
+            "Type": "SHA256",
             "Vendor": "Flashpoint"
         },
         "File": {
             "Flashpoint": {
-                "href": [
+                "Href": [
                     "https://fp.tools/api/v4/indicators/attribute/rqIX70QLVlC3aAydF8uECQ",
                     "https://fp.tools/api/v4/indicators/attribute/9oi7LdmmWGuh1AG4fKv13g"
                 ]
@@ -395,7 +398,7 @@ Lookup the "File" type indicator details
                 "Description": "Found in malicious indicators dataset",
                 "Vendor": "Flashpoint"
             },
-            "sha256": "ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5"
+            "SHA256": "ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5"
         }
     }
 
@@ -407,10 +410,10 @@ Reputation: Malicious
 
 ### Events in which this IOC observed
 
-  **Date Observed (UTC)**  | **Name**                  | **Tags**
-  -------------------------| --------------------------| ----------------------------------------------------------------------------
-  Dec 13, 2019 06:03       | Gandcrab                  | source:VirusTotal, type:Ransomware, gandcrab, malware:GandCrab, os:Windows
-  Jul 17, 2019 18:02       | win\_ransomware\_generic  | source:VirusTotal, type:Ransomware, win\_ransomware\_generic, os:Windows
+  **Date Observed (UTC)**   |**Name**                   |**Tags**
+  ------------------------- |-------------------------- |----------------------------------------------------------------------------
+  Dec 18, 2019 07:03        |Gandcrab                   |source:VirusTotal, type:Ransomware, gandcrab, malware:GandCrab, os:Windows
+  Jul 17, 2019 18:02        |win\_ransomware\_generic   |source:VirusTotal, type:Ransomware, win\_ransomware\_generic, os:Windows
 
 All events and details (fp-tools):
 [https://fp.tools/home/search/iocs?group=indicator&ioc\_type=md5%2Csha1%2Csha256%2Csha512&ioc\_value=ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5](https://fp.tools/home/search/iocs?group=indicator&ioc\_type=md5%2Csha1%2Csha256%2Csha512&ioc\_value=ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5)
@@ -427,24 +430,24 @@ Lookup the "Email" type indicator details
 
 ##### Input
 
-  **Argument Name**  | **Description**    | **Required**
-  -------------------| -------------------| --------------
-  email              | Enter valid email  | Required
+  **Argument Name**   |**Description**       |**Required**
+  ------------------- |--------------------- |--------------
+  email               |The email to check.   |Optional
 
  
 
 ##### Context Output
 
-  **Path**                             | **Type**  | **Description**
-  -------------------------------------| ----------| -----------------------------------------
-  DBotScore.Indicator                  | string    | The indicator that was tested.
-  DBotScore.Score                      | number    | The indicator score.
-  DBotScore.Type                       | string    | The indicator type.
-  DBotScore.Vendor                     | string    | The vendor used to calculate the score.
-  Account.Email.Flashpoint.href        | Unknown   | List of email references.
-  Account.Email.Malicious.Description  | string    | Description of Malicious email account.
-  Account.Email.Malicious.Vendor       | string    | Vendor of Malicious email.
-  Account.Email.Name                   | string    | Name of indicator.
+  **Path**                              |**Type**   |**Description**
+  ------------------------------------- |---------- |-----------------------------------------
+  DBotScore.Indicator                   |string     |The indicator that was tested.
+  DBotScore.Score                       |number     |The indicator score.
+  DBotScore.Type                        |string     |The indicator type.
+  DBotScore.Vendor                      |string     |The vendor used to calculate the score.
+  Account.Email.Flashpoint.Href         |Unknown    |List of email references.
+  Account.Email.Malicious.Description   |string     |Description of Malicious email account.
+  Account.Email.Malicious.Vendor        |string     |Vendor of Malicious email.
+  Account.Email.Name                    |string     |Name of indicator.
 
  
 
@@ -502,17 +505,17 @@ Search for the Intelligence Reports using a keyword
 
 ##### Input
 
-  **Argument Name**  | **Description**                      | **Required**
-  -------------------| -------------------------------------| --------------
-  report\_search     | Search report using keyword or text  | Required
+  **Argument Name**   |**Description**                       |**Required**
+  ------------------- |------------------------------------- |--------------
+  report\_search      |Search report using keyword or text   |Required
 
  
 
 ##### Context Output
 
-  **Path**            | **Type**  | **Description**
-  --------------------| ----------| -------------------------------------------------------------------
-  Flashpoint.Reports  | Unknown   | Display list of reports based on specify search query or keyword.
+  **Path**            |**Type**   |**Description**
+  ------------------- |---------- |-------------------------------------------------------------------
+  Flashpoint.Report   |Unknown    |Display list of reports based on specify search query or keyword.
 
  
 
@@ -523,46 +526,51 @@ Search for the Intelligence Reports using a keyword
 ##### Context Example
 
     {
-        "Flashpoint.Reports": [
+        "Flashpoint.Report": [
             {
-                "notified_at": "2019-12-02T21:13:08.271+00:00",
-                "platform_url": "https://fp.tools/home/intelligence/reports/report/og0aVCYmSeS-mpSXOF21Rg#detail",
-                "posted_at": "2019-12-02T21:13:08.271+00:00",
-                "summary": "Despite Telegram?s aggressive and sustained targeting of jihadists on its platform, ISIS?s official media and supportive groups are beginning to rebuild on Telegram.",
-                "title": "ISIS Media Rebuilds Following Sweeping Suspensions",
-                "updated_at": "2019-12-02T21:13:08.271+00:00"
+                "NotifiedAt": "2019-12-13T19:17:32.520+00:00",
+                "PlatformUrl": "https://fp.tools/home/intelligence/reports/report/urDeGGjbTwWOSDikhp9YDw#detail",
+                "PostedAt": "2019-12-13T19:17:32.520+00:00",
+                "ReportId": "urDeGGjbTwWOSDikhp9YDw",
+                "Summary": "On December 5, 2019, the al-Qaeda affiliated Global Islamic Media Front (GIMF) announced the launch of its server on the messaging platform RocketChat. The announcement follows the purge of jihadists from multiple social media and communication platforms, most notably Telegram.",
+                "Title": "Al-Qaeda Affiliated Unit Launches Private RocketChat Server",
+                "UpdatedAt": "2019-12-13T19:17:32.520+00:00"
             },
             {
-                "notified_at": "2019-11-25T21:21:41.647+00:00",
-                "platform_url": "https://fp.tools/home/intelligence/reports/report/Kd1HMXJQRYmKDmECAmsPMA#detail",
-                "posted_at": "2019-11-25T21:21:41.647+00:00",
-                "summary": "Between November 22 and 24, 2019, Telegram removed more than 7,000 jihadist channnels and bots from its platform?in the largest purge of ISIS propaganda in Telegram?s history. The takedown drastically impacted ISIS propaganda dissemination, knocking out critical channels and groups, many of which had operated uninterrupted for years.",
-                "title": "Telegram Targets ISIS Propaganda in Largest Platform Purge",
-                "updated_at": "2019-11-25T21:21:41.647+00:00"
+                "NotifiedAt": null,
+                "PlatformUrl": "https://fp.tools/home/intelligence/reports/report/WFhcFuASR3CbxbC6IzuKBA#detail",
+                "PostedAt": "2019-12-13T18:28:05.858+00:00",
+                "ReportId": "WFhcFuASR3CbxbC6IzuKBA",
+                "Summary": "WEEK OF DECEMBER 9 KEY DEVELOPMENTS ",
+                "Title": "Iran Global Spotlight (Analyst Knowledge Page)",
+                "UpdatedAt": "2019-12-13T18:28:05.858+00:00"
             },
             {
-                "notified_at": "2019-11-22T19:24:21.634+00:00",
-                "platform_url": "https://fp.tools/home/intelligence/reports/report/mwpd9Dn7SuO_K7KLPzfJeA#detail",
-                "posted_at": "2019-11-22T19:24:21.634+00:00",
-                "summary": "",
-                "title": "Global Spotlight - Iran: Key Developments This Week",
-                "updated_at": "2019-11-22T19:24:21.634+00:00"
+                "NotifiedAt": "2019-12-02T21:13:08.271+00:00",
+                "PlatformUrl": "https://fp.tools/home/intelligence/reports/report/og0aVCYmSeS-mpSXOF21Rg#detail",
+                "PostedAt": "2019-12-02T21:13:08.271+00:00",
+                "ReportId": "og0aVCYmSeS-mpSXOF21Rg",
+                "Summary": "Despite Telegram?s aggressive and sustained targeting of jihadists on its platform, ISIS?s official media and supportive groups are beginning to rebuild on Telegram.",
+                "Title": "ISIS Media Rebuilds Following Sweeping Suspensions",
+                "UpdatedAt": "2019-12-02T21:13:08.271+00:00"
             },
             {
-                "notified_at": "2019-11-14T20:02:00.159+00:00",
-                "platform_url": "https://fp.tools/home/intelligence/reports/report/pRtNw1SETZOD71IRNakVCA#detail",
-                "posted_at": "2019-11-14T20:02:00.159+00:00",
-                "summary": "Flashpoint analysts have identified a Dropbox account called ?NS Library? belonging to a far-right extremist containing over 200 white supremacist publications and guides?including neo-Nazi literature and propaganda, instruction manuals for making homemade weapons, survival guides, attackers? manifestos, and workout manuals, among other content.",
-                "title": "Dropbox Account Disseminates Far-Right Extremist Content",
-                "updated_at": "2019-11-14T20:02:00.159+00:00"
+                "NotifiedAt": "2019-11-25T21:21:41.647+00:00",
+                "PlatformUrl": "https://fp.tools/home/intelligence/reports/report/Kd1HMXJQRYmKDmECAmsPMA#detail",
+                "PostedAt": "2019-11-25T21:21:41.647+00:00",
+                "ReportId": "Kd1HMXJQRYmKDmECAmsPMA",
+                "Summary": "Between November 22 and 24, 2019, Telegram removed more than 7,000 jihadist channnels and bots from its platform?in the largest purge of ISIS propaganda in Telegram?s history. The takedown drastically impacted ISIS propaganda dissemination, knocking out critical channels and groups, many of which had operated uninterrupted for years.",
+                "Title": "Telegram Targets ISIS Propaganda in Largest Platform Purge",
+                "UpdatedAt": "2019-11-25T21:21:41.647+00:00"
             },
             {
-                "notified_at": "2019-11-08T20:09:41.574+00:00",
-                "platform_url": "https://fp.tools/home/intelligence/reports/report/hrPmox3jSxyk5zkgTRmLjw#detail",
-                "posted_at": "2019-11-08T20:09:41.574+00:00",
-                "summary": "On October 26, 2019, ISIS?s former leader Abu Bakr al-Baghdadi killed himself in the midst of a US military operation. Less than a week later, ISIS confirmed al-Baghdadi?s death, and announced that Abu Ibrahim al-Hashimi al-Qurashi is the group?s new leader.",
-                "title": "ISIS Activity Continues Unabated Following al-Baghdadi's Death",
-                "updated_at": "2019-11-08T20:09:41.574+00:00"
+                "NotifiedAt": "2019-11-22T19:24:21.634+00:00",
+                "PlatformUrl": "https://fp.tools/home/intelligence/reports/report/mwpd9Dn7SuO_K7KLPzfJeA#detail",
+                "PostedAt": "2019-11-22T19:24:21.634+00:00",
+                "ReportId": "mwpd9Dn7SuO_K7KLPzfJeA",
+                "Summary": "",
+                "Title": "Global Spotlight - Iran: Key Developments This Week",
+                "UpdatedAt": "2019-11-22T19:24:21.634+00:00"
             }
         ]
     }
@@ -615,22 +623,23 @@ Get a single report by its ID
 
 ##### Input
 
-  **Argument Name**  | **Description**               | **Required**
-  -------------------| ------------------------------| --------------
-  report\_id         | Search report by report fpid  | Required
+  **Argument Name**   |**Description**                                                                          |**Required**
+  ------------------- |---------------------------------------------------------------------------------------- |--------------
+  report\_id          |Search report by report id. It is known by fp user or it is found in response as fpid.   |Required
 
  
 
 ##### Context Output
 
-  **Path**                         | **Type**  | **Description**
-  ---------------------------------| ----------| ------------------------------
-  Flashpoint.Report.notified\_at   | string    | Notify date of report.
-  Flashpoint.Report.platform\_url  | string    | Platform url of report.
-  Flashpoint.Report.posted\_at     | number    | posted date of report.
-  Flashpoint.Report.summary        | string    | Summary of report.
-  Flashpoint.Report.title          | string    | Title of the report.
-  Flashpoint.Report.updated\_at    | string    | Last updated date of report.
+  **Path**                        |**Type**   |**Description**
+  ------------------------------- |---------- |-------------------------------------------------------------------
+  Flashpoint.Report.NotifiedAt    |string     |Notify date of report.
+  Flashpoint.Report.PlatformUrl   |string     |Platform url of report. It helps to redirect flashpoint platform.
+  Flashpoint.Report.PostedAt      |number     |posted date of report.
+  Flashpoint.Report.Summary       |string     |Summary of report.
+  Flashpoint.Report.Title         |string     |Title of the report.
+  Flashpoint.Report.UpdatedAt     |string     |Last updated date of report.
+  Flashpoint.Report.ReportId      |string     |Unique id of the report.
 
  
 
@@ -641,12 +650,15 @@ Get a single report by its ID
 ##### Context Example
 
     {
-        "Flashpoint.Report.notified_at": "2019-09-23T20:27:20.638+00:00",
-        "Flashpoint.Report.platform_url": "https://fp.tools/home/intelligence/reports/report/e-QdYuuwRwCntzRljzn9-A#detail",
-        "Flashpoint.Report.posted_at": "2019-09-23T20:27:20.638+00:00",
-        "Flashpoint.Report.summary": "On September 17, 2019, multiple pro-ISIS Telegram groups disseminated a message warning of the dangers of exposed exif data?a type of metadata showing GPS coordinates, time, and date the image was taken and the make and model of the device used?that is typically captured from images taken by a phone or camera, unless the security settings are properly configured.",
-        "Flashpoint.Report.title": "ISIS Supporters Warn of the Risks Associated with Exif Data",
-        "Flashpoint.Report.updated_at": "2019-09-23T20:27:20.638+00:00"
+        "Flashpoint.Report": {
+            "NotifiedAt": "2019-09-23T20:27:20.638+00:00",
+            "PlatformUrl": "https://fp.tools/home/intelligence/reports/report/e-QdYuuwRwCntzRljzn9-A#detail",
+            "PostedAt": "2019-09-23T20:27:20.638+00:00",
+            "ReportId": "e-QdYuuwRwCntzRljzn9-A",
+            "Summary": "On September 17, 2019, multiple pro-ISIS Telegram groups disseminated a message warning of the dangers of exposed exif data?a type of metadata showing GPS coordinates, time, and date the image was taken and the make and model of the device used?that is typically captured from images taken by a phone or camera, unless the security settings are properly configured.",
+            "Title": "ISIS Supporters Warn of the Risks Associated with Exif Data",
+            "UpdatedAt": "2019-09-23T20:27:20.638+00:00"
+        }
     }
 
 ##### Human Readable Output
@@ -671,17 +683,17 @@ Get related reports for a given report id
 
 ##### Input
 
-  **Argument Name**  | **Description**                        | **Required**
-  -------------------| ---------------------------------------| --------------
-  report\_id         | Search related report by report fpid.  | Required
+  **Argument Name**   |**Description**                       |**Required**
+  ------------------- |------------------------------------- |--------------
+  report\_id          |Search related report by report id.   |Required
 
  
 
 ##### Context Output
 
-  **Path**            | **Type**  | **Description**
-  --------------------| ----------| ------------------------------------------------------
-  Flashpoint.Reports  | Unknown   | Display list of related report based on report fpid.
+  **Path**            |**Type**   |**Description**
+  ------------------- |---------- |------------------------------------------------------
+  Flashpoint.Report   |Unknown    |Display list of related report based on report fpid.
 
  
 
@@ -692,46 +704,51 @@ Get related reports for a given report id
 ##### Context Example
 
     {
-        "Flashpoint.Reports": [
+        "Flashpoint.Report": [
             {
-                "notified_at": "2019-11-04T21:14:28.506+00:00",
-                "platform_url": "https://fp.tools/home/intelligence/reports/report/90paj4gCSBG8FT8R_SCtgQ#detail",
-                "posted_at": "2019-11-04T21:14:28.506+00:00",
-                "summary": "In August 2019, militant white supremacist channel ?Stack the Bodies to God? appeared on Telegram, inciting violence and providing a large quantity of informational resources?including extremist publications, tactical manuals, survival guides, guerrilla warfare tactics, instructions for making homemade explosives, weapons, and ricin, and internet security tips.",
-                "title": "Neo-Nazi Telegram Channel Incites Violence, Spreads Extremist Content",
-                "updated_at": "2019-11-04T21:14:28.506+00:00"
+                "NotifiedAt": "2019-10-02T19:31:41.625+00:00",
+                "PlatformUrl": "https://fp.tools/home/intelligence/reports/report/X6YSFdWWQ3yDa9_0r627sg#detail",
+                "PostedAt": "2019-10-02T19:31:41.625+00:00",
+                "ReportId": "X6YSFdWWQ3yDa9_0r627sg",
+                "Summary": "On September 30, 2019, the admin of ?The_Bowlcast? Telegram channel promoted the launch of the militant, white supremacist group ?Atomwaffen Division?s? (AWD) latest website and new video dubbed ?Nuclear Congress 2019,? which subtlely discusses the need for AWD to accomplish its goals?alluding to the need for new financing and recruitment.",
+                "Title": "Atomwaffen Division Resumes Recruitment Activity",
+                "UpdatedAt": "2019-10-02T19:31:41.625+00:00"
             },
             {
-                "notified_at": "2019-10-02T19:31:41.625+00:00",
-                "platform_url": "https://fp.tools/home/intelligence/reports/report/X6YSFdWWQ3yDa9_0r627sg#detail",
-                "posted_at": "2019-10-02T19:31:41.625+00:00",
-                "summary": "On September 30, 2019, the admin of ?The_Bowlcast? Telegram channel promoted the launch of the militant, white supremacist group ?Atomwaffen Division?s? (AWD) latest website and new video dubbed ?Nuclear Congress 2019,? which subtlely discusses the need for AWD to accomplish its goals?alluding to the need for new financing and recruitment.",
-                "title": "Atomwaffen Division Resumes Recruitment Activity",
-                "updated_at": "2019-10-02T19:31:41.625+00:00"
+                "NotifiedAt": "2019-09-26T19:52:21.089+00:00",
+                "PlatformUrl": "https://fp.tools/home/intelligence/reports/report/iQRHJvzySma6-aHNE973mA#detail",
+                "PostedAt": "2019-09-26T19:52:21.089+00:00",
+                "ReportId": "iQRHJvzySma6-aHNE973mA",
+                "Summary": "On June 14, 2019, a militant white supremacy group called ?Vorherrschaft Division? (VSD) announced its creation in its Telegram channel \"Vorherrschaft division propaganda posting.\"",
+                "Title": "\"Vorherrschaft Division\" (VSD): A Nascent Militant White Supremacy Group",
+                "UpdatedAt": "2019-09-26T19:52:21.089+00:00"
             },
             {
-                "notified_at": "2019-09-26T19:52:21.089+00:00",
-                "platform_url": "https://fp.tools/home/intelligence/reports/report/iQRHJvzySma6-aHNE973mA#detail",
-                "posted_at": "2019-09-26T19:52:21.089+00:00",
-                "summary": "On June 14, 2019, a militant white supremacy group called ?Vorherrschaft Division? (VSD) announced its creation in its Telegram channel \"Vorherrschaft division propaganda posting.\"",
-                "title": "\"Vorherrschaft Division\" (VSD): A Nascent Militant White Supremacy Group",
-                "updated_at": "2019-09-26T19:52:21.089+00:00"
+                "NotifiedAt": "2019-11-04T21:14:28.506+00:00",
+                "PlatformUrl": "https://fp.tools/home/intelligence/reports/report/90paj4gCSBG8FT8R_SCtgQ#detail",
+                "PostedAt": "2019-11-04T21:14:28.506+00:00",
+                "ReportId": "90paj4gCSBG8FT8R_SCtgQ",
+                "Summary": "In August 2019, militant white supremacist channel ?Stack the Bodies to God? appeared on Telegram, inciting violence and providing a large quantity of informational resources?including extremist publications, tactical manuals, survival guides, guerrilla warfare tactics, instructions for making homemade explosives, weapons, and ricin, and internet security tips.",
+                "Title": "Neo-Nazi Telegram Channel Incites Violence, Spreads Extremist Content",
+                "UpdatedAt": "2019-11-04T21:14:28.506+00:00"
             },
             {
-                "notified_at": "2019-08-27T18:50:13.081+00:00",
-                "platform_url": "https://fp.tools/home/intelligence/reports/report/IpIgbStQS8yprb4nqzLW4Q#detail",
-                "posted_at": "2019-08-27T18:50:13.081+00:00",
-                "summary": "The August 2019 arrests of two individuals making threatening posts on the meme-sharing app iFunny reveal an active far-right extremist presence on the platform. The arrests appear to have prompted changes to the site?s search functions and the removal of prominent far-right accounts. ",
-                "title": "iFunny: Arrests Reveal Violent Far-Right Activity",
-                "updated_at": "2019-08-27T18:50:13.081+00:00"
+                "NotifiedAt": "2019-11-25T19:12:47.634+00:00",
+                "PlatformUrl": "https://fp.tools/home/intelligence/reports/report/pQBUFAlfSce-xQd7Ignmyg#detail",
+                "PostedAt": "2019-11-25T19:12:47.634+00:00",
+                "ReportId": "pQBUFAlfSce-xQd7Ignmyg",
+                "Summary": "Members of the far-right community are preparing for what they call ?meme war 2020??content spread via social media focused on left-leaning targets?in the lead up to the 2020 U.S. presidential election. ",
+                "Title": "Far-Right Prepares for \"Meme War 2020\"",
+                "UpdatedAt": "2019-11-25T19:12:47.634+00:00"
             },
             {
-                "notified_at": "2019-10-23T18:47:40.810+00:00",
-                "platform_url": "https://fp.tools/home/intelligence/reports/report/iEOIjuPjREmCIJR7Krbpnw#detail",
-                "posted_at": "2019-10-23T18:47:40.810+00:00",
-                "summary": "The term ?boogaloo? (also known as ?the boogaloo? and ?big igloo?) is the latest term used by accelerationists?advocates of hastening the collapse of society through violence?to describe an armed revolution against society to rebuild a white-ethno state.",
-                "title": "\"Boogaloo\": Accelerationists' Latest Call to Action",
-                "updated_at": "2019-10-23T18:47:40.810+00:00"
+                "NotifiedAt": "2019-10-23T18:47:40.810+00:00",
+                "PlatformUrl": "https://fp.tools/home/intelligence/reports/report/iEOIjuPjREmCIJR7Krbpnw#detail",
+                "PostedAt": "2019-10-23T18:47:40.810+00:00",
+                "ReportId": "iEOIjuPjREmCIJR7Krbpnw",
+                "Summary": "The term ?boogaloo? (also known as ?the boogaloo? and ?big igloo?) is the latest term used by accelerationists?advocates of hastening the collapse of society through violence?to describe an armed revolution against society to rebuild a white-ethno state.",
+                "Title": "\"Boogaloo\": Accelerationists' Latest Call to Action",
+                "UpdatedAt": "2019-10-23T18:47:40.810+00:00"
             }
         ]
     }
@@ -739,6 +756,7 @@ Get related reports for a given report id
 ##### Human Readable Output
 
 ### Flashpoint Intelligence related reports:
+
 
 Top 5 related reports: 
 1) [Neo-Nazi Telegram Channel Incites Violence, Spreads Extremist Content](https://fp.tools/home/intelligence/reports/report/90paj4gCSBG8FT8R\_SCtgQ\#detail)  
@@ -775,6 +793,7 @@ left-leaning targets?in the lead up to the 2020 U.S. presidential
 election. Link to the given Report on Flashpoint platform:
 [https://fp.tools/home/intelligence/reports/report/tiPqg51OQpOTsoFyTaYa\_w\#detail](https://fp.tools/home/intelligence/reports/report/tiPqg51OQpOTsoFyTaYa\_w\#detail)
 
+
 ### 10. flashpoint-get-single-event
 
 * * * * *
@@ -787,21 +806,22 @@ For getting single event
 
 ##### Input
 
-  **Argument Name**  | **Description**                                       | **Required**
-  -------------------| ------------------------------------------------------| --------------
-  event\_id          | The UUID or FPID that identifies a particular event.  | Required
+  **Argument Name**   |**Description**                                        |**Required**
+  ------------------- |------------------------------------------------------ |--------------
+  event\_id           |The UUID or FPID that identifies a particular event.   |Required
 
  
 
 ##### Context Output
 
-  **Path**                                | **Type**  | **Description**
-  ----------------------------------------| ----------| -------------------------------
-  Flashpoint.event.date                   | string    | Date of event triggered.
-  Flashpoint.event.event\_creator\_email  | string    | Event creator email.
-  Flashpoint.event.href                   | Unknown   | Display event reference.
-  Flashpoint.event.tag                    | Unknown   | Display event tag.
-  Flashpoint.event.event\_id              | string    | Display event id (event fpid)
+  **Path**                             |**Type**   |**Description**
+  ------------------------------------ |---------- |-------------------------------
+  Flashpoint.Event.ObservedTime        |string     |Date of event triggered.
+  Flashpoint.Event.EventCreatorEmail   |string     |Event creator email.
+  Flashpoint.Event.Href                |Unknown    |Display event reference.
+  Flashpoint.Event.Tags                |Unknown    |Display event tags.
+  Flashpoint.Event.EventId             |string     |Display event id (event fpid)
+  Flashpoint.Event.Name                |string     |Name of the event
 
  
 
@@ -812,14 +832,13 @@ For getting single event
 ##### Context Example
 
     {
-        "Flashpoint": {
-            "event": {
-                "date": "Jun 18, 2019  22:08",
-                "event_creator_email": "info@flashpoint-intel.com",
-                "event_id": "Hu2SoTWJWteLrH9mR94JbQ",
-                "href": "https://fp.tools/api/v4/indicators/event/Hu2SoTWJWteLrH9mR94JbQ",
-                "tag": "source:CryptingService2"
-            }
+        "Flashpoint.Event": {
+            "EventCreatorEmail": "info@flashpoint-intel.com",
+            "EventId": "Hu2SoTWJWteLrH9mR94JbQ",
+            "Href": "https://fp.tools/api/v4/indicators/event/Hu2SoTWJWteLrH9mR94JbQ",
+            "Name": "[CryptingService_4c0d570ecdf23529c91b8decf27107db5c5e9430_2019-06-17T03:01:03.000Z](https://fp.tools/home/technical_data/iocs/items/5d0960cc-6128-4416-9996-05d20a640c05)",
+            "ObservedTime": "Jun 18, 2019  22:08",
+            "Tags": "source:CryptingService2"
         }
     }
 
@@ -833,7 +852,6 @@ For getting single event
   ------------------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| -------------------------
   Jun 18, 2019 22:08        |[CryptingService\_4c0d570ecdf23529c91b8decf27107db5c5e9430\_2019-06-17T03:01:03.000Z](https://fp.tools/home/technical\_data/iocs/items/5d0960cc-6128-4416-9996-05d20a640c05)  | source:CryptingService2
 
-
 ### 11. flashpoint-get-events
 
 * * * * *
@@ -844,22 +862,22 @@ Get all event details
 
 `flashpoint-get-events`
 
-
 ##### Input
 
-  **Argument Name**  | **Description**                                                                         | **Required**
-  -------------------| ----------------------------------------------------------------------------------------| --------------
-  time\_period       | Specified time period. Search events based on time period.                              | Optional
-  report\_fpid       | Search events by report fpid. User can get report-id from output of report-search or related-reports commands and use it in this command to get events for specific Flashpoint report. Users may also already have report-id from their own investigations.      | Optional
-  limit              | Specify limit of the record.                                                            | Optional
-  attack\_ids        | Search events by attack ids. Multiple ids are acceptable using comma separated values.  | Optional
+  **Argument Name**   |**Description**                                                                                                                                                                           |**Required**
+  ------------------- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |--------------
+  time\_period        |Specified time period. Search events based on time period.                                                                                                                                |Optional
+  report\_fpid        |Search events by report fpid.User can get report fpid from output of report-search or related-reports commands and use it in this command to get events for specific Flashpoint report.   |Optional
+  limit               |Specify limit of the record.                                                                                                                                                              |Optional
+  attack\_ids         |Search events by attack ids. Multiple ids are acceptable using comma separated values. attack\_ids can be found in event information.                                                     |Optional
 
+ 
 
 ##### Context Output
 
-  **Path**           | **Type**  | **Description**
-  -------------------| ----------| --------------------------------------
-  Flashpoint.events  | Unknown   | Display the list of multiple events.
+  **Path**           |**Type**   |**Description**
+  ------------------ |---------- |--------------------------------------
+  Flashpoint.Event   |Unknown    |Display the list of multiple events.
 
  
 
@@ -870,150 +888,168 @@ Get all event details
 ##### Context Example
 
     {
-        "Flashpoint": {
-            "events": [
-                {
-                    "Name": "[Loki](https://fp.tools/home/technical_data/iocs/items/5d087e04-1464-4a26-964e-05cd0a640c05)",
-                    "Observed time (UTC)": "Dec 13, 2019  12:00",
-                    "Tags": "source:VirusTotal, type:Stealer, malware:Loki, loki, os:Windows",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "nx7tsJYKWKm259vMLduWGw"
-                },
-                {
-                    "Name": "[CryptingService_0f157d82ae3c17aeaa2b60df43d015a724b5498d_2019-12-13T03:01:02.000Z](https://fp.tools/home/technical_data/iocs/items/5df3651b-20b8-4188-bfeb-035b0a212040)",
-                    "Observed time (UTC)": "Dec 13, 2019  10:16",
-                    "Tags": "source:CryptingService2",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "vSOfAXcnVq2Ub8uQ2F8Ccw"
-                },
-                {
-                    "Name": "[CyberGate](https://fp.tools/home/technical_data/iocs/items/5d07d55f-e9f8-4530-b57c-05cd0a640c05)",
-                    "Observed time (UTC)": "Dec 13, 2019  08:00",
-                    "Tags": "source:VirusTotal, os:Windows, type:RAT, cybergate, malware:CyberGate",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "hirKFHGUVAySCvUzchchgA"
-                },
-                {
-                    "Name": "[Command_Line_Options](https://fp.tools/home/technical_data/iocs/items/5da01a75-0f20-41da-83e1-56550a640c05)",
-                    "Observed time (UTC)": "Dec 13, 2019  07:03",
-                    "Tags": "source:VirusTotal, command_line_options",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "Y_0iIuFFXU-wuNBCs0kF_g"
-                },
-                {
-                    "Name": "[crime_win32_isfb_v216_tor_client_dll](https://fp.tools/home/technical_data/iocs/items/5d166f92-d8dc-4766-a3e9-12a70a640c05)",
-                    "Observed time (UTC)": "Dec 13, 2019  07:02",
-                    "Tags": "source:VirusTotal, crime_win32_isfb_v216_tor_client_dll, v216, malware:GoziISFB, target:Japan, type:Banker, os:Windows",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "A9drxEO1UAWqtnNofYR7rg"
-                },
-                {
-                    "Name": "[Ursniff](https://fp.tools/home/technical_data/iocs/items/5d2627b8-87e4-428a-bc92-11e00a640c05)",
-                    "Observed time (UTC)": "Dec 13, 2019  07:02",
-                    "Tags": "source:VirusTotal, ursniff",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "JwtRVKzvUwu05JGtU5fzcA"
-                },
-                {
-                    "Name": "[MegaCortex_Load_Dinkum_CLib](https://fp.tools/home/technical_data/iocs/items/5da01a84-b3fc-4eef-961d-0a340a640c05)",
-                    "Observed time (UTC)": "Dec 13, 2019  07:01",
-                    "Tags": "source:VirusTotal, megacortex_load_dinkum_clib, malware:MegaCortex, type:Ransomware, os:Windows",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "f97cPO5dVqO74ttWZwbFqQ"
-                },
-                {
-                    "Name": "[Sodinokibi_Unreachable_After_MZ_Check](https://fp.tools/home/technical_data/iocs/items/5da01a74-4b5c-4160-83c6-05d00a640c05)",
-                    "Observed time (UTC)": "Dec 13, 2019  07:01",
-                    "Tags": "source:VirusTotal, sodinokibi_unreachable_after_mz_check",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "Ut6zC32_VMSg6vB-cvwNmg"
-                },
-                {
-                    "Name": "[Gandcrab](https://fp.tools/home/technical_data/iocs/items/5d07d587-a9ac-4da1-9c72-05cd0a640c05)",
-                    "Observed time (UTC)": "Dec 13, 2019  06:03",
-                    "Tags": "source:VirusTotal, type:Ransomware, gandcrab, malware:GandCrab, os:Windows",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "Lc3dCH1sXbOIYkKTyUQoow"
-                },
-                {
-                    "Name": "[cobalt_beacon](https://fp.tools/home/technical_data/iocs/items/5d07ff66-2544-4632-b2bc-0f140a640c05)",
-                    "Observed time (UTC)": "Dec 13, 2019  06:00",
-                    "Tags": "source:VirusTotal, cobalt_beacon",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "pSRoICopXrC6fN4uNpEcZw"
-                },
-                {
-                    "Name": "[botox_lampeduza_amaterasu_output5E0600](https://fp.tools/home/technical_data/iocs/items/5d1504b4-572c-47dd-afb2-05d20a640c05)",
-                    "Observed time (UTC)": "Dec 13, 2019  05:01",
-                    "Tags": "source:VirusTotal, botox_lampeduza_amaterasu_output5e0600",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "Nc-OJiCGWaWqVgLbFHiotA"
-                },
-                {
-                    "Name": "[CryptingService_d935119f6a0b5335f31043f288258a3ef7d5e4a4_2019-12-13T03:01:02.000Z](https://fp.tools/home/technical_data/iocs/items/5df310c7-0ce4-4a92-a287-005f0a212040)",
-                    "Observed time (UTC)": "Dec 13, 2019  04:17",
-                    "Tags": "source:CryptingService2",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "fkd93PCzVLCcUMXrRE8O0A"
-                },
-                {
-                    "Name": "[CryptingService_70e8ab62e1bb0c95a433ece52ed489f8e43fbd75_2019-12-13T02:01:02.000Z](https://fp.tools/home/technical_data/iocs/items/5df3108b-11f0-4cd4-b0c8-246d0a21253a)",
-                    "Observed time (UTC)": "Dec 13, 2019  04:16",
-                    "Tags": "source:CryptingService2",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "hcWeibb6V2WZMed7en4ufQ"
-                },
-                {
-                    "Name": "[CryptingService_dc1b91769fcfa0a8f03659cbb1403d6d86573cd9_2019-12-13T03:01:02.000Z](https://fp.tools/home/technical_data/iocs/items/5df31087-1d70-49cc-aabd-00720a21270c)",
-                    "Observed time (UTC)": "Dec 13, 2019  04:16",
-                    "Tags": "source:CryptingService2",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "3qPfbjkQWve1N88HPbxdOA"
-                },
-                {
-                    "Name": "[CryptingService_5021912b868affc0ebd06172b98dcd3b7b083c7f_2019-12-13T03:01:02.000Z](https://fp.tools/home/technical_data/iocs/items/5df31082-2208-4de2-bc6c-004d0a21253a)",
-                    "Observed time (UTC)": "Dec 13, 2019  04:16",
-                    "Tags": "source:CryptingService2",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "21SMNSRIXHufn9YiX8kptA"
-                },
-                {
-                    "Name": "[CryptingService_c208b070effa4c7ef62a959d042b5d5e031dccc7_2019-12-13T03:01:02.000Z](https://fp.tools/home/technical_data/iocs/items/5df31071-a2bc-4b60-af09-dc260a21270c)",
-                    "Observed time (UTC)": "Dec 13, 2019  04:15",
-                    "Tags": "source:CryptingService2",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "guu6GcYgWxmA7h3fIlFx5A"
-                },
-                {
-                    "Name": "[Kovter](https://fp.tools/home/technical_data/iocs/items/5d0aa281-9768-4f33-9903-05d20a640c05)",
-                    "Observed time (UTC)": "Dec 13, 2019  04:01",
-                    "Tags": "source:VirusTotal, actor:KovCoreG, kovter, os:Windows, type:Trojan, malware:Kovter",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "J7W0HoNDULyq7p6FqLEH6Q"
-                },
-                {
-                    "Name": "[NetWire](https://fp.tools/home/technical_data/iocs/items/5d58176a-6020-418a-b5aa-05d20a640c05)",
-                    "Observed time (UTC)": "Dec 12, 2019  20:00",
-                    "Tags": "source:VirusTotal, T1060, netwire, T1056, os:Windows, type:RAT, malware:NetWire, T1082, T1116, T1113, misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Registry Run Keys / Start Folder - T1060\", misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Input Capture - T1056\", misp-galaxy:mitre-enterprise-attack-attack-pattern=\"System Information Discovery - T1082\", misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Code Signing - T1116\", misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Screen Capture - T1113\"",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "yV-3FFFwXWW3xxB6IMnP0g"
-                },
-                {
-                    "Name": "[ryuk3_exe](https://fp.tools/home/technical_data/iocs/items/5dc0f4cc-cb70-44bf-bdbf-00540a2123fc)",
-                    "Observed time (UTC)": "Dec 12, 2019  20:00",
-                    "Tags": "source:VirusTotal, type:Ransomware, ryuk3_exe, os:Windows, malware:Ryuk",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "8tWwTNyfWY2oBqSmmI0AUg"
-                },
-                {
-                    "Name": "[Phobos Retrohunt](https://fp.tools/home/technical_data/iocs/items/5defec18-14e8-4b8e-8775-005e0a212040)",
-                    "Observed time (UTC)": "Dec 12, 2019  19:21",
-                    "Tags": "T1059, malware:Phobos, origin:Russia, os:Windows, type:Ransomware, T1060, T1089, misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Execution through API - T1106\", misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Command-Line Interface - T1059\", misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Registry Run Keys / Start Folder - T1060\", misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Disabling Security Tools - T1089\"",
-                    "event_creator_email": "info@flashpoint-intel.com",
-                    "event_id": "ebXTRKy3Uoyydd9peHR3hg"
-                }
-            ]
-        }
+        "Flashpoint.Event": [
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "nx7tsJYKWKm259vMLduWGw",
+                "Href": "https://fp.tools/api/v4/indicators/event/nx7tsJYKWKm259vMLduWGw",
+                "Name": "[Loki](https://fp.tools/home/technical_data/iocs/items/5d087e04-1464-4a26-964e-05cd0a640c05)",
+                "ObservedTime": "Dec 18, 2019  12:00",
+                "Tags": "source:VirusTotal, type:Stealer, malware:Loki, loki, os:Windows"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "yV-3FFFwXWW3xxB6IMnP0g",
+                "Href": "https://fp.tools/api/v4/indicators/event/yV-3FFFwXWW3xxB6IMnP0g",
+                "Name": "[NetWire](https://fp.tools/home/technical_data/iocs/items/5d58176a-6020-418a-b5aa-05d20a640c05)",
+                "ObservedTime": "Dec 18, 2019  12:00",
+                "Tags": "source:VirusTotal, T1060, netwire, T1056, os:Windows, type:RAT, malware:NetWire, T1082, T1116, T1113, misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Registry Run Keys / Start Folder - T1060\", misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Input Capture - T1056\", misp-galaxy:mitre-enterprise-attack-attack-pattern=\"System Information Discovery - T1082\", misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Code Signing - T1116\", misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Screen Capture - T1113\""
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "PSP0k-dFUiWbX9YWV9pMag",
+                "Href": "https://fp.tools/api/v4/indicators/event/PSP0k-dFUiWbX9YWV9pMag",
+                "Name": "[unpacked_cutwailv4](https://fp.tools/home/technical_data/iocs/items/5dfa14da-d190-48ab-80b6-23fe0a212040)",
+                "ObservedTime": "Dec 18, 2019  12:00",
+                "Tags": "source:VirusTotal, v:4, os:Windows, T1204, unpacked_cutwailv4, malware:Cutwail, T1060, type:Botnet"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "hirKFHGUVAySCvUzchchgA",
+                "Href": "https://fp.tools/api/v4/indicators/event/hirKFHGUVAySCvUzchchgA",
+                "Name": "[CyberGate](https://fp.tools/home/technical_data/iocs/items/5d07d55f-e9f8-4530-b57c-05cd0a640c05)",
+                "ObservedTime": "Dec 18, 2019  12:00",
+                "Tags": "source:VirusTotal, os:Windows, type:RAT, cybergate, malware:CyberGate"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "E1EnVbazXKOoV6eIMwz68A",
+                "Href": "https://fp.tools/api/v4/indicators/event/E1EnVbazXKOoV6eIMwz68A",
+                "Name": "[UNKN actor profile (distributor of Revil Ransomware)](https://fp.tools/home/technical_data/iocs/items/5dfa10af-7470-4ac5-af4e-dc260a21270c)",
+                "ObservedTime": "Dec 18, 2019  11:51",
+                "Tags": "malware:ransomware, ransomware:Revil, actor:UNKN, origin:Russia"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "F8igomEDVVOG2bWhNcfBaQ",
+                "Href": "https://fp.tools/api/v4/indicators/event/F8igomEDVVOG2bWhNcfBaQ",
+                "Name": "[win_snatch_loader_g2](https://fp.tools/home/technical_data/iocs/items/5db9a5f0-01a8-4f2b-867c-0a340a640c05)",
+                "ObservedTime": "Dec 18, 2019  11:00",
+                "Tags": "source:VirusTotal, win_snatch_loader_g2, malware:SnatchLoader, os:Windows, type:Downloader"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "vjqRiYHvWnWBweTqiqNTBQ",
+                "Href": "https://fp.tools/api/v4/indicators/event/vjqRiYHvWnWBweTqiqNTBQ",
+                "Name": "[Sofacy_CollectorStealer_Gen2](https://fp.tools/home/technical_data/iocs/items/5de6be25-b70c-4077-9f8a-00bd0a2120d6)",
+                "ObservedTime": "Dec 18, 2019  11:00",
+                "Tags": "source:VirusTotal, actor:APT28, sofacy_collectorstealer_gen2, origin:Russia, type:Stealer"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "78hNTAcJWWezTL9t8WuUtg",
+                "Href": "https://fp.tools/api/v4/indicators/event/78hNTAcJWWezTL9t8WuUtg",
+                "Name": "[crime_tinynuke_1](https://fp.tools/home/technical_data/iocs/items/5d0950fb-faa4-42f6-a116-05d00a640c05)",
+                "ObservedTime": "Dec 18, 2019  10:00",
+                "Tags": "source:VirusTotal, crime_tinynuke_1"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "_0VfrtauWN6VpZ5d2QFiUA",
+                "Href": "https://fp.tools/api/v4/indicators/event/_0VfrtauWN6VpZ5d2QFiUA",
+                "Name": "[win_tinba_g1](https://fp.tools/home/technical_data/iocs/items/5df9f8be-e188-4516-80f9-03030a21270c)",
+                "ObservedTime": "Dec 18, 2019  10:00",
+                "Tags": "source:VirusTotal, type:Banker, malware:tinba, win_tinba_g1, os:Windows, target: Russia, target:Japan"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "Ajj-czMuVhO6MLsIYpcdUg",
+                "Href": "https://fp.tools/api/v4/indicators/event/Ajj-czMuVhO6MLsIYpcdUg",
+                "Name": "[win_tinba_g0](https://fp.tools/home/technical_data/iocs/items/5d70500d-e88c-40ee-ae95-05cd0a640c05)",
+                "ObservedTime": "Dec 18, 2019  10:00",
+                "Tags": "source:VirusTotal, type:Banker, win_tinba_g0, target: Russia, malware:tinba, target:Japan, os:Windows"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "f97cPO5dVqO74ttWZwbFqQ",
+                "Href": "https://fp.tools/api/v4/indicators/event/f97cPO5dVqO74ttWZwbFqQ",
+                "Name": "[MegaCortex_Load_Dinkum_CLib](https://fp.tools/home/technical_data/iocs/items/5da01a84-b3fc-4eef-961d-0a340a640c05)",
+                "ObservedTime": "Dec 18, 2019  07:03",
+                "Tags": "source:VirusTotal, megacortex_load_dinkum_clib, malware:MegaCortex, type:Ransomware, os:Windows"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "Y_0iIuFFXU-wuNBCs0kF_g",
+                "Href": "https://fp.tools/api/v4/indicators/event/Y_0iIuFFXU-wuNBCs0kF_g",
+                "Name": "[Command_Line_Options](https://fp.tools/home/technical_data/iocs/items/5da01a75-0f20-41da-83e1-56550a640c05)",
+                "ObservedTime": "Dec 18, 2019  07:03",
+                "Tags": "source:VirusTotal, command_line_options"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "Lc3dCH1sXbOIYkKTyUQoow",
+                "Href": "https://fp.tools/api/v4/indicators/event/Lc3dCH1sXbOIYkKTyUQoow",
+                "Name": "[Gandcrab](https://fp.tools/home/technical_data/iocs/items/5d07d587-a9ac-4da1-9c72-05cd0a640c05)",
+                "ObservedTime": "Dec 18, 2019  07:03",
+                "Tags": "source:VirusTotal, type:Ransomware, gandcrab, malware:GandCrab, os:Windows"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "Nc-OJiCGWaWqVgLbFHiotA",
+                "Href": "https://fp.tools/api/v4/indicators/event/Nc-OJiCGWaWqVgLbFHiotA",
+                "Name": "[botox_lampeduza_amaterasu_output5E0600](https://fp.tools/home/technical_data/iocs/items/5d1504b4-572c-47dd-afb2-05d20a640c05)",
+                "ObservedTime": "Dec 18, 2019  07:00",
+                "Tags": "source:VirusTotal, botox_lampeduza_amaterasu_output5e0600"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "Ut6zC32_VMSg6vB-cvwNmg",
+                "Href": "https://fp.tools/api/v4/indicators/event/Ut6zC32_VMSg6vB-cvwNmg",
+                "Name": "[Sodinokibi_Unreachable_After_MZ_Check](https://fp.tools/home/technical_data/iocs/items/5da01a74-4b5c-4160-83c6-05d00a640c05)",
+                "ObservedTime": "Dec 18, 2019  06:02",
+                "Tags": "source:VirusTotal, sodinokibi_unreachable_after_mz_check"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "w0B3dKLxX9aat0O0YyS-6A",
+                "Href": "https://fp.tools/api/v4/indicators/event/w0B3dKLxX9aat0O0YyS-6A",
+                "Name": "[CryptingService_27a1ad076d1c155856c0ad08dd302018281aba1e_2019-12-18T02:01:02.000Z](https://fp.tools/home/technical_data/iocs/items/5df9a7f3-7260-44d7-bcdd-03010a21270c)",
+                "ObservedTime": "Dec 18, 2019  04:15",
+                "Tags": "source:CryptingService2"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "8tWwTNyfWY2oBqSmmI0AUg",
+                "Href": "https://fp.tools/api/v4/indicators/event/8tWwTNyfWY2oBqSmmI0AUg",
+                "Name": "[ryuk3_exe](https://fp.tools/home/technical_data/iocs/items/5dc0f4cc-cb70-44bf-bdbf-00540a2123fc)",
+                "ObservedTime": "Dec 18, 2019  01:00",
+                "Tags": "source:VirusTotal, type:Ransomware, ryuk3_exe, os:Windows, malware:Ryuk"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "J7W0HoNDULyq7p6FqLEH6Q",
+                "Href": "https://fp.tools/api/v4/indicators/event/J7W0HoNDULyq7p6FqLEH6Q",
+                "Name": "[Kovter](https://fp.tools/home/technical_data/iocs/items/5d0aa281-9768-4f33-9903-05d20a640c05)",
+                "ObservedTime": "Dec 18, 2019  00:00",
+                "Tags": "source:VirusTotal, actor:KovCoreG, kovter, os:Windows, type:Trojan, malware:Kovter"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "zzc5kPgfUzeUO3epfZs6ug",
+                "Href": "https://fp.tools/api/v4/indicators/event/zzc5kPgfUzeUO3epfZs6ug",
+                "Name": "[predatorthethief retrohunt](https://fp.tools/home/technical_data/iocs/items/5df9165e-0e34-4cc8-b7f5-004e0a21253a)",
+                "ObservedTime": "Dec 17, 2019  17:55",
+                "Tags": "malware:trojan:PredatorTheThief"
+            },
+            {
+                "EventCreatorEmail": "info@flashpoint-intel.com",
+                "EventId": "NXgn9Ty5VeiTzGMGNkHMnA",
+                "Href": "https://fp.tools/api/v4/indicators/event/NXgn9Ty5VeiTzGMGNkHMnA",
+                "Name": "[Golang_Win](https://fp.tools/home/technical_data/iocs/items/5da90f11-2240-420f-849a-12a70a640c05)",
+                "ObservedTime": "Dec 17, 2019  05:02",
+                "Tags": "source:VirusTotal, golang_win"
+            }
+        ]
     }
 
 ##### Human Readable Output
@@ -1061,20 +1097,20 @@ Lookup any type of indicator
 
 ##### Input
 
-  **Argument Name**  | **Description**                                               | **Required**
-  -------------------| --------------------------------------------------------------| --------------
-  indicator          | Specify indicator value like any domain, ip, email, url etc.  | Required
+  **Argument Name**   |**Description**                                                |**Required**
+  ------------------- |-------------------------------------------------------------- |--------------
+  indicator           |Specify indicator value like any domain, ip, email, url etc.   |Optional
 
  
 
 ##### Context Output
 
-  **Path**             | **Type**  | **Description**
-  ---------------------| ----------| -----------------------------------------
-  DBotScore.Indicator  | string    | The indicator that was tested.
-  DBotScore.Score      | number    | The indicator score.
-  DBotScore.Type       | string    | The indicator type.
-  DBotScore.Vendor     | string    | The vendor used to calculate the score.
+  **Path**              |**Type**   |**Description**
+  --------------------- |---------- |-----------------------------------------
+  DBotScore.Indicator   |string     |The indicator that was tested.
+  DBotScore.Score       |number     |The indicator score.
+  DBotScore.Type        |string     |The indicator type.
+  DBotScore.Vendor      |string     |The vendor used to calculate the score.
 
  
 
@@ -1105,10 +1141,6 @@ Reputation: Malicious
   -------------------------| ----------| -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Oct 11, 2019 15:30       | ModiRAT   | misp-galaxy:mitre-enterprise-attack-attack-pattern="Deobfuscate/Decode Files or Information - T1140", misp-galaxy:mitre-enterprise-attack-attack-pattern="System Owner/User Discovery - T1033", misp-galaxy:mitre-enterprise-attack-attack-pattern="System Information Discovery - T1082", misp-galaxy:mitre-enterprise-attack-attack-pattern="Screen Capture - T1113", misp-galaxy:mitre-enterprise-attack-attack-pattern="Custom Command and Control Protocol - T1094", misp-galaxy:mitre-enterprise-attack-attack-pattern="Data Encoding - T1132", misp-galaxy:mitre-enterprise-attack-attack-pattern="Uncommonly Used Port - T1065", malware:ModiRAT, type:RAT, os:Windows, report:FQmMHh1rR\_WuGd\_PNVv-bQ
 
-
-All events and details (fp-tools):
-[https://fp.tools/home/search/iocs?group=indicator&ioc\_value=mondns.myftp.biz](https://fp.tools/home/search/iocs?group=indicator&ioc\_value=mondns.myftp.biz)
-
 ### 13. flashpoint-get-forum-details
 
 * * * * *
@@ -1121,21 +1153,22 @@ Get forum details
 
 ##### Input
 
-  **Argument Name**  | **Description**   | **Required**
-  -------------------| ------------------| --------------
-  forum\_id          | Specify forum id  | Required
+  **Argument Name**   |**Description**                                                                                                                                   |**Required**
+  ------------------- |------------------------------------------------------------------------------------------------------------------------------------------------- |--------------
+  forum\_id           |Specify forum id which is help to retrieve forum details. forum\_id is known by fp user. if unknown, use flashpoint-search-forum-posts command.   |Required
 
  
 
 ##### Context Output
 
-  **Path**                      | **Type**  | **Description**
-  ------------------------------| ----------| ---------------------------------------------------------------------
-  Flashpoint.forum.description  | string    | Description of forum.
-  Flashpoint.forum.hostname     | string    | Display hostname of forum.
-  Flashpoint.forum.name         | string    | Display name of forum.
-  Flashpoint.forum.stats        | Unknown   | Display stats like posts, rooms, threads and users details.
-  Flashpoint.forum.tags         | Unknown   | Display list of tags which includes id, name, parent\_tag and uuid.
+  **Path**                       |**Type**   |**Description**
+  ------------------------------ |---------- |-----------------------------------------------------------------------------------
+  Flashpoint.Forum.Description   |string     |Detail information of supplied forum id.
+  Flashpoint.Forum.Hostname      |string     |Host detail of supplied forum id.
+  Flashpoint.Forum.Name          |string     |Name of forum.
+  Flashpoint.Forum.Stats         |Unknown    |Display stats information like number of posts, rooms, threads and users details.
+  Flashpoint.Forum.Tags          |Unknown    |Display list of tags which includes id, name, parent\_tag and uuid.
+  Flashpoint.Forum.ForumId       |string     |Forum's unique id.
 
  
 
@@ -1146,44 +1179,43 @@ Get forum details
 ##### Context Example
 
     {
-        "Flashpoint": {
-            "forum": {
-                "description": "0hack (\u96f6\u9ed1\u8054\u76df) is a Chinese-language hacker training forum. The forum appears to be affiliated with \u975e\u51e1\u5b89\u5168\u7f51, 803389.com.",
-                "hostname": "bbs.0hack.com",
-                "name": "0hack",
-                "stats": {
-                    "posts": 1226,
-                    "rooms": 11,
-                    "threads": 226,
-                    "users": 114
+        "Flashpoint.Forum": {
+            "Description": "0hack (\u96f6\u9ed1\u8054\u76df) is a Chinese-language hacker training forum. The forum appears to be affiliated with \u975e\u51e1\u5b89\u5168\u7f51, 803389.com.",
+            "ForumId": "ifY5BsXeXQqdTx3fafZbIg",
+            "Hostname": "bbs.0hack.com",
+            "Name": "0hack",
+            "Stats": {
+                "posts": 1226,
+                "rooms": 11,
+                "threads": 226,
+                "users": 114
+            },
+            "Tags": [
+                {
+                    "id": 31,
+                    "name": "Chinese",
+                    "parent_tag": 28,
+                    "uuid": "e725fc5d-71f9-4403-ab00-ae609f2fd3bd"
                 },
-                "tags": [
-                    {
-                        "id": 31,
-                        "name": "Chinese",
-                        "parent_tag": 28,
-                        "uuid": "e725fc5d-71f9-4403-ab00-ae609f2fd3bd"
-                    },
-                    {
-                        "id": 6,
-                        "name": "Cyber Threat",
-                        "parent_tag": null,
-                        "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
-                    },
-                    {
-                        "id": 8,
-                        "name": "Hacking",
-                        "parent_tag": 6,
-                        "uuid": "c88a0cd8-a259-46d7-b8b4-b6e0060f16a0"
-                    },
-                    {
-                        "id": 28,
-                        "name": "Language",
-                        "parent_tag": null,
-                        "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
-                    }
-                ]
-            }
+                {
+                    "id": 6,
+                    "name": "Cyber Threat",
+                    "parent_tag": null,
+                    "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+                },
+                {
+                    "id": 8,
+                    "name": "Hacking",
+                    "parent_tag": 6,
+                    "uuid": "c88a0cd8-a259-46d7-b8b4-b6e0060f16a0"
+                },
+                {
+                    "id": 28,
+                    "name": "Language",
+                    "parent_tag": null,
+                    "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+                }
+            ]
         }
     }
 
@@ -1193,9 +1225,9 @@ Get forum details
 
 ### Below are the details found:
 
-  **Name**  | **Hostname**   | **Tags**
-  ----------| ---------------| ------------------------------------------
-  0hack     | bbs.0hack.com  | Chinese, Cyber Threat, Hacking, Language
+  **Name**   |**Hostname**    |**Tags**
+  ---------- |--------------- |------------------------------------------
+  0hack      |bbs.0hack.com   |Chinese, Cyber Threat, Hacking, Language
 
 ### 14. flashpoint-get-forum-room-details
 
@@ -1209,19 +1241,20 @@ Get room details
 
 ##### Input
 
-  **Argument Name**  | **Description**  | **Required**
-  -------------------| -----------------| --------------
-  room\_id           | Specify room id  | Required
+  **Argument Name**   |**Description**                                                                                                                                        |**Required**
+  ------------------- |------------------------------------------------------------------------------------------------------------------------------------------------------ |--------------
+  room\_id            |Specify room id which helps to retrieve room information in forum. Either room id is known by fp user or it can be search by "forum search" command.   |Required
 
  
 
 ##### Context Output
 
-  **Path**                     | **Type**  | **Description**
-  -----------------------------| ----------| ----------------------------------------------------------------------------------------
-  Flashpoint.forum.room.forum  | Unknown   | Display all forum details like forum name, hostname, platform url, stats and tags etc.
-  Flashpoint.forum.room.title  | string    | Title of the room
-  Flashpoint.forum.room.url    | string    | url of the room
+  **Path**                       |**Type**   |**Description**
+  ------------------------------ |---------- |-----------------------------------------------------------------------------------------
+  Flashpoint.Forum.Room.Forum    |Unknown    |Displays all forum details like forum name, hostname, platform url, stats and tags etc.
+  Flashpoint.Forum.Room.Title    |string     |Room title. User can use same title in forum search command.
+  Flashpoint.Forum.Room.Url      |string     |Room url.
+  Flashpoint.Forum.Room.RoomId   |string     |Unique id of forum room.
 
  
 
@@ -1232,59 +1265,56 @@ Get room details
 ##### Context Example
 
     {
-        "Flashpoint": {
-            "forum": {
-                "room": {
-                    "forum": {
-                        "description": "This is the restored 2013 database of the Carding.pro SQL dump. Crdpro was set up by the threat actor operating under the alias \"Makaka\" to drive traffic to their forum Crdclub.",
-                        "hostname": "crdpro.su",
-                        "id": "4aFfW6e7VVea1cP7G-Z7mw",
-                        "legacy_id": "_OU09w6LVm69kgAyDaTv5A",
-                        "name": "Crdpro",
-                        "platform_url": "https://fp.tools/home/search/forums?forum_ids=4aFfW6e7VVea1cP7G-Z7mw",
-                        "stats": {
-                            "posts": 987018,
-                            "rooms": 132,
-                            "threads": 116115,
-                            "users": 50902
-                        },
-                        "tags": [
-                            {
-                                "id": 6,
-                                "name": "Cyber Threat",
-                                "parent_tag": null,
-                                "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
-                            },
-                            {
-                                "id": 9,
-                                "name": "Fraud",
-                                "parent_tag": null,
-                                "uuid": "fa9a9533-0cf1-42b6-9553-08ebbbaaa60b"
-                            },
-                            {
-                                "id": 28,
-                                "name": "Language",
-                                "parent_tag": null,
-                                "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
-                            },
-                            {
-                                "id": 29,
-                                "name": "English",
-                                "parent_tag": null,
-                                "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
-                            },
-                            {
-                                "id": 30,
-                                "name": "Russian",
-                                "parent_tag": null,
-                                "uuid": "c3815816-c639-4ea2-9e5c-aec29eee2b1a"
-                            }
-                        ]
+        "Flashpoint.Forum.Room": {
+            "Forum": {
+                "description": "This is the restored 2013 database of the Carding.pro SQL dump. Crdpro was set up by the threat actor operating under the alias \"Makaka\" to drive traffic to their forum Crdclub.",
+                "hostname": "crdpro.su",
+                "id": "4aFfW6e7VVea1cP7G-Z7mw",
+                "legacy_id": "_OU09w6LVm69kgAyDaTv5A",
+                "name": "Crdpro",
+                "platform_url": "https://fp.tools/home/search/forums?forum_ids=4aFfW6e7VVea1cP7G-Z7mw",
+                "stats": {
+                    "posts": 987018,
+                    "rooms": 132,
+                    "threads": 116115,
+                    "users": 50902
+                },
+                "tags": [
+                    {
+                        "id": 6,
+                        "name": "Cyber Threat",
+                        "parent_tag": null,
+                        "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
                     },
-                    "title": "Bank Carding",
-                    "url": "forumdisplay.php?f=70&s=6e25902255e1b57bfe37dd2749dafd66"
-                }
-            }
+                    {
+                        "id": 9,
+                        "name": "Fraud",
+                        "parent_tag": null,
+                        "uuid": "fa9a9533-0cf1-42b6-9553-08ebbbaaa60b"
+                    },
+                    {
+                        "id": 28,
+                        "name": "Language",
+                        "parent_tag": null,
+                        "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+                    },
+                    {
+                        "id": 29,
+                        "name": "English",
+                        "parent_tag": null,
+                        "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
+                    },
+                    {
+                        "id": 30,
+                        "name": "Russian",
+                        "parent_tag": null,
+                        "uuid": "c3815816-c639-4ea2-9e5c-aec29eee2b1a"
+                    }
+                ]
+            },
+            "RoomId": "dBoQqur5XmGGYLxSrc8C9A",
+            "Title": "Bank Carding",
+            "Url": "forumdisplay.php?f=70&s=6e25902255e1b57bfe37dd2749dafd66"
         }
     }
 
@@ -1294,9 +1324,9 @@ Get room details
 
 ### Below are the detail found:
 
-  **Forum Name**  | **Title**     | **URL**
-  ----------------| --------------| ----------------------------------------------------------
-  Crdpro          | Bank Carding  | forumdisplay.php?f=70&s=6e25902255e1b57bfe37dd2749dafd66
+  **Forum Name**   |**Title**      |**URL**
+  ---------------- |-------------- |----------------------------------------------------------
+  Crdpro           |Bank Carding   |forumdisplay.php?f=70&s=6e25902255e1b57bfe37dd2749dafd66
 
 ### 15. flashpoint-get-forum-user-details
 
@@ -1310,20 +1340,21 @@ Get user details
 
 ##### Input
 
-  **Argument Name**  | **Description**  | **Required**
-  -------------------| -----------------| --------------
-  user\_id           | Specify user id  | Required
+  **Argument Name**   |**Description**                                                                                                                                |**Required**
+  ------------------- |---------------------------------------------------------------------------------------------------------------------------------------------- |--------------
+  user\_id            |Specify user id which is used for retrieve user's information. Either it is known by fp user or it can be found using forum search commands.   |Required
 
  
 
 ##### Context Output
 
-  **Path**                             | **Type**  | **Description**
-  -------------------------------------| ----------| ----------------------------------------------------------------------------
-  Flashpoint.forum.user.forum          | Unknown   | Display all forum details like id, hostname, description, stats, tags etc.
-  Flashpoint.forum.user.name           | string    | Name of author.
-  Flashpoint.forum.user.platform\_url  | string    | platform url of user.
-  Flashpoint.forum.user.url            | string    | URL of user.
+  **Path**                            |**Type**   |**Description**
+  ----------------------------------- |---------- |----------------------------------------------------------------------------
+  Flashpoint.Forum.User.Forum         |Unknown    |Display all forum details like id, hostname, description, stats, tags etc.
+  Flashpoint.Forum.User.Name          |string     |Name of user.
+  Flashpoint.Forum.User.PlatformUrl   |string     |platform url of user which is redirect to Flashpoint platform.
+  Flashpoint.Forum.User.Url           |string     |URL of user.
+  Flashpoint.Forum.User.UserId        |string     |Unique id of forum user.
 
  
 
@@ -1334,60 +1365,57 @@ Get user details
 ##### Context Example
 
     {
-        "Flashpoint": {
-            "forum": {
-                "user": {
-                    "forum": {
-                        "description": "This is the restored 2013 database of the Carding.pro SQL dump. Crdpro was set up by the threat actor operating under the alias \"Makaka\" to drive traffic to their forum Crdclub.",
-                        "hostname": "crdpro.su",
-                        "id": "4aFfW6e7VVea1cP7G-Z7mw",
-                        "legacy_id": "_OU09w6LVm69kgAyDaTv5A",
-                        "name": "Crdpro",
-                        "platform_url": "https://fp.tools/home/search/forums?forum_ids=4aFfW6e7VVea1cP7G-Z7mw",
-                        "stats": {
-                            "posts": 987018,
-                            "rooms": 132,
-                            "threads": 116115,
-                            "users": 50902
-                        },
-                        "tags": [
-                            {
-                                "id": 6,
-                                "name": "Cyber Threat",
-                                "parent_tag": null,
-                                "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
-                            },
-                            {
-                                "id": 9,
-                                "name": "Fraud",
-                                "parent_tag": null,
-                                "uuid": "fa9a9533-0cf1-42b6-9553-08ebbbaaa60b"
-                            },
-                            {
-                                "id": 28,
-                                "name": "Language",
-                                "parent_tag": null,
-                                "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
-                            },
-                            {
-                                "id": 29,
-                                "name": "English",
-                                "parent_tag": null,
-                                "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
-                            },
-                            {
-                                "id": 30,
-                                "name": "Russian",
-                                "parent_tag": null,
-                                "uuid": "c3815816-c639-4ea2-9e5c-aec29eee2b1a"
-                            }
-                        ]
+        "Flashpoint.Forum.User": {
+            "Forum": {
+                "description": "This is the restored 2013 database of the Carding.pro SQL dump. Crdpro was set up by the threat actor operating under the alias \"Makaka\" to drive traffic to their forum Crdclub.",
+                "hostname": "crdpro.su",
+                "id": "4aFfW6e7VVea1cP7G-Z7mw",
+                "legacy_id": "_OU09w6LVm69kgAyDaTv5A",
+                "name": "Crdpro",
+                "platform_url": "https://fp.tools/home/search/forums?forum_ids=4aFfW6e7VVea1cP7G-Z7mw",
+                "stats": {
+                    "posts": 987018,
+                    "rooms": 132,
+                    "threads": 116115,
+                    "users": 50902
+                },
+                "tags": [
+                    {
+                        "id": 6,
+                        "name": "Cyber Threat",
+                        "parent_tag": null,
+                        "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
                     },
-                    "name": "IllWillPub",
-                    "platform_url": "https://fp.tools/home/search/forums?author_id=P3au_EzEX4-uctmRfdUYeA",
-                    "url": "http://www.crdpro.su/member.php?s=9f099a0eebc5f7c79e36fc688af2f697&u=50678"
-                }
-            }
+                    {
+                        "id": 9,
+                        "name": "Fraud",
+                        "parent_tag": null,
+                        "uuid": "fa9a9533-0cf1-42b6-9553-08ebbbaaa60b"
+                    },
+                    {
+                        "id": 28,
+                        "name": "Language",
+                        "parent_tag": null,
+                        "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+                    },
+                    {
+                        "id": 29,
+                        "name": "English",
+                        "parent_tag": null,
+                        "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
+                    },
+                    {
+                        "id": 30,
+                        "name": "Russian",
+                        "parent_tag": null,
+                        "uuid": "c3815816-c639-4ea2-9e5c-aec29eee2b1a"
+                    }
+                ]
+            },
+            "Name": "IllWillPub",
+            "PlatformUrl": "https://fp.tools/home/search/forums?author_id=P3au_EzEX4-uctmRfdUYeA",
+            "Url": "http://www.crdpro.su/member.php?s=9f099a0eebc5f7c79e36fc688af2f697&u=50678",
+            "UserId": "P3au_EzEX4-uctmRfdUYeA"
         }
     }
 
@@ -1397,9 +1425,9 @@ Get user details
 
 ### Below are the detail found:
 
-  **Forum Name**  | **Name**    | **URL**
-  ----------------| ------------| ----------------------------------------------------------------------------
-  Crdpro          | IllWillPub  | http://www.crdpro.su/member.php?s=9f099a0eebc5f7c79e36fc688af2f697&u=50678
+  **Forum Name**   |**Name**     |**URL**
+  ---------------- |------------ |----------------------------------------------------------------------------
+  Crdpro           |IllWillPub   |http://www.crdpro.su/member.php?s=9f099a0eebc5f7c79e36fc688af2f697&u=50678
 
 ### 16. flashpoint-get-forum-post-details
 
@@ -1413,22 +1441,23 @@ Get post details
 
 ##### Input
 
-  **Argument Name**  | **Description**  | **Required**
-  -------------------| -----------------| --------------
-  post\_id           | Specify post id  | Required
+  **Argument Name**   |**Description**                                                                                                                                                           |**Required**
+  ------------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |--------------
+  post\_id            |Specify post id which gives post information embed with forum, room, user etc. This post id is either known by fp user or user can get using forum post search command.   |Required
 
  
 
 ##### Context Output
 
-  **Path**                             | **Type**  | **Description**
-  -------------------------------------| ----------| ------------------------------------------------------------------------------------
-  Flashpoint.forum.post.forum          | Unknown   | Display all forum details of post like id, hostname, stats, description, tags etc.
-  Flashpoint.forum.post.room           | Unknown   | Display room details of post like room title, id, url, platform url etc.
-  Flashpoint.forum.post.user           | Unknown   | Display user details of post like user id, name, url, platform url etc.
-  Flashpoint.forum.post.platform\_url  | string    | platform url of post.
-  Flashpoint.forum.post.published\_at  | Unknown   | published date of post.
-  Flashpoint.forum.post.url            | Unknown   | Display url of post.
+  **Path**                            |**Type**   |**Description**
+  ----------------------------------- |---------- |------------------------------------------------------------------------------------
+  Flashpoint.Forum.Post.Forum         |Unknown    |Display all forum details of post like id, hostname, stats, description, tags etc.
+  Flashpoint.Forum.Post.Room          |Unknown    |Display room details of post like room title, id, url, platform url etc.
+  Flashpoint.Forum.Post.User          |Unknown    |Display user details of post like user id, name, url, platform url etc.
+  Flashpoint.Forum.Post.PlatformUrl   |string     |Using platform url user can redirect to Flashpoint platform.
+  Flashpoint.Forum.Post.PublishedAt   |Unknown    |published date of post.
+  Flashpoint.Forum.Post.Url           |Unknown    |Display url of post.
+  Flashpoint.Forum.Post.PostId        |string     |Unique id of forum post.
 
  
 
@@ -1439,70 +1468,67 @@ Get post details
 ##### Context Example
 
     {
-        "Flashpoint": {
-            "forum": {
-                "post": {
-                    "forum": {
-                        "description": "Ukrainian forum with focus on Russian-Ukrainian conflict.",
-                        "hostname": "ord-ua.com",
-                        "id": "rJnT5ETuWcW9jTCnsobFZQ",
-                        "legacy_id": null,
-                        "name": "Ord-UA",
-                        "platform_url": "https://fp.tools/home/search/forums?forum_ids=rJnT5ETuWcW9jTCnsobFZQ",
-                        "stats": {
-                            "posts": 163710,
-                            "rooms": 1,
-                            "threads": 13916,
-                            "users": 71614
-                        },
-                        "tags": [
-                            {
-                                "id": 55,
-                                "name": "Communities in Conflict",
-                                "parent_tag": 17,
-                                "uuid": "83a2e5d4-e591-42be-943f-4af7d5de30e4"
-                            },
-                            {
-                                "id": 28,
-                                "name": "Language",
-                                "parent_tag": null,
-                                "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
-                            },
-                            {
-                                "id": 30,
-                                "name": "Russian",
-                                "parent_tag": 28,
-                                "uuid": "c3815816-c639-4ea2-9e5c-aec29eee2b1a"
-                            },
-                            {
-                                "id": 98,
-                                "name": "Ukrainian",
-                                "parent_tag": null,
-                                "uuid": "9bf8c176-3b2d-4445-a2f5-6fe92843a4a1"
-                            }
-                        ]
+        "Flashpoint.Forum.Post": {
+            "Forum": {
+                "description": "Ukrainian forum with focus on Russian-Ukrainian conflict.",
+                "hostname": "ord-ua.com",
+                "id": "rJnT5ETuWcW9jTCnsobFZQ",
+                "legacy_id": null,
+                "name": "Ord-UA",
+                "platform_url": "https://fp.tools/home/search/forums?forum_ids=rJnT5ETuWcW9jTCnsobFZQ",
+                "stats": {
+                    "posts": 163710,
+                    "rooms": 1,
+                    "threads": 13916,
+                    "users": 71614
+                },
+                "tags": [
+                    {
+                        "id": 55,
+                        "name": "Communities in Conflict",
+                        "parent_tag": 17,
+                        "uuid": "83a2e5d4-e591-42be-943f-4af7d5de30e4"
                     },
-                    "platform_url": "https://fp.tools/home/ddw/forums/threads/M3NorvmYVoG6rVFHnP3T9w?id=PDo1xGiKXDebHGc8fZme6g",
-                    "published_at": "2019-12-10T01:17:00+00:00",
-                    "room": {
-                        "forum": "/forums/sites/rJnT5ETuWcW9jTCnsobFZQ",
-                        "id": "UWUdaSQ7VXCkHq4KDQalpQ",
-                        "legacy_id": null,
-                        "native_id": "forum",
-                        "platform_url": "https://fp.tools/home/search/forums?room_title=\"%D0%A4%D0%BE%D1%80%D1%83%D0%BC\"",
-                        "title": "\u0424\u043e\u0440\u0443\u043c",
-                        "url": "forum"
+                    {
+                        "id": 28,
+                        "name": "Language",
+                        "parent_tag": null,
+                        "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
                     },
-                    "url": "2014/10/22/dsns-na-choli-z-bochkovskim-i-k/?lpage=1&page=580",
-                    "user": {
-                        "id": "0vK-XB2KWaeYqXjXaO9ruA",
-                        "legacy_id": null,
-                        "name": "\u0414\u0443\u0431\u043e\u0432\u0438\u043a",
-                        "native_id": "\u0414\u0443\u0431\u043e\u0432\u0438\u043a",
-                        "platform_url": "https://fp.tools/home/search/forums?author_id=0vK-XB2KWaeYqXjXaO9ruA",
-                        "url": null
+                    {
+                        "id": 30,
+                        "name": "Russian",
+                        "parent_tag": 28,
+                        "uuid": "c3815816-c639-4ea2-9e5c-aec29eee2b1a"
+                    },
+                    {
+                        "id": 98,
+                        "name": "Ukrainian",
+                        "parent_tag": null,
+                        "uuid": "9bf8c176-3b2d-4445-a2f5-6fe92843a4a1"
                     }
-                }
+                ]
+            },
+            "PlatformUrl": "https://fp.tools/home/ddw/forums/threads/M3NorvmYVoG6rVFHnP3T9w?id=PDo1xGiKXDebHGc8fZme6g",
+            "PostId": "PDo1xGiKXDebHGc8fZme6g",
+            "PublishedAt": "2019-12-10T01:17:00+00:00",
+            "Room": {
+                "forum": "/forums/sites/rJnT5ETuWcW9jTCnsobFZQ",
+                "id": "UWUdaSQ7VXCkHq4KDQalpQ",
+                "legacy_id": null,
+                "native_id": "forum",
+                "platform_url": "https://fp.tools/home/search/forums?room_title=\"%D0%A4%D0%BE%D1%80%D1%83%D0%BC\"",
+                "title": "\u0424\u043e\u0440\u0443\u043c",
+                "url": "forum"
+            },
+            "Url": "2014/10/22/dsns-na-choli-z-bochkovskim-i-k/?lpage=1&page=580",
+            "User": {
+                "id": "0vK-XB2KWaeYqXjXaO9ruA",
+                "legacy_id": null,
+                "name": "\u0414\u0443\u0431\u043e\u0432\u0438\u043a",
+                "native_id": "\u0414\u0443\u0431\u043e\u0432\u0438\u043a",
+                "platform_url": "https://fp.tools/home/search/forums?author_id=0vK-XB2KWaeYqXjXaO9ruA",
+                "url": null
             }
         }
     }
@@ -1517,12 +1543,12 @@ Get post details
   --------------------------| ----------------| ----------------| ----------------- |----------------------------------| --------------------------------------------------------------| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   2019-12-10T01:17:00+00:00 |  Ord-UA         |  Форум          |  Дубовик          | ДСНС на чолі з Бочковським і К…. |  2014/10/22/dsns-na-choli-z-bochkovskim-i-k/?lpage=1&page=580 |  [https://fp.tools/home/ddw/forums/threads/M3NorvmYVoG6rVFHnP3T9w?id=PDo1xGiKXDebHGc8fZme6g](https://fp.tools/home/ddw/forums/threads/M3NorvmYVoG6rVFHnP3T9w?id=PDo1xGiKXDebHGc8fZme6g)
 
-
 ### 17. flashpoint-search-forum-sites
 
 * * * * *
 
-Search forum sites using a keyword
+Search forum sites using a keyword. it will search in site content like
+name, title, descripion etc.
 
 ##### Base Command
 
@@ -1530,17 +1556,17 @@ Search forum sites using a keyword
 
 ##### Input
 
-  **Argument Name**  | **Description**                  | **Required**
-  -------------------| ---------------------------------| --------------
-  site\_search       | Search by site keyword or text.  | Required
+  **Argument Name**   |**Description**                                                                                                                         |**Required**
+  ------------------- |--------------------------------------------------------------------------------------------------------------------------------------- |--------------
+  site\_search        |Search by site keyword or text. This keyword is used for search information in forum sites. This keyword or text is known by fp user.   |Required
 
  
 
 ##### Context Output
 
-  **Path**                | **Type**  | **Description**
-  ------------------------| ----------| -------------------------------------------------------------
-  Flashpoint.forum.sites  | unknown   | Display list of forum site details based on search keyword.
+  **Path**                |**Type**   |**Description**
+  ----------------------- |---------- |-----------------------------------------------------
+  Flashpoint.Forum.Site   |Unknown    |List of forum site details based on search keyword.
 
  
 
@@ -1551,7 +1577,7 @@ Search forum sites using a keyword
 ##### Context Example
 
     {
-        "Flashpoint.forum.sites": [
+        "Flashpoint.Forum.Site": [
             {
                 "Description": "0hack (\u96f6\u9ed1\u8054\u76df) is a Chinese-language hacker training forum. The forum appears to be affiliated with \u975e\u51e1\u5b89\u5168\u7f51, 803389.com.",
                 "Hostname": "bbs.0hack.com",
@@ -1568,10 +1594,9 @@ Top 10 sites:
 
 ### Below are the detail found:
 
-  **Name**  | **Hostname**    |**Description**
-  ----------| --------------- |-------------------------------------------------------------------------------------------------------------------------------
-  0hack     | bbs.0hack.com   |0hack (零黑联盟) is a Chinese-language hacker training forum. The forum appears to be affiliated with 非凡安全网, 803389.com.
-
+  **Name**   |**Hostname**    |**Description**
+  ---------- |--------------- |-------------------------------------------------------------------------------------------------------------------------------
+  0hack      |bbs.0hack.com   |0hack (零黑联盟) is a Chinese-language hacker training forum. The forum appears to be affiliated with 非凡安全网, 803389.com.
 
 ### 18. flashpoint-search-forum-posts
 
@@ -1585,17 +1610,17 @@ Search forum posts using a keyword
 
 ##### Input
 
-  **Argument Name**  | **Description**                  | **Required**
-  -------------------| ---------------------------------| --------------
-  post\_search       | Search by post keyword or text.  | Required
+  **Argument Name**   |**Description**                                                                                                  |**Required**
+  ------------------- |---------------------------------------------------------------------------------------------------------------- |--------------
+  post\_search        |Search by post keyword or text which is used for search information in forum posts and it is known by fp user.   |Required
 
  
 
 ##### Context Output
 
-  **Path**                | **Type**  | **Description**
-  ------------------------| ----------| ----------------------------------------------------------------
-  Flashpoint.forum.posts  | unknown   | Display list of forum posts based on specified search keyword.
+  **Path**                |**Type**   |**Description**
+  ----------------------- |---------- |----------------------------------------------------------------
+  Flashpoint.Forum.Post   |Unknown    |Display list of forum posts based on specified search keyword.
 
  
 
@@ -1606,76 +1631,636 @@ Search forum posts using a keyword
 ##### Context Example
 
     {
-        "Flashpoint.forum.posts": [
+        "Flashpoint.Forum.Post": [
             {
-                "Author Name": "Valium",
-                "Forum Name": "The Sammyboy Times",
-                "Platform URL": "[https://fp.tools/home/ddw/foru...](https://fp.tools/home/ddw/forums/threads/z6ZBpNPBWq2A4YXNI4Z0nA?id=EPLtT_knXEi5TiffRhD8Og)",
-                "Room Title": "The Courtyard Caf\u00e9",
-                "Thread Title": "Why Chinese women love Indian ...."
+                "Forum": {
+                    "description": "The Sammyboy Times forum",
+                    "hostname": "www.sammyboy.com",
+                    "id": "TTIpsoLTW8m1AKn4qU52sQ",
+                    "legacy_id": null,
+                    "name": "The Sammyboy Times",
+                    "platform_url": "https://fp.tools/home/search/forums?forum_ids=TTIpsoLTW8m1AKn4qU52sQ",
+                    "stats": {
+                        "posts": 459033,
+                        "rooms": 14,
+                        "threads": 21736,
+                        "users": 6571
+                    },
+                    "tags": [
+                        {
+                            "id": 6,
+                            "name": "Cyber Threat",
+                            "parent_tag": null,
+                            "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+                        },
+                        {
+                            "id": 29,
+                            "name": "English",
+                            "parent_tag": 28,
+                            "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Hacking",
+                            "parent_tag": 6,
+                            "uuid": "c88a0cd8-a259-46d7-b8b4-b6e0060f16a0"
+                        },
+                        {
+                            "id": 28,
+                            "name": "Language",
+                            "parent_tag": null,
+                            "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+                        }
+                    ]
+                },
+                "PlatformUrl": "https://fp.tools/home/ddw/forums/threads/BTdC6qjzVQ63D7p810ea8g?id=Exe7t24dVfSUooUSbsOPsw",
+                "PostId": "Exe7t24dVfSUooUSbsOPsw",
+                "PublishedAt": "2019-12-18T11:43:00+00:00",
+                "Room": {
+                    "forum": "/forums/sites/TTIpsoLTW8m1AKn4qU52sQ",
+                    "id": "pVGplbH4XPGMwryH9g8L6g",
+                    "legacy_id": "PB9r4WC8Xh-7vP109JAUZQ",
+                    "native_id": "the-courtyard-caf%C3%A9.2",
+                    "platform_url": "https://fp.tools/home/search/forums?room_title=\"The%20Courtyard%20Caf%C3%A9\"",
+                    "title": "The Courtyard Caf\u00e9",
+                    "url": "forums/the-courtyard-caf%C3%A9.2"
+                },
+                "Url": "threads/kfc-promotion-8-pieces-sour-cream-onion-chicken-for-4-18-20-dec.277554/post-3015468",
+                "User": {
+                    "id": "f5xG_0M2Wl-XFOpvlZGQow",
+                    "legacy_id": "oR-Cwv6DVF6tKAEr1g3ZjA",
+                    "name": "syed putra",
+                    "native_id": "4371",
+                    "platform_url": "https://fp.tools/home/search/forums?author_id=f5xG_0M2Wl-XFOpvlZGQow",
+                    "url": "https://www.sammyboy.com/members/syed-putra.4371"
+                }
             },
             {
-                "Author Name": "syed putra",
-                "Forum Name": "The Sammyboy Times",
-                "Platform URL": "[https://fp.tools/home/ddw/foru...](https://fp.tools/home/ddw/forums/threads/9agn-LnsWz-SIAROT8jo3Q?id=pO3UJKuRXW6w_vDh37nI4A)",
-                "Room Title": "The Courtyard Caf\u00e9",
-                "Thread Title": "Tree 1 - Alfa Romeo 0...."
+                "Forum": {
+                    "description": "The Sammyboy Times forum",
+                    "hostname": "www.sammyboy.com",
+                    "id": "TTIpsoLTW8m1AKn4qU52sQ",
+                    "legacy_id": null,
+                    "name": "The Sammyboy Times",
+                    "platform_url": "https://fp.tools/home/search/forums?forum_ids=TTIpsoLTW8m1AKn4qU52sQ",
+                    "stats": {
+                        "posts": 459033,
+                        "rooms": 14,
+                        "threads": 21736,
+                        "users": 6571
+                    },
+                    "tags": [
+                        {
+                            "id": 6,
+                            "name": "Cyber Threat",
+                            "parent_tag": null,
+                            "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+                        },
+                        {
+                            "id": 29,
+                            "name": "English",
+                            "parent_tag": 28,
+                            "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Hacking",
+                            "parent_tag": 6,
+                            "uuid": "c88a0cd8-a259-46d7-b8b4-b6e0060f16a0"
+                        },
+                        {
+                            "id": 28,
+                            "name": "Language",
+                            "parent_tag": null,
+                            "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+                        }
+                    ]
+                },
+                "PlatformUrl": "https://fp.tools/home/ddw/forums/threads/BTdC6qjzVQ63D7p810ea8g?id=xaQRdIiRW1eQ4kS6TxAC5A",
+                "PostId": "xaQRdIiRW1eQ4kS6TxAC5A",
+                "PublishedAt": "2019-12-18T11:41:00+00:00",
+                "Room": {
+                    "forum": "/forums/sites/TTIpsoLTW8m1AKn4qU52sQ",
+                    "id": "pVGplbH4XPGMwryH9g8L6g",
+                    "legacy_id": "PB9r4WC8Xh-7vP109JAUZQ",
+                    "native_id": "the-courtyard-caf%C3%A9.2",
+                    "platform_url": "https://fp.tools/home/search/forums?room_title=\"The%20Courtyard%20Caf%C3%A9\"",
+                    "title": "The Courtyard Caf\u00e9",
+                    "url": "forums/the-courtyard-caf%C3%A9.2"
+                },
+                "Url": "threads/kfc-promotion-8-pieces-sour-cream-onion-chicken-for-4-18-20-dec.277554/post-3015466",
+                "User": {
+                    "id": "HzP04FFEX_663EPpm8C1OA",
+                    "legacy_id": "Mm48bgjkWGGokSgpnl0kSQ",
+                    "name": "horny",
+                    "native_id": "153283",
+                    "platform_url": "https://fp.tools/home/search/forums?author_id=HzP04FFEX_663EPpm8C1OA",
+                    "url": "https://www.sammyboy.com/members/horny.153283"
+                }
             },
             {
-                "Author Name": "rambo22",
-                "Forum Name": "The Sammyboy Times",
-                "Platform URL": "[https://fp.tools/home/ddw/foru...](https://fp.tools/home/ddw/forums/threads/9agn-LnsWz-SIAROT8jo3Q?id=lz1eeBY0XSaNlFDHc0aruA)",
-                "Room Title": "The Courtyard Caf\u00e9",
-                "Thread Title": "Tree 1 - Alfa Romeo 0...."
+                "Forum": {
+                    "description": "The Sammyboy Times forum",
+                    "hostname": "www.sammyboy.com",
+                    "id": "TTIpsoLTW8m1AKn4qU52sQ",
+                    "legacy_id": null,
+                    "name": "The Sammyboy Times",
+                    "platform_url": "https://fp.tools/home/search/forums?forum_ids=TTIpsoLTW8m1AKn4qU52sQ",
+                    "stats": {
+                        "posts": 459033,
+                        "rooms": 14,
+                        "threads": 21736,
+                        "users": 6571
+                    },
+                    "tags": [
+                        {
+                            "id": 6,
+                            "name": "Cyber Threat",
+                            "parent_tag": null,
+                            "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+                        },
+                        {
+                            "id": 29,
+                            "name": "English",
+                            "parent_tag": 28,
+                            "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Hacking",
+                            "parent_tag": 6,
+                            "uuid": "c88a0cd8-a259-46d7-b8b4-b6e0060f16a0"
+                        },
+                        {
+                            "id": 28,
+                            "name": "Language",
+                            "parent_tag": null,
+                            "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+                        }
+                    ]
+                },
+                "PlatformUrl": "https://fp.tools/home/ddw/forums/threads/BTdC6qjzVQ63D7p810ea8g?id=iEDOMDW7XHOLQpHJvqIubA",
+                "PostId": "iEDOMDW7XHOLQpHJvqIubA",
+                "PublishedAt": "2019-12-18T11:40:00+00:00",
+                "Room": {
+                    "forum": "/forums/sites/TTIpsoLTW8m1AKn4qU52sQ",
+                    "id": "pVGplbH4XPGMwryH9g8L6g",
+                    "legacy_id": "PB9r4WC8Xh-7vP109JAUZQ",
+                    "native_id": "the-courtyard-caf%C3%A9.2",
+                    "platform_url": "https://fp.tools/home/search/forums?room_title=\"The%20Courtyard%20Caf%C3%A9\"",
+                    "title": "The Courtyard Caf\u00e9",
+                    "url": "forums/the-courtyard-caf%C3%A9.2"
+                },
+                "Url": "threads/kfc-promotion-8-pieces-sour-cream-onion-chicken-for-4-18-20-dec.277554/post-3015464",
+                "User": {
+                    "id": "f5xG_0M2Wl-XFOpvlZGQow",
+                    "legacy_id": "oR-Cwv6DVF6tKAEr1g3ZjA",
+                    "name": "syed putra",
+                    "native_id": "4371",
+                    "platform_url": "https://fp.tools/home/search/forums?author_id=f5xG_0M2Wl-XFOpvlZGQow",
+                    "url": "https://www.sammyboy.com/members/syed-putra.4371"
+                }
             },
             {
-                "Author Name": "syed putra",
-                "Forum Name": "The Sammyboy Times",
-                "Platform URL": "[https://fp.tools/home/ddw/foru...](https://fp.tools/home/ddw/forums/threads/z6ZBpNPBWq2A4YXNI4Z0nA?id=rf_5yQpjUcKUbsgwDGZ2jA)",
-                "Room Title": "The Courtyard Caf\u00e9",
-                "Thread Title": "Why Chinese women love Indian ...."
+                "Forum": {
+                    "description": "The Sammyboy Times forum",
+                    "hostname": "www.sammyboy.com",
+                    "id": "TTIpsoLTW8m1AKn4qU52sQ",
+                    "legacy_id": null,
+                    "name": "The Sammyboy Times",
+                    "platform_url": "https://fp.tools/home/search/forums?forum_ids=TTIpsoLTW8m1AKn4qU52sQ",
+                    "stats": {
+                        "posts": 459033,
+                        "rooms": 14,
+                        "threads": 21736,
+                        "users": 6571
+                    },
+                    "tags": [
+                        {
+                            "id": 6,
+                            "name": "Cyber Threat",
+                            "parent_tag": null,
+                            "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+                        },
+                        {
+                            "id": 29,
+                            "name": "English",
+                            "parent_tag": 28,
+                            "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Hacking",
+                            "parent_tag": 6,
+                            "uuid": "c88a0cd8-a259-46d7-b8b4-b6e0060f16a0"
+                        },
+                        {
+                            "id": 28,
+                            "name": "Language",
+                            "parent_tag": null,
+                            "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+                        }
+                    ]
+                },
+                "PlatformUrl": "https://fp.tools/home/ddw/forums/threads/g2g0cO3JUeyFrRQxblYCxw?id=cAGx-p5-VzGxNhcH88CgVQ",
+                "PostId": "cAGx-p5-VzGxNhcH88CgVQ",
+                "PublishedAt": "2019-12-18T11:23:00+00:00",
+                "Room": {
+                    "forum": "/forums/sites/TTIpsoLTW8m1AKn4qU52sQ",
+                    "id": "pVGplbH4XPGMwryH9g8L6g",
+                    "legacy_id": "PB9r4WC8Xh-7vP109JAUZQ",
+                    "native_id": "the-courtyard-caf%C3%A9.2",
+                    "platform_url": "https://fp.tools/home/search/forums?room_title=\"The%20Courtyard%20Caf%C3%A9\"",
+                    "title": "The Courtyard Caf\u00e9",
+                    "url": "forums/the-courtyard-caf%C3%A9.2"
+                },
+                "Url": "threads/ministry-of-defence-mindef-is-a.277563/post-3015459",
+                "User": {
+                    "id": "42aVe_v5UuidpcA80eekoQ",
+                    "legacy_id": "H16SdxrQVp6pmP-2sBO3lA",
+                    "name": "sweetiepie",
+                    "native_id": "64347",
+                    "platform_url": "https://fp.tools/home/search/forums?author_id=42aVe_v5UuidpcA80eekoQ",
+                    "url": "https://www.sammyboy.com/members/sweetiepie.64347"
+                }
             },
             {
-                "Author Name": "Valium",
-                "Forum Name": "The Sammyboy Times",
-                "Platform URL": "[https://fp.tools/home/ddw/foru...](https://fp.tools/home/ddw/forums/threads/z6ZBpNPBWq2A4YXNI4Z0nA?id=BcvyNseyUXi2Ct7pVf0xiA)",
-                "Room Title": "The Courtyard Caf\u00e9",
-                "Thread Title": "Why Chinese women love Indian ...."
+                "Forum": {
+                    "description": "The Sammyboy Times forum",
+                    "hostname": "www.sammyboy.com",
+                    "id": "TTIpsoLTW8m1AKn4qU52sQ",
+                    "legacy_id": null,
+                    "name": "The Sammyboy Times",
+                    "platform_url": "https://fp.tools/home/search/forums?forum_ids=TTIpsoLTW8m1AKn4qU52sQ",
+                    "stats": {
+                        "posts": 459033,
+                        "rooms": 14,
+                        "threads": 21736,
+                        "users": 6571
+                    },
+                    "tags": [
+                        {
+                            "id": 6,
+                            "name": "Cyber Threat",
+                            "parent_tag": null,
+                            "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+                        },
+                        {
+                            "id": 29,
+                            "name": "English",
+                            "parent_tag": 28,
+                            "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Hacking",
+                            "parent_tag": 6,
+                            "uuid": "c88a0cd8-a259-46d7-b8b4-b6e0060f16a0"
+                        },
+                        {
+                            "id": 28,
+                            "name": "Language",
+                            "parent_tag": null,
+                            "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+                        }
+                    ]
+                },
+                "PlatformUrl": "https://fp.tools/home/ddw/forums/threads/b-m8neykUly5gSeufYEfyQ?id=r0yTgwVaUvm_L6t4Y8O8Fw",
+                "PostId": "r0yTgwVaUvm_L6t4Y8O8Fw",
+                "PublishedAt": "2019-12-18T11:21:00+00:00",
+                "Room": {
+                    "forum": "/forums/sites/TTIpsoLTW8m1AKn4qU52sQ",
+                    "id": "pVGplbH4XPGMwryH9g8L6g",
+                    "legacy_id": "PB9r4WC8Xh-7vP109JAUZQ",
+                    "native_id": "the-courtyard-caf%C3%A9.2",
+                    "platform_url": "https://fp.tools/home/search/forums?room_title=\"The%20Courtyard%20Caf%C3%A9\"",
+                    "title": "The Courtyard Caf\u00e9",
+                    "url": "forums/the-courtyard-caf%C3%A9.2"
+                },
+                "Url": "threads/church-holds-100-billion-for-2nd-coming-of-jesus-guess-church.277562/post-3015458",
+                "User": {
+                    "id": "eMgRtiHVUiWc2Do8qlG18g",
+                    "legacy_id": "1Mh9MDBzUc-Vc7RBFwd3XA",
+                    "name": "JohnTan",
+                    "native_id": "106375",
+                    "platform_url": "https://fp.tools/home/search/forums?author_id=eMgRtiHVUiWc2Do8qlG18g",
+                    "url": "https://www.sammyboy.com/members/johntan.106375"
+                }
             },
             {
-                "Author Name": "Valium",
-                "Forum Name": "The Sammyboy Times",
-                "Platform URL": "[https://fp.tools/home/ddw/foru...](https://fp.tools/home/ddw/forums/threads/z6ZBpNPBWq2A4YXNI4Z0nA?id=kWqORZkrXQuQ1WDkCHfdtA)",
-                "Room Title": "The Courtyard Caf\u00e9",
-                "Thread Title": "Why Chinese women love Indian ...."
+                "Forum": {
+                    "description": "The Sammyboy Times forum",
+                    "hostname": "www.sammyboy.com",
+                    "id": "TTIpsoLTW8m1AKn4qU52sQ",
+                    "legacy_id": null,
+                    "name": "The Sammyboy Times",
+                    "platform_url": "https://fp.tools/home/search/forums?forum_ids=TTIpsoLTW8m1AKn4qU52sQ",
+                    "stats": {
+                        "posts": 459033,
+                        "rooms": 14,
+                        "threads": 21736,
+                        "users": 6571
+                    },
+                    "tags": [
+                        {
+                            "id": 6,
+                            "name": "Cyber Threat",
+                            "parent_tag": null,
+                            "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+                        },
+                        {
+                            "id": 29,
+                            "name": "English",
+                            "parent_tag": 28,
+                            "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Hacking",
+                            "parent_tag": 6,
+                            "uuid": "c88a0cd8-a259-46d7-b8b4-b6e0060f16a0"
+                        },
+                        {
+                            "id": 28,
+                            "name": "Language",
+                            "parent_tag": null,
+                            "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+                        }
+                    ]
+                },
+                "PlatformUrl": "https://fp.tools/home/ddw/forums/threads/KCxhIFNzV3yDC1W7cJE5Lw?id=mUPvMlpZW8WjGNYmgbA5jQ",
+                "PostId": "mUPvMlpZW8WjGNYmgbA5jQ",
+                "PublishedAt": "2019-12-18T11:15:00+00:00",
+                "Room": {
+                    "forum": "/forums/sites/TTIpsoLTW8m1AKn4qU52sQ",
+                    "id": "pVGplbH4XPGMwryH9g8L6g",
+                    "legacy_id": "PB9r4WC8Xh-7vP109JAUZQ",
+                    "native_id": "the-courtyard-caf%C3%A9.2",
+                    "platform_url": "https://fp.tools/home/search/forums?room_title=\"The%20Courtyard%20Caf%C3%A9\"",
+                    "title": "The Courtyard Caf\u00e9",
+                    "url": "forums/the-courtyard-caf%C3%A9.2"
+                },
+                "Url": "threads/stressed-uni-student-has-addiction-to-womens-buttocks-caught-taking-upskirt-videos-guess-race-and-university.277560/post-3015456",
+                "User": {
+                    "id": "eMgRtiHVUiWc2Do8qlG18g",
+                    "legacy_id": "1Mh9MDBzUc-Vc7RBFwd3XA",
+                    "name": "JohnTan",
+                    "native_id": "106375",
+                    "platform_url": "https://fp.tools/home/search/forums?author_id=eMgRtiHVUiWc2Do8qlG18g",
+                    "url": "https://www.sammyboy.com/members/johntan.106375"
+                }
             },
             {
-                "Author Name": "Papsmearer",
-                "Forum Name": "The Sammyboy Times",
-                "Platform URL": "[https://fp.tools/home/ddw/foru...](https://fp.tools/home/ddw/forums/threads/z6ZBpNPBWq2A4YXNI4Z0nA?id=TGsdIEWcV86un3XtZxBeSQ)",
-                "Room Title": "The Courtyard Caf\u00e9",
-                "Thread Title": "Why Chinese women love Indian ...."
+                "Forum": {
+                    "description": "The Sammyboy Times forum",
+                    "hostname": "www.sammyboy.com",
+                    "id": "TTIpsoLTW8m1AKn4qU52sQ",
+                    "legacy_id": null,
+                    "name": "The Sammyboy Times",
+                    "platform_url": "https://fp.tools/home/search/forums?forum_ids=TTIpsoLTW8m1AKn4qU52sQ",
+                    "stats": {
+                        "posts": 459033,
+                        "rooms": 14,
+                        "threads": 21736,
+                        "users": 6571
+                    },
+                    "tags": [
+                        {
+                            "id": 6,
+                            "name": "Cyber Threat",
+                            "parent_tag": null,
+                            "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+                        },
+                        {
+                            "id": 29,
+                            "name": "English",
+                            "parent_tag": 28,
+                            "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Hacking",
+                            "parent_tag": 6,
+                            "uuid": "c88a0cd8-a259-46d7-b8b4-b6e0060f16a0"
+                        },
+                        {
+                            "id": 28,
+                            "name": "Language",
+                            "parent_tag": null,
+                            "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+                        }
+                    ]
+                },
+                "PlatformUrl": "https://fp.tools/home/ddw/forums/threads/CYIQywO-Wx2t-2xWZpBz4w?id=GJsY66RSV6KW5Y0A1U30Kg",
+                "PostId": "GJsY66RSV6KW5Y0A1U30Kg",
+                "PublishedAt": "2019-12-18T11:09:00+00:00",
+                "Room": {
+                    "forum": "/forums/sites/TTIpsoLTW8m1AKn4qU52sQ",
+                    "id": "pVGplbH4XPGMwryH9g8L6g",
+                    "legacy_id": "PB9r4WC8Xh-7vP109JAUZQ",
+                    "native_id": "the-courtyard-caf%C3%A9.2",
+                    "platform_url": "https://fp.tools/home/search/forums?room_title=\"The%20Courtyard%20Caf%C3%A9\"",
+                    "title": "The Courtyard Caf\u00e9",
+                    "url": "forums/the-courtyard-caf%C3%A9.2"
+                },
+                "Url": "threads/sph-let-go-5-media-staff-as-net-profit-slumps-23-while-ceo-ng-still-paid-in-millions.277529/post-3015454",
+                "User": {
+                    "id": "pofOSuuqVGi-UM9aar9mug",
+                    "legacy_id": "_jef3w0FWEyoy8ka_1QyTw",
+                    "name": "Valium",
+                    "native_id": "155762",
+                    "platform_url": "https://fp.tools/home/search/forums?author_id=pofOSuuqVGi-UM9aar9mug",
+                    "url": "https://www.sammyboy.com/members/valium.155762"
+                }
             },
             {
-                "Author Name": "Papsmearer",
-                "Forum Name": "The Sammyboy Times",
-                "Platform URL": "[https://fp.tools/home/ddw/foru...](https://fp.tools/home/ddw/forums/threads/z6ZBpNPBWq2A4YXNI4Z0nA?id=wPCiFVACWbe-1tDBPFqBDQ)",
-                "Room Title": "The Courtyard Caf\u00e9",
-                "Thread Title": "Why Chinese women love Indian ...."
+                "Forum": {
+                    "description": "The Sammyboy Times forum",
+                    "hostname": "www.sammyboy.com",
+                    "id": "TTIpsoLTW8m1AKn4qU52sQ",
+                    "legacy_id": null,
+                    "name": "The Sammyboy Times",
+                    "platform_url": "https://fp.tools/home/search/forums?forum_ids=TTIpsoLTW8m1AKn4qU52sQ",
+                    "stats": {
+                        "posts": 459033,
+                        "rooms": 14,
+                        "threads": 21736,
+                        "users": 6571
+                    },
+                    "tags": [
+                        {
+                            "id": 6,
+                            "name": "Cyber Threat",
+                            "parent_tag": null,
+                            "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+                        },
+                        {
+                            "id": 29,
+                            "name": "English",
+                            "parent_tag": 28,
+                            "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Hacking",
+                            "parent_tag": 6,
+                            "uuid": "c88a0cd8-a259-46d7-b8b4-b6e0060f16a0"
+                        },
+                        {
+                            "id": 28,
+                            "name": "Language",
+                            "parent_tag": null,
+                            "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+                        }
+                    ]
+                },
+                "PlatformUrl": "https://fp.tools/home/ddw/forums/threads/YpOP1H1RWwuc4-Dov2Cwww?id=xT3N2UWEW-SR1Gb9vBoGLQ",
+                "PostId": "xT3N2UWEW-SR1Gb9vBoGLQ",
+                "PublishedAt": "2019-12-18T11:00:00+00:00",
+                "Room": {
+                    "forum": "/forums/sites/TTIpsoLTW8m1AKn4qU52sQ",
+                    "id": "pVGplbH4XPGMwryH9g8L6g",
+                    "legacy_id": "PB9r4WC8Xh-7vP109JAUZQ",
+                    "native_id": "the-courtyard-caf%C3%A9.2",
+                    "platform_url": "https://fp.tools/home/search/forums?room_title=\"The%20Courtyard%20Caf%C3%A9\"",
+                    "title": "The Courtyard Caf\u00e9",
+                    "url": "forums/the-courtyard-caf%C3%A9.2"
+                },
+                "Url": "threads/oh-is-this-what-pofma-really-stands-for.277558/post-3015452",
+                "User": {
+                    "id": "oWWKc07zUO-VGKR8BdVohw",
+                    "legacy_id": "0ZN7piYkW9-0G00EgohtNQ",
+                    "name": "TerrexLee",
+                    "native_id": "120397",
+                    "platform_url": "https://fp.tools/home/search/forums?author_id=oWWKc07zUO-VGKR8BdVohw",
+                    "url": "https://www.sammyboy.com/members/terrexlee.120397"
+                }
             },
             {
-                "Author Name": "micromachine",
-                "Forum Name": "The Sammyboy Times",
-                "Platform URL": "[https://fp.tools/home/ddw/foru...](https://fp.tools/home/ddw/forums/threads/yC001PBsXp-c8kjlBE4r5g?id=42gu9HbGXzyOZxBR8BD5jA)",
-                "Room Title": "The Courtyard Caf\u00e9",
-                "Thread Title": "[Post-Exams] Tip(s) for studen...."
+                "Forum": {
+                    "description": "The Sammyboy Times forum",
+                    "hostname": "www.sammyboy.com",
+                    "id": "TTIpsoLTW8m1AKn4qU52sQ",
+                    "legacy_id": null,
+                    "name": "The Sammyboy Times",
+                    "platform_url": "https://fp.tools/home/search/forums?forum_ids=TTIpsoLTW8m1AKn4qU52sQ",
+                    "stats": {
+                        "posts": 459033,
+                        "rooms": 14,
+                        "threads": 21736,
+                        "users": 6571
+                    },
+                    "tags": [
+                        {
+                            "id": 6,
+                            "name": "Cyber Threat",
+                            "parent_tag": null,
+                            "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+                        },
+                        {
+                            "id": 29,
+                            "name": "English",
+                            "parent_tag": 28,
+                            "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Hacking",
+                            "parent_tag": 6,
+                            "uuid": "c88a0cd8-a259-46d7-b8b4-b6e0060f16a0"
+                        },
+                        {
+                            "id": 28,
+                            "name": "Language",
+                            "parent_tag": null,
+                            "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+                        }
+                    ]
+                },
+                "PlatformUrl": "https://fp.tools/home/ddw/forums/threads/KPNwvwZVXf-m79AGqquJ8Q?id=pFpDpiKgVWGixxAPKQqsyA",
+                "PostId": "pFpDpiKgVWGixxAPKQqsyA",
+                "PublishedAt": "2019-12-18T10:57:00+00:00",
+                "Room": {
+                    "forum": "/forums/sites/TTIpsoLTW8m1AKn4qU52sQ",
+                    "id": "pVGplbH4XPGMwryH9g8L6g",
+                    "legacy_id": "PB9r4WC8Xh-7vP109JAUZQ",
+                    "native_id": "the-courtyard-caf%C3%A9.2",
+                    "platform_url": "https://fp.tools/home/search/forums?room_title=\"The%20Courtyard%20Caf%C3%A9\"",
+                    "title": "The Courtyard Caf\u00e9",
+                    "url": "forums/the-courtyard-caf%C3%A9.2"
+                },
+                "Url": "threads/workforce-sg-wsg-is-a.277557/post-3015451",
+                "User": {
+                    "id": "42aVe_v5UuidpcA80eekoQ",
+                    "legacy_id": "H16SdxrQVp6pmP-2sBO3lA",
+                    "name": "sweetiepie",
+                    "native_id": "64347",
+                    "platform_url": "https://fp.tools/home/search/forums?author_id=42aVe_v5UuidpcA80eekoQ",
+                    "url": "https://www.sammyboy.com/members/sweetiepie.64347"
+                }
             },
             {
-                "Author Name": "laksaboy",
-                "Forum Name": "The Sammyboy Times",
-                "Platform URL": "[https://fp.tools/home/ddw/foru...](https://fp.tools/home/ddw/forums/threads/agb24TqwX4SaPfwTDQh6ig?id=GyrsabrUWO2JaH8W_f8gFQ)",
-                "Room Title": "The Courtyard Caf\u00e9",
-                "Thread Title": "Tory or Labour?...."
+                "Forum": {
+                    "description": "The Sammyboy Times forum",
+                    "hostname": "www.sammyboy.com",
+                    "id": "TTIpsoLTW8m1AKn4qU52sQ",
+                    "legacy_id": null,
+                    "name": "The Sammyboy Times",
+                    "platform_url": "https://fp.tools/home/search/forums?forum_ids=TTIpsoLTW8m1AKn4qU52sQ",
+                    "stats": {
+                        "posts": 459033,
+                        "rooms": 14,
+                        "threads": 21736,
+                        "users": 6571
+                    },
+                    "tags": [
+                        {
+                            "id": 6,
+                            "name": "Cyber Threat",
+                            "parent_tag": null,
+                            "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+                        },
+                        {
+                            "id": 29,
+                            "name": "English",
+                            "parent_tag": 28,
+                            "uuid": "2fb5aeb5-7afc-4e04-a5bc-465297456ffc"
+                        },
+                        {
+                            "id": 8,
+                            "name": "Hacking",
+                            "parent_tag": 6,
+                            "uuid": "c88a0cd8-a259-46d7-b8b4-b6e0060f16a0"
+                        },
+                        {
+                            "id": 28,
+                            "name": "Language",
+                            "parent_tag": null,
+                            "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b"
+                        }
+                    ]
+                },
+                "PlatformUrl": "https://fp.tools/home/ddw/forums/threads/CYIQywO-Wx2t-2xWZpBz4w?id=0guT14M-X2ixzc-MuDJPmw",
+                "PostId": "0guT14M-X2ixzc-MuDJPmw",
+                "PublishedAt": "2019-12-18T10:49:00+00:00",
+                "Room": {
+                    "forum": "/forums/sites/TTIpsoLTW8m1AKn4qU52sQ",
+                    "id": "pVGplbH4XPGMwryH9g8L6g",
+                    "legacy_id": "PB9r4WC8Xh-7vP109JAUZQ",
+                    "native_id": "the-courtyard-caf%C3%A9.2",
+                    "platform_url": "https://fp.tools/home/search/forums?room_title=\"The%20Courtyard%20Caf%C3%A9\"",
+                    "title": "The Courtyard Caf\u00e9",
+                    "url": "forums/the-courtyard-caf%C3%A9.2"
+                },
+                "Url": "threads/sph-let-go-5-media-staff-as-net-profit-slumps-23-while-ceo-ng-still-paid-in-millions.277529/post-3015450",
+                "User": {
+                    "id": "r__we_wyX3WZ0MOlSx_MQQ",
+                    "legacy_id": "eve1h4-TU_mnlrgoYPCdqQ",
+                    "name": "Loofydralb",
+                    "native_id": "2174",
+                    "platform_url": "https://fp.tools/home/search/forums?author_id=r__we_wyX3WZ0MOlSx_MQQ",
+                    "url": "https://www.sammyboy.com/members/loofydralb.2174"
+                }
             }
         ]
     }
