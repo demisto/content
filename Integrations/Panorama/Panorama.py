@@ -9,7 +9,6 @@ import uuid
 import json
 import requests
 
-
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -139,9 +138,9 @@ def http_request(uri: str, method: str, headers: Dict = {},
                     'Object was not found, verify that the name is correct and that the instance was committed.')
 
             #  catch urlfiltering error and display a meaningful message
-            elif str(json_result['response']['msg']['line']).find('test -> url  is unexpected') != -1:
+            elif str(json_result['response']['msg']['line']).find('test -> url') != -1:
                 return_error('The URL filtering license is either expired or not active.'
-                             'Please contact your PAN-OS representative.')
+                             ' Please contact your PAN-OS representative.')
 
             # catch non valid jobID errors and display a meaningful message
             elif isinstance(json_result['response']['msg']['line'], str) and \
@@ -300,6 +299,31 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
     return params
 
 
+def get_pan_os_version() -> str:
+    """Retrieves pan-os version
+
+       Returns:
+           String representation of the version
+       """
+    params = {
+        'type': 'version',
+        'key': API_KEY
+    }
+    result = http_request(URL, 'GET', params=params)
+    version = result['response']['result']['sw-version']
+    return version
+
+
+def get_pan_os_major_version() -> int:
+    """Retrieves pan-os major version
+
+    Returns:
+        String representation of the major version
+    """
+    major_version = int(get_pan_os_version().split('.')[0])
+    return major_version
+
+
 ''' FUNCTIONS'''
 
 
@@ -370,9 +394,9 @@ def panorama_command():
     Executes a command
     """
     params = {}
-    params['key'] = API_KEY
     for arg in demisto.args().keys():
         params[arg] = demisto.args()[arg]
+    params['key'] = API_KEY
 
     result = http_request(
         URL,
@@ -886,7 +910,8 @@ def panorama_list_address_groups_command():
         'Contents': address_groups_arr,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Address groups:', address_groups_output,
-                                         ['Name', 'Type', 'Addresses', 'Match', 'Description', 'Tags'], removeNull=True),
+                                         ['Name', 'Type', 'Addresses', 'Match', 'Description', 'Tags'],
+                                         removeNull=True),
         'EntryContext': {
             "Panorama.AddressGroups(val.Name == obj.Name)": address_groups_output
         }
@@ -1755,7 +1780,14 @@ def prettify_custom_url_category(custom_url_category):
     if 'description' in custom_url_category:
         pretty_custom_url_category['Description'] = custom_url_category['description']
 
-    if 'list' in custom_url_category:
+    #  In PAN-OS 9.X changes to the default behavior were introduced regarding custom url categories.
+    if 'type' in custom_url_category:
+        pretty_custom_url_category['Type'] = custom_url_category['type']
+        if pretty_custom_url_category['Type'] == 'Category Match':
+            pretty_custom_url_category['Categories'] = custom_url_category['list']['member']
+        else:
+            pretty_custom_url_category['Sites'] = custom_url_category['list']['member']
+    else:
         pretty_custom_url_category['Sites'] = custom_url_category['list']['member']
 
     return pretty_custom_url_category
@@ -1793,7 +1825,7 @@ def panorama_get_custom_url_category_command():
         'Contents': custom_url_category,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Custom URL Category:', custom_url_category_output,
-                                         ['Name', 'Sites', 'Description'], removeNull=True),
+                                         ['Name', 'Type', 'Categories', 'Sites', 'Description'], removeNull=True),
         'EntryContext': {
             "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
         }
@@ -1801,12 +1833,34 @@ def panorama_get_custom_url_category_command():
 
 
 @logger
-def panorama_create_custom_url_category(custom_url_category_name: str, sites, description: str = None):
+def panorama_create_custom_url_category(custom_url_category_name: str, type_: Any = None,
+                                        sites=None, categories=None, description: str = None):
+    #  In PAN-OS 9.X changes to the default behavior were introduced regarding custom url categories.
+    major_version = get_pan_os_major_version()
+    element = add_argument(description, 'description', False)
+    if major_version <= 8:
+        if type_ or categories:
+            return_error('The type and categories arguments are only relevant for PAN-OS 9.x versions.')
+        element += add_argument_list(sites, 'list', True)
+    else:  # major is 9.x
+        if not type_:
+            return_error('The type argument is mandatory for PAN-OS 9.x versions.')
+        if (not sites and not categories) or (sites and categories):
+            return_error('Exactly one of the sites and categories arguments should be defined.')
+        if (type_ == 'URL List' and categories) or (type_ == 'Category Match' and sites):
+            return_error('URL List type is only for sites, Category Match is only for categories.')
+
+        if type_ == 'URL List':
+            element += add_argument_list(sites, 'list', True)
+        else:
+            element += add_argument_list(categories, 'list', True)
+        element += add_argument(type_, 'type', False)
+
     params = {
         'action': 'set',
         'type': 'config',
         'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
-        'element': add_argument(description, 'description', False) + add_argument_list(sites, 'list', True),
+        'element': element,
         'key': API_KEY
     }
     result = http_request(
@@ -1818,11 +1872,14 @@ def panorama_create_custom_url_category(custom_url_category_name: str, sites, de
     custom_url_category_output = {'Name': custom_url_category_name}
     if DEVICE_GROUP:
         custom_url_category_output['DeviceGroup'] = DEVICE_GROUP
-    if sites:
-        custom_url_category_output['Sites'] = sites
     if description:
         custom_url_category_output['Description'] = description
-
+    if type_:
+        custom_url_category_output['Type'] = type_
+    if sites:
+        custom_url_category_output['Sites'] = sites
+    else:
+        custom_url_category_output['Categories'] = categories
     return result, custom_url_category_output
 
 
@@ -1831,19 +1888,21 @@ def panorama_create_custom_url_category_command():
     Create a custom URL category
     """
     custom_url_category_name = demisto.args()['name']
+    type_ = demisto.args()['type'] if 'type' in demisto.args() else None
     sites = argToList(demisto.args()['sites']) if 'sites' in demisto.args() else None
+    categories = argToList(demisto.args()['categories']) if 'categories' in demisto.args() else None
     description = demisto.args().get('description')
 
     custom_url_category, custom_url_category_output = panorama_create_custom_url_category(custom_url_category_name,
-                                                                                          sites, description)
-
+                                                                                          type_, sites, categories,
+                                                                                          description)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': custom_url_category,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Created Custom URL Category:', custom_url_category_output,
-                                         ['Name', 'Sites', 'Description'], removeNull=True),
+                                         ['Name', 'Type', 'Categories', 'Sites', 'Description'], removeNull=True),
         'EntryContext': {
             "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
         }
@@ -1892,14 +1951,24 @@ def panorama_delete_custom_url_category_command():
 
 
 @logger
-def panorama_edit_custom_url_category(custom_url_category_name, sites, description=None):
+def panorama_edit_custom_url_category(custom_url_category_name, type_, items, description=None):
+    major_version = get_pan_os_major_version()
+    description_element = add_argument(description, 'description', False)
+    items_element = add_argument_list(items, 'list', True)
+
+    if major_version <= 8:
+        if type_ == 'Category Match':
+            return_error('The Categories argument is only relevant for PAN-OS 9.x versions.')
+        element = f"<entry name='{custom_url_category_name}'>{description_element}{items_element}</entry>"
+    else:
+        type_element = add_argument(type_, 'type', False)
+        element = f"<entry name='{custom_url_category_name}'>{description_element}{items_element}{type_element}</entry>"
+
     params = {
         'action': 'edit',
         'type': 'config',
         'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
-        'element': "<entry name='" + custom_url_category_name + "'>"
-                   + add_argument(description, 'description', False)
-                   + add_argument_list(sites, 'list', True) + "</entry>",
+        'element': element,
         'key': API_KEY
     }
     result = http_request(
@@ -1908,59 +1977,55 @@ def panorama_edit_custom_url_category(custom_url_category_name, sites, descripti
         params=params,
     )
 
-    custom_url_category_output = {'Name': custom_url_category_name}
+    custom_url_category_output = {'Name': custom_url_category_name,
+                                  'Type': type_}
     if DEVICE_GROUP:
         custom_url_category_output['DeviceGroup'] = DEVICE_GROUP
-    if sites:
-        custom_url_category_output['Sites'] = sites
     if description:
         custom_url_category_output['Description'] = description
+    if type_ == 'Category Match':
+        custom_url_category_output['Categories'] = items
+    else:
+        custom_url_category_output['Sites'] = items
 
     return result, custom_url_category_output
 
 
-def panorama_custom_url_category_add_sites_command():
+def panorama_custom_url_category_add_items(custom_url_category_name, items, type_):
     """
-    Add sites to a configured custom url category
+    Add sites or categories to a configured custom url category
     """
-    custom_url_category_name = demisto.args()['name']
-
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
-
     if '@dirtyId' in custom_url_category:
         return_error('Please commit the instance prior to editing the Custom URL Category.')
     description = custom_url_category.get('description')
 
-    custom_url_category_sites: List[str] = []
+    custom_url_category_items: List[str] = []
     if 'list' in custom_url_category:
         if custom_url_category['list']:
-            custom_url_category_sites = argToList(custom_url_category['list']['member'])
+            custom_url_category_items = argToList(custom_url_category['list']['member'])
 
-    sites = argToList(demisto.args()['sites'])
-    merged_sites = list((set(sites)).union(set(custom_url_category_sites)))
+    merged_items = list((set(items)).union(set(custom_url_category_items)))
 
-    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, merged_sites,
-                                                                           description)
-
+    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_,
+                                                                           merged_items, description)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Updated Custom URL Category:', custom_url_category_output,
-                                         ['Name', 'Sites', 'Description'], removeNull=True),
+                                         ['Name', 'Type', 'Categories', 'Sites', 'Description'], removeNull=True),
         'EntryContext': {
             "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
         }
     })
 
 
-def panorama_custom_url_category_remove_sites_command():
+def panorama_custom_url_category_remove_items(custom_url_category_name, items, type_):
     """
-    Add sites to a configured custom url category
+    Add sites or categories to a configured custom url category
     """
-    custom_url_category_name = demisto.args()['name']
-
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
     if '@dirtyId' in custom_url_category:
         return_error('Please commit the instance prior to editing the Custom URL Category.')
@@ -1968,49 +2033,62 @@ def panorama_custom_url_category_remove_sites_command():
 
     if 'list' in custom_url_category:
         if 'member' in custom_url_category['list']:
-            custom_url_category_sites = custom_url_category['list']['member']
+            custom_url_category_items = custom_url_category['list']['member']
+    if not custom_url_category_items:
+        return_error('Custom url category does not contain sites or categories.')
 
-    if not custom_url_category_sites:
-        return_error('Custom url category does not contain sites')
-
-    sites = argToList(demisto.args()['sites'])
-
-    subtracted_sites = [item for item in custom_url_category_sites if item not in sites]
-    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, subtracted_sites,
-                                                                           description)
-
+    subtracted_items = [item for item in custom_url_category_items if item not in items]
+    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, type_,
+                                                                           subtracted_items, description)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Updated Custom URL Category:', custom_url_category_output,
-                                         ['Name', 'Sites', 'Description'], removeNull=True),
+                                         ['Name', 'Categories', 'Sites', 'Description'], removeNull=True),
         'EntryContext': {
             "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
         }
     })
 
 
+def panorama_edit_custom_url_category_command():
+    custom_url_category_name = demisto.args()['name']
+    items = argToList(demisto.args()['sites']) if 'sites' in demisto.args() else argToList(demisto.args()['categories'])
+    type_ = "URL List" if 'sites' in demisto.args() else "Category Match"
+    if demisto.args()['action'] == 'remove':
+        panorama_custom_url_category_remove_items(custom_url_category_name, items, type_)
+    else:
+        panorama_custom_url_category_add_items(custom_url_category_name, items, type_)
+
+
 ''' URL Filtering '''
 
 
 @logger
-def panorama_get_url_category(url):
+def panorama_get_url_category(url_cmd, url):
     params = {
         'action': 'show',
         'type': 'op',
         'key': API_KEY,
-        'cmd': '<test><url>' + url + '</url></test>'
+        'cmd': f'<test><{url_cmd}>{url}</{url_cmd}></test>'
     }
-    result = http_request(
+    raw_result = http_request(
         URL,
         'POST',
         params=params,
     )
-
-    s = result['response']['result'].splitlines()[1]
-    return s.split(' ')[1]
+    result = raw_result['response']['result']
+    if url_cmd == 'url-info-host':
+        category = result.split(': ')[1]
+    else:
+        result = result.splitlines()[1]
+        if url_cmd == 'url':
+            category = result.split(' ')[1]
+        else:  # url-info-cloud
+            category = result.split(',')[3]
+    return category
 
 
 def populate_url_filter_category_from_context(category):
@@ -2028,7 +2106,7 @@ def populate_url_filter_category_from_context(category):
             return context_urls
 
 
-def panorama_get_url_category_command():
+def panorama_get_url_category_command(url_cmd: str):
     """
     Get the url category from Palo Alto URL Filtering
     """
@@ -2036,7 +2114,7 @@ def panorama_get_url_category_command():
 
     categories_dict: Dict[str, list] = {}
     for url in urls:
-        category = panorama_get_url_category(url)
+        category = panorama_get_url_category(url_cmd, url)
         if category in categories_dict:
             categories_dict[category].append(url)
         else:
@@ -2050,17 +2128,26 @@ def panorama_get_url_category_command():
             'Category': key,
             'URL': value
         })
+    title = 'URL Filtering'
+    if url_cmd == 'url-info-cloud':
+        title += f' from cloud'
+    elif url_cmd == 'url-info-host':
+        title += f' from host'
+    human_readable = tableToMarkdown(f'{title}:', url_category_output, ['URL', 'Category'], removeNull=True)
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': categories_dict,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('URL Filtering:', url_category_output, ['URL', 'Category'], removeNull=True),
+        'HumanReadable': human_readable,
         'EntryContext': {
             "Panorama.URLFilter(val.Category === obj.Category)": url_category_output
         }
     })
+
+
+''' URL Filter '''
 
 
 def prettify_get_url_filter(url_filter):
@@ -2682,7 +2769,7 @@ def panorama_custom_block_rule_command():
             result = http_request(URL, 'POST', params=params)
         custom_block_output['IP'] = object_value
 
-    elif object_type == 'address-group' or 'edl':
+    elif object_type in ['address-group', 'edl']:
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination='any', rulename=rulename + '-from', target=target,
@@ -3071,13 +3158,9 @@ def panorama_edit_edl(edl_name, element_to_change, element_value):
     edl_output = {'Name': edl_name}
     if DEVICE_GROUP:
         edl_output['DeviceGroup'] = DEVICE_GROUP
-    params = {
-        'action': 'edit',
-        'type': 'config',
-        'key': API_KEY
-    }
-
-    params['xpath'] = XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
+    params = {'action': 'edit', 'type': 'config', 'key': API_KEY,
+              'xpath': XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/"
+                        + edl_type + "/" + element_to_change}
 
     if element_to_change == 'url':
         params['element'] = add_argument_open(element_value, 'url', False)
@@ -3582,7 +3665,7 @@ def build_array_query(query, arg_string, string, operator):
     return query
 
 
-def build_logs_query(address_src=None, address_dst=None,
+def build_logs_query(address_src=None, address_dst=None, ip_=None,
                      zone_src=None, zone_dst=None, time_generated=None, action=None,
                      port_dst=None, rule=None, url=None, filedigest=None):
     query = ''
@@ -3592,6 +3675,12 @@ def build_logs_query(address_src=None, address_dst=None,
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
         query += build_array_query(query, address_dst, 'addr.dst', 'in')
+    if ip_:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query = build_array_query(query, ip_, 'addr.src', 'in')
+        query += ' or '
+        query = build_array_query(query, ip_, 'addr.dst', 'in')
     if zone_src:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
@@ -3619,7 +3708,7 @@ def build_logs_query(address_src=None, address_dst=None,
     if url:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += build_array_query(query, url, 'url', 'eq')
+        query += build_array_query(query, url, 'url', 'contains')
     if filedigest:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
@@ -3629,7 +3718,7 @@ def build_logs_query(address_src=None, address_dst=None,
 
 
 @logger
-def panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst,
+def panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
                         zone_src, zone_dst, time_generated, action,
                         port_dst, rule, url, filedigest):
     params = {
@@ -3646,7 +3735,9 @@ def panorama_query_logs(log_type, number_of_logs, query, address_src, address_ds
     if query:
         params['query'] = query
     else:
-        params['query'] = build_logs_query(address_src, address_dst,
+        if ip_ and (address_src or address_dst):
+            return_error('The ip argument cannot be used with the address-source or the address-destination arguments.')
+        params['query'] = build_logs_query(address_src, address_dst, ip_,
                                            zone_src, zone_dst, time_generated, action,
                                            port_dst, rule, url, filedigest)
     if number_of_logs:
@@ -3670,6 +3761,7 @@ def panorama_query_logs_command():
     query = demisto.args().get('query')
     address_src = demisto.args().get('addr-src')
     address_dst = demisto.args().get('addr-dst')
+    ip_ = demisto.args().get('ip')
     zone_src = demisto.args().get('zone-src')
     zone_dst = demisto.args().get('zone-dst')
     time_generated = demisto.args().get('time-generated')
@@ -3685,7 +3777,7 @@ def panorama_query_logs_command():
                   or time_generated or action or port_dst or rule or url or filedigest):
         return_error('Use the free query argument or the fixed search parameters arguments to build your query')
 
-    result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst,
+    result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
                                  zone_src, zone_dst, time_generated, action,
                                  port_dst, rule, url, filedigest)
 
@@ -3720,36 +3812,37 @@ def panorama_check_logs_status_command():
     """
     Check query logs status
     """
-    job_id = demisto.args().get('job_id')
-    result = panorama_get_traffic_logs(job_id)
+    job_ids = argToList(demisto.args().get('job_id'))
+    for job_id in job_ids:
+        result = panorama_get_traffic_logs(job_id)
 
-    if result['response']['@status'] == 'error':
-        if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            message = '. Reason is: ' + result['response']['msg']['line']
-            return_error('Query logs failed' + message)
-        else:
-            return_error('Query logs failed')
+        if result['response']['@status'] == 'error':
+            if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                message = '. Reason is: ' + result['response']['msg']['line']
+                return_error('Query logs failed' + message)
+            else:
+                return_error('Query logs failed')
 
-    query_logs_status_output = {
-        'JobID': job_id,
-        'Status': 'Pending'
-    }
+        query_logs_status_output = {
+            'JobID': job_id,
+            'Status': 'Pending'
+        }
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
-            or 'status' not in result['response']['result']['job']:
-        return_error('Missing JobID status in response')
-    if result['response']['result']['job']['status'] == 'FIN':
-        query_logs_status_output['Status'] = 'Completed'
+        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
+                or 'status' not in result['response']['result']['job']:
+            return_error('Missing JobID status in response')
+        if result['response']['result']['job']['status'] == 'FIN':
+            query_logs_status_output['Status'] = 'Completed'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_status_output, ['JobID', 'Status'],
-                                         removeNull=True),
-        'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_status_output}
-    })
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_status_output, ['JobID', 'Status'],
+                                             removeNull=True),
+            'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_status_output}
+        })
 
 
 def prettify_log(log):
@@ -3844,64 +3937,200 @@ def prettify_logs(logs):
 
 
 def panorama_get_logs_command():
-    job_id = demisto.args().get('job_id')
-    result = panorama_get_traffic_logs(job_id)
     ignore_auto_extract = demisto.args().get('ignore_auto_extract') == 'true'
-    log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
-    if isinstance(log_type_dt, list):
-        log_type = log_type_dt[0]
-    else:
-        log_type = log_type_dt
-
-    if result['response']['@status'] == 'error':
-        if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            message = '. Reason is: ' + result['response']['msg']['line']
-            return_error('Query logs failed' + message)
+    job_ids = argToList(demisto.args().get('job_id'))
+    for job_id in job_ids:
+        result = panorama_get_traffic_logs(job_id)
+        log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
+        if isinstance(log_type_dt, list):
+            log_type = log_type_dt[0]
         else:
-            return_error('Query logs failed')
+            log_type = log_type_dt
 
-    query_logs_output = {
-        'JobID': job_id,
-        'Status': 'Pending'
-    }
+        if result['response']['@status'] == 'error':
+            if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                message = '. Reason is: ' + result['response']['msg']['line']
+                return_error('Query logs failed' + message)
+            else:
+                return_error('Query logs failed.')
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
-            or 'status' not in result['response']['result']['job']:
-        return_error('Missing JobID status in response')
+        query_logs_output = {
+            'JobID': job_id,
+            'Status': 'Pending'
+        }
 
-    if result['response']['result']['job']['status'] != 'FIN':
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_output,
-                                             ['JobID', 'Status'], removeNull=True),
-            'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
-        })
-    else:  # FIN
-        query_logs_output['Status'] = 'Completed'
-        if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result'] \
-                or 'logs' not in result['response']['result']['log']:
-            return_error('Missing logs in response')
+        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
+                or 'status' not in result['response']['result']['job']:
+            return_error('Missing JobID status in response.')
 
-        logs = result['response']['result']['log']['logs']
-        if logs['@count'] == '0':
-            demisto.results('No ' + log_type + ' logs matched the query')
-        else:
-            pretty_logs = prettify_logs(logs['entry'])
-            query_logs_output['Logs'] = pretty_logs
+        if result['response']['result']['job']['status'] != 'FIN':
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
                 'Contents': result,
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
+                'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_output,
+                                                 ['JobID', 'Status'], removeNull=True),
+                'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
+            })
+        else:  # FIN
+            query_logs_output['Status'] = 'Completed'
+            if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result'] \
+                    or 'logs' not in result['response']['result']['log']:
+                return_error('Missing logs in response.')
+
+            logs = result['response']['result']['log']['logs']
+            if logs['@count'] == '0':
+                human_readable = f'No {log_type} logs matched the query.'
+            else:
+                pretty_logs = prettify_logs(logs['entry'])
+                query_logs_output['Logs'] = pretty_logs
+                human_readable = tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
                                                  ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
-                                                  'Action', 'Rule', 'URLOrFilename'], removeNull=True),
+                                                  'Action', 'Rule', 'URLOrFilename'], removeNull=True)
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': result,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': human_readable,
                 'IgnoreAutoExtract': ignore_auto_extract,
                 'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
             })
+
+
+''' Security Policy Match'''
+
+
+def build_policy_match_query(application=None, category=None,
+                             destination=None, destination_port=None, from_=None, to_=None,
+                             protocol=None, source=None, source_user=None):
+    query = '<test><security-policy-match>'
+    if from_:
+        query += f'<from>{from_}</from>'
+    if to_:
+        query += f'<to>{to_}</to>'
+    if source:
+        query += f'<source>{source}</source>'
+    if destination:
+        query += f'<destination>{destination}</destination>'
+    if destination_port:
+        query += f'<destination-port>{destination_port}</destination-port>'
+    if protocol:
+        query += f'<protocol>{protocol}</protocol>'
+    if source_user:
+        query += f'<source-user>{source_user}</source-user>'
+    if application:
+        query += f'<application>{application}</application>'
+    if category:
+        query += f'<category>{category}</category>'
+    query += '</security-policy-match></test>'
+
+    return query
+
+
+def panorama_security_policy_match(application=None, category=None, destination=None,
+                                   destination_port=None, from_=None, to_=None,
+                                   protocol=None, source=None, source_user=None):
+    params = {'type': 'op', 'key': API_KEY,
+              'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
+                                              protocol, source, source_user)}
+
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result['response']['result']
+
+
+def prettify_matching_rule(matching_rule):
+    pretty_matching_rule = {}
+
+    if '@name' in matching_rule:
+        pretty_matching_rule['Name'] = matching_rule['@name']
+    if 'from' in matching_rule:
+        pretty_matching_rule['From'] = matching_rule['from']
+    if 'source' in matching_rule:
+        pretty_matching_rule['Source'] = matching_rule['source']
+    if 'to' in matching_rule:
+        pretty_matching_rule['To'] = matching_rule['to']
+    if 'destination' in matching_rule:
+        pretty_matching_rule['Destination'] = matching_rule['destination']
+    if 'category' in matching_rule:
+        pretty_matching_rule['Category'] = matching_rule['category']
+    if 'action' in matching_rule:
+        pretty_matching_rule['Action'] = matching_rule['action']
+
+    return pretty_matching_rule
+
+
+def prettify_matching_rules(matching_rules):
+    if not isinstance(matching_rules, list):  # handle case of only one log that matched the query
+        return prettify_matching_rule(matching_rules)
+
+    pretty_matching_rules_arr = []
+    for matching_rule in matching_rules:
+        pretty_matching_rule = prettify_matching_rule(matching_rule)
+        pretty_matching_rules_arr.append(pretty_matching_rule)
+
+    return pretty_matching_rules_arr
+
+
+def prettify_query_fields(application=None, category=None,
+                          destination=None, destination_port=None, from_=None, to_=None,
+                          protocol=None, source=None, source_user=None):
+    pretty_query_fields = {'Source': source, 'Destination': destination, 'Protocol': protocol}
+    if application:
+        pretty_query_fields['Application'] = application
+    if category:
+        pretty_query_fields['Category'] = category
+    if destination_port:
+        pretty_query_fields['DestinationPort'] = destination_port
+    if from_:
+        pretty_query_fields['From'] = from_
+    if to_:
+        pretty_query_fields['To'] = to_
+    if source_user:
+        pretty_query_fields['SourceUser'] = source_user
+    return pretty_query_fields
+
+
+def panorama_security_policy_match_command():
+    if not VSYS:
+        return_error("The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
+
+    application = demisto.args().get('application')
+    category = demisto.args().get('category')
+    destination = demisto.args().get('destination')
+    destination_port = demisto.args().get('destination-port')
+    from_ = demisto.args().get('from')
+    to_ = demisto.args().get('to')
+    protocol = demisto.args().get('protocol')
+    source = demisto.args().get('source')
+    source_user = demisto.args().get('source-user')
+
+    matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
+                                                    protocol, source, source_user)
+    if not matching_rules:
+        demisto.results('The query did not match a Security policy.')
+    else:
+        ec_ = {'Rules': prettify_matching_rules(matching_rules['rules']['entry']),
+               'QueryFields': prettify_query_fields(application, category, destination, destination_port,
+                                                    from_, to_, protocol, source, source_user),
+               'Query': build_policy_match_query(application, category, destination, destination_port,
+                                                 from_, to_, protocol, source, source_user)}
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': matching_rules,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Matching Security Policies:', ec_['Rules'],
+                                             ['Name', 'Action', 'From', 'To', 'Source', 'Destination', 'Application'],
+                                             removeNull=True),
+            'EntryContext': {"Panorama.SecurityPolicyMatch(val.Query == obj.Query)": ec_}
+        })
 
 
 ''' EXECUTION '''
@@ -4001,15 +4230,19 @@ def main():
             panorama_delete_custom_url_category_command()
 
         elif demisto.command() == 'panorama-edit-custom-url-category':
-            if demisto.args()['action'] == 'remove':
-                panorama_custom_url_category_remove_sites_command()
-            else:
-                panorama_custom_url_category_add_sites_command()
+            panorama_edit_custom_url_category_command()
 
         # URL Filtering capabilities
         elif demisto.command() == 'panorama-get-url-category':
-            panorama_get_url_category_command()
+            panorama_get_url_category_command(url_cmd='url')
 
+        elif demisto.command() == 'panorama-get-url-category-from-cloud':
+            panorama_get_url_category_command(url_cmd='url-info-cloud')
+
+        elif demisto.command() == 'panorama-get-url-category-from-host':
+            panorama_get_url_category_command(url_cmd='url-info-host')
+
+        # URL Filter
         elif demisto.command() == 'panorama-get-url-filter':
             panorama_get_url_filter_command()
 
@@ -4098,6 +4331,10 @@ def main():
         # Application
         elif demisto.command() == 'panorama-list-applications':
             panorama_list_applications_command()
+
+        # Test security policy match
+        elif demisto.command() == 'panorama-security-policy-match':
+            panorama_security_policy_match_command()
 
     except Exception as ex:
         return_error(str(ex))

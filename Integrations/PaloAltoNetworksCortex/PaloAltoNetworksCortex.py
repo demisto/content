@@ -26,7 +26,7 @@ ENC_KEY = demisto.params().get('auth_key')
 
 USE_SSL = not demisto.params().get('insecure', False)
 TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/panw-token'
-FETCH_QUERY = None
+FETCH_QUERY = 'Traps Threats'
 
 FIRST_FETCH_TIMESTAMP = demisto.params().get('first_fetch_timestamp', '').strip()
 if not FIRST_FETCH_TIMESTAMP:
@@ -190,7 +190,6 @@ VALUE_TRANSFORM_DICT: Dict[object, Dict[object, Dict]] = {
         'regionId': {10: 'Americas (N. Virginia)', 70: 'EMEA (Frankfurt)'}
     }
 }
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -397,12 +396,14 @@ def analytics_context_transformer(row_content: dict) -> dict:
             <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['osType']) else '',
             'IsVdi': VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['isVdi'][end_point_header.get('isVdi')]
             if end_point_header.get('isVdi')
-            and 0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['isVdi'])
+            and 0 <= end_point_header.get('isVdi') <= len(
+                VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['isVdi'])
             else '',
             'OSVersion': end_point_header.get('osVersion'),
             'Is64': VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['is64'][end_point_header.get('is64')]
             if end_point_header.get('is64')
-            and 0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['is64'])
+            and 0 <= end_point_header.get('isVdi') <= len(
+                VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['is64'])
             else '',
             'AgentIP': end_point_header.get('agentIp'),
             'DeviceName': end_point_header.get('deviceName'),
@@ -510,7 +511,7 @@ def parse_tree_by_root_to_leaf_paths(root: str, body) -> dict:
     Basically what this function does is when it gets a tree it creates a dict from it which it's keys are all
     root to leaf paths and the corresponding values are the values in the leafs
     Please note that the implementation is similar to DFS on trees (which means we don't have to check for visited
-    nodes because there are no cycles)
+    nodes since there are no cycles)
     :param root: the root string
     :param body: the body of the root
     :return: the parsed tree
@@ -1117,6 +1118,18 @@ def convert_log_to_incident(log):
 ''' COMMANDS FUNCTIONS '''
 
 
+def test_module():
+    if demisto.params().get('isFetch'):
+        last_fetched_event_timestamp, _ = parse_date_range(FIRST_FETCH_TIMESTAMP)
+    test_args = {
+        'query': f'{FETCH_QUERY_DICT[FETCH_QUERY]} LIMIT 1',
+        'startTime': 0,
+        'endTime': 1609459200,
+    }
+    query_loggings(test_args)
+    demisto.results('ok')
+
+
 def query_logs_command():
     """
     Return the result of querying the Logging service
@@ -1584,6 +1597,7 @@ def fetch_incidents():
             fetch_timestamp = last_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
         query = prepare_fetch_query(fetch_timestamp)
+        demisto.debug('Query being fetched: {}'.format(query))
 
         query_data = {
             'query': query,
@@ -1597,7 +1611,7 @@ def fetch_incidents():
         response_json = response.json()
         query_status = response_json.get('queryStatus', '')
         if query_status == 'JOB_FAILED':
-            raise Exception(f'Logging query job failed with status: JOB_FAILED\nResponse: {response.text}')
+            demisto.debug(f'Logging query job failed with status: JOB_FAILED\nResponse: {response.text}')
         elif query_status == 'RUNNING':
             if isinstance(last_fetched_event_timestamp, datetime):
                 # In case we don't have query ID from previous run
@@ -1612,7 +1626,7 @@ def fetch_incidents():
         result = response_json.get('result', {})
         pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
     except ValueError:
-        raise Exception('Failed to parse the response from Cortex')
+        demisto.debug('Failed to parse the response from Cortex')
 
     incident_pairs = []
 
@@ -1644,17 +1658,7 @@ def main():
     LOG('command is %s' % (demisto.command(),))
     try:
         if demisto.command() == 'test-module':
-            if demisto.params().get('isFetch'):
-                last_fetched_event_timestamp, _ = parse_date_range(FIRST_FETCH_TIMESTAMP)
-            test_args = {
-                "query": "SELECT * FROM panw.threat LIMIT 1",
-                "startTime": 0,
-                "endTime": 1609459200,
-            }
-            if query_loggings(test_args):
-                demisto.results('ok')
-            else:
-                demisto.results('test failed')
+            test_module()
         elif demisto.command() == 'cortex-query-logs':
             demisto.results(query_logs_command())
         elif demisto.command() == 'cortex-get-critical-threat-logs':

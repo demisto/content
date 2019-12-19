@@ -8285,7 +8285,7 @@ def whois_command():
                 '%d-%m-%Y')
             md['Expiration Date'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
     except ValueError as e:
-        return_error('Date could not be parsed. Please check the date again.\n{error}'.format(type(e)))
+        return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
     if 'registrar' in whois_result:
         ec.update({'Registrar': {'Name': whois_result.get('registrar')}})
         standard_ec['WHOIS']['Registrar'] = whois_result.get('registrar')

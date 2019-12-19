@@ -1,4 +1,10 @@
 ## [Unreleased]
+
+
+## [19.11.1] - 2019-11-26
+Fixed an issue in ***get-search-results*** command output.
+
+## [19.10.2] - 2019-10-29
   - Fixed an issue in which ***fetch-incidents*** failed while enriching fetched offenses with source and destination IP addresses.
   - Fixed an issue in which ***qradar-delete-reference-set-value*** failed to delete reference sets with the "\\" character in their names.
 

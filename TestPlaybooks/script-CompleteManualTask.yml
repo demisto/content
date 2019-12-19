@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: CompleteManualTask
 script: |
+  task_type = demisto.args().get('type', 'regular')
   args =  {
               "incidentId": demisto.args()['id'],
               "states": "Waiting",
@@ -11,10 +12,13 @@ script: |
 
   resCmdName = demisto.executeCommand("DemistoGetIncidentTasksByState", args)
   contents = resCmdName[0].get("Contents", {})
-  regulars = [i.get('id', 0) for i in contents if i.get('type', '') == 'regular']
+  tasks = [i.get('id', 0) for i in contents if i.get('type', '') == task_type]
 
-  if len(regulars) > 0:
-      closing_args = { "id": regulars[0] }
+  if len(tasks) > 0:
+      closing_args = { "id": tasks[0] }
+      if task_type == 'condition':
+          closing_args['input'] = demisto.args().get('closing_option')
+
       demisto.executeCommand("taskComplete", closing_args)
 type: python
 tags: []
@@ -24,6 +28,10 @@ args:
 - name: id
   required: true
   description: The id of the incident
+- name: type
+  description: Type of manual task. Can be regular or condition.
+- name: closing_option
+  description: Relevant only for conditional tasks.
 scripttarget: 0
 runonce: false
 tests:

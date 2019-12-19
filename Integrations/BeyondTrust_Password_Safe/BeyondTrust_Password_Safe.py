@@ -404,7 +404,7 @@ def fetch_credentials():
         credentials.append({
             'user': account_name,
             'password': password,
-            'name': system_name
+            'name': system_name + '_' + account_name
         })
 
     if identifier:

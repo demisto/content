@@ -324,12 +324,12 @@ def get_compliance_search(search_name):
 
     if stderr:
         return_error(stderr)
-    stdout = stdout.split('\n', 1)
-    status = stdout[0].strip()
+    stdsplit = stdout.split('\n', 1)
+    status = stdsplit[0].strip()
     results = [get_cs_status(search_name, status)]
 
-    if status == 'Completed' and len(stdout[1].strip()) > 4:
-        res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-4].split(r'\r\n'))
+    if status == 'Completed' and len(stdsplit[1].strip()) > 4:
+        res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdsplit[1][2:-4].split(r'\r\n'))
         res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
         results.append(
             {
@@ -415,7 +415,7 @@ try:
         encode_and_submit_results(check_purge_compliance_search(**args))
     elif demisto.command() == 'test-module':
         test_module()
-except Exception, e:
+except Exception as e:
     if isinstance(e, WindowsError):  # pylint: disable=undefined-variable
         return_error("Could not open powershell on the target engine.")
     else:
