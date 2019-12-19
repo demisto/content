@@ -120,7 +120,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.DetectedFIelds
+                  simple: inputs.InvestigationFields
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -510,7 +510,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.DetectedFIelds
+                  simple: inputs.InvestigationFields
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -716,7 +716,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.DetectedFIelds
+                  simple: inputs.InvestigationFields
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1013,7 +1013,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.DetectedFIelds
+                  simple: inputs.InvestigationFields
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1091,7 +1091,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.DetectedFIelds
+                  simple: inputs.InvestigationFields
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1239,7 +1239,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.DetectedFIelds
+                  simple: inputs.InvestigationFields
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1554,7 +1554,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.DetectedFIelds
+                  simple: inputs.InvestigationFields
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1632,7 +1632,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.DetectedFIelds
+                  simple: inputs.InvestigationFields
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1881,7 +1881,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.DetectedFIelds
+                  simple: inputs.InvestigationFields
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1958,7 +1958,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.DetectedFIelds
+                  simple: inputs.InvestigationFields
                 iscontext: true
               suffix: {}
           - operator: concat
