@@ -7,6 +7,12 @@ from typing import Dict, Any
 
 """ CONSTANTS """
 FLASHPOINT_PATHS = {
+    'IP': 'Flashpoint.IP.Event(val.Fpid && val.Fpid == obj.Fpid)',
+    'Url': 'Flashpoint.URL.Event(val.Fpid && val.Fpid == obj.Fpid)',
+    'Domain': 'Flashpoint.Domain.Event(val.Fpid && val.Fpid == obj.Fpid)',
+    'Email': 'Flashpoint.Email.Event(val.Fpid && val.Fpid == obj.Fpid)',
+    'File': 'Flashpoint.File.Event(val.Fpid && val.Fpid == obj.Fpid)',
+    'Filename': 'Flashpoint.Filename.Event(val.Fpid && val.Fpid == obj.Fpid)',
     'Event': 'Flashpoint.Event(val.EventId == obj.EventId)',
     'Report': 'Flashpoint.Report(val.ReportId == obj.ReportId)',
     'Forum': 'Flashpoint.Forum(val.ForumId == obj.ForumId)',
@@ -279,21 +285,41 @@ def ip_lookup_command(client, ip):
         fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=ip-dst%2Cip-src&ioc_value=' + ip
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
-        ec = {outputPaths['ip']: {
-            'Address': ip,
-            'Flashpoint': {
-                'Href': events_details['href']
-            }
-        }, 'DBotScore': {
+        dbot_context = {
             'Indicator': ip,
             'Type': 'ip',
             'Vendor': 'Flashpoint',
             'Score': 3
-        }}
+        }
 
-        ec[outputPaths['ip']]['Malicious'] = {
-            'Vendor': 'Flashpoint',
-            'Description': 'Found in malicious indicators dataset'
+        ip_context = {
+            'Address': ip,
+            'Malicious': {
+                'Vendor': 'Flashpoint',
+                'Description': 'Found in malicious indicators dataset'
+            }
+        }
+
+        flashpoint_ip_context = []
+        for indicator in resp:
+            indicator = indicator.get("Attribute", {})
+            event = {
+                'Address': ip,
+                'EventDetails': indicator.get('Event'),
+                'Category': indicator.get('category', ''),
+                'Fpid': indicator.get('fpid', ''),
+                'Href': indicator.get('href', ''),
+                'Timestamp': indicator.get('timestamp', ''),
+                'Type': indicator.get('type', ''),
+                'Uuid': indicator.get('uuid', ''),
+                'Comment': indicator['value'].get('comment', '')
+            }
+            flashpoint_ip_context.append(event)
+
+        ec = {
+            'DBotScore': dbot_context,
+            outputPaths['ip']: ip_context,
+            FLASHPOINT_PATHS['IP']: flashpoint_ip_context
         }
 
         return hr, ec, resp
@@ -314,7 +340,7 @@ def ip_lookup_command(client, ip):
             hr += 'FP tools link to torrent search: [{}]({})\n'.format(torrent_search_link, torrent_search_link)
 
             ec = {
-                outputPaths['ip']: {
+                FLASHPOINT_PATHS['IP']: {
                     "Address": ip
                 },
                 'DBotScore': {
@@ -339,7 +365,7 @@ def ip_lookup_command(client, ip):
                 hr += 'FP tools link to Forum-visit search: [{}]({})\n'.format(forum_search_link, forum_search_link)
 
                 ec = {
-                    outputPaths['ip']: {
+                    FLASHPOINT_PATHS['IP']: {
                         "Address": ip
                     },
                     'DBotScore': {
@@ -393,21 +419,42 @@ def domain_lookup_command(client, domain):
         fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=domain&ioc_value=' + domain
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
-        ec = {outputPaths['domain']: {
-            'Name': domain,
-            'Flashpoint': {
-                'Href': events_details['href']
-            }
-        }, 'DBotScore': {
+        dbot_context = {
             'Indicator': domain,
             'Type': 'domain',
             'Vendor': 'Flashpoint',
             'Score': 3
-        }}
+        }
 
-        ec[outputPaths['domain']]['Malicious'] = {
-            'Vendor': 'Flashpoint',
-            'Description': 'Found in malicious indicators dataset'
+        domain_context = {
+            'Name': domain,
+            'Malicious': {
+                'Vendor': 'Flashpoint',
+                'Description': 'Found in malicious indicators dataset'
+            }
+
+        }
+
+        flashpoint_domain_context = []
+        for indicator in resp:
+            indicator = indicator.get("Attribute", {})
+            event = {
+                'Domain': domain,
+                'Category': indicator.get('category', ''),
+                'Fpid': indicator.get('fpid', ''),
+                'Href': indicator.get('href', ''),
+                'Timestamp': indicator.get('timestamp', ''),
+                'Type': indicator.get('type'),
+                'Uuid': indicator.get('uuid', ''),
+                'EventDetails': indicator.get('Event', []),
+                'Comment': indicator['value'].get('comment', '')
+            }
+            flashpoint_domain_context.append(event)
+
+        ec = {
+            'DBotScore': dbot_context,
+            outputPaths['domain']: domain_context,
+            FLASHPOINT_PATHS['Domain']: flashpoint_domain_context
         }
 
         return hr, ec, resp
@@ -457,12 +504,43 @@ def filename_lookup_command(client, filename):
             filename.replace('\\', '\\\\').encode('utf8'))
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
-        ec = {'DBotScore': {
+        dbot_context = {
             'Indicator': filename,
             'Type': 'filename',
             'Vendor': 'Flashpoint',
             'Score': 3
-        }}
+        }
+
+        filename_context = {
+            'Name': filename,
+            'Malicious': {
+                'Vendor': 'Flashpoint',
+                'Description': 'Found in malicious indicators dataset'
+            }
+
+        }
+
+        flashpoint_filename_context = []
+        for indicator in resp:
+            indicator = indicator.get("Attribute", {})
+            event = {
+                'Filename': filename,
+                'Category': indicator.get('category', ''),
+                'Fpid': indicator.get('fpid', ''),
+                'Href': indicator.get('href', ''),
+                'Timestamp': indicator.get('timestamp', ''),
+                'Type': indicator.get('type'),
+                'Uuid': indicator.get('uuid', ''),
+                'EventDetails': indicator.get('Event', []),
+                'Comment': indicator['value'].get('comment', '')
+            }
+            flashpoint_filename_context.append(event)
+
+        ec = {
+            'DBotScore': dbot_context,
+            'Filename(val.Name == obj.Name)': filename_context,
+            FLASHPOINT_PATHS['Filename']: flashpoint_filename_context
+        }
 
         return hr, ec, resp
 
@@ -512,21 +590,42 @@ def url_lookup_command(client, url):
         fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=url&ioc_value=' + encoded_url
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
-        ec = {outputPaths['url']: {
-            'Name': url,
-            'Flashpoint': {
-                'Href': events_details['href']
-            }
-        }, 'DBotScore': {
+        dbot_context = {
             'Indicator': url,
             'Type': 'url',
             'Vendor': 'Flashpoint',
             'Score': 3
-        }}
+        }
 
-        ec[outputPaths['url']]['Malicious'] = {
-            'Vendor': 'Flashpoint',
-            'Description': 'Found in malicious indicators dataset'
+        url_context = {
+            'Name': url,
+            'Malicious': {
+                'Vendor': 'Flashpoint',
+                'Description': 'Found in malicious indicators dataset'
+            }
+
+        }
+
+        flashpoint_url_context = []
+        for indicator in resp:
+            indicator = indicator.get("Attribute", {})
+            event = {
+                'Fpid': indicator.get('fpid', ''),
+                'EventDetails': indicator['Event'],
+                'Category': indicator.get('category', ''),
+                'Href': indicator.get('href', ''),
+                'Timestamp': indicator.get('timestamp', ''),
+                'Type': indicator.get('type', ''),
+                'Uuid': indicator.get('uuid', ''),
+                'Comment': indicator['value'].get('comment', ''),
+                'Url': indicator['value']['url']
+            }
+            flashpoint_url_context.append(event)
+
+        ec = {
+            'DBotScore': dbot_context,
+            outputPaths['url']: url_context,
+            FLASHPOINT_PATHS['Url']: flashpoint_url_context
         }
 
         return hr, ec, resp
@@ -578,21 +677,41 @@ def file_lookup_command(client, file):
 
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
-        ec = {outputPaths['file']: {
-            indicator_type: file,
-            'Flashpoint': {
-                'Href': events_details['href']
+        flashpoint_file_context = []
+        for indicator in resp:
+            indicator = indicator.get("Attribute", {})
+            event = {
+                str(indicator_type).upper(): file,
+                'EventDetails': indicator.get('Event'),
+                'Category': indicator.get('category', ''),
+                'Fpid': indicator.get('fpid', ''),
+                'Href': indicator.get('href', ''),
+                'Timestamp': indicator.get('timestamp', ''),
+                'Type': indicator.get('type', ''),
+                'Uuid': indicator.get('uuid', ''),
+                'Comment': indicator['value'].get('comment', '')
             }
-        }, 'DBotScore': {
+            flashpoint_file_context.append(event)
+
+        dbot_context = {
             'Indicator': file,
             'Type': indicator_type,
             'Vendor': 'Flashpoint',
             'Score': 3
-        }}
+        }
 
-        ec[outputPaths['file']]['Malicious'] = {
-            'Vendor': 'Flashpoint',
-            'Description': 'Found in malicious indicators dataset'
+        file_context = {
+            indicator_type: file,
+            'Malicious': {
+                'Vendor': 'Flashpoint',
+                'Description': 'Found in malicious indicators dataset'
+            }
+        }
+
+        ec = {
+            'DBotScore': dbot_context,
+            outputPaths['file']: file_context,
+            FLASHPOINT_PATHS['File']: flashpoint_file_context
         }
 
         return hr, ec, resp
@@ -643,21 +762,40 @@ def email_lookup_command(client, email):
                                '-display-name%2Cemail-subject&ioc_value=' + urllib.parse.quote(email.encode('utf8'))
         hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
 
-        ec = {outputPaths['email']: {
+        email_context = {
             'Name': email,
-            'Flashpoint': {
-                'href': events_details['href']
+            'Malicious': {
+                'Vendor': 'Flashpoint',
+                'Description': 'Found in malicious indicators dataset'
             }
-        }, 'DBotScore': {
+        }
+
+        dbot_context = {
             'Indicator': email,
             'Type': 'email',
             'Vendor': 'Flashpoint',
             'Score': 3
-        }}
+        }
 
-        ec[outputPaths['email']]['Malicious'] = {
-            'Vendor': 'Flashpoint',
-            'Description': 'Found in malicious indicators dataset'
+        flashpoint_email_context = []
+        for indicator in resp:
+            indicator = indicator.get("Attribute", {})
+            event = {
+                'EventDetails': indicator.get('Event', ''),
+                'Category': indicator.get('category', ''),
+                'Fpid': indicator.get('fpid', ''),
+                'Href': indicator.get('href', ''),
+                'Timestamp': indicator.get('timestamp', ''),
+                'Type': indicator.get('type', ''),
+                'Uuid': indicator.get('uuid', ''),
+                'Comment': indicator['value'].get('comment', '')
+            }
+            flashpoint_email_context.append(event)
+
+        ec = {
+            'DBotScore': dbot_context,
+            outputPaths['email']: email_context,
+            FLASHPOINT_PATHS['Email']: flashpoint_email_context
         }
 
         return hr, ec, resp

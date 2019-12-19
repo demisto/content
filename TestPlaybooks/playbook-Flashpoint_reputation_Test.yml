@@ -99,10 +99,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 78c8d532-2dd3-4014-8e17-7696b248e186
+    taskid: 5ff17a16-4a2c-4c6a-8498-bddbc1919092
     type: condition
     task:
-      id: 78c8d532-2dd3-4014-8e17-7696b248e186
+      id: 5ff17a16-4a2c-4c6a-8498-bddbc1919092
       version: -1
       name: verify result
       type: condition
@@ -119,17 +119,52 @@ tasks:
           left:
             value:
               complex:
-                root: ${IP
-                accessor: Address}
+                root: ${Flashpoint
+                accessor: IP.Event.Address}
             iscontext: true
           right:
             value:
               simple: 210.122.7.129
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.IP.Event.Type}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.IP.Event.Href}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.IP.Event.Fpid}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.IP.Event.Category}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.IP.Event.Uuid}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.IP.Event.Comment}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.IP.Event.EventDetails}
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 590
+          "y": 600
         }
       }
     note: false
@@ -226,10 +261,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 133380f8-9771-46c7-8c54-60df4e45f568
+    taskid: 26332a43-9489-458e-82c8-69fbf5886183
     type: condition
     task:
-      id: 133380f8-9771-46c7-8c54-60df4e45f568
+      id: 26332a43-9489-458e-82c8-69fbf5886183
       version: -1
       name: Verify Domain
       type: condition
@@ -252,6 +287,51 @@ tasks:
           right:
             value:
               simple: subaat.com
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Domain.Event.Domain}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Domain.Event.Fpid}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Domain.Event.Href}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Domain.Event.Timestamp}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Domain.Event.Type}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Domain.Event.Uuid}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Domain.Event.Category}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Domain.Event.Comment}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Domain.Event.EventDetails}
+            iscontext: true
     view: |-
       {
         "position": {
@@ -353,10 +433,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: d81829ea-6d8f-4c69-8d9d-f8672bb5c3b8
+    taskid: 56dae1bc-f47f-4126-8ee7-c9704972a6b7
     type: condition
     task:
-      id: d81829ea-6d8f-4c69-8d9d-f8672bb5c3b8
+      id: 56dae1bc-f47f-4126-8ee7-c9704972a6b7
       version: -1
       name: Verify filename
       type: condition
@@ -379,16 +459,51 @@ tasks:
           right:
             value:
               simple: .locked
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
-              complex:
-                root: ${DBotScore
-                accessor: Score}
+              simple: ${Flashpoint.Filename.Event.Fpid}
             iscontext: true
-          right:
+      - - operator: isExists
+          left:
             value:
-              simple: "3"
+              simple: ${Flashpoint.Filename.Event.Filename}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Filename.Event.Href}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Filename.Event.Timestamp}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Filename.Event.Type}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Filename.Event.Uuid}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Filename.Event.Category}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Filename.Event.Comment}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Filename.Event.EventDetails}
+            iscontext: true
     view: |-
       {
         "position": {
@@ -621,10 +736,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 1f14ba8b-c501-44db-8990-ffa12e2d1b4b
+    taskid: 148b9970-5b00-44c3-8254-c47f4eecaab5
     type: condition
     task:
-      id: 1f14ba8b-c501-44db-8990-ffa12e2d1b4b
+      id: 148b9970-5b00-44c3-8254-c47f4eecaab5
       version: -1
       name: Verify File
       type: condition
@@ -642,17 +757,46 @@ tasks:
             value:
               complex:
                 root: ${File
-                filters:
-                - - operator: isNotEmpty
-                    left:
-                      value:
-                        simple: File.Flashpoint.Href
-                      iscontext: true
                 accessor: Malicious.Vendor}
             iscontext: true
           right:
             value:
               simple: Flashpoint
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.File.Event.Type}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.File.Event.Href}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.File.Event.Fpid}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.File.Event.Category}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.File.Event.Uuid}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.File.Event.Comment}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.File.Event.EventDetails}
+            iscontext: true
     view: |-
       {
         "position": {
@@ -754,10 +898,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 9f870bf3-74db-41dc-89af-2690eff9209c
+    taskid: 35ce5d31-721d-47ff-84a8-0ab0b88a3d55
     type: condition
     task:
-      id: 9f870bf3-74db-41dc-89af-2690eff9209c
+      id: 35ce5d31-721d-47ff-84a8-0ab0b88a3d55
       version: -1
       name: Verify Email
       type: condition
@@ -780,6 +924,46 @@ tasks:
           right:
             value:
               simple: qicifomuejijika@o2.pl
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Email.Event.Category}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Email.Event.Comment}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Email.Event.EventDetails}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Email.Event.Fpid}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Email.Event.Href}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Email.Event.Timestamp}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Email.Event.Type}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Email.Event.Uuid}
+            iscontext: true
     view: |-
       {
         "position": {

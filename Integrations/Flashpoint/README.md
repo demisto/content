@@ -9,8 +9,8 @@ Configure Flashpoint on Demisto
 3.  Click **Add instance** to create and configure a new integration
     instance.
     -   **Name**: a textual name for the integration instance.
-    -   **URL**
-    -   **API Key**
+    -   **URL** : URL of the Flashpoint platform (default is https://fp.tools)
+    -   **API Key**: The API key generated using above steps
     -   **Trust any certificate (not secure)**
     -   **Use system proxy settings**
 
@@ -59,7 +59,11 @@ a DBot message appears in the War Room with the command details.
 
 * * * * *
 
-Lookup the "IP" type indicator details
+Lookup the "IP" type indicator details. The reputation of IP is
+considered Malicious if there's at least one IOC event in Flashpoint
+database matching the IP indicator. Alternately the IP address is
+considered Suspicious if it matches with any one of the Torrent's Peer
+IP Address or Forum Visit's Peer IP Address.
 
 ##### Base Command
 
@@ -67,24 +71,32 @@ Lookup the "IP" type indicator details
 
 ##### Input
 
-  **Argument Name**   |**Description**                                            |**Required**
-  ------------------- |---------------------------------------------------------- |--------------
-  ip                  |The IP to check the given ip is malicious or suspicious.   |Optional
+  **Argument Name**   |**Description**                                           | **Required**
+  ------------------- |----------------------------------------------------------| --------------
+  ip                  |The IP to check the given ip is malicious or suspicious.  | Optional
 
  
 
 ##### Context Output
 
-  **Path**                   |**Type**   |**Description**
-  -------------------------- |---------- |------------------------------------------
-  DBotScore.Indicator        |string     |The indicator that was tested.
-  DBotScore.Score            |number     |The indicator score.
-  DBotScore.Type             |string     |The indicator type.
-  DBotScore.Vendor           |string     |The vendor used to calculate the score.
-  IP.Address                 |string     |IP address
-  IP.Flashpoint.Href         |Unknown    |List of reference link of the indicator.
-  IP.Malicious.Description   |string     |Description of malicious ip.
-  IP.Malicious.Vendor        |string     |Vandor of malicious ip.
+  **Path**                          | **Type**  | **Description**
+  ----------------------------------| ----------| ------------------------------------------------------------
+  DBotScore.Indicator               | string    | The indicator that was tested.
+  DBotScore.Score                   | number    | The indicator score.
+  DBotScore.Type                    | string    | The indicator type.
+  DBotScore.Vendor                  | string    | The vendor used to calculate the score.
+  IP.Address                        | string    | IP address
+  IP.Malicious.Description          | string    | Description of malicious ip.
+  IP.Malicious.Vendor               | string    | Vandor of malicious ip.
+  Flashpoint.IP.Event.Href          | string   | List of reference link of the indicator
+  Flashpoint.IP.Event.Address       | string   | IP address of the indicator
+  Flashpoint.IP.Event.EventDetails  | Unknown   | Event details in which the indicator observed
+  Flashpoint.IP.Event.Category      | string   | Category of the indicator
+  Flashpoint.IP.Event.Fpid          | string   | Fp-id of the indicator
+  Flashpoint.IP.Event.Timestamp     | string   | Time at which indicaor observed
+  Flashpoint.IP.Event.Type          | string   | Type of the indicator
+  Flashpoint.IP.Event.Uuid          | string   | uuid of the indicator
+  Flashpoint.IP.Event.Comment       | string   | Comment which was provided when the indicator was observed
 
  
 
@@ -101,13 +113,32 @@ Lookup the "IP" type indicator details
             "Type": "ip",
             "Vendor": "Flashpoint"
         },
+        "Flashpoint.IP.Event": [
+            {
+                "Address": "210.122.7.129",
+                "Category": "Network activity",
+                "Comment": "",
+                "EventDetails": {
+                    "RelatedEvent": null,
+                    "Tags": [
+                        "source:OSINT"
+                    ],
+                    "attack_ids": null,
+                    "fpid": "4J0I4NojWB2fm8IhKRJ6iw",
+                    "href": "https://fp.tools/api/v4/indicators/event/4J0I4NojWB2fm8IhKRJ6iw",
+                    "info": "Lazarus Resurfaces, Targets Global Banks and Bitcoin Users",
+                    "reports": null,
+                    "timestamp": "1518471985"
+                },
+                "Fpid": "KyhpGHc2XYKp2iUESO7ejA",
+                "Href": "https://fp.tools/api/v4/indicators/attribute/KyhpGHc2XYKp2iUESO7ejA",
+                "Timestamp": "1518471985",
+                "Type": "ip-dst",
+                "Uuid": "5a820b31-3894-4ed9-bd2a-29d6ac110002"
+            }
+        ],
         "IP": {
             "Address": "210.122.7.129",
-            "Flashpoint": {
-                "Href": [
-                    "https://fp.tools/api/v4/indicators/attribute/KyhpGHc2XYKp2iUESO7ejA"
-                ]
-            },
             "Malicious": {
                 "Description": "Found in malicious indicators dataset",
                 "Vendor": "Flashpoint"
@@ -123,9 +154,9 @@ Reputation: Malicious
 
 ### Events in which this IOC observed
 
-  **Date Observed (UTC)**   |**Name**                                                     |**Tags**
-  ------------------------- |------------------------------------------------------------ |--------------
-  Feb 12, 2018 21:46        |Lazarus Resurfaces, Targets Global Banks and Bitcoin Users   |source:OSINT
+  **Date Observed (UTC)**   |**Name**                                                    | **Tags**
+  ------------------------- |------------------------------------------------------------| --------------
+  Feb 12, 2018 21:46        |Lazarus Resurfaces, Targets Global Banks and Bitcoin Users  | source:OSINT
 
 All events and details (fp-tools):
 [https://fp.tools/home/search/iocs?group=indicator&ioc\_type=ip-dst%2Cip-src&ioc\_value=210.122.7.129](https://fp.tools/home/search/iocs?group=indicator&ioc\_type=ip-dst%2Cip-src&ioc\_value=210.122.7.129)
@@ -134,7 +165,9 @@ All events and details (fp-tools):
 
 * * * * *
 
-Lookup the "Domain" type indicator details
+Lookup the "Domain" type indicator details. The reputation of Domain is
+considered Malicious if there's at least one IOC event in Flashpoint
+database matching the Domain indicator.
 
 ##### Base Command
 
@@ -142,24 +175,32 @@ Lookup the "Domain" type indicator details
 
 ##### Input
 
-  **Argument Name**   |**Description**             |**Required**
-  ------------------- |--------------------------- |--------------
-  domain              |The domain name to check.   |Optional
+  **Argument Name**   |**Description**            | **Required**
+  ------------------- |---------------------------| --------------
+  domain              |The domain name to check.  | Optional
 
  
 
 ##### Context Output
 
-  **Path**                       |**Type**   |**Description**
-  ------------------------------ |---------- |-----------------------------------------
-  DBotScore.Indicator            |string     |The indicator that was tested.
-  DBotScore.Score                |number     |The indicator score.
-  DBotScore.Type                 |string     |The indicator type.
-  DBotScore.Vendor               |string     |The vendor used to calculate the score.
-  Domain.Flashpoint.Href         |Unknown    |List of reference of indicators.
-  Domain.Malicious.Description   |string     |Description of malicious indicator.
-  Domain.Malicious.Vendor        |string     |Vendor of malicious indicator.
-  Domain.Name                    |string     |Name of domain.
+  **Path**                              | **Type**   |**Description**
+  --------------------------------------| ---------- |------------------------------------------------------------
+  DBotScore.Indicator                   | string     |The indicator that was tested.
+  DBotScore.Score                       | number     |The indicator score.
+  DBotScore.Type                        | string     |The indicator type.
+  DBotScore.Vendor                      | string     |The vendor used to calculate the score.
+  Flashpoint.Domain.Event.Href          | string     |List of reference link of the indicator
+  Flashpoint.Domain.Event.Domain        | string     |Domain of the indicator
+  Flashpoint.Domain.Event.EventDetails  | unknown    |Event details in which the indicator observed
+  Flashpoint.Domain.Event.Category      | string    |Category of the indicator
+  Flashpoint.Domain.Event.Fpid          | string    |Fp-id of the indicator
+  Flashpoint.Domain.Event.Timestamp     | string    |Time at which indicaor observed
+  Flashpoint.Domain.Event.Type          | string    |Type of the indicator
+  Flashpoint.Domain.Event.Uuid          | string    |uuid of the indicator
+  Flashpoint.Domain.Event.Comment       | string    |Comment which was provided when the indicator was observed
+  Domain.Malicious.Description          | string     |Description of malicious indicator.
+  Domain.Malicious.Vendor               | string     |Vendor of malicious indicator.
+  Domain.Name                           | string     |Name of domain.
 
  
 
@@ -177,17 +218,55 @@ Lookup the "Domain" type indicator details
             "Vendor": "Flashpoint"
         },
         "Domain": {
-            "Flashpoint": {
-                "Href": [
-                    "https://fp.tools/api/v4/indicators/attribute/ua5eL6q5W5CTmYcmAhS0XQ"
-                ]
-            },
             "Malicious": {
                 "Description": "Found in malicious indicators dataset",
                 "Vendor": "Flashpoint"
             },
             "Name": "subaat.com"
-        }
+        },
+        "Flashpoint.Domain.Event": [
+            {
+                "Category": "Network activity",
+                "Comment": "",
+                "Domain": "subaat.com",
+                "EventDetails": {
+                    "RelatedEvent": null,
+                    "Tags": [
+                        "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Spearphishing Attachment - T1193\"",
+                        "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Scripting - T1064\"",
+                        "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Command-Line Interface - T1059\"",
+                        "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"System Information Discovery - T1082\"",
+                        "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Remote Services - T1021\"",
+                        "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Exfiltration Over Command and Control Channel - T1041\"",
+                        "os:Windows",
+                        "source:phishing",
+                        "type:RAT",
+                        "malware:rat:Quasar",
+                        "malware:banker:Lokibot",
+                        "file_name: njrat.exe",
+                        "file_name: excel_.exe"
+                    ],
+                    "attack_ids": [
+                        "T1193",
+                        "T1064",
+                        "T1059",
+                        "T1082",
+                        "T1021",
+                        "T1041"
+                    ],
+                    "fpid": "xTcVdG3mU2ayoTZATFTqJQ",
+                    "href": "https://fp.tools/api/v4/indicators/event/xTcVdG3mU2ayoTZATFTqJQ",
+                    "info": "Gorgon Group actor profile",
+                    "reports": null,
+                    "timestamp": "1569441099"
+                },
+                "Fpid": "ua5eL6q5W5CTmYcmAhS0XQ",
+                "Href": "https://fp.tools/api/v4/indicators/attribute/ua5eL6q5W5CTmYcmAhS0XQ",
+                "Timestamp": "1569436997",
+                "Type": "domain",
+                "Uuid": "5d8bb545-7ef0-4463-9595-02bac9bb0799"
+            }
+        ]
     }
 
 ##### Human Readable Output
@@ -198,10 +277,9 @@ Reputation: Malicious
 
 ### Events in which this IOC observed
 
-  **Date Observed (UTC)**  | **Name**                    | **Tags**
-  -------------------------| ----------------------------| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  Sep 25, 2019 19:51       | Gorgon Group actor profile  | misp-galaxy:mitre-enterprise-attack-attack-pattern="Spearphishing Attachment - T1193", misp-galaxy:mitre-enterprise-attack-attack-pattern="Scripting - T1064", misp-galaxy:mitre-enterprise-attack-attack-pattern="Command-Line Interface - T1059", misp-galaxy:mitre-enterprise-attack-attack-pattern="System Information Discovery - T1082", misp-galaxy:mitre-enterprise-attack-attack-pattern="Remote Services - T1021", misp-galaxy:mitre-enterprise-attack-attack-pattern="Exfiltration Over Command and Control Channel - T1041", os:Windows, source:phishing, type:RAT, malware:rat:Quasar, malware:banker:Lokibot, file\_name: njrat.exe, file\_name: excel\_.exe
-
+  **Date Observed (UTC)**  | **Name**                     |**Tags**
+  -------------------------| ---------------------------- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Sep 25, 2019 19:51       | Gorgon Group actor profile   |misp-galaxy:mitre-enterprise-attack-attack-pattern="Spearphishing Attachment - T1193", misp-galaxy:mitre-enterprise-attack-attack-pattern="Scripting - T1064", misp-galaxy:mitre-enterprise-attack-attack-pattern="Command-Line Interface - T1059", misp-galaxy:mitre-enterprise-attack-attack-pattern="System Information Discovery - T1082", misp-galaxy:mitre-enterprise-attack-attack-pattern="Remote Services - T1021", misp-galaxy:mitre-enterprise-attack-attack-pattern="Exfiltration Over Command and Control Channel - T1041", os:Windows, source:phishing, type:RAT, malware:rat:Quasar, malware:banker:Lokibot, file\_name: njrat.exe, file\_name: excel\_.exe
 
 All events and details (fp-tools):
 [https://fp.tools/home/search/iocs?group=indicator&ioc\_type=domain&ioc\_value=subaat.com](https://fp.tools/home/search/iocs?group=indicator&ioc\_type=domain&ioc\_value=subaat.com)
@@ -210,7 +288,9 @@ All events and details (fp-tools):
 
 * * * * *
 
-Lookup the "Filename" type indicator details
+Lookup the "Filename" type indicator details. The reputation of Filename
+is considered Malicious if there's at least one IOC event in Flashpoint
+database matching the Filename indicator.
 
 ##### Base Command
 
@@ -218,20 +298,29 @@ Lookup the "Filename" type indicator details
 
 ##### Input
 
-  **Argument Name**   |**Description**           |**Required**
-  ------------------- |------------------------- |--------------
-  filename            |The file name to check.   |Optional
+  **Argument Name**  | **Description**          | **Required**
+  -------------------| -------------------------| --------------
+  filename           | The file name to check.  | Optional
 
  
 
 ##### Context Output
 
-  **Path**              |**Type**   |**Description**
-  --------------------- |---------- |-----------------------------------------
-  DBotScore.Indicator   |string     |The indicator that was tested.
-  DBotScore.Score       |number     |The indicator score.
-  DBotScore.Type        |string     |The indicator type.
-  DBotScore.Vendor      |string     |The vendor used to calculate the score.
+  **Path**                                | **Type**  | **Description**
+  ----------------------------------------| ----------| ------------------------------------------------------------
+  DBotScore.Indicator                     | string    | The indicator that was tested.
+  DBotScore.Score                         | number    | The indicator score.
+  DBotScore.Type                          | string    | The indicator type.
+  DBotScore.Vendor                        | string    | The vendor used to calculate the score.
+  Flashpoint.Filename.Event.Href          | string    | List of reference link of the indicator
+  Flashpoint.Filename.Event.Filename      | string    | Filename of the indicator
+  Flashpoint.Filename.Event.EventDetails  | unknown   | Event details in which the indicator observed
+  Flashpoint.Filename.Event.Category      | string    | Category of the indicator
+  Flashpoint.Filename.Event.Fpid          | string    | Fp-id of the indicator
+  Flashpoint.Filename.Event.Timestamp     | string    | Time at which indicaor observed
+  Flashpoint.Filename.Event.Type          | string    | Type of the indicator
+  Flashpoint.Filename.Event.Uuid          | string    | uuid of the indicator
+  Flashpoint.Filename.Event.Comment       | string    | Comment which was provided when the indicator was observed
 
  
 
@@ -247,7 +336,47 @@ Lookup the "Filename" type indicator details
             "Score": 3,
             "Type": "filename",
             "Vendor": "Flashpoint"
-        }
+        },
+        "Filename": {
+            "Malicious": {
+                "Description": "Found in malicious indicators dataset",
+                "Vendor": "Flashpoint"
+            },
+            "Name": ".locked"
+        },
+        "Flashpoint.Filename.Event": [
+            {
+                "Category": "Artifacts dropped",
+                "Comment": "",
+                "EventDetails": {
+                    "RelatedEvent": null,
+                    "Tags": [
+                        "malware:ransomware:lockergoga",
+                        "report:lKyimEX1TWS8x6AtdiJ_vA",
+                        "report:jEteM4YxQZCdm4macbE3vQ",
+                        "report:w0fL5MgoQ_Wih8XyB6Lowg",
+                        "report:7t-BsuFKTL-HJWbid8nupg"
+                    ],
+                    "attack_ids": null,
+                    "fpid": "iBUPRQOoU4SQrH64LGUbzw",
+                    "href": "https://fp.tools/api/v4/indicators/event/iBUPRQOoU4SQrH64LGUbzw",
+                    "info": "LockerGoga",
+                    "reports": [
+                        "https://fp.tools/home/intelligence/reports/report/lKyimEX1TWS8x6AtdiJ_vA",
+                        "https://fp.tools/home/intelligence/reports/report/jEteM4YxQZCdm4macbE3vQ",
+                        "https://fp.tools/home/intelligence/reports/report/w0fL5MgoQ_Wih8XyB6Lowg",
+                        "https://fp.tools/home/intelligence/reports/report/7t-BsuFKTL-HJWbid8nupg"
+                    ],
+                    "timestamp": "1571934618"
+                },
+                "Filename": ".locked",
+                "Fpid": "nFIUupaMWdSpJQZI03ryZA",
+                "Href": "https://fp.tools/api/v4/indicators/attribute/nFIUupaMWdSpJQZI03ryZA",
+                "Timestamp": "1553280019",
+                "Type": "filename",
+                "Uuid": "5c952c13-d048-4741-a769-05cd0a640c05"
+            }
+        ]
     }
 
 ##### Human Readable Output
@@ -269,7 +398,9 @@ All events and details (fp-tools):
 
 * * * * *
 
-Lookup the "URL" type indicator details
+Lookup the "URL" type indicator details. The reputation of Url is
+considered Malicious if there's at least one IOC event in Flashpoint
+database matching the Url indicator.
 
 ##### Base Command
 
@@ -277,23 +408,31 @@ Lookup the "URL" type indicator details
 
 ##### Input
 
-  **Argument Name**   |**Description**     |**Required**
-  ------------------- |------------------- |--------------
-  url                 |The url to check.   |Optional
+  **Argument Name**  | **Description**    | **Required**
+  -------------------| -------------------| --------------
+  url                | The url to check.  | Optional
 
  
 
 ##### Context Output
 
-  **Path**                    |**Type**  |**Description**
-  --------------------------- |----------|-----------------------------------------
-  DBotScore.Indicator         |string    |The indicator that was tested.
-  DBotScore.Score             |number    |The indicator score.
-  DBotScore.Type              |string    |The indicator type.
-  DBotScore.Vendor            |string    |The vendor used to calculate the score.
-  URL.Flashpoint.Href         |Unknown   |List of reference of url.
-  URL.Malicious.Description   |string    |Description of malicious url.
-  URL.Malicious.Vendor        |string    |Vendor of malicious url.
+  **Path**                           | **Type**   |**Description**
+  -----------------------------------| ---------- |------------------------------------------------------------
+  DBotScore.Indicator                | string     |The indicator that was tested.
+  DBotScore.Score                    | number     |The indicator score.
+  DBotScore.Type                     | string     |The indicator type.
+  DBotScore.Vendor                   | string     |The vendor used to calculate the score.
+  Flashpoint.Url.Event.Href          | string     |List of reference link of the indicator
+  Flashpoint.Url.Event.Url           | string     |Url of the indicator
+  Flashpoint.Url.Event.EventDetails  | unknown    |Event details in which the indicator observed
+  Flashpoint.Url.Event.Category      | string     |Category of the indicator
+  Flashpoint.Url.Event.Fpid          | string     |Fp-id of the indicator
+  Flashpoint.Url.Event.Timestamp     | string     |Time at which indicaor observed
+  Flashpoint.Url.Event.Type          | string     |Type of the indicator
+  Flashpoint.Url.Event.Uuid          | string     |uuid of the indicator
+  Flashpoint.Url.Event.Comment       | string     |Comment which was provided when the indicator was observed
+  URL.Malicious.Description          | string     |Description of malicious url.
+  URL.Malicious.Vendor               | string     |Vendor of malicious url.
 
  
 
@@ -310,12 +449,36 @@ Lookup the "URL" type indicator details
             "Type": "url",
             "Vendor": "Flashpoint"
         },
+        "Flashpoint.URL.Event": [
+            {
+                "Category": "Network activity",
+                "Comment": "Network Indicators",
+                "EventDetails": {
+                    "RelatedEvent": null,
+                    "Tags": [
+                        "malware:ransomware:GandCrab",
+                        "report:lKyimEX1TWS8x6AtdiJ_vA",
+                        "report:7t-BsuFKTL-HJWbid8nupg"
+                    ],
+                    "attack_ids": null,
+                    "fpid": "tg9pLoOcXzmo36by0whRIA",
+                    "href": "https://fp.tools/api/v4/indicators/event/tg9pLoOcXzmo36by0whRIA",
+                    "info": "GandCrab 2019",
+                    "reports": [
+                        "https://fp.tools/home/intelligence/reports/report/lKyimEX1TWS8x6AtdiJ_vA",
+                        "https://fp.tools/home/intelligence/reports/report/7t-BsuFKTL-HJWbid8nupg"
+                    ],
+                    "timestamp": "1571934622"
+                },
+                "Fpid": "XEAP2wmHVqaHERj7E23gTg",
+                "Href": "https://fp.tools/api/v4/indicators/attribute/XEAP2wmHVqaHERj7E23gTg",
+                "Timestamp": "1551736985",
+                "Type": "url",
+                "Url": "92.63.197.153/krabaldento.exe",
+                "Uuid": "5c7da099-fe38-4cc5-a2f5-11200a640c05"
+            }
+        ],
         "URL": {
-            "Flashpoint": {
-                "Href": [
-                    "https://fp.tools/api/v4/indicators/attribute/XEAP2wmHVqaHERj7E23gTg"
-                ]
-            },
             "Malicious": {
                 "Description": "Found in malicious indicators dataset",
                 "Vendor": "Flashpoint"
@@ -332,9 +495,9 @@ Reputation: Malicious
 
 ### Events in which this IOC observed
 
-  **Date Observed (UTC)**   |**Name**        |**Tags**
-  ------------------------- |--------------- |--------------------------------------------------------------------------------------------
-  Oct 24, 2019 16:30        |GandCrab 2019   |malware:ransomware:GandCrab, report:lKyimEX1TWS8x6AtdiJ\_vA, report:7t-BsuFKTL-HJWbid8nupg
+  **Date Observed (UTC)**  | **Name**       | **Tags**
+  -------------------------| ---------------| --------------------------------------------------------------------------------------------
+  Oct 24, 2019 16:30       | GandCrab 2019  | malware:ransomware:GandCrab, report:lKyimEX1TWS8x6AtdiJ\_vA, report:7t-BsuFKTL-HJWbid8nupg
 
 All events and details (fp-tools):
 [https://fp.tools/home/search/iocs?group=indicator&ioc\_type=url&ioc\_value=92.63.197.153/krabaldento.exe](https://fp.tools/home/search/iocs?group=indicator&ioc\_type=url&ioc\_value=92.63.197.153/krabaldento.exe)
@@ -343,36 +506,49 @@ All events and details (fp-tools):
 
 * * * * *
 
-Lookup the "File" type indicator details
+Lookup the "File" type indicator details. The reputation of File-hash is
+considered Malicious if there's at least one IOC event in Flashpoint
+database matching the File-hash indicator.
 
 ##### Base Command
 
 `file`
 
+
 ##### Input
 
-  **Argument Name**   |**Description**                                    |**Required**
-  ------------------- |-------------------------------------------------- |--------------
-  file                |The file to check. It may sha1, md5, sha256 etc.   |Optional
+  **Argument Name**  | **Description**                                   | **Required**
+  -------------------| --------------------------------------------------| --------------
+  file               | The file to check. It may sha1, md5, sha256 etc.  | Optional
 
  
 
 ##### Context Output
 
-  **Path**                     |**Type**   |**Description**
-  ---------------------------- |---------- |-----------------------------------------
-  DBotScore.Indicator          |string     |The indicator that was tested.
-  DBotScore.Score              |number     |The indicator score.
-  DBotScore.Type               |string     |The indicator type.
-  DBotScore.Vendor             |string     |The vendor used to calculate the score.
-  File.Flashpoint.Href         |Unknown    |List of indicators reference.
-  File.Malicious.Description   |string     |Description of malicious file.
-  File.Malicious.Vendor        |string     |Vendor of malicious file.
-  File.MD5                     |string     |MD5 type file.
-  File.SHA1                    |string     |SHA1 type file.
-  File.SHA256                  |string     |SHA256 type file.
-
- 
+  **Path**                            | **Type**  | **Description**
+  ------------------------------------| ----------| ------------------------------------------------------------
+  DBotScore.Indicator                 | string    | The indicator that was tested.
+  DBotScore.Score                     | number    | The indicator score.
+  DBotScore.Type                      | string    | The indicator type.
+  DBotScore.Vendor                    | string    | The vendor used to calculate the score.
+  Flashpoint.File.Event.Href          | string    | List of reference link of the indicator
+  Flashpoint.File.Event.MD5           | string    | MD5 file hash of the indicator
+  Flashpoint.File.Event.SHA1          | string    | SHA1 file hash of the indicator
+  Flashpoint.File.Event.SHA256        | string    | SHA256 file hash of the indicator
+  Flashpoint.File.Event.EventDetails  | unknown   | Event details in which the indicator observed
+  Flashpoint.File.Event.Category      | string    | Category of the indicator
+  Flashpoint.File.Event.Fpid          | string    | Fp-id of the indicator
+  Flashpoint.File.Event.Timestamp     | string    | Time at which indicaor observed
+  Flashpoint.File.Event.Type          | string    | Type of the indicator
+  Flashpoint.File.Event.Uuid          | string    | uuid of the indicator
+  Flashpoint.File.Event.Comment       | string    | Comment which was provided when the indicator was observed
+  File.Malicious.Description          | string    | Description of malicious file.
+  File.Malicious.Vendor               | string    | Vendor of malicious file.
+  File.MD5                            | string    | MD5 type file.
+  File.SHA1                           | string    | SHA1 type file.
+  File.SHA256                         | string    | SHA256 type file.
+|
+ |
 
 ##### Command Example
 
@@ -388,18 +564,91 @@ Lookup the "File" type indicator details
             "Vendor": "Flashpoint"
         },
         "File": {
-            "Flashpoint": {
-                "Href": [
-                    "https://fp.tools/api/v4/indicators/attribute/rqIX70QLVlC3aAydF8uECQ",
-                    "https://fp.tools/api/v4/indicators/attribute/9oi7LdmmWGuh1AG4fKv13g"
-                ]
-            },
             "Malicious": {
                 "Description": "Found in malicious indicators dataset",
                 "Vendor": "Flashpoint"
             },
             "SHA256": "ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5"
-        }
+        },
+        "Flashpoint.File.Event": [
+            {
+                "Category": "Payload delivery",
+                "Comment": "",
+                "EventDetails": {
+                    "RelatedEvent": [
+                        {
+                            "Event": {
+                                "fpid": "DHDkx7UaWX6bYoBo2dqxlA",
+                                "info": "win_ransomware_generic"
+                            }
+                        }
+                    ],
+                    "Tags": [
+                        "source:VirusTotal",
+                        "type:Ransomware",
+                        "gandcrab",
+                        "malware:GandCrab",
+                        "os:Windows"
+                    ],
+                    "attack_ids": null,
+                    "fpid": "Lc3dCH1sXbOIYkKTyUQoow",
+                    "href": "https://fp.tools/api/v4/indicators/event/Lc3dCH1sXbOIYkKTyUQoow",
+                    "info": "Gandcrab",
+                    "reports": null,
+                    "timestamp": "1576735275"
+                },
+                "Fpid": "rqIX70QLVlC3aAydF8uECQ",
+                "Href": "https://fp.tools/api/v4/indicators/attribute/rqIX70QLVlC3aAydF8uECQ",
+                "SHA256": "ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5",
+                "Timestamp": "1560826915",
+                "Type": "sha256",
+                "Uuid": "f161c532-26fa-422d-ad71-3781b6619894"
+            },
+            {
+                "Category": "Payload delivery",
+                "Comment": "",
+                "EventDetails": {
+                    "RelatedEvent": [
+                        {
+                            "Event": {
+                                "fpid": "6tTJ5r_nUoW5FGlEtGl_Yg",
+                                "info": "crime_azorult_2"
+                            }
+                        },
+                        {
+                            "Event": {
+                                "fpid": "4VTU1zY3V5qO0W7HvEgeig",
+                                "info": "crime_azorult_1"
+                            }
+                        },
+                        {
+                            "Event": {
+                                "fpid": "Lc3dCH1sXbOIYkKTyUQoow",
+                                "info": "Gandcrab"
+                            }
+                        }
+                    ],
+                    "Tags": [
+                        "source:VirusTotal",
+                        "type:Ransomware",
+                        "win_ransomware_generic",
+                        "os:Windows"
+                    ],
+                    "attack_ids": null,
+                    "fpid": "DHDkx7UaWX6bYoBo2dqxlA",
+                    "href": "https://fp.tools/api/v4/indicators/event/DHDkx7UaWX6bYoBo2dqxlA",
+                    "info": "win_ransomware_generic",
+                    "reports": null,
+                    "timestamp": "1563386535"
+                },
+                "Fpid": "9oi7LdmmWGuh1AG4fKv13g",
+                "Href": "https://fp.tools/api/v4/indicators/attribute/9oi7LdmmWGuh1AG4fKv13g",
+                "SHA256": "ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5",
+                "Timestamp": "1560826913",
+                "Type": "sha256",
+                "Uuid": "08f5ac60-45cb-4bc1-be05-591eb51071dc"
+            }
+        ]
     }
 
 ##### Human Readable Output
@@ -410,11 +659,11 @@ Reputation: Malicious
 
 ### Events in which this IOC observed
 
-  **Date Observed (UTC)**   |**Name**                   |**Tags**
-  ------------------------- |-------------------------- |----------------------------------------------------------------------------
-  Dec 18, 2019 07:03        |Gandcrab                   |source:VirusTotal, type:Ransomware, gandcrab, malware:GandCrab, os:Windows
-  Jul 17, 2019 18:02        |win\_ransomware\_generic   |source:VirusTotal, type:Ransomware, win\_ransomware\_generic, os:Windows
-
+  **Date Observed (UTC)**  | **Name**                  | **Tags**
+  -------------------------| --------------------------| ----------------------------------------------------------------------------
+  Dec 19, 2019 06:01       | Gandcrab                  | source:VirusTotal, type:Ransomware, gandcrab, malware:GandCrab, os:Windows
+  Jul 17, 2019 18:02       | win\_ransomware\_generic  | source:VirusTotal, type:Ransomware, win\_ransomware\_generic, os:Windows
+|
 All events and details (fp-tools):
 [https://fp.tools/home/search/iocs?group=indicator&ioc\_type=md5%2Csha1%2Csha256%2Csha512&ioc\_value=ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5](https://fp.tools/home/search/iocs?group=indicator&ioc\_type=md5%2Csha1%2Csha256%2Csha512&ioc\_value=ab09761ad832efb9359fac985d1a2ab74f8a8d182d7b71188a121b850b80dfe5)
 
@@ -422,7 +671,9 @@ All events and details (fp-tools):
 
 * * * * *
 
-Lookup the "Email" type indicator details
+Lookup the "Email" type indicator details. The reputation of Email is
+considered Malicious if there's at least one IOC event in Flashpoint
+database matching the Email indicator.
 
 ##### Base Command
 
@@ -430,24 +681,31 @@ Lookup the "Email" type indicator details
 
 ##### Input
 
-  **Argument Name**   |**Description**       |**Required**
-  ------------------- |--------------------- |--------------
-  email               |The email to check.   |Optional
+  **Argument Name**   |**Description**      | **Required**
+  ------------------- |---------------------| --------------
+  email               |The email to check.  | Optional
 
  
 
 ##### Context Output
 
-  **Path**                              |**Type**   |**Description**
-  ------------------------------------- |---------- |-----------------------------------------
-  DBotScore.Indicator                   |string     |The indicator that was tested.
-  DBotScore.Score                       |number     |The indicator score.
-  DBotScore.Type                        |string     |The indicator type.
-  DBotScore.Vendor                      |string     |The vendor used to calculate the score.
-  Account.Email.Flashpoint.Href         |Unknown    |List of email references.
-  Account.Email.Malicious.Description   |string     |Description of Malicious email account.
-  Account.Email.Malicious.Vendor        |string     |Vendor of Malicious email.
-  Account.Email.Name                    |string     |Name of indicator.
+  **Path**                             | **Type**   | **Description**
+  -------------------------------------| ---------- | ------------------------------------------------------------
+  DBotScore.Indicator                  | string     | The indicator that was tested.
+  DBotScore.Score                      | number     | The indicator score.
+  DBotScore.Type                       | string     | The indicatstring .
+  DBotScore.Vendor                     | string     | The vendor string  calculate the score.
+  Flashpoint.Email.Event.Href          | string     | List of refstring link of the indicator
+  Flashpoint.Email.Event.EventDetails  | unknown    | Event detaistring hich the indicator observed
+  Flashpoint.Email.Event.Category      | string     | Category of the indicator
+  Flashpoint.Email.Event.Fpid          | string     | Fp-id of the indicator
+  Flashpoint.Email.Event.Timestamp     | string     | Time at which indicaor observed
+  Flashpoint.Email.Event.Type          | string     | Type of the indicator
+  Flashpoint.Email.Event.Uuid          | string     | uuid of the indicator
+  Flashpoint.Email.Event.Comment       | string     | Comment which was provided when the indicator was observed
+  Account.Email.Malicious.Description  | string     | Description of Malicious email account.
+  Account.Email.Malicious.Vendor       | string     | Vendor of Malicious email.
+  Account.Email.Name                   | string     | Name of indicator.
 
  
 
@@ -459,11 +717,6 @@ Lookup the "Email" type indicator details
 
     {
         "Account.Email": {
-            "Flashpoint": {
-                "href": [
-                    "https://fp.tools/api/v4/indicators/attribute/TrwIYc5AWP-xtjODCXyp7w"
-                ]
-            },
             "Malicious": {
                 "Description": "Found in malicious indicators dataset",
                 "Vendor": "Flashpoint"
@@ -475,7 +728,39 @@ Lookup the "Email" type indicator details
             "Score": 3,
             "Type": "email",
             "Vendor": "Flashpoint"
-        }
+        },
+        "Flashpoint.Email.Event": [
+            {
+                "Category": "Network activity",
+                "Comment": "",
+                "EventDetails": {
+                    "RelatedEvent": null,
+                    "Tags": [
+                        "malware:ransomware:lockergoga",
+                        "report:lKyimEX1TWS8x6AtdiJ_vA",
+                        "report:jEteM4YxQZCdm4macbE3vQ",
+                        "report:w0fL5MgoQ_Wih8XyB6Lowg",
+                        "report:7t-BsuFKTL-HJWbid8nupg"
+                    ],
+                    "attack_ids": null,
+                    "fpid": "iBUPRQOoU4SQrH64LGUbzw",
+                    "href": "https://fp.tools/api/v4/indicators/event/iBUPRQOoU4SQrH64LGUbzw",
+                    "info": "LockerGoga",
+                    "reports": [
+                        "https://fp.tools/home/intelligence/reports/report/lKyimEX1TWS8x6AtdiJ_vA",
+                        "https://fp.tools/home/intelligence/reports/report/jEteM4YxQZCdm4macbE3vQ",
+                        "https://fp.tools/home/intelligence/reports/report/w0fL5MgoQ_Wih8XyB6Lowg",
+                        "https://fp.tools/home/intelligence/reports/report/7t-BsuFKTL-HJWbid8nupg"
+                    ],
+                    "timestamp": "1571934618"
+                },
+                "Fpid": "TrwIYc5AWP-xtjODCXyp7w",
+                "Href": "https://fp.tools/api/v4/indicators/attribute/TrwIYc5AWP-xtjODCXyp7w",
+                "Timestamp": "1553280098",
+                "Type": "email-dst",
+                "Uuid": "5c952c62-ef38-4fcc-8b6e-0f140a640c05"
+            }
+        ]
     }
 
 ##### Human Readable Output

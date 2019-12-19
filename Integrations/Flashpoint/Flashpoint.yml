@@ -53,15 +53,41 @@ script:
     - contextPath: IP.Address
       description: IP address
       type: string
-    - contextPath: IP.Flashpoint.Href
-      description: List of reference link of the indicator.
     - contextPath: IP.Malicious.Description
       description: Description of malicious ip.
       type: string
     - contextPath: IP.Malicious.Vendor
       description: Vandor of malicious ip.
       type: string
-    description: Lookup the "IP" type indicator details
+    - contextPath: Flashpoint.IP.Event.Href
+      description: List of reference link of the indicator
+      type: string
+    - contextPath: Flashpoint.IP.Event.Address
+      description: IP address of the indicator
+      type: string
+    - contextPath: Flashpoint.IP.Event.EventDetails
+      description: Event details in which the indicator observed
+    - contextPath: Flashpoint.IP.Event.Category
+      description: Category of the indicator
+      type: string
+    - contextPath: Flashpoint.IP.Event.Fpid
+      description: Fp-id of the indicator
+      type: string
+    - contextPath: Flashpoint.IP.Event.Timestamp
+      description: Time at which indicaor observed
+      type: string
+    - contextPath: Flashpoint.IP.Event.Type
+      description: Type of the indicator
+      type: string
+    - contextPath: Flashpoint.IP.Event.Uuid
+      description: uuid of the indicator
+      type: string
+    - contextPath: Flashpoint.IP.Event.Comment
+      description: Comment which was provided when the indicator was observed
+      type: string
+    description: Lookup the "IP" type indicator details. The reputation of IP is considered Malicious 
+      if there's at least one IOC event in Flashpoint database matching the IP indicator. 
+      Alternately the IP address is considered Suspicious if it matches with any one of the Torrent's Peer IP Address or Forum Visit's Peer IP Address.
   - name: domain
     arguments:
     - name: domain
@@ -82,8 +108,32 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
-    - contextPath: Domain.Flashpoint.Href
-      description: List of reference of indicators.
+    - contextPath: Flashpoint.Domain.Event.Href
+      description: List of reference link of the indicator
+      type: string
+    - contextPath: Flashpoint.Domain.Event.Domain
+      description: Domain of the indicator
+      type: string
+    - contextPath: Flashpoint.Domain.Event.EventDetails
+      description: Event details in which the indicator observed
+    - contextPath: Flashpoint.Domain.Event.Category
+      description: Category of the indicator
+      type: string
+    - contextPath: Flashpoint.Domain.Event.Fpid
+      description: Fp-id of the indicator
+      type: string
+    - contextPath: Flashpoint.Domain.Event.Timestamp
+      description: Time at which indicaor observed
+      type: string
+    - contextPath: Flashpoint.Domain.Event.Type
+      description: Type of the indicator
+      type: string
+    - contextPath: Flashpoint.Domain.Event.Uuid
+      description: uuid of the indicator
+      type: string
+    - contextPath: Flashpoint.Domain.Event.Comment
+      description: Comment which was provided when the indicator was observed
+      type: string
     - contextPath: Domain.Malicious.Description
       description: Description of malicious indicator.
       type: string
@@ -93,7 +143,8 @@ script:
     - contextPath: Domain.Name
       description: Name of domain.
       type: string
-    description: Lookup the "Domain" type indicator details
+    description: Lookup the "Domain" type indicator details. The reputation of Domain is considered Malicious 
+      if there's at least one IOC event in Flashpoint database matching the Domain indicator.
   - name: filename
     arguments:
     - name: filename
@@ -114,7 +165,34 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
-    description: Lookup the "Filename" type indicator details
+    - contextPath: Flashpoint.Filename.Event.Href
+      description: List of reference link of the indicator
+      type: string
+    - contextPath: Flashpoint.Filename.Event.Filename
+      description: Filename of the indicator
+      type: string
+    - contextPath: Flashpoint.Filename.Event.EventDetails
+      description: Event details in which the indicator observed
+    - contextPath: Flashpoint.Filename.Event.Category
+      description: Category of the indicator
+      type: string
+    - contextPath: Flashpoint.Filename.Event.Fpid
+      description: Fp-id of the indicator
+      type: string
+    - contextPath: Flashpoint.Filename.Event.Timestamp
+      description: Time at which indicaor observed
+      type: string
+    - contextPath: Flashpoint.Filename.Event.Type
+      description: Type of the indicator
+      type: string
+    - contextPath: Flashpoint.Filename.Event.Uuid
+      description: uuid of the indicator
+      type: string
+    - contextPath: Flashpoint.Filename.Event.Comment
+      description: Comment which was provided when the indicator was observed
+      type: string
+    description: Lookup the "Filename" type indicator details. The reputation of Filename is considered Malicious 
+      if there's at least one IOC event in Flashpoint database matching the Filename indicator.
   - name: url
     arguments:
     - name: url
@@ -135,15 +213,40 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
-    - contextPath: URL.Flashpoint.Href
-      description: List of reference of url.
+    - contextPath: Flashpoint.Url.Event.Href
+      description: List of reference link of the indicator
+      type: string
+    - contextPath: Flashpoint.Url.Event.Url
+      description: Url of the indicator
+      type: string
+    - contextPath: Flashpoint.Url.Event.EventDetails
+      description: Event details in which the indicator observed
+    - contextPath: Flashpoint.Url.Event.Category
+      description: Category of the indicator
+      type: string
+    - contextPath: Flashpoint.Url.Event.Fpid
+      description: Fp-id of the indicator
+      type: string
+    - contextPath: Flashpoint.Url.Event.Timestamp
+      description: Time at which indicaor observed
+      type: string
+    - contextPath: Flashpoint.Url.Event.Type
+      description: Type of the indicator
+      type: string
+    - contextPath: Flashpoint.Url.Event.Uuid
+      description: uuid of the indicator
+      type: string
+    - contextPath: Flashpoint.Url.Event.Comment
+      description: Comment which was provided when the indicator was observed
+      type: string
     - contextPath: URL.Malicious.Description
       description: Description of malicious url.
       type: string
     - contextPath: URL.Malicious.Vendor
       description: Vendor of malicious url.
       type: string
-    description: Lookup the "URL" type indicator details
+    description: Lookup the "URL" type indicator details. The reputation of Url is considered Malicious 
+      if there's at least one IOC event in Flashpoint database matching the Url indicator.
   - name: file
     arguments:
     - name: file
@@ -164,8 +267,38 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
-    - contextPath: File.Flashpoint.Href
-      description: List of indicators reference.
+    - contextPath: Flashpoint.File.Event.Href
+      description: List of reference link of the indicator
+      type: string
+    - contextPath: Flashpoint.File.Event.MD5
+      description: MD5 file hash of the indicator
+      type: string
+    - contextPath: Flashpoint.File.Event.SHA1
+      description: SHA1 file hash of the indicator
+      type: string
+    - contextPath: Flashpoint.File.Event.SHA256
+      description: SHA256 file hash of the indicator
+      type: string
+    - contextPath: Flashpoint.File.Event.EventDetails
+      description: Event details in which the indicator observed
+    - contextPath: Flashpoint.File.Event.Category
+      description: Category of the indicator
+      type: string
+    - contextPath: Flashpoint.File.Event.Fpid
+      description: Fp-id of the indicator
+      type: string
+    - contextPath: Flashpoint.File.Event.Timestamp
+      description: Time at which indicaor observed
+      type: string
+    - contextPath: Flashpoint.File.Event.Type
+      description: Type of the indicator
+      type: string
+    - contextPath: Flashpoint.File.Event.Uuid
+      description: uuid of the indicator
+      type: string
+    - contextPath: Flashpoint.File.Event.Comment
+      description: Comment which was provided when the indicator was observed
+      type: string
     - contextPath: File.Malicious.Description
       description: Description of malicious file.
       type: string
@@ -181,7 +314,8 @@ script:
     - contextPath: File.SHA256
       description: SHA256 type file.
       type: string
-    description: Lookup the "File" type indicator details
+    description: Lookup the "File" type indicator details. The reputation of File-hash is considered Malicious 
+      if there's at least one IOC event in Flashpoint database matching the File-hash indicator.
   - name: email
     arguments:
     - name: email
@@ -202,8 +336,29 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
-    - contextPath: Account.Email.Flashpoint.Href
-      description: List of email references.
+    - contextPath: Flashpoint.Email.Event.Href
+      description: List of reference link of the indicator
+      type: string
+    - contextPath: Flashpoint.Email.Event.EventDetails
+      description: Event details in which the indicator observed
+    - contextPath: Flashpoint.Email.Event.Category
+      description: Category of the indicator
+      type: string
+    - contextPath: Flashpoint.Email.Event.Fpid
+      description: Fp-id of the indicator
+      type: string
+    - contextPath: Flashpoint.Email.Event.Timestamp
+      description: Time at which indicaor observed
+      type: string
+    - contextPath: Flashpoint.Email.Event.Type
+      description: Type of the indicator
+      type: string
+    - contextPath: Flashpoint.Email.Event.Uuid
+      description: uuid of the indicator
+      type: string
+    - contextPath: Flashpoint.Email.Event.Comment
+      description: Comment which was provided when the indicator was observed
+      type: string
     - contextPath: Account.Email.Malicious.Description
       description: Description of Malicious email account.
       type: string
@@ -213,7 +368,8 @@ script:
     - contextPath: Account.Email.Name
       description: Name of indicator.
       type: string
-    description: Lookup the "Email" type indicator details
+    description: Lookup the "Email" type indicator details. The reputation of Email is considered Malicious 
+      if there's at least one IOC event in Flashpoint database matching the Email indicator.
   - name: flashpoint-search-intelligence-reports
     arguments:
     - name: report_search
@@ -228,6 +384,7 @@ script:
     - name: report_id
       required: true
       description: The report id of the report for which the details are to be fetched.
+        The id can be known from report-search command response or some other investigation.
     outputs:
     - contextPath: Flashpoint.Report.NotifiedAt
       description: Notify date of report.
@@ -257,6 +414,7 @@ script:
     - name: report_id
       required: true
       description: The report-id of the report of which the related reports are to be fetched.
+        The id can be known from report-search command response or some other investigation.
     outputs:
     - contextPath: Flashpoint.Report
       description: Display list of related report based on report fpid.
@@ -266,7 +424,8 @@ script:
     arguments:
     - name: event_id
       required: true
-      description: The UUID or FPID that identifies a particular event.
+      description: The UUID or FPID that identifies a particular event. The id can be fetched from get-events command or 
+        indicator reputation command response or some other investigation.
     outputs:
     - contextPath: Flashpoint.Event.ObservedTime
       description: Date of event triggered.
@@ -328,7 +487,8 @@ script:
     arguments:
     - name: forum_id
       required: true
-      description: Specify forum id of the forum for which the details are to be fetched.
+      description: Specify forum id of the forum for which the details are to be fetched. The id can be known from 
+        flashpoint-search-forum-posts command response or some other investigation.
     outputs:
     - contextPath: Flashpoint.Forum.Description
       description: Detail information of supplied forum id.
@@ -352,7 +512,8 @@ script:
     arguments:
     - name: room_id
       required: true
-      description: Specify room id which is used to retrieve room information in forum.
+      description: Specify room id which is used to retrieve room information in forum. The id can be known from 
+        flashpoint-search-forum-posts command response or some other investigation.
     outputs:
     - contextPath: Flashpoint.Forum.Room.Forum
       description: Displays all forum details like forum name, hostname, platform url,
@@ -372,7 +533,8 @@ script:
     arguments:
     - name: user_id
       required: true
-      description: Specify user id which is used to retrieve user's information.
+      description: Specify user id which is used to retrieve user's information. The id can be known from 
+        flashpoint-search-forum-posts command response or some other investigation.
     outputs:
     - contextPath: Flashpoint.Forum.User.Forum
       description: Display all forum details like id, hostname, description, stats,
@@ -396,6 +558,7 @@ script:
     - name: post_id
       required: true
       description: Specify post id which gives post information embeded with forum, room, user etc.
+        The id can be known from flashpoint-search-forum-posts command response or some other investigation.
     outputs:
     - contextPath: Flashpoint.Forum.Post.Forum
       description: Display all forum details of post like id, hostname, stats, description,
