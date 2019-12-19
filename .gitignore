@@ -8,7 +8,7 @@ TestData/EmailWithNonUnicodeSubject.eml
 .pytest_cache
 
 CommonServerPython.py
-microsoft_api.py
+*Module.py
 !Scripts/CommonServerPython/CommonServerPython.py
 CommonServerUserPython.py
 demistomock.py

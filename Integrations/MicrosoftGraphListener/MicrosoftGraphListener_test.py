@@ -1,7 +1,7 @@
 import pytest
 import demistomock as demisto
 import json
-from microsoft_api import MicrosoftClient
+from MicrosoftApiModule import *
 from MicrosoftGraphListener import MsGraphClient
 from MicrosoftGraphListener import add_second_to_str_date
 
