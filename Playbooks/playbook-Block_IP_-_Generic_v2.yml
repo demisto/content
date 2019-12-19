@@ -54,7 +54,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 1080
+          "y": 1020
         }
       }
     note: false
@@ -97,7 +97,7 @@ tasks:
       id: 077714b6-f53e-4ab4-8679-d2c172e67a59
       version: -1
       name: Block IP with Check Point Firewall
-      description: Block the IPs using Check Point Firewall.
+      description: Block the IPs using Check Point Firewall
       script: '|||checkpoint-block-ip'
       type: regular
       iscommand: true
@@ -120,7 +120,7 @@ tasks:
       {
         "position": {
           "x": 980,
-          "y": 910
+          "y": 850
         }
       }
     note: false
@@ -178,7 +178,7 @@ tasks:
       {
         "position": {
           "x": 980,
-          "y": 695
+          "y": 660
         }
       }
     note: false
@@ -310,7 +310,7 @@ tasks:
       {
         "position": {
           "x": 1470,
-          "y": 705
+          "y": 660
         }
       }
     note: false
@@ -341,7 +341,7 @@ tasks:
       {
         "position": {
           "x": 1470,
-          "y": 910
+          "y": 850
         }
       }
     note: false
@@ -349,10 +349,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 7f789536-a8f4-42fa-836b-925b0ca13840
+    taskid: 161ff68a-c259-4e8c-8d24-965fe952c1d2
     type: playbook
     task:
-      id: 7f789536-a8f4-42fa-836b-925b0ca13840
+      id: 161ff68a-c259-4e8c-8d24-965fe952c1d2
       version: -1
       name: PAN-OS - Block IP - Custom Block Rule
       playbookName: PAN-OS - Block IP - Custom Block Rule
@@ -365,13 +365,16 @@ tasks:
       - "2"
     scriptarguments:
       AutoCommit:
-        simple: "No"
+        complex:
+          root: inputs.AutoCommit
       IP:
         complex:
           root: inputs.IP
           transformers:
           - operator: uniq
-      LogForwarding: {}
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
     separatecontext: true
     loop:
       iscommand: false
@@ -381,7 +384,7 @@ tasks:
       {
         "position": {
           "x": 80,
-          "y": 660
+          "y": 850
         }
       }
     note: false
@@ -389,10 +392,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 667eb34c-413d-405e-8b0d-22c7ab5297ff
+    taskid: dcbbc272-0463-4e4c-81ba-ed176e92d04c
     type: playbook
     task:
-      id: 667eb34c-413d-405e-8b0d-22c7ab5297ff
+      id: dcbbc272-0463-4e4c-81ba-ed176e92d04c
       version: -1
       name: PAN-OS - Block IP - Static Address Group
       playbookName: PAN-OS - Block IP - Static Address Group
@@ -404,15 +407,20 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      AddressGroupName: {}
+      AddressGroupName:
+        complex:
+          root: inputs.StaticAddressGroup
       AutoCommit:
-        simple: "No"
+        complex:
+          root: inputs.AutoCommit
       IP:
         complex:
           root: inputs.IP
           transformers:
           - operator: uniq
-      LogForwarding: {}
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
     separatecontext: true
     loop:
       iscommand: false
@@ -421,8 +429,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -340,
-          "y": 660
+          "x": -330,
+          "y": 850
         }
       }
     note: false
@@ -430,10 +438,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: acd02d63-947e-4886-88ce-b7035a46e8e1
+    taskid: 6843cc6b-0460-4f91-8ad4-7925fb5f817a
     type: playbook
     task:
-      id: acd02d63-947e-4886-88ce-b7035a46e8e1
+      id: 6843cc6b-0460-4f91-8ad4-7925fb5f817a
       version: -1
       name: PAN-OS - Block IP and URL - External Dynamic List
       playbookName: PAN-OS - Block IP and URL - External Dynamic List
@@ -446,15 +454,22 @@ tasks:
       - "2"
     scriptarguments:
       AutoCommit:
-        simple: "No"
-      EDLServerIP: {}
+        complex:
+          root: inputs.AutoCommit
+      EDLServerIP:
+        complex:
+          root: inputs.EDLServerIP
       IP:
         complex:
           root: inputs.IP
           transformers:
           - operator: uniq
-      IPListName: {}
-      LogForwarding: {}
+      IPListName:
+        complex:
+          root: inputs.IPListName
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
       URL: {}
       URLListName: {}
     separatecontext: true
@@ -466,7 +481,7 @@ tasks:
       {
         "position": {
           "x": -760,
-          "y": 660
+          "y": 850
         }
       }
     note: false
@@ -486,15 +501,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
-      - "15"
-      - "14"
+      - "22"
+      - "23"
+      - "24"
+      - "25"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -340,
-          "y": 515
+          "x": -550,
+          "y": 510
         }
       }
     note: false
@@ -578,18 +594,239 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "21":
+    id: "21"
+    taskid: be4682fc-8d29-42a2-8de6-6f31f277e4d9
+    type: playbook
+    task:
+      id: be4682fc-8d29-42a2-8de6-6f31f277e4d9
+      version: -1
+      name: PAN-OS DAG Configuration
+      playbookName: PAN-OS DAG Configuration
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action-type:
+        simple: drop
+      address_group_name:
+        simple: Demisto - Remediation IP Address Group
+      auto_commit:
+        complex:
+          root: inputs.AutoCommit
+      device-group: {}
+      inbound-or-outbound-rule:
+        simple: outbound
+      ip_list:
+        complex:
+          root: inputs.IP
+      log-forwarding-object-name:
+        complex:
+          root: inputs.LogForwarding
+      pre-post-rulebase:
+        simple: pre-rulebase
+      relative-rule-name: {}
+      rule-position:
+        simple: before
+      rule_name:
+        simple: Demisto Block Rule - ${incident.id}
+      tag_name:
+        complex:
+          root: inputs.DAG
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -1180,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: c3a30091-7a2f-405a-808c-c1553a264cb4
+    type: condition
+    task:
+      id: c3a30091-7a2f-405a-808c-c1553a264cb4
+      version: -1
+      name: Use Custom Block Rules?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.CustomBlockRule
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: f62443fb-69ea-4a5d-8c10-f3dd19a1cdc8
+    type: condition
+    task:
+      id: f62443fb-69ea-4a5d-8c10-f3dd19a1cdc8
+      version: -1
+      name: Use Static Address Group?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.StaticAddressGroup
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -330,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 5358db30-716f-46d9-86d5-bd22d496c93c
+    type: condition
+    task:
+      id: 5358db30-716f-46d9-86d5-bd22d496c93c
+      version: -1
+      name: Use External Dynamic List?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IPListName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EDLServerIP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -760,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 07323c54-1759-454b-89c5-09ae35d4e86d
+    type: condition
+    task:
+      id: 07323c54-1759-454b-89c5-09ae35d4e86d
+      version: -1
+      name: Use Dynamic Address Group?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.DAG
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1180,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
       "12_2_#default#": 0.23,
+      "22_2_#default#": 0.22,
+      "23_2_#default#": 0.11,
+      "24_2_#default#": 0.1,
+      "25_2_#default#": 0.1,
       "7_2_#default#": 0.39,
       "8_2_#default#": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 1135,
-        "width": 2610,
-        "x": -760,
+        "height": 1075,
+        "width": 3030,
+        "x": -1180,
         "y": 10
       }
     }
@@ -603,6 +840,50 @@ inputs:
   value: {}
   required: false
   description: Array of malicious IPs to block.
+- key: CustomBlockRule
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.
+    Specify True to use Custom Block Rules.
+- key: LogForwarding
+  value: {}
+  required: false
+  description: Panorama log forwarding object name.
+- key: AutoCommit
+  value:
+    simple: "No"
+  required: false
+  description: |-
+    This input determines whether to commit the configuration automatically.
+    Yes - Commit automatically.
+    No - Commit manually.
+- key: StaticAddressGroup
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
+    Specify the Static Address Group name for IP handling.
+- key: IPListName
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
+    Specify the EDL name for IP handling.
+- key: EDLServerIP
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:
+    * The IP address of the web server on which the files are stored.
+    * The web server IP address is configured in the integration instance.
+- key: DAG
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
+    Specify the Dynamic Address Group tag name for IP handling.
 outputs:
 - contextPath: CheckpointFWRule.Destination
   description: Rule Destination.
