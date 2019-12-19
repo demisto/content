@@ -1567,7 +1567,7 @@ def find_groups_api_response_to_context(api_response):
 
         groups_list.append(group_entry)
 
-    return {'Mimecast.Group(val.ID && val.ID == obj.ID)': groups_list}
+    return {'Mimecast.Groups(val.ID && val.ID == obj.ID)': groups_list}
 
 
 def get_group_members():
@@ -1607,7 +1607,7 @@ def create_get_group_members_request(group_id=-1, pagination=100):
 
 def group_members_api_response_to_markdown(api_response):
     num_users_found = api_response.get('meta', {}).get('pagination', {}).get('pageSize', 0)
-    group_id = demisto.args().get('groupID', '')
+    group_id = demisto.args().get('group_id', '')
 
     if not num_users_found:
         md = 'Found 0 users for group ID: ' + group_id + ''
@@ -1633,9 +1633,28 @@ def group_members_api_response_to_markdown(api_response):
     return md
 
 
+def add_users_under_group_in_context_dict(users_list, group_id):
+    demisto_context = demisto.context()
+
+    if demisto_context and 'Mimecast' in demisto_context:
+        if 'Groups' in demisto_context['Mimecast']:
+            groups_entry_in_context = demisto_context['Mimecast']['Groups']
+            for group in groups_entry_in_context:
+                demisto.results('2')
+                if group['ID'] == group_id:
+                    group['Users'] = users_list
+                    return groups_entry_in_context
+
+    return [
+        {
+            'ID': group_id,
+            'Users': users_list
+        }
+    ]
+
+
 def group_members_api_response_to_context(api_response, group_id=-1):
-    if group_id != -1:
-        group_id = demisto.args().get('groupID', group_id)
+    group_id = demisto.args().get('group_id', group_id)
 
     users_list = list()
     for user in api_response['data'][0]['groupMembers']:
@@ -1645,12 +1664,14 @@ def group_members_api_response_to_context(api_response, group_id=-1):
             'Domain': user['domain'],
             'Type': user['type'],
             'InternalUser': str(user['internal']),
-            'IsRemoved': 'False'
+            'IsRemoved': False
         }
 
         users_list.append(user_entry)
 
-    return {'Mimecast.Group_{}.User(val.Name && val.Name == obj.Name)'.format(group_id): users_list}
+    groups_after_update = add_users_under_group_in_context_dict(users_list, group_id)
+
+    return {'Mimecast.Groups(val.ID && val.ID == obj.ID)': groups_after_update}
 
 
 def add_remove_member_to_group(action_type):
@@ -1701,6 +1722,27 @@ def add_remove_api_response_to_markdown(api_response, action_type):
     return address_modified + ' has been removed from group ID ' + group_id
 
 
+def change_user_status_removed_in_context(user_info, group_id):
+    demisto_context = demisto.context()
+
+    if demisto_context and 'Mimecast' in demisto_context:
+        if 'Groups' in demisto_context['Mimecast']:
+            groups_entry_in_context = demisto_context['Mimecast']['Groups']
+            for group in groups_entry_in_context:
+                if group['ID'] == group_id:
+                    for user in group['Users']:
+                        if user['EmailAddress'] == user_info['EmailAddress']:
+                            user['IsRmoved'] = True
+                    return groups_entry_in_context
+
+    return [
+        {
+            'ID': group_id,
+            'Users': [user_info]
+        }
+    ]
+
+
 def add_remove_api_response_to_context(api_response, action_type):
     group_id = api_response['data'][0]['folderId']
 
@@ -1711,11 +1753,15 @@ def add_remove_api_response_to_context(api_response, action_type):
         return group_members_api_response_to_context(api_response, group_id=group_id)
     else:
         address_removed = api_response['data'][0]['emailAddress']
+
         removed_user = {
-            'Email': address_removed,
-            'IsRemoved': 'True'
+            'EmailAddress': address_removed,
+            'IsRemoved': True
         }
-        return {'Mimecast.Group_{}.User(val.Name && val.Name == obj.Name)'.format(group_id): removed_user}
+
+        groups_after_update = change_user_status_removed_in_context(removed_user, group_id)
+
+        return {'Mimecast.Groups(val.ID && val.ID == obj.ID)': groups_after_update}
 
 
 def create_group():
@@ -1729,18 +1775,18 @@ def create_group():
 
 def create_group_request():
     api_endpoint = '/api/directory/create-group'
-    group_name = demisto.args().get('group_name').encode('utf-8')
+    group_name = demisto.args().get('group_name', '').encode('utf-8')
     parent_id = demisto.args().get('parent_id', '-1').encode('utf-8')
 
-    data = [{
+    data = {
         'description': group_name,
-    }]
+    }
 
     if parent_id != '-1'.encode('utf-8'):
-        data[0]['parentId'] = parent_id
+        data['parentId'] = parent_id
 
     payload = {
-        'data': data
+        'data': [data]
     }
 
     response = http_request('POST', api_endpoint, str(payload))
@@ -1754,8 +1800,8 @@ def create_group_api_response_to_markdown(api_response):
     group_source = api_response['data'][0]['source']
     group_id = api_response['data'][0]['id']
 
-    md = '###' + group_name + ' has been created###\n'
-    md += 'Group source: ' + group_source
+    md = group_name + ' has been created'
+    md += '\nGroup source: ' + group_source
     md += '\nGroup ID: ' + group_id
 
     return md
@@ -1771,7 +1817,7 @@ def create_group_api_response_to_context(api_response):
         'NumberOfChildGroups': 0
     }
 
-    return {'Mimecast.Group(val.Name && val.Name == obj.Name)': group_created}
+    return {'Mimecast.Groups(val.Name && val.Name == obj.Name)': group_created}
 
 
 def update_group():
@@ -1822,7 +1868,7 @@ def update_group_api_response_to_context(api_response):
         'ParentID': api_response['data'][0]['parentId']
     }
 
-    return {'Mimecast.Group(val.ID && val.ID == obj.ID)': group_updated}
+    return {'Mimecast.Groups(val.ID && val.ID == obj.ID)': group_updated}
 
 
 def create_mimecast_incident():
