@@ -47,20 +47,26 @@ class Client:
                     - region
                     - service
         """
-        self.url = url
-        self.verify = insecure
-        self.auth = (credentials.get('username'), credentials.get('password'))
         self.extractor = extractor
         self.indicator = indicator
         self.source_name = source_name
         self.fields = argToList(fields)
 
-        # Hidden
+        # Request related attributes
+        self.url = url
+        self.verify = insecure
+        self.auth = (credentials.get('username'), credentials.get('password'))
+
+        # Hidden params
         self.headers = headers
-        self.cert = (cert_file, key_file)
+        self.cert = (cert_file, key_file) if cert_file and key_file else None
+
+    def _get_request_attr(self):
+        unrelated_attr = ['source_name', 'indicator', 'extractor', 'fields']
+        return {key: value for key, value in vars(self).items() if value and key not in unrelated_attr}
 
     def build_iterator(self) -> List:
-        r = requests.get(**vars(self))
+        r = requests.get(**self._get_request_attr())
 
         try:
             r.raise_for_status()
