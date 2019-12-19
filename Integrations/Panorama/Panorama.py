@@ -56,7 +56,10 @@ else:
     XPATH_OBJECTS = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/"
 
 # setting template xpath relevant to panorama instances.
-TEMPLATE = demisto.params().get('template', None)
+if demisto.args() and demisto.args().get('template', None):
+    TEMPLATE = demisto.args().get('template')
+else:
+    TEMPLATE = demisto.params().get('template', None)
 if TEMPLATE:
     if not DEVICE_GROUP or VSYS:
         return_error('Template is only relevant for Panorama instances.')

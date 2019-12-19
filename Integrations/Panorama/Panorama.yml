@@ -32,8 +32,7 @@ configuration:
   name: vsys
   required: false
   type: 0
-- display: Template - Please select a template to perform any changes on the static
-    routes.
+- display: Template - Panorama instances only. routes.
   name: template
   required: false
   type: 0
@@ -3008,6 +3007,13 @@ script:
       name: virtual_router
       required: true
       secret: false
+    - default: false
+      description: The template to run the command on. Overrides the template parameter
+        (Panorama instances).
+      isArray: false
+      name: template
+      required: false
+      secret: false
     deprecated: false
     description: List the static routes of a virtual router.
     execution: false
@@ -3051,6 +3057,13 @@ script:
       isArray: false
       name: static_route
       required: true
+      secret: false
+    - default: false
+      description: The template to run the command on. Overrides the template parameter
+        (Panorama instances).
+      isArray: false
+      name: template
+      required: false
       secret: false
     deprecated: false
     description: Get a specific static route of a virtual router.
@@ -3137,6 +3150,13 @@ script:
       name: interface
       required: false
       secret: false
+    - default: false
+      description: The template to run the command on. Overrides the template parameter
+        (Panorama instances).
+      isArray: false
+      name: template
+      required: false
+      secret: false
     deprecated: false
     description: Add a static route.
     execution: false
@@ -3180,6 +3200,13 @@ script:
       isArray: false
       name: virtual_router
       required: true
+      secret: false
+    - default: false
+      description: The template to run the command on. Overrides the template parameter
+        (Panorama instances).
+      isArray: false
+      name: template
+      required: false
       secret: false
     deprecated: false
     description: Delete a static route
