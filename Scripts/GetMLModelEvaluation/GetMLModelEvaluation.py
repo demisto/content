@@ -9,14 +9,14 @@ from CommonServerPython import *
 
 METRICS = {}
 METRICS['Precision'] = 'The precision of the class in the evaluation set that were classified as this class by the ' \
-                       'model. Precision is calculated by dividing the TPs of the class by the number of mails that ' \
+                       'model. Precision is calculated by dividing the TPs of the class by the number of incidents that ' \
                        'the model predicted as this class.'
-METRICS['TP (true positive)'] = 'The number of mails from the class in the evaluation set that were predicted ' \
+METRICS['TP (true positive)'] = 'The number of incidents from the class in the evaluation set that were predicted ' \
                                 'correctly. '
-METRICS['FP (false positive)'] = 'The number of mails from other classes that were predicted incorrectly as this class.'
-METRICS['Coverage'] = 'The number of mails from the class in the evaluation set for which the confidence level of ' \
+METRICS['FP (false positive)'] = 'The number of incidents from other classes that were predicted incorrectly as this class.'
+METRICS['Coverage'] = 'The number of incidents from the class in the evaluation set for which the confidence level of ' \
                       'the model exceeded the threshold in the prediction.'
-METRICS['Total'] = 'The total number of mails from the class in the evaluation set.'
+METRICS['Total'] = 'The total number of incidents from the class in the evaluation set.'
 
 
 def bold_hr(s):
@@ -54,8 +54,7 @@ def generate_metrics_df(y_true, y_true_per_class, y_pred, y_pred_per_class, thre
                                    and y_pred_i == 1)
         above_thresh = sum(1 for i, y_true_i in enumerate(y_true_class) if y_true_i == 1
                            and any(y_pred_per_class[c][i] >= threshold for c in y_pred_per_class))
-        fp = sum(1 for i, y_true_i in enumerate(y_true_class) if y_true_i == 0
-                 and any(c != class_ and y_pred_per_class[c][i] >= threshold for c in y_pred_per_class))
+        fp = sum(1 for i, y_true_i in enumerate(y_true_class) if y_true_i == 0 and y_pred_class_binary[i] == 1.0)
         total = int(sum(y_true_class))
         df = df.append({'Class': class_,
                         'Precision': precision,
@@ -100,12 +99,12 @@ def output_report(y_true, y_true_per_class, y_pred, y_pred_per_class, threshold,
     human_readable_threshold = [
         '## Summary',
         '- A confidence threshold of {:.2f} meets the conditions of required precision.'.format(threshold),
-        '- {}/{} mails of the evaluation set were predicted with higher confidence than this threshold.'.format(
+        '- {}/{} incidents of the evaluation set were predicted with higher confidence than this threshold.'.format(
             int(coverage), int(test_set_size)),
-        '- The remainder, {}/{} mails of the evaluation set, were predicted with lower confidence than this threshold '
+        '- The remainder, {}/{} incidents of the evaluation set, were predicted with lower confidence than this threshold '
         '(these predictions were ignored).'.format(
             int(test_set_size - coverage), int(test_set_size)),
-        '- Expected coverage ratio: The model will attempt to provide a prediction for {:.2f}% of mails. '
+        '- Expected coverage ratio: The model will attempt to provide a prediction for {:.2f}% of incidents. '
         '({}/{})'.format(
             coverage / test_set_size * 100, int(coverage), int(test_set_size)),
         '- Evaluation of the model performance using this probability threshold can be found below:']
