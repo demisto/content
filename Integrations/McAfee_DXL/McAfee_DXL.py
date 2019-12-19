@@ -1,11 +1,12 @@
-import demistomock as demisto
 from typing import Dict
 import tempfile
-from CommonServerPython import *
 from dxlclient.client_config import DxlClientConfig
 from dxlclient.client import DxlClient
 from dxlclient.broker import Broker
 from dxlclient.message import Event
+import demistomock as demisto
+from CommonServerPython import return_error, return_outputs, is_ip_valid
+
 
 INTEGRATION_NAME = "McAfee DXL"
 CONNECT_RETRIES = 1
@@ -47,11 +48,13 @@ class EventSender:
         self.client.connect()
 
     def push_ip(self, ip, trust_level, topic):
-        if not (is_ip_valid(ip)):
-            raise Exception(f'argument ip {ip} is not a valid IP')
+        if not is_ip_valid(ip):
+            raise ValueError(f'argument ip {ip} is not a valid IP')
+
         trust_level_key = self.TRUST_LEVEL[trust_level]
         if topic:
             self.push_ip_topic = topic
+
         self.send_event(self.push_ip_topic, f'ip:{ip};trust_level:{trust_level_key}')
         return f'Successfully pushed ip {ip} with trust level {trust_level}'
 
@@ -59,6 +62,7 @@ class EventSender:
         trust_level_key = self.TRUST_LEVEL[trust_level]
         if topic:
             self.push_url_topic = topic
+
         self.send_event(self.push_url_topic, f'url:{url};trust_level:{trust_level_key}')
         return f'Successfully pushed url {url} with trust level {trust_level}'
 
@@ -66,6 +70,7 @@ class EventSender:
         trust_level_key = self.TRUST_LEVEL[trust_level]
         if topic:
             self.push_domain_topic = topic
+
         self.send_event(self.push_domain_topic, f'domain:{domain};trust_level:{trust_level_key}')
         return f'Successfully pushed domain {domain} with trust level {trust_level}'
 
@@ -73,6 +78,7 @@ class EventSender:
         trust_level_key = self.TRUST_LEVEL[trust_level]
         if topic:
             self.push_ip_topic = topic
+
         self.send_event(self.push_hash_topic, f'hash:{hash_obj};trust_level:{trust_level_key}')
         return f'Successfully pushed hash {hash_obj} with trust level {trust_level}'
 
@@ -91,6 +97,7 @@ class EventSender:
     def send_event(self, topic, payload):
         if not topic:
             raise Exception(f'Error in {demisto.command()} topic field is required')
+
         event = Event(topic)
         event.payload = str(payload).encode()
         self.client.send_event(event)
@@ -103,27 +110,37 @@ class EventSender:
 def main():
     args = demisto.args()
     command = demisto.command()
-    result = ''
+    event_sender = EventSender(demisto.params())
     try:
-        event_sender = EventSender(demisto.params())
+        result = ''
         if command == 'test-module':
+            event_sender.send_event('TEST', 'test')
             result = 'ok'
         elif command == 'dxl-send-event':
             result = event_sender.send_event_wrapper(args.get('topic'), args.get('payload'))
         elif command == 'dxl-push-ip':
-            result = event_sender.push_ip(args.get('ip'), args.get('trust_level'), args.get('topic'))
+            result = event_sender.push_ip(args.get('ip'),
+                                          args.get('trust_level'),
+                                          args.get('topic'))
         elif command == 'dxl-push-url':
-            result = event_sender.push_url(args.get('url'), args.get('trust_level'), args.get('topic'))
+            result = event_sender.push_url(args.get('url'),
+                                           args.get('trust_level'),
+                                           args.get('topic'))
         elif command == 'dxl-push-domain':
-            result = event_sender.push_domain(args.get('domain'), args.get('trust_level'), args.get('topic'))
+            result = event_sender.push_domain(args.get('domain'),
+                                              args.get('trust_level'),
+                                              args.get('topic'))
         elif command == 'dxl-push-hash':
-            result = event_sender.push_hash(args.get('hash'), args.get('trust_level'), args.get('topic'))
+            result = event_sender.push_hash(args.get('hash'),
+                                            args.get('trust_level'),
+                                            args.get('topic'))
         else:
             Exception(f'{demisto.command()} is not A command')
-        event_sender.client.disconnect()
         return_outputs(result)
     except Exception as error:
-        return_error(f'error in {INTEGRATION_NAME} {str(error)}.')
+        return_error(f'error in {INTEGRATION_NAME} {str(error)}.', error)
+    finally:
+        event_sender.client.disconnect()
 
 
 if __name__ in ('__builtin__', 'builtins'):
