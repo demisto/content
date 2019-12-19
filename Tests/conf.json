@@ -1933,7 +1933,7 @@
         },
         {
             "integrations": "Flashpoint",
-            "playbookID": "Flaspoint_reputation-Test"
+            "playbookID": "Flashpoint_reputation-Test"
         },
         {
             "integrations": "BluecatAddressManager",

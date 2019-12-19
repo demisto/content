@@ -1353,7 +1353,7 @@ def main():
         return_error(str(v_err))
     except requests.exceptions.ConnectionError as c:
         """ Caused mostly when URL is altered."""
-        return_error(f'Failed to execute {demisto.command()} command.')
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(c)}')
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
