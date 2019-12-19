@@ -1741,7 +1741,7 @@ tasks:
       - "102"
     scriptarguments:
       virtual_router:
-        simple: virtual_router_DONT_DELETE
+        simple: virtual_router_test_DONT_DELETE
     separatecontext: false
     view: |-
       {
