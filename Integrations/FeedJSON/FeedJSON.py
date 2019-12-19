@@ -13,8 +13,8 @@ INTEGRATION_NAME = 'JsonFeed'
 
 class Client:
     def __init__(self, url: str, credentials: Dict[str, str] = None, extractor: str = '@', indicator: str = 'indicator',
-                 source_name: str = 'json', fields: Union[List, str] = None, insecure: bool = True, cert_file: str = None,
-                 key_file: str = None, headers: str = None):
+                 source_name: str = 'json', fields: Union[List, str] = None, insecure: bool = True,
+                 cert_file: str = None, key_file: str = None, headers: str = None, **_):
         """
         Implements class for miners of JSON feeds over http/https.
 
@@ -49,7 +49,6 @@ class Client:
         """
         self.extractor = extractor
         self.indicator = indicator
-        self.source_name = source_name
         self.fields = argToList(fields)
 
         # Request related attributes
@@ -58,6 +57,7 @@ class Client:
         self.auth = (credentials.get('username'), credentials.get('password'))
 
         # Hidden params
+        self.source_name = source_name
         self.headers = headers
         self.cert = (cert_file, key_file) if cert_file and key_file else None
 
@@ -90,21 +90,12 @@ def test_module(client) -> str:
 
 
 def fetch_indicators_command(client: Client, indicator_type: str) -> List[Dict]:
-    iterator = client.build_iterator()
-
     indicators = []
-    for item in iterator:
+    for item in client.build_iterator():
         indicator_value = item.get(client.indicator)
 
-        fields = client.fields
-        if not fields:
-            fields = item.keys()
-            fields.remove(client.indicator)
-
         attributes = {'source_name': client.source_name}
-        for field in fields:
-            if field in item:
-                attributes[field] = item[field]
+        attributes.update({field: item.get(field) for field in client.fields or item.keys() if field is not client.indicator})
 
         indicator = {'value': indicator_value, 'type': indicator_type}
 
