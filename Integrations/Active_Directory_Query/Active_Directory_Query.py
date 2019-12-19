@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import *
+from typing import List, Dict, Optional
 from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry
 from ldap3.extend import microsoft
 import ssl
@@ -38,7 +38,7 @@ DEFAULT_PERSON_ATTRIBUTES = [
     'displayName',
     'memberOf',
     'mail',
-    'samAccountName',
+    'sAMAccountName',
     'manager',
     'userAccountControl'
 ]
@@ -91,7 +91,7 @@ def account_entry(person_object, custome_attributes):
         'Type': 'AD',
         'ID': person_object.get('dn'),
         'Email': person_object.get('mail'),
-        'Username': person_object.get('samAccountName'),
+        'Username': person_object.get('sAMAccountName'),
         'DisplayName': person_object.get('displayName'),
         'Managr': person_object.get('manager'),
         'Manager': person_object.get('manager'),
@@ -514,7 +514,7 @@ def create_user():
     password = args.get("password")
     custome_attributes = args.get('custom-attributes')
     attributes = {
-        "samAccountName": username
+        "sAMAccountName": username
     }
 
     # set common user attributes
@@ -804,7 +804,7 @@ def add_member_to_group(default_base_dn):
 
     success = microsoft.addMembersToGroups.ad_add_members_to_groups(conn, [member_dn], [grp_dn])
     if not success:
-        raise Exception("Failed to add {} to group {]}".format(
+        raise Exception("Failed to add {} to group {}".format(
             args.get('username') or args.get('computer-name'),
             args.get('group_name')
         ))
@@ -842,10 +842,10 @@ def remove_member_from_group(default_base_dn):
 
     success = microsoft.removeMembersFromGroups.ad_remove_members_from_groups(conn, [member_dn], [grp_dn], True)
     if not success:
-        raise Exception("Failed to remove {member} from group {group_name}".format({
-            "member": args.get('username') or args.get('computer-name'),
-            "group_name": args.get('group_name')
-        }))
+        raise Exception("Failed to remove {} from group {}".format(
+            args.get('username') or args.get('computer-name'),
+            args.get('group_name')
+        ))
 
     demisto_entry = {
         'ContentsFormat': formats['text'],

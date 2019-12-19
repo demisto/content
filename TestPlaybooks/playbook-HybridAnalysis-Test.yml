@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b2d70110-f597-4f63-8f7f-c62350b38c1f
+    taskid: c45eff83-a350-403b-8d0e-8a344a8dc2a8
     type: start
     task:
-      id: b2d70110-f597-4f63-8f7f-c62350b38c1f
+      id: c45eff83-a350-403b-8d0e-8a344a8dc2a8
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 480,
           "y": 50
         }
       }
@@ -30,10 +30,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 705c8f95-d80e-4260-8201-e3218c24db3d
+    taskid: 1c9fdb96-9d08-4365-8275-9ba69b85ce38
     type: regular
     task:
-      id: 705c8f95-d80e-4260-8201-e3218c24db3d
+      id: 1c9fdb96-9d08-4365-8275-9ba69b85ce38
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -55,7 +55,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 480,
           "y": 195
         }
       }
@@ -64,10 +64,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: fbe56d92-ec38-4117-84bf-cbcee07f9616
+    taskid: 06892eb4-931d-4b51-8766-66b8d66755f0
     type: title
     task:
-      id: fbe56d92-ec38-4117-84bf-cbcee07f9616
+      id: 06892eb4-931d-4b51-8766-66b8d66755f0
       version: -1
       name: Done
       type: title
@@ -77,8 +77,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 2470
+          "x": 265,
+          "y": 3520
         }
       }
     note: false
@@ -86,10 +86,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 9ffe7883-9e27-4376-8932-5bcb23c8ed14
+    taskid: 22353fd6-157e-44a5-8925-3d2657fdbed3
     type: regular
     task:
-      id: 9ffe7883-9e27-4376-8932-5bcb23c8ed14
+      id: 22353fd6-157e-44a5-8925-3d2657fdbed3
       version: -1
       name: hybrid-analysis-scan
       description: Get summary information for a given MD5, SHA1 or SHA256 and all
@@ -111,8 +111,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 545
+          "x": 480,
+          "y": 1945
         }
       }
     note: false
@@ -120,10 +120,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 82d1869a-a384-4f04-886c-bd9a7f3d2744
+    taskid: d312ccca-53d6-4ee0-8093-7985677e9b05
     type: condition
     task:
-      id: 82d1869a-a384-4f04-886c-bd9a7f3d2744
+      id: d312ccca-53d6-4ee0-8093-7985677e9b05
       version: -1
       name: verify-scan
       type: condition
@@ -170,8 +170,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 720
+          "x": 480,
+          "y": 2120
         }
       }
     note: false
@@ -179,10 +179,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 33a74522-fb29-4501-8be5-597f5243aaab
+    taskid: ecfcc69e-7125-4fd7-8003-9dd134c9ebd9
     type: regular
     task:
-      id: 33a74522-fb29-4501-8be5-597f5243aaab
+      id: ecfcc69e-7125-4fd7-8003-9dd134c9ebd9
       version: -1
       name: hybrid-analysis-submit-url
       description: Submit a website's url or url with file for analysis
@@ -202,8 +202,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1945
+          "x": 265,
+          "y": 2995
         }
       }
     note: false
@@ -211,10 +211,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 21e15bba-3e7a-495d-8c29-c41f89520449
+    taskid: 6d662d7a-2989-47b3-8311-94a7eacdc2fc
     type: regular
     task:
-      id: 21e15bba-3e7a-495d-8c29-c41f89520449
+      id: 6d662d7a-2989-47b3-8311-94a7eacdc2fc
       version: -1
       name: verify submission through scan
       description: Get summary information for a given MD5, SHA1 or SHA256 and all
@@ -234,8 +234,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 265,
+          "y": 3170
         }
       }
     note: false
@@ -243,10 +243,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 415817ca-d2ce-46e4-8b0f-ce855fd9d588
+    taskid: 102af89a-3418-46cd-8797-2383ada3e367
     type: condition
     task:
-      id: 415817ca-d2ce-46e4-8b0f-ce855fd9d588
+      id: 102af89a-3418-46cd-8797-2383ada3e367
       version: -1
       name: verify submission scan
       type: condition
@@ -267,8 +267,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2295
+          "x": 265,
+          "y": 3345
         }
       }
     note: false
@@ -276,10 +276,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: dede989a-6d42-44de-8c98-2d02633adf95
+    taskid: 684fcd62-9477-4600-8f43-d745cc18a33a
     type: regular
     task:
-      id: dede989a-6d42-44de-8c98-2d02633adf95
+      id: 684fcd62-9477-4600-8f43-d745cc18a33a
       version: -1
       name: hybrid-analysis-search
       description: Search the database using the Hybrid Analysis search syntax
@@ -316,8 +316,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 265,
+          "y": 2295
         }
       }
     note: false
@@ -325,10 +325,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: d6d16cd8-f9d5-4797-8aad-725071e28700
+    taskid: 27856955-b7e6-42ff-8591-81168fbff524
     type: condition
     task:
-      id: d6d16cd8-f9d5-4797-8aad-725071e28700
+      id: 27856955-b7e6-42ff-8591-81168fbff524
       version: -1
       name: verify-search
       type: condition
@@ -362,8 +362,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 265,
+          "y": 2470
         }
       }
     note: false
@@ -371,10 +371,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 127b7109-71c8-4162-8738-42b14cd68bc3
+    taskid: 2848ab03-7bf5-4c66-8733-faca98a8fb22
     type: regular
     task:
-      id: 127b7109-71c8-4162-8738-42b14cd68bc3
+      id: 2848ab03-7bf5-4c66-8733-faca98a8fb22
       version: -1
       name: Create sample file
       description: Sends http request. Returns the response as json.
@@ -385,7 +385,6 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
-      - "5"
     scriptarguments:
       body: {}
       filename: {}
@@ -405,7 +404,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 480,
           "y": 370
         }
       }
@@ -414,10 +413,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 95dd4a7c-4f4b-42e1-8ba4-19ee130346d0
+    taskid: 15a5dbcc-990c-48ec-8f51-884dd69727c7
     type: regular
     task:
-      id: 95dd4a7c-4f4b-42e1-8ba4-19ee130346d0
+      id: 15a5dbcc-990c-48ec-8f51-884dd69727c7
       version: -1
       name: hybrid-analysis-submit-sample
       description: Submit a file from investigation to analysis server  (NOTE - minimum
@@ -440,8 +439,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 2120
+          "x": 480,
+          "y": 545
         }
       }
     note: false
@@ -449,10 +448,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 0146e801-7563-41a3-83ce-e3382bd0cf4d
+    taskid: 43a39dc0-3b5d-42b5-81b1-f829894f7ece
     type: condition
     task:
-      id: 0146e801-7563-41a3-83ce-e3382bd0cf4d
+      id: 43a39dc0-3b5d-42b5-81b1-f829894f7ece
       version: -1
       name: verify-submission
       type: condition
@@ -460,7 +459,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -476,8 +475,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 2295
+          "x": 480,
+          "y": 720
         }
       }
     note: false
@@ -485,10 +484,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: bc8f396b-c95e-4417-8cac-698331be2522
+    taskid: 0d1c46e7-5f59-4a37-845f-dd4b2945e25d
     type: regular
     task:
-      id: bc8f396b-c95e-4417-8cac-698331be2522
+      id: 0d1c46e7-5f59-4a37-845f-dd4b2945e25d
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -503,8 +502,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 895
+          "x": 695,
+          "y": 2295
         }
       }
     note: false
@@ -512,10 +511,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: d34b87e7-b45a-4fe5-84d7-7dac891f51a1
+    taskid: 1ed5622a-bd0d-4eb0-863c-fee5f3bed91f
     type: regular
     task:
-      id: d34b87e7-b45a-4fe5-84d7-7dac891f51a1
+      id: 1ed5622a-bd0d-4eb0-863c-fee5f3bed91f
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -530,8 +529,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1245
+          "x": 50,
+          "y": 2645
         }
       }
     note: false
@@ -539,10 +538,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: eb5cc410-f11a-4ed4-8e11-978178d02daf
+    taskid: 654d6588-73b1-4533-8d1e-9c9ad9dd02ae
     type: condition
     task:
-      id: eb5cc410-f11a-4ed4-8e11-978178d02daf
+      id: 654d6588-73b1-4533-8d1e-9c9ad9dd02ae
       version: -1
       name: verify quick-scan results
       type: condition
@@ -575,8 +574,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 1720
+          "x": 480,
+          "y": 2820
         }
       }
     note: false
@@ -584,10 +583,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 4c290456-9fd0-48b8-8796-7c01e5ee31d4
+    taskid: 6d15070a-7694-42ed-85d9-00c1c03a38ce
     type: regular
     task:
-      id: 4c290456-9fd0-48b8-8796-7c01e5ee31d4
+      id: 6d15070a-7694-42ed-85d9-00c1c03a38ce
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -602,8 +601,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1945
+          "x": 695,
+          "y": 2995
         }
       }
     note: false
@@ -611,10 +610,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: b7c5c3a7-5097-4317-82a2-632545d0bbc4
+    taskid: c22379d0-04fd-4fd8-89f9-c5dbd1811dc5
     type: playbook
     task:
-      id: b7c5c3a7-5097-4317-82a2-632545d0bbc4
+      id: c22379d0-04fd-4fd8-89f9-c5dbd1811dc5
       version: -1
       name: Hybrid-analysis quick-scan
       playbookName: Hybrid-analysis quick-scan
@@ -639,8 +638,254 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 260,
-          "y": 1530
+          "x": 480,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 9a4d86e6-a105-4513-86a6-d8d795af8c2a
+    type: regular
+    task:
+      id: 9a4d86e6-a105-4513-86a6-d8d795af8c2a
+      version: -1
+      name: hybrid-analysis-detonate-file
+      description: Submits a file for detonation in Hybrid Analysis.
+      script: '|||hybrid-analysis-detonate-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      delay: {}
+      entryId:
+        complex:
+          root: File
+          accessor: EntryID
+      environmentID:
+        simple: "100"
+      malicious_threat_levels: {}
+      timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 007376d6-1d84-40f8-8a87-943ee93ca878
+    type: regular
+    task:
+      id: 007376d6-1d84-40f8-8a87-943ee93ca878
+      version: -1
+      name: hybrid-analysis-get-report-status
+      description: Returns the state of the file submission.
+      script: '|||hybrid-analysis-get-report-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      environmentID:
+        simple: "100"
+      jobID:
+        complex:
+          root: HybridAnalysis
+          accessor: Submit.JobID
+      sha256:
+        complex:
+          root: HybridAnalysis
+          accessor: Submit.SHA256
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 7d626e46-f1fa-4753-8c6b-711a1dfe20af
+    type: condition
+    task:
+      id: 7d626e46-f1fa-4753-8c6b-711a1dfe20af
+      version: -1
+      name: verify-report-status
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: HybridAnalysis
+                accessor: Submit.State
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: e490cac7-cfda-4d66-8872-110505f17f73
+    type: condition
+    task:
+      id: e490cac7-cfda-4d66-8872-110505f17f73
+      version: -1
+      name: verify-detonate-file
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Hybrid Analysis
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.submitname
+            iscontext: true
+          right:
+            value:
+              simple: test_file.pdf
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: File.environmentId
+            iscontext: true
+          right:
+            value:
+              simple: "100"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 25891236-db3c-485b-845b-052ca68c95b4
+    type: regular
+    task:
+      id: 25891236-db3c-485b-845b-052ca68c95b4
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 469d72eb-a475-4dab-87cd-ef302bee9219
+    type: regular
+    task:
+      id: 469d72eb-a475-4dab-87cd-ef302bee9219
+      version: -1
+      name: Create sample file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
         }
       }
     note: false
@@ -653,8 +898,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2485,
-        "width": 1465,
+        "height": 3535,
+        "width": 1025,
         "x": 50,
         "y": 50
       }

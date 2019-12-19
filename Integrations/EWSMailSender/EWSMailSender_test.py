@@ -2,7 +2,7 @@ import logging
 import EWSMailSender
 
 
-def test_prepar():
+def test_prepare():
     res = EWSMailSender.prepare()
     assert res.protocol.server == 'outlook.office365.com'
 
