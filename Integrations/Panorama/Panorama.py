@@ -361,6 +361,9 @@ def panorama_test():
     if DEVICE_GROUP and DEVICE_GROUP != 'shared':
         device_group_test()
 
+    if TEMPLATE:
+        template_test()
+
     demisto.results('ok')
 
 
@@ -401,6 +404,45 @@ def device_group_test():
     if DEVICE_GROUP not in device_group_names:
         return_error(f'Device Group: {DEVICE_GROUP} does not exist.'
                      f' The available Device Groups for this instance: {", ".join(device_group_names)}.')
+
+
+def get_templates_names():
+    """
+    Get templates names in the Panorama
+    """
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': "/config/devices/entry[@name=\'localhost.localdomain\']/template/entry",
+        'key': API_KEY
+    }
+
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    templates = result['response']['result']['entry']
+    template_names = []
+    if isinstance(templates, dict):
+        # only one device group in the panorama
+        template_names.append(templates.get('@name'))
+    else:
+        for template in templates:
+            template_names.append(template.get('@name'))
+
+    return template_names
+
+
+def template_test():
+    """
+    Test module for the Template specified
+    """
+    template_names = get_templates_names()
+    if TEMPLATE not in template_names:
+        return_error(f'Template: {TEMPLATE} does not exist.'
+                     f' The available Templates for this instance: {", ".join(template_names)}.')
 
 
 @logger
