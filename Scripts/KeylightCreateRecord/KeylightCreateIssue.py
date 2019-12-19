@@ -5,15 +5,15 @@ import json
 
 """
 This script is used to simplify the process of creating or updating a record in Keylight (v2).
-You can add fields that you want in the record as script arguments and or in the
-code and have the format for the `kl-create-record` and `kl-update-record` commands in a jiffy.
+You can add fields in the record as script arguments and/or in the
+code. The format for the `kl-create-record` and `kl-update-record` commands are created quickly.
 
 Fill out the args below and add arguments accordingly.
-`args` dict contains the record fields you want to create in the component via create/update records
+`args` dict contains the record fields you want to create in the component through create/update records.
 
-`lookup_fields` - specifies which of the fields are lookup fields and what component are they taken from.
+`lookup_fields` - specifies which fields are lookup fields and what components they are taken from.
 
-Output - you can find the json to create/update your records in `Keylight.JSON`
+Output - locate the json file to create/update your records in `Keylight.JSON`
 """
 
 
