@@ -173,7 +173,9 @@ jobs:
             demisto-sdk create -a $CIRCLE_ARTIFACTS
             # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
             cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
-            zip -j "$CIRCLE_ARTIFACTS/all_content.zip" "$CIRCLE_ARTIFACTS/bundle_test/*"
+            unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "$CIRCLE_ARTIFACTS/test_content"
+            zip -j "$CIRCLE_ARTIFACTS/all_content.zip" $CIRCLE_ARTIFACTS/test_content/*
+            rm -r $CIRCLE_ARTIFACTS/test_content
       - store_artifacts:
           path: artifacts
           destination: artifacts
