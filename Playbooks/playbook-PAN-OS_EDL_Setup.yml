@@ -2,8 +2,8 @@ id: PAN-OS EDL Setup
 version: -1
 name: PAN-OS EDL Setup
 fromversion: 4.0.0
-description: "Sets up external dynamic list in PAN-OS.\nIn case file exists in web
-  server it will sync it to demisto. Then it will create an EDL object and a matching
+description: "Configures an external dynamic list in PAN-OS.\nIn the event that the file exists on the web
+  server, it will sync it to demisto. Then it will create an EDL object and a matching
   rule."
 starttaskid: "0"
 tasks:
@@ -288,7 +288,7 @@ tasks:
       id: c41aaffd-a288-4eaa-8afb-d7d2df2250ec
       version: -1
       name: Is there an external file?
-      description: Checks if an external file exists in the web server.
+      description: Checks if an external file exists on the web server.
       type: condition
       iscommand: false
       brand: ""
@@ -429,7 +429,7 @@ tasks:
       id: f0191f59-4221-4f88-8811-a8cc196f4971
       version: -1
       name: Is auto-commit defined?
-      description: Checks if the values provided in arguments are equal. If either
+      description: Checks if the values provided in the arguments are equal. If either
         of the arguments are missing, "no" is returned.
       scriptName: AreValuesEqual
       type: condition
@@ -466,8 +466,8 @@ tasks:
       id: fecf981d-2339-4dd6-880a-0af64002c524
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This will be
-        operational if auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This option is available
+        when auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -493,8 +493,8 @@ tasks:
       id: c6cb98f4-5335-4271-860c-677955525d7f
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This will be
-        operational if auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This option is available
+        when auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -521,7 +521,7 @@ tasks:
       version: -1
       name: PAN-OS - Create Or Edit Rule
       description: Creates or edits a Panorama rule and moves it into the desired
-        position
+        position.
       playbookName: PAN-OS - Create Or Edit Rule
       type: playbook
       iscommand: false
@@ -588,7 +588,7 @@ tasks:
       version: -1
       name: PAN-OS - Create Or Edit Rule
       description: Creates or edits a Panorama rule and moves it into the desired
-        position
+        position.
       playbookName: PAN-OS - Create Or Edit Rule
       type: playbook
       iscommand: false
@@ -672,7 +672,7 @@ inputs:
   required: true
   description: |-
     The name of the list that will store the IOCs.
-    The name of the file on the web server. This file name will be the name of the list with the extension ".txt".
+    The name of the file on the web server. This file name is the same as the name of the list with the extension ".txt" added.
 - key: ioc-type
   value: {}
   required: true
@@ -711,7 +711,7 @@ inputs:
       * Before
       * After
 
-    The default position will be 'Top'
+    The default position is 'Top'
 - key: relative-rule-name
   value: {}
   required: false
