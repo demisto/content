@@ -3,7 +3,7 @@ version: -1
 fromversion: 4.5.0
 name: Active Directory - Get User Manager Email
 description: Takes an email address or a username of a user account in Active Directory,
-  and returns the email address of his or her manager.
+  and returns the email address of the user's manager.
 starttaskid: '0'
 tasks:
   '0':
@@ -144,8 +144,7 @@ tasks:
       id: a4daff2e-4e2c-48f2-878c-1fe7db24ca37
       version: -1
       name: Get user details by username
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
+      description: Retrieves detailed information about a user account based on name or Active Directory Distinguished
         Name (DN). If no filter is specified, all users are returned.
       script: Active Directory Query v2|||ad-get-user
       type: regular
@@ -188,9 +187,7 @@ tasks:
       id: f100ed8b-fa1e-4b6a-87ee-1d07a6e8d52f
       version: -1
       name: Get user details by email
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account based on the user's email address. If no filter is specified, all users are returned.
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
@@ -229,7 +226,7 @@ tasks:
     task:
       id: c1b5f0d9-797a-4d66-8c40-a7a4693dcc83
       version: -1
-      name: Was a user manager found?
+      name: Was a manager found?
       description: Checks whether a manager name was found for the user account.
       type: condition
       iscommand: false
@@ -333,8 +330,8 @@ tasks:
     task:
       id: 83647f89-f85f-47e7-8dc1-268311f54299
       version: -1
-      name: Was a manager found by email or by username?
-      description: Checks whether an email was retrieved for the manager of the user
+      name: Was a manager found by email or username?
+      description: Checks whether an email was retrieved for the user's manager.
         account.
       type: condition
       iscommand: false
@@ -586,6 +583,6 @@ inputs:
   description: Search for user by the email attribute in Active Directory.
 outputs:
 - contextPath: UserManagerEmail
-  description: The email the user's manager.
+  description: The email of the user's manager.
 tests:
   - Active Directory - Get User Manager Email - Test
