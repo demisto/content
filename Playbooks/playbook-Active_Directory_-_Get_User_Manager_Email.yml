@@ -1,9 +1,9 @@
-id: Active Directory - Get User Manager Email
+id: Active Directory - Get User Manager Details
 version: -1
 fromversion: 4.5.0
-name: Active Directory - Get User Manager Email
+name: Active Directory - Get User Manager Details
 description: Takes an email address or a username of a user account in Active Directory,
-  and returns the email address of his or her manager.
+  and returns the email address of the user's manager.
 starttaskid: '0'
 tasks:
   '0':
@@ -138,15 +138,14 @@ tasks:
     ignoreworker: false
   '4':
     id: '4'
-    taskid: a4daff2e-4e2c-48f2-878c-1fe7db24ca37
+    taskid: 89d7467d-51c7-4391-8b8d-db68c2612e9f
     type: regular
     task:
-      id: a4daff2e-4e2c-48f2-878c-1fe7db24ca37
+      id: 89d7467d-51c7-4391-8b8d-db68c2612e9f
       version: -1
       name: Get user details by username
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account based on their
+        username.
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
@@ -182,15 +181,14 @@ tasks:
     ignoreworker: false
   '5':
     id: '5'
-    taskid: f100ed8b-fa1e-4b6a-87ee-1d07a6e8d52f
+    taskid: 9361739f-d4a8-4be6-8b25-df7549fa65c6
     type: regular
     task:
-      id: f100ed8b-fa1e-4b6a-87ee-1d07a6e8d52f
+      id: 9361739f-d4a8-4be6-8b25-df7549fa65c6
       version: -1
       name: Get user details by email
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account based on their
+        email address.
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
@@ -224,12 +222,12 @@ tasks:
     ignoreworker: false
   '6':
     id: '6'
-    taskid: c1b5f0d9-797a-4d66-8c40-a7a4693dcc83
+    taskid: 30809343-6474-43b7-8f4e-2fc30a3ee496
     type: condition
     task:
-      id: c1b5f0d9-797a-4d66-8c40-a7a4693dcc83
+      id: 30809343-6474-43b7-8f4e-2fc30a3ee496
       version: -1
-      name: Was a user manager found?
+      name: Was a manager found?
       description: Checks whether a manager name was found for the user account.
       type: condition
       iscommand: false
@@ -264,15 +262,16 @@ tasks:
     ignoreworker: false
   '7':
     id: '7'
-    taskid: 4d5ca879-e03d-48ac-83b5-112534139e6b
+    taskid: 65cf888f-15a2-4f6a-8b3f-72dff44acae4
     type: regular
     task:
-      id: 4d5ca879-e03d-48ac-83b5-112534139e6b
+      id: 65cf888f-15a2-4f6a-8b3f-72dff44acae4
       version: -1
       name: Get manager details by user email or username
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about the user's manager based on
+        their email or username.
+      tags:
+      - active_directory_manager_details
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
@@ -280,6 +279,7 @@ tasks:
     nexttasks:
       '#none#':
       - '9'
+      - '15'
     scriptarguments:
       attributes: {}
       custom-field-data: {}
@@ -328,14 +328,13 @@ tasks:
     ignoreworker: false
   '9':
     id: '9'
-    taskid: 83647f89-f85f-47e7-8dc1-268311f54299
+    taskid: 37fd0c79-5294-4e2e-8524-31f09859e8ec
     type: condition
     task:
-      id: 83647f89-f85f-47e7-8dc1-268311f54299
+      id: 37fd0c79-5294-4e2e-8524-31f09859e8ec
       version: -1
-      name: Was a manager found by email or by username?
-      description: Checks whether an email was retrieved for the manager of the user
-        account.
+      name: Was a manager found by email or username?
+      description: Checks whether an email was retrieved for the user's manager.
       type: condition
       iscommand: false
       brand: ''
@@ -549,9 +548,89 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  '15':
+    id: '15'
+    taskid: e67a330b-f25f-470d-881d-6dc98f436631
+    type: condition
+    task:
+      id: e67a330b-f25f-470d-881d-6dc98f436631
+      version: -1
+      name: Was a manager display name found?
+      description: Checks whether an email was retrieved for the user's manager.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '12'
+      'Yes':
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: 'Yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Users.displayName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '16':
+    id: '16'
+    taskid: ed939125-7125-4822-8684-d38388341d88
+    type: regular
+    task:
+      id: ed939125-7125-4822-8684-d38388341d88
+      version: -1
+      name: Set manager display name to outputs
+      description: Sets the email of the manager to the output context key of the
+        playbook. It finds the manager by looking in the context for a user who's
+        username is not the same as the playbook input username.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      append: {}
+      key:
+        simple: UserManagerDisplayName
+      value:
+        complex:
+          root: ActiveDirectory
+          accessor: Users.displayName
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
+      "15_12_#default#": 0.25,
+      "15_16_Yes": 0.56,
       "1_13_#default#": 0.22,
       "1_2_yes": 0.58,
       "2_4_Username": 0.47,
@@ -564,8 +643,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1675,
-        "width": 1450,
-        "x": 20,
+        "width": 1900,
+        "x": -430,
         "y": 50
       }
     }
@@ -586,6 +665,9 @@ inputs:
   description: Search for user by the email attribute in Active Directory.
 outputs:
 - contextPath: UserManagerEmail
-  description: The email the user's manager.
+  description: The email of the user's manager.
+- contextPath: UserManagerDisplayName
+  description: The display name of the user's manager.
+  type: unknown
 tests:
-  - Active Directory - Get User Manager Email - Test
+  - Active Directory - Get User Manager Details - Test

@@ -1,7 +1,7 @@
-id: Active Directory - Get User Manager Email - Test
+id: Active Directory - Get User Manager Details - Test
 version: -1
 fromversion: 4.5.0
-name: Active Directory - Get User Manager Email - Test
+name: Active Directory - Get User Manager Details - Test
 description: A test playbook for the Active Directory - Get User Manager Email playbook.
 starttaskid: "0"
 tasks:
@@ -31,13 +31,15 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 56b46d50-e345-4f6e-8ddf-73f1040e14a9
+    taskid: 8ecfaffd-55cd-45e2-8667-f5cf68a029cf
     type: playbook
     task:
-      id: 56b46d50-e345-4f6e-8ddf-73f1040e14a9
+      id: 8ecfaffd-55cd-45e2-8667-f5cf68a029cf
       version: -1
       name: Active Directory - Get User Manager Email
-      playbookName: Active Directory - Get User Manager Email
+      description: Takes an email address or a username of a user account in Active
+        Directory, and returns the email address of his or her manager.
+      playbookName: Active Directory - Get User Manager Details
       type: playbook
       iscommand: false
       brand: ""
