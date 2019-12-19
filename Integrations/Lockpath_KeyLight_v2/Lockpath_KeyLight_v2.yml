@@ -41,7 +41,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: Use LockPath KeyLight to manage tickets.
+description: Use the LockPath KeyLight integration to manage GRC tickets in the Keylight platform.
 display: Lockpath KeyLight v2
 name: Lockpath KeyLight v2
 script:
@@ -60,8 +60,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a component specified by its ID or its alias. If no parameters
-      are specified, all componenets will be retrieved.
+    description: Retrieves a component specified by ID or alias. If no parameters
+      are specified, all components will be retrieved.
     execution: false
     name: kl-get-component
     outputs:
@@ -85,7 +85,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves detail field listing for a component specified by its ID.
+    description: Retrieves a detail field listing for a component specified by ID.
     execution: false
     name: kl-get-field-list
     outputs:
@@ -109,7 +109,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: The ID of the component. Get ID from `kl-get-coponent`.
+      description: The ID of the component. Get the ID from the kl-get-component command.
       isArray: false
       name: component_id
       required: true
@@ -121,7 +121,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves details for a field specified by its ID.
+    description: Retrieves details for a field specified by ID.
     execution: false
     name: kl-get-field
     outputs:
@@ -145,22 +145,22 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The component ID. Get ID from `kl-get-coponent`.
+      description: The component ID. Get the D from the kl-get-component.
       isArray: false
       name: component_id
       required: true
       secret: false
     - default: false
       description: |-
-        Filter specific field names.
-        * Case sensetive.
-        * If one of the names contains a space, add all names in parenthesis (i.e. "Id,Published Revision")
+        The filter specific for field names.
+        * Case sensitive.
+        * If one of the names contains a space, add all names in parenthesis (such as "Id,Published Revision").
       isArray: true
       name: field_names
       required: false
       secret: false
     - default: false
-      description: The record ID. Can get from Keylight itself or from `kl-get-records`.
+      description: The record ID. Get the ID from Keylight or from the kl-get-records command.
       isArray: false
       name: record_id
       required: true
@@ -168,7 +168,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Get detailed records.
+      description: Whether to get detailed records. Default is false.
       isArray: false
       name: detailed
       predefined:
@@ -188,14 +188,14 @@ script:
       description: The fields in the record.
       type: String
     - contextPath: Keylight.Record.ComponentID
-      description: The ID of the component the record is in.
+      description: The component ID of the record.
       type: String
     - contextPath: Keylight.Record.DisplayName
       description: The display name of the record.
       type: String
   - arguments:
     - default: false
-      description: The ID of the desired component. Get ID from `kl-get-coponent`.
+      description: The ID of the desired component. Get the ID from the kl-get-component command.
       isArray: false
       name: component_id
       required: true
@@ -209,15 +209,15 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: The index of the page of result to return. Must be between 0 and
-        100.
+      description: The index of the page of result to return. Must be between 0 and 100.
       isArray: false
       name: page_size
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of filter to apply.
+      description: 'The type of filter to apply. Can be: "Contains", "Excludes", "Starts With", "Ends With", "Equals", "Not Equals", "Greater Than", "Less Than", "Greater Than",
+        "Less Than", "Greater Equals Than", "Between", "Not Between", "Is Null", "Is Not Null".'
       isArray: false
       name: filter_type
       predefined:
@@ -238,13 +238,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the field to apply the filter on.
+      description: The name of the field for which to apply the filter.
       isArray: false
       name: filter_field_name
       required: false
       secret: false
     - default: false
-      description: The value to filter by.
+      description: The value for which to filter.
       isArray: false
       name: filter_value
       required: false
@@ -252,7 +252,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Get detailed records
+      description: Whether to get detailed records.
       isArray: false
       name: detailed
       predefined:
@@ -261,20 +261,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: A list of specific fields to return. If empty - return all fields.
+      description: A list of specific fields to return. If empty, return all fields.
       isArray: false
       name: returned_fields
       required: false
       secret: false
     deprecated: false
     description: |-
-      Returns the title/default field for a set of records within a chosen component.
-      Filters may be applied to return only the records meeting selected criteria.
+      Retrieves the title/default field for a set of records within a chosen component.
+      Filters may be applied to retrieve only the records meeting the selected criteria.
     execution: false
     name: kl-get-records
     outputs:
     - contextPath: Keylight.Record.ComponentID
-      description: The ID of the component the record is in.
+      description: The ID of the component containing the record.
       type: String
     - contextPath: Keylight.Record.DisplayName
       description: The display name of the record.
@@ -283,18 +283,19 @@ script:
       description: The fields in the record.
       type: Unknown
     - contextPath: Keylight.Record.ID
-      description: The record ID.
+      description: The ID of the record.
       type: Unknown
   - arguments:
     - default: false
-      description: The ID of the desired component.Get ID from `kl-get-coponent`.
+      description: The ID of the desired component. Get the ID from the kl-get-component command.
       isArray: false
       name: component_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of filter to apply.
+      description: 'The type of filter to apply. Can be: "Contains", "Excludes", "Starts With", "Ends With", "Equals", "Not Equals", "Greater Than", "Less Than", "Greater Than",
+        "Less Than", "Greater Equals Than", "Between", "Not Between", "Is Null", "Is Not Null".'
       isArray: false
       name: filter_type
       predefined:
@@ -315,13 +316,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the field to apply the filter on.
+      description: The name of the field for which to apply the filter.
       isArray: false
       name: filter_field_name
       required: false
       secret: false
     - default: false
-      description: The value to filter by.
+      description: The value for which to filter.
       isArray: false
       name: filter_value
       required: false
@@ -332,26 +333,26 @@ script:
     name: kl-get-record-count
   - arguments:
     - default: false
-      description: The ID of the desired component. Get ID from `kl-get-coponent`.
+      description: The ID of the desired component. Get the ID from the kl-get-component command.
       isArray: false
       name: component_id
       required: true
       secret: false
     - default: false
-      description: The record ID. Can get from Keylight itself or from `kl-get-records`.
+      description: The record ID. Can get from Keylight or from the kl-get-records command.
       isArray: false
       name: record_id
       required: true
       secret: false
     - default: false
-      description: The name of the field that holds the attachments. Has to be of
+      description: The name of the field that holds the attachments. Must be
         type "Documents".
       isArray: false
       name: field_name
       required: true
       secret: false
     deprecated: false
-    description: Get the attachments of a specific field and record.
+    description: Return the attachments of a specific field and record.
     execution: false
     name: kl-get-record-attachments
     outputs:
@@ -359,32 +360,32 @@ script:
       description: The name of the attachment.
       type: String
     - contextPath: Keylight.Attachment.FieldID
-      description: The field ID that the attachment is in.
+      description: The field ID of the attachment.
       type: String
     - contextPath: Keylight.Attachment.DocumentID
-      description: The ID of the document.
+      description: The ID of the document containing the attachment.
       type: String
     - contextPath: Keylight.Attachment.ComponentID
-      description: The component ID, the document was in.
+      description: The component ID of the attachment.
       type: String
     - contextPath: Keylight.Attachment.RecordID
-      description: The record ID the attachment was in.
+      description: The record ID of the attachment.
       type: String
   - arguments:
     - default: false
-      description: The ID of the desired component. Get ID from `kl-get-coponent`.
+      description: The ID of the desired component. Get the ID from the kl-get-component command.
       isArray: false
       name: component_id
       required: true
       secret: false
     - default: false
-      description: The record ID. Can get from Keylight itself or from `kl-get-records`.
+      description: The record ID. Can get from Keylight or from the kl-get-records command.
       isArray: false
       name: record_id
       required: true
       secret: false
     - default: false
-      description: The name of the field that holds the attachments. Has to be of
+      description: The name of the field that holds the attachments. Must be 
         type "Documents".
       isArray: false
       name: field_name
@@ -397,13 +398,13 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets a single attachment associated with the provided component ID,
-      record ID, documents field ID, and document ID.
+    description: Returns a single attachment associated with the component ID,
+      record ID, documents field ID, and the document ID.
     execution: false
     name: kl-get-record-attachment
   - arguments:
     - default: false
-      description: The component ID. Get ID from `kl-get-coponent`.
+      description: The component ID. Get the ID from the kl-get-component command.
       isArray: false
       name: component_id
       required: true
@@ -415,12 +416,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a selected record from within a chosen component.
+    description: Deletes a selected record from within a chosen component.
     execution: false
     name: kl-delete-record
   - arguments:
     - default: false
-      description: The ID of the component. Get ID from `kl-get-coponent`.
+      description: The ID of the component. Get the ID from the kl-get-component command.
       isArray: false
       name: component_id
       required: true
@@ -432,7 +433,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the field
+      description: The ID of the field.
       isArray: false
       name: field_id
       required: true
@@ -449,22 +450,22 @@ script:
     name: kl-delete-record-attachment
   - arguments:
     - default: false
-      description: The lookup field ID.
+      description: The lookup field ID, which relates to a lookup field that uses the
+        report definition. 
       isArray: false
       name: lookup_field_id
       required: true
       secret: false
     - default: false
-      description: The field path ID.
+      description: The field path ID, which relates to the field path that
+        retrieves fields. Get from the kl-get-record command. Detailed=True.
       isArray: false
       name: field_path_id
       required: true
       secret: false
     deprecated: false
-    description: Gets the field information of each field in a field path that corresponds
-      to a lookup report column. The lookupFieldId corresponds to a lookup field with
-      a report definition on it and the fieldPathId corresponds to the field path
-      to retrieve fields from, which is obtained from kl-get-record, detailed=True.
+    description: Retrieves information of each field in a field path, which relates
+      to a lookup report column. 
     execution: false
     name: kl-get-lookup-report-column-fields
     outputs:
@@ -478,18 +479,18 @@ script:
       description: The lookup field's component ID.
       type: String
     - contextPath: Keylight.LookupField.SystemName
-      description: The system name of the lookup field
+      description: The system name of the lookup field.
       type: String
   - arguments:
     - default: false
-      description: The ID of the component the record should be created in. Get ID
-        from `kl-get-coponent`.
+      description: The ID of the component the record should be created in. Get the ID
+        from the kl-get-component command.
       isArray: false
       name: component_id
       required: true
       secret: false
     - default: false
-      description: A json in the format that the API requests. The exact format is
+      description: A JSON file in the format that the API requests. The exact format is
         found in the API documentation.
       isArray: false
       name: record_json
@@ -497,13 +498,13 @@ script:
       secret: false
     deprecated: false
     description: |-
-      Create a new record within the specified component of the Keylight application.
+      Creates a new record within the specified component of the Keylight application.
       * The Required option for a field is only enforced through the user interface, not through Demisto.
     execution: false
     name: kl-create-record
     outputs:
     - contextPath: Keylight.Record.ComponentID
-      description: The ID of the component the record is in.
+      description: The component ID of the record.
       type: String
     - contextPath: Keylight.Record.DisplayName
       description: The display name of the record.
@@ -516,20 +517,20 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the component. Get ID from `kl-get-coponent`.
+      description: The ID of the component. Get the ID from the kl-get-component command.
       isArray: false
       name: component_id
       required: true
       secret: false
     - default: false
-      description: The Id of the record to be updated. Can get from Keylight itself
-        or from `kl-get-records`.
+      description: The ID of the record to be updated. Get the ID from Keylight
+        or from the kl-get-records command.
       isArray: false
       name: record_id
       required: true
       secret: false
     - default: false
-      description: A json in the format that the API requests. The exact format is
+      description: A JSON file in the format that the API requests. The exact format is
         found in the API documentation.
       isArray: false
       name: record_json
