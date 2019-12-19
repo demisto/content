@@ -845,7 +845,7 @@ inputs:
     simple: "True"
   required: false
   description: |-
-    This input establishes whether Palo Alto Networks Panorama or Firewall Custom block rules are used.
+    This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.
     Specify True to use Custom Block Rules.
 - key: LogForwarding
   value: {}
@@ -856,34 +856,34 @@ inputs:
     simple: "No"
   required: false
   description: |-
-    This input establishes whether to commit the configuration automatically.
+    This input determines whether to commit the configuration automatically.
     Yes - Commit automatically.
     No - Commit manually.
 - key: StaticAddressGroup
   value: {}
   required: false
   description: |-
-    This input establishes whether Palo Alto Networks Panorama or Firewall Static address groups are used.
-    Specify Static address group name for IP handling.
+    This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
+    Specify the Static Address Group name for IP handling.
 - key: IPListName
   value: {}
   required: false
   description: |-
-    This input establishes whether Palo Alto Networks Panorama or Firewall External Dynamic Lists, are used for IP Blockage.
+    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
     Specify the EDL name for IP handling.
 - key: EDLServerIP
   value: {}
   required: false
   description: |-
-    This input establishes whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:
+    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:
     * The IP address of the web server on which the files are stored.
     * The web server IP address is configured in the integration instance.
 - key: DAG
   value: {}
   required: false
   description: |-
-    This input establishes whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
-    Specify Dynamic Address Group tag name for IP handling.
+    This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
+    Specify the Dynamic Address Group tag name for IP handling.
 outputs:
 - contextPath: CheckpointFWRule.Destination
   description: Rule Destination.
