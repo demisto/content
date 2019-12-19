@@ -195,9 +195,8 @@ def get_code_file(package_path, script_type):
     :return: path to found code file
     :rtype: str
     """
-
     ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|' \
-                   r'demistomock\.py|test_.*\.py|_test\.py|conftest\.py|microsoft_api\.py'
+                   r'demistomock\.py|test_.*\.py|_test\.py|conftest\.py|MicrosoftApiModule\.py'
 
     if not package_path.endswith('/'):
         package_path += '/'
@@ -214,7 +213,9 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
     with io.open(script_path, mode='r', encoding='utf-8') as script_file:
         script_code = script_file.read()
 
-    script_code = check_microsoft(script_code)
+    module_import, module_name = check_module_imports(script_code)
+    if module_import:
+        script_code = insert_module_code(script_code, module_import, module_name)
 
     clean_code = clean_python_code(script_code)
 
@@ -267,30 +268,29 @@ def remove_imports(script_code):
     return script_code
 
 
-def check_microsoft(script_code):
-    microsoft_import_no_qa = 'from microsoft_api import MicrosoftClient  # noqa: E402'
-    microsoft_import = 'from microsoft_api import MicrosoftClient'
-    if script_code.find(microsoft_import_no_qa) != -1:
-        client_code = get_microsoft_client_code()
-        script_code = script_code.replace(microsoft_import_no_qa, client_code)
-    elif script_code.find(microsoft_import) != -1:
-        client_code = get_microsoft_client_code()
-        script_code = script_code.replace(microsoft_import, client_code)
-    return script_code
+def check_module_imports(script_code):
+    module_regex = r'from ([\w\d]+Module) import \*(?:  # noqa: E402)?'
+
+    module_match = re.search(module_regex, script_code)
+    if module_match:
+        return module_match.group(), module_match.group(1)
+    else:
+        return '', ''
 
 
-def get_microsoft_client_code():
-    client_path = './Utils/microsoft_api.py'
+def insert_module_code(script_code, module_import, module_name):
+    module_path = get_code_file('./Scripts/{}'.format(module_name), '.py')
     try:
-        with open(client_path, 'r') as file:
-            client_code = file.read()
+        with io.open(module_path, mode='r', encoding='utf-8') as script_file:
+            client_code = script_file.read()
 
-        client_code = '\n### GENERATED CODE ###\n{}\n'.format(client_code)
+        client_code = '\n### GENERATED CODE ###\n This code was inserted in place of an API module.\n{}\n'\
+            .format(client_code)
 
     except Exception as e:
         raise ValueError('Could not retrieve the Microsoft client code: {}'.format(str(e)))
 
-    return client_code
+    return script_code.replace(module_import, client_code)
 
 
 def get_package_path():

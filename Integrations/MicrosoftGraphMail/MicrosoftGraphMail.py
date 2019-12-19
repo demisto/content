@@ -5,28 +5,38 @@ from typing import Union, Optional, Any
 
 ''' IMPORTS '''
 import requests
+import base64
+import os
 import binascii
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 PARAMS = demisto.params()
-NO_OPROXY = demisto.params().get('no_oproxy', False)
 TENANT_ID = PARAMS.get('tenant_id')
-AUTH_AND_TOKEN_URL = PARAMS.get('auth_id', '')
+AUTH_AND_TOKEN_URL = PARAMS.get('auth_id', '').split('@')
+AUTH_ID = AUTH_AND_TOKEN_URL[0]
 ENC_KEY = PARAMS.get('enc_key')
-
+if len(AUTH_AND_TOKEN_URL) != 2:
+    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+else:
+    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 # Remove trailing slash to prevent wrong URL path to service
 URL = PARAMS.get('url', '')
 SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
 # Service base URL
 BASE_URL = SERVER + '/v1.0'
 APP_NAME = 'ms-graph-mail'
+
 USE_SSL = not PARAMS.get('insecure', False)
 # Remove proxy if not set to true in params
-PROXY = handle_proxy()
-MS_CLIENT: Any
+if not PARAMS.get('proxy'):
+    os.environ.pop('HTTP_PROXY', '')
+    os.environ.pop('HTTPS_PROXY', '')
+    os.environ.pop('http_proxy', '')
+    os.environ.pop('https_proxy', '')
 
 CONTEXT_FOLDER_PATH = 'MSGraphMail.Folders(val.ID && val.ID === obj.ID)'
 CONTEXT_COPIED_EMAIL = 'MSGraphMail.MovedEmails(val.ID && val.ID === obj.ID)'
@@ -40,31 +50,196 @@ FOLDER_MAPPING = {
     'totalItemCount': 'TotalItemCount'
 }
 
-
 ''' HELPER FUNCTIONS '''
 
 
-def get_client(base_url, auth_id_and_url, tenant_id, enc_key, proxy, ok_codes, use_ssl, no_oproxy, app_name):
-    if no_oproxy:
-        app_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
-        ms_client = MicrosoftClient.from_self_deployed(tenant_id, auth_id_and_url,
-                                                       enc_key, app_url=app_url,
-                                                       scope='https://graph.microsoft.com/.default',
-                                                       base_url=base_url, verify=use_ssl, proxy=proxy,
-                                                       ok_codes=ok_codes)
-    else:
-        # params related to oproxy
-        auth_id_and_token_retrieval_url = auth_id_and_url.split('@')
-        auth_id_and_url = auth_id_and_token_retrieval_url[0]
-        if len(auth_id_and_token_retrieval_url) != 2:
-            token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
-        else:
-            token_retrieval_url = auth_id_and_token_retrieval_url[1]
-        ms_client = MicrosoftClient.from_oproxy(auth_id_and_url, enc_key, token_retrieval_url, app_name,
-                                                tenant_id=tenant_id, base_url=base_url, verify=use_ssl,
-                                                proxy=proxy, ok_codes=ok_codes)
+def epoch_seconds(d: datetime = None) -> int:
+    """
+    Return the number of seconds for given date. If no date, return current.
 
-    return ms_client
+    Args:
+        d (datetime): timestamp
+    Returns:
+         int: timestamp in epoch
+    """
+    if not d:
+        d = datetime.utcnow()
+    return int((d - datetime.utcfromtimestamp(0)).total_seconds())
+
+
+def get_encrypted(content: str, key: str) -> str:
+    """
+
+    Args:
+        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
+            the tenant id
+        key (str): encryption key from Demistobot
+
+    Returns:
+        encrypted timestamp:content
+    """
+
+    def create_nonce() -> bytes:
+        return os.urandom(12)
+
+    def encrypt(string: str, enc_key: str) -> bytes:
+        """
+
+        Args:
+            enc_key (str):
+            string (str):
+
+        Returns:
+            bytes:
+        """
+        # String to bytes
+        enc_key = base64.b64decode(enc_key)
+        # Create key
+        aes_gcm = AESGCM(enc_key)
+        # Create nonce
+        nonce = create_nonce()
+        # Create ciphered data
+        data = string.encode()
+        ct = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct)
+
+    now = epoch_seconds()
+    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
+    return encrypted
+
+
+def get_access_token():
+    integration_context = demisto.getIntegrationContext()
+    access_token = integration_context.get('access_token')
+    valid_until = integration_context.get('valid_until')
+    if access_token and valid_until:
+        if epoch_seconds() < valid_until:
+            return access_token
+    headers = {'Accept': 'application/json'}
+
+    dbot_response = requests.post(
+        TOKEN_RETRIEVAL_URL,
+        headers=headers,
+        data=json.dumps({
+            'app_name': APP_NAME,
+            'registration_id': AUTH_ID,
+            'encrypted_token': get_encrypted(TENANT_ID, ENC_KEY)
+        }),
+        verify=USE_SSL
+    )
+    if dbot_response.status_code not in {200, 201}:
+        msg = 'Error in authentication. Try checking the credentials you entered.'
+        try:
+            demisto.info('Authentication failure from server: {} {} {}'.format(
+                dbot_response.status_code, dbot_response.reason, dbot_response.text))
+            err_response = dbot_response.json()
+            server_msg = err_response.get('message')
+            if not server_msg:
+                title = err_response.get('title')
+                detail = err_response.get('detail')
+                if title:
+                    server_msg = f'{title}. {detail}'
+            if server_msg:
+                msg += ' Server message: {}'.format(server_msg)
+        except Exception as ex:
+            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+        raise Exception(msg)
+    try:
+        gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
+        demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
+        parsed_response = dbot_response.json()
+    except ValueError:
+        raise Exception(
+            'There was a problem in retrieving an updated access token.\n'
+            'The response from the Demistobot server did not contain the expected content.'
+        )
+    access_token = parsed_response.get('access_token')
+    expires_in = parsed_response.get('expires_in', 3595)
+    time_now = epoch_seconds()
+    time_buffer = 5  # seconds by which to shorten the validity period
+    if expires_in - time_buffer > 0:
+        # err on the side of caution with a slightly shorter access token validity period
+        expires_in = expires_in - time_buffer
+
+    demisto.setIntegrationContext({
+        'access_token': access_token,
+        'valid_until': time_now + expires_in
+    })
+    return access_token
+
+
+def error_parser(resp_err: requests.Response) -> str:
+    """
+
+    Args:
+        error (requests.Response): response with error
+
+    Returns:
+        str: string of error
+
+    """
+    try:
+        response = resp_err.json()
+        error = response.get('error', {})
+        err_str = f"{error.get('code')}: {error.get('message')}"
+        if err_str:
+            return err_str
+        # If no error message
+        raise ValueError
+    except ValueError:
+        return resp_err.text
+
+
+def http_request(method: str, url_suffix: str = '', params: dict = None, data: dict = None, odata: str = None,
+                 url: str = None, resp_type: str = 'json', json_data: dict = None) -> Any:
+    """
+    A wrapper for requests lib to send our requests and handle requests and responses better
+    Headers to be sent in requests
+
+    Args:
+        method (str): any restful method
+        url_suffix (str): suffix to add to BASE_URL
+        params (str): http params
+        data (dict): http body
+        resp_type (str): response type, json or text
+        json_data (dict) : http json
+        odata (str): odata query format
+        url (str): url to replace if need a new api call
+
+    Returns:
+        dict or str: requests.json() or string
+    """
+    token = get_access_token()
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+
+    if odata:
+        url_suffix += odata
+    res = requests.request(
+        method,
+        url if url else BASE_URL + url_suffix,
+        verify=USE_SSL,
+        params=params,
+        data=data,
+        headers=headers,
+        json=json_data,
+    )
+    # Handle error responses gracefully
+    if not (199 < res.status_code < 299):
+        error = error_parser(res)
+        return_error(f'Error in API call to Microsoft Graph Mail Integration [{res.status_code}] - {error}')
+    try:
+        if method.lower() != 'delete' and resp_type == 'json':  # the DELETE request returns nothing in response
+            return res.json()
+        elif resp_type == 'text':
+            return res.text  # noqa
+        return {}
+    except ValueError:
+        return_error('Could not decode response from API')
+        return {}  # return_error will exit
 
 
 def assert_pages(pages: Union[str, int]) -> int:
@@ -123,7 +298,7 @@ def pages_puller(response: dict, page_count: int) -> list:
         next_link = response.get('@odata.nextLink')
         if next_link:
             responses.append(
-                MS_CLIENT.http_request('GET', next_link)
+                http_request('GET', url=next_link)
             )
 
         else:
@@ -258,7 +433,7 @@ def parse_folders_list(folders_list):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def list_mails(user_id: str, folder_id: str = '', search: str = '', odata: str = '') -> Union[dict, list]:
+def list_mails(user_id: str, folder_id: str = '', search: str = None, odata: str = None) -> Union[dict, list]:
     """Returning all mails from given user
 
     Args:
@@ -277,9 +452,7 @@ def list_mails(user_id: str, folder_id: str = '', search: str = '', odata: str =
     if search:
         odata = f'?{odata}$search={search}' if odata else f'?$search={search}'
     suffix = with_folder if folder_id else no_folder
-    if odata:
-        suffix += odata
-    response = MS_CLIENT.http_request('GET', suffix)
+    response = http_request('GET', suffix, odata=odata)
     return pages_puller(response, assert_pages(pages_to_pull))
 
 
@@ -316,7 +489,7 @@ def delete_mail(user_id: str, message_id: str, folder_id: str = None) -> bool:
     with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}'  # type: ignore
     no_folder = f'/users/{user_id}/messages/{message_id}'
     suffix = with_folder if folder_id else no_folder
-    MS_CLIENT.http_request('DELETE', suffix)
+    http_request('DELETE', suffix)
     return True
 
 
@@ -358,7 +531,7 @@ def get_attachment(message_id: str, user_id: str, attachment_id: str, folder_id:
     with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
                    f'messages/{message_id}/attachments/{attachment_id}')
     suffix = with_folder if folder_id else no_folder
-    response = MS_CLIENT.http_request('GET', suffix)
+    response = http_request('GET', suffix)
     return response
 
 
@@ -372,7 +545,7 @@ def get_attachment_command(args):
     demisto.results(entry_context)
 
 
-def get_message(user_id: str, message_id: str, folder_id: str = '', odata: str = '') -> dict:
+def get_message(user_id: str, message_id: str, folder_id: str = None, odata: str = None) -> dict:
     """
 
     Args:
@@ -389,9 +562,7 @@ def get_message(user_id: str, message_id: str, folder_id: str = '', odata: str =
                    f'/messages/{message_id}/')
 
     suffix = with_folder if folder_id else no_folder
-    if odata:
-        suffix += odata
-    response = MS_CLIENT.http_request('GET', suffix)
+    response = http_request('GET', suffix, odata=odata)
 
     # Add user ID
     response['userId'] = user_id
@@ -433,7 +604,7 @@ def list_attachments(user_id: str, message_id: str, folder_id: str) -> dict:
     no_folder = f'/users/{user_id}/messages/{message_id}/attachments/'
     with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/attachments/'
     suffix = with_folder if folder_id else no_folder
-    return MS_CLIENT.http_request('GET', suffix)
+    return http_request('GET', suffix)
 
 
 def list_attachments_command(args):
@@ -475,7 +646,7 @@ def list_folders(user_id: str, limit: str = '20') -> dict:
         dict: Collection of folders under root folder
     """
     suffix = f'/users/{user_id}/mailFolders?$top={limit}'
-    return MS_CLIENT.http_request('GET', suffix)
+    return http_request('GET', suffix)
 
 
 def list_folders_command(args):
@@ -504,7 +675,7 @@ def list_child_folders(user_id: str, parent_folder_id: str, limit: str = '20') -
     """
     # for additional info regarding OData query https://docs.microsoft.com/en-us/graph/query-parameters
     suffix = f'/users/{user_id}/mailFolders/{parent_folder_id}/childFolders?$top={limit}'
-    return MS_CLIENT.http_request('GET', suffix)
+    return http_request('GET', suffix)
 
 
 def list_child_folders_command(args):
@@ -538,7 +709,7 @@ def create_folder(user_id: str, new_folder_name: str, parent_folder_id: str = No
         suffix += f'/{parent_folder_id}/childFolders'
 
     json_data = {'displayName': new_folder_name}
-    return MS_CLIENT.http_request('POST', suffix, json_data=json_data)
+    return http_request('POST', suffix, json_data=json_data)
 
 
 def create_folder_command(args):
@@ -570,7 +741,7 @@ def update_folder(user_id: str, folder_id: str, new_display_name: str) -> dict:
 
     suffix = f'/users/{user_id}/mailFolders/{folder_id}'
     json_data = {'displayName': new_display_name}
-    return MS_CLIENT.http_request('PATCH', suffix, json_data=json_data)
+    return http_request('PATCH', suffix, json_data=json_data)
 
 
 def update_folder_command(args):
@@ -596,7 +767,7 @@ def delete_folder(user_id: str, folder_id: str):
     """
 
     suffix = f'/users/{user_id}/mailFolders/{folder_id}'
-    return MS_CLIENT.http_request('DELETE', suffix)
+    return http_request('DELETE', suffix)
 
 
 def delete_folder_command(args):
@@ -621,7 +792,7 @@ def move_email(user_id: str, message_id: str, destination_folder_id: str) -> dic
 
     suffix = f'/users/{user_id}/messages/{message_id}/move'
     json_data = {'destinationId': destination_folder_id}
-    return MS_CLIENT.http_request('POST', suffix, json_data=json_data)
+    return http_request('POST', suffix, json_data=json_data)
 
 
 def move_email_command(args):
@@ -654,7 +825,7 @@ def get_email_as_eml(user_id: str, message_id: str) -> str:
     """
 
     suffix = f'/users/{user_id}/messages/{message_id}/$value'
-    return MS_CLIENT.http_request('GET', suffix, resp_type='text')
+    return http_request('GET', suffix, resp_type='text')
 
 
 def get_email_as_eml_command(args):
@@ -676,13 +847,9 @@ def main():
     args = demisto.args()
     LOG(f'Command being called is {command}')
 
-    global MS_CLIENT
-    MS_CLIENT = get_client(BASE_URL, AUTH_AND_TOKEN_URL, TENANT_ID, ENC_KEY, PROXY, (200, 201, 202), USE_SSL,
-                           NO_OPROXY, APP_NAME)
-
     try:
         if command == 'test-module':
-            MS_CLIENT.get_access_token()
+            get_access_token()
             demisto.results('ok')
         elif command in ('msgraph-mail-list-emails', 'msgraph-mail-search-email'):
             list_mails_command(args)
@@ -711,9 +878,6 @@ def main():
     # Log exceptions
     except Exception as e:
         return_error(str(e))
-
-
-from microsoft_api import MicrosoftClient  # noqa: E402
 
 
 if __name__ in ["builtins", "__main__"]:
