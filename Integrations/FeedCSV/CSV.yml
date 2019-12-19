@@ -20,6 +20,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Request Timeout
+  name: polling_timeout
+  required: true
+  type: 0
+  defaultvalue: 20
 - display: Indicator Type
   name: indicator_type
   required: true

@@ -15,7 +15,7 @@ SOURCE_NAME = demisto.params().get('source_name')
 class Client(object):
     def __init__(self, url: str, fieldnames: str, insecure: bool = False, credentials: dict = None,
                  ignore_regex: str = None, delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
-                 quotechar: str = '"', skipinitialspace: bool = False, **kwargs):
+                 quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, **kwargs):
         """
         :param url: URL of the feed.
         :param fieldnames: list of field names in the file. If *null* the values in the first row of the file are
@@ -33,10 +33,12 @@ class Client(object):
             <https://docs.python.org/2/library/csv.html#dialects-and-formatting-parameters>`. Default "
         :param skipinitialspace: see `csv Python module
             <https://docs.python.org/2/library/csv.html#dialects-and-formatting-parameters>`. Default False
+        :param polling_timeout: timeout of the polling request in seconds. Default: 20
         :param kwargs:
         """
         self.url = url
         self.verify_cert = not insecure
+        self.polling_timeout = int(polling_timeout)
         credentials = credentials
         if not credentials:
             credentials = {}
@@ -81,6 +83,7 @@ class Client(object):
         )
         rkwargs['stream'] = True
         rkwargs['verify'] = self.verify_cert
+        rkwargs['timeout'] = self.polling_timeout
 
         r = _session.send(prepreq, **rkwargs)
 
