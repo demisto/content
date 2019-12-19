@@ -1969,6 +1969,10 @@
             "playbookID": "Google-KMS-test"
         },
         {
+            "integrations": "SecBI",
+            "playbookID": "SecBI - Test"
+        },
+        {
             "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         },
         {
