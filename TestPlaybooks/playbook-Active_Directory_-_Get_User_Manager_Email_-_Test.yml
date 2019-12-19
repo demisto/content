@@ -146,7 +146,7 @@ tasks:
     scriptarguments:
       message:
         simple: The manager was not found. Check the demisto.local Active Directory
-          instance. There should be an Ido Van Dijk user, and Donald Trump should
+          instance. There should be a Remove Me user, and Donald Trump should
           be his manager. Trump should also have a specific email address configured.
     reputationcalc: 1
     separatecontext: false
