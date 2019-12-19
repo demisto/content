@@ -2325,7 +2325,7 @@ tasks:
       id: 2ab45f59-c5eb-4c7d-8b4e-d644ee5f805d
       version: -1
       name: Set detected IP addresses
-      description: Sets a value into the context with the given context key
+      description: Sets the IP addresses found in the DetectedIPs context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2369,7 +2369,7 @@ tasks:
       id: b6c28137-213b-4740-8ebf-b6ff6c7761a0
       version: -1
       name: Set detected usernames
-      description: Sets a value into the context with the given context key
+      description: Sets the usernames found in the DetectedUsers context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2456,7 +2456,7 @@ tasks:
       id: 63d16d8f-95cf-4668-8775-b97c98fd2613
       version: -1
       name: Set detected hostnames from assets
-      description: Sets a value into the context with the given context key
+      description: Sets the hostnames found in the DetectedHosts context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2494,7 +2494,7 @@ tasks:
       id: ea7b46f4-4c4d-458b-8801-9e9124d6ac01
       version: -1
       name: Set detected IP addresses
-      description: Sets a value into the context with the given context key
+      description: Sets the IP addresses found in the DetectedIPs context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2538,7 +2538,7 @@ tasks:
       id: 5b531c4f-9e6c-4072-8f7a-7ebc8328bc38
       version: -1
       name: Set detected usernames
-      description: Sets a value into the context with the given context key
+      description: Sets the usernames found in the DetectedUsers context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2625,7 +2625,7 @@ tasks:
       id: 0c266af1-631e-4a36-8339-cc9e4ed5acbd
       version: -1
       name: Set detected hostnames from assets
-      description: Sets a value into the context with the given context key
+      description: Sets the hostnames found in the DetectedHosts context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2663,7 +2663,7 @@ tasks:
       id: a90db54b-31e7-4690-896d-d910cdbf12ed
       version: -1
       name: Set detected usernames
-      description: Sets a value into the context with the given context key
+      description: Sets the usernames found in the DetectedUsers context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2750,7 +2750,7 @@ tasks:
       id: 47354bc5-ee46-43ef-82b9-451510b27293
       version: -1
       name: Set detected hostnames from assets
-      description: Sets a value into the context with the given context key
+      description: Sets the hostnames found in the DetectedHosts context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2788,7 +2788,7 @@ tasks:
       id: 427f7845-ff31-42f4-88a6-4b3da8ccafe2
       version: -1
       name: Set detected IP addresses
-      description: Sets a value into the context with the given context key
+      description: Sets the IP addresses found in the DetectedIPs context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2832,7 +2832,7 @@ tasks:
       id: 134a4982-0e96-4623-8b15-9435c8ad7eba
       version: -1
       name: Set detected usernames
-      description: Sets a value into the context with the given context key
+      description: Sets the usernames found in the DetectedUsers context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2919,7 +2919,7 @@ tasks:
       id: 2eb43ac7-a464-41b1-8795-08370ed415b4
       version: -1
       name: Set detected hostnames from assets
-      description: Sets a value into the context with the given context key
+      description: Sets the hostnames found in the DetectedHosts context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2957,7 +2957,7 @@ tasks:
       id: acb8eb12-ff99-44a6-8765-c3b1d750f066
       version: -1
       name: Set detected IP addresses
-      description: Sets a value into the context with the given context key
+      description: Sets the IP addresses found in the DetectedIPs context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -3001,7 +3001,7 @@ tasks:
       id: b1fe87e9-59cc-4804-84ef-fc039d3f012b
       version: -1
       name: Set detected usernames
-      description: Sets a value into the context with the given context key
+      description: Sets the usernames found in the DetectedUsers context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -3088,7 +3088,7 @@ tasks:
       id: 453c6b03-6c0e-4a67-880d-89b7dd549969
       version: -1
       name: Set detected hostnames from assets
-      description: Sets a value into the context with the given context key
+      description: Sets the hostnames found in the DetectedHosts context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -3126,7 +3126,7 @@ tasks:
       id: 33de96b1-93f5-4b0d-8fc4-445b724e0faf
       version: -1
       name: Set detected IP addresses
-      description: Sets a value into the context with the given context key
+      description: Sets the IP addresses found in the DetectedIPs context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -3439,25 +3439,25 @@ inputs:
     LAST 7 DAYS
     START '2019-09-25 15:51' STOP '2019-09-25 17:51'
     For more examples review IBM's AQL documentation.
-- key: DetectedFIelds
+- key: InvestigationFields
   value:
     simple: sourceip,destinationip,username
   required: true
   description: The fields to be used for the hunting outputs. These fields are added
-    to the selected fields input.
+    to the selected field's input.
 outputs:
 - contextPath: QRadar.Search.Result
   description: Qradar's search results.
   type: string
 - contextPath: QRadar.DetectedIPs
-  description: Detected IP addresses from search from sourceip and destinationip fields.
+  description: IP addresses detected based on sourceip and destinationip fields in your search.
   type: string
 - contextPath: QRadar.DetectedUsers
-  description: Detected users from search from username field.
+  description: Users detected based on the username field in your search.
   type: string
 - contextPath: QRadar.DetectedHosts
-  description: 'Detected hosts from the assets table. Notice that the data accuracy
-    depends on the Asset mapping in QRadar. '
+  description: 'Hosts detected based on hosts in your assets table. Note that the data accuracy
+    depends on how the Asset mapping is configured in QRadar.'
   type: string
 
 tests:
