@@ -32,6 +32,11 @@ configuration:
   name: vsys
   required: false
   type: 0
+- display: Template - Please select a template to perform any changes on the static
+    routes.
+  name: template
+  required: false
+  type: 0
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
 display: Palo Alto Networks PAN-OS
@@ -2629,9 +2634,9 @@ script:
       required: false
       secret: false
     - default: false
-      name: ip
       description: Source or destination IP address.
       isArray: true
+      name: ip
       required: false
       secret: false
     - default: false
@@ -2996,6 +3001,220 @@ script:
     - contextPath: Panorama.SecurityPolicyMatch.QueryFields.SourceUser
       description: The source user.
       type: String
+  - arguments:
+    - default: false
+      description: Name of the virtual router to list its static routes.
+      isArray: false
+      name: virtual_router
+      required: true
+      secret: false
+    deprecated: false
+    description: List the static routes of a virtual router.
+    execution: false
+    name: panorama-list-static-routes
+    outputs:
+    - contextPath: Panorama.StaticRoutes.Name
+      description: Static route name.
+      type: String
+    - contextPath: Panorama.StaticRoutes.BFDProfile
+      description: Static route BFD profile.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.Destination'
+      description: Static route destination.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.Metric'
+      description: Static route metric(port).
+      type: Number
+    - contextPath: ' Panorama.StaticRoutes.NextHop'
+      description: Static route next hop. Could be an ip address, fqdn or a virtual
+        router.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.RouteTable'
+      description: Static route route table.
+      type: String
+    - contextPath: Panorama.StaticRoutes.VirtualRouter
+      description: The virtual router the staic router belongs to.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.Template'
+      description: The template in which the static route is defined(relevant to Panorama
+        instances only).
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the virtual router to display its static route.
+      isArray: false
+      name: virtual_router
+      required: true
+      secret: false
+    - default: false
+      description: Name of the static route to display.
+      isArray: false
+      name: static_route
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a specific static route of a virtual router.
+    execution: false
+    name: panorama-get-static-route
+    outputs:
+    - contextPath: Panorama.StaticRoutes.Name
+      description: Static route name.
+      type: String
+    - contextPath: Panorama.StaticRoutes.BFDProfile
+      description: Static route BFD profile.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.Destination'
+      description: Static route destination.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.Metric'
+      description: Static route metric(port).
+      type: Number
+    - contextPath: ' Panorama.StaticRoutes.NextHop'
+      description: Static route next hop. Could be an ip address, fqdn or a virtual
+        router.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.RouteTable'
+      description: Static route route table.
+      type: String
+    - contextPath: Panorama.StaticRoutes.VirtualRouter
+      description: The virtual router the staic router belongs to.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.Template'
+      description: The template in which the static route is defined(relevant to Panorama
+        instances only).
+      type: String
+  - arguments:
+    - default: false
+      description: Virtual Router where the routes will be added.
+      isArray: false
+      name: virtual_router
+      required: true
+      secret: false
+    - default: false
+      description: Enter a name to identify the static route (up to 31 characters).
+        The name is case-sensitive and must be unique. Use only letters, numbers,
+        spaces, hyphens, and underscores.
+      isArray: false
+      name: static_route
+      required: true
+      secret: false
+    - default: false
+      description: 'Enter an IP address and network mask in Classless Inter-domain
+        Routing (CIDR) notation: ip_address/mask (for example, 192.168.2.0/24 for
+        IPv4 or 2001:db8::/32 for IPv6).'
+      isArray: false
+      name: destination
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Enter a type for the nexthop. Can be: ip-address,  next-vr, fqdn
+        or discard'
+      isArray: false
+      name: nexthop_type
+      predefined:
+      - ip-address
+      - ' next-vr'
+      - ' fqdn'
+      - ' discard'
+      required: true
+      secret: false
+    - default: false
+      description: Enter the next hop value.
+      isArray: false
+      name: nexthop_value
+      required: true
+      secret: false
+    - default: false
+      description: Metric port for the static route. between 1-65535.
+      isArray: false
+      name: metric
+      required: false
+      secret: false
+    - default: false
+      description: Interface name where the Static Route will be added.
+      isArray: false
+      name: interface
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a static route.
+    execution: false
+    name: panorama-add-static-route
+    outputs:
+    - contextPath: Panorama.StaticRoutes.Name
+      description: Static route name.
+      type: String
+    - contextPath: Panorama.StaticRoutes.BFDProfile
+      description: Static route BFD profile.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.Destination'
+      description: Static route destination.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.Metric'
+      description: Static route metric(port).
+      type: Number
+    - contextPath: ' Panorama.StaticRoutes.NextHop'
+      description: Static route next hop. Could be an ip address, fqdn or a virtual
+        router.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.RouteTable'
+      description: Static route route table.
+      type: String
+    - contextPath: Panorama.StaticRoutes.VirtualRouter
+      description: The virtual router the staic router belongs to.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.Template'
+      description: The template in which the static route is defined(relevant to Panorama
+        instances only).
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the static route to be deleted.
+      isArray: false
+      name: route_name
+      required: true
+      secret: false
+    - default: false
+      description: Virtual Router where the routes will be deleted.
+      isArray: false
+      name: virtual_router
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a static route
+    execution: false
+    name: panorama-delete-static-route
+    outputs:
+    - contextPath: Panorama.StaticRoutes.Name
+      description: Static route name.
+      type: String
+    - contextPath: Panorama.StaticRoutes.BFDProfile
+      description: Static route BFD profile.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.Destination'
+      description: Static route destination.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.Metric'
+      description: Static route metric(port).
+      type: Number
+    - contextPath: ' Panorama.StaticRoutes.NextHop'
+      description: Static route next hop. Could be an ip address, fqdn or a virtual
+        router.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.RouteTable'
+      description: Static route route table.
+      type: String
+    - contextPath: Panorama.StaticRoutes.VirtualRouter
+      description: The virtual router the staic router belongs to.
+      type: String
+    - contextPath: ' Panorama.StaticRoutes.Template'
+      description: The template in which the static route is defined(relevant to Panorama
+        instances only).
+      type: String
+    - contextPath: Panorama.StaticRoutes.Deleted
+      description: Whether the static route is deleted or not.
+      type: Boolean
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   longRunning: false
