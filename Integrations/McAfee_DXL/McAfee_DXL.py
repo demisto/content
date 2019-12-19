@@ -5,7 +5,8 @@ from dxlclient.client import DxlClient
 from dxlclient.broker import Broker
 from dxlclient.message import Event
 import demistomock as demisto
-from CommonServerPython import return_error, return_outputs, is_ip_valid
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 
 INTEGRATION_NAME = "McAfee DXL"
