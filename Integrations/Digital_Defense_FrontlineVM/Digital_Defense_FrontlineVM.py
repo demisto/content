@@ -10,7 +10,11 @@ import struct
 from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Any
 
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 # Params:
+VERIFY_SSL = not demisto.params().get('insecure', False)
 API_TOKEN = demisto.params().get('apiToken')
 INCIDENT_VULN_MIN_SEVERITY = demisto.params().get('incidentSeverity')
 INCIDENT_FREQUENCY = demisto.params().get('incidentFrequency')
@@ -91,7 +95,7 @@ def get_all_data(first_page):
     current_data = {}   # type: Dict[str, Any]
     all_data = []       # type: List[Dict]
     while not have_all_data:
-        resp = requests.get(url=request_url, headers=API_AUTH_HEADER, timeout=30)
+        resp = requests.get(url=request_url, headers=API_AUTH_HEADER, timeout=30, verify=VERIFY_SSL)
         if not resp.ok:
             msg = "FrontlineVM get_all_data -- status code: " + str(resp.status_code)
             demisto.debug(msg)
@@ -109,7 +113,7 @@ def get_fvm_data(request_url, **kwargs):
     ''' Retrieves data from FrontlineVM API '''
     data = []   # type: List
     current_data = {}   # type: Dict
-    resp = requests.get(request_url, headers=API_AUTH_HEADER, timeout=30, **kwargs)
+    resp = requests.get(request_url, headers=API_AUTH_HEADER, timeout=30, verify=VERIFY_SSL, **kwargs)
     resp.raise_for_status()
     current_data = json.loads(resp.text)
     data.extend(current_data.get('results', []))
@@ -349,8 +353,7 @@ def get_vulns(severity, min_severity, max_days_since_created, min_days_since_cre
     if min_severity and severity:
         msg = "Selecting both \'min_severity\' and \'severity\' will yield to the minimum severity."
         demisto.debug("FrontlineVM get_vulns -- " + msg)
-        # Warning user that selecting both min_severity & severity args will yeild to min_severity only:
-        print("Warning: " + msg)
+
     if min_severity:
         req_params['lte_vuln_severity_ddi'] = str(min_severity)
     elif severity:
@@ -423,9 +426,9 @@ def get_host_id_from_ip_address(ip_address):
     '''
     hosts_with_given_ip = get_fvm_data(HOST_ENDPOINT, params={'_0_eq_host_ip_address': str(ip_address)})
     if len(hosts_with_given_ip) < 1:
-        msg = 'Host not found within Frontline.Cloud given host IP Address.'
-        demisto.debug('Frontline.Cloud get_host_id_from_ip_address -- ' + msg)
-        return_error("Error: " + msg)
+        msg = 'Host not found within Frontline.Cloud given host IP Address. Host will not be included in querying vulnerabilities'
+        demisto.error('Frontline.Cloud get_host_id_from_ip_address -- ' + msg)  # print to demisto log in ERROR
+        demisto.log('Frontline.Cloud get_host_id_from_ip_address -- ' + msg)    # print to war room
     first_relevant_host = hosts_with_given_ip[0]
     return first_relevant_host.get('id')
 
@@ -466,7 +469,7 @@ def get_vulns_command():
                                              headers=VULN_DATA_HEADERS,
                                              removeNull=True),
             'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': {'FrontlineVM.Vulns(val.ID && val.ID == obj.ID)': vuln_data_output}
+            'EntryContext': {'FrontlineVM.Vulns(val.vuln-id && val.vuln-id == obj.vuln-id)': vuln_data_output}
         },
         {
             'Type': entryTypes['note'],
@@ -475,7 +478,7 @@ def get_vulns_command():
             'HumanReadable': tableToMarkdown(vuln_stat_table_name,
                                              vuln_stat_output,
                                              headers=vuln_stat_headers),
-            'EntryContext': {'FrontlineVM.VulnStats(val.ID && val.ID == obj.ID)': vuln_stat_output}
+            'EntryContext': {'FrontlineVM.VulnStats(1>0)': vuln_stat_output}
         }
     ])
 
@@ -507,7 +510,7 @@ def get_network_data():
     ''' Get network data. Used to perform scan. '''
     try:
         url = BASE_URL + "/api/networkprofiles/?_0_eq_networkprofile_internal=True"
-        resp = requests.get(url, headers=API_AUTH_HEADER)
+        resp = requests.get(url, headers=API_AUTH_HEADER, verify=VERIFY_SSL)
         resp.raise_for_status()
         return json.loads(resp.text)
     except Exception as err:
@@ -523,7 +526,7 @@ def get_scan_data(network_data, low_ip, high_ip):
             continue
         scanner_id = profile.get('scanner_ids')[0]
         scanner_url = BASE_URL + "/api/scanners/" + str(scanner_id) + "/"
-        scanner_resp = requests.get(scanner_url, headers=API_AUTH_HEADER)
+        scanner_resp = requests.get(scanner_url, headers=API_AUTH_HEADER, verify=VERIFY_SSL)
         scanner_resp.raise_for_status()
         scanner = json.loads(scanner_resp.text)
         if scanner.get('status', '') == 'online':
@@ -531,7 +534,7 @@ def get_scan_data(network_data, low_ip, high_ip):
             profile_data = []   # type: List
             have_all_data = False
             while not have_all_data:
-                resp = requests.get(url, headers=API_AUTH_HEADER)
+                resp = requests.get(url, headers=API_AUTH_HEADER, verify=VERIFY_SSL)
                 resp.raise_for_status()
                 current_data = json.loads(resp.text)
                 profile_data.extend(current_data.get('results', []))
@@ -545,7 +548,7 @@ def get_scan_data(network_data, low_ip, high_ip):
                     rule_low_ip_num = rule['ip_address_range']['low_ip_number']
                     if (rule_high_ip_num >= high_ip) and (rule_low_ip_num <= low_ip):
                         return {'profile_id': profile['id']}
-    return_error("Error: no scan data found.")
+    return_error("Error: no scanner profile found for given ip range(s).")
     return {}   # placed to satisfy pylint (inconsistent-return-statements error)
 
 
@@ -554,12 +557,12 @@ def get_business_group():
     demisto.debug('FrontlineVM get_business_group -- checking if user allows business groups.')
     # Getting users's FrontlineVM session/account info:
     url = BASE_URL + "/api/session/"
-    user_session = requests.get(url, headers=API_AUTH_HEADER)
+    user_session = requests.get(url, headers=API_AUTH_HEADER, verify=VERIFY_SSL)
     user_session.raise_for_status()
     data = json.loads(user_session.text)
     if data.get('account_allow_businessgroups_setting'):
         business_groups_url = BASE_URL + "/api/businessgroups/?_0_eq_businessgroup_name=Enterprise Admins"
-        bus_resp = requests.get(business_groups_url, headers=API_AUTH_HEADER)
+        bus_resp = requests.get(business_groups_url, headers=API_AUTH_HEADER, verify=VERIFY_SSL)
         if bus_resp.ok:
             bus_data = json.loads(bus_resp.text)
             return bus_data[0]
@@ -670,17 +673,15 @@ def scan_asset(ip_address, scan_policy, ip_range_start, ip_range_end):
             msg = "Invalid arguments. Must input either a single ip_address or range of ip addresses to scan."
             demisto.debug(msg)
             return_error(msg)
-        if ip_address and ip_range_start or ip_range_end:
+        if ip_address and (ip_range_start or ip_range_end):
             msg = "Inputting a single \'ip_address\' and a range of addresses will yield to the single ip_address to scan"
             demisto.debug("FrontlineVM scan_asset -- " + msg)
-            # Warning user that selecting a single asset and a range of assets will yield to scanning a single asset:
-            print("Warning: " + msg)
 
         scan_payload = build_scan(low_ip_address, high_ip_address, scan_policy)
         header = {}
         header['Authorization'] = 'Token ' + str(API_TOKEN)
         header['Content-Type'] = "application/json;charset=utf-8"
-        resp = requests.post(SCAN_ENDPOINT, data=json.dumps(scan_payload), headers=header)
+        resp = requests.post(SCAN_ENDPOINT, data=json.dumps(scan_payload), headers=header, verify=VERIFY_SSL)
         if resp.ok:
             scan_data = json.loads(resp.text)
         else:
@@ -698,7 +699,7 @@ def scan_policy_exists(policy_selected):
     policy_url = SCAN_ENDPOINT + "policies"
     demisto.debug("FrontlineVM scan_policy_exists -- checking if user defined policy exists within Frontline.Cloud")
     try:
-        resp = requests.get(policy_url, headers=API_AUTH_HEADER)
+        resp = requests.get(policy_url, headers=API_AUTH_HEADER, verify=VERIFY_SSL)
         resp.raise_for_status()
         data = json.loads(resp.text)
         for policy in data:
@@ -774,7 +775,7 @@ def scan_asset_command():
 def test_module():
     ''' Test integration method '''
     session_url = BASE_URL + "/api/session/"
-    resp = requests.get(session_url, headers=API_AUTH_HEADER)
+    resp = requests.get(session_url, headers=API_AUTH_HEADER, verify=VERIFY_SSL)
     if resp.ok:
         demisto.results('ok')
     else:
