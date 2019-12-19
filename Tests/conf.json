@@ -1970,11 +1970,7 @@
         },
         {
             "integrations": "SecBI",
-            "playbookID": "SecBI-Test",
-            "params": {
-                "API_URL": "https://demisto.secbi.com",
-                "API_KEY": "example_api_key"
-            }
+            "playbookID": "SecBI - Test"
         },
         {
             "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
