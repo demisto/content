@@ -41,7 +41,7 @@ tasks:
       version: -1
       name: send ip message
       description: Push given IP  to the DXL fabric
-      script: McAfee DXL|||dxl-push-ip
+      script: '|||dxl-push-ip'
       type: regular
       iscommand: true
     nexttasks:
@@ -93,7 +93,7 @@ tasks:
       version: -1
       name: send hash message
       description: Push given hash  to the DXL fabric
-      script: McAfee DXL|||dxl-push-hash
+      script: '|||dxl-push-hash'
       type: regular
       iscommand: true
     nexttasks:
@@ -124,7 +124,7 @@ tasks:
       version: -1
       name: dxl-push-domain
       description: Push given domain  to the DXL fabric
-      script: McAfee DXL|||dxl-push-domain
+      script: '|||dxl-push-domain'
       type: regular
       iscommand: true
     nexttasks:
@@ -155,7 +155,7 @@ tasks:
       version: -1
       name: dxl-push-url
       description: Push given url  to the DXL fabric
-      script: McAfee DXL|||dxl-push-url
+      script: '|||dxl-push-url'
       type: regular
       iscommand: true
     nexttasks:
@@ -186,7 +186,7 @@ tasks:
       version: -1
       name: dxl-send-event
       description: Deliver the specified event to the DXL fabric
-      script: McAfee DXL|||dxl-send-event
+      script: '|||dxl-send-event'
       type: regular
       iscommand: true
     nexttasks:
