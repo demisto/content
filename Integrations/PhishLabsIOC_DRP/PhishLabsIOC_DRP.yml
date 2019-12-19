@@ -749,12 +749,9 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Paginate results used in conjunction with the max_records argument. First 200
-      records maxRecords=200&offset=0 second 200 records maxRecords=200&offset=200
+      description: Paginate results used in conjunction with the max_records argument.
       isArray: false
       name: offset
-      predefined:
-      - ''
       required: false
       secret: false
     - auto: PREDEFINED
