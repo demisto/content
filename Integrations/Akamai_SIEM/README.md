@@ -385,60 +385,92 @@
 {
   "Akamai": {
     "SIEM": [
-      {
-        "AttackData": {
-          "ClientIP": "8.8.8.8",
-          "ConfigID": "50170",
-          "PolicyID": "1234"
+        {
+            "AttackData": {
+                "ClientIP": "8.8.8.8",
+                "ConfigID": "50170",
+                "PolicyID": "1234_89452",
+                "RuleActions": [
+                    "alert",
+                    "deny"
+                ],
+                "RuleMessages": [
+                    "Custom_RegEX_Rule",
+                    "No Accept Header AND No User Agent Header"
+                ],
+                "RuleTags": [
+                    "example",
+                    "No-AH-UA"
+                ],
+                "Rules": [
+                    "642118",
+                    "642119"
+                ]
+            },
+            "Geo": {
+                "Asn": "16509",
+                "City": "FRANKFURT",
+                "Continent": "EU",
+                "Country": "DE",
+                "RegionCode": "HE"
+            },
+            "HttpMessage": {
+                "Bytes": "296",
+                "Host": "wordpress.demisto.ninja",
+                "Method": "POST",
+                "Path": "/wp-cron.php",
+                "Port": "80",
+                "Protocol": "HTTP/1.1",
+                "RequestHeaders": "Host",
+                "RequestId": "87bb604",
+                "ResponseHeaders": "Server",
+                "Start": "1576746102",
+                "Status": "403"
+            }
         },
-        "Geo": {
-          "Asn": "16509",
-          "City": "FRANKFURT",
-          "Continent": "EU",
-          "Country": "DE",
-          "RegionCode": "HE"
-        },
-        "HttpMessage": {
-          "Bytes": "296",
-          "Host": "wordpress.demisto.ninja",
-          "Method": "POST",
-          "Path": "/wp-cron.php",
-          "Port": "80",
-          "Protocol": "HTTP/1.1",
-          "Host": "wordpress.demisto.ninja",
-          "RequestId": "321a8ec5",
-          "ResponseHeaders": "Server",
-          "Start": "1576637273",
-          "Status": "403"
+        {
+            "AttackData": {
+                "ClientIP": "8.8.8.8",
+                "ConfigID": "50170",
+                "PolicyID": "1234_89452",
+                "RuleActions": [
+                    "alert",
+                    "deny"
+                ],
+                "RuleMessages": [
+                    "Custom_RegEX_Rule",
+                    "No Accept Header AND No User Agent Header"
+                ],
+                "RuleTags": [
+                    "example",
+                    "No-AH-UA"
+                ],
+                "Rules": [
+                    "642118",
+                    "642119"
+                ]
+            },
+            "Geo": {
+                "Asn": "16509",
+                "City": "FRANKFURT",
+                "Continent": "EU",
+                "Country": "DE",
+                "RegionCode": "HE"
+            },
+            "HttpMessage": {
+                "Bytes": "296",
+                "Host": "wordpress.demisto.ninja",
+                "Method": "POST",
+                "Path": "/wp-cron.php",
+                "Port": "80",
+                "Protocol": "HTTP/1.1",
+                "RequestHeaders": "Header",
+                "RequestId": "32e63ee2",
+                "ResponseHeaders": "Server",
+                "Start": "1576746179",
+                "Status": "403"
+            }
         }
-      },
-      {
-        "AttackData": {
-          "ClientIP": "8.8.8.8",
-          "ConfigID": "50170",
-          "PolicyID": "1234"
-        },
-        "Geo": {
-          "Asn": "16509",
-          "City": "FRANKFURT",
-          "Continent": "EU",
-          "Country": "DE",
-          "RegionCode": "HE"
-        },
-        "HttpMessage": {
-          "Bytes": "296",
-          "Host": "wordpress.demisto.ninja",
-          "Method": "POST",
-          "Path": "/wp-cron.php",
-          "Port": "80",
-          "Protocol": "HTTP/1.1",
-          "RequestHeaders": "wordpress.demisto.ninja",
-          "RequestId": "83e044a",
-          "ResponseHeaders": "Server",
-          "Start": "1576637333",
-          "Status": "403"
-        }
-      }
     ]
   },
   "IP": [
@@ -465,26 +497,35 @@
   <thead>
     <tr>
       <th><strong>Attacking IP</strong></th>
-      <th><strong>Config ID triggered</strong></th>
+      <th><strong>Config ID</strong></th>
       <th><strong>Date occured</strong></th>
       <th><strong>Location</strong></th>
-      <th><strong>Policy ID trigered</strong></th>
+      <th><strong>Policy ID</strong></th>
+      <th><strong>Rule actions</strong></th>
+      <th><strong>Rule messages</strong></th>
+      <th><strong>Rules</strong></th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td> 8.8.8.8 </td>
+      <td> 3.124.101.138 </td>
       <td> 50170 </td>
-      <td> 2019-12-18T06:43:33Z </td>
+      <td> 2019-12-19T09:00:42Z </td>
       <td> Country: DE<br>City: FRANKFURT </td>
       <td> 1234_89452 </td>
+      <td> alert,<br>deny </td>
+      <td> Custom_RegEX_Rule,<br>No Accept Header AND No User Agent Header </td>
+      <td> 642118,<br>642119 </td>
     </tr>
     <tr>
-      <td> 8.8.8.8 </td>
+      <td> 3.124.101.138 </td>
       <td> 50170 </td>
-      <td> 2019-12-18T06:44:33Z </td>
+      <td> 2019-12-19T09:01:42Z </td>
       <td> Country: DE<br>City: FRANKFURT </td>
       <td> 1234_89452 </td>
+      <td> alert,<br>deny </td>
+      <td> Custom_RegEX_Rule,<br>No Accept Header AND No User Agent Header </td>
+      <td> 642118,<br>642119 </td>
     </tr>
   </tbody>
 </table>

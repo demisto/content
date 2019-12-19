@@ -1,10 +1,12 @@
 """ IMPORTS """
 # Std imports
 from datetime import datetime, timezone
+from base64 import b64decode
 
 # 3-rd party imports
 from typing import Dict, Tuple, Union, Optional, List, Any
 import urllib3
+import urllib.parse
 from akamai.edgegrid import EdgeGridAuth
 
 # Local imports
@@ -86,7 +88,7 @@ class Client(BaseClient):
 '''HELPER FUNCIONS'''
 
 
-def date_format_converter(from_format: str, date_before: str, readable_format: str = '%Y-%m-%dT%H:%M:%S%ZZ') -> str:
+def date_format_converter(from_format: str, date_before: str, readable_format: str = '%Y-%m-%dT%H:%M:%SZ%Z') -> str:
     """
         Convert datatime object from epoch time to follow format %Y-%m-%dT%H:%M:%SZ
     Args:
@@ -97,7 +99,7 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
         >>> date_format_converter(from_format='epoch', date_before='1576570098')
         '2019-12-17T08:08:18Z'
         >>> date_format_converter(from_format='epoch', date_before='1576570098', readable_format='%Y-%m-%d %H:%M:%S')
-        '2019-12-17 08:08:18Z'
+        '2019-12-17 08:08:18'
         >>> date_format_converter(from_format='readable', date_before='2019-12-17T08:08:18Z')
         '1576570098'
 
@@ -112,6 +114,35 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
         converted_date = int(datetime.strptime(date_before, readable_format).replace(tzinfo=timezone.utc).timestamp())
 
     return str(converted_date)
+
+
+def decode_message(msg: str) -> List[Optional[str]]:
+    """
+        Follow these steps for data members that appear within the event’s attackData section:
+            1. If the member name is prefixed rule, URL-decode the value.
+            2. The result is a series of base64-encoded chunks delimited with semicolons.
+            3. Split the value at semicolon (;) characters.
+            4. base64-decode each chunk of split data.
+             The example above would yield a sequence of alert, alert, and deny.
+    Args:
+        msg: Messeage to decode
+
+    Returns:
+        Decoded message as array
+
+    Examples:
+        >>> decode_message(msg='ZGVueQ%3d%3d')
+        ['deny']
+        >>> decode_message(msg='Q3VzdG9tX1JlZ0VYX1J1bGU%3d%3bTm8gQWNjZXB0IEhlYWRlciBBTkQgTm8gVXNlciBBZ2VudCBIZWFkZXI%3d')
+        ['Custom_RegEX_Rule', 'No Accept Header AND No User Agent Header']
+    """
+    readable_msg = []
+    translated_msg = urllib.parse.unquote(msg).split(';')
+    for word in translated_msg:
+        word = b64decode(word.encode('utf8')).decode('utf8')
+        if word:
+            readable_msg.append(word)
+    return readable_msg
 
 
 def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
@@ -130,12 +161,18 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
     for event in raw_response:
         events_ec.append(
             {
-                "AttackData": {
+                "AttackData": assign_params(**{
                     "ConfigID": event.get('attackData', {}).get('configId'),
                     "PolicyID": event.get('attackData', {}).get('policyId'),
-                    "ClientIP": event.get('attackData', {}).get('clientIP')
-                },
-                "HttpMessage": {
+                    "ClientIP": event.get('attackData', {}).get('clientIP'),
+                    "Rules": decode_message(event.get('attackData', {}).get('rules')),
+                    "RuleMessages": decode_message(event.get('attackData', {}).get('ruleMessages')),
+                    "RuleTags": decode_message(event.get('attackData', {}).get('ruleTags')),
+                    "RuleData": decode_message(event.get('attackData', {}).get('ruleData')),
+                    "RuleSelectors": decode_message(event.get('attackData', {}).get('ruleSelectors')),
+                    "RuleActions": decode_message(event.get('attackData', {}).get('ruleActions'))
+                }),
+                "HttpMessage":assign_params(**{
                     "RequestId": event.get('httpMessage', {}).get('requestId'),
                     "Start": event.get('httpMessage', {}).get('start'),
                     "Protocol": event.get('httpMessage', {}).get('protocol'),
@@ -147,37 +184,39 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
                     "Status": event.get('httpMessage', {}).get('status'),
                     "Bytes": event.get('httpMessage', {}).get('bytes'),
                     "ResponseHeaders": event.get('httpMessage', {}).get('responseHeaders')
-                },
-                "Geo": {
+                }),
+                "Geo": assign_params(**{
                     "Continent": event.get('geo', {}).get('continent'),
                     "Country": event.get('geo', {}).get('country'),
                     "City": event.get('geo', {}).get('city'),
                     "RegionCode": event.get('geo', {}).get('regionCode'),
                     "Asn": event.get('geo', {}).get('asn')
-                }
+                })
             }
         )
 
-        ip_ec.append({
+        ip_ec.append(assign_params(**{
             "Address": event.get('attackData', {}).get('clientIP'),
             "ASN": event.get('geo', {}).get('asn'),
             "Geo": {
                 "Country": event.get('geo', {}).get('country')
             }
-        })
+        }))
 
-        events_human_readable.append({
+        events_human_readable.append(assign_params(**{
             'Attacking IP': event.get('attackData', {}).get('clientIP'),
-            "Config ID triggered": event.get('attackData', {}).get('configId'),
-            "Policy ID trigered": event.get('attackData', {}).get('policyId'),
+            "Config ID": event.get('attackData', {}).get('configId'),
+            "Policy ID": event.get('attackData', {}).get('policyId'),
+            "Rules": decode_message(event.get('attackData', {}).get('rules')),
+            "Rule messages": decode_message(event.get('attackData', {}).get('ruleMessages')),
+            "Rule actions": decode_message(event.get('attackData', {}).get('ruleActions')),
             'Date occured': date_format_converter(from_format='epoch',
                                                   date_before=event.get('httpMessage', {}).get('start')),
             "Location": {
                 'Country': event.get('geo', {}).get('country'),
                 'City': event.get('geo', {}).get('city')
             }
-
-        })
+        }))
 
     return events_ec, ip_ec, events_human_readable
 
