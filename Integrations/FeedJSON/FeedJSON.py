@@ -12,7 +12,7 @@ INTEGRATION_NAME = 'JsonFeed'
 
 
 class Client:
-    def __init__(self, url: str, credentials: Dict[str, str] = None, extractor: str = '@', indicator: str = 'indicator',
+    def __init__(self, url: str, credentials: Dict[str, str], extractor: str = '@', indicator: str = 'indicator',
                  source_name: str = 'json', fields: Union[List, str] = None, insecure: bool = True,
                  cert_file: str = None, key_file: str = None, headers: str = None, **_):
         """
@@ -95,7 +95,7 @@ def fetch_indicators_command(client: Client, indicator_type: str) -> List[Dict]:
         indicator_value = item.get(client.indicator)
 
         attributes = {'source_name': client.source_name}
-        attributes.update({field: item.get(field) for field in client.fields or item.keys() if field is not client.indicator})
+        attributes.update({f: item.get(f) for f in client.fields or item.keys() if f is not client.indicator})
 
         indicator = {'value': indicator_value, 'type': indicator_type}
 
@@ -122,7 +122,7 @@ def main():
             return_outputs(readable_output, outputs, raw_response)
 
         elif demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, params.get('indicator_type'))
+            indicators = fetch_indicators_command(client, params['indicator_type'])
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
