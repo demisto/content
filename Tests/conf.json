@@ -1562,7 +1562,7 @@
             "timeout": 700
         },
         {
-            "playbookID": "Active Directory - Get User Manager Email - Test",
+            "playbookID": "Active Directory - Get User Manager Details - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_80k",
             "fromversion": "4.5.0"
