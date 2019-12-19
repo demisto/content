@@ -1482,8 +1482,8 @@ def find_groups():
 
 def create_find_groups_request():
     api_endpoint = '/api/directory/find-groups'
-    query_string = demisto.args().get('query_string').encode('utf-8')
-    query_source = demisto.args().get('query_source').encode('utf-8')
+    query_string = demisto.args().get('query_string', '').encode('utf-8')
+    query_source = demisto.args().get('query_source', '').encode('utf-8')
     pagination = demisto.args().get('pagination')
 
     meta = dict()  # type: Dict[str, Dict[str, int]]
@@ -1507,36 +1507,35 @@ def create_find_groups_request():
     response = http_request('POST', api_endpoint, str(payload))
     if isinstance(response, dict) and response.get('fail'):
         return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
-    return response.content
+    return response
 
 
 def find_groups_api_response_to_markdown(api_response):
-    num_groups_found = api_response['pagination']['pageSize']
-    query_string = api_response['data']['query']
-    query_source = api_response['data']['source']
+    num_groups_found = api_response.get('meta', {}).get('pagination', {}).get('pageSize', 0)
+    query_string = demisto.args().get('query_string', '')
+    query_source = demisto.args().get('query_source', '')
 
     if not num_groups_found:
-        md = '###Found 0 groups###'
+        md = '### Found 0 groups'
 
         if query_string:
-            md += ' query: ' + query_string
+            md += '\n#### query: ' + query_string
 
         if query_source:
-            md += ' source: ' + query_source
+            md += '\n#### source: ' + query_source
 
-        md += '###'
         return md
 
-    md = '###Found ' + str(num_groups_found) + ' groups:###'
+    md = 'Found ' + str(num_groups_found) + ' groups:'
 
     if query_string:
-        md += ' query: ' + query_string
+        md += '\n#### query: ' + query_string
 
     if query_source:
-        md += ' source: ' + query_source
+        md += '\n#### source: ' + query_source
 
     groups_list = list()
-    for group in api_response['data'][0]['folders']:
+    for group in api_response.get('data', [])[0]['folders']:
         group_entry = {
             'Name': group['description'],
             'Source': group['source'],
@@ -1582,8 +1581,8 @@ def get_group_members():
 
 def create_get_group_members_request(group_id=-1, pagination=100):
     api_endpoint = '/api/directory/get-group-members'
-    group_id = demisto.args().get('group_id').encode('utf-8')
-    pagination = demisto.args().get('pagination')
+    group_id = demisto.args().get('group_id', group_id).encode('utf-8')
+    pagination = demisto.args().get('pagination', pagination)
 
     meta = dict()  # type: Dict[str, Dict[str, int]]
     data = dict()  # type: Dict[str, Dict[str, str]]
@@ -1603,18 +1602,18 @@ def create_get_group_members_request(group_id=-1, pagination=100):
     response = http_request('POST', api_endpoint, str(payload))
     if isinstance(response, dict) and response.get('fail'):
         return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
-    return response.content
+    return response
 
 
 def group_members_api_response_to_markdown(api_response):
-    num_users_found = api_response['pagination']['pageSize']
-    group_id = demisto.args().get('groupID').encode('utf-8')
+    num_users_found = api_response.get('meta', {}).get('pagination', {}).get('pageSize', 0)
+    group_id = demisto.args().get('groupID', '')
 
     if not num_users_found:
-        md = '###Found 0 users for group ID: ' + group_id + '###'
+        md = 'Found 0 users for group ID: ' + group_id + ''
         return md
 
-    md = '###Found ' + str(num_users_found) + ' users for group ID: ' + group_id + '###'
+    md = 'Found ' + str(num_users_found) + ' users for group ID: ' + group_id
 
     users_list = list()
     for user in api_response['data'][0]['groupMembers']:
@@ -1636,7 +1635,7 @@ def group_members_api_response_to_markdown(api_response):
 
 def group_members_api_response_to_context(api_response, group_id=-1):
     if group_id != -1:
-        group_id = demisto.args().get('groupID').encode('utf-8')
+        group_id = demisto.args().get('groupID', group_id)
 
     users_list = list()
     for user in api_response['data'][0]['groupMembers']:
@@ -1664,30 +1663,33 @@ def add_remove_member_to_group(action_type):
 
     markdown_output = add_remove_api_response_to_markdown(api_response, action_type)
     entry_context = add_remove_api_response_to_context(api_response, action_type)
-    entry_context = None
 
     return_outputs(markdown_output, entry_context, api_response)
 
 
 def create_add_remove_group_member_request(api_endpoint):
-    group_id = demisto.args().get('group_id').encode('utf-8')
-    email = demisto.args().get('email_address').encode('utf-8')
-    domain = demisto.args().get('domain_address').encode('utf-8')
+    group_id = demisto.args().get('group_id', '').encode('utf-8')
+    email = demisto.args().get('email_address', '').encode('utf-8')
+    domain = demisto.args().get('domain_address', '').encode('utf-8')
 
-    data = [{
+    data = {
         'id': group_id,
-        'emailAddress': email,
-        'domain': domain
-    }]
+    }
+
+    if email:
+        data['emailAddress'] = email
+
+    if domain:
+        data['domain'] = domain
 
     payload = {
-        'data': data
+        'data': [data]
     }
 
     response = http_request('POST', api_endpoint, str(payload))
     if isinstance(response, dict) and response.get('fail'):
         return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
-    return response.content
+    return response
 
 
 def add_remove_api_response_to_markdown(api_response, action_type):
@@ -1695,8 +1697,8 @@ def add_remove_api_response_to_markdown(api_response, action_type):
     group_id = api_response['data'][0]['folderId']
 
     if action_type == 'add':
-        return '###' + address_modified + ' had been added to group ID ' + group_id + '###'
-    return '###' + address_modified + ' has been removed from group ID ' + group_id + '###'
+        return address_modified + ' had been added to group ID ' + group_id
+    return address_modified + ' has been removed from group ID ' + group_id
 
 
 def add_remove_api_response_to_context(api_response, action_type):
@@ -1706,8 +1708,7 @@ def add_remove_api_response_to_context(api_response, action_type):
         # Run get group members again, to get all relevant data, the response from add user
         # does not match the get group members.
         api_response = create_get_group_members_request(group_id=group_id)
-        entry_context = group_members_api_response_to_context(api_response, group_id=group_id)
-        return entry_context
+        return group_members_api_response_to_context(api_response, group_id=group_id)
     else:
         address_removed = api_response['data'][0]['emailAddress']
         removed_user = {
@@ -1745,7 +1746,7 @@ def create_group_request():
     response = http_request('POST', api_endpoint, str(payload))
     if isinstance(response, dict) and response.get('fail'):
         return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
-    return response.content
+    return response
 
 
 def create_group_api_response_to_markdown(api_response):
@@ -1805,7 +1806,7 @@ def create_update_group_request():
     response = http_request('POST', api_endpoint, str(payload))
     if isinstance(response, dict) and response.get('fail'):
         return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
-    return response.content
+    return response
 
 
 def update_group_api_response_to_markdown(api_response):
@@ -1860,7 +1861,7 @@ def create_mimecast_incident_request():
     response = http_request('POST', api_endpoint, str(payload))
     if isinstance(response, dict) and response.get('fail'):
         return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
-    return response.content
+    return response
 
 
 def get_mimecast_incident():
@@ -1887,7 +1888,7 @@ def get_mimecast_incident_request():
     response = http_request('POST', api_endpoint, str(payload))
     if isinstance(response, dict) and response.get('fail'):
         return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
-    return response.content
+    return response
 
 
 def mimecast_incident_api_response_to_markdown(api_response, action_type):
@@ -1984,7 +1985,7 @@ def create_search_file_hash_request():
     response = http_request('POST', api_endpoint, str(payload))
     if isinstance(response, dict) and response.get('fail'):
         return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
-    return response.content
+    return response
 
 
 def search_file_hash_api_response_to_markdown(api_response):
