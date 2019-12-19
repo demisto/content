@@ -1,8 +1,11 @@
-from CommonServerPython import *
 import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
+
 import requests
 import base64
-from typing import Union, Dict, List, Tuple, Optional
+from typing import Union, Dict, List, Tuple
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 OPROXY_AUTH_TYPE = 'oproxy'
@@ -170,7 +173,7 @@ class MicrosoftClient(BaseClient):
                     if field not in fields_to_drop}
         return sc
 
-    def _oproxy_authorize(self) -> Tuple[str, int, Optional[str]]:
+    def _oproxy_authorize(self) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing with oproxy.
 
@@ -215,8 +218,8 @@ class MicrosoftClient(BaseClient):
                 'The response from the Oproxy server did not contain the expected content.'
             )
 
-        return (parsed_response.get('access_token'), parsed_response.get('expires_in', 3595),
-                parsed_response.get('refresh_token'))
+        return (parsed_response.get('access_token', ''), parsed_response.get('expires_in', 3595),
+                parsed_response.get('refresh_token', ''))
 
     def _get_self_deployed_token(self) -> Tuple[str, int]:
         """
@@ -250,7 +253,7 @@ class MicrosoftClient(BaseClient):
         except Exception as e:
             return_error(f'Error in Microsoft authorization: {str(e)}')
 
-        access_token = body.get('access_token')
+        access_token = body.get('access_token', '')
         expires_in = int(body.get('expires_on', 3595))
 
         return access_token, expires_in
@@ -333,3 +336,17 @@ class MicrosoftClient(BaseClient):
         now = MicrosoftClient.epoch_seconds()
         encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
         return encrypted
+
+    @staticmethod
+    def _add_info_headers(headers, expiry):
+        # pylint: disable=no-member
+        try:
+            calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
+            brand_name = calling_context.get('IntegrationBrand', '')
+            instance_name = calling_context.get('IntegrationInstance', '')
+            headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
+            headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
+            if hasattr(demisto, 'demistoVersion'):
+                headers['X-Content-Server-Version'] = demisto.demistoVersion().get('version')
+        except Exception as e:
+            demisto.error('Failed getting integration info: {}'.format(str(e)))

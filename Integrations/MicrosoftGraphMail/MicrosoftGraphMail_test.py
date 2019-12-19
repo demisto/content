@@ -1,6 +1,5 @@
 from CommonServerPython import *
-from microsoft_api import MicrosoftClient
-from MicrosoftGraphMail import build_mail_object, assert_pages, build_folders_path
+from MicrosoftGraphMail import build_mail_object, assert_pages, build_folders_path, error_parser, epoch_seconds
 from requests.models import Response
 
 
@@ -38,10 +37,10 @@ def test_error_parser():
     err = Response()
     err.status_code = 401
     err._content = b'{"error":{"code":"code","message":"message"}}'
-    response = MicrosoftClient.error_parser(err)
+    response = error_parser(err)
     assert response == 'code: message'
 
 
 def test_epoch_seconds():
-    integer = MicrosoftClient.epoch_seconds()
+    integer = epoch_seconds()
     assert isinstance(integer, int)
