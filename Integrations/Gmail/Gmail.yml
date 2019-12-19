@@ -151,7 +151,7 @@ script:
         example, for AD, these are the groups in which the account is a member.
       type: String
     - contextPath: Account.VisibleInDirectory
-      description: Is the account is visible in the directory
+      description: Whether the account is visible in the directory.
       type: Boolean
     - contextPath: Account.CustomerId
       description: The customer unique ID.
