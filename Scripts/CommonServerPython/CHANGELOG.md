@@ -1,6 +1,15 @@
 ## [Unreleased]
 
 
+## [19.12.0] - 2019-12-10
+-
+
+## [19.11.1] - 2019-11-26
+BaseClient now uses the session function to maintain an open session with the server.
+
+## [19.11.0] - 2019-11-12
+Fixed the IntegrationLogger auto-replace of sensitive strings.
+
 ## [19.10.1] - 2019-10-15
  - Added ***is_debug_mode*** wrapper function for checking if **debug-mode** is enabled. 
  - The ***return_outputs*** function can now return readable_output.

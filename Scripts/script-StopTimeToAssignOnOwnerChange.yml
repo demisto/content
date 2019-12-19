@@ -1,6 +1,6 @@
 fromversion: 4.1.0
 commonfields:
-  id: stoptimetoassignonownerchange
+  id: StopTimeToAssignOnOwnerChange
   version: -1
 name: StopTimeToAssignOnOwnerChange
 script: |

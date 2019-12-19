@@ -92,6 +92,7 @@ def html_to_text(html):
     return parser.get_text()
 
 
+# disable-secrets-detection-start
 def get_http_client_with_proxy():
     proxies = handle_proxy()
     if not proxies or not proxies['https']:
@@ -107,6 +108,7 @@ def get_http_client_with_proxy():
         proxy_user=parsed_proxy.username,
         proxy_pass=parsed_proxy.password)
     return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=DISABLE_SSL)
+# disable-secrets-detection-end
 
 
 def get_credentials(additional_scopes=None, delegated_user=None):
@@ -165,6 +167,15 @@ def parse_mail_parts(parts):
                 })
 
     return body, html, attachments
+
+
+def parse_privileges(raw_privileges):
+    privileges = []
+    for p in raw_privileges:
+        privilege = assign_params(**{'ServiceID': p.get('serviceId'), 'Name': p.get('privilegeName')})
+        if privilege:
+            privileges.append(privilege)
+    return privileges
 
 
 def localization_extract(time_from_mail):
@@ -226,9 +237,9 @@ def get_email_context(email_data, mailbox):
     context_gmail = {
         'Type': 'Gmail',
         'Mailbox': ADMIN_EMAIL if mailbox == 'me' else mailbox,
-        'ID': email_data['id'],
-        'ThreadId': email_data['threadId'],
-        'Labels': ', '.join(email_data['labelIds']),
+        'ID': email_data.get('id'),
+        'ThreadId': email_data.get('threadId'),
+        'Labels': ', '.join(email_data.get('labelIds', [])),
         'Headers': context_headers,
         'Attachments': email_data.get('payload', {}).get('filename', ''),
         # only for format 'raw'
@@ -249,7 +260,7 @@ def get_email_context(email_data, mailbox):
     }
 
     context_email = {
-        'ID': email_data['id'],
+        'ID': email_data.get('id'),
         'Headers': context_headers,
         'Attachments': {'entryID': email_data.get('payload', {}).get('filename', '')},
         # only for format 'raw'
@@ -478,7 +489,7 @@ def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, bodyHtml, body, 
         gmail_context.append({
             'Type': "Gmail",
             'ID': mail_results_data.get('id'),
-            'Labels': mail_results_data.get('labelIds'),
+            'Labels': mail_results_data.get('labelIds', []),
             'ThreadId': mail_results_data.get('threadId'),
             'To': ','.join(to),
             'From': emailfrom,
@@ -502,7 +513,7 @@ def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, bodyHtml, body, 
     }
 
 
-def roles_to_entry(title, response):
+def user_roles_to_entry(title, response):
     context = []
     for role_data in response:
         context.append({
@@ -513,7 +524,7 @@ def roles_to_entry(title, response):
             'Kind': role_data['kind'],
             'OrgUnitId': role_data.get('orgUnitId', ''),
         })
-    headers = ['ID', 'AssignedTo', 'RoleAssignmentId',
+    headers = ['ID', 'RoleAssignmentId',
                'ScopeType', 'Kind', 'OrgUnitId']
 
     return {
@@ -567,7 +578,39 @@ def filters_to_entry(title, mailbox, response):
         'Contents': context,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
-        'EntryContext': {'GmailFilter(val.ID && val.ID == obj.ID)': context}
+        'EntryContext': {'GmailFilter(val.ID && val.ID == obj.ID)': context,
+                         'Gmail.Filter(val.ID && val.ID == obj.ID)': context}
+    }
+
+
+def role_to_entry(title, role):
+    context = {
+        'ETag': role.get('etag').strip('"'),
+        'IsSuperAdminRole': bool(role.get('isSuperAdminRole')) if role.get('isSuperAdminRole') else False,
+        'IsSystemRole': bool(role.get('isSystemRole')) if role.get('isSystemRole') else False,
+        'Kind': role.get('kind'),
+        'Description': role.get('roleDescription'),
+        'ID': role.get('roleId'),
+        'Name': role.get('roleName'),
+        'Privilege': parse_privileges(role.get('rolePrivileges', []))
+    }
+
+    headers = ['ETag', 'IsSuperAdminRole', 'IsSystemRole', 'Kind', 'Description',
+               'ID', 'Name']
+    details_hr = tableToMarkdown(title, context, headers, removeNull=True)
+
+    privileges = context.get('Privilege', [])
+    privileges_headers = ['ServiceID', 'Name']
+    privileges_title = 'Role {} privileges:'.format(context.get('ID'))
+    privileges_hr = tableToMarkdown(privileges_title, privileges, privileges_headers, removeNull=True)
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': context,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': details_hr + privileges_hr,
+        'EntryContext': {'Gmail.Role(val.ID && val.ID == obj.ID)': context}
     }
 
 
@@ -840,7 +883,7 @@ def get_user_role_command():
         raise ValueError('Must provide Immutable GoogleApps Id')
 
     roles = get_user_role(user_key, GAPPS_ID)
-    return roles_to_entry('User Roles of %s:' % (user_key, ), roles)
+    return user_roles_to_entry('User Roles of %s:' % (user_key,), roles)
 
 
 def get_user_role(user_key, customer):
@@ -859,6 +902,33 @@ def get_user_role(user_key, customer):
     user_data = service.users().get(userKey=user_key).execute()
 
     return [role for role in result['items'] if role['assignedTo'] == user_data['id']]
+
+
+def get_role(role_identity, customer):
+    command_args = {
+        'customer': customer,
+        'roleId': role_identity
+    }
+
+    service = get_service(
+        'admin',
+        'directory_v1',
+        ['https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly',
+         'https://www.googleapis.com/auth/admin.directory.rolemanagement'])
+
+    return service.roles().get(**command_args).execute()
+
+
+def get_role_command():
+    args = demisto.args()
+    role_id = args['role-id']
+    customer = args['customer-id'] if args.get('customer-id') else GAPPS_ID
+
+    if not customer:
+        raise ValueError('Must provide Immutable GoogleApps Id')
+
+    role = get_role(role_id, customer)
+    return role_to_entry('Role {} details:'.format(role_id), role)
 
 
 def revoke_user_roles_command():
@@ -1764,7 +1834,8 @@ def main():
         'gmail-set-autoreply': set_autoreply_command,
         'gmail-delegate-user-mailbox': delegate_user_mailbox_command,
         'gmail-remove-delegated-mailbox': remove_delegate_user_mailbox_command,
-        'send-mail': send_mail_command
+        'send-mail': send_mail_command,
+        'gmail-get-role': get_role_command
     }
     command = demisto.command()
     LOG('GMAIL: command is %s' % (command, ))
