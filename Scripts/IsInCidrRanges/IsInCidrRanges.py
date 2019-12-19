@@ -51,9 +51,9 @@ def cidr_to_tuple(cidr):
         return ip, mask
 
 
-def main(value, cidr_ranges):
-    ADDRESS_LIST = csv_string_to_list(value)
-    CIDR_LIST = csv_string_to_list(cidr_ranges)
+def main():
+    ADDRESS_LIST = csv_string_to_list(demisto.args()['left'])
+    CIDR_LIST = csv_string_to_list(demisto.args()['right'])
 
     included_addresses = []
 
@@ -67,10 +67,10 @@ def main(value, cidr_ranges):
                 included_addresses.append(addr)
 
     if len(included_addresses) == 0:
-        return False
+        demisto.results(False)
     else:
-        return True
+        demisto.results(True)
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
-    demisto.results(main(**demisto.args()))
+    main()
