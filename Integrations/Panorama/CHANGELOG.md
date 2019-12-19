@@ -1,4 +1,9 @@
 ## [Unreleased]
+- Added 4 commands:
+    - ***panorama-list-static-routes***
+    - ***panorama-get-static-route***
+    - ***panorama-add-static-route***
+    - ***panorama-delete-static-route***
 
 
 ## [19.12.0] - 2019-12-10
