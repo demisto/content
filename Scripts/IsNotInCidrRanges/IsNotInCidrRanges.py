@@ -49,8 +49,8 @@ def cidr_to_tuple(cidr):
 
 
 def main():
-    ADDRESS_LIST = csv_string_to_list(demisto.args()['value'])
-    CIDR_LIST = csv_string_to_list(demisto.args()['cidr_ranges'])
+    ADDRESS_LIST = csv_string_to_list(demisto.args()['left'])
+    CIDR_LIST = csv_string_to_list(demisto.args()['right'])
 
     excluded_addresses = []
 
