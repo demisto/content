@@ -69,6 +69,11 @@ script:
     BASE_URL = SERVER + '/api/'
     USE_SSL = not demisto.params().get('insecure', False)
     TOKEN = demisto.params().get('token')
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
     """ End configuration """
 
 
@@ -90,25 +95,19 @@ script:
             return "{}{}".format(self.hostname, endpoint)
 
         def get(self, endpoint, params={}):
-            return requests.get(self._build_url(endpoint), params=params, headers=self.headers)
+            return requests.get(self._build_url(endpoint), params=params, headers=self.headers, verify=USE_SSL)
 
         def post(self, endpoint, data):
-            return requests.post(self._build_url(endpoint), json=data, headers=self.headers)
+            return requests.post(self._build_url(endpoint), json=data, headers=self.headers, verify=USE_SSL)
 
         def put(self, endpoint, data):
-            return requests.put(self._build_url(endpoint), json=data, headers=self.headers)
+            return requests.put(self._build_url(endpoint), json=data, headers=self.headers, verify=USE_SSL)
 
         def delete(self, endpoint):
-            return requests.delete(self._build_url(endpoint), headers=self.headers)
+            return requests.delete(self._build_url(endpoint), headers=self.headers, verify=USE_SSL)
 
 
     cybraics = CybraicsAPI(BASE_URL, TOKEN)
-
-    if not demisto.params().get('proxy'):
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
 
 
     def get_cybraics_case():
