@@ -1831,22 +1831,22 @@ def update_group():
 
 def create_update_group_request():
     api_endpoint = '/api/directory/update-group'
-    group_name = demisto.args().get('group_name').encode('utf-8')
-    group_id = demisto.args().get('group_id').encode('utf-8')
-    parent_id = demisto.args().get('parent_id').encode('utf-8')
+    group_name = demisto.args().get('group_name', '').encode('utf-8')
+    group_id = demisto.args().get('group_id', '').encode('utf-8')
+    parent_id = demisto.args().get('parent_id', '').encode('utf-8')
 
-    data = [{
+    data = {
         'id': group_id
-    }]
+    }
 
     if group_name:
-        data[0]['description'] = group_name
+        data['description'] = group_name
 
     if parent_id:
-        data[0]['parentId'] = parent_id
+        data['parentId'] = parent_id
 
     payload = {
-        'data': data
+        'data': [data]
     }
 
     response = http_request('POST', api_endpoint, str(payload))
@@ -1858,7 +1858,7 @@ def create_update_group_request():
 def update_group_api_response_to_markdown(api_response):
     group_name = api_response['data'][0]['description']
 
-    return '###' + group_name + ' has been updated###'
+    return group_name + ' has been updated'
 
 
 def update_group_api_response_to_context(api_response):
@@ -1882,26 +1882,26 @@ def create_mimecast_incident():
 
 def create_mimecast_incident_request():
     api_endpoint = '/api/ttp/remediation/create'
-    reason = demisto.args().get('reason').encode('utf-8')
-    start_date = demisto.args().get('start_date').encode('utf-8')
-    end_date = demisto.args().get('end_date').encode('utf-8')
-    search_by = demisto.args().get('search_by').encode('utf-8')
-    hash_or_message_id = demisto.args().get('hash_message_id').encode('utf-8')
+    reason = demisto.args().get('reason', '').encode('utf-8')
+    start_date = demisto.args().get('start_date', '').encode('utf-8')
+    end_date = demisto.args().get('end_date', '').encode('utf-8')
+    search_by = demisto.args().get('search_by', 'hash').encode('utf-8')
+    hash_or_message_id = demisto.args().get('hash_message_id', '').encode('utf-8')
 
-    data = [{
+    data = {
         'reason': reason,
         'hashOrMessageId': hash_or_message_id,
         'searchBy': search_by
-    }]
+    }
 
     if start_date:
-        data[0]['start'] = start_date
+        data['start'] = start_date
 
     if end_date:
-        data[0]['end'] = end_date
+        data['end'] = end_date
 
     payload = {
-        'data': data
+        'data': [data]
     }
 
     response = http_request('POST', api_endpoint, str(payload))
@@ -1921,14 +1921,14 @@ def get_mimecast_incident():
 
 def get_mimecast_incident_request():
     api_endpoint = '/api/ttp/remediation/get-incident'
-    incident_id = demisto.args().get('incident_id').encode('utf-8')
+    incident_id = demisto.args().get('incident_id', '').encode('utf-8')
 
-    data = [{
+    data = {
         'id': incident_id
-    }]
+    }
 
     payload = {
-        'data': data
+        'data': [data]
     }
 
     response = http_request('POST', api_endpoint, str(payload))
@@ -1948,16 +1948,16 @@ def mimecast_incident_api_response_to_markdown(api_response, action_type):
     incident_id = api_response['data'][0]['id']
 
     if action_type == 'create':
-        md = '###Incident ' + incident_id + ' has been created###\n'
+        md = 'Incident ' + incident_id + ' has been created\n'
     else:
-        md = '###Incident ' + incident_id + ' has been found###\n'
-    md += 'Code: ' + incident_code
-    md += 'Type: ' + incident_type
-    md += '\nReason: ' + incident_reason
-    md += '\nThe number of messages identified based on the search criteria: ' + incident_identified_messages_amount
-    md += '\nThe number successfully remediated messages: ' + incident_successful_messages_amount
-    md += '\nThe number of messages that failed to remediate: ' + incident_failed_messages_amount
-    md += '\nThe number of messages that were restored from the incident: ' + incident_restored_messages_amount
+        md = 'Incident ' + incident_id + ' has been found\n'
+    md += '\n####Code: ' + incident_code
+    md += '\n####Type: ' + incident_type
+    md += '\n####Reason: ' + incident_reason
+    md += '\n####The number of messages identified based on the search criteria: ' + incident_identified_messages_amount
+    md += '\n####The number successfully remediated messages: ' + incident_successful_messages_amount
+    md += '\n####The number of messages that failed to remediate: ' + incident_failed_messages_amount
+    md += '\n####The number of messages that were restored from the incident: ' + incident_restored_messages_amount
 
     messages_table_list = list()
     for message in api_response['data'][0]['searchCriteria']:
@@ -2018,14 +2018,14 @@ def search_file_hash():
 
 def create_search_file_hash_request():
     api_endpoint = '/api/ttp/remediation/search-hash'
-    hashes_to_search = demisto.args().get('hashes_to_search').encode('utf-8')
+    hashes_to_search = argToList(demisto.args().get('hashes_to_search').encode('utf-8'))
 
-    data = [{
+    data = {
         'hashes': hashes_to_search
-    }]
+    }
 
     payload = {
-        'data': data
+        'data': [data]
     }
 
     response = http_request('POST', api_endpoint, str(payload))
@@ -2035,7 +2035,7 @@ def create_search_file_hash_request():
 
 
 def search_file_hash_api_response_to_markdown(api_response):
-    md = '####Hashes detected:####\n'
+    md = 'Hashes detected:\n'
     detected_hashes_list = list()
     for detected_hash in api_response['data'][0]['hashStatus']:
         detected_hash_entry = {
@@ -2047,9 +2047,9 @@ def search_file_hash_api_response_to_markdown(api_response):
 
     md = tableToMarkdown(md, detected_hashes_list, ['Hash', 'Found within the account'])
 
-    md += '####Hashes that failed verification:####\n'
+    md += '### Hashes that failed verification:\n'
 
-    failed_hash_list = [failed_hash for failed_hash in api_response['data'][0]['failedHashes']]
+    failed_hash_list = [str(failed_hash) for failed_hash in api_response['data'][0]['failedHashes']]
     md += str(failed_hash_list)[1:-1] + '\n'
 
     return md
@@ -2065,7 +2065,9 @@ def search_file_hash_api_response_to_context(api_response):
 
         detected_hashes_list.append(detected_hash_entry)
 
-    return {'Mimecast.Hash(val.Hash && val.Hash == obj.Hash)': detected_hashes_list}
+    if detected_hashes_list:
+        return {'Mimecast.Hash(val.Hash && val.Hash == obj.Hash)': detected_hashes_list}
+    return None
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
