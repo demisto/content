@@ -1,1 +1,181 @@
-[]
+{
+  "displayName": "Palo Alto Networks Cortex XDR - Investigation and Response",
+  "description": "Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.",
+  "updated": "2019-10-30T20:07:15.385Z",
+  "support": "demisto",
+  "beta": false,
+  "deprecated": false,
+  "certification": "certified",
+  "serverMinVersion": "5.5.0",
+  "serverLicense": "standard",
+  "currentVersion": "2.0.0",
+  "supportDetails": {
+    "author": "demisto"
+  },
+  "general": [
+    "Demisto Certified",
+    "By Demisto",
+    "Free"
+  ],
+  "tags": [
+    "Recommended by Demisto",
+    "xdr"
+  ],
+  "categories": [
+    "Endpoint"
+  ],
+  "contentItems": {
+    "Automations": [
+      {
+        "name": "XDRSyncScript",
+        "description": "This script compares between Demisto incident and incident in XDR and updates\n  both incidents mutually. This script always uses xdr-get-incident-extra-data and\n  outputs to the context the whole incident JSON. If the incident in XDR updated then\n  Demisto incident will be updated accordingly and playbook will rerun. If incident\n  in Demisto updated then the script will execute xdr-update-incident and update the\n  incident in XDR."
+      },
+      {
+        "name": "EntryWidgetNumberHostsXDR",
+        "description": "Entry widget that returns the number of hosts in a Cortex XDR incident."
+      },
+      {
+        "name": "EntryWidgetNumberUsersXDR",
+        "description": "Entry widget that returns the number of users that participated in a specified Cortex XDR incident."
+      },
+      {
+        "name": "EntryWidgetPieAlertsXDR",
+        "description": "Entry widget that returns a pie chart of alerts for a specified Cortex XDR incident by alert severity (low, medium, and high)."
+      }
+    ],
+    "Integrations": [
+      {
+        "name": "Cortex XDR - IR",
+        "description": "Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks."
+      }
+    ],
+    "Incident Fields": [
+      {
+        "name": "XDR High Severity Alert Count",
+        "description": ""
+      },
+      {
+        "name": "XDR Low Severity Alert Count",
+        "description": ""
+      },
+      {
+        "name": "XDR Alert Count",
+        "description": ""
+      },
+      {
+        "name": "XDR Resolve Comment",
+        "description": ""
+      },
+      {
+        "name": "XDR URL",
+        "description": ""
+      },
+      {
+        "name": "XDR Detection Time",
+        "description": ""
+      },
+      {
+        "name": "XDR Notes",
+        "description": ""
+      },
+      {
+        "name": "XDR Assigned User Pretty Name",
+        "description": ""
+      },
+      {
+        "name": "XDR Network Artifacts",
+        "description": ""
+      },
+      {
+        "name": "XDR Status",
+        "description": ""
+      },
+      {
+        "name": "XDR Alerts",
+        "description": ""
+      },
+      {
+        "name": "XDR Assigned User Email",
+        "description": ""
+      },
+      {
+        "name": "XDR File Artifacts",
+        "description": ""
+      },
+      {
+        "name": "XDR Description",
+        "description": ""
+      },
+      {
+        "name": "XDR User Count",
+        "description": ""
+      },
+      {
+        "name": "XDR Medium Severity Alert Count",
+        "description": ""
+      },
+      {
+        "name": "XDR Incident ID",
+        "description": ""
+      }
+    ],
+    "Incident Types": [
+      {
+        "name": "Cortex XDR Incident"
+      }
+    ],
+    "Incident Layouts": [
+      {
+        "name": "Cortex XDR Incident"
+      }
+    ],
+    "Playbooks": [
+      {
+        "name": "Cortex XDR Incident Handling",
+        "description": "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR\n  incident. \\nThe playbook syncs and updates new XDR alerts that construct the incident.\n  It enriches indicators using Threat Intelligence integrations and Palo Alto Networks\n  AutoFocus. The incident's severity is then updated based on the indicators reputation\n  and an analyst is assigned for manual investigation. If chosen, automated remediation\n  with Palo Alto Networks FireWall is initiated. After a manual review by the\n  SOC analyst, the XDR incident is closed automatically.\\n\\n*** Note - The XDRSyncScript\n  used by this playbook sets data in the XDR incident fields that were released\n  to content from the Demisto server version 5.0.0.\\nFor Demisto versions under 5.0.0,\n  please follow the 'Palo Alto Networks Cortex XDR' documentation to upload the new\n  fields manually."
+      },
+      {
+        "name": "Cortex XDR Incident Sync",
+        "description": "Compares incidents in Palo Alto Networks Cortex XDR and Demisto, and\n  updates the incidents appropriately. When an incident is updated in Demisto, the XDRSyncScript\n  will update the incident in XDR. When an incident is updated in XDR, the XDRSyncScript\n  will update the incident fields in Demisto and rerun the current playbook."
+      }
+    ]
+  },
+  "contentItemTypes": [
+    "Automations",
+    "Incident Fields",
+    "Incident Types",
+    "Incident Layouts",
+    "Integrations",
+    "Playbooks"
+  ],
+  "integrations": [
+    "Palo Alto Networks Cortex XDR - Investigation and Response"
+  ],
+  "useCases": [
+    "Malware"
+  ],
+  "keywords": [
+    "adaptive cyber protection",
+    "apt"
+  ],
+  "dependencies": {
+    "AutoFocus V2": {
+      "mandatory": false,
+      "minVersion": "1.0.0"
+    },
+    "Palo Alto Networks - Malware Remediation": {
+      "mandatory": false,
+      "minVersion": "1.0.0",
+      "dependencies": {
+        "PAN-OS - Block IP - Custom Block Rule": {
+          "mandatory": true,
+          "minVersion": "1.0.0"
+        }
+      }
+    },
+    "Calculate Severity - Standard": {
+      "mandatory": true,
+      "minVersion": "1.0.0"
+    }
+  }
+}

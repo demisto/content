@@ -1,0 +1,20 @@
+{
+  "1.0.0": {
+    "displayName": "1.0.0",
+    "released": "2019-09-30T20:07:15.385Z",
+    "path": "CortexXDR/1.0.0",
+    "releaseNotes": "string"
+  },
+  "1.0.1": {
+    "displayName": "1.0.1",
+    "released": "2019-10-30T20:07:15.385Z",
+    "path": "CortexXDR/1.0.1",
+    "releaseNotes": "string"
+  },
+  "2.0.0": {
+    "displayName": "2.0.0 (pre-release)",
+    "modified": "2019-11-05T20:07:15.385Z",
+    "path": "CortexXDR/2.0.0",
+    "releaseNotes": "string"
+  }
+}
