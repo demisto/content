@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Enhanced the speed of the ***splunk-search*** command.
 
 ## [19.11.0] - 2019-11-12
 Increased the maximum fetch limit for Splunk.
