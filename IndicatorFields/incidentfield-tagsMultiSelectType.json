@@ -18,10 +18,8 @@
   "breachScript": "",
   "editForm": true,
   "description": "",
-  "associatedToAll": false,
-  "associatedTypes": [
-    "File"
-  ],
+  "associatedToAll": true,
+  "associatedTypes": [],
   "caseInsensitive": true,
   "columns": null,
   "placeholder": "",
@@ -40,5 +38,5 @@
   "validationRegex": "",
   "sla": 0,
   "fromVersion": "5.0.0",
-  "toVersion": "5.5.0"
+  "toVersion": "5.4.9"
 }
