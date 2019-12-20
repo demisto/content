@@ -9,6 +9,7 @@ import ssl
 from StringIO import StringIO
 import requests
 import urllib3
+import io
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -20,6 +21,29 @@ SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
 FETCH_LIMIT = int(demisto.params().get('fetch_limit', 50))
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
+
+
+class ResponseReaderWrapper(io.RawIOBase):
+
+    def __init__(self, responseReader):
+        self.responseReader = responseReader
+
+    def readable(self):
+        return True
+
+    def close(self):
+        self.responseReader.close()
+
+    def read(self, n):
+        return self.responseReader.read(n)
+
+    def readinto(self, b):
+        sz = len(b)
+        data = self.responseReader.read(sz)
+        for idx, ch in enumerate(data):
+            b[idx] = ch
+
+        return len(data)
 
 
 def get_current_splunk_time(splunk_service):
@@ -245,48 +269,73 @@ if demisto.command() == 'test-module':
 if demisto.command() == 'splunk-search':
     t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
-    kwargs_oneshot = {"earliest_time": time_str}  # type: Dict[str,Any]
+    kwargs_normalsearch = {
+        "earliest_time": time_str,
+        "exec_mode": "blocking"
+    }  # type: Dict[str,Any]
     if demisto.get(demisto.args(), 'earliest_time'):
-        kwargs_oneshot['earliest_time'] = demisto.args()['earliest_time']
+        kwargs_normalsearch['earliest_time'] = demisto.args()['earliest_time']
     if demisto.get(demisto.args(), 'latest_time'):
-        kwargs_oneshot['latest_time'] = demisto.args()['latest_time']
-    if demisto.get(demisto.args(), 'event_limit'):
-        kwargs_oneshot['count'] = int(demisto.args()['event_limit'])
+        kwargs_normalsearch['latest_time'] = demisto.args()['latest_time']
+
     searchquery_oneshot = demisto.args()['query']
     searchquery_oneshot = searchquery_oneshot.encode('utf-8')
     if not searchquery_oneshot.startswith('search') and not searchquery_oneshot.startswith('Search')\
             and not searchquery_oneshot.startswith('|'):
         searchquery_oneshot = 'search ' + searchquery_oneshot
-    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
 
-    reader = results.ResultsReader(oneshotsearch_results)
     res = []
     dbot_scores = []  # type: List[Dict[str,Any]]
-    for item in reader:
-        if isinstance(item, results.Message):
-            if "Error in" in item.message:
-                raise ValueError(item.message)
-            res.append(convert_to_str(item.message))
 
-        elif isinstance(item, dict):
-            if demisto.get(item, 'host'):
-                dbot_scores.append({'Indicator': item['host'], 'Type': 'hostname',
-                                    'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True})
-            # Normal events are returned as dicts
-            res.append(item)
+    job = service.jobs.create(searchquery_oneshot, **kwargs_normalsearch)
+    num_of_results = job["resultCount"]
+
+    results_limit = int(demisto.args().get("event_limit", 100))
+    if results_limit == 0:
+        # In Splunk, a result limit of 0 means no limit.
+        results_limit = float("inf")
+    batch_limit = int(demisto.args().get("batch_limit", 25000))
+    offset = 0
+    while len(res) < int(num_of_results) and len(res) < results_limit:
+        batch_kwargs = {
+            "count": batch_limit,
+            "offset": offset
+        }
+
+        results_batch = job.results(**batch_kwargs)
+        results_reader = results.ResultsReader(io.BufferedReader(ResponseReaderWrapper(results_batch)))
+        for item in results_reader:
+            if isinstance(item, results.Message):
+                if "Error in" in item.message:
+                    raise ValueError(item.message)
+                res.append(convert_to_str(item.message))
+
+            elif isinstance(item, dict):
+                if demisto.get(item, 'host'):
+                    dbot_scores.append({'Indicator': item['host'], 'Type': 'hostname',
+                                        'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True})
+                # Normal events are returned as dicts
+                res.append(item)
+
+            if len(res) >= results_limit:
+                break
+
+        offset += batch_limit
+
     ec = {}
-    ec['Splunk.Result'] = res
-    if len(dbot_scores) > 0:
-        ec['DBotScore'] = dbot_scores
+
+    if demisto.args().get('update_context', "true") == "true":
+        ec['Splunk.Result'] = res
+        if len(dbot_scores) > 0:
+            ec['DBotScore'] = dbot_scores
 
     headers = ""
-    if (res and len(res) > 0):
+    if res and len(res) > 0:
         if not isinstance(res[0], dict):
             headers = "results"
 
     human_readable = tableToMarkdown("Splunk Search results \n\n Results for query: {}".format(demisto.args()['query']),
                                      res, headers)
-
     demisto.results({
         "Type": 1,
         "Contents": res,
