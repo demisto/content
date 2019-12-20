@@ -131,6 +131,16 @@ script:
       name: event_limit
       required: false
       secret: false
+    - name: batch_limit
+      description: Maximum number of events to fetch in each batch. Default is 25,000.
+      defaultValue: "25000"
+    - name: update_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      description: Determines whether the results will be entered into the context.
+      defaultValue: "true"
     deprecated: false
     description: Searches Splunk for events.
     execution: false
