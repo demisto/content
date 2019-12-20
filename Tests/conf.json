@@ -69,8 +69,8 @@
             "playbookID": "AttackIQ - Test"
         },
         {
-          "integrations": "PhishLabs IOC EIR",
-          "playbookID": "PhishlabsIOC_EIR-Test"
+            "integrations": "PhishLabs IOC EIR",
+            "playbookID": "PhishlabsIOC_EIR-Test"
         },
         {
             "integrations": "PhishLabs IOC DRP",
