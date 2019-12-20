@@ -1,0 +1,564 @@
+commonfields:
+  id: cybraics
+  version: -1
+name: cybraics
+display: cybraics
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJcAAABFCAMAAABwt4RvAAAAmVBMVEX///8AAAAXsgAetgAArwD2/PUptR7V79FAvi3c8dlnZ2e+vr7t7e0ArQD1/PNvb2/u+exvy2h4zXLi9d/o9uas3qefn58yMjK45LH7/vo4uyPM7Mes4KS85Lmy4azD6L6j3ZtGu0FexVBXw0iHh4dWVlaUlJQ9PT2ysrJ3d3dHvjqM1YKY2JBwzGJmyFmF03nR0dEkJCRISEgEPcZAAAAC3ElEQVRoge2WbXPiIBCAcV0laY3NC7aSF6WmvV5txN79/x93SxIStLVz0y/ezPGMH2RZ4BE2RMY8Ho/H4/F4PB6Px+Px/E/cPt2N3FNApoZke1WrxfPkhB8UCwEBsLyq18vkjKdW7NpeP8+1JpPXTmzwUsHcEoSsgPl8H5t4CXNI4rGTSDKmYGzuN8M6293O1oXI66BgXOc2DVYmvNkP41CxGxJ5uTnh+bYVs15vdKYDc05igAGJlQiYyFnu9AJOY+WmR03vUh1mMqm671nKVluOTp5ZSkVj8607xvvPNjKEzisDmLpwxmlosDRaqWTL3O0HVBQfmwCy2yItRSzrePQ6oDstqNl0nCelpIdLXox3h1AgLT9z6KqPdNCMJ6/90g7JEI8l4tq2D4CdSsKZ1nR0g9c6hyB2Jl2KCA7u6pe9esjreB4T7W63YfJ6FIEFsFCIRZP3TQja/FXDVqXasGbjes3cKWNzCD2p+KYXo13HrnSMVzYdSiNhxutoawdF+zNq+sTxPmOBuOTlljFi9k0vVgOGn3lheOqVmJxdyJJc64Myhpe85JvzBOkvvJb8b71k3EMPWUL1VS1FS6zbDVOKraeqG1c2o5c8X7CfRdD5X/aa1d1UIUKQjGhuvfjgJdKuL9UAB+Nl5ziYrEwzMZ2qklCx2TvjVT0CpCMJ6a6HFj1VzLyF7m5PeTfbWkf9/bVzLxp7qZ2d45ASmbo/9dKC6XVRGVY7FtfdPbGJzGw9kZZ0HVpolpLdf7zvfy3Mbg0KS+1clPYCrzHq9wvwMRu68xVromjw0oi82ZdHe7syddzUjdhv6D9BMx9/bSJpmLMK5S8+aP1eGBd03o8itGQ2lIVhXx4UlEM/3WSC89hmhZzPim21HSupqrZbuV5XlBJTb49ksuAj7UP8fqb1bHZLX///BFu8PrhaFJEazbvhyl5GbcQ06V1mOH+OPR6Px+PxeDwej8fj+df4A3uRPxwxeGlaAAAAAElFTkSuQmCC
+description: Cybraics integration to perform actions like get and update cases, get
+  servers, get and update networks, and get outliers.
+detaileddescription: |-
+  Click the eye icon to view all the available commands. All commands start with `!cybraics-`.
+
+  The Python library `graphqlclient` will need to be installed in the docker container.
+  You can create a docker image with the necessary dependency from the Demisto CLI with the following command:
+
+  ```
+  /docker_image_create base=demisto/python3 name=python3-graphql dependencies=graphqlclient
+  ```
+
+  The following operations are currently supported:
+
+  - Getting a specific case via the REST API
+  - Getting a specific case with outliers via GraphQL
+  - Updating a case (e.g. changing status)
+  - Adding a comment to a case
+  - Getting customer networks
+  - Creating a customer network
+  - Updating customer network
+  - Deleting customer network
+  - Getting customer network roles
+  - Getting servers
+  - Updating servers
+  - Getting outliers starting from a specific date
+configuration:
+- display: Cybraics Server URL (e.g. https://example.net)
+  name: url
+  defaultvalue: https://example.net
+  type: 0
+  required: true
+- display: Cybraics API Token
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any SSL certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system HTTP(S) proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    """ Cybraics integration """
+    from datetime import datetime
+    import json
+    import requests
+    from graphqlclient import GraphQLClient
+    from distutils.util import strtobool
+
+
+    """ Configuration """
+    requests.packages.urllib3.disable_warnings()
+    SERVER = demisto.params()['url'][:-1] \
+        if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+    BASE_URL = SERVER + '/api/'
+    USE_SSL = not demisto.params().get('insecure', False)
+    TOKEN = demisto.params().get('token')
+    """ End configuration """
+
+
+    class CybraicsAPI:
+        """
+        This class stores information about the API connection
+        and provides a simple interface for making HTTP requests
+        to the Cybraics server.
+        """
+        def __init__(self, hostname, token):
+            self.hostname = hostname
+            self.token = token
+            self.headers = {
+                "Authorization": "Bearer {}".format(token),
+                "Accepts": "application/json"
+            }
+
+        def _build_url(self, endpoint):
+            return "{}{}".format(self.hostname, endpoint)
+
+        def get(self, endpoint, params={}):
+            return requests.get(self._build_url(endpoint), params=params, headers=self.headers)
+
+        def post(self, endpoint, data):
+            return requests.post(self._build_url(endpoint), json=data, headers=self.headers)
+
+        def put(self, endpoint, data):
+            return requests.put(self._build_url(endpoint), json=data, headers=self.headers)
+
+        def delete(self, endpoint):
+            return requests.delete(self._build_url(endpoint), headers=self.headers)
+
+
+    cybraics = CybraicsAPI(BASE_URL, TOKEN)
+
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+
+    def get_cybraics_case():
+        """
+        Get a specific case from Cybraics API and output the JSON
+        received from the server.
+
+        :return: None
+        """
+        results = cybraics.get("/cases/%s" % demisto.getArg('case_id'))
+        demisto.results(results.json())
+
+
+    def get_cybraics_cases():
+        """
+        Get cases from Cybraics API and output the JSON
+        received from the server.
+
+        :return: None
+        """
+        results = cybraics.get('/cases')
+        demisto.results(results.json())
+
+
+    def update_cybraics_case():
+        """
+        Update fields of a Cybraics case. All data fields are optional.
+        Only the provided fields will be updated in the case.
+
+        :return: None
+        """
+        if demisto.getArg('case_id') is None:
+            raise Exception('No Cybraics case ID provided')
+
+        # Populate only the provided fields. If a field
+        # is not provided, do not include it in the data object
+        data = dict()
+        if demisto.getArg('title'):
+            data['title'] = demisto.getArg('title')
+        if demisto.getArg('external_ticket_url'):
+            data['external_ticket_url'] = demisto.getArg('external_ticket_url')
+        if demisto.getArg('external_ticket_title'):
+            data['external_ticket_title'] = demisto.getArg('external_ticket_title')
+        if demisto.getArg('summary'):
+            data['summary'] = demisto.getArg('summary')
+        if demisto.getArg('risk_score'):
+            data['risk'] = demisto.getArg('risk_score')
+        if demisto.getArg('threat_type_id'):
+            data['threat_type_id'] = demisto.getArg('threat_type_id')
+        if demisto.getArg('status'):
+            data['status'] = demisto.getArg('status')
+
+        results = cybraics.put('cases/%s' % demisto.getArg('case_id'), data=data)
+        demisto.results(results.json())
+
+
+    def add_cybraics_case_comment():
+        """Add a comment to a Cybraics case"""
+        results = cybraics.post('/cases/%s/comments' % demisto.getArg('case_id'), data={'text': demisto.getArg('comment')})
+        demisto.results(results.json())
+
+
+    def get_cybraics_servers():
+        """
+        Get all known servers from Cybraics and output the
+        JSON received from the server.
+
+        :return: None
+        """
+        results = cybraics.get('/known_servers')
+        demisto.results(results.json())
+
+
+    def get_cybraics_networks():
+        """Get a list of customer networks from Cybraics"""
+        results = cybraics.get('/customer_networks')
+        demisto.results(results.json())
+
+
+    def get_cybraics_network_roles():
+        """Get a list of network roles from Cybraics"""
+        results = cybraics.get('/network_roles')
+        demisto.results(results.json())
+
+
+    def create_cybraics_network():
+        """
+        Create a new customer network in Cybraics
+        Network roles may need to be fetched first to get
+        the proper values for network roles
+        """
+        data = {
+            'network': demisto.getArg('network'),
+            'name': demisto.getArg('name'),
+            'description': demisto.getArg('description'),
+            'network_roles': demisto.getArg('network_roles'),  # array of strings
+        }
+        results = cybraics.post('/customer_networks', data=data)
+        demisto.results(results.json())
+
+
+    def update_cybraics_network():
+        """
+        Update a customer network. Not all fields are changeable,
+        and the network may need to be deleted and re-created
+        if fields other than the name and description need
+        to change.
+        """
+        data = {}
+        if demisto.getArg('name'):
+            data['name'] = demisto.getArg('name')
+        if demisto.getArg('description'):
+            data['description'] = demisto.getArg('description')
+        if demisto.getArg('network_roles'):
+            data['network_roles'] = demisto.getArg('network_roles')
+        results = cybraics.put('/customer_networks/%s' % demisto.getArg('network_id'), data=data)
+        demisto.results(results.json())
+
+
+    def delete_cybraics_network():
+        """Delete a customer network from Cybraics"""
+        results = cybraics.delete('/customer_networks/%s' % demisto.getArg('network_id'))
+        demisto.results(results.json())
+
+
+    def update_cybraics_server():
+        """
+        Update a known server in Cybraics and print
+        the JSON returned from the server.
+
+        :return: None
+        """
+        if demisto.getArg('server_id') is None:
+            raise Exception('No server_id provided.')
+
+        # Prevent unused arguments from appearing in data object
+        data = dict()
+        if demisto.getArg('description'):
+            data['description'] = demisto.getArg('description')
+        if demisto.getArg('hostname'):
+            data['hostname'] = demisto.getArg('hostname')
+        if demisto.getArg('server_role'):
+            data['server_role'] = demisto.getArg('server_role')
+
+        result = cybraics.put('/known_servers/%s' % demisto.getArg('server_id'), data=data)
+        demisto.results(result.json())
+
+
+    def search_cybraics_cases():
+        """Search Cybraics cases using the GraphQL endpoint"""
+        client = GraphQLClient(SERVER + '/graphql')
+        client.inject_token('Bearer {}'.format(TOKEN), 'Authorization')
+    # cases(query:"status:open")
+        query = """
+    query fetchCases {
+        cases(query: "id:%s") {
+            nodes {
+                id
+                title
+                summary
+                 outliers {
+                    edges {
+                        node {
+                            timewindowEnd
+                            timewindowStart
+                            observable
+                        }
+                    }
+                 }
+            }
+        }
+    }
+        """ % demisto.getArg('case_id')
+
+        try:
+            results = json.loads(client.execute(query))
+            demisto.results(results)
+        except Exception as e:
+            raise Exception('Error processing graphql query: %s' % e)
+        if 'errors' in results:
+            raise Exception('Error process results: %s' % json.dumps(results))
+
+
+    def get_cybraics_outliers():
+        """
+        Fetch outliers from Cybraics GraphQL endpoint.
+        It accepts a start date and fetches to the current time.
+        """
+        client = GraphQLClient(SERVER + '/graphql')
+        client.inject_token('Bearer {}'.format(TOKEN), 'Authorization')
+
+        parameters_template = 'order: "updated_at asc", createdAfter: "{}"'
+
+        get_outlier_graphql_query = """
+        query fetchOutlierEvidence {
+          outlierEvidence(PARAMETERS_TEMPLATE) {
+            pageInfo {
+              endCursor
+              startCursor
+            }
+            edges {
+              node {
+                createdAt
+                # deletedAt
+                id
+                # type
+                updatedAt
+                case {
+                  # audits
+                  # author
+                  autoCreated
+                  closedAt
+                  createdAt
+                  # deletedAt
+                  externalTicketTitle
+                  externalTicketUrl
+                  id
+                  openedAt
+                  # outliers
+                  risk
+                  status
+                  summary
+                  threatType {
+                    id
+                    name
+                  }
+                  timewindowEnd
+                  timewindowStart
+                  title
+                  updatedAt
+                }
+                outlier {
+                  analyticName
+                  # annotations
+                  # audits
+                  # behavior
+                  # case
+                  createdAt
+                  # curatedAt
+                  # curationEvent
+                  dataSource
+                  # deletedAt
+                  # detailMessage
+                  # details
+                  # entity
+                  # entityAnnotations
+                  id
+                  observable
+                  # observedAt
+                  # schemaVersion
+                  timewindowEnd
+                  timewindowStart
+                  # updatedAt
+                  # uuid
+                }
+              }
+            }
+          }
+        }
+        """
+
+        query = get_outlier_graphql_query.replace(
+            'PARAMETERS_TEMPLATE',
+            parameters_template.format(demisto.getArg('start_date'))
+        )
+
+        try:
+            results = json.loads(client.execute(query))
+        except Exception as e:
+            raise Exception('Error processing graphql query: %s' % e)
+
+        if 'errors' in results:
+            raise Exception('Error process results: %s' % json.dumps(results))
+
+        try:
+            if len(results['data']['outlierEvidence']) == 0:
+                demisto.results("Zero observables received.")
+                exit()
+        except KeyError:
+            raise Exception('Error parsing server response: %s' % results)
+
+        try:
+            nodes = results['data']['outlierEvidence']['edges']
+            if not len(nodes):
+                demisto.results("Query returned zero nodes.")
+                exit()
+            demisto.results(nodes)
+        except:
+            demisto.results('No outlierEvidence edges found.')
+
+
+    def process_command():
+        """
+        Based on the command that was called, trigger a specific function
+        to perform the action.
+
+        :return: None
+        """
+
+        # Case related commands
+        if demisto.command() == 'cybraics-get-case':
+            get_cybraics_case()
+        elif demisto.command() == 'cybraics-get-cases':
+            get_cybraics_cases()
+        elif demisto.command() == 'cybraics-update-case':
+            update_cybraics_case()
+        elif demisto.command() == 'cybraics-add-case-comment':
+            add_cybraics_case_comment()
+        elif demisto.command() == 'cybraics-case-search':
+            search_cybraics_cases()
+
+        # Network related commands
+        elif demisto.command() == 'cybraics-get-networks':
+            get_cybraics_networks()
+        elif demisto.command() == 'cybraics-create-network':
+            create_cybraics_network()
+        elif demisto.command() == 'cybraics-get-network-roles':
+            get_cybraics_network_roles()
+        elif demisto.command() == 'cybraics-update-network':
+            update_cybraics_network()
+        elif demisto.command() == 'cybraics-delete-network':
+            delete_cybraics_network()
+
+        # Server related commands
+        elif demisto.command() == 'cybraics-get-servers':
+            get_cybraics_servers()
+        elif demisto.command() == 'cybraics-update-server':
+            update_cybraics_server()
+
+        # Outlier related commands
+        elif demisto.command() == 'cybraics-get-outliers':
+            get_cybraics_outliers()
+
+
+    try:
+        process_command()
+    except Exception as e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+  type: python
+  commands:
+  - name: cybraics-update-case
+    arguments:
+    - name: case_id
+      required: true
+      description: ID of the Cybraics case
+    - name: title
+      description: Updated title for case
+    - name: external_ticket_url
+      description: Updated ticket URL for case
+    - name: external_ticket_title
+      description: Updated title for external ticket
+    - name: summary
+      description: Updated summary for case
+    - name: risk_score
+      description: Updated risk score for case
+    - name: threat_type_id
+      description: Updated threat type ID for case
+    - name: status
+      description: Updated status for case
+    description: Update a Cybraics case
+    execution: true
+  - name: cybraics-update-server
+    arguments:
+    - name: server_id
+      required: true
+      description: ID of the known server in Cybraics
+    - name: description
+      description: New description for the known server in Cybraics
+    - name: hostname
+      description: New hostname for the known server in Cybraics
+    - name: server_role
+      description: New server role for the known server in Cybraics
+    description: Update a known server via the Cybraics API
+    execution: true
+  - name: cybraics-get-servers
+    arguments: []
+    description: Get a list of known servers in Cybraics
+  - name: cybraics-get-cases
+    arguments: []
+    description: Get all cases from Cybraics
+  - name: cybraics-get-outliers
+    arguments:
+    - name: start_date
+      required: true
+      description: Date to start the search in ISO format. e.g. 2018-08-12T12:20:30.656234Z
+        or 2019-08-08
+      defaultValue: 2019-01-01
+    description: Get last year of outliers from Cybraics
+  - name: cybraics-add-case-comment
+    arguments:
+    - name: case_id
+      required: true
+      description: Numerical ID of the case in Cybraics
+    - name: comment
+      required: true
+      description: The comment string to add to the case
+  - name: cybraics-get-networks
+    arguments: []
+    description: Get customer networks from Cybraics
+  - name: cybraics-get-network-roles
+    arguments: []
+    description: Get details about available network roles from Cybraics
+  - name: cybraics-create-network
+    arguments:
+    - name: network
+      required: true
+      description: The subnet IP mask
+    - name: name
+      required: true
+      description: Label for network
+    - name: description
+      required: true
+      description: Additional details about the network
+    - name: network_roles
+      required: true
+      description: The list of network role names associated with this network
+      isArray: true
+    description: Create a customer network in Cybraics
+  - name: cybraics-update-network
+    arguments:
+    - name: network_id
+      required: true
+      description: ID of the customer network in Cybraics
+    - name: name
+      description: Updated name for the network in Cybraics
+    - name: description
+      description: Updated description for customer network in Cybraics
+    - name: network_roles
+      description: List of customer network role IDs for customer networks in Cybraics
+      isArray: true
+    description: Update a customer network in Cybraics
+  - name: cybraics-delete-network
+    arguments:
+    - name: network_id
+      required: true
+    description: Delete a customer network from Cybraics
+  - name: cybraics-case-search
+    arguments:
+    - name: case_id
+      required: true
+      description: ID of the case in Cybraics to search for, includes attached outliers
+    description: Search for cases in Cybraics
+  - name: cybraics-get-case
+    arguments:
+    - name: case_id
+      required: true
+      description: ID of the case in Cybraics
+    description: Get a specific case by ID from Cybraics
+  dockerimage: python3-graphql:latest
+  runonce: false
+  subtype: python3
