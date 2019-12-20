@@ -93,10 +93,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 4018526b-5f84-4841-8b4a-58f799c9e132
+    taskid: bb92bf67-b955-4bcd-840c-6364abcedd48
     type: condition
     task:
-      id: 4018526b-5f84-4841-8b4a-58f799c9e132
+      id: bb92bf67-b955-4bcd-840c-6364abcedd48
       version: -1
       name: verify report
       type: condition
@@ -115,6 +115,41 @@ tasks:
               complex:
                 root: ${Flashpoint
                 accessor: Report}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.NotifiedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.PostedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.ReportId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.Summary}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.Title}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.UpdatedAt}
             iscontext: true
     view: |-
       {
@@ -217,10 +252,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 1faa4a74-bb70-4ab5-85eb-37e160726cd7
+    taskid: 599245b5-d5f7-4370-8a89-18cafdd0dab7
     type: condition
     task:
-      id: 1faa4a74-bb70-4ab5-85eb-37e160726cd7
+      id: 599245b5-d5f7-4370-8a89-18cafdd0dab7
       version: -1
       name: Verify single intelligence report
       type: condition
@@ -244,6 +279,36 @@ tasks:
             value:
               simple: ISIS
           ignorecase: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.NotifiedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.PostedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.ReportId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.Summary}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.UpdatedAt}
+            iscontext: true
     view: |-
       {
         "position": {
@@ -345,10 +410,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 514c511b-08c2-4af1-870a-0c63be9a8ebb
+    taskid: dc552997-592e-4418-88bd-659189009f7c
     type: condition
     task:
-      id: 514c511b-08c2-4af1-870a-0c63be9a8ebb
+      id: dc552997-592e-4418-88bd-659189009f7c
       version: -1
       name: Verify report
       type: condition
@@ -367,6 +432,36 @@ tasks:
               complex:
                 root: ${Flashpoint
                 accessor: Report}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.NotifiedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.PostedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.ReportId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.Summary}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Report.Title}
             iscontext: true
     view: |-
       {

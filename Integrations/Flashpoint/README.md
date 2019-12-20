@@ -73,7 +73,7 @@ IP Address or Forum Visit's Peer IP Address.
 
   **Argument Name**   |**Description**                                           | **Required**
   ------------------- |----------------------------------------------------------| --------------
-  ip                  |The IP to check the given ip is malicious or suspicious.  | Optional
+  ip                  |The IP to check whether it is malicious or suspicious.    | Optional
 
  
 
@@ -519,7 +519,7 @@ database matching the File-hash indicator.
 
   **Argument Name**  | **Description**                                   | **Required**
   -------------------| --------------------------------------------------| --------------
-  file               | The file to check. It may sha1, md5, sha256 etc.  | Optional
+  file               | A list of hashes of the file to query. Supports MD5, SHA1 and SHA256.  | Optional
 
  
 
@@ -910,7 +910,7 @@ Get a single report by its ID
 
   **Argument Name**   |**Description**                                                                          |**Required**
   ------------------- |---------------------------------------------------------------------------------------- |--------------
-  report\_id          |Search report by report id. It is known by fp user or it is found in response as fpid.   |Required
+  report\_id          |Search report by report id. The report id can be known from output context path (Flashpoint.Report.ReportId) of report-search command or some other investigation.   |Required
 
  
 
@@ -970,7 +970,7 @@ Get related reports for a given report id
 
   **Argument Name**   |**Description**                       |**Required**
   ------------------- |------------------------------------- |--------------
-  report\_id          |Search related report by report id.   |Required
+  report\_id          |Search report by report id. The report id can be known from output context path (Flashpoint.Report.ReportId) of report-search command or some other investigation.   |Required
 
  
 
@@ -1093,7 +1093,7 @@ For getting single event
 
   **Argument Name**   |**Description**                                        |**Required**
   ------------------- |------------------------------------------------------ |--------------
-  event\_id           |The UUID or FPID that identifies a particular event.   |Required
+  event\_id           |The UUID or FPID that identifies a particular event. The event id can be fetched from output context path(Flashpoint.Event.EventId) get-events command or indicator reputation command response or some other investigation.   |Required
 
  
 
@@ -1154,7 +1154,7 @@ Get all event details
   time\_period        |Specified time period. Search events based on time period.                                                                                                                                |Optional
   report\_fpid        |Search events by report fpid.User can get report fpid from output of report-search or related-reports commands and use it in this command to get events for specific Flashpoint report.   |Optional
   limit               |Specify limit of the record.                                                                                                                                                              |Optional
-  attack\_ids         |Search events by attack ids. Multiple ids are acceptable using comma separated values. attack\_ids can be found in event information.                                                     |Optional
+  attack\_ids         |comma separated values. attack_ids can be found in event information or on flashpoint platform using filtering events by attack ids.                                                   |Optional
 
  
 
@@ -1384,7 +1384,7 @@ Lookup any type of indicator
 
   **Argument Name**   |**Description**                                                |**Required**
   ------------------- |-------------------------------------------------------------- |--------------
-  indicator           |Specify indicator value like any domain, ip, email, url etc.   |Optional
+  indicator           |Specify indicator value like domain, ip, email, url etc.   |Optional
 
  
 
@@ -1440,7 +1440,7 @@ Get forum details
 
   **Argument Name**   |**Description**                                                                                                                                   |**Required**
   ------------------- |------------------------------------------------------------------------------------------------------------------------------------------------- |--------------
-  forum\_id           |Specify forum id which is help to retrieve forum details. forum\_id is known by fp user. if unknown, use flashpoint-search-forum-posts command.   |Required
+  forum\_id           |Specify forum id of the forum for which the details are to be fetched. The forum id can be known from context path (Flashpoint.Forum.ForumId or Flashpoint.Forum.Post.Forum.id) of flashpoint-search-forum-posts command or some other investigation.   |Required
 
  
 
@@ -1528,7 +1528,7 @@ Get room details
 
   **Argument Name**   |**Description**                                                                                                                                        |**Required**
   ------------------- |------------------------------------------------------------------------------------------------------------------------------------------------------ |--------------
-  room\_id            |Specify room id which helps to retrieve room information in forum. Either room id is known by fp user or it can be search by "forum search" command.   |Required
+  room\_id            |Specify room id which is used to retrieve room information in forum. The room id can be known from context path (Flashpoint.Forum.Post.Room.id) of flashpoint-search-forum-posts command or some other investigation.  |Required
 
  
 
@@ -1627,7 +1627,7 @@ Get user details
 
   **Argument Name**   |**Description**                                                                                                                                |**Required**
   ------------------- |---------------------------------------------------------------------------------------------------------------------------------------------- |--------------
-  user\_id            |Specify user id which is used for retrieve user's information. Either it is known by fp user or it can be found using forum search commands.   |Required
+  user\_id            |Specify user id which is used to retrieve user's information. The user id can be known from context path (Flashpoint.Forum.Post.User.id) of flashpoint-search-forum-posts command or some other investigation.  |Required
 
  
 
@@ -1728,7 +1728,7 @@ Get post details
 
   **Argument Name**   |**Description**                                                                                                                                                           |**Required**
   ------------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |--------------
-  post\_id            |Specify post id which gives post information embed with forum, room, user etc. This post id is either known by fp user or user can get using forum post search command.   |Required
+  post\_id            |Specify post id which gives post information embed with forum, room, user etc. The post id can be known from context path (Flashpoint.Forum.Post.PostId) of flashpoint-search-forum-posts command or some other investigation.   |Required
 
  
 

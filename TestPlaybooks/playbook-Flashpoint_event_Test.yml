@@ -93,10 +93,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 708c7131-8b3c-4df2-8ac2-a25b1d2689dd
+    taskid: 3146a184-516e-45d2-8c2c-aaa815c5ae4b
     type: condition
     task:
-      id: 708c7131-8b3c-4df2-8ac2-a25b1d2689dd
+      id: 3146a184-516e-45d2-8c2c-aaa815c5ae4b
       version: -1
       name: Verify event by id
       type: condition
@@ -119,6 +119,31 @@ tasks:
           right:
             value:
               simple: Hu2SoTWJWteLrH9mR94JbQ
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Event.EventCreatorEmail}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Event.Href}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Event.Name}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Event.ObservedTime}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Event.Tags}
+            iscontext: true
     view: |-
       {
         "position": {
@@ -255,10 +280,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: f04bfb5e-28f4-48d2-856d-04433b92e607
+    taskid: 94a24c2e-28a3-48be-825d-05bc1d4206a0
     type: condition
     task:
-      id: f04bfb5e-28f4-48d2-856d-04433b92e607
+      id: 94a24c2e-28a3-48be-825d-05bc1d4206a0
       version: -1
       name: Verify events details by param
       type: condition
@@ -279,6 +304,36 @@ tasks:
           right:
             value:
               simple: "5"
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Event.EventCreatorEmail}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Event.EventId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Event.Href}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Event.Name}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Event.ObservedTime}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Event.Tags}
+            iscontext: true
     view: |-
       {
         "position": {

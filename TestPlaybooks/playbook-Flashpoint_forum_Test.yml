@@ -93,10 +93,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 700e1f6a-d2a1-447c-8699-b88ef2a0fed0
+    taskid: 822b286d-5c59-4571-8ed0-33ac9a5d9f27
     type: condition
     task:
-      id: 700e1f6a-d2a1-447c-8699-b88ef2a0fed0
+      id: 822b286d-5c59-4571-8ed0-33ac9a5d9f27
       version: -1
       name: Verify forum
       type: condition
@@ -124,7 +124,32 @@ tasks:
             value:
               complex:
                 root: ${Flashpoint
-                accessor: Forum.Hostname}
+                accessor: Forum.ForumId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Description}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Hostname}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Name}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Tags}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Stats}
             iscontext: true
     view: |-
       {
@@ -227,10 +252,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 1d73e159-89aa-4ecf-814c-f3a8b3cbc00b
+    taskid: 31f54f64-4c15-4063-8dd3-37b7233aec4a
     type: condition
     task:
-      id: 1d73e159-89aa-4ecf-814c-f3a8b3cbc00b
+      id: 31f54f64-4c15-4063-8dd3-37b7233aec4a
       version: -1
       name: Verify forum post detail
       type: condition
@@ -248,7 +273,37 @@ tasks:
             value:
               complex:
                 root: ${Flashpoint
-                accessor: Forum.Post.Forum}
+                accessor: Forum.Post.PostId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.Forum}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.Room}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.User}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.PublishedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.Url}
             iscontext: true
     view: |-
       {
@@ -351,10 +406,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: b0e7a7fb-0f5e-4f24-8b6d-021b9acfa5aa
+    taskid: 3e30fe2e-81ab-4eed-8d66-47d62a73def3
     type: condition
     task:
-      id: b0e7a7fb-0f5e-4f24-8b6d-021b9acfa5aa
+      id: 3e30fe2e-81ab-4eed-8d66-47d62a73def3
       version: -1
       name: verify forum user detail
       type: condition
@@ -377,12 +432,27 @@ tasks:
           right:
             value:
               simple: IllWillPub
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               complex:
                 root: ${Flashpoint
                 accessor: Forum.User.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.User.Forum}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.User.Url}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.User.UserId}
             iscontext: true
     view: |-
       {
@@ -451,10 +521,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 0db6aa02-bdbf-4de7-8d4f-7c554bb3ce69
+    taskid: 6300dcb7-f29d-409c-8338-314a51cf4e5b
     type: condition
     task:
-      id: 0db6aa02-bdbf-4de7-8d4f-7c554bb3ce69
+      id: 6300dcb7-f29d-409c-8338-314a51cf4e5b
       version: -1
       name: Verify forum room detail
       type: condition
@@ -477,12 +547,32 @@ tasks:
           right:
             value:
               simple: Bank Carding
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               complex:
                 root: ${Flashpoint
                 accessor: Forum.Room.Url}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Room.RoomId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Room.Forum}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Room.Forum.id}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Room.Forum.hostname}
             iscontext: true
     view: |-
       {
@@ -619,10 +709,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 2efc1d6c-da6d-46d1-859c-8d92c26e732a
+    taskid: ae0a272c-970b-467a-8bd1-3ee2a9dc2876
     type: condition
     task:
-      id: 2efc1d6c-da6d-46d1-859c-8d92c26e732a
+      id: ae0a272c-970b-467a-8bd1-3ee2a9dc2876
       version: -1
       name: Verify search result
       type: condition
@@ -635,12 +725,37 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               complex:
                 root: ${Flashpoint
-                accessor: Forum.Site}
+                accessor: Forum.Site.SiteId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Site.Description}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Site.Hostname}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Site.Name}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Site.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Site.Tags}
             iscontext: true
     view: |-
       {
@@ -709,10 +824,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 8a16a01f-ac99-4418-803a-920d944151ee
+    taskid: 815c9379-c15a-4521-8a56-939bf039d50e
     type: condition
     task:
-      id: 8a16a01f-ac99-4418-803a-920d944151ee
+      id: 815c9379-c15a-4521-8a56-939bf039d50e
       version: -1
       name: Verify post search
       type: condition
@@ -725,12 +840,42 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               complex:
                 root: ${Flashpoint
-                accessor: Forum.Post}
+                accessor: Forum.Post.Forum}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.Room}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.User}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.PostId}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.PlatformUrl}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.PublishedAt}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.Forum.Post.Url}
             iscontext: true
     view: |-
       {

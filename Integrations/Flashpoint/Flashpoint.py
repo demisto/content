@@ -18,7 +18,8 @@ FLASHPOINT_PATHS = {
     'Forum': 'Flashpoint.Forum(val.ForumId == obj.ForumId)',
     'Room': 'Flashpoint.Forum.Room(val.RoomId == obj.RoomId)',
     'User': 'Flashpoint.Forum.User(val.UserId == obj.UserId)',
-    'Post': 'Flashpoint.Forum.Post(val.PostId == obj.PostId)'
+    'Post': 'Flashpoint.Forum.Post(val.PostId == obj.PostId)',
+    'Site': 'Flashpoint.Forum.Site(val.SiteId == obj.SiteId)'
 }
 
 
@@ -263,6 +264,9 @@ def ip_lookup_command(client, ip):
     :param ip: ip-address
     :return: command output
     """
+    if not is_ip_valid(ip, True):
+        raise ValueError("Invalid ip - " + ip)
+
     query = r'+type:("ip-src","ip-dst") +value.\*:"' + urllib.parse.quote(ip.encode('utf-8')) + '"'
     resp = client.http_request("GET", url_suffix=get_url_suffix(query))
 
@@ -1325,9 +1329,12 @@ def get_forum_sites_command(client, site_search):
         site_details = []
         for site in sites:
             site_detail = {
+                'SiteId': site.get('id', ''),
                 'Name': site.get('name', 'N/A'),
                 'Hostname': site.get('hostname', 'N/A'),
-                'Description': site.get('description', 'N/A')
+                'Description': site.get('description', 'N/A'),
+                'PlatformUrl': site.get('platform_url', ''),
+                'Tags': site.get('tags', [])
             }
 
             site_details.append(site_detail)
@@ -1336,7 +1343,7 @@ def get_forum_sites_command(client, site_search):
         hr += '\n'
 
         ec = {
-            "Flashpoint.Forum.Site": site_details
+            FLASHPOINT_PATHS['Site']: site_details
         }
 
     else:

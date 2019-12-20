@@ -1,4 +1,4 @@
-Access Flashpoint using API
+Configure an API account on Flashpoint
 -------------------------------
  - Login/Register at [Flashpoint](https://fp.tools/) platform. 
  - Navigate to API & Integrations and select the **Manage API Tokens**.
@@ -7,7 +7,7 @@ Access Flashpoint using API
  - Click on GENERATE button once all required data are entered.
 
 
-Configure Flashpoint on Demisto
+Configure Flashpoint instance on Demisto
 -------------------------------
 
 1.  Navigate to **Settings** \> **Integrations**  \> **Servers &

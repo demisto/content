@@ -605,10 +605,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 7a399cf2-c699-4e93-8bf4-e7c8821cb627
+    taskid: ab238e45-5283-453c-804e-e2435e48c7e9
     type: condition
     task:
-      id: 7a399cf2-c699-4e93-8bf4-e7c8821cb627
+      id: ab238e45-5283-453c-804e-e2435e48c7e9
       version: -1
       name: Verify URL
       type: condition
@@ -631,6 +631,51 @@ tasks:
           right:
             value:
               simple: Flashpoint
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.URL.Event.EventDetails}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.URL.Event.Fpid}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.URL.Event.Href}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.URL.Event.Url}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.URL.Event.Timestamp}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.URL.Event.Type}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.URL.Event.Uuid}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.URL.Event.Category}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Flashpoint.URL.Event.Comment}
+            iscontext: true
     view: |-
       {
         "position": {
