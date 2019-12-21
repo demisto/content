@@ -306,12 +306,7 @@ def main():
             demisto.results(error_message)
         else:
             return_error(error_message + '\n' + debug_log)
-    finally:
-        if isinstance(config, Configuration):
-            # The protocol will not kill its threads after use, so kill it manually
-            if "thread_pool" in config.protocol.__dict__:
-                config.protocol.thread_pool.terminate()
-                del config.protocol.__dict__["thread_pool"]
+    finally:        
         try:
             # we don't want to leave cached connection around as EWS limits the number of connections
             # in a very aggressive way. 12 seems to be the default limit
@@ -319,6 +314,14 @@ def main():
             close_connections()
         except Exception as ex:
             demisto.info("Failed close_connections (shouldn't happen). Ignoring exception: {}".format(ex))
+        try:
+            if isinstance(config, Configuration):
+                # The protocol will not kill its threads after use, so kill it manually
+                if "thread_pool" in config.protocol.__dict__:
+                    config.protocol.thread_pool.terminate()
+                    del config.protocol.__dict__["thread_pool"]
+        except Exception as ex:
+            demisto.error("Failed thread_pool.terminate (shouldn't happen). Ignoring exception: {}".format(ex))
         if log_stream:
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
