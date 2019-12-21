@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Fixed unexpected failures as a result of thread cleanup.
 
 
 ## [19.12.0] - 2019-12-10
