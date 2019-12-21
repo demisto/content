@@ -226,15 +226,16 @@
     </tbody>
 </table>
 
-<p>
-    Allowed query parameters combinations:
-    1. offset - Since a prior request.
-    2. offset, limit - Since a prior request, limited.
-    3. from - Since a point in time.
-    4. from, limit - Since a point in time, limited.
-    5. from, to - Over a range of time.
-    6. from, to, limit - Over a range of time, limited.
-</p>
+<p>Allowed query parameters combinations:</p>
+<ol>
+    <li>offset - Since a prior request.</li>
+    <li>offset, limit - Since a prior request, limited.</li>
+    <li>from - Since a point in time.</li>
+    <li>from, limit - Since a point in time, limited.</li>
+    <li>from, to - Over a range of time.</li>
+    <li>from, to, limit - Over a range of time, limited.</li>
+</ol>
+
 
 <h5>Context Output</h5>
 <table style="width:750px" border="2" cellpadding="6">
