@@ -399,10 +399,6 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     raw_response = client.list_response_policy_zone_rules(zone, max_results, next_page_id)
     new_next_page_id = raw_response.get('next_page_id')
 
-    if new_next_page_id:
-        demisto.setContext(
-            f'{INTEGRATION_CONTEXT_NAME}.NextPageID(val.NextPageID && val.NextPageID === obj.NextPageID)',
-            new_next_page_id)
     rules_list = raw_response.get('result')
     if not rules_list:
         return f'{INTEGRATION_NAME} - No rules associated to zone: {zone} were found', {}, {}
@@ -417,6 +413,11 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRulesList.(val.Name && val.Name === obj.Name)': fixed_keys_rule_list
     }
+    if new_next_page_id:
+        context.update({
+            f'{INTEGRATION_CONTEXT_NAME}.NextPage(true)':
+            {'NextPageID': new_next_page_id, 'a': 'a'}
+        })
     human_readable = tableToMarkdown(title, fixed_keys_rule_list,
                                      headerTransform=pascalToSpace)
     return human_readable, context, raw_response
