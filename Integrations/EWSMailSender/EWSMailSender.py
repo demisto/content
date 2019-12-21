@@ -306,7 +306,7 @@ def main():
             demisto.results(error_message)
         else:
             return_error(error_message + '\n' + debug_log)
-    finally:        
+    finally:
         try:
             # we don't want to leave cached connection around as EWS limits the number of connections
             # in a very aggressive way. 12 seems to be the default limit
