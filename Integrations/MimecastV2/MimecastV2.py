@@ -1746,7 +1746,7 @@ def change_user_status_removed_in_context(user_info, group_id):
                 if group['ID'] == group_id:
                     for user in group['Users']:
                         if user['EmailAddress'] == user_info['EmailAddress']:
-                            user['IsRmoved'] = True
+                            user['IsRemoved'] = True
                     return groups_entry_in_context
 
     return [
