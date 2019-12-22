@@ -767,8 +767,11 @@ def create_assets_result(assets, full_values=False):
     human_readable_trans_assets = {}
     endpoint_dict = create_empty_endpoint_dict(full_values)
     for asset in assets:
-        asset_key = 'QRadar.Asset(val.ID === "{0}")'.format(asset['id'])
-        human_readable_key = 'Asset(ID:{0})'.format(asset['id'])
+        asset_key = 'QRadar.Asset'
+        human_readable_key = 'Asset'
+        if 'id' in asset:
+            asset_key += '(val.ID === "{0}")'.format(asset['id'])
+            human_readable_key += '(ID:{0})'.format(asset['id'])
         populated_asset = create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values)
         trans_assets[asset_key] = populated_asset
         human_readable_trans_assets[human_readable_key] = transform_single_asset_to_hr(populated_asset)
@@ -792,31 +795,33 @@ def transform_single_asset_to_hr(asset):
 
 
 def create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values):
-    asset_dict = {'ID': asset['id']}
-    for interface in asset['interfaces']:
+    asset_dict = {'ID': asset.get('id')}
+    for interface in asset.get('interfaces', []):
         if full_values:
-            endpoint_dict['MACAddress'].append(interface['mac_address'])
-        for ip_address in interface['ip_addresses']:
-            endpoint_dict['IPAddress'].append(ip_address['value'])
+            endpoint_dict.get('MACAddress').append(interface.get('mac_address'))
+        for ip_address in interface.get('ip_addresses'):
+            endpoint_dict.get('IPAddress').append(ip_address.get('value'))
     if full_values:
-        domain_name = get_domain_name(asset['domain_id'])
-        endpoint_dict['Domain'].append(domain_name)
+        if 'domain_id' in asset:
+            domain_name = get_domain_name(asset.get('domain_id'))
+            endpoint_dict.get('Domain').append(domain_name)
     # Adding values found in properties of the asset
     enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values)
     return asset_dict
 
 
 def enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values):
-    for prop in asset['properties']:
-        if prop['name'] in ASSET_PROPERTIES_NAMES_MAP:
-            asset_dict[ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = {'Value': prop['value'],
-                                                                    'LastUser': prop['last_reported_by']}
-        elif prop['name'] in ASSET_PROPERTIES_ENDPOINT_NAMES_MAP:
-            endpoint_dict[ASSET_PROPERTIES_ENDPOINT_NAMES_MAP[prop['name']]] = prop['value']
+    for prop in asset.get('properties', []):
+        if prop.get('name') in ASSET_PROPERTIES_NAMES_MAP:
+            asset_dict[ASSET_PROPERTIES_NAMES_MAP[prop.get('name')]] = {'Value': prop.get('value'),
+                                                                        'LastUser': prop.get('last_reported_by')}
+        elif prop.get('name') in ASSET_PROPERTIES_ENDPOINT_NAMES_MAP:
+            endpoint_dict[ASSET_PROPERTIES_ENDPOINT_NAMES_MAP[prop.get('name')]] = prop.get('value')
         elif full_values:
-            if prop['name'] in FULL_ASSET_PROPERTIES_NAMES_MAP:
-                asset_dict[FULL_ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = {'Value': prop['value'],
-                                                                             'LastUser': prop['last_reported_by']}
+            if prop.get('name') in FULL_ASSET_PROPERTIES_NAMES_MAP:
+                asset_dict[FULL_ASSET_PROPERTIES_NAMES_MAP[prop.get('name')]] = {'Value': prop.get('value'),
+                                                                                 'LastUser': prop.get(
+                                                                                     'last_reported_by')}
     return None
 
 

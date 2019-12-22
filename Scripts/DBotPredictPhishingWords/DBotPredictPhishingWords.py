@@ -1,6 +1,7 @@
-from CommonServerPython import *
 # pylint: disable=no-member
 import demisto_ml
+
+from CommonServerPython import *
 
 
 def get_model_data(model_name, store_type):
@@ -52,26 +53,31 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
                                                     word_threshold,
                                                     top_word_limit)
     if explain_result["Probability"] < label_threshold:
-        handle_error("Label probability is %.2f and it's below the input threshold", is_return_error)
+        handle_error("Label probability is {:.2f} and it's below the input threshold".format(
+            explain_result["Probability"]), is_return_error)
 
     if tokenized_text_result.get('hashedTokenizedText'):
-        hash_word_to_plain = dict(
-            zip(tokenized_text_result['hashedTokenizedText'].split(" "),
-                tokenized_text_result['tokenizedText'].split(" ")))
-        explain_result['PositiveWords'] = map(lambda x: hash_word_to_plain[x], explain_result['PositiveWords'])
-        explain_result['NegativeWords'] = map(lambda x: hash_word_to_plain[x], explain_result['NegativeWords'])
+        words_to_token_maps = tokenized_text_result['wordsToHashedTokens']
+    else:
+        words_to_token_maps = tokenized_text_result['originalWordsToTokens']
+    positive_tokens = set([''.join(c for c in word if c.isalnum()) for word in explain_result['PositiveWords']])
+    negative_tokens = set([''.join(c for c in word if c.isalnum()) for word in explain_result['NegativeWords']])
+    positive_words = find_words_contain_tokens(positive_tokens, words_to_token_maps)
+    negative_words = find_words_contain_tokens(negative_tokens, words_to_token_maps)
+    explain_result['PositiveWords'] = positive_words
+    explain_result['NegativeWords'] = negative_words
     explain_result['OriginalText'] = tokenized_text_result['originalText']
     explain_result['TextTokensHighlighted'] = tokenized_text_result['tokenizedText']
 
-    res = demisto.executeCommand('HighlightWords', {'text': tokenized_text_result['tokenizedText'],
-                                                    'terms': ",".join(explain_result['PositiveWords'])})
+    res = demisto.executeCommand('HighlightWords', {'text': tokenized_text_result['originalText'],
+                                                    'terms': ",".join(positive_words)})
     res = res[0]
     if not is_error(res):
         highlighted_text_markdown = res['Contents']
         explain_result['TextTokensHighlighted'] = highlighted_text_markdown
     explain_result_hr = dict(explain_result)
-    explain_result_hr['PositiveWords'] = ", ".join(explain_result_hr['PositiveWords'])
-    explain_result_hr['NegativeWords'] = ", ".join(explain_result_hr['NegativeWords'])
+    explain_result_hr['PositiveWords'] = ", ".join(positive_tokens)
+    explain_result_hr['NegativeWords'] = ", ".join(negative_tokens)
     explain_result_hr['Probability'] = "%.2f" % explain_result_hr['Probability']
     return {
         'Type': entryTypes['note'],
@@ -86,6 +92,14 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
             'DBotPredictPhishingWords': explain_result
         }
     }
+
+
+def find_words_contain_tokens(positive_tokens, words_to_token_maps):
+    positive_words = []
+    for word, word_in_tokens_list in words_to_token_maps.items():
+        if any(token in positive_tokens for token in word_in_tokens_list):
+            positive_words.append(word)
+    return positive_words
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
