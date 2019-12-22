@@ -1782,7 +1782,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: fqdn
+                  simple: ip
           accessor: StaticRoutes.Name
       virtual_router:
         complex:

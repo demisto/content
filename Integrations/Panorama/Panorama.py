@@ -4360,12 +4360,12 @@ def panorama_add_static_route_command():
     interface = demisto.args().get('interface', None)
     metric = demisto.args().get('metric', None)
 
-    if nexthop_type == 'fqdn' and DEVICE_GROUP:
-        # Only from PAN-OS 9.X, creating a static route based on FQDN nexthop is available.
+    if nexthop_type == 'fqdn':
+        # Only from PAN-OS 9.x, creating a static route based on FQDN nexthop is available.
         major_version = get_pan_os_major_version()
 
         if major_version <= 8:
-            return_error('Next Hop of type FQDN is only available for PAN_OS Panorama 9.X instances.')
+            return_error('Next Hop of type FQDN is only available for PAN-OS 9.x instances.')
     static_route = panorama_add_static_route(xpath_network, virtual_router, static_route_name, destination,
                                              nexthop_type, nexthop_value, interface, metric)
     human_readable = f'New uncommitted static route {static_route_name} configuration added.'
