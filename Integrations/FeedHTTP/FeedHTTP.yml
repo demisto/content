@@ -1,0 +1,107 @@
+category: Threat Intelligence Feeds
+commonfields:
+  id: HTTPFeed
+  version: -1
+configuration:
+- display: URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '20'
+  display: Request Timeout
+  name: polling_timeout
+  required: false
+  type: 0
+- display: Indicator Type
+  name: indicator_type
+  required: true
+  type: 0
+- display: Reliability
+  name: feedInstanceReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- display: ""
+  name: expiration
+  defaultvalue: ""
+  type: 17
+  required: false
+- display: ""
+  name: expirationPolicy
+  defaultvalue: indicatorType
+  type: 0
+  required: false
+  hidden: true
+- display: ""
+  name: expirationInterval
+  defaultvalue: ""
+  type: 1
+  required: false
+  hidden: true
+- display: Fetch indicators
+  name: feed
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Ignore Regex
+  name: ignore_regex
+  required: false
+  type: 0
+- defaultvalue: HTTP
+  name: source_name
+  required: false
+  type: 0
+- display: Encoding
+  name: encoding
+  required: false
+  type: 0
+- display: Indicator
+  name: indicator
+  required: false
+  type: 0
+- defaultvalue: '{}'
+  display: Fields
+  name: fields
+  required: false
+  type: 0
+- display: User Agent
+  name: user_agent
+  required: false
+  type: 0
+description: HTTP Feed Integration
+display: HTTP Feed
+name: HTTPFeed
+script:
+  commands:
+  - deprecated: false
+    execution: false
+    name: get-indicators
+  dockerimage: demisto/python3:3.7.5.4583
+  isfetch: false
+  feed: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
