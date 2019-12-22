@@ -125,6 +125,12 @@ def main():
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
 
+        elif demisto.command() == 'get-indicators':
+            # dummy command for testing
+            indicators = fetch_indicators_command(client, demisto.params()['indicator_type'])
+            for b in batch(indicators, batch_size=2000):
+                demisto.createIndicators(b)
+
     except Exception as err:
         return_error(str(err))
 
