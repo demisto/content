@@ -1,0 +1,449 @@
+id: Akamai_WAF-Test
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: Akamai_WAF-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 39e914e4-16c5-4105-8e00-50e699b68fab
+    type: start
+    task:
+      id: 39e914e4-16c5-4105-8e00-50e699b68fab
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "1":
+    id: "1"
+    taskid: bf0a719b-59a2-459a-87c4-3602dc7a7cc5
+    type: regular
+    task:
+      id: bf0a719b-59a2-459a-87c4-3602dc7a7cc5
+      version: -1
+      name: Create network list command
+      description: Create new network list (Support txt file upload for elements)
+      script: '|||akamai-create-network-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      description: {}
+      elements:
+        simple: 192.168.0.1
+      entry_id: {}
+      list_name:
+        simple: Test
+      list_type:
+        simple: IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "2":
+    id: "2"
+    taskid: 6182475b-876b-42f6-8fde-21de03b6ea34
+    type: condition
+    task:
+      id: 6182475b-876b-42f6-8fde-21de03b6ea34
+      version: -1
+      name: Check create network list command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Akamai.NetworkLists.Name
+            iscontext: true
+          right:
+            value:
+              simple: Test
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: c0ab9469-145b-4b9f-87f8-ddb7fa21451a
+    type: regular
+    task:
+      id: c0ab9469-145b-4b9f-87f8-ddb7fa21451a
+      version: -1
+      name: Get network list by ID command
+      description: Get network list by ID
+      script: '|||akamai-get-network-list-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      network_list_id:
+        simple: ${Akamai.NetworkLists.UniqueID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: "4"
+    taskid: 8e33480c-4452-46bd-8a04-5a6d00f2e680
+    type: condition
+    task:
+      id: 8e33480c-4452-46bd-8a04-5a6d00f2e680
+      version: -1
+      name: Check get network list by ID command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Akamai.NetworkLists.Name
+            iscontext: true
+          right:
+            value:
+              simple: Test
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "5":
+    id: "5"
+    taskid: b2eef0c6-9ee8-45e5-8db3-bcac85c58612
+    type: regular
+    task:
+      id: b2eef0c6-9ee8-45e5-8db3-bcac85c58612
+      version: -1
+      name: Remove element from network list command
+      description: Remove element from network list
+      script: '|||akamai-remove-element-from-network-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      element:
+        simple: 192.168.0.1
+      network_list_id:
+        simple: ${Akamai.NetworkLists.[0].UniqueID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "6":
+    id: "6"
+    taskid: 9d7c2710-8bad-492f-82fc-9c8ba55a94b7
+    type: regular
+    task:
+      id: 9d7c2710-8bad-492f-82fc-9c8ba55a94b7
+      version: -1
+      name: ' Add elements to network list command'
+      description: Add elements to network list
+      script: '|||akamai-add-elements-to-network-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      elements:
+        simple: 192.168.0.3
+      entry_id: {}
+      network_list_id:
+        simple: ${Akamai.NetworkLists.[0].UniqueID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "7":
+    id: "7"
+    taskid: a2d00817-60e6-4629-89a3-a8c9c4d58791
+    type: regular
+    task:
+      id: a2d00817-60e6-4629-89a3-a8c9c4d58791
+      version: -1
+      name: Get network list activation status command
+      description: Get network list activation status in Production or staging
+      script: '|||akamai-get-network-list-activation-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      env:
+        simple: PRODUCTION
+      network_list_id:
+        simple: ${Akamai.NetworkLists.[0].UniqueID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "8":
+    id: "8"
+    taskid: c843e395-3a4b-41a1-8094-6a9478232a2f
+    type: regular
+    task:
+      id: c843e395-3a4b-41a1-8094-6a9478232a2f
+      version: -1
+      name: Delete network list command
+      description: Delete network list
+      script: '|||akamai-delete-network-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      network_list_id:
+        simple: ${Akamai.NetworkLists.[0].UniqueID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "9":
+    id: "9"
+    taskid: 93e1bb6e-e113-49af-867a-e3398a365f8a
+    type: regular
+    task:
+      id: 93e1bb6e-e113-49af-867a-e3398a365f8a
+      version: -1
+      name: Get network lists command
+      description: List all network lists available for an authenticated user who
+        belongs to a group.
+      script: '|||akamai-get-network-lists'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      list_type:
+        simple: IP
+      search: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "10":
+    id: "10"
+    taskid: 0d0ef63e-2bbe-467b-89de-eb7186a104f5
+    type: condition
+    task:
+      id: 0d0ef63e-2bbe-467b-89de-eb7186a104f5
+      version: -1
+      name: Check get network lists command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Akamai.NetworkLists.[4].Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "11":
+    id: "11"
+    taskid: 0546721c-ed22-447a-802a-82644b3a9a4b
+    type: regular
+    task:
+      id: 0546721c-ed22-447a-802a-82644b3a9a4b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "12":
+    id: "12"
+    taskid: 071089c4-39cc-4a6c-895b-b8fdb084a379
+    type: regular
+    task:
+      id: 071089c4-39cc-4a6c-895b-b8fdb084a379
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      outputformat:
+        simple: ${Akamai.NetworkLists.Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2170,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
