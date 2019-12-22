@@ -24,6 +24,8 @@ FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 
 
 class ResponseReaderWrapper(io.RawIOBase):
+    """ This class was supplied as a solution for a bug in Splunk causing the search to run slowly.
+    """
 
     def __init__(self, responseReader):
         self.responseReader = responseReader
@@ -269,6 +271,7 @@ if demisto.command() == 'test-module':
 if demisto.command() == 'splunk-search':
     t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
+    # When we run  a blocking search, it runs synchronously, and returns a job when it's finished.
     kwargs_normalsearch = {
         "earliest_time": time_str,
         "exec_mode": "blocking"
@@ -278,16 +281,16 @@ if demisto.command() == 'splunk-search':
     if demisto.get(demisto.args(), 'latest_time'):
         kwargs_normalsearch['latest_time'] = demisto.args()['latest_time']
 
-    searchquery_oneshot = demisto.args()['query']
-    searchquery_oneshot = searchquery_oneshot.encode('utf-8')
-    if not searchquery_oneshot.startswith('search') and not searchquery_oneshot.startswith('Search')\
-            and not searchquery_oneshot.startswith('|'):
-        searchquery_oneshot = 'search ' + searchquery_oneshot
+    query = demisto.args()['query']
+    query = query.encode('utf-8')
+    if not query.startswith('search') and not query.startswith('Search')\
+            and not query.startswith('|'):
+        query = 'search ' + query
 
     res = []
     dbot_scores = []  # type: List[Dict[str,Any]]
 
-    job = service.jobs.create(searchquery_oneshot, **kwargs_normalsearch)
+    job = service.jobs.create(query, **kwargs_normalsearch)
     num_of_results = job["resultCount"]
 
     results_limit = int(demisto.args().get("event_limit", 100))
