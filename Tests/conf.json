@@ -2007,6 +2007,10 @@
         {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
+        },
+        {
+            "integrations": "Infoblox",
+            "playbookID": "Infoblox Test"
         }
     ],
     "skipped_tests": {
