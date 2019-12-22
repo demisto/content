@@ -722,6 +722,7 @@ script:
     name: xdr-get-distribution-url
     outputs:
     - contextPath: PaloAltoNetwoksXDR.DistributionURL
+      description: Distribution URL for download
       type: String
   - arguments:
     - default: false
@@ -914,6 +915,7 @@ script:
       default: false
       isArray: false
       name: sort_by
+      description: Sort by one of the following fields (type, subtype, trapsversion, timestamp, domain)
       predefined:
       - type
       - category
