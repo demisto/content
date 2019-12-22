@@ -16,6 +16,8 @@ class LdapClient:
     GROUPS_MEMBER = 'memberOf'
     GROUPS_PRIMARY_ID = 'primaryGroupID'
     TIMEOUT = 120
+    DEV_BUILD_NUMBER = 'REPLACE_THIS_WITH_CI_BUILD_NUM'
+    SUPPORTED_BUILD_NUMBER = 57352
 
     def __init__(self, kwargs):
         self._host = kwargs.get('host')
@@ -62,7 +64,6 @@ class LdapClient:
 
             return Server(host=self._host, port=self._port, use_ssl=True, tls=tls, connect_timeout=LdapClient.TIMEOUT)
         else:
-            # todo check get_info parameter with different inputs
             return Server(host=self._host, port=self._port, connect_timeout=LdapClient.TIMEOUT)
 
     @staticmethod
@@ -144,7 +145,7 @@ class LdapClient:
             }
 
     def get_ldap_groups(self, specific_group=None):
-        instance_name = demisto.integrationInstance()  # type: ignore
+        instance_name = demisto.integrationInstance()  # pylint: disable=E1101
         if not self._fetch_groups and not specific_group:
             demisto.info(f'Instance [{instance_name}] configured not to fetch groups')
             sys.exit()
@@ -229,10 +230,16 @@ class LdapClient:
         }
 
     def test_module(self):
+        build_number = get_demisto_version().get('buildNumber', LdapClient.DEV_BUILD_NUMBER)
+
+        if build_number != LdapClient.DEV_BUILD_NUMBER \
+                and LdapClient.SUPPORTED_BUILD_NUMBER > int(build_number):
+            raise Exception(f'OpenLDAP integration is supported from build number: {LdapClient.SUPPORTED_BUILD_NUMBER}')
+
         try:
             parse_dn(self._username)
         except LDAPInvalidDnError:
-            raise Exception("Not valid credentials input. Credentials must be full DN.")
+            raise Exception("Invalid credentials input. Credentials must be full DN.")
         self.authenticate_ldap_user(username=self._username, password=self._password)
         demisto.results('ok')
 
