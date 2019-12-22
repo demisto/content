@@ -400,7 +400,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
 
     rules_list = raw_response.get('result')
     if not rules_list:
-        return f'{INTEGRATION_NAME} - No rules associated to zone: {zone} were found', {}, {}   # type: ignore
+        return f'{INTEGRATION_NAME} - No rules associated to zone: {zone} were found', {}, {}
 
     fixed_keys_rule_list = []
     for rule in rules_list:
@@ -415,7 +415,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     }
     if new_next_page_id:
         context.update({
-            f'{INTEGRATION_CONTEXT_NAME}.RulesNextPage(val.NextPageID !== obj.NextPageID)': {
+            f'{INTEGRATION_CONTEXT_NAME}.RulesNextPage(val.NextPageID !== obj.NextPageID)': {   # type: ignore
                 'NextPageID': new_next_page_id}
         })
     human_readable = tableToMarkdown(title, fixed_keys_rule_list,
