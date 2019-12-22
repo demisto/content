@@ -1495,14 +1495,14 @@ def create_find_groups_request():
     api_endpoint = '/api/directory/find-groups'
     query_string = demisto.args().get('query_string', '').encode('utf-8')
     query_source = demisto.args().get('query_source', '').encode('utf-8')
-    number_of_enries_to_fetch = demisto.args().get('number_of_enries_to_fetch')
+    limit = demisto.args().get('limit')
 
     meta = dict()  # type: Dict[str, Dict[str, int]]
     data = dict()  # type: Dict[str, Dict[str, str]]
 
-    if number_of_enries_to_fetch:
+    if limit:
         meta['pagination'] = {
-            'pageSize': int(number_of_enries_to_fetch)
+            'pageSize': int(limit)
         }
 
     if query_string:
@@ -1594,17 +1594,17 @@ def get_group_members():
     return_outputs(markdown_output, entry_context, api_response)
 
 
-def create_get_group_members_request(group_id=-1, number_of_enries_to_fetch=100):
+def create_get_group_members_request(group_id=-1, limit=100):
     api_endpoint = '/api/directory/get-group-members'
     group_id = demisto.args().get('group_id', group_id).encode('utf-8')
-    number_of_enries_to_fetch = demisto.args().get('number_of_enries_to_fetch', number_of_enries_to_fetch)
+    limit = demisto.args().get('limit', limit)
 
     meta = dict()  # type: Dict[str, Dict[str, int]]
     data = dict()  # type: Dict[str, Dict[str, str]]
 
-    if number_of_enries_to_fetch:
+    if limit:
         meta['pagination'] = {
-            'pageSize': int(number_of_enries_to_fetch)
+            'pageSize': int(limit)
         }
 
     data['id'] = group_id
