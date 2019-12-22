@@ -33,3 +33,4 @@ outputs:
 - contextPath: expectBadSsdeepValue
 scripttarget: 0
 runonce: false
+runas: DBotWeakRole

@@ -74,7 +74,7 @@ def analysis_to_entry(title, info):
             'MD5': analysis['md5'],
             'SHA1': analysis['sha1'],
             'SHA256': analysis['sha256'],
-            'Systems': [run['system'] for run in analysis['runs']],
+            'Systems': list(set([run['system'] for run in analysis['runs']])),
             'Result': ', '.join([run['detection'] for run in analysis['runs']]),
             'Errors': [run['error'] for run in analysis['runs']],
         }
