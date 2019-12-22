@@ -37,6 +37,7 @@ def alexa_fallback_command(domain):
 
 
 
+
 def alexa_domain_command():
     domain = demisto.args().get('domain')
     try:
