@@ -511,7 +511,7 @@ def parse_tree_by_root_to_leaf_paths(root: str, body) -> dict:
     Basically what this function does is when it gets a tree it creates a dict from it which it's keys are all
     root to leaf paths and the corresponding values are the values in the leafs
     Please note that the implementation is similar to DFS on trees (which means we don't have to check for visited
-    nodes because there are no cycles)
+    nodes since there are no cycles)
     :param root: the root string
     :param body: the body of the root
     :return: the parsed tree
@@ -1597,6 +1597,7 @@ def fetch_incidents():
             fetch_timestamp = last_fetched_event_timestamp.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
         query = prepare_fetch_query(fetch_timestamp)
+        demisto.debug('Query being fetched: {}'.format(query))
 
         query_data = {
             'query': query,
@@ -1610,7 +1611,7 @@ def fetch_incidents():
         response_json = response.json()
         query_status = response_json.get('queryStatus', '')
         if query_status == 'JOB_FAILED':
-            raise Exception(f'Logging query job failed with status: JOB_FAILED\nResponse: {response.text}')
+            demisto.debug(f'Logging query job failed with status: JOB_FAILED\nResponse: {response.text}')
         elif query_status == 'RUNNING':
             if isinstance(last_fetched_event_timestamp, datetime):
                 # In case we don't have query ID from previous run
@@ -1625,7 +1626,7 @@ def fetch_incidents():
         result = response_json.get('result', {})
         pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
     except ValueError:
-        raise Exception('Failed to parse the response from Cortex')
+        demisto.debug('Failed to parse the response from Cortex')
 
     incident_pairs = []
 

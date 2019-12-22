@@ -276,12 +276,13 @@ def create_user_command():
         'userPrincipalName': demisto.getArg('user_principal_name')
     }
     other_properties = {}
-    for key_value in demisto.getArg('other_properties').split(','):
-        key, value = key_value.split('=', 2)
-        other_properties[key] = value
+    if demisto.getArg('other_properties'):
+        for key_value in demisto.getArg('other_properties').split(','):
+            key, value = key_value.split('=', 2)
+            other_properties[key] = value
+        required_properties.update(other_properties)
 
     # create the user
-    required_properties.update(other_properties)
     create_user(required_properties)
 
     # display the new user and it's properties
