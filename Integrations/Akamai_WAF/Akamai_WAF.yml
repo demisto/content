@@ -1,0 +1,321 @@
+category: Network Security
+commonfields:
+  id: Akamai WAF
+  version: -1
+configuration:
+- defaultvalue: https://example.net
+  display: Server URL (e.g., https://example.net)
+  name: host
+  required: true
+  type: 0
+- display: Client token
+  name: clientToken
+  required: true
+  type: 4
+- display: Access token
+  name: accessToken
+  required: true
+  type: 4
+- display: Client secret
+  name: clientSecret
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Manage common sets of lists used by various Akamai security products
+  and features.
+display: Akamai WAF
+name: Akamai WAF
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'Filters the output to lists of only the given type of network
+        lists if provided, either IP or GEO. '
+      isArray: false
+      name: list_type
+      predefined:
+      - IP
+      - GEO
+      required: false
+      secret: false
+    - default: false
+      description: Only list items that match the specified substring in any network
+        list’s name or list of items.
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    deprecated: false
+    description: List all network lists available for an authenticated user who belongs
+      to a group.
+    execution: false
+    name: akamai-get-network-lists
+    outputs:
+    - contextPath: Akamai.NetworkLists.Name
+      description: Network list name
+      type: String
+    - contextPath: Akamai.NetworkLists.Type
+      description: Network list type GEO/IP
+      type: String
+    - contextPath: Akamai.NetworkLists.UniqueID
+      description: Network list unique ID
+      type: String
+    - contextPath: Akamai.NetworkLists.ElementCount
+      description: Network list elements count
+      type: String
+    - contextPath: Akamai.NetworkLists.CreateDate
+      description: Network list creation date
+      type: Date
+    - contextPath: Akamai.NetworkLists.CreatedBy
+      description: Network list creator
+      type: String
+    - contextPath: Akamai.NetworkLists.ExpeditedProductionActivationStatus
+      description: Expedited production activation status
+      type: String
+    - contextPath: Akamai.NetworkLists.ExpeditedStagingActivationStatus
+      description: Expedited staging activation status
+      type: String
+    - contextPath: Akamai.NetworkLists.ProductionActivationStatus
+      description: Production activation status
+      type: String
+    - contextPath: Akamai.NetworkLists.StagingActivationStatus
+      description: Staging activation status
+      type: String
+    - contextPath: Akamai.NetworkLists.UpdateDate
+      description: Network list update date
+      type: String
+    - contextPath: Akamai.NetworkLists.UpdatedBy
+      description: Last user updated the network list
+      type: String
+    - contextPath: Akamai.NetworkLists.Elements
+      description: Elemnts in the network list
+      type: String
+  - arguments:
+    - default: false
+      description: Network list ID
+      isArray: false
+      name: network_list_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get network list by ID
+    execution: false
+    name: akamai-get-network-list-by-id
+    outputs:
+    - contextPath: Akamai.NetworkLists.Name
+      description: Network list name
+      type: String
+    - contextPath: Akamai.NetworkLists.Type
+      description: Network list type GEO/IP
+      type: String
+    - contextPath: Akamai.NetworkLists.UniqueID
+      description: Network list unique ID
+      type: String
+    - contextPath: Akamai.NetworkLists.ElementCount
+      description: Network list elements count
+      type: String
+    - contextPath: Akamai.NetworkLists.CreateDate
+      description: Network list creation date
+      type: Date
+    - contextPath: Akamai.NetworkLists.CreatedBy
+      description: Network list creator
+      type: String
+    - contextPath: Akamai.NetworkLists.ExpeditedProductionActivationStatus
+      description: Expedited production activation status
+      type: String
+    - contextPath: Akamai.NetworkLists.ExpeditedStagingActivationStatus
+      description: Expedited staging activation status
+      type: String
+    - contextPath: Akamai.NetworkLists.ProductionActivationStatus
+      description: Production activation status
+      type: String
+    - contextPath: Akamai.NetworkLists.StagingActivationStatus
+      description: Staging activation status
+      type: String
+    - contextPath: Akamai.NetworkLists.UpdateDate
+      description: Network list update date
+      type: String
+    - contextPath: Akamai.NetworkLists.UpdatedBy
+      description: Last user updated the network list
+      type: String
+    - contextPath: Akamai.NetworkLists.Elements
+      description: Elemnts in the network list
+      type: String
+  - arguments:
+    - default: false
+      description: Network list name
+      isArray: false
+      name: list_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Network list type
+      isArray: false
+      name: list_type
+      predefined:
+      - IP
+      - GEO
+      required: true
+      secret: false
+    - default: false
+      description: Network list elements
+      isArray: true
+      name: elements
+      required: false
+      secret: false
+    - default: false
+      description: War-room entry ID of sample file
+      isArray: false
+      name: entry_id
+      required: false
+      secret: false
+    - default: false
+      description: Network list description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Create new network list (Support txt file upload for elements)
+    execution: false
+    name: akamai-create-network-list
+    outputs:
+    - contextPath: Akamai.NetworkLists.Name
+      description: Network list ID
+      type: String
+    - contextPath: Akamai.NetworkLists.UniqueID
+      description: Network list ID - Get it from akamai-get-network-lists
+      type: String
+    - contextPath: Akamai.NetworkLists.Type
+      description: Network list type
+      type: String
+    - contextPath: Akamai.NetworkLists.ElementCount
+      description: Number of element in the list
+      type: Number
+    - contextPath: Akamai.NetworkLists.Elements
+      description: Elements in the lisy
+      type: String
+  - arguments:
+    - default: false
+      description: Network list ID
+      isArray: false
+      name: network_list_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete network list
+    execution: false
+    name: akamai-delete-network-list
+  - arguments:
+    - default: false
+      description: Network list ID
+      isArray: false
+      name: network_list_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enviorment to activate the network list
+      isArray: false
+      name: env
+      predefined:
+      - STAGING
+      - PRODUCTION
+      required: true
+      secret: false
+    - default: false
+      description: Comment to be logged
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: List of emails seprated with commas
+      isArray: true
+      name: notify
+      required: false
+      secret: false
+    deprecated: false
+    description: Activate network list on Staging or Production
+    execution: false
+    name: akamai-activate-network-list
+  - arguments:
+    - default: false
+      description: Network list ID
+      isArray: false
+      name: network_list_id
+      required: true
+      secret: false
+    - default: false
+      description: War-room entry ID of sample file
+      isArray: false
+      name: entry_id
+      required: false
+      secret: false
+    - default: false
+      description: Elements to be added, comma seprated
+      isArray: true
+      name: elements
+      required: false
+      secret: false
+    deprecated: false
+    description: Add elements to network list
+    execution: false
+    name: akamai-add-elements-to-network-list
+  - arguments:
+    - default: false
+      description: Network list ID
+      isArray: false
+      name: network_list_id
+      required: true
+      secret: false
+    - default: false
+      description: Element to be removed
+      isArray: false
+      name: element
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove element from network list
+    execution: false
+    name: akamai-remove-element-from-network-list
+  - arguments:
+    - default: false
+      description: Network list ID
+      isArray: false
+      name: network_list_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enviorment Produciton or Staginf
+      isArray: false
+      name: env
+      predefined:
+      - PRODUCTION
+      - STAGING
+      required: true
+      secret: false
+    deprecated: false
+    description: Get network list activation status in Production or staging
+    execution: false
+    name: akamai-get-network-list-activation-status
+  dockerimage: demisto/akamai:1.0.0.5063
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- Akamai_WAF-Test
