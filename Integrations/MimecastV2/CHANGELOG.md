@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Added all directory handling commands.
+Added the following commands:
 
 
 ## [19.9.0] - 2019-09-04
