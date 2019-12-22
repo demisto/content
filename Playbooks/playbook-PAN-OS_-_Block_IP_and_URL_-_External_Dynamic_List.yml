@@ -111,7 +111,7 @@ tasks:
       {
         "position": {
           "x": -252.5,
-          "y": 1090
+          "y": 1150
         }
       }
     note: false
@@ -249,7 +249,7 @@ tasks:
       {
         "position": {
           "x": 980,
-          "y": 1090
+          "y": 1150
         }
       }
     note: false
@@ -272,7 +272,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1260
+          "y": 1320
         }
       }
     note: false
@@ -733,7 +733,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1535,
+        "height": 1595,
         "width": 1612.5,
         "x": -252.5,
         "y": -210
