@@ -53,11 +53,12 @@ def start_logging():
         logger.setLevel(logging.DEBUG)
 
 
+import exchangelib  # noqa: E402
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter  # noqa: E402
 from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, \
     EXCHANGE_2016  # noqa: E402
 from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
-    BASIC, DIGEST, Version, DELEGATE, close_connections  # noqa: E402
+    BASIC, DIGEST, Version, DELEGATE  # noqa: E402
 
 IS_TEST_MODULE = False
 
@@ -82,6 +83,21 @@ VERSIONS = {
     '2013': EXCHANGE_2013,
     '2016': EXCHANGE_2016
 }
+
+
+# NOTE: Same method used in EWSv2
+def exchangelib_cleanup():
+    try:
+        for key, protocol in exchangelib.protocol.CachingProtocol._protocol_cache.items():
+            if "thread_pool" in protocol.__dict__:
+                demisto.debug('terminating thread pool key: {} id: {}'.format(key, id(protocol.thread_pool)))
+                protocol.thread_pool.terminate()
+                del protocol.__dict__["thread_pool"]
+            else:
+                demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
+        exchangelib.close_connections()
+    except Exception as ex:
+        demisto.debug("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
 
 
 def get_account(account_email):
@@ -307,21 +323,7 @@ def main():
         else:
             return_error(error_message + '\n' + debug_log)
     finally:
-        try:
-            # we don't want to leave cached connection around as EWS limits the number of connections
-            # in a very aggressive way. 12 seems to be the default limit
-            # see: https://blogs.msdn.microsoft.com/webdav_101/2018/06/02/you-are-doing-too-much-at-one-time-ewsmaxconcurrency-too-many-concurrent-connections-opened/ # noqa
-            close_connections()
-        except Exception as ex:
-            demisto.info("Failed close_connections (shouldn't happen). Ignoring exception: {}".format(ex))
-        try:
-            if isinstance(config, Configuration):
-                # The protocol will not kill its threads after use, so kill it manually
-                if "thread_pool" in config.protocol.__dict__:
-                    config.protocol.thread_pool.terminate()
-                    del config.protocol.__dict__["thread_pool"]
-        except Exception as ex:
-            demisto.error("Failed thread_pool.terminate (shouldn't happen). Ignoring exception: {}".format(ex))
+        exchangelib_cleanup()
         if log_stream:
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore

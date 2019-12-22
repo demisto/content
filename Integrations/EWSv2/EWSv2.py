@@ -329,6 +329,21 @@ if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
     raise Exception(PUBLIC_FOLDERS_ERROR)
 
 
+# NOTE: Same method used in EWSMailSender
+def exchangelib_cleanup():
+    try:
+        for key, protocol in exchangelib.protocol.CachingProtocol._protocol_cache.items():
+            if "thread_pool" in protocol.__dict__:
+                demisto.debug('terminating thread pool key{} id: {}'.format(key, id(protocol.thread_pool)))
+                protocol.thread_pool.terminate()
+                del protocol.__dict__["thread_pool"]
+            else:
+                demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
+        exchangelib.close_connections()
+    except Exception as ex:
+        demisto.debug("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
+
+
 # Prep Functions
 def get_auth_method(auth_method):
     auth_method = auth_method.lower()
@@ -2085,15 +2100,7 @@ def main():
                 {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
     finally:
-        try:
-            if isinstance(config, Configuration):
-                # Sometimes new threads are created but never killed, so killing them manually.
-                if "thread_pool" in config.protocol.__dict__:
-                    config.protocol.thread_pool.terminate()
-                    del config.protocol.__dict__["thread_pool"]
-        except Exception:
-            demisto.debug("Error was found in terminating threads in config.protocol, ignoring.")
-        exchangelib.close_connections()
+        exchangelib_cleanup()
         if log_stream:
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
