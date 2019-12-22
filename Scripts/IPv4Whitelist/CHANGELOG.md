@@ -1,5 +1,5 @@
 ## [Unreleased]
-Improved implementation of script
+Improved script implementation.
 
 ## [19.11.0] - 2019-11-12
 #### New Script
