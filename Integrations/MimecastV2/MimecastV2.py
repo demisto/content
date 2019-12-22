@@ -24,7 +24,7 @@ ACCESS_KEY = demisto.params()['accessKey']
 SECRET_KEY = demisto.params()['secretKey']
 APP_ID = demisto.params()['appId']
 APP_KEY = demisto.params()['appKey']
-USE_SSL = False
+USE_SSL = None  # assigned in determine_ssl_usage
 PROXY = True if demisto.params().get('proxy') else False
 # Flags to control which type of incidents are being fetched
 FETCH_URL = demisto.params().get('fetchURL')
@@ -69,7 +69,7 @@ def determine_ssl_usage():
 
     old_insecure = demisto.params().get('insecure', None)
     if old_insecure:
-        USE_SSL = old_insecure
+        USE_SSL = True if old_insecure else False
         return
 
     USE_SSL = False if demisto.params().get('new_insecure') else True
