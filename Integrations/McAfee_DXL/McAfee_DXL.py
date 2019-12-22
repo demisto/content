@@ -136,7 +136,7 @@ def main():
                                             args.get('trust_level'),
                                             args.get('topic'))
         else:
-            raise Exception(f'{demisto.command()} is not A command')
+            raise Exception(f'{demisto.command()} is not a command')
 
         return_outputs(result)
     except Exception as error:
