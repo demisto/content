@@ -2876,10 +2876,11 @@ def panorama_list_pcaps_command():
     """
     Get list of pcap files
     """
+    pcap_type = demisto.args()['pcapType']
     params = {
         'type': 'export',
         'key': API_KEY,
-        'category': demisto.args()['pcapType']
+        'category': pcap_type
     }
 
     if 'password' in demisto.args():
@@ -2893,19 +2894,22 @@ def panorama_list_pcaps_command():
         return_error('Request to get list of Pcaps Failed.\nStatus code: ' + str(
             json_result['response']['@code']) + '\nWith message: ' + str(json_result['response']['msg']['line']))
 
-    pcap_list = json_result['result']['dir-listing']['file']
-    pcap_list = [pcap[1:] for pcap in pcap_list]
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': json_result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('List of Pcaps:', pcap_list, ['Pcap name']),
-        'EntryContext': {
-            "Panorama.Pcaps(val.Name == obj.Name)": pcap_list
-        }
-    })
+    dir_listing = json_result['result']['dir-listing']
+    if 'file' not in dir_listing:
+        demisto.results(f'PAN-OS has no Pcaps of type: {pcap_type}.')
+    else:
+        pcaps = dir_listing['file']
+        pcap_list = [pcap[1:] for pcap in pcaps]
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': json_result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('List of Pcaps:', pcap_list, ['Pcap name']),
+            'EntryContext': {
+                "Panorama.Pcaps(val.Name == obj.Name)": pcap_list
+            }
+        })
 
 
 @logger
@@ -2922,12 +2926,12 @@ def panorama_get_pcap_command():
     if 'password' in demisto.args():
         params['dlp-password'] = demisto.args()['password']
     elif demisto.args()['pcapType'] == 'dlp-pcap':
-        return_error('can not provide dlp-pcap without password')
+        return_error('Can not provide dlp-pcap without password.')
 
     if 'pcapID' in demisto.args():
         params['pcap-id'] = demisto.args()['pcapID']
     elif demisto.args()['pcapType'] == 'threat-pcap':
-        return_error('can not provide threat-pcap without pcap-id')
+        return_error('Can not provide threat-pcap without pcap-id.')
 
     pcap_name = demisto.args().get('from')
     local_name = demisto.args().get('localName')
@@ -2955,7 +2959,7 @@ def panorama_get_pcap_command():
     # due pcap file size limitation in the product, for more details, please see the documentation.
     if result.headers['Content-Type'] != 'application/octet-stream':
         return_error(
-            'PCAP download failed. Most likely cause is the file size limitation.'
+            'PCAP download failed. Most likely cause is the file size limitation.\n'
             'For information on how to download manually, see the documentation for this integration.')
 
     file = fileResult(file_name + ".pcap", result.content)
