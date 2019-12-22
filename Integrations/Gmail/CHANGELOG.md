@@ -1,4 +1,12 @@
 ## [Unreleased]
+  - Added a new command:
+    - ***gmail-get-role***
+  - Improved the outputs for the following commands:
+    - ***gmail-get-user-roles***
+    - ***gmail-list-filters*** 
+    - ***gmail-add-filter***
+
+## [19.12.0] - 2019-12-10
 -
 
 ## [19.10.2] - 2019-10-29

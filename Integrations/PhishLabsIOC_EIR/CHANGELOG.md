@@ -1,5 +1,11 @@
 ## [Unreleased]
+  - Added the *period* argument to the ***phishlabs-ioc-eir-get-incidents*** command, which defines the time range for which to return incidents.
+  - Improved implementation of the fetch incidents functionality.
+  - Improved the integration documentation.
+  - Changed the display name to **PhishLabs IOC EIR**.
 
+## [19.12.0] - 2019-12-10
+Changed the display name to **PhishLabs EIR v2**.
 
 ## [19.11.1] - 2019-11-26
 #### New Integration
