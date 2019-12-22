@@ -24,11 +24,11 @@ configuration:
   required: true
   type: 4
 - defaultvalue: 'true'
-  display: Trust any certificate (insecure)
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -813,30 +813,43 @@ script:
     name: xdr-get-audit-management-logs
     outputs:
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ID
+      description: Audit Log ID
       type: Number
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_OWNER_NAME
+      description: Audit owner name
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_OWNER_EMAIL
+      description: Audit owner email
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ASSET_JSON
+      description: Asset JSON
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ASSET_NAMES
+      description: Audit asset names
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_HOSTNAME
+      description: hostname
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_RESULT
+      description: Audit result
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_REASON
+      description: Audit reason
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_DESCRIPTION
+      description: Description
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY
+      description: Audit entity (e.g. AUTH, DISTRIBUTIONS)
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE
+      description: Entity subtype (e.g Login, Create)
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_CASE_ID
+      description: Audit case id
       type: Number
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_INSERT_TIME
+      description: Insert time of the log
       type: Date
   - arguments:
     - default: false
@@ -929,28 +942,40 @@ script:
     name: xdr-get-audit-agent-reports
     outputs:
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTID
+      description: Endpoint ID
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTNAME
+      description: Endpoint name
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.DOMAIN
+      description: Agent domain
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.TRAPSVERSION
+      description: Traps version
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.RECEIVEDTIME
+      description: Received time in epoch time
       type: Date
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.TIMESTAMP
+      description: Timestamp in epoch time
       type: Date
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.CATEGORY
+      description: Report category (e.g Audit)
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.TYPE
+      description: Report type (e.g Action, Policy)
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.SUBTYPE
+      description: Subtype (e.g Fully Protected,Policy Update,Cancel Isolation)
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.RESULT
+      description: Report Result
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.REASON
+      description: Reason
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.DESCRIPTION
+      description: Agent report description
       type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
