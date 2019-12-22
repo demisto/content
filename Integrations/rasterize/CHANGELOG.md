@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue with the ***rasterize*** command in which child processes were defunct.
 
 ## [19.11.0] - 2019-11-12
 Added support for the *px* suffix in the _width_ and _height_ parameters.
