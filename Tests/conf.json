@@ -2005,6 +2005,10 @@
         {
             "integrations": "BPA",
             "playbookID": "Test-BPA"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA_Integration"
         }
     ],
     "skipped_tests": {

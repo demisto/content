@@ -153,4 +153,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - Test-BPA
+  - Test-BPA_Integration

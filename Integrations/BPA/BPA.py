@@ -175,8 +175,9 @@ def get_results_command(client: Client, args: Dict):
         'Checks': job_checks,
         'Status': status
     }}
+    human_readable = tableToMarkdown('BPA Results', job_checks)
 
-    return 'Checks received.', context, results
+    return human_readable, context, results
 
 
 def test_module(client, panorama):
