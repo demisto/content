@@ -1484,14 +1484,14 @@ def create_find_groups_request():
     api_endpoint = '/api/directory/find-groups'
     query_string = demisto.args().get('query_string', '').encode('utf-8')
     query_source = demisto.args().get('query_source', '').encode('utf-8')
-    pagination = demisto.args().get('pagination')
+    number_of_enries_to_fetch = demisto.args().get('number_of_enries_to_fetch')
 
     meta = dict()  # type: Dict[str, Dict[str, int]]
     data = dict()  # type: Dict[str, Dict[str, str]]
 
-    if pagination:
+    if number_of_enries_to_fetch:
         meta['pagination'] = {
-            'pageSize': int(pagination)
+            'pageSize': int(number_of_enries_to_fetch)
         }
 
     if query_string:
@@ -1527,12 +1527,15 @@ def find_groups_api_response_to_markdown(api_response):
         return md
 
     md = 'Found ' + str(num_groups_found) + ' groups:'
+    md_metadata = ''
 
     if query_string:
-        md += '\n#### query: ' + query_string
+        md_metadata += '#### query: ' + query_string
 
     if query_source:
-        md += '\n#### source: ' + query_source
+        if md_metadata:
+            md_metadata += '\n'
+        md_metadata += '#### source: ' + query_source
 
     groups_list = list()
     for group in api_response.get('data', [])[0]['folders']:
@@ -1548,7 +1551,8 @@ def find_groups_api_response_to_markdown(api_response):
         groups_list.append(group_entry)
 
     md = tableToMarkdown(md, groups_list,
-                         ['Name', 'Source', 'Group ID', 'Number of users', 'Parent ID', 'Number of child groups'])
+                         ['Name', 'Source', 'Group ID', 'Number of users', 'Parent ID', 'Number of child groups'],
+                         metadata=md_metadata)
 
     return md
 
@@ -1567,7 +1571,7 @@ def find_groups_api_response_to_context(api_response):
 
         groups_list.append(group_entry)
 
-    return {'Mimecast.Groups(val.ID && val.ID == obj.ID)': groups_list}
+    return {'Mimecast.Group(val.ID && val.ID == obj.ID)': groups_list}
 
 
 def get_group_members():
@@ -1579,17 +1583,17 @@ def get_group_members():
     return_outputs(markdown_output, entry_context, api_response)
 
 
-def create_get_group_members_request(group_id=-1, pagination=100):
+def create_get_group_members_request(group_id=-1, number_of_enries_to_fetch=100):
     api_endpoint = '/api/directory/get-group-members'
     group_id = demisto.args().get('group_id', group_id).encode('utf-8')
-    pagination = demisto.args().get('pagination', pagination)
+    number_of_enries_to_fetch = demisto.args().get('number_of_enries_to_fetch', number_of_enries_to_fetch)
 
     meta = dict()  # type: Dict[str, Dict[str, int]]
     data = dict()  # type: Dict[str, Dict[str, str]]
 
-    if pagination:
+    if number_of_enries_to_fetch:
         meta['pagination'] = {
-            'pageSize': int(pagination)
+            'pageSize': int(number_of_enries_to_fetch)
         }
 
     data['id'] = group_id
@@ -1637,10 +1641,9 @@ def add_users_under_group_in_context_dict(users_list, group_id):
     demisto_context = demisto.context()
 
     if demisto_context and 'Mimecast' in demisto_context:
-        if 'Groups' in demisto_context['Mimecast']:
-            groups_entry_in_context = demisto_context['Mimecast']['Groups']
+        if 'Group' in demisto_context['Mimecast']:
+            groups_entry_in_context = demisto_context['Mimecast']['Group']
             for group in groups_entry_in_context:
-                demisto.results('2')
                 if group['ID'] == group_id:
                     group['Users'] = users_list
                     return groups_entry_in_context
@@ -1663,7 +1666,7 @@ def group_members_api_response_to_context(api_response, group_id=-1):
             'EmailAddress': user['emailAddress'],
             'Domain': user['domain'],
             'Type': user['type'],
-            'InternalUser': str(user['internal']),
+            'InternalUser': user['internal'],
             'IsRemoved': False
         }
 
@@ -1671,7 +1674,7 @@ def group_members_api_response_to_context(api_response, group_id=-1):
 
     groups_after_update = add_users_under_group_in_context_dict(users_list, group_id)
 
-    return {'Mimecast.Groups(val.ID && val.ID == obj.ID)': groups_after_update}
+    return {'Mimecast.Group(val.ID && val.ID == obj.ID)': groups_after_update}
 
 
 def add_remove_member_to_group(action_type):
@@ -1726,8 +1729,8 @@ def change_user_status_removed_in_context(user_info, group_id):
     demisto_context = demisto.context()
 
     if demisto_context and 'Mimecast' in demisto_context:
-        if 'Groups' in demisto_context['Mimecast']:
-            groups_entry_in_context = demisto_context['Mimecast']['Groups']
+        if 'Group' in demisto_context['Mimecast']:
+            groups_entry_in_context = demisto_context['Mimecast']['Group']
             for group in groups_entry_in_context:
                 if group['ID'] == group_id:
                     for user in group['Users']:
@@ -1761,7 +1764,7 @@ def add_remove_api_response_to_context(api_response, action_type):
 
         groups_after_update = change_user_status_removed_in_context(removed_user, group_id)
 
-        return {'Mimecast.Groups(val.ID && val.ID == obj.ID)': groups_after_update}
+        return {'Mimecast.Group(val.ID && val.ID == obj.ID)': groups_after_update}
 
 
 def create_group():
@@ -1817,7 +1820,7 @@ def create_group_api_response_to_context(api_response):
         'NumberOfChildGroups': 0
     }
 
-    return {'Mimecast.Groups(val.Name && val.Name == obj.Name)': group_created}
+    return {'Mimecast.Group(val.Name && val.Name == obj.Name)': group_created}
 
 
 def update_group():
@@ -1868,7 +1871,7 @@ def update_group_api_response_to_context(api_response):
         'ParentID': api_response['data'][0]['parentId']
     }
 
-    return {'Mimecast.Groups(val.ID && val.ID == obj.ID)': group_updated}
+    return {'Mimecast.Group(val.ID && val.ID == obj.ID)': group_updated}
 
 
 def create_mimecast_incident():
@@ -1951,13 +1954,14 @@ def mimecast_incident_api_response_to_markdown(api_response, action_type):
         md = 'Incident ' + incident_id + ' has been created\n'
     else:
         md = 'Incident ' + incident_id + ' has been found\n'
-    md += '\n####Code: ' + incident_code
-    md += '\n####Type: ' + incident_type
-    md += '\n####Reason: ' + incident_reason
-    md += '\n####The number of messages identified based on the search criteria: ' + incident_identified_messages_amount
-    md += '\n####The number successfully remediated messages: ' + incident_successful_messages_amount
-    md += '\n####The number of messages that failed to remediate: ' + incident_failed_messages_amount
-    md += '\n####The number of messages that were restored from the incident: ' + incident_restored_messages_amount
+
+    md_metadata = '####Code: ' + incident_code
+    md_metadata += '\n####Type: ' + incident_type
+    md_metadata += '\n####Reason: ' + incident_reason
+    md_metadata += '\n####The number of messages identified based on the search criteria: ' + incident_identified_messages_amount
+    md_metadata += '\n####The number successfully remediated messages: ' + incident_successful_messages_amount
+    md_metadata += '\n####The number of messages that failed to remediate: ' + incident_failed_messages_amount
+    md_metadata += '\n####The number of messages that were restored from the incident: ' + incident_restored_messages_amount
 
     messages_table_list = list()
     for message in api_response['data'][0]['searchCriteria']:
@@ -1973,7 +1977,7 @@ def mimecast_incident_api_response_to_markdown(api_response, action_type):
         messages_table_list.append(message_entry)
 
     md = tableToMarkdown(md, messages_table_list,
-                         ['From', 'To', 'Start', 'End date', 'Message ID', 'File hash'])
+                         ['From', 'To', 'Start', 'End date', 'Message ID', 'File hash'], metadata=md_metadata)
 
     return md
 
@@ -1984,7 +1988,7 @@ def mimecast_incident_api_response_to_context(api_response):
         message_entry = {
             'From': message['from'],
             'To': message['to'],
-            'Message ID': message['messageId'],
+            'MessageID': message['messageId'],
             'FileHash': message['fileHash'],
             'StartDate': datetime.strptime(message['start'], '%Y-%m-%dT%H:%M:%SZ'),
             'EndDate': datetime.strptime(message['end'], '%Y-%m-%dT%H:%M:%SZ')
@@ -2059,14 +2063,14 @@ def search_file_hash_api_response_to_context(api_response):
     detected_hashes_list = list()
     for detected_hash in api_response['data'][0]['hashStatus']:
         detected_hash_entry = {
-            'Hash': detected_hash['hash'],
+            'HashValue': detected_hash['hash'],
             'Detected': detected_hash['detected']
         }
 
         detected_hashes_list.append(detected_hash_entry)
 
     if detected_hashes_list:
-        return {'Mimecast.Hash(val.Hash && val.Hash == obj.Hash)': detected_hashes_list}
+        return {'Mimecast.Hash(val.HashValue && val.HashValue == obj.HashValue)': detected_hashes_list}
     return None
 
 
