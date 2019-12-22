@@ -43,9 +43,7 @@ class Client:
                 prefix: aws
                 indicator: ip_prefix
                 headers: {'Authorization': '12345668900', 'user-agent': 'my-app/0.0.1'}
-                fields:
-                    - region
-                    - service
+                fields: region, service
         """
         self.extractor = extractor or '@'
         self.indicator = indicator or 'indicator'
@@ -117,8 +115,7 @@ def main():
     demisto.info(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
-            readable_output, outputs, raw_response = test_module(client)
-            return_outputs(readable_output, outputs, raw_response)
+            return_outputs(test_module(client))
 
         elif demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators_command(client, demisto.params()['indicator_type'])
