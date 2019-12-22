@@ -4,6 +4,7 @@
     - ***panorama-get-static-route***
     - ***panorama-add-static-route***
     - ***panorama-delete-static-route***
+- Fixed an issue in the ***!panorama-list-pcaps*** command when there are no pcaps in the PAN-OS.
 
 
 ## [19.12.0] - 2019-12-10
