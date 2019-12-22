@@ -73,6 +73,10 @@
             "playbookID": "PhishlabsIOC_EIR-Test"
         },
         {
+            "integrations": "PhishLabs IOC DRP",
+            "playbookID": "PhishlabsIOC_DRP-Test"
+        },
+        {
             "playbookID": "Create Phishing Classifier V2 ML Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
@@ -608,6 +612,10 @@
             "playbookID": "Test Playbook McAfee ePO"
         },
         {
+            "integrations": "McAfee DXL",
+            "playbookID": "McAfee DXL - Test"
+        },
+        {
             "integrations": "activedir",
             "playbookID": "calculate_severity_-_critical_assets_-_test"
         },
@@ -1134,6 +1142,16 @@
             "integrations": "Microsoft Graph Groups",
             "playbookID": "Microsoft Graph Groups - Test",
             "instance_names": "ms_graph_groups_prod"
+        },
+                {
+            "integrations": "Microsoft Graph Calendar",
+            "playbookID": "Microsoft Graph Calendar - Test",
+            "instance_names": "ms_graph_calendar_dev"
+        },
+        {
+            "integrations": "Microsoft Graph Calendar",
+            "playbookID": "Microsoft Graph Calendar - Test",
+            "instance_names": "ms_graph_calendar_prod"
         },
         {
             "integrations": "RedLock",
@@ -1969,11 +1987,21 @@
             "playbookID": "Google-KMS-test"
         },
         {
+            "integrations": "SecBI",
+            "playbookID": "SecBI - Test"
+        },
+        {
             "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         },
         {
           "integrations": "EWS v2",
           "playbookID": "Get EWS Folder Test",
+          "fromversion": "4.5.0"
+        },
+        {
+          "integrations": "QRadar",
+          "playbookID": "QRadar Indicator Hunting Test",
+          "timeout": 1200,
           "fromversion": "4.5.0"
         },
         {
@@ -2027,6 +2055,7 @@
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
         "ExtraHop v2": "No instance",
+        "Fidelis Elevate Network": "Issue 20735",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
         "fireeye": "Issue 19839",
