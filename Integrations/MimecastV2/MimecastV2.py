@@ -1637,7 +1637,7 @@ def group_members_api_response_to_markdown(api_response):
             'Email address': user['emailAddress'],
             'Domain': user['domain'],
             'Type': user['type'],
-            'Internal user': str(user['internal'])
+            'Internal user': user['internal']
         }
 
         users_list.append(user_entry)
@@ -1815,10 +1815,13 @@ def create_group_api_response_to_markdown(api_response):
     group_id = api_response['data'][0]['id']
 
     md = group_name + ' has been created'
-    md += '\nGroup source: ' + group_source
-    md += '\nGroup ID: ' + group_id
 
-    return md
+    group_info = {
+        'Group Source': group_source,
+        'Group ID': group_id
+    }
+
+    return tableToMarkdown(md, group_info, ['Group Source', 'Group ID'])
 
 
 def create_group_api_response_to_context(api_response):
