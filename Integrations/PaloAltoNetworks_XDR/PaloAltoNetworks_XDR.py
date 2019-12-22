@@ -20,6 +20,8 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
 
+INTEGRATION_CONTEXT_PREFIX = 'PaloAltoNetworksXDR'
+
 
 def convert_epoch_to_milli(ts):
     if ts is None:
@@ -402,6 +404,142 @@ class Client(BaseClient):
 
         return reply.get('reply').get('distribution_url')
 
+    def audit_management_logs(self, email, result, _type, sub_type, search_from, search_to, timestamp_gte,
+                              timestamp_lte, sort_by, sort_order):
+
+        request_data = {}
+        filters = []
+        if email:
+            filters.append({
+                'field': 'email',
+                'operator': 'in',
+                'value': email
+            })
+        if result:
+            filters.append({
+                'field': 'result',
+                'operator': 'in',
+                'value': result
+            })
+        if _type:
+            filters.append({
+                'field': 'type',
+                'operator': 'in',
+                'value': _type
+            })
+        if sub_type:
+            filters.append({
+                'field': 'sub_type',
+                'operator': 'in',
+                'value': sub_type
+            })
+        if timestamp_gte:
+            filters.append({
+                'field': 'timestamp',
+                'operator': 'gte',
+                'value': timestamp_gte
+            })
+        if timestamp_lte:
+            filters.append({
+                'field': 'timestamp',
+                'operator': 'lte',
+                'value': timestamp_lte
+            })
+
+        if filters:
+            request_data['filters'] = filters
+
+        if search_from > 0:
+            request_data['search_from'] = search_from
+
+        if search_to:
+            request_data['search_to'] = search_to
+
+        if sort_by:
+            request_data['sort'] = {
+                'field': sort_by,
+                'keyword': sort_order
+            }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/audits/management_logs/',
+            json_data={'request_data': request_data}
+        )
+
+        return reply.get('reply').get('data', [])
+
+
+    def get_audit_agent_reports(self, endpoint_ids, endpoint_names, result, _type, sub_type, search_from, search_to,
+                                timestamp_gte, timestamp_lte, sort_by, sort_order):
+        request_data = {}
+        filters = []
+        if endpoint_ids:
+            filters.append({
+                'field': 'endpoint_id',
+                'operator': 'in',
+                'value': endpoint_ids
+            })
+        if endpoint_names:
+            filters.append({
+                'field': 'endpoint_name',
+                'operator': 'in',
+                'value': endpoint_names
+            })
+        if result:
+            filters.append({
+                'field': 'result',
+                'operator': 'in',
+                'value': result
+            })
+        if _type:
+            filters.append({
+                'field': 'type',
+                'operator': 'in',
+                'value': _type
+            })
+        if sub_type:
+            filters.append({
+                'field': 'sub_type',
+                'operator': 'in',
+                'value': sub_type
+            })
+        if timestamp_gte:
+            filters.append({
+                'field': 'timestamp',
+                'operator': 'gte',
+                'value': timestamp_gte
+            })
+        if timestamp_lte:
+            filters.append({
+                'field': 'timestamp',
+                'operator': 'lte',
+                'value': timestamp_lte
+            })
+
+        if filters:
+            request_data['filters'] = filters
+
+        if search_from > 0:
+            request_data['search_from'] = search_from
+
+        if search_to:
+            request_data['search_to'] = search_to
+
+        if sort_by:
+            request_data['sort'] = {
+                'field': sort_by,
+                'keyword': sort_order
+            }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/audits/agents_reports/',
+            json_data={'request_data': request_data}
+        )
+
+        return reply.get('reply').get('data', [])
+
 
 def get_incidents_command(client, args):
     """
@@ -456,7 +594,7 @@ def get_incidents_command(client, args):
     return (
         tableToMarkdown('Incidents', raw_incidents),
         {
-            'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': raw_incidents
+            f'{INTEGRATION_CONTEXT_PREFIX}.Incident(val.incident_id==obj.incident_id)': raw_incidents
         },
         raw_incidents
     )
@@ -499,7 +637,7 @@ def get_incident_extra_data_command(client, args):
     return (
         '\n'.join(readable_output),
         {
-            'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': incident
+            f'{INTEGRATION_CONTEXT_PREFIX}.Incident(val.incident_id==obj.incident_id)': incident
         },
         raw_incident
     )
@@ -574,7 +712,7 @@ def get_endpoints_command(client, args):
 
     return (
         tableToMarkdown('Endpoints', endpoints),
-        {'PaloAltoNetworksXDR.Endpoint(val.endpoint_id == val.endpoint_id)': endpoints},
+        {f'{INTEGRATION_CONTEXT_PREFIX}.Endpoint(val.endpoint_id == val.endpoint_id)': endpoints},
         endpoints
     )
 
@@ -694,8 +832,96 @@ def get_distribution_url_command(client, args):
 
     return (
         f'[Distribution URL]({url})',
-        {'PaloAltoNetworks_XDR.DistributionURL': url},
+        {f'{INTEGRATION_CONTEXT_PREFIX}.DistributionURL': url},
         url
+    )
+
+
+def get_audit_management_logs_command(client, args):
+    email = argToList(args.get('email'))
+    result = argToList(args.get('result'))
+    _type = argToList(args.get('type'))
+    sub_type = argToList(args.get('sub_type'))
+
+    timestamp_gte = None
+    timestamp_lte = None
+    if args.get('timestamp_gte'):
+        timestamp_gte = dateparser.parse(args.get('timestamp_gte')).timestamp() * 1000
+
+    if args.get('timestamp_lte'):
+        timestamp_lte = dateparser.parse(args.get('timestamp_lte')).timestamp() * 1000
+
+    search_from = int(args.get('search_from', 0))
+    search_to = search_from + int(args.get('limit', 20))
+
+    sort_by = args.get('sort_by')
+    sort_order = args.get('sort_order', 'asc')
+
+    audit_logs = client.audit_management_logs(
+        email=email,
+        result=result,
+        _type=_type,
+        sub_type=sub_type,
+        timestamp_gte=timestamp_gte,
+        timestamp_lte=timestamp_lte,
+
+        search_from=search_from,
+        search_to=search_to,
+        sort_by=sort_by,
+        sort_order=sort_order
+    )
+
+    return (
+        tableToMarkdown('Audit Management Logs', audit_logs),
+        {
+            f'{INTEGRATION_CONTEXT_PREFIX}.AuditManagementLogs(val.AUDIT_ID == obj.AUDIT_ID)': audit_logs
+        },
+        audit_logs
+    )
+
+
+def get_audit_agent_reports_command(client, args):
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    endpoint_names = argToList(args.get('endpoint_names'))
+    result = argToList(args.get('result'))
+    _type = argToList(args.get('type'))
+    sub_type = argToList(args.get('sub_type'))
+
+    timestamp_gte = None
+    timestamp_lte = None
+    if args.get('timestamp_gte'):
+        timestamp_gte = dateparser.parse(args.get('timestamp_gte')).timestamp() * 1000
+
+    if args.get('timestamp_lte'):
+        timestamp_lte = dateparser.parse(args.get('timestamp_lte')).timestamp() * 1000
+
+    search_from = int(args.get('search_from', 0))
+    search_to = search_from + int(args.get('limit', 20))
+
+    sort_by = args.get('sort_by')
+    sort_order = args.get('sort_order', 'asc')
+
+    audit_logs = client.get_audit_agent_reports(
+        endpoint_ids=endpoint_ids,
+        endpoint_names=endpoint_names,
+        result=result,
+        _type=_type,
+        sub_type=sub_type,
+        timestamp_gte=timestamp_gte,
+        timestamp_lte=timestamp_lte,
+
+        search_from=search_from,
+        search_to=search_to,
+        sort_by=sort_by,
+        sort_order=sort_order
+    )
+
+    return (
+        tableToMarkdown('Audit Agent Reports', audit_logs),
+        {
+            f'{INTEGRATION_CONTEXT_PREFIX}.AuditAgentReports': audit_logs
+        },
+        audit_logs
     )
 
 
@@ -798,6 +1024,12 @@ def main():
 
         elif demisto.command() == 'xdr-get-distribution-url':
             return_outputs(*get_distribution_url_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-get-audit-management-logs':
+            return_outputs(*get_audit_management_logs_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-get-audit-agent-reports':
+            return_outputs(*get_audit_agent_reports_command(client, demisto.args()))
 
     except Exception as e:
         if demisto.command() == 'fetch-incidents':

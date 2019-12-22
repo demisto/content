@@ -112,7 +112,9 @@ def test_get_endpoints(requests_mock):
         base_url=f'{XDR_URL}/public_api/v1'
     )
     args = {
-        'hostname': 'foo'
+        'hostname': 'foo',
+        'page': 1,
+        'limit': 3
     }
 
     _, outputs, _ = get_endpoints_command(client, args)
@@ -226,7 +228,50 @@ def test_get_distribution_url(requests_mock):
     readable_output, outputs, _ = get_distribution_url_command(client, args)
     expected_url = get_distribution_url_response.get('reply').get('distribution_url')
     assert outputs == {
-        'PaloAltoNetworks_XDR.DistributionURL': expected_url
+        'PaloAltoNetworksXDR.DistributionURL': expected_url
     }
 
     assert readable_output == f'[Distribution URL]({expected_url})'
+
+
+def test_get_audit_management_logs(requests_mock):
+    from PaloAltoNetworks_XDR import get_audit_management_logs_command, Client
+
+    get_audit_management_logs_response = load_test_data('./test_data/get_audit_management_logs.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/audits/management_logs/', json=get_audit_management_logs_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1'
+    )
+
+    args = {
+        'email': 'woo@demisto.com',
+        'limit': '3',
+        'timestamp_gte': '3 month'
+    }
+
+    readable_output, outputs, _ = get_audit_management_logs_command(client, args)
+
+    expected_outputs = get_audit_management_logs_response.get('reply').get('data')
+    assert outputs['PaloAltoNetworksXDR.AuditManagementLogs(val.AUDIT_ID == obj.AUDIT_ID)'] == expected_outputs
+
+
+def test_get_audit_agent_reports(requests_mock):
+    from PaloAltoNetworks_XDR import get_audit_agent_reports_command, Client
+
+    get_audit_agent_reports_response = load_test_data('./test_data/get_audit_agent_report.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/audits/agents_reports/', json=get_audit_agent_reports_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1'
+    )
+
+    args = {
+        'endpoint_names': 'woo.demisto',
+        'limit': '3',
+        'timestamp_gte': '3 month'
+    }
+
+    readable_output, outputs, _ = get_audit_agent_reports_command(client, args)
+    expected_outputs = get_audit_agent_reports_response.get('reply').get('data')
+    assert outputs['PaloAltoNetworksXDR.AuditAgentReports'] == expected_outputs

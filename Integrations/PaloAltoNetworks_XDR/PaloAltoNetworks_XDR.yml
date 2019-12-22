@@ -640,35 +640,40 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        An integer representing the start offset within the query result set from which you want endpoints returned.
-        Endpoints are returned as a zero-based list. Any endpoint
-        indexed less than this value is not returned in the final result set and defaults to zero.
+      defaultValue: '0'
+      description: Page number (for pagination). The default is 0 (the first page).
       isArray: false
-      name: search_from
+      name: page
       required: false
       secret: false
     - default: false
-      description: |-
-        An integer representing the end offset within the result set after which you do not want endpoints returned.
-        Endpoint in the endpoint list that are indexed higher than this value are not returned in the final results set. Defaults to zero, which returns all endpoints to the end of the list.
+      defaultValue: '30'
+      description: Maximum number of incidents to return per page. The default and
+        maximum is 30.
       isArray: false
-      name: search_to
+      name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
+      description: Sort endpoints by first_seen or last_seen
       isArray: false
-      name: sort_by_first_seen
+      name: sort_by
       predefined:
-      - ascending
-      - descending
+      - first_seen
+      - last_seen
       required: false
       secret: false
-    - default: false
-      description: ascending,descending
+    - auto: PREDEFINED
+      default: false
+      defaultValue: asc
+      description: Sort order asc (ascending) or desc( descending). Default set to
+        asc
       isArray: false
-      name: sort_by_last_see
+      name: sort_order
+      predefined:
+      - asc
+      - desc
       required: false
       secret: false
     deprecated: false
@@ -716,11 +721,243 @@ script:
     execution: false
     name: xdr-get-distribution-url
     outputs:
-    - contextPath: PaloAltoNetwoks_XDR.DistributionURL
+    - contextPath: PaloAltoNetwoksXDR.DistributionURL
+      type: String
+  - arguments:
+    - default: false
+      description: User’s email address
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      description: Type of audit log
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: Subtype of audit log
+      isArray: false
+      name: sub_type
+      required: false
+      secret: false
+    - default: false
+      description: Result type
+      isArray: false
+      name: result
+      required: false
+      secret: false
+    - default: false
+      description: "Return logs that their timestamp is greater than 'log_time_after'.\n\
+        Examples: \n\"1 hour\"\n\"2 days\""
+      isArray: false
+      name: timestamp_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return logs that their timestamp is lesser than 'log_time_after'.
+        Examples:
+        "1 hour"
+        "2 days"
+      isArray: false
+      name: timestamp_lte
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page number (for pagination). The default is 0 (the first page).
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Maximum number of audit logs to return per page. The default and
+        maximum is 30.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Identifies the sort order for the result set. By default the sort
+        is defined as creation-time and DESC.
+      isArray: false
+      name: sort_by
+      predefined:
+      - type
+      - sub_type
+      - result
+      - timestamp
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: desc
+      description: 'Default set to DESC. '
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    deprecated: false
+    description: Get management logs. Filtering by multiple fields will be concatenated
+      using AND condition (OR is not supported). Maximum result set size is 100. Offset
+      is the zero-based number of management logs from the start of the result set
+      (start by counting from 0).
+    execution: false
+    name: xdr-get-audit-management-logs
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ID
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_OWNER_NAME
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_OWNER_EMAIL
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ASSET_JSON
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ASSET_NAMES
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_HOSTNAME
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_RESULT
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_REASON
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_DESCRIPTION
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_CASE_ID
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_INSERT_TIME
+      type: Date
+  - arguments:
+    - default: false
+      description: list of endpoint ids (could be comma separated)
+      isArray: true
+      name: endpoint_ids
+      required: false
+      secret: false
+    - default: false
+      description: list of endpoint names (could be comma separated)
+      isArray: true
+      name: endpoint_names
+      required: false
+      secret: false
+    - default: false
+      description: Type of report
+      isArray: true
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: Subtype of report
+      isArray: true
+      name: sub_type
+      required: false
+      secret: false
+    - default: false
+      description: Result type
+      isArray: true
+      name: result
+      required: false
+      secret: false
+    - default: false
+      description: "Return logs that their timestamp is greater than 'log_time_after'.\n\
+        Examples: \n\"1 hour\"\n\"2 days\""
+      isArray: false
+      name: timestamp_gte
+      required: false
+      secret: false
+    - default: false
+      description: "Return logs that their timestamp is lesser than 'log_time_after'.\n\
+        Examples: \n\"1 hour\"\n\"2 days\""
+      isArray: false
+      name: timestamp_lte
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page number (for pagination). The default is 0 (the first page).
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Limit the number of reports returned. Default set to 30.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: sort_by
+      predefined:
+      - type
+      - category
+      - trapsversion
+      - timestamp
+      - domain
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: asc
+      description: 'A string, either asc (ascending order) or desc (descending order). '
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    deprecated: false
+    description: Get agent event reports. Filtering by multiple fields will be concatenated
+      using AND condition (OR is not supported). Maximum result set size is 100. Offset
+      is the zero-based number of reports from the start of the result set (start
+      by counting from 0).
+    execution: false
+    name: xdr-get-audit-agent-reports
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTID
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTNAME
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditAgentReports.DOMAIN
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditAgentReports.TRAPSVERSION
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditAgentReports.RECEIVEDTIME
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.AuditAgentReports.TIMESTAMP
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.AuditAgentReports.CATEGORY
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditAgentReports.TYPE
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditAgentReports.SUBTYPE
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditAgentReports.RESULT
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditAgentReports.REASON
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AuditAgentReports.DESCRIPTION
       type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
+  subtype: python3
   type: python
 fromversion: 4.1.0
