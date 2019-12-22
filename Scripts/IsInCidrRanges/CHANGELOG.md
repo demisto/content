@@ -1,5 +1,5 @@
 ## [Unreleased]
-Improved implementation of script filters.
+Improved implementation of script.
 
 ## [19.11.0] - 2019-11-12
 #### New Script
