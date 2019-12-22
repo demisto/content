@@ -10,9 +10,6 @@ from tempfile import mkdtemp
 import shutil
 
 
-dir_path = mkdtemp()
-
-
 def main(dir_path):
     args = demisto.args()  # type: dict
     file_entry_id = ''
@@ -120,6 +117,7 @@ def main(dir_path):
 
 
 if __name__ in ('__builtin__', 'builtins'):
+    dir_path = mkdtemp()
     try:
         main(dir_path)
     except Exception as e:
