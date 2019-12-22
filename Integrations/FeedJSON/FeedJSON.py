@@ -47,8 +47,8 @@ class Client:
                     - region
                     - service
         """
-        self.extractor = extractor
-        self.indicator = indicator
+        self.extractor = extractor or '@'
+        self.indicator = indicator or 'indicator'
         self.fields = argToList(fields)
 
         # Request related attributes
@@ -57,16 +57,18 @@ class Client:
         self.auth = (credentials.get('username'), credentials.get('password'))
 
         # Hidden params
-        self.source_name = source_name
+        self.source_name = source_name or 'json'
         self.headers = headers
         self.cert = (cert_file, key_file) if cert_file and key_file else None
 
-    def _get_request_attr(self):
-        unrelated_attr = ['source_name', 'indicator', 'extractor', 'fields']
-        return {key: value for key, value in vars(self).items() if value and key not in unrelated_attr}
-
     def build_iterator(self) -> List:
-        r = requests.get(**self._get_request_attr())
+        r = requests.get(
+            url=self.url,
+            verify=self.verify,
+            auth=self.auth,
+            cert=self.cert,
+            headers=self.headers
+        )
 
         try:
             r.raise_for_status()
@@ -107,13 +109,10 @@ def fetch_indicators_command(client: Client, indicator_type: str) -> List[Dict]:
 
 
 def main():
-    # handle parameters (remove None values)
-    params = {param: value for param, value in demisto.params().items() if value is not None}
-
     # handle proxy settings
     handle_proxy()
 
-    client = Client(**params)
+    client = Client(**demisto.params())
 
     demisto.info(f'Command being called is {demisto.command()}')
     try:
@@ -122,8 +121,7 @@ def main():
             return_outputs(readable_output, outputs, raw_response)
 
         elif demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, params['indicator_type'])
-            # we submit the indicators in batches
+            indicators = fetch_indicators_command(client, demisto.params()['indicator_type'])
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
 
