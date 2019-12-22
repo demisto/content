@@ -686,7 +686,7 @@ def get_indicator_type_id(indicator_name: str) -> str:
 
 def advance_search_command():
     args = demisto.args()
-    limit = args.get('limit')
+    limit = args.get('limit', 10)
     query = args.get('query')
     indicator_type = args.get('indicator_type')
     search_body = {
