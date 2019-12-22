@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 import uuid
 import json
 import requests
@@ -54,21 +54,6 @@ if DEVICE_GROUP:
         XPATH_OBJECTS = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
 else:
     XPATH_OBJECTS = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/"
-
-# setting template xpath relevant to panorama instances.
-if demisto.args() and demisto.args().get('template', None):
-    TEMPLATE = demisto.args().get('template')
-else:
-    TEMPLATE = demisto.params().get('template', None)
-if TEMPLATE:
-    if not DEVICE_GROUP or VSYS:
-        return_error('Template is only relevant for Panorama instances.')
-# setting network xpath relevant to FW or panorama management
-if DEVICE_GROUP:
-    XPATH_NETWORK = f'/config/devices/entry[@name=\'localhost.localdomain\']/template/entry[@name=\'{TEMPLATE}\']' \
-                    f'/config/devices/entry[@name=\'localhost.localdomain\']/network'
-else:
-    XPATH_NETWORK = "/config/devices/entry[@name='localhost.localdomain']/network"
 
 # Security rule arguments for output handling
 SECURITY_RULE_ARGS = {
@@ -273,6 +258,23 @@ def add_argument_target(arg: Optional[str], field_name: str) -> str:
         return ''
 
 
+def set_xpath_network(template: str = None) -> Tuple[str, Optional[str]]:
+    """
+    Setting template xpath relevant to panorama instances.
+    """
+    if not DEVICE_GROUP or VSYS:
+        return_error('Template is only relevant for Panorama instances.')
+    if not template:
+        template = demisto.params().get('template', None)
+    # setting network xpath relevant to FW or panorama management
+    if DEVICE_GROUP:
+        xpath_network = f'/config/devices/entry[@name=\'localhost.localdomain\']/template/entry[@name=\'{template}\']' \
+                        f'/config/devices/entry[@name=\'localhost.localdomain\']/network'
+    else:
+        xpath_network = "/config/devices/entry[@name='localhost.localdomain']/network"
+    return xpath_network, template
+
+
 def prepare_security_rule_params(api_action: str = None, rulename: str = None, source: str = None,
                                  destination: str = None, negate_source: str = None, negate_destination: str = None,
                                  action: str = None, service: str = None, disable: str = None, application: str = None,
@@ -361,8 +363,9 @@ def panorama_test():
     if DEVICE_GROUP and DEVICE_GROUP != 'shared':
         device_group_test()
 
-    if TEMPLATE:
-        template_test()
+    _, template = set_xpath_network()
+    if template:
+        template_test(template)
 
     demisto.results('ok')
 
@@ -435,13 +438,13 @@ def get_templates_names():
     return template_names
 
 
-def template_test():
+def template_test(template):
     """
     Test module for the Template specified
     """
     template_names = get_templates_names()
-    if TEMPLATE not in template_names:
-        return_error(f'Template: {TEMPLATE} does not exist.'
+    if template not in template_names:
+        return_error(f'Template: {template} does not exist.'
                      f' The available Templates for this instance: {", ".join(template_names)}.')
 
 
@@ -4192,7 +4195,7 @@ def panorama_security_policy_match_command():
 ''' Static Routes'''
 
 
-def prettify_static_route(static_route: Dict, virtual_router: str) -> Dict[str, str]:
+def prettify_static_route(static_route: Dict, virtual_router: str, template: Optional[str] = None) -> Dict[str, str]:
     pretty_static_route: Dict = {}
 
     if '@name' in static_route:
@@ -4224,30 +4227,30 @@ def prettify_static_route(static_route: Dict, virtual_router: str) -> Dict[str, 
         else:  # route table is no-install
             pretty_static_route['RouteTable'] = 'No install'
     pretty_static_route['VirtualRouter'] = virtual_router
-    if TEMPLATE:
-        pretty_static_route['Template'] = TEMPLATE
+    if template:
+        pretty_static_route['Template'] = template
 
     return pretty_static_route
 
 
-def prettify_static_routes(static_routes, virtual_router: str):
+def prettify_static_routes(static_routes, virtual_router: str, template: Optional[str] = None):
     if not isinstance(static_routes, list):  # handle case of only one static route in a virtual router
-        return prettify_static_route(static_routes, virtual_router)
+        return prettify_static_route(static_routes, virtual_router, template)
 
     pretty_static_route_arr = []
     for static_route in static_routes:
-        pretty_static_route = prettify_static_route(static_route, virtual_router)
+        pretty_static_route = prettify_static_route(static_route, virtual_router, template)
         pretty_static_route_arr.append(pretty_static_route)
 
     return pretty_static_route_arr
 
 
 @logger
-def panorama_list_static_routes(virtual_router: str) -> Dict[str, str]:
+def panorama_list_static_routes(xpath_network: str, virtual_router: str) -> Dict[str, str]:
     params = {
         'action': 'show',
         'type': 'config',
-        'xpath': f'{XPATH_NETWORK}/virtual-router/entry[@name=\'{virtual_router}\']/routing-table/ip/static-route',
+        'xpath': f'{xpath_network}/virtual-router/entry[@name=\'{virtual_router}\']/routing-table/ip/static-route',
         'key': API_KEY
     }
     result = http_request(URL, 'GET', params=params)
@@ -4258,14 +4261,16 @@ def panorama_list_static_routes_command():
     """
     List all static routes of a virtual Router
     """
+    template = demisto.args().get('template')
+    xpath_network, template = set_xpath_network(template)
     virtual_router = demisto.args()['virtual_router']
-    virtual_router_object = panorama_list_static_routes(virtual_router)
+    virtual_router_object = panorama_list_static_routes(xpath_network, virtual_router)
 
     if 'static-route' not in virtual_router_object or 'entry' not in virtual_router_object['static-route']:
         human_readable = 'The Virtual Router has does not exist or has no static routes configured.'
         static_routes = virtual_router_object
     else:
-        static_routes = prettify_static_routes(virtual_router_object['static-route']['entry'], virtual_router)
+        static_routes = prettify_static_routes(virtual_router_object['static-route']['entry'], virtual_router, template)
         table_header = f'Displaying all Static Routes for the Virtual Router: {virtual_router}'
         headers = ['Name', 'Destination', 'NextHop', 'RouteTable', 'Metric', 'BFDprofile']
         human_readable = tableToMarkdown(name=table_header, t=static_routes, headers=headers, removeNull=True)
@@ -4281,11 +4286,11 @@ def panorama_list_static_routes_command():
 
 
 @logger
-def panorama_get_static_route(virtual_router: str, static_route_name: str) -> Dict[str, str]:
+def panorama_get_static_route(xpath_network: str, virtual_router: str, static_route_name: str) -> Dict[str, str]:
     params = {
         'action': 'get',
         'type': 'config',
-        'xpath': f'{XPATH_NETWORK}/virtual-router/entry[@name=\'{virtual_router}\']/routing-table/ip/'
+        'xpath': f'{xpath_network}/virtual-router/entry[@name=\'{virtual_router}\']/routing-table/ip/'
                  f'static-route/entry[@name=\'{static_route_name}\']',
         'key': API_KEY
     }
@@ -4297,12 +4302,14 @@ def panorama_get_static_route_command():
     """
     Get a static route of a virtual router
     """
+    template = demisto.args().get('template')
+    xpath_network, template = set_xpath_network(template)
     virtual_router = demisto.args()['virtual_router']
     static_route_name = demisto.args()['static_route']
-    static_route_object = panorama_get_static_route(virtual_router, static_route_name)
+    static_route_object = panorama_get_static_route(xpath_network, virtual_router, static_route_name)
     if '@count' in static_route_object and int(static_route_object['@count']) < 1:
         return_error('Static route does not exist.')
-    static_route = prettify_static_route(static_route_object['entry'], virtual_router)
+    static_route = prettify_static_route(static_route_object['entry'], virtual_router, template)
     table_header = f'Static route: {static_route_name}'
 
     demisto.results({
@@ -4318,13 +4325,14 @@ def panorama_get_static_route_command():
 
 
 @logger
-def panorama_add_static_route(virtual_router: str, static_route_name: str, destination: str, nexthop_type: str,
-                              nexthop_value: str, interface: str = None, metric: str = None) -> Dict[str, str]:
+def panorama_add_static_route(xpath_network: str, virtual_router: str, static_route_name: str, destination: str,
+                              nexthop_type: str, nexthop_value: str, interface: str = None,
+                              metric: str = None) -> Dict[str, str]:
     params = {
         'action': 'set',
         'type': 'config',
         'key': API_KEY,
-        'xpath': f'{XPATH_NETWORK}/virtual-router/entry[@name=\'{virtual_router}\']/'
+        'xpath': f'{xpath_network}/virtual-router/entry[@name=\'{virtual_router}\']/'
                 f'routing-table/ip/static-route/entry[@name=\'{static_route_name}\']',
         'element': f'<destination>{destination}</destination>'
                    f'<nexthop><{nexthop_type}>{nexthop_value}</{nexthop_type}></nexthop>'
@@ -4342,6 +4350,8 @@ def panorama_add_static_route_command():
     """
     Add a Static Route
     """
+    template = demisto.args().get('template')
+    xpath_network, template = set_xpath_network(template)
     virtual_router = demisto.args().get('virtual_router')
     static_route_name = demisto.args().get('static_route')
     destination = demisto.args().get('destination')
@@ -4353,10 +4363,11 @@ def panorama_add_static_route_command():
     if nexthop_type == 'fqdn' and DEVICE_GROUP:
         # Only from PAN-OS 9.X, creating a static route based on FQDN nexthop is available.
         major_version = get_pan_os_major_version()
+
         if major_version <= 8:
             return_error('Next Hop of type FQDN is only available for PAN_OS Panorama 9.X instances.')
-    static_route = panorama_add_static_route(virtual_router, static_route_name, destination, nexthop_type,
-                                             nexthop_value, interface, metric)
+    static_route = panorama_add_static_route(xpath_network, virtual_router, static_route_name, destination,
+                                             nexthop_type, nexthop_value, interface, metric)
     human_readable = f'New uncommitted static route {static_route_name} configuration added.'
     entry_context = {
         'Name': static_route_name,
@@ -4368,6 +4379,8 @@ def panorama_add_static_route_command():
         entry_context['Interface'] = interface
     if metric:
         entry_context['Metric'] = metric
+    if template:
+        entry_context['Template'] = template
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -4380,11 +4393,11 @@ def panorama_add_static_route_command():
 
 
 @logger
-def panorama_delete_static_route(virtual_router: str, route_name: str) -> Dict[str, str]:
+def panorama_delete_static_route(xpath_network: str, virtual_router: str, route_name: str) -> Dict[str, str]:
     params = {
         'action': 'delete',
         'type': 'config',
-        'xpath': f'{XPATH_NETWORK}/virtual-router/entry[@name=\'{virtual_router}\']/'
+        'xpath': f'{xpath_network}/virtual-router/entry[@name=\'{virtual_router}\']/'
                  f'routing-table/ip/static-route/entry[@name=\'{route_name}\']',
         'key': API_KEY
     }
@@ -4396,9 +4409,11 @@ def panorama_delete_static_route_command():
     """
     Delete a Static Route
     """
+    template = demisto.args().get('template')
+    xpath_network, template = set_xpath_network(template)
     virtual_router = demisto.args()['virtual_router']
     route_name = demisto.args()['route_name']
-    deleted_static_route = panorama_delete_static_route(virtual_router, route_name)
+    deleted_static_route = panorama_delete_static_route(xpath_network, virtual_router, route_name)
     entry_context = {
         'Name': route_name,
         'Deleted': True
