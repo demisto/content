@@ -114,8 +114,8 @@
             "playbookID": "TestUptycs"
         },
         {
-            "integrations": "Uptycs",
-            "playbookID": "TestUptycs"
+            "integrations": "ThreatX",
+            "playbookID": "ThreatX-test"
         },
         {
             "integrations": "Akamai WAF SIEM",

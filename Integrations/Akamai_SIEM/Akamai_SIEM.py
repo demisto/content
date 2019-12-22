@@ -238,6 +238,7 @@ def test_module_command(client: Client) -> Tuple[None, None, str]:
     Raises:
         DemistoException: If test failed.
     """
+    # Test on the following date Monday, 6 March 2017 16:07:22
     events, offset = client.get_events(config_ids=demisto.params().get('configIds'),
                                        from_epoch='1488816442',
                                        limit='1')
@@ -292,7 +293,7 @@ def fetch_incidents_command(
 
 
 def get_events_command(client: Client, config_ids: str, offset: Optional[str] = None, limit: Optional[str] = None,
-                       from_epoch: Optional[str] = None, to_epoch: Optional[str] = None, period: Optional[str] = None) \
+                       from_epoch: Optional[str] = None, to_epoch: Optional[str] = None, time_stamp: Optional[str] = None) \
         -> Tuple[object, dict, Union[List, Dict]]:
     """
         Get security events from Akamai WAF service
@@ -313,18 +314,18 @@ def get_events_command(client: Client, config_ids: str, offset: Optional[str] = 
                time-based modes. The default limit is 10000. Expect requests to return a slightly higher number of
                security events than you set in the limit parameter, because data is stored in different buckets.
         from_epoch: The start of a specified time range, expressed in Unix epoch seconds.
-                    This is a required parameter to get time-based results for a set period, and you can’t use it in
+                    This is a required parameter to get time-based results for a set time_stamp, and you can’t use it in
                     offset mode.
         to_epoch: The end of a specified time range, expressed in Unix epoch seconds. You can’t use this parameter in
                   offset mode and it’s an optional parameter in time-based mode. If omitted, the value defaults to the
                   current time.
-        period: timestamp (<number> <time unit>, e.g., 12 hours, 7 days of events
+        time_stamp: timestamp (<number> <time unit>, e.g., 12 hours, 7 days of events
 
     Returns:
         Human readable, entry context, raw response
     """
-    if period:
-        from_epoch, to_epoch = parse_date_range(date_range=period,
+    if time_stamp:
+        from_epoch, to_epoch = parse_date_range(date_range=time_stamp,
                                                 date_format="%s")
     raw_response, offset = client.get_events(config_ids=config_ids,
                                              offset=offset,

@@ -3,8 +3,8 @@ commonfields:
   id: Akamai WAF SIEM
   version: -1
 configuration:
-- defaultvalue: https://akab-hnanog6ge5or6biz-ukavvo4zvqliqhlw.cloudsecurity.akamaiapis.net
-  display: Server URL (e.g., https://example.net)
+- defaultvalue: https://akaa-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net
+  display: Server URL (e.g., https://akaa-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net)
   name: host
   required: true
   type: 0
@@ -29,7 +29,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 1 hour
+- defaultvalue: 1 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetchTime
   required: false
@@ -89,9 +89,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Period timestamp of events (<number> <time unit>. For example, 12 hours, 7 days.
+      description: Timestamp of events (<number> <time unit>. For example, 12 hours, 7 days.
       isArray: false
-      name: period
+      name: time_stamp
       required: false
       secret: false
     deprecated: false
