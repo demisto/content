@@ -92,10 +92,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: a05186b5-0a8b-41ca-8f55-a8daf6824e76
+    taskid: 3f8777ec-682c-4834-8efc-0e9e7b7b1cf4
     type: regular
     task:
-      id: a05186b5-0a8b-41ca-8f55-a8daf6824e76
+      id: 3f8777ec-682c-4834-8efc-0e9e7b7b1cf4
       version: -1
       name: infoblox-list-response-policy-zone-rules
       description: List all response policy rules that belongs to the given response
@@ -109,7 +109,7 @@ tasks:
       - "8"
     scriptarguments:
       next_page_id:
-        simple: ${Infoblox.ListResponsePolicyZoneRules.Pages.NextPageID}
+        simple: ${Infoblox.RulesNextPage.NextPageID}
       page_size: {}
       response_policy_zone_name: {}
     separatecontext: false
@@ -136,6 +136,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "32"
     scriptarguments:
       ip:
         simple: ${Infoblox.IP.IpAddress}
@@ -218,10 +221,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: d93ead0c-039e-4e4e-8a49-155c6254bdb9
+    taskid: b3072bea-f68e-4426-8ef5-ee20a49e5184
     type: regular
     task:
-      id: d93ead0c-039e-4e4e-8a49-155c6254bdb9
+      id: b3072bea-f68e-4426-8ef5-ee20a49e5184
       version: -1
       name: infoblox-search-rule
       description: Search a specific rule by its name.
@@ -236,7 +239,7 @@ tasks:
       object_type:
         complex:
           root: Infoblox
-          accessor: ListResponsePolicyZoneRules.List
+          accessor: ResponsePolicyZoneRulesList
           transformers:
           - operator: atIndex
             args:
@@ -259,7 +262,7 @@ tasks:
                 value:
                   simple: ','
       rule_name:
-        simple: ${Infoblox.ListResponsePolicyZoneRules.List.[0].Name}.${Infoblox.ListResponsePolicyZoneRules.List.[0].Zone}
+        simple: ${Infoblox.ResponsePolicyZoneRulesList.[0].Name}.${Infoblox.ResponsePolicyZoneRulesList.[0].Zone}
     separatecontext: false
     view: |-
       {
@@ -273,10 +276,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 93d31c8b-b961-4f55-8baa-35180f7d4c05
+    taskid: 7309fe32-d2e0-4ab7-882f-7004e3772f30
     type: regular
     task:
-      id: 93d31c8b-b961-4f55-8baa-35180f7d4c05
+      id: 7309fe32-d2e0-4ab7-882f-7004e3772f30
       version: -1
       name: infoblox-get-object-fields
       description: Use this command the retrieve object field names to be used later
@@ -292,7 +295,7 @@ tasks:
       object_type:
         complex:
           root: Infoblox
-          accessor: ListResponsePolicyZoneRules.List
+          accessor: ResponsePolicyZoneRulesList
           transformers:
           - operator: atIndex
             args:
@@ -873,10 +876,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 13c82991-177e-460d-8f6a-2f32f36c96bf
+    taskid: b2c694ef-c8ba-49ac-87af-849de9d9442a
     type: regular
     task:
-      id: 13c82991-177e-460d-8f6a-2f32f36c96bf
+      id: b2c694ef-c8ba-49ac-87af-849de9d9442a
       version: -1
       name: infoblox-delete-rpz-rule
       description: Delete a rule
@@ -1028,6 +1031,70 @@ tasks:
         "position": {
           "x": 3920,
           "y": 1805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 3c756bd5-154b-4755-8b9c-17be684deec5
+    type: regular
+    task:
+      id: 3c756bd5-154b-4755-8b9c-17be684deec5
+      version: -1
+      name: infoblox-delete-response-policy-zone
+      description: Delete a given response policy zone.
+      script: Infoblox|||infoblox-delete-response-policy-zone
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.ResponsePolicyZones(val.FQDN == 'infonlox.nightly.tpb.com').ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2415,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 29a1fdcc-0c7a-48b9-8438-e13f1cd86247
+    type: regular
+    task:
+      id: 29a1fdcc-0c7a-48b9-8438-e13f1cd86247
+      version: -1
+      name: infoblox-create-response-policy-zone
+      description: Create response policy zone.
+      script: Infoblox|||infoblox-create-response-policy-zone
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      FQDN:
+        simple: infonlox.nightly.tpb.com
+      rpz_policy:
+        simple: DISABLED
+      rpz_severity:
+        simple: INFORMATIONAL
+      rpz_type:
+        simple: FEED
+      substitute_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2415,
+          "y": 720
         }
       }
     note: false

@@ -9,7 +9,6 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 INTEGRATION_NAME = 'Infoblox Integration'
 INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
@@ -411,12 +410,13 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     zone_name = zone.capitalize() if zone else fixed_keys_rule_list[0].get('Name')
     title = f'{INTEGRATION_NAME} - Zone: {zone_name} rule list.'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRulesList.(val.Name && val.Name === obj.Name)': fixed_keys_rule_list
+        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRulesList(val.Name && val.Name === obj.Name)':
+            fixed_keys_rule_list
     }
     if new_next_page_id:
         context.update({
-            f'{INTEGRATION_CONTEXT_NAME}.NextPage(true)':
-            {'NextPageID': new_next_page_id, 'a': 'a'}
+            f'{INTEGRATION_CONTEXT_NAME}.RulesNextPage(val.NextPageID !== obj.NextPageID)': {
+                'NextPageID': new_next_page_id}
         })
     human_readable = tableToMarkdown(title, fixed_keys_rule_list,
                                      headerTransform=pascalToSpace)
