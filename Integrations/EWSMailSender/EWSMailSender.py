@@ -104,7 +104,6 @@ def exchangelib_cleanup():
         demisto.error("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
 
 
-
 def get_account(account_email):
     return Account(
         primary_smtp_address=account_email, autodiscover=False, config=config, access_type=ACCESS_TYPE,
