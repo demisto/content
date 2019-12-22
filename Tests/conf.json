@@ -73,10 +73,13 @@
             "playbookID": "PhishlabsIOC_EIR-Test"
         },
         {
+            "integrations": "PhishLabs IOC DRP",
+            "playbookID": "PhishlabsIOC_DRP-Test"
+        },
+        {
             "playbookID": "Create Phishing Classifier V2 ML Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
-
         },
         {
             "integrations": "ZeroFox",
@@ -113,6 +116,10 @@
         {
             "integrations": "ThreatX",
             "playbookID": "ThreatX-test"
+        },
+        {
+            "integrations": "Akamai WAF SIEM",
+            "playbookID": "Akamai_WAF_SIEM-Test"
         },
         {
             "integrations": "AlienVault OTX",
@@ -606,6 +613,10 @@
         {
             "integrations": "epo",
             "playbookID": "Test Playbook McAfee ePO"
+        },
+        {
+            "integrations": "McAfee DXL",
+            "playbookID": "McAfee DXL - Test"
         },
         {
             "integrations": "activedir",
@@ -1134,6 +1145,16 @@
             "integrations": "Microsoft Graph Groups",
             "playbookID": "Microsoft Graph Groups - Test",
             "instance_names": "ms_graph_groups_prod"
+        },
+                {
+            "integrations": "Microsoft Graph Calendar",
+            "playbookID": "Microsoft Graph Calendar - Test",
+            "instance_names": "ms_graph_calendar_dev"
+        },
+        {
+            "integrations": "Microsoft Graph Calendar",
+            "playbookID": "Microsoft Graph Calendar - Test",
+            "instance_names": "ms_graph_calendar_prod"
         },
         {
             "integrations": "RedLock",
@@ -1969,6 +1990,10 @@
             "playbookID": "Google-KMS-test"
         },
         {
+            "integrations": "SecBI",
+            "playbookID": "SecBI - Test"
+        },
+        {
             "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         },
         {
@@ -1977,8 +2002,18 @@
           "fromversion": "4.5.0"
         },
         {
+          "integrations": "QRadar",
+          "playbookID": "QRadar Indicator Hunting Test",
+          "timeout": 1200,
+          "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
+        },
+        {
+            "integrations": "Infoblox",
+            "playbookID": "Infoblox Test"
         }
     ],
     "skipped_tests": {

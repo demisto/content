@@ -1,0 +1,185 @@
+id: Akamai_WAF_SIEM-Test
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: Akamai-WAF-SIEM_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8fbb9485-d8b9-4c28-846d-36e89582f7c9
+    type: start
+    task:
+      id: 8fbb9485-d8b9-4c28-846d-36e89582f7c9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "1":
+    id: "1"
+    taskid: 3cd14e16-2976-41a3-8faa-b8e4c8e28f6e
+    type: regular
+    task:
+      id: 3cd14e16-2976-41a3-8faa-b8e4c8e28f6e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "2":
+    id: "2"
+    taskid: 6b20c52a-8bfd-46b1-8c66-d202cd8b4fba
+    type: regular
+    task:
+      id: 6b20c52a-8bfd-46b1-8c66-d202cd8b4fba
+      version: -1
+      name: Command get events
+      description: Get security events from Akamai WAF
+      script: '|||akamai-siem-get-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      config_ids:
+        simple: "50170"
+      from_epoch:
+        simple: "1576602011"
+      limit:
+        simple: "1"
+      offset: {}
+      period: {}
+      to_epoch: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: eeeee1aa-b73b-409e-860d-2b8e02c551f3
+    type: condition
+    task:
+      id: eeeee1aa-b73b-409e-860d-2b8e02c551f3
+      version: -1
+      name: Check get event command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Akamai.SIEM.AttackData
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: "4"
+    taskid: 30e726e1-c9ae-4cd2-8738-95a696e0e08f
+    type: regular
+    task:
+      id: 30e726e1-c9ae-4cd2-8738-95a696e0e08f
+      version: -1
+      name: Fetch incidents
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      add_to_context: {}
+      brand_name:
+        simple: Akamai WAF SIEM
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 905,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
