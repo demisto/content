@@ -6,9 +6,14 @@ import os
 from os.path import isdir
 from os.path import isfile
 from subprocess import Popen, PIPE
+from tempfile import mkdtemp
+import shutil
 
 
-def main():
+dir_path = mkdtemp()
+
+
+def main(dir_path):
     args = demisto.args()  # type: dict
     file_entry_id = ''
     if args.get('fileName') or args.get('lastZipFileInWarroom'):
@@ -66,7 +71,8 @@ def main():
     excluded_files = [f for f in os.listdir('.') if isfile(f)]
     excluded_dirs = [d for d in os.listdir('.') if isdir(d)]
     # extracting the zip file
-    process = Popen(["7z", "x", "-p{}".format(password), file_path], stdout=PIPE, stderr=PIPE)
+    cmd = '7z x -p{} -o{} {}'.format(password, dir_path, file_path)
+    process = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     if stderr:
         return_error(str(stderr))
@@ -96,7 +102,7 @@ def main():
         files_base_names = [os.path.basename(file_path) for file_path in filenames]  # noqa[F812]
         files_dic = {file_path: os.path.basename(file_path) for file_path in filenames}
         for file_path, file_name in files_dic.items():
-            demisto.results(file_result_existing_file(file_path, file_name))
+            demisto.results(fileResult(file_path, file_name))
         results.append(
             {
                 'Type': entryTypes['note'],
@@ -114,4 +120,9 @@ def main():
 
 
 if __name__ in ('__builtin__', 'builtins'):
-    main()
+    try:
+        main(dir_path)
+    except Exception as e:
+        return_error(str(e))
+    finally:
+        shutil.rmtree(dir_path)
