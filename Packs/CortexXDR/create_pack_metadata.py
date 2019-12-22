@@ -119,6 +119,7 @@ def gather_script_tags(pack_path):
 
 def create_pack_metadata(pack_path):
     pack_metdadata = OrderedDict()
+    pack_metdadata['id'] = '##### Fill this in #####'
     pack_metdadata['displayName'] = '##### Fill this in #####'
     pack_metdadata['description'] = '##### Fill this in #####'
     pack_metdadata['updated'] = datetime.strftime(datetime.utcnow(), '%Y-%m-%dT%H:%M:%SZ')
