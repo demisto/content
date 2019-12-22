@@ -715,7 +715,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Limit number of returned results.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -786,7 +786,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Limit number of returned results.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -921,7 +921,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Limit number of returned results.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -1202,9 +1202,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of results to return.
+      description: The maximum number of results to return.
       isArray: false
-      name: number_of_enries_to_fetch
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -1238,9 +1238,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The number of results to return.
+      description: The maximum number of results to return.
       isArray: false
-      name: number_of_enries_to_fetch
+      name: limit
       required: false
       secret: false
     deprecated: false
