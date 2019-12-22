@@ -4434,7 +4434,7 @@ def panorama_delete_static_route_command():
 
 
 def main():
-    LOG('command is %s' % (demisto.command(),))
+    LOG(f'Command being called is: {demisto.command()}')
 
     try:
         # Remove proxy if not set to true in params
