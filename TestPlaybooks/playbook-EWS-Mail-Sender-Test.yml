@@ -164,7 +164,7 @@ tasks:
       htmlBody: {}
       replyTo: {}
       subject:
-        simple: Bad Email That fials
+        simple: Bad Email That Fails
       to:
         simple: buildtests@demisto.int
     continueonerror: true
