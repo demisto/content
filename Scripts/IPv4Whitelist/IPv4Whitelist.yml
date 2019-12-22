@@ -23,7 +23,7 @@ args:
   isArray: true
 scripttarget: 0
 runonce: false
-dockerimage: demisto/netaddr:latest
+dockerimage: demisto/netutils:1.0.0.5165
 runas: DBotWeakRole
 tests:
   - No test - unit test
