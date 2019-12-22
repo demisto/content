@@ -94,6 +94,7 @@ def get_access_token():
             return access_token
     headers = {'Accept': 'application/json'}
     headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
+    headers['X-Branch-Name'] = CONTENT_BRANCH_NAME
     headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
 
     dbot_response = requests.post(
