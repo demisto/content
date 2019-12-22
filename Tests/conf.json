@@ -80,7 +80,6 @@
             "playbookID": "Create Phishing Classifier V2 ML Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
-
         },
         {
             "integrations": "ZeroFox",
@@ -117,6 +116,10 @@
         {
             "integrations": "ThreatX",
             "playbookID": "ThreatX-test"
+        },
+        {
+            "integrations": "Akamai WAF SIEM",
+            "playbookID": "Akamai_WAF_SIEM-Test"
         },
         {
             "integrations": "AlienVault OTX",
