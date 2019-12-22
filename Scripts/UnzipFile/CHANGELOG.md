@@ -1,4 +1,5 @@
 ## [Unreleased]
+Fixed an issue where file size returned 0. 
 
 
 ## [19.12.0] - 2019-12-10
