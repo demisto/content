@@ -59,37 +59,44 @@ The following example shows how we use both **First Run** and the **Query** opti
 Incidents are created by building an array of incident objects. These object all must contain the ```name``` of the incident, when the incident ```occurred``` as well as the ```rawJSON``` for the incident.
 
 ```python
-    # convert the events to demisto incident 
-    incidents = []
-    for event in events:
-        incident = {
-            'name': event['name'],        # name is required field, must be set
-            'occurred': event['create_time'], # occurred is optional date
-            'rawJSON': json.dumps(event)  # set the original event to rawJSON, this will allow mapping of the event. Don't forget to `json.dumps`
-        }
-        incident.append(incident)
+# convert the events to demisto incident 
+events = [
+  {
+      'name': 'event_1',
+      'create_time': '2019-10-23T10:11:00Z',
+      'event_id': 100
+  }
+]
+    
+incidents = []
+for event in events:
+    incident = {
+        'name': event['name'],        # name is required field, must be set
+        'occurred': event['create_time'], # must be string of a format ISO8601
+        'rawJSON': json.dumps(event)  # the original event, this will allow mapping of the event in the mapping stage. Don't forget to `json.dumps`
+    }
+    incident.append(incident)
 ```
 
 ### rawJSON
-When fetching incidents, it's important to include the ```rawJson``` key in the incident field, which enables event mapping. Mapping is how an event gets imported into Demisto, since it allows a customer to choose which data from the event to be mapped to their proper fields. An example of this is below:
+When fetching incidents, it's important to include the ```rawJSON``` key in the incident field, which enables event mapping. Mapping is how an event gets imported into Demisto, since it allows a customer to choose which data from the event to be mapped to their proper fields. An example of this is below:
 
 ```python
-        incident = {
-            'name': event['name'],        # name is required field, must be set
-            'occurred': event['create_time'], # occurred is optional date
-            'rawJSON': json.dumps(event)  # set the original event to rawJSON, this will allow mapping of the event. Don't forget to `json.dumps`
-        }
+incident = {
+    'name': event['name'],        # name is required field, must be set
+    'occurred': '2019-10-23T10:00:00Z', # occurred is optional date - must be string of a format ISO8601
+    'rawJSON': json.dumps(event)  # set the original event to rawJSON, this will allow mapping of the event. Don't forget to `json.dumps`
+}
 ```
-
 
 ### Setting Last Run
 When the last of the events have been retrieved, we need to save the new last run time to the integration context. This timestamp will be used the next time the ```fetch-incidents``` function is run.
 When setting the last run object, it's important to know that the values of the dictionairy must be of type `string`.
 
 ```python
-    demisto.setLastRun({
-        'start_time': datetime.now()
-    })
+demisto.setLastRun({
+  'start_time': datetime.now()
+})
 ```
 ## Sending the Incidents to Demisto
 When all of the incidents have been created, we return the array of incidents by using the ```demisto.incidents()``` function. This is similar to the ```demisto.results()``` function, but is used exclusively to handle incident objects.
@@ -97,6 +104,11 @@ When all of the incidents have been created, we return the array of incidents by
 An example of it's usage is below:
 
 ```python
-    # this command will create incidents in Demisto
-    demisto.incidents(incidents)
+# this command will create incidents in Demisto
+demisto.incidents(incidents)
 ```
+
+## Troubleshooting
+For troubleshooting fetch-incident execute `!integration_instance_name-fetch` in the Playground, it should return the incidents <br>
+<img src="https://user-images.githubusercontent.com/7270217/70272523-0f34f300-17b1-11ea-89a0-e4e0e359f614.png" width="480">
+
