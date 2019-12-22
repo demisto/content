@@ -4,7 +4,7 @@ commonfields:
 name: Flashpoint
 display: Flashpoint
 category: Data Enrichment & Threat Intelligence
-description: Use flashpoint integration for reduced business risk.
+description: Use the Flashpoint integration to reduce business risk.
 configuration:
 - display: URL
   name: url
@@ -35,7 +35,7 @@ script:
     - name: ip
       default: true
       required: false
-      description: The IP to check whether it is malicious or suspicious.
+      description: The IP address to check.
       isArray: true
     outputs:
     - contextPath: DBotScore.Indicator
@@ -51,43 +51,44 @@ script:
       description: The vendor used to calculate the score.
       type: string
     - contextPath: IP.Address
-      description: IP address
+      description: The IP address.
       type: string
     - contextPath: IP.Malicious.Description
-      description: Description of malicious ip.
+      description: The description of the malicious indicator.
       type: string
     - contextPath: IP.Malicious.Vendor
-      description: Vandor of malicious ip.
+      description: The vendor used to calculate the severity of the IP address.
       type: string
     - contextPath: Flashpoint.IP.Event.Href
-      description: List of reference link of the indicator
+      description: A list of reference links of the indicator.
       type: string
     - contextPath: Flashpoint.IP.Event.Address
-      description: IP address of the indicator
+      description: The IP address of the indicator.
       type: string
     - contextPath: Flashpoint.IP.Event.EventDetails
-      description: Event details in which the indicator observed
+      description: The event details in which the indicator was observed.
+      type: string
     - contextPath: Flashpoint.IP.Event.Category
-      description: Category of the indicator
+      description: The category of the indicator.
       type: string
     - contextPath: Flashpoint.IP.Event.Fpid
-      description: Fp-id of the indicator
+      description: The Flashpoint ID of the indicator.
       type: string
     - contextPath: Flashpoint.IP.Event.Timestamp
-      description: Time at which indicaor observed
+      description: The time and date that the indicator was observed.
       type: string
     - contextPath: Flashpoint.IP.Event.Type
-      description: Type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: Flashpoint.IP.Event.Uuid
-      description: uuid of the indicator
+      description: The UUID of the indicator.
       type: string
     - contextPath: Flashpoint.IP.Event.Comment
-      description: Comment which was provided when the indicator was observed
+      description: The comment that was provided when the indicator was observed.
       type: string
-    description: Lookup the "IP" type indicator details. The reputation of IP is considered Malicious 
-      if there's at least one IOC event in Flashpoint database matching the IP indicator. 
-      Alternately the IP address is considered Suspicious if it matches with any one of the Torrent's Peer IP Address or Forum Visit's Peer IP Address.
+    description: Looks up details of an IP indicator. The reputation of the IP address is considered malicious 
+      if there's at least one IOC event in the Flashpoint database that matches the IP indicator. 
+      Alternatively, the IP address is considered suspicious if it matches any one of the Torrent's Peer IP Address or Forum Visit's Peer IP Address.
   - name: domain
     arguments:
     - name: domain
@@ -109,33 +110,34 @@ script:
       description: The vendor used to calculate the score.
       type: string
     - contextPath: Flashpoint.Domain.Event.Href
-      description: List of reference link of the indicator
+      description: A list of reference links of the indicator.
       type: string
     - contextPath: Flashpoint.Domain.Event.Domain
-      description: Domain of the indicator
+      description: The domain of the indicator.
       type: string
     - contextPath: Flashpoint.Domain.Event.EventDetails
-      description: Event details in which the indicator observed
+      description: The event details in which the indicator was observed.
+      type: string
     - contextPath: Flashpoint.Domain.Event.Category
-      description: Category of the indicator
+      description: The category of the indicator.
       type: string
     - contextPath: Flashpoint.Domain.Event.Fpid
-      description: Fp-id of the indicator
+      description: The Flashpoint ID of the indicator.
       type: string
     - contextPath: Flashpoint.Domain.Event.Timestamp
-      description: Time at which indicaor observed
+      description: The time and date that the indicator was observed.
       type: string
     - contextPath: Flashpoint.Domain.Event.Type
-      description: Type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: Flashpoint.Domain.Event.Uuid
-      description: uuid of the indicator
+      description: The UUID of the indicator.
       type: string
     - contextPath: Flashpoint.Domain.Event.Comment
-      description: Comment which was provided when the indicator was observed
+      description: The comment that was provided when the indicator was observed.
       type: string
     - contextPath: Domain.Malicious.Description
-      description: Description of malicious indicator.
+      description: The description of the malicious indicator.
       type: string
     - contextPath: Domain.Malicious.Vendor
       description: Vendor of malicious indicator.
@@ -166,30 +168,31 @@ script:
       description: The vendor used to calculate the score.
       type: string
     - contextPath: Flashpoint.Filename.Event.Href
-      description: List of reference link of the indicator
+      description: A list of reference links of the indicator.
       type: string
     - contextPath: Flashpoint.Filename.Event.Filename
       description: Filename of the indicator
       type: string
     - contextPath: Flashpoint.Filename.Event.EventDetails
-      description: Event details in which the indicator observed
+      description: The event details in which the indicator was observed.
+      type: string
     - contextPath: Flashpoint.Filename.Event.Category
-      description: Category of the indicator
+      description: The category of the indicator.
       type: string
     - contextPath: Flashpoint.Filename.Event.Fpid
-      description: Fp-id of the indicator
+      description: The Flashpoint ID of the indicator.
       type: string
     - contextPath: Flashpoint.Filename.Event.Timestamp
-      description: Time at which indicaor observed
+      description: The time and date that the indicator was observed.
       type: string
     - contextPath: Flashpoint.Filename.Event.Type
-      description: Type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: Flashpoint.Filename.Event.Uuid
-      description: uuid of the indicator
+      description: The UUID of the indicator.
       type: string
     - contextPath: Flashpoint.Filename.Event.Comment
-      description: Comment which was provided when the indicator was observed
+      description: The comment that was provided when the indicator was observed.
       type: string
     description: Lookup the "Filename" type indicator details. The reputation of Filename is considered Malicious 
       if there's at least one IOC event in Flashpoint database matching the Filename indicator.
@@ -214,33 +217,34 @@ script:
       description: The vendor used to calculate the score.
       type: string
     - contextPath: Flashpoint.Url.Event.Href
-      description: List of reference link of the indicator
+      description: A list of reference links of the indicator.
       type: string
     - contextPath: Flashpoint.Url.Event.Url
       description: Url of the indicator
       type: string
     - contextPath: Flashpoint.Url.Event.EventDetails
-      description: Event details in which the indicator observed
+      description: The event details in which the indicator was observed.
+      type: string
     - contextPath: Flashpoint.Url.Event.Category
-      description: Category of the indicator
+      description: The category of the indicator.
       type: string
     - contextPath: Flashpoint.Url.Event.Fpid
-      description: Fp-id of the indicator
+      description: The Flashpoint ID of the indicator.
       type: string
     - contextPath: Flashpoint.Url.Event.Timestamp
-      description: Time at which indicaor observed
+      description: The time and date that the indicator was observed.
       type: string
     - contextPath: Flashpoint.Url.Event.Type
-      description: Type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: Flashpoint.Url.Event.Uuid
-      description: uuid of the indicator
+      description: The UUID of the indicator.
       type: string
     - contextPath: Flashpoint.Url.Event.Comment
-      description: Comment which was provided when the indicator was observed
+      description: The comment that was provided when the indicator was observed.
       type: string
     - contextPath: URL.Malicious.Description
-      description: Description of malicious url.
+      description: The description of the malicious indicator.
       type: string
     - contextPath: URL.Malicious.Vendor
       description: Vendor of malicious url.
@@ -268,7 +272,7 @@ script:
       description: The vendor used to calculate the score.
       type: string
     - contextPath: Flashpoint.File.Event.Href
-      description: List of reference link of the indicator
+      description: A list of reference links of the indicator.
       type: string
     - contextPath: Flashpoint.File.Event.MD5
       description: MD5 file hash of the indicator
@@ -280,27 +284,28 @@ script:
       description: SHA256 file hash of the indicator
       type: string
     - contextPath: Flashpoint.File.Event.EventDetails
-      description: Event details in which the indicator observed
+      description: The event details in which the indicator was observed.
+      type: string
     - contextPath: Flashpoint.File.Event.Category
-      description: Category of the indicator
+      description: The category of the indicator.
       type: string
     - contextPath: Flashpoint.File.Event.Fpid
-      description: Fp-id of the indicator
+      description: The Flashpoint ID of the indicator.
       type: string
     - contextPath: Flashpoint.File.Event.Timestamp
-      description: Time at which indicaor observed
+      description: The time and date that the indicator was observed.
       type: string
     - contextPath: Flashpoint.File.Event.Type
-      description: Type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: Flashpoint.File.Event.Uuid
-      description: uuid of the indicator
+      description: The UUID of the indicator.
       type: string
     - contextPath: Flashpoint.File.Event.Comment
-      description: Comment which was provided when the indicator was observed
+      description: The comment that was provided when the indicator was observed.
       type: string
     - contextPath: File.Malicious.Description
-      description: Description of malicious file.
+      description: The description of the malicious indicator.
       type: string
     - contextPath: File.Malicious.Vendor
       description: Vendor of malicious file.
@@ -337,30 +342,31 @@ script:
       description: The vendor used to calculate the score.
       type: string
     - contextPath: Flashpoint.Email.Event.Href
-      description: List of reference link of the indicator
+      description: A list of reference links of the indicator.
       type: string
     - contextPath: Flashpoint.Email.Event.EventDetails
-      description: Event details in which the indicator observed
+      description: The event details in which the indicator was observed.
+      type: string
     - contextPath: Flashpoint.Email.Event.Category
-      description: Category of the indicator
+      description: The category of the indicator.
       type: string
     - contextPath: Flashpoint.Email.Event.Fpid
-      description: Fp-id of the indicator
+      description: The Flashpoint ID of the indicator.
       type: string
     - contextPath: Flashpoint.Email.Event.Timestamp
-      description: Time at which indicaor observed
+      description: The time and date that the indicator was observed.
       type: string
     - contextPath: Flashpoint.Email.Event.Type
-      description: Type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: Flashpoint.Email.Event.Uuid
-      description: uuid of the indicator
+      description: The UUID of the indicator.
       type: string
     - contextPath: Flashpoint.Email.Event.Comment
-      description: Comment which was provided when the indicator was observed
+      description: The comment that was provided when the indicator was observed.
       type: string
     - contextPath: Account.Email.Malicious.Description
-      description: Description of Malicious email account.
+      description: The description of the malicious indicator.
       type: string
     - contextPath: Account.Email.Malicious.Vendor
       description: Vendor of Malicious email.
@@ -433,47 +439,45 @@ script:
         or indicator reputation command response or some other investigation.
     outputs:
     - contextPath: Flashpoint.Event.ObservedTime
-      description: Date of event triggered.
+      description: The date that the event was triggered.
       type: string
     - contextPath: Flashpoint.Event.EventCreatorEmail
-      description: Event creator email.
+      description: The email address of the event creator.
       type: string
     - contextPath: Flashpoint.Event.Href
-      description: Display event reference.
+      description: The display event reference.
+      type: string
     - contextPath: Flashpoint.Event.Tags
-      description: Display event tags.
+      description: The display event tags.
     - contextPath: Flashpoint.Event.EventId
-      description: Display event id (event fpid)
+      description: The display event ID (event fpid).
       type: string
     - contextPath: Flashpoint.Event.Name
-      description: Name of the event
+      description: The name of the event.
       type: string
-    description: Get single event details using its UUID or FPID. The event id can be fetched from
-      output context path (Flashpoint.Event.EventId) get-events command
+    description: Retrieves the details of a single event using event UUID or FPID. To retrieve the event id, run the get-events command and see the value under the Flashpoint.Event.EventId context path.
       or indicator reputation command response or some other investigation.
   - name: flashpoint-get-events
     arguments:
     - name: time_period
-      description: Search events based on time period.
+      description: The time period for the search.
     - name: report_fpid
-      description: Search events by report fpid. Get report fpid from output context path of report-search or related-reports
-        commands and use it in this command to get events for specific Flashpoint report.
+      description: The report fpid. To retrieve the report fpid, run the related-reports command.
     - name: limit
       description: Specify the limit on the no. of record.
       defaultValue: "10"
     - name: attack_ids
-      description: Search events by attack ids. Multiple ids are accepted using
-        comma separated values. attack_ids can be found in event information or on flashpoint platform using filtering events by attack ids.
+      description: A comma-separated list of attack IDs for which to search. Attack IDs can be found in event information or on the Flashpoint platform by filtering events by attack IDs.
     outputs:
     - contextPath: Flashpoint.Event
-      description: Display the list of multiple events.
-    description: Search events using time-period, Report fpid or Attack-ids.
+      description: A list of multiple events.
+    description: Searches for events within the specified time-period, the report fpid, or attack IDs.
   - name: flashpoint-common-lookup
     arguments:
     - name: indicator
       required: false
       default: true
-      description: Specify indicator value like domain, ip, email, url etc.
+      description: The indicator type, for example, domain, ip, email, url, and so on.
       isArray: true
     outputs:
     - contextPath: DBotScore.Indicator
@@ -498,118 +502,108 @@ script:
         of flashpoint-search-forum-posts command or some other investigation.
     outputs:
     - contextPath: Flashpoint.Forum.Description
-      description: Detail information of supplied forum id.
+      description: Detailed information of the supplied forum ID.
       type: string
     - contextPath: Flashpoint.Forum.Hostname
-      description: Host detail of supplied forum id.
+      description: Host details of the supplied forum ID.
       type: string
     - contextPath: Flashpoint.Forum.Name
-      description: Name of forum.
+      description: The name of forum.
       type: string
     - contextPath: Flashpoint.Forum.Stats
-      description: Display stats information like number of posts, rooms, threads and users details.
+      description: Statistical information such as the number of posts, rooms, threads, and users details.
     - contextPath: Flashpoint.Forum.Tags
-      description: Display list of tags which includes id, name, parent_tag and uuid.
+      description: A list of forum tags, including id, name, parent_tag, and UUID.
     - contextPath: Flashpoint.Forum.ForumId
-      description: Forum's unique id.
+      description: The Forum ID.
       type: string
-    description: Get forum details using the forum-id. The forum id can be known from
-      context path (Flashpoint.Forum.ForumId or Flashpoint.Forum.Post.Forum.id)
-      of flashpoint-search-forum-posts command or some other investigation.
+    description: Retrieves forum details using the forum ID. To retrieve the forum ID run the flashpoint-search-forum-posts command and see the value under the following context paths, Flashpoint.Forum.ForumId or Flashpoint.Forum.Post.Forum.id.
   - name: flashpoint-get-forum-room-details
     arguments:
     - name: room_id
       required: true
-      description: Specify room id which is used to retrieve room information in forum. The room id can be known from
-        context path (Flashpoint.Forum.Post.Room.id) of flashpoint-search-forum-posts command or some other investigation.
+      description: The room ID for which to retrieve room information in a forum. To retrieve the room ID run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.Room.id context path.
     outputs:
     - contextPath: Flashpoint.Forum.Room.Forum
-      description: Displays all forum details like forum name, hostname, platform url,
-        stats and tags etc.
+      description: Forum details, including forum name, hostname, platform url, stats, tags, and so on.
     - contextPath: Flashpoint.Forum.Room.Title
-      description: Room title. User can use same title in forum search command.
+      description: The room title. You can use the same title in the forum search command.
       type: string
     - contextPath: Flashpoint.Forum.Room.Url
-      description: Room url.
+      description: The forum room URL.
       type: string
     - contextPath: Flashpoint.Forum.Room.RoomId
-      description: Unique id of forum room.
+      description: The forum room ID.
       type: string
-    description: Get forum-room details using the room-id. The id can be known from context path (Flashpoint.Forum.Post.Room.id) of
-      flashpoint-search-forum-posts command or some other investigation.
+    description: Retrieves forum room details using the room ID. To retrieve the room ID run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.Room.id context path.
   - name: flashpoint-get-forum-user-details
     arguments:
     - name: user_id
       required: true
-      description: Specify user id which is used to retrieve user's information. The user id can be known from
-        context path (Flashpoint.Forum.Post.User.id) of flashpoint-search-forum-posts command or some other investigation.
+      description: The user ID used to retrieve a user's information. To retrieve the user ID, run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.User.id context path.
     outputs:
     - contextPath: Flashpoint.Forum.User.Forum
-      description: Display all forum details like id, hostname, description, stats,
-        tags etc.
+      description: Forum details, including id, hostname, description, stats,
+        tags, and so on.
     - contextPath: Flashpoint.Forum.User.Name
-      description: Name of user.
+      description: The name of the user.
       type: string
     - contextPath: Flashpoint.Forum.User.PlatformUrl
-      description: platform url of user which is redirect to Flashpoint platform.
+      description: The platform URL of the user which is redirected to Flashpoint platform.
       type: string
     - contextPath: Flashpoint.Forum.User.Url
-      description: URL of user.
+      description: The URL of user.
       type: string
     - contextPath: Flashpoint.Forum.User.UserId
-      description: Unique id of forum user.
+      description: The unique ID of the forum user.
       type: string
-    description: Get user details using the user-id. The user id can be known from
-      context path (Flashpoint.Forum.Post.User.id) of flashpoint-search-forum-posts command or some other investigation.
+    description: Retrieves user details using the user-id. To retrieve the user ID, run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.User.id context path.
   - name: flashpoint-get-forum-post-details
     arguments:
     - name: post_id
       required: true
-      description: Specify post id which gives post information embeded with forum, room, user etc.
-        The post id can be known from context path (Flashpoint.Forum.Post.PostId) of flashpoint-search-forum-posts
-        command or some other investigation.
+      description: The post ID, which gives post information embedded within the forum, room, user, and so on. To retrieve the post ID, run the flashpoint-search-forum-posts and see the value under the Flashpoint.Forum.Post.PostId context path. 
     outputs:
     - contextPath: Flashpoint.Forum.Post.Forum
-      description: Display all forum details of post like id, hostname, stats, description,
-        tags etc.
+      description: Forum details of the post, including id, hostname, stats, description,
+        tags, and so on.
     - contextPath: Flashpoint.Forum.Post.Room
-      description: Display room details of post like room title, id, url, platform
-        url etc.
+      description: Room details of the post, including room title, id, url, platform
+        url, and so on.
     - contextPath: Flashpoint.Forum.Post.User
-      description: Display user details of post like user id, name, url, platform
-        url etc.
+      description: User details of the post, including user id, name, url, platform
+        url, and so on.
     - contextPath: Flashpoint.Forum.Post.PlatformUrl
-      description: Using platform url user can redirect to Flashpoint platform.
+      description: Using platform URL user can redirect to Flashpoint platform.
       type: string
     - contextPath: Flashpoint.Forum.Post.PublishedAt
-      description: published date of post.
+      description: The date that the post was published.
     - contextPath: Flashpoint.Forum.Post.Url
-      description: Display url of post.
+      description: The display URL of the post.
     - contextPath: Flashpoint.Forum.Post.PostId
-      description: Unique id of forum post.
+      description: The forum post ID.
       type: string
-    description: Get post details using the post-id. The post id can be known from
-      context path (Flashpoint.Forum.Post.PostId) of flashpoint-search-forum-posts
+    description: Retrieves post details using the post-id. To retrieve the post ID, run the flashpoint-search-forum-posts command and see the value under the Flashpoint.Forum.Post.PostId context path.
       command or some other investigation.
   - name: flashpoint-search-forum-sites
     arguments:
     - name: site_search
       required: true
-      description: Search by site keyword or text. This keyword is used for search information in forum sites.
-        This keyword or text is known by fp user.
+      description: The site keyword or text for which to search. This keyword is used for search information in forum sites.
+        This keyword or text is known by Flashpoint users.
     outputs:
     - contextPath: Flashpoint.Forum.Site
-      description: List of forum site details based on search keyword.
-    description: Search forum sites using a keyword. it will search in site content like name, title, descripion etc.
+      description: A list of forum site details based on the search keyword.
+    description: Searches forum sites using a keyword. it will search in site content like name, title, descripion etc.
   - name: flashpoint-search-forum-posts
     arguments:
     - name: post_search
       required: true
-      description: Search by post keyword or text which is used for search information in forum posts and it is known by
-        fp user.
+      description: The post keyword or text which is used for search information in forum posts, and is known by
+        Flashpoint users.
     outputs:
     - contextPath: Flashpoint.Forum.Post
-      description: Display list of forum posts based on specified search keyword.
+      description: A list of forum posts based on the search keyword.
     description: Search forum posts using a keyword
   dockerimage: demisto/python3:3.7.5.4583
   runonce: false
@@ -619,4 +613,3 @@ tests:
 - Flashpoint_forum-Test
 - Flashpoint_report-Test
 - Flashpoint_reputation-Test
-
