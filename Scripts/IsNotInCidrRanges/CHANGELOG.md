@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Breaking backwards compatibility because filter wasn't written correctly. 
+Improved implementation of script filters.
 
 ## [19.11.0] - 2019-11-12
 #### New Script
