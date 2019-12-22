@@ -24,7 +24,7 @@ ACCESS_KEY = demisto.params()['accessKey']
 SECRET_KEY = demisto.params()['secretKey']
 APP_ID = demisto.params()['appId']
 APP_KEY = demisto.params()['appKey']
-USE_SSL = True if demisto.params().get('insecure') else False
+USE_SSL = False
 PROXY = True if demisto.params().get('proxy') else False
 # Flags to control which type of incidents are being fetched
 FETCH_URL = demisto.params().get('fetchURL')
@@ -62,6 +62,17 @@ default_query_xml = "<?xml version=\"1.0\"?> \n\
 </xmlquery>"
 
 ''' HELPER FUNCTIONS '''
+
+
+def determine_ssl_usage():
+    global USE_SSL
+
+    old_insecure = demisto.params().get('insecure', None)
+    if old_insecure:
+        USE_SSL = old_insecure
+        return
+
+    USE_SSL = False if demisto.params().get('new_insecure') else True
 
 
 def epoch_seconds(d=None):
@@ -2084,6 +2095,7 @@ if ACCESS_KEY:
 
 try:
     handle_proxy()
+    determine_ssl_usage()
 
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.

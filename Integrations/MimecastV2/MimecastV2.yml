@@ -33,7 +33,7 @@ configuration:
   required: false
   type: 4
 - display: Trust any certificate (not secure)
-  name: insecure
+  name: new_insecure
   required: false
   type: 8
 - display: Use system proxy settings
@@ -1186,14 +1186,14 @@ script:
       type: string
   - arguments:
     - default: false
-      description: A string to query for.
+      description: The string to query for.
       isArray: false
       name: query_string
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: A group source to filter on, either "cloud" or "ldap".
+      description: The group source to filter on, either "cloud" or "ldap".
       isArray: false
       name: query_source
       predefined:
@@ -1216,7 +1216,7 @@ script:
       description: The name of the group.
       type: String
     - contextPath: Mimecast.Group.Source
-      description: The source of the group. Either 'Cloud' or 'ldap'.
+      description: The source of the group.
       type: String
     - contextPath: Mimecast.Group.ID
       description: The Mimecast ID of the group.
@@ -1261,14 +1261,14 @@ script:
       description: The type of user.
       type: String
     - contextPath: Mimecast.Group.Users.InternalUser
-      description: Is the user is internal or not.
+      description: Whether the user is internal or not.
       type: Boolean
     - contextPath: Mimecast.Group.Users.IsRemoved
-      description: Is the user part of the group or not.
+      description: Whether the user is part of the group or not.
       type: Boolean
   - arguments:
     - default: false
-      description: The Mimecast ID of the group to add to.
+      description: The Mimecast ID of the group to add the user to.
       isArray: false
       name: group_id
       required: true
@@ -1295,11 +1295,11 @@ script:
       description: The user's email address.
       type: String
     - contextPath: Mimecast.Group.Users.IsRemoved
-      description: Is the user part of the group or not.
+      description: Whether the user is part of the group or not.
       type: Boolean
   - arguments:
     - default: false
-      description: The Mimecast ID of the group to remove from.
+      description: The Mimecast ID of the group to remove the user from.
       isArray: false
       name: group_id
       required: true
@@ -1326,7 +1326,7 @@ script:
       description: The user's email address.
       type: String
     - contextPath: Mimecast.Group.Users.IsRemoved
-      description: Is the user part of the group or not.
+      description: Whether the user part of the group or not.
       type: Boolean
   - arguments:
     - default: false
@@ -1336,8 +1336,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Mimecast ID of the new groups parent. If excluded, the new
-        group will be created at the root level.
+      description: The Mimecast ID of the new groups parent. Default will be root
+        level.
       isArray: false
       name: parent_id
       required: false
@@ -1351,7 +1351,7 @@ script:
       description: The name of the group.
       type: String
     - contextPath: Mimecast.Group.Source
-      description: The source of the group. Either 'Cloud' or 'ldap'.
+      description: The source of the group.
       type: String
     - contextPath: Mimecast.Group.ID
       description: The Mimecast ID of the group.
@@ -1360,7 +1360,7 @@ script:
       description: The number of members of the group.
       type: Number
     - contextPath: Mimecast.Group.ParentID
-      description: The Mimecast ID of the groups parent.
+      description: The Mimecast ID of the group's parent.
       type: String
     - contextPath: Mimecast.Group.NumberOfChildGroups
       description: The number of child groups the group has.
@@ -1396,7 +1396,7 @@ script:
       description: The Mimecast ID of the group.
       type: String
     - contextPath: Mimecast.Group.ParentID
-      description: The Mimecast ID of the groups parent.
+      description: The Mimecast ID of the group's parent.
       type: String
   - arguments:
     - default: false
@@ -1413,13 +1413,12 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The message component in which to search by. Must "hash" or "messageId".
-        Default option is hash if not specified.
+      description: The message component in which to search by. Default is hash.
       isArray: false
       name: search_by
       predefined:
       - hash
-      - ' messageId'
+      - messageId
       required: false
       secret: false
     - default: false
@@ -1488,8 +1487,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The Mimecast ID for a remediation incident, provided when an incident
-        is created.
+      description: The Mimecast ID for a remediation incident.
       isArray: false
       name: incident_id
       required: true
