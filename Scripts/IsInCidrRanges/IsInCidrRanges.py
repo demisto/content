@@ -1,15 +1,15 @@
 import demistomock as demisto
-from CommonServerPython import argToList
+from CommonServerPython import *
 
 from netaddr import IPAddress, IPNetwork
 
 
 def main():
-    ip = demisto.args()['left']
-    cidr_list = argToList(demisto.args()['right'])
+    ip_address = demisto.args()['left']
+    cidr_range_list = argToList(demisto.args()['right'])
 
-    for cidr in cidr_list:
-        if IPAddress(ip) in IPNetwork(cidr):
+    for cidr in cidr_range_list:
+        if IPAddress(ip_address) in IPNetwork(cidr):
             demisto.results(True)
             return
 
