@@ -381,7 +381,7 @@ def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[st
     return human_readable, context, raw_response
 
 
-def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, list[Dict]]:
     """
     Args:
         client: Client object
