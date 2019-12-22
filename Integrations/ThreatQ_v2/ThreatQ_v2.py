@@ -308,6 +308,7 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
             res = tq_request('GET', url_suffix)
             indicators.append(indicator_data_to_demisto_format(res['data']))
 
+    indicators = indicators or {'Value': value, 'TQScore': -1}
     entry_context = set_indicator_entry_context(
         indicator_type=indicator_type,
         indicators=indicators,
@@ -569,8 +570,9 @@ def set_indicator_entry_context(indicator_type, indicators, generic_context):
         indicators = [indicators]
     dbot_context = [create_dbot_context(i.get('Value'), indicator_type, i.get('TQScore', -1)) for i in indicators]
 
+    path = outputPaths.get(indicator_type, 'Indicator(val.ID && val.ID == obj.ID)')
     ec: Dict = {
-        outputPaths.get(indicator_type, 'Indicator(val.ID && val.ID == obj.ID)'): [],
+        path: [],
         CONTEXT_PATH['indicator']: [],
         'DBotScore': []
     }
@@ -578,7 +580,7 @@ def set_indicator_entry_context(indicator_type, indicators, generic_context):
         if dbot.get('Score') == 3:
             add_malicious_data(generic_context, indicator.get('TQScore', -1))
 
-        ec[outputPaths[indicator_type]].append(generic_context)
+        ec[path].append(generic_context)
         ec['DBotScore'].append(dbot)
         if indicator:
             ec[CONTEXT_PATH['indicator']].append(indicator)
@@ -726,9 +728,10 @@ def advance_search_command():
     for obj in search_results:
         # Search for detailed information about the indicator
         url_suffix = f"/indicators/{obj.get('id')}?with=attributes,sources,score,type"
-        res = tq_request('GET', url_suffix)
+        search_results = res = tq_request('GET', url_suffix)
         indicators.append(indicator_data_to_demisto_format(res.get('data')))
 
+    indicators = indicators or {'Value': query, 'TQScore': -1}
     entry_context = set_indicator_entry_context(
         indicator_type=indicator_type,
         indicators=indicators,
@@ -741,7 +744,7 @@ def advance_search_command():
         data=indicators
     )
 
-    return_outputs(readable, entry_context, res)
+    return_outputs(readable, entry_context, search_results)
 
 
 def search_by_name_command():
