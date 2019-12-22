@@ -116,7 +116,7 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
     return str(converted_date)
 
 
-def decode_message(msg: str) -> List[Optional[str]]:
+def decode_message(msg: str) -> list:
     """
         Follow these steps for data members that appear within the event’s attackData section:
             1. If the member name is prefixed rule, URL-decode the value.
