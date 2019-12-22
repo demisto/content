@@ -381,7 +381,7 @@ def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[st
     return human_readable, context, raw_response
 
 
-def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, list[Dict]]:
+def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Args:
         client: Client object
@@ -400,7 +400,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
 
     rules_list = raw_response.get('result')
     if not rules_list:
-        return f'{INTEGRATION_NAME} - No rules associated to zone: {zone} were found', {}, {}
+        return f'{INTEGRATION_NAME} - No rules associated to zone: {zone} were found', {}, {}   # type: ignore
 
     fixed_keys_rule_list = []
     for rule in rules_list:
