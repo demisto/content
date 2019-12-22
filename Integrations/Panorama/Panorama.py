@@ -262,8 +262,9 @@ def set_xpath_network(template: str = None) -> Tuple[str, Optional[str]]:
     """
     Setting template xpath relevant to panorama instances.
     """
-    if not DEVICE_GROUP or VSYS:
-        return_error('Template is only relevant for Panorama instances.')
+    if template:
+        if not DEVICE_GROUP or VSYS:
+            return_error('Template is only relevant for Panorama instances.')
     if not template:
         template = demisto.params().get('template', None)
     # setting network xpath relevant to FW or panorama management
