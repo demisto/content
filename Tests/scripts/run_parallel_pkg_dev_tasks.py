@@ -13,7 +13,7 @@ from Tests.test_utils import print_color, LOG_COLORS  # noqa: E402
 
 
 def run_dev_task(pkg_dir: str, params: Optional[List[str]]) -> Tuple[subprocess.CompletedProcess, str]:
-    args = [SCRIPT_DIR + '/pkg_dev_test_tasks.py', '-d', pkg_dir]
+    args = ['demisto-sdk lint', '-d', pkg_dir]
     if params:
         args.extend(params)
     cmd_line = " ".join(args)
@@ -90,8 +90,8 @@ def main():
         for future in concurrent.futures.as_completed(futures_submit):
             res = future.result()
             handle_run_res(res, fail_pkgs, good_pkgs)
+    create_failed_unittests_file(fail_pkgs)
     if fail_pkgs:
-        create_failed_unittests_file(fail_pkgs)
         print_color("\n******* FAIL PKGS: *******", LOG_COLORS.RED)
         print_color("\n\t{}\n".format("\n\t".join(fail_pkgs)), LOG_COLORS.RED)
     if good_pkgs:
