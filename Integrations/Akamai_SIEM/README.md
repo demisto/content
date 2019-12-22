@@ -1,14 +1,14 @@
 <p>
     Get security event from <a href="https://www.akamai.com/us/en/resources/waf.jsp">Akamai Web Application Firewall (WAF)</a>
     service.
-    This integration was integrated and tested with <a href="https://developer.akamai.com/api/cloud_security/siem/v1.html"> version 1.0 of Akamai WAF
+    This integration was integrated and tested with <a href="https://developer.akamai.com/api/cloud_security/siem/v1.html"> API version 1.0 of Akamai WAF
     SIEM</a>
 </p>
 
 <h2>Use Cases</h2>
 <ul>
     <li>Get security events from Akamai WAF.</li>
-    <li>analyze security events generated on the Akamai platform and correlate them with security events generated from
+    <li>Analyze security events generated on the Akamai platform and correlate them with security events generated from
         other sources in Demisto</li>
 </ul>
 
@@ -23,6 +23,7 @@
 
 <h2>API keys generating steps</h2>
 <ol>
+    <li>Go to `WEB & DATA CENTER SECURITY`>`Security Configuration`>choose you configuration>`Advanced settings`> Enable SIEM integration.</li>
     <li><a href="https://control.akamai.com/">Open Control panel</a> and login with admin account.</li>
     <li>Open <code>identity and access management</code> menu.</li>
     <li>Create user with assign roles <code>Manage SIEM</code> or make sure the admin has rights for manage SIEM.</li>
@@ -49,13 +50,10 @@
             <li><strong>Client token</strong></li>
             <li><strong>Access token</strong></li>
             <li><strong>Client secret</strong></li>
-            <li><strong>Config ids to fetch (can have multiple seperated by commas ';')</strong></li>
+            <li><strong>Config ids to fetch (can have multiple seperated by semi commas ';')</strong></li>
             <li><strong>Incident type</strong></li>
-            <li><strong>First fetch timestamp (
-                <number>
-                    <time unit>, e.g., 12 hours, 7 days)
-            </strong></li>
-            <li><strong>Fetch limit (min 20)</strong></li>
+            <li>First fetch timestamp (for example 12 hours, 7 days)</li>
+            <li><strong>Fetch limit </strong></li>
             <li><strong>Trust any certificate (not secure)</strong></li>
             <li><strong>Use system proxy settings</strong></li>
         </ul>
@@ -216,11 +214,8 @@
         <td>Optional</td>
     </tr>
     <tr>
-        <td>period</td>
-        <td>period timestamp (
-            <number>
-                <time unit>, e.g., 12 hours, 7 days of events
-        </td>
+        <td>timestamp</td>
+        <td>timestamp (for example 12 hours, 7 days of events</td>
         <td>Optional</td>
     </tr>
     </tbody>
