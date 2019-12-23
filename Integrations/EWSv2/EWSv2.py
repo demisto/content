@@ -2116,20 +2116,23 @@ def sub_main():
 
 
 def process_main():
-    # setup stdin to fd=0 so we can read from the server
+    """setup stdin to fd=0 so we can read from the server"""
     sys.stdin = os.fdopen(0, "r")
     sub_main()
 
 
 def main():
-    seperate_process = True
-    if seperate_process:
+    # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
+    # collector. `separate_process` flag will run the integration on a separate process that will prevent
+    # memory leakage.
+    separate_process = demisto.params().get("separate_process")
+    if separate_process:
         try:
             p = Process(target=process_main)
             p.start()
             p.join()
         except Exception as ex:
-            demisto.error("Failed starging Process: {}".format(ex))
+            demisto.error("Failed starting Process: {}".format(ex))
     else:
         sub_main()
 
