@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added ***Max Incidents Per Fetch*** field - Limit incidents created per fetch.
 
 ## [19.11.1] - 2019-11-26
 Added the ***cb-binary-download*** command, which replaces the deprecated ***cb-binary-get*** command.
