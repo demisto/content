@@ -996,11 +996,9 @@ def query_file_command():
         endpoint_outputs = []
         files = data.get('resultIdToElementDataMap')
         for file in files.keys():
-
             raw_machine_details = get_file_machine_details(file)['data']['resultIdToElementDataMap']
             machine_details = raw_machine_details[raw_machine_details.keys()[0]]
             simple_values = files[file]['simpleValues']
-
             file_name = simple_values['elementDisplayName']['values'][0]
             md5 = simple_values['md5String']['values'][0]
             sha1 = simple_values['sha1String']['values'][0]
@@ -1029,10 +1027,22 @@ def query_file_command():
             if 'companyName' in simple_values:
                 company_name = simple_values['companyName']['values'][0]
 
+            created_time = None
+            if 'createdTime' in simple_values:
+                created_time = timestamp_to_datestring(simple_values['createdTime']['values'][0])
+
+            modified_time = None
+            if 'modifiedTime' in simple_values:
+                modified_time = timestamp_to_datestring(simple_values['modifiedTime']['values'][0])
+
+            is_signed = None
+            if 'isSigned' in simple_values:
+                is_signed = simple_values['isSigned']['values'][0]
+
             cybereason_outputs.append({
                 'Name': file_name,
-                'CreationTime': timestamp_to_datestring(simple_values['createdTime']['values'][0]),
-                'ModifiedTime': timestamp_to_datestring(simple_values['modifiedTime']['values'][0]),
+                'CreationTime': created_time,
+                'ModifiedTime': modified_time,
                 'Malicious': files[file]['isMalicious'],
                 'MD5': md5,
                 'SHA1': sha1,
@@ -1043,7 +1053,7 @@ def query_file_command():
                 'OSVersion': os_version,
                 'Suspicion': suspicions,
                 'Evidence': evidences,
-                'Signed': True if simple_values['isSigned']['values'][0] == 'true' else False,
+                'Signed': is_signed,
                 'Company': company_name
             })
 
@@ -1059,20 +1069,20 @@ def query_file_command():
                 'OSVersion': os_version
             })
 
-            ec = {
-                'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
-                'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs
-            }
-            ec[outputPaths['file']] = file_outputs
+        ec = {
+            'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
+            'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs
+        }
+        ec[outputPaths['file']] = file_outputs
 
-            demisto.results({
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': data,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Cybereason file query results', cybereason_outputs),
-                'EntryContext': ec
-            })
+        demisto.results({
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Cybereason file query results', cybereason_outputs, removeNull=True),
+            'EntryContext': ec
+        })
     else:
         demisto.results('No results found.')
 
