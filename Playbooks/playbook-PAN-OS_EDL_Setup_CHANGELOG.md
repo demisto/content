@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Rule position is not mandatory anymore, the default is Top
 
 ## [19.10.2] - 2019-10-29
 Added support in attaching the EDL to an existing rule.
