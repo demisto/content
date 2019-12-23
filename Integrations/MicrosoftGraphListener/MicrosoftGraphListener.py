@@ -789,7 +789,7 @@ def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
 
-    self_deployed = params.get('no_oproxy', False)
+    self_deployed = params.get('self_deployed', False)
 
     # params related to common instance configuration
     base_url = 'https://graph.microsoft.com/v1.0/'
