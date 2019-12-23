@@ -15,6 +15,10 @@ BPA_URL = BPA_HOST + '/api/' + BPA_VERSION + '/'
 
 
 class LightPanoramaClient(BaseClient):
+    '''
+    This is a client for Panorama API, used by integration commands to issue requests to Panorama API,
+     not the BPA service.
+    '''
     def __init__(self, server, port, api_key, verify, proxy):
         super().__init__(server.rstrip('/:') + ':' + port + '/', verify, proxy)
         self.api_key = api_key
@@ -67,7 +71,7 @@ class LightPanoramaClient(BaseClient):
 
 class Client(BaseClient):
     """
-    Client to use in the BPA integration. Overrides BaseClient
+    Client to use in the BPA integration. This client issues requests to the BPA service, and not Panorama.
     """
 
     def __init__(self, bpa_token: str, verify: bool, proxy: bool):
@@ -150,7 +154,11 @@ def get_results_command(client: Client, args: Dict):
     task_id = args.get('task_id', '')
     raw: Dict = client.get_results_request(task_id)
 
-    status = raw.get('status', '')
+    status = raw.get('status')
+
+    if not status:
+        raise Exception("Invalid response from BPA")
+
     job_checks: List[Dict] = []
 
     if status == 'invalid':
