@@ -62,34 +62,6 @@ Demisto Platform support flexible reports written in JSON. All of our standard r
 ## Release Notes
 For information about content release notes conventions, refer to our [release notes documentation](docs/release_notes).
 
-
-# Documentation Directory
-
-| Link | Description |
-| --- | ---|
-| [Tutorial Video](docs/tutorial-video) | A step-by-step introduction to creating an integration |
-| [Getting Started](docs/getting_started) | Environment setup and a brief explanation of the Demisto IDE |
-| [Package directory](docs/package_directory_structure) | Explanation of Python integration / automation script package directory structure |
-| [Code Conventions](docs/code_conventions) | Our Code Conventions |
-| [Linting](docs/linting) | How to run linting on Demisto integrations/scripts |
-| [Unit Testing](docs/tests/unit-testing) | Explanation of How to Perform Unit Testing on Integrations/Scripts |
-| [Integration Parameter Types](docs/parameter_types) | Description of the various integration parameter types |
-| [Context and Outputs](docs/context_and_ouputs) | Brief overview of Context and Outputs |
-| [Context Conventions](docs/context_standards) | Conventions for the Demisto Standard Context |
-| [Contributing](CONTRIBUTING.md) | How to contribute to the Content Repo |
-| [Creating Playbooks](docs/creating_playbooks) | How to create a Playbook |
-| [DBot Score](docs/dbot) | How the DBot Score works |
-| [Demisto Transform Language (DT)](docs/DT) | Understanding Demisto Transform Language (DT) |
-| [Docker](docs/docker) | How to use Docker |
-| [Fetching Incidents](docs/fetching_incidents) | How to Fetch Incidents |
-| [Fetching Credentials](docs/fetching_credentials) | How to Fetch Credentials |
-| [Integration Documentation](docs/integration_documentation) | How to generate documentation for an integration |
-| [YAML File](docs/yaml-file-integration) | Explanation of the Demisto YAML structure |
-| [Testing](docs/tests) | The Demisto Content Repo Testing Methods |
-| [CircleCI](docs/tests/circleci) | How we test using CircleCI |
-| [Mocks](docs/tests/mocks) | Explanation of how to test using mocked data |
-| [GenericPolling Playbook](docs/tests/genericpolling) | Explanation of how and when to use the GenericPolling playbook |
-| [Release Notes](docs/release_notes) | Explanation of our content release notes conventions |
-
 ---
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com).
+
