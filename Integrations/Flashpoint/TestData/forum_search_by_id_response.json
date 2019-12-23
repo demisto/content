@@ -1,0 +1,28 @@
+{
+  "legacy_id": null,
+  "stats": {
+    "users": 71614,
+    "rooms": 1,
+    "threads": 13916,
+    "posts": 163710
+  },
+  "id": "test_scan_forum_id",
+  "description": "fake description",
+  "name": "fake name",
+  "platform_url": "http://123-fake-api.com/home/search/forums?forum_ids=test_scan_forum_id",
+  "hostname": "fake hostname",
+  "tags": [
+    {
+      "name": "fake tag name",
+      "uuid": "83a2e5d4-e591-42be-943f-4af7d5de30e4",
+      "id": 55,
+      "parent_tag": 17
+    },
+    {
+      "name": "fake tag1 name",
+      "uuid": "6d6719ac-9ead-4980-a783-1f32ac398e2b",
+      "id": 28,
+      "parent_tag": null
+    }
+  ]
+}
