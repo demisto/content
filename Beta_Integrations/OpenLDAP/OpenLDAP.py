@@ -145,7 +145,7 @@ class LdapClient:
             }
 
     def get_ldap_groups(self, specific_group=None):
-        instance_name = demisto.integrationInstance()  # noqa # pylint: disable no-member # type: ignore
+        instance_name = demisto.integrationInstance()
         if not self._fetch_groups and not specific_group:
             demisto.info(f'Instance [{instance_name}] configured not to fetch groups')
             sys.exit()
