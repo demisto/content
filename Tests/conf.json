@@ -1480,18 +1480,18 @@
         },
         {
             "playbookID": "Active Directory Test",
-            "instance_names": "active_directory_query_v2",
-            "integrations": "Active Directory Query v2"
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
         },
         {
             "playbookID": "AD v2 - debug-mode - Test",
-            "instance_names": "active_directory_query_v2",
             "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_query_v2_with_port_configuration",
+            "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory Query V2 configuration with port"
         },
         {
@@ -1503,7 +1503,8 @@
         },
         {
             "playbookID": "Email Address Enrichment - Generic v2.1 - Test",
-            "integrations": "Active Directory Query v2"
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
         },
         {
             "integrations": "Cofense Intelligence",
@@ -1537,6 +1538,7 @@
                 "Palo Alto Minemeld",
                 "Active Directory Query v2"
             ],
+            "instance_names": "active_directory_ninja",
             "fromversion": "4.5.0"
         },
         {
@@ -1562,8 +1564,15 @@
                 "Active Directory Query v2",
                 "Demisto REST API"
             ],
+            "instance_names": "active_directory_ninja",
             "fromversion": "5.0.0",
             "timeout": 700
+        },
+        {
+            "playbookID": "Active Directory - Get User Manager Details - Test",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_80k",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Kafka V2",
@@ -1658,7 +1667,8 @@
                 "carbonblack-v2",
                 "epo",
                 "Active Directory Query v2"
-            ]
+            ],
+            "instance_names": "active_directory_ninja"
         },
         {
             "playbookID": "EmailReputationTest",
@@ -1699,7 +1709,8 @@
         },
         {
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
-            "integrations": "Active Directory Query v2"
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -1737,7 +1748,7 @@
         },
         {
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_query_v2",
+            "instance_names": "active_directory_ninja",
             "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
         },
         {
