@@ -3,6 +3,7 @@ import sys
 import json
 import ast
 import argparse
+import time
 from time import sleep
 import datetime
 import requests
@@ -91,6 +92,24 @@ def is_correct_content_installed(ips, content_version, username, password):
     return True
 
 
+def exit_if_timed_out(loop_start_time, current_time):
+    time_since_started = current_time - loop_start_time
+    half_hour_in_seconds = 30 * 60
+    if time_since_started > half_hour_in_seconds:
+        print_error("Timed out while trying to set up instances.")
+        sys.exit(1)
+
+
+def get_instance_types_count(instance_ips):
+    instance_types_count = {}
+    for ami_instance_name, ami_instance_ip in instance_ips:
+        if ami_instance_name in instance_types_count:
+            instance_types_count[ami_instance_name] += 1
+        else:
+            instance_types_count[ami_instance_name] = 1
+    return instance_types_count
+
+
 def main():
     username, password, content_version = get_username_password()
     ready_ami_list = []
@@ -98,29 +117,29 @@ def main():
         instance_ips = instance_file.readlines()
         instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
-    for i in range(MAX_TRIES * SLEEP_TIME):
+    instance_types_to_create = get_instance_types_count(instance_ips)
+    loop_start_time = time.perf_counter()
+    last_update_time = loop_start_time
+
+    while len(ready_ami_list) < len(instance_ips):
+        current_time = time.perf_counter()
+        exit_if_timed_out(loop_start_time, current_time)
+
+        for ami_instance_name, ami_instance_ip in instance_ips:
+            if instance_types_to_create[ami_instance_name] > 0:
+                host = "https://{}".format(ami_instance_ip)
+                path = '/health'
+                method = 'GET'
+                res = requests.request(method=method, url=(host + path), verify=False)
+                if res.status_code == 200:
+                    print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
+                    ready_ami_list.append(ami_instance_name)
+                elif current_time - last_update_time > 30 :  # printing the message every 30 seconds
+                    print("{} is not ready yet - waiting for it to start".format(ami_instance_name))
+                    last_update_time = current_time
+
         if len(instance_ips) > len(ready_ami_list):
-            for ami_instance_name, ami_instance_ip in instance_ips:
-                if ami_instance_name not in ready_ami_list:
-                    host = "https://{}".format(ami_instance_ip)
-                    path = '/health'
-                    method = 'GET'
-                    res = requests.request(method=method, url=(host + path), verify=False)
-                    if res.status_code == 200:
-                        print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
-                        ready_ami_list.append(ami_instance_name)
-                    elif i % 30 == 0:  # printing the message every 30 seconds
-                        print("{} is not ready yet - waiting for it to start".format(ami_instance_name))
-
-            if len(instance_ips) > len(ready_ami_list):
-                sleep(1)
-
-        else:
-            break
-
-    if len(ready_ami_list) != len(instance_ips):
-        print_error("The server is not ready :(")
-        sys.exit(1)
+            sleep(1)
 
     if not is_correct_content_installed(instance_ips, content_version, username=username, password=password):
         sys.exit(1)
