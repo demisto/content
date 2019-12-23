@@ -52,6 +52,12 @@ tasks:
       domains:
         complex:
           root: inputs.DomainColumn
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.DomainColumn
+                iscontext: true
       entryID:
         complex:
           root: File
@@ -63,9 +69,21 @@ tasks:
       hashes:
         complex:
           root: inputs.FileColumn
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.FileColumn
+                iscontext: true
       ips:
         complex:
           root: inputs.IPColumn
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.IPColumn
+                iscontext: true
       parseAll: {}
     reputationcalc: 2
     separatecontext: false
@@ -100,27 +118,22 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               complex:
                 root: File
-                accessor: Name
-                transformers:
-                - operator: split
-                  args:
-                    delimiter:
+                filters:
+                - - operator: isEqualString
+                    left:
                       value:
-                        simple: .
-                - operator: atIndex
-                  args:
-                    index:
+                        simple: File.Info
+                      iscontext: true
+                    right:
                       value:
-                        simple: "1"
+                        simple: csv
+                    ignorecase: true
             iscontext: true
-          right:
-            value:
-              simple: csv
     view: |-
       {
         "position": {
@@ -235,7 +248,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
+          "x": 690,
           "y": 910
         }
       }
@@ -292,19 +305,20 @@ tasks:
               complex:
                 root: IP
                 accessor: Address
-                transformers:
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: Domain.Name
-                      iscontext: true
-                - operator: append
-                  args:
-                    item:
-                      value:
-                        simple: File.MD5
-                      iscontext: true
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Name
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: MD5
             iscontext: true
     view: |-
       {
@@ -389,23 +403,19 @@ view: |-
   }
 inputs:
 - key: IPColumn
-  value:
-    simple: "0"
+  value: {}
   required: false
-  description: IP column number in the CSV file.
+  description: The column number that contains IPs. (First column is column 0).
 - key: DomainColumn
-  value:
-    simple: "1"
+  value: {}
   required: false
-  description: Domain column number in the CSV file.
+  description: The column number that contains domains. (First column is column 0).
 - key: FileColumn
-  value:
-    simple: "2"
+  value: {}
   required: false
-  description: The hashes column number in the CSV file.
+  description: The column number that contains hashes. (First column is column 0).
 - key: Miner
-  value:
-    simple: Malicious
+  value: {}
   required: false
   description: Miner name to upload the indicators to in MineMeld.
 - key: IPListName
@@ -444,7 +454,7 @@ inputs:
 - key: rule-position
   value:
     simple: Top
-  required: false
+  required: falseo
   description: |-
     The position of the rule in the ruleset. Valid values are:
       * Top
