@@ -558,11 +558,12 @@ def get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id):
         return_error('Command failed - objects are not related.')
 
 
-def add_malicious_data(generic_context, tq_score):
-    generic_context['Malicious'] = {
+def get_malicious_data(tq_score):
+    malicious_data = {
         'Vendor': 'ThreatQ v2',
         'Description': 'Score from ThreatQ is {0}'.format(tq_score)
     }
+    return malicious_data
 
 
 def set_indicator_entry_context(indicator_type, indicators, generic_context):
@@ -570,20 +571,21 @@ def set_indicator_entry_context(indicator_type, indicators, generic_context):
         indicators = [indicators]
     dbot_context = [create_dbot_context(i.get('Value'), indicator_type, i.get('TQScore', -1)) for i in indicators]
 
-    path = outputPaths.get(indicator_type, 'Indicator(val.ID && val.ID == obj.ID)')
+    generic_context_path = outputPaths.get(indicator_type, 'Indicator(val.ID && val.ID == obj.ID)')
+    integration_context_path = CONTEXT_PATH['indicator']
     ec: Dict = {
-        path: [],
-        CONTEXT_PATH['indicator']: [],
+        generic_context_path: [],
+        integration_context_path: [],
         'DBotScore': []
     }
     for dbot, indicator in zip(dbot_context, indicators):
         if dbot.get('Score') == 3:
-            add_malicious_data(generic_context, indicator.get('TQScore', -1))
+            malicious_data = get_malicious_data(indicator.get('TQScore', -1))
 
-        ec[path].append(generic_context)
+        ec[generic_context_path].append(generic_context)
         ec['DBotScore'].append(dbot)
         if indicator:
-            ec[CONTEXT_PATH['indicator']].append(indicator)
+            ec[integration_context_path].append(indicator)
 
     # backwards compatibility
     ec['DBotScore'] = ec['DBotScore'][0] if len(ec['DBotScore']) == 1 else ec['DBotScore']
@@ -1382,3 +1384,6 @@ try:
 
 except Exception as ex:
     return_error(str(ex))
+
+
+# todo Attributes and Sources in readable are missing
