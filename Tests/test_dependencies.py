@@ -153,7 +153,6 @@ def get_tests_allocation(number_of_instances, tests_file_path):
     dependent_tests_clusters.sort(key=len, reverse=True)  # Sort the clusters from biggest to smallest
     tests_allocation = []
     number_of_tests_left = len(all_tests)
-    print(dependent_tests_clusters)
     while number_of_tests_left > 0:
         allocations_left = number_of_instances - len(tests_allocation)
         desired_tests_per_allocation = math.ceil(number_of_tests_left / allocations_left)  # We prefer an equal division of tests.
@@ -198,11 +197,4 @@ def get_tests_allocation(number_of_instances, tests_file_path):
             current_allocation_size += 1
 
         tests_allocation.append(current_allocation)
-    arrrr = [len(alloca) for alloca in tests_allocation]
-    print(arrrr)
     return tests_allocation
-
-
-
-
-print(get_tests_allocation(10, "conf.json"))
