@@ -631,7 +631,6 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     server_numeric_version = tests_settings.serverNumericVersion
     start_message = "Executing tests with the server {} - and the server ip {}".format(server, server_ip)
     prints_manager.add_print_job(start_message, print, thread_index)
-    # GGG - verify that there is no good reason we were calling options_handler() again
     is_nightly = tests_settings.nightly
     is_memory_check = tests_settings.memCheck
     slack = tests_settings.slack
@@ -769,18 +768,11 @@ def manage_tests(tests_settings):
     is_nightly = tests_settings.nightly
     number_of_instances = len(instances_ips)
     prints_manager = ParallelPrintsManager(number_of_instances)
-    # GGG
-    if not tests_settings.api_key:
-        print_color("api_key is NULL", LOG_COLORS.GREEN)
-    else:
-        print_color("api_key is NOT NULL", LOG_COLORS.GREEN)
 
     if tests_settings.server:
         # If the user supplied a server - all tests will be done on that server.
         server_ip = tests_settings.server
         print_color("Starting tests for {}".format(server_ip), LOG_COLORS.GREEN)
-        # GGG
-        print_color("tests_settings.server is not null".format(server_ip), LOG_COLORS.GREEN)
         print("Starts tests with server url - https://{}".format(server_ip))
         all_tests = get_all_tests(tests_settings)
         execute_testing(tests_settings, server_ip, [], all_tests, is_ami=False, thread_index=0,
@@ -800,8 +792,6 @@ def manage_tests(tests_settings):
             unmockable_tests = [test for test in all_unmockable_tests_list if test in tests_allocation_for_instance]
             mockable_tests = [test for test in tests_allocation_for_instance if test not in unmockable_tests]
             print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
-            # GGG
-            print_color("tests_settings.server is null and nightly", LOG_COLORS.GREEN)
             print("Starts tests with server url - https://{}".format(ami_instance_ip))
             thread_args = (tests_settings, current_instance, mockable_tests, unmockable_tests)
             thread_kwargs = {
@@ -816,8 +806,6 @@ def manage_tests(tests_settings):
         for ami_instance_name, ami_instance_ip in instances_ips:
             if ami_instance_name == tests_settings.serverVersion:
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
-                # GGG
-                print_color("Not tests_settings.server, Not nightly".format(ami_instance_name), LOG_COLORS.GREEN)
                 print("Starts tests with server url - https://{}".format(ami_instance_ip))
                 all_tests = get_all_tests(tests_settings)
                 unmockable_tests = get_unmockable_tests(tests_settings)
