@@ -612,6 +612,8 @@ def main():
         if not success:
             postupdate_fails.add((instance_name, integration_of_instance))
 
+    # reinitiate the client since its authorization has probably expired by now
+    client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
     __disable_integrations_instances(client, all_module_instances)
 
     success = report_tests_status(preupdate_fails, postupdate_fails, new_integrations_names)
