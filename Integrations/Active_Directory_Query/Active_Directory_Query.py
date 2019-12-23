@@ -414,7 +414,7 @@ def search_computers(default_base_dn, page_size):
         if not args.get('custom-field-data'):
             raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
         query = "(&(objectClass=user)(objectCategory=computer)({}={}))".format(
-            args['custom-field-type'], args['ustom-field-data'])
+            args['custom-field-type'], args['custom-field-data'])
 
     if args.get('attributes'):
         custome_attributes = args['attributes'].split(",")

@@ -1,5 +1,5 @@
 ## [Unreleased]
-Allow authenticating with a self deployed Azure application.
+Added content-version and content-name headers to Oproxy request.
 
 ## [19.12.0] - 2019-12-10
 Added 7 new commands.
