@@ -139,7 +139,8 @@ def main():
                 elif current_time - last_update_time > 30:  # printing the message every 30 seconds
                     print("{} at ip {} is not ready yet - waiting for it to start".format(ami_instance_name, ami_instance_ip))
 
-        last_update_time = current_time
+        if current_time - last_update_time > 30:
+            last_update_time = current_time
         if len(instance_ips) > len(ready_ami_list):
             sleep(1)
 
