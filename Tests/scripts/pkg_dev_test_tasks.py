@@ -3,7 +3,6 @@ import argparse
 import yaml
 import glob
 import subprocess
-import io
 import os
 import hashlib
 import sys
@@ -14,7 +13,7 @@ from datetime import datetime
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
-from package_creator import get_code_file, check_module_imports  # noqa: E402
+from package_creator import get_code_file  # noqa: E402
 
 DEF_DOCKER = 'demisto/python:1.3-alpine'
 ENVS_DIRS_BASE = '{}/dev_envs/default_python'.format(SCRIPT_DIR)
@@ -271,29 +270,14 @@ def run_bandit(project_dir, py_num):
     print("bandit completed")
 
 
-def setup_dev_files(project_dir, py_num):
+def setup_dev_files(project_dir):
     # copy demistomock and common server
     shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
     open(project_dir + '/CommonServerUserPython.py', 'a').close()  # create empty file
     shutil.rmtree(project_dir + '/__pycache__', ignore_errors=True)
     shutil.copy(CONTENT_DIR + '/Tests/scripts/dev_envs/pytest/conftest.py', project_dir)
-    check_modules(project_dir, py_num)
     if "/Scripts/CommonServerPython" not in project_dir:  # Otherwise we already have the CommonServerPython.py file
         shutil.copy(CONTENT_DIR + '/Scripts/CommonServerPython/CommonServerPython.py', project_dir)
-
-
-def check_modules(project_dir, py_num):
-    if py_num > 3:
-        code_file_path = get_code_file(project_dir, '.py')
-        try:
-            with io.open(code_file_path, mode='r', encoding='utf-8') as script_file:
-                _, module_name = check_module_imports(script_file.read())
-            if module_name:
-                module_path = os.path.join(CONTENT_DIR, 'Scripts', module_name, module_name + '.py')
-                print_v('Copying ' + os.path.join(CONTENT_DIR, 'Scripts', module_path))
-                shutil.copy(os.path.join(module_path), project_dir)
-        except Exception as e:
-            print_v('Unable to retrieve the module file {}: {}'.format(module_name, str(e)))
 
 
 def main():
@@ -346,7 +330,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
         for try_num in (1, 2):
             print_v("Using docker image: {}".format(docker))
             py_num = get_python_version(docker)
-            setup_dev_files(project_dir, py_num)
+            setup_dev_files(project_dir)
             try:
                 if not args.no_flake8:
                     run_flake8(project_dir, py_num)
