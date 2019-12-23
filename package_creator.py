@@ -195,15 +195,13 @@ def get_code_file(package_path, script_type):
     :return: path to found code file
     :rtype: str
     """
-    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|' \
-                   r'demistomock\.py|test_.*\.py|_test\.py|conftest\.py|Module\.py'
 
+    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|' \
+                   r'demistomock\.py|test_.*\.py|_test\.py|conftest\.py'
     if not package_path.endswith('/'):
         package_path += '/'
     if package_path.endswith('Scripts/CommonServerPython/'):
         return package_path + 'CommonServerPython.py'
-    if package_path.endswith('Module'):
-        return os.path.join(package_path, os.path.basename(package_path) + '.py')
 
     script_path = list(filter(lambda x: not re.search(ignore_regex, x),
                               glob.glob(package_path + '*' + script_type)))[0]
@@ -214,10 +212,6 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
     script_path = get_code_file(package_path, script_type)
     with io.open(script_path, mode='r', encoding='utf-8') as script_file:
         script_code = script_file.read()
-
-    module_import, module_name = check_module_imports(script_code)
-    if module_import:
-        script_code = insert_module_code(script_code, module_import, module_name)
 
     clean_code = clean_python_code(script_code)
 
@@ -255,44 +249,13 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
 
 
 def clean_python_code(script_code, remove_print_future=True):
-    script_code = remove_imports(script_code)
-
+    script_code = script_code.replace("import demistomock as demisto", "")
+    script_code = script_code.replace("from CommonServerPython import *", "")
+    script_code = script_code.replace("from CommonServerUserPython import *", "")
     # print function is imported in python loop
     if remove_print_future:  # docs generation requires to leave this
         script_code = script_code.replace("from __future__ import print_function", "")
     return script_code
-
-
-def remove_imports(script_code):
-    script_code = script_code.replace("import demistomock as demisto", "")
-    script_code = script_code.replace("from CommonServerPython import *", "")
-    script_code = script_code.replace("from CommonServerUserPython import *", "")
-    return script_code
-
-
-def check_module_imports(script_code):
-    module_regex = r'from ([\w\d]+Module) import \*(?:  # noqa: E402)?'
-
-    module_match = re.search(module_regex, script_code)
-    if module_match:
-        return module_match.group(), module_match.group(1)
-    else:
-        return '', ''
-
-
-def insert_module_code(script_code, module_import, module_name):
-    module_path = os.path.join('./Scripts', module_name, module_name + '.py')
-    try:
-        with io.open(module_path, mode='r', encoding='utf-8') as script_file:
-            client_code = script_file.read()
-
-        client_code = '\n### GENERATED CODE ###\n# This code was inserted in place of an API module.{}\n'\
-            .format(client_code)
-
-    except Exception as e:
-        raise ValueError('Could not retrieve the Microsoft client code: {}'.format(str(e)))
-
-    return script_code.replace(module_import, client_code)
 
 
 def get_package_path():
