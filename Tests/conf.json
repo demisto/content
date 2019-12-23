@@ -1902,6 +1902,22 @@
             "playbookID": "ThreatStream-Test"
         },
         {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_event-Test"
+        },
+        {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_forum-Test"
+        },
+        {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_report-Test"
+        },
+        {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_reputation-Test"
+        },
+        {
             "integrations": "BluecatAddressManager",
             "playbookID": "Bluecat Address Manager test"
         },
