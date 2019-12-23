@@ -88,20 +88,21 @@ VERSIONS = {
 # NOTE: Same method used in EWSv2
 # If you are modifying this probably also need to modify in the other file
 def exchangelib_cleanup():
+    key_protocols = exchangelib.protocol.CachingProtocol._protocol_cache.items()
     try:
-        for key, protocol in exchangelib.protocol.CachingProtocol._protocol_cache.items():
-            try:
-                if "thread_pool" in protocol.__dict__:
-                    demisto.debug('terminating thread pool key{} id: {}'.format(key, id(protocol.thread_pool)))
-                    protocol.thread_pool.terminate()
-                    del protocol.__dict__["thread_pool"]
-                else:
-                    demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
-            except Exception as ex:
-                demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
         exchangelib.close_connections()
     except Exception as ex:
         demisto.error("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
+    for key, protocol in key_protocols:
+        try:
+            if "thread_pool" in protocol.__dict__:
+                demisto.debug('terminating thread pool key{} id: {}'.format(key, id(protocol.thread_pool)))
+                protocol.thread_pool.terminate()
+                del protocol.__dict__["thread_pool"]
+            else:
+                demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
+        except Exception as ex:
+            demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
 
 
 def get_account(account_email):
