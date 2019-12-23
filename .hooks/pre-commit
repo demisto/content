@@ -15,20 +15,15 @@ if [ -e "./venv/bin/activate" -a -z "${VIRTUAL_ENV}" ]; then
     source ./venv/bin/activate
     DO_DEACTIVATE=1
 fi
-if [[ -z "${WINDIR}" ]]
-    then
-        PYTHONPATH="`pwd`:${PYTHONPATH}" python Tests/scripts/validate_files.py -t true
-        PYTHONPATH="`pwd`:${PYTHONPATH}" python Tests/scripts/hook_validations/secrets.py
-    else
-        python Tests/scripts/validate_files.py
-        python Tests/scripts/hook_validations/secrets.py
-fi
+
+demisto-sdk validate -t true -g
+demisto-sdk secrets
 
 RES=$?
 
 echo ""
 if [[ -n "$CONTENT_PRECOMMIT_RUN_DEV_TASKS" ]]; then
-    echo "Running content dev tasks (flake8, mypy, pylint, pytst) as env variable CONTENT_PRECOMMIT_RUN_DEV_TASKS is set."
+    echo "Running content dev tasks (flake8, mypy, bandit, pylint, pytest) as env variable CONTENT_PRECOMMIT_RUN_DEV_TASKS is set."
     ./Tests/scripts/run_all_pkg_dev_tasks.sh
     RES=$(($RES + $?))
 else    
