@@ -1,4 +1,3 @@
-import json
 from FeedCSV import *
 import requests_mock
 
