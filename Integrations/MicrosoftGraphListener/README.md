@@ -1,4 +1,4 @@
-<p>Microsoft Graph allows Demisto authorized access to a user's Outlook mail data in a personal or organization account. This integration was integrated and tested with version 1.0 of Microsoft Graph Mail Single User</p>
+<p>Microsoft Graph allows Demisto authorized access to a user's Outlook mail data in a personal or organization account. This integration was tested with version 1.0 of Microsoft Graph Mail Single User.</p>
 <h2>Use Cases</h2>
 <ul>
 <li>Monitor a specific email account and create incidents from incoming emails to the defined folder.</li>
