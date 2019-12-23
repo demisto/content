@@ -13,7 +13,7 @@ from Tests.test_utils import print_color, LOG_COLORS  # noqa: E402
 
 
 def run_dev_task(pkg_dir: str, params: Optional[List[str]]) -> Tuple[subprocess.CompletedProcess, str]:
-    args = ['demisto-sdk lint', '-d', pkg_dir]
+    args = [SCRIPT_DIR + '/pkg_dev_test_tasks.py', '-d', pkg_dir]
     if params:
         args.extend(params)
     cmd_line = " ".join(args)
