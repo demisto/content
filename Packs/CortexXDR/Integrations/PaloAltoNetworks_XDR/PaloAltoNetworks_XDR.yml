@@ -717,12 +717,14 @@ script:
       description: Last seen in epoch (milliseconds)
       type: Date
     - contextPath: PaloAltoNetworksXDR.Endpoint.content_version
-      type: Unknown
+      description: Content version
+      type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.installation_package
       description: Installation package
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.active_directory
-      type: Unknown
+      description: Active directory
+      type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.install_date
       description: Install date in epoch (milliseconds)
       type: Date
