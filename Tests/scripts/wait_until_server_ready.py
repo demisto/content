@@ -134,7 +134,7 @@ def main():
                 if res.status_code == 200:
                     print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
                     ready_ami_list.append(ami_instance_name)
-                    instance_types_to_create[ami_instance_name] -= - 1
+                    instance_types_to_create[ami_instance_name] -= 1
                 elif current_time - last_update_time > 30:  # printing the message every 30 seconds
                     print("{} is not ready yet - waiting for it to start".format(ami_instance_name))
                     last_update_time = current_time
