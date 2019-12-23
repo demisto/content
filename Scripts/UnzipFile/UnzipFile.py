@@ -8,6 +8,7 @@ from os.path import isfile
 from subprocess import Popen, PIPE
 from tempfile import mkdtemp
 import shutil
+import shlex
 
 
 def main(dir_path):
@@ -69,7 +70,8 @@ def main(dir_path):
     excluded_dirs = [d for d in os.listdir('.') if isdir(d)]
     # extracting the zip file
     cmd = '7z x -p{} -o{} {}'.format(password, dir_path, file_path)
-    process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
+    process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    # process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     if stderr:
         return_error(str(stderr))
