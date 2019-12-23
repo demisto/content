@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue where file size returned 0
+The file size (in bytes) is returned as expected.
 
 
 ## [19.12.0] - 2019-12-10
