@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [19.12.1] - 2019-12-23
+Fix for failed Convert file hash to corresponding hashes
+Fixed casing from FIle.SHA1 to File.SHA1
+Fixed Inputs in set
 
 ## [19.11.1] - 2019-11-26
 #### New Playbook
