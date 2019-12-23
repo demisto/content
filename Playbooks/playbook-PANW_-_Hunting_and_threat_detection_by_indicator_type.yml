@@ -443,7 +443,6 @@ tasks:
     type: regular
     task:
       id: d1762265-fecc-426c-8247-ad1286c4a568
-      description: Set detected source and destination IP addresses.
       version: -1
       name: Set detected source and destination IPs
       description: Sets a value into the context with the given context key.
