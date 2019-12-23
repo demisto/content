@@ -1,0 +1,37 @@
+{
+  "id": "test_scan_id",
+  "title": "faketitle",
+  "summary": "fakesummary",
+  "tags": [
+    "tags1",
+    "tags2",
+    "tags3"
+  ],
+  "body": "fakebody",
+  "title_asset": "/assets/test_scan_id",
+  "title_asset_id": "test_scan_id",
+  "assets": [
+    "/assets/test_scan_id"
+  ],
+  "asset_ids": [
+    "test_scan_id"
+  ],
+  "sources": [
+    {
+      "type": "faketype",
+      "source_id": null,
+      "title": "http://123-fake-api.com/home/ddw/chats/channels/test_scan_id",
+      "source": null,
+      "original": "http://123-fake-api.com/home/ddw/chats/channels/test_scan_id",
+      "platform_url": null
+    }
+  ],
+  "is_featured": false,
+  "ingested_at": "2019-09-23T20:27:20.638+00:00",
+  "posted_at": "2019-09-23T20:27:20.638+00:00",
+  "platform_url": "http://123-fake-api.com/home/intelligence/reports/report/test_scan_id",
+  "notified_at": "2019-09-23T20:27:20.638+00:00",
+  "updated_at": "2019-09-23T20:27:20.638+00:00",
+  "version_posted_at": "2019-09-23T20:27:20.638+00:00",
+  "published_status": "published"
+}
