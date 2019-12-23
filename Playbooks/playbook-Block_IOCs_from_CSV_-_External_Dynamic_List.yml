@@ -454,7 +454,7 @@ inputs:
 - key: rule-position
   value:
     simple: Top
-  required: falseo
+  required: false
   description: |-
     The position of the rule in the ruleset. Valid values are:
       * Top
