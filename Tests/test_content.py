@@ -506,24 +506,24 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
         prints_manager.add_print_job('\n------ Test {} start ------'.format(test_message), print, thread_index)
         prints_manager.add_print_job('Skip test', print, thread_index)
         prints_manager.add_print_job('------ Test {} end ------\n'.format(test_message), print, thread_index)
-        prints_manager.execute_thread_prints()
+        prints_manager.execute_thread_prints(thread_index)
         return
 
     if not run_all_tests:
         # Skip filtered test
         if is_filter_configured and playbook_id not in filtered_tests:
-            prints_manager.execute_thread_prints()
+            prints_manager.execute_thread_prints(thread_index)
             return
 
     # Skip bad test
     if playbook_id in skipped_tests_conf:
         skipped_tests.add("{0} - reason: {1}".format(playbook_id, skipped_tests_conf[playbook_id]))
-        prints_manager.execute_thread_prints()
+        prints_manager.execute_thread_prints(thread_index)
         return
 
     # Skip integration
     if has_skipped_integration:
-        prints_manager.execute_thread_prints()
+        prints_manager.execute_thread_prints(thread_index)
         return
 
     # Skip version mismatch test
@@ -537,14 +537,14 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
                                                                                                   test_to_version)
         prints_manager.add_print_job(warning_message, print_warning, thread_index)
         prints_manager.add_print_job('------ Test {} end ------\n'.format(test_message), print, thread_index)
-        prints_manager.execute_thread_prints()
+        prints_manager.execute_thread_prints(thread_index)
         return
 
     are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf,
                                             playbook_id, thread_index=thread_index, prints_manager=prints_manager)
     if not are_params_set:
         failed_playbooks.append(playbook_id)
-        prints_manager.execute_thread_prints()
+        prints_manager.execute_thread_prints(thread_index)
         return
 
     test_message = update_test_msg(integrations, test_message)
@@ -560,7 +560,7 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
     run_test(demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
              succeed_playbooks, test_message, test_options, slack, circle_ci,
              build_number, server, build_name, is_ami, thread_index=thread_index, prints_manager=prints_manager)
-    prints_manager.execute_thread_prints()
+    prints_manager.execute_thread_prints(thread_index)
 
 
 def restart_demisto_service(ami, demisto_api_key, server, thread_index=0, prints_manager=None):
@@ -671,7 +671,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     skipped_integration = set([])
 
     disable_all_integrations(demisto_api_key, server, thread_index=thread_index, prints_manager=prints_manager)
-    prints_manager.execute_thread_prints()
+    prints_manager.execute_thread_prints(thread_index)
     mockable_tests = get_tests_records_from_names(tests_settings, mockable_tests_names)
     unmockable_tests = get_tests_records_from_names(tests_settings, unmockable_tests_names)
 
@@ -697,7 +697,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         prints_manager.add_print_job("Restarting demisto service", print, thread_index)
         restart_demisto_service(ami, demisto_api_key, server, thread_index=thread_index, prints_manager=prints_manager)
         prints_manager.add_print_job("Demisto service restarted\n", print, thread_index)
-        prints_manager.execute_thread_prints()
+        prints_manager.execute_thread_prints(thread_index)
     for t in unmockable_tests:
         run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
@@ -711,23 +711,23 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                        proxy, is_ami, thread_index=thread_index, prints_manager=prints_manager)
 
     create_result_files(failed_playbooks, skipped_integration, skipped_tests)
-    prints_manager.execute_thread_prints()
+    prints_manager.execute_thread_prints(thread_index)
     if is_ami and build_name == 'master':
         updating_mocks_msg = "Pushing new/updated mock files to mock git repo."
         prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
         ami.upload_mock_files(build_name, build_number)
-        prints_manager.execute_thread_prints()
+        prints_manager.execute_thread_prints(thread_index)
 
     if len(failed_playbooks):
         tests_failed_msg = "Some tests have failed. Not destroying instances."
         prints_manager.add_print_job(tests_failed_msg, print, thread_index)
-        prints_manager.execute_thread_prints()
+        prints_manager.execute_thread_prints(thread_index)
         sys.exit(1)
     else:
         file_path = "./Tests/is_build_passed_{}.txt".format(server_version.replace(' ', ''))
         with open(file_path, "w") as is_build_passed_file:
             is_build_passed_file.write('Build passed')
-        prints_manager.execute_thread_prints()
+        prints_manager.execute_thread_prints(thread_index)
 
 
 def get_unmockable_tests(tests_settings):
