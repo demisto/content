@@ -117,26 +117,27 @@ def main():
         instance_ips = instance_file.readlines()
         instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
-    instance_types_to_create = get_instance_types_count(instance_ips)
+    # instance_types_to_create = get_instance_types_count(instance_ips)
     loop_start_time = time.time()
     last_update_time = loop_start_time
+    instance_ips_not_created = [ami_instance_ip for ami_instance_name, ami_instance_ip in instance_ips]
 
     while len(ready_ami_list) < len(instance_ips):
         current_time = time.time()
         exit_if_timed_out(loop_start_time, current_time)
 
         for ami_instance_name, ami_instance_ip in instance_ips:
-            if instance_types_to_create[ami_instance_name] > 0:
+            if ami_instance_ip in instance_ips_not_created:
                 host = "https://{}".format(ami_instance_ip)
                 path = '/health'
                 method = 'GET'
                 res = requests.request(method=method, url=(host + path), verify=False)
                 if res.status_code == 200:
                     print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
-                    ready_ami_list.append(ami_instance_name)
-                    instance_types_to_create[ami_instance_name] -= 1
+                    # ready_ami_list.append(ami_instance_name)
+                    instance_ips_not_created.remove(ami_instance_ip)
                 elif current_time - last_update_time > 30:  # printing the message every 30 seconds
-                    print("{} is not ready yet - waiting for it to start".format(ami_instance_name))
+                    print("{} at ip {} is not ready yet - waiting for it to start".format(ami_instance_name, ami_instance_ip))
                     last_update_time = current_time
 
         if len(instance_ips) > len(ready_ami_list):
