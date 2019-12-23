@@ -354,10 +354,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 03ac66c8-ebed-49d0-8d8a-8675db38e88a
+    taskid: 5aa360f1-019e-4a0a-8c5a-c7d7c46ed122
     type: playbook
     task:
-      id: 03ac66c8-ebed-49d0-8d8a-8675db38e88a
+      id: 5aa360f1-019e-4a0a-8c5a-c7d7c46ed122
       version: -1
       name: PAN-OS EDL Setup
       description: Sets up external dynamic list in PAN-OS.\nIn case file exists in
@@ -376,6 +376,8 @@ tasks:
       auto-commit:
         complex:
           root: inputs.AutoCommit
+      device-group: {}
+      inbound-or-outbound-rule: {}
       ioc-type:
         simple: URL
       list-name:
@@ -391,7 +393,13 @@ tasks:
                   simple: inputs.LogForwarding
                 iscontext: true
       pre-post-rulebase:
-        simple: pre-rulebase
+        complex:
+          root: inputs.url-pre-post-rulebase
+      relative-rule-name: {}
+      rule-name: {}
+      rule-position:
+        complex:
+          root: inputs.url-rule-position
       web-server-ip:
         complex:
           root: inputs.EDLServerIP
@@ -412,12 +420,15 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 1b142fd6-27ca-4cad-8291-57380d422c8e
+    taskid: 5683eba8-05cf-4f3c-831d-15c9bb67f0f3
     type: playbook
     task:
-      id: 1b142fd6-27ca-4cad-8291-57380d422c8e
+      id: 5683eba8-05cf-4f3c-831d-15c9bb67f0f3
       version: -1
       name: PAN-OS EDL Setup
+      description: Sets up external dynamic list in PAN-OS.\nin case file exists in
+        web server it will sync it to demisto. then it will create an EDL object and
+        a matching rule.
       playbookName: PAN-OS EDL Setup
       description: ""
       type: playbook
@@ -431,6 +442,8 @@ tasks:
         simple: drop
       auto-commit:
         simple: "No"
+      device-group: {}
+      inbound-or-outbound-rule: {}
       ioc-type:
         simple: IP
       list-name:
@@ -446,7 +459,13 @@ tasks:
                   simple: inputs.LogForwarding
                 iscontext: true
       pre-post-rulebase:
-        simple: pre-rulebase
+        complex:
+          root: inputs.ip-pre-post-rulebase
+      relative-rule-name: {}
+      rule-name: {}
+      rule-position:
+        complex:
+          root: inputs.ip-rule-position
       web-server-ip:
         complex:
           root: inputs.EDLServerIP
@@ -596,6 +615,34 @@ inputs:
     This input establishes whether to commit the configuration automatically.
     Yes - Commit automatically.
     No - Commit manually.
+- key: url-pre-post-rulebase
+  value:
+    simple: pre-rulebase
+  required: false
+  description: Either pre-rulebase or post-rulebase,  according to the rule structure.
+- key: ip-pre-post-rulebase
+  value:
+    simple: pre-rulebase
+  required: false
+  description: Either pre-rulebase or post-rulebase,  according to the rule structure.
+- key: url-rule-position
+  value: {}
+  required: false
+  description: |-
+    The position of the rule in the ruleset. Valid values are:
+      * Top
+      * Bottom
+      * Before
+      * After
+- key: ip-rule-position
+  value: {}
+  required: false
+  description: |-
+    The position of the rule in the ruleset. Valid values are:
+      * Top
+      * Bottom
+      * Before
+      * After
 outputs: []
 tests:
   - PAN-OS - Block IP and URL - External Dynamic List Test

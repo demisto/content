@@ -32,9 +32,8 @@ configuration:
   name: secretKey
   required: false
   type: 4
-- defaultvalue: 'true'
-  display: Trust any certificate (unsecure)
-  name: insecure
+- display: Trust any certificate (not secure)
+  name: new_insecure
   required: false
   type: 8
 - display: Use system proxy settings
@@ -716,7 +715,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Limit number of returned results.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -787,7 +786,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Limit number of returned results.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -922,7 +921,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Limit number of returned results.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -1185,10 +1184,385 @@ script:
     - contextPath: File.MD5
       description: MD5 hash of the file
       type: string
+  - arguments:
+    - default: false
+      description: The string to query.
+      isArray: false
+      name: query_string
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The group source by which to filter. Can be "cloud" or "ldap".
+      isArray: false
+      name: query_source
+      predefined:
+      - cloud
+      - ldap
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the list of groups according to the specified query.
+    execution: false
+    name: mimecast-find-groups
+    outputs:
+    - contextPath: Mimecast.Group.Name
+      description: The name of the group.
+      type: String
+    - contextPath: Mimecast.Group.Source
+      description: The source of the group.
+      type: String
+    - contextPath: Mimecast.Group.ID
+      description: The Mimecast ID of the group.
+      type: String
+    - contextPath: Mimecast.Group.NumberOfUsers
+      description: The number of members in the group.
+      type: Number
+    - contextPath: Mimecast.Group.ParentID
+      description: The Mimecast ID of the group's parent.
+      type: String
+    - contextPath: Mimecast.Group.NumberOfChildGroups
+      description: The number of child groups.
+      type: Number
+  - arguments:
+    - default: false
+      description: The Mimecast ID of the group to return.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the members list for the specified group.
+    execution: false
+    name: mimecast-get-group-members
+    outputs:
+    - contextPath: Mimecast.Group.Users.Name
+      description: The user's display name.
+      type: String
+    - contextPath: Mimecast.Group.Users.EmailAddress
+      description: The user's email address.
+      type: String
+    - contextPath: Mimecast.Group.Users.Domain
+      description: The domain name of the user's email address.
+      type: String
+    - contextPath: Mimecast.Group.Users.Type
+      description: The user type.
+      type: String
+    - contextPath: Mimecast.Group.Users.InternalUser
+      description: Whether the user is internal.
+      type: Boolean
+    - contextPath: Mimecast.Group.Users.IsRemoved
+      description: Whether the user is part of the group.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The Mimecast ID of the group to add the user to.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: The email address of the user to add to a group.
+      isArray: false
+      name: email_address
+      required: false
+      secret: false
+    - default: false
+      description: A domain to add to a group.
+      isArray: false
+      name: domain_address
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a user to a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.
+    execution: false
+    name: mimecast-add-group-member
+    outputs:
+    - contextPath: Mimecast.Group.Users.EmailAddress
+      description: The user's email address.
+      type: String
+    - contextPath: Mimecast.Group.Users.IsRemoved
+      description: Whether the user is part of the group.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The Mimecast ID of the group from which to remove the user.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: The email address of the user to remove from the group.
+      isArray: false
+      name: email_address
+      required: false
+      secret: false
+    - default: false
+      description: A domain of the user to remove from a group.
+      isArray: false
+      name: domain_address
+      required: false
+      secret: false
+    deprecated: false
+    description: Removes a user from a group. The email_address and domain_adddress arguments are optional, but one of them must be supplied.
+    execution: false
+    name: mimecast-remove-group-member
+    outputs:
+    - contextPath: Mimecast.Group.Users.EmailAddress
+      description: The user's email address.
+      type: String
+    - contextPath: Mimecast.Group.Users.IsRemoved
+      description: Whether the user part of the group.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The name of the new group.
+      isArray: false
+      name: group_name
+      required: true
+      secret: false
+    - default: false
+      description: The Mimecast ID of the new group's parent. Default will be root
+        level.
+      isArray: false
+      name: parent_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new Mimecast group.
+    execution: false
+    name: mimecast-create-group
+    outputs:
+    - contextPath: Mimecast.Group.Name
+      description: The name of the group.
+      type: String
+    - contextPath: Mimecast.Group.Source
+      description: The source of the group.
+      type: String
+    - contextPath: Mimecast.Group.ID
+      description: The Mimecast ID of the group.
+      type: String
+    - contextPath: Mimecast.Group.NumberOfUsers
+      description: The number of members in the group.
+      type: Number
+    - contextPath: Mimecast.Group.ParentID
+      description: The Mimecast ID of the group's parent.
+      type: String
+    - contextPath: Mimecast.Group.NumberOfChildGroups
+      description: The number of child groups.
+      type: Number
+  - arguments:
+    - default: false
+      description: The new name for the group.
+      isArray: false
+      name: group_name
+      required: false
+      secret: false
+    - default: false
+      description: The Mimecast ID of the group to update.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: The new parent group.
+      isArray: false
+      name: parent_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an existing Mimecast group.
+    execution: false
+    name: mimecast-update-group
+    outputs:
+    - contextPath: Mimecast.Group.Name
+      description: The name of the group.
+      type: String
+    - contextPath: Mimecast.Group.ID
+      description: The Mimecast ID of the group.
+      type: String
+    - contextPath: Mimecast.Group.ParentID
+      description: The Mimecast ID of the group's parent.
+      type: String
+  - arguments:
+    - default: false
+      description: The file hash or messageId value.
+      isArray: false
+      name: hash_message_id
+      required: true
+      secret: false
+    - default: false
+      description: The reason for creating the remediation incident.
+      isArray: false
+      name: reason
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The message component by which to search. Can be "hash" or "messagId". Default is "hash".
+      isArray: false
+      name: search_by
+      predefined:
+      - hash
+      - messageId
+      required: false
+      secret: false
+    - default: false
+      description: 'The startt date of messages to remediate. Default value is the previous month. (Format: yyyy-mm-ddThh:mm:ss+0000)'
+      isArray: false
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: 'Theend date of messages to remediate. Default value is the end of the current day. (Format: yyyy-mm-ddThh:mm:ss+0000)'
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new Mimecast remediation incident.
+    execution: false
+    name: mimecast-create-remediation-incident
+    outputs:
+    - contextPath: Mimecast.Incident.ID
+      description: The secure Mimecast remediation ID.
+      type: String
+    - contextPath: Mimecast.Incident.Code
+      description: The incident code generated at creation.
+      type: String
+    - contextPath: Mimecast.Incident.Type
+      description: The incident type.
+      type: String
+    - contextPath: Mimecast.Incident.Reason
+      description: The reason provided at the creation of the remediation incident.
+      type: String
+    - contextPath: Mimecast.Incident.IdentifiedMessages
+      description: The number of messages identified based on the search criteria.
+      type: Number
+    - contextPath: Mimecast.Incident.SuccessfullyRemediatedMessages
+      description: The number successfully remediated messages.
+      type: Number
+    - contextPath: Mimecast.Incident.FailedRemediatedMessages
+      description: The number of messages that failed to remediate.
+      type: Number
+    - contextPath: Mimecast.Incident.MessagesRestored
+      description: The number of messages that were restored from the incident.
+      type: Number
+    - contextPath: Mimecast.Incident.LastModified
+      description: The date and time that the incident was last modified.
+      type: String
+    - contextPath: Mimecast.Incident.SearchCriteria.From
+      description: The sender email address or domain.
+      type: String
+    - contextPath: Mimecast.Incident.SearchCriteria.To
+      description: The recipient email address or domain.
+      type: String
+    - contextPath: Mimecast.Incident.SearchCriteria.MessageID
+      description: The message ID used when creating the remediation incident.
+      type: String
+    - contextPath: Mimecast.Incident.SearchCriteria.FileHash
+      description: The file hash used when creating the remediation incident.
+      type: String
+    - contextPath: Mimecast.Incident.SearchCriteria.StartDate
+      description: The start date of included messages.
+      type: String
+    - contextPath: Mimecast.Incident.SearchCriteria.EndDate
+      description: The end date of included messages.
+      type: String
+  - arguments:
+    - default: false
+      description: The Mimecast ID for a remediation incident.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a Mimecast remediation incident.
+    execution: false
+    name: mimecast-get-remediation-incident
+    outputs:
+    - contextPath: Mimecast.Incident.ID
+      description: The secure Mimecast remediation ID.
+      type: String
+    - contextPath: Mimecast.Incident.Code
+      description: The incident code generated at creation.
+      type: String
+    - contextPath: Mimecast.Incident.Type
+      description: The incident type.
+      type: String
+    - contextPath: Mimecast.Incident.Reason
+      description: The reason provided when the remediation incident was created.
+      type: String
+    - contextPath: Mimecast.Incident.IdentifiedMessages
+      description: The number of messages identified based on the search criteria.
+      type: Number
+    - contextPath: Mimecast.Incident.SuccessfullyRemediatedMessages
+      description: The number of successfully remediated messages.
+      type: Number
+    - contextPath: Mimecast.Incident.FailedRemediatedMessages
+      description: The number of messages that failed to remediate.
+      type: Number
+    - contextPath: Mimecast.Incident.MessagesRestored
+      description: The number of messages that were restored from the incident.
+      type: Number
+    - contextPath: Mimecast.Incident.LastModified
+      description: The date and time that the incident was last modified.
+      type: String
+    - contextPath: Mimecast.Incident.SearchCriteria.From
+      description: The sender email address or domain.
+      type: String
+    - contextPath: Mimecast.Incident.SearchCriteria.To
+      description: The recipient email address or domain.
+      type: String
+    - contextPath: Mimecast.Incident.SearchCriteria.MessageID
+      description: The message ID used when creating the remediation incident.
+      type: String
+    - contextPath: Mimecast.Incident.SearchCriteria.FileHash
+      description: The file hash used when creating the remediation incident.
+      type: String
+    - contextPath: Mimecast.Incident.SearchCriteria.StartDate
+      description: The start date of included messages.
+      type: String
+    - contextPath: Mimecast.Incident.SearchCriteria.EndDate
+      description: The end date of included messages.
+      type: String
+  - arguments:
+    - default: false
+      description: List of file hashes to check if they have been seen within
+        an account.
+      isArray: true
+      name: hashes_to_search
+      required: true
+      secret: false
+    deprecated: false
+    description: Searches for one or more file hashes in the account. Maximum is 100.
+    execution: false
+    name: mimecast-search-file-hash
+    outputs:
+    - contextPath: Mimecast.Hash.HashValue
+      description: The file hash value.
+      type: String
+    - contextPath: Mimecast.Hash.Detected
+      description: Whether the hash was found in the account.
+      type: Boolean
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - Mimecast test
