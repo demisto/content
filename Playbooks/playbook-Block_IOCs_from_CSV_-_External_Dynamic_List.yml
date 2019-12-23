@@ -105,7 +105,7 @@ tasks:
       id: d6cc76f7-2d52-4258-8aa5-a53edf1d6c08
       version: -1
       name: Is there a CSV to parse?
-      description: "Checks whether there is a CSV file to parse"
+      description: "Checks whether there is a CSV file to parse."
       type: condition
       iscommand: false
       brand: ""
@@ -292,7 +292,7 @@ tasks:
       id: 8c250efa-29b1-4041-8494-26b5bff72aab
       version: -1
       name: Are there indicators to block?
-      description: "Checks whether there are indicators to block"
+      description: "Checks whether there are indicators to block."
       type: condition
       iscommand: false
       brand: ""
@@ -476,3 +476,4 @@ inputs:
 outputs: []
 tests:
   - No Test
+  
