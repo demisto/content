@@ -8,8 +8,6 @@ def load_test_data(json_path):
     with open(json_path) as f:
         return json.load(f)
 
-    return None
-
 
 def test_get_incident_list(requests_mock):
     from PaloAltoNetworks_XDR import get_incidents_command, Client

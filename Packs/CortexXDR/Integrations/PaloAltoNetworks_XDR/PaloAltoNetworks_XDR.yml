@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Cortex XDR v2
+  id: Cortex XDR - IR
   version: -1
 configuration:
 - display: Fetch incidents
@@ -38,8 +38,8 @@ configuration:
   type: 0
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint and cloud data to stop sophisticated attacks.
-display: Palo Alto Networks Cortex XDR v2
-name: Cortex XDR v2
+display: Palo Alto Networks Cortex XDR - Investigation and Response
+name: Cortex XDR - IR
 script:
   commands:
   - arguments:
@@ -682,6 +682,60 @@ script:
       result set (start by counting from 0).
     execution: false
     name: xdr-get-endpoints
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
+      description: Endpoint ID
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_name
+      description: Endpoint name
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_type
+      description: 'Possible values: AGENT_TYPE_SERVER'
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
+      description: 'Possible values: CONNECTED, DISCONNECTED'
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.os_type
+      description: 'Possible values: AGENT_OS_LINUX, AGENT_OS_MACOS, AGENT_OS_WINDOWS'
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.ip
+      description: List of IPs
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Endpoint.users
+      description: List of users
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Endpoint.domain
+      description: Endpoint Domain
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.alias
+      description: Alias
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.first_seen
+      description: First seen in epoch (milliseconds)
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Endpoint.last_seen
+      description: Last seen in epoch (milliseconds)
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.Endpoint.content_version
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Endpoint.installation_package
+      description: Installation package
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.active_directory
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Endpoint.install_date
+      description: Install date in epoch (milliseconds)
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_version
+      description: Endpoint version (e.g. 7.0.0.1915)
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.is_isolated
+      description: 'Possible values: AGENT_ISOLATED, AGENT_UNISOLATED, null (also
+        indicates that endpoint is NOT isolated)'
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Endpoint.group_name
+      description: Group name
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -912,9 +966,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      description: Sort by one of the following fields (type, subtype, trapsversion,
+        timestamp, domain)
       isArray: false
       name: sort_by
-      description: Sort by one of the following fields (type, subtype, trapsversion, timestamp, domain)
       predefined:
       - type
       - category
