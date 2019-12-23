@@ -2057,6 +2057,7 @@
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
         "nexpose_test": "Issue 18694",
         "Recorded Future Test": "Issue 18922",
+        "Phishing v2 Test - Attachment": "Need to create new testdata (new MSG or EML file) with the URL that is used in the inline phishing test",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
