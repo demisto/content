@@ -359,7 +359,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: FIle.SHA1
+        simple: File.SHA1
       value:
         complex:
           root: File
@@ -436,7 +436,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: FIle.SHA1
+        simple: File.SHA1
       value:
         complex:
           root: File
@@ -552,7 +552,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: FIle.SHA1
+        simple: File.SHA1
       value:
         complex:
           root: File
