@@ -118,11 +118,11 @@ def main():
         instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
     instance_types_to_create = get_instance_types_count(instance_ips)
-    loop_start_time = time.perf_counter()
+    loop_start_time = time.time()
     last_update_time = loop_start_time
 
     while len(ready_ami_list) < len(instance_ips):
-        current_time = time.perf_counter()
+        current_time = time.time()
         exit_if_timed_out(loop_start_time, current_time)
 
         for ami_instance_name, ami_instance_ip in instance_ips:
