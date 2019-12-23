@@ -516,7 +516,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                         package_name = os.path.dirname(script_file_path)
                         if glob.glob(package_name + "/*_test.py"):
                             catched_scripts.add(script_name)
-                            tests.add('Found a unittest for the script {}'.format(script_name))
+                            tests_set.add('Found a unittest for the script {}'.format(script_name))
 
                         updated_script_names.add(script_name)
                         new_versions = (script_fromversion, script_toversion)
@@ -569,7 +569,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                 package_name = os.path.dirname(script_file_path)
                 if glob.glob(package_name + "/*_test.py"):
                     catched_scripts.add(script_name)
-                    tests.add('Found a unittest for the script {}'.format(script_name))
+                    tests_set.add('Found a unittest for the script {}'.format(script_name))
 
                 updated_script_names.add(script_name)
                 new_versions = (script_fromversion, script_toversion)
