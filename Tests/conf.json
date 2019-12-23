@@ -80,7 +80,6 @@
             "playbookID": "Create Phishing Classifier V2 ML Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
-
         },
         {
             "integrations": "ZeroFox",
@@ -117,6 +116,10 @@
         {
             "integrations": "ThreatX",
             "playbookID": "ThreatX-test"
+        },
+        {
+            "integrations": "Akamai WAF SIEM",
+            "playbookID": "Akamai_WAF_SIEM-Test"
         },
         {
             "integrations": "AlienVault OTX",
@@ -610,6 +613,10 @@
         {
             "integrations": "epo",
             "playbookID": "Test Playbook McAfee ePO"
+        },
+        {
+            "integrations": "McAfee DXL",
+            "playbookID": "McAfee DXL - Test"
         },
         {
             "integrations": "activedir",
@@ -1895,6 +1902,22 @@
             "playbookID": "ThreatStream-Test"
         },
         {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_event-Test"
+        },
+        {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_forum-Test"
+        },
+        {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_report-Test"
+        },
+        {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_reputation-Test"
+        },
+        {
             "integrations": "BluecatAddressManager",
             "playbookID": "Bluecat Address Manager test"
         },
@@ -2003,6 +2026,10 @@
         {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
+        },
+        {
+            "integrations": "Infoblox",
+            "playbookID": "Infoblox Test"
         }
     ],
     "skipped_tests": {
