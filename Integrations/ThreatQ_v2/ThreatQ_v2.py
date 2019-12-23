@@ -132,6 +132,22 @@ TYPE_ID_TO_FILE_TYPE = {
     24: 'Whitepaper'
 }
 
+INDICATOR_TYPES = {
+    'File Path': 'file',
+    'File': 'file',
+    'MD5': 'file',
+    'SHA-1': 'file',
+    'SHA-256': 'file',
+    'SHA-384': 'file',
+    'SHA-512': 'file',
+    'IP Address': 'ip',
+    'IPv6 Address': 'ip',
+    'URL': 'url',
+    'URL Path': 'url',
+    'FQDN': 'domain',
+    'Email Address': 'email',
+}
+
 TABLE_HEADERS = {
     'indicator': ['ID', 'Type', 'Value', 'Description', 'Status',
                   'TQScore', 'CreatedAt', 'UpdatedAt', 'URL'],
@@ -140,7 +156,7 @@ TABLE_HEADERS = {
     'attachment': ['ID', 'Name', 'Title', 'Type', 'Size', 'Description', 'MD5', 'CreatedAt', 'UpdatedAt',
                    'MalwareLocked', 'ContentType', 'URL'],
     'attributes': ['ID', 'Name', 'Value'],
-    'sources': ['ID', 'Name']
+    'sources': ['ID', 'Name', 'TLP']
 }
 
 OBJ_DIRECTORY = {
@@ -308,10 +324,10 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
             res = tq_request('GET', url_suffix)
             indicators.append(indicator_data_to_demisto_format(res['data']))
 
-    indicators = indicators or {'Value': value, 'TQScore': -1}
-    entry_context = set_indicator_entry_context(
-        indicator_type=indicator_type,
+    indicators = indicators or [{'Value': value, 'TQScore': -1}]
+    entry_context = aggregate_search_results(
         indicators=indicators,
+        default_indicator_type=indicator_type,
         generic_context=generic_context
     )
 
@@ -560,35 +576,29 @@ def get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id):
 
 def get_malicious_data(tq_score):
     malicious_data = {
-        'Vendor': 'ThreatQ v2',
-        'Description': 'Score from ThreatQ is {0}'.format(tq_score)
+        'Malicious': {
+            'Vendor': 'ThreatQ v2',
+            'Description': 'Score from ThreatQ is {0}'.format(tq_score)
+        }
     }
     return malicious_data
 
 
-def set_indicator_entry_context(indicator_type, indicators, generic_context):
-    if not isinstance(indicators, list):
-        indicators = [indicators]
-    dbot_context = [create_dbot_context(i.get('Value'), indicator_type, i.get('TQScore', -1)) for i in indicators]
+def set_indicator_entry_context(indicator_type, indicator, generic_context):
+    dbot_context = create_dbot_context(indicator.get('Value'), indicator_type, indicator.get('TQScore', -1))
 
+    indicator_type = INDICATOR_TYPES.get(indicator_type) or indicator_type
     generic_context_path = outputPaths.get(indicator_type, 'Indicator(val.ID && val.ID == obj.ID)')
     integration_context_path = CONTEXT_PATH['indicator']
-    ec: Dict = {
-        generic_context_path: [],
-        integration_context_path: [],
-        'DBotScore': []
-    }
-    for dbot, indicator in zip(dbot_context, indicators):
-        if dbot.get('Score') == 3:
-            malicious_data = get_malicious_data(indicator.get('TQScore', -1))
 
-        ec[generic_context_path].append(generic_context)
-        ec['DBotScore'].append(dbot)
-        if indicator:
-            ec[integration_context_path].append(indicator)
+    if dbot_context.get('Score') == 3:
+        malicious_data = get_malicious_data(indicator.get('TQScore', -1))
+        generic_context.update(malicious_data)
 
-    # backwards compatibility
-    ec['DBotScore'] = ec['DBotScore'][0] if len(ec['DBotScore']) == 1 else ec['DBotScore']
+    ec = {generic_context_path: generic_context, 'DBotScore': dbot_context}
+    if indicator:
+        ec[integration_context_path] = indicator
+
     return ec
 
 
@@ -642,6 +652,8 @@ def build_readable(readable_title, obj_type, data, metadata=None):
             readable = readable.replace(data['URL'], url_in_markdown_format)
 
     else:  # 'data' is a list of objects
+        if len(data) == 1:
+            return build_readable(readable_title, obj_type, data[0], metadata=None)
         readable = tableToMarkdown(
             name=readable_title,
             t=data,
@@ -686,11 +698,27 @@ def get_indicator_type_id(indicator_name: str) -> str:
                          f'\n[Error Message: {indicator_types_res.text}]')
 
 
-def advance_search_command():
-    args = demisto.args()
-    limit = args.get('limit', 10)
-    query = args.get('query')
-    indicator_type = args.get('indicator_type')
+def aggregate_search_results(indicators, default_indicator_type, generic_context=None):
+    entry_context = []
+    for i in indicators:
+        entry_context.append(set_indicator_entry_context(
+            indicator_type=i.get('Type') or default_indicator_type,
+            indicator=i,
+            generic_context=generic_context or {'Data': i.get('Value')}
+        ))
+
+    aggregated: Dict = {}
+    for entry in entry_context:
+        for key, value in entry.items():
+            if key in aggregated:
+                aggregated[key].append(value)
+            else:
+                aggregated[key] = [value]
+
+    return aggregated
+
+
+def get_search_body(query, indicator_type):
     search_body = {
         "indicators": [
             [
@@ -707,7 +735,16 @@ def advance_search_command():
             ]
         ]
     }
+    return search_body
 
+
+def advance_search_command():
+    args = demisto.args()
+    limit = args.get('limit', 10)
+    query = args.get('query')
+    indicator_type = args.get('indicator_type')
+
+    search_body = get_search_body(query, indicator_type)
     if limit and isinstance(limit, str) and not limit.isdigit():
         return_error('limit argument must be an integer.')
 
@@ -733,12 +770,8 @@ def advance_search_command():
         search_results = res = tq_request('GET', url_suffix)
         indicators.append(indicator_data_to_demisto_format(res.get('data')))
 
-    indicators = indicators or {'Value': query, 'TQScore': -1}
-    entry_context = set_indicator_entry_context(
-        indicator_type=indicator_type,
-        indicators=indicators,
-        generic_context={'Data': '{}'}
-    )
+    indicators = indicators or [{'Value': query, 'TQScore': -1}]
+    entry_context = aggregate_search_results(indicators=indicators, default_indicator_type=indicator_type)
 
     readable = build_readable(
         readable_title=f'Search results for "{query}":',
@@ -1384,6 +1417,3 @@ try:
 
 except Exception as ex:
     return_error(str(ex))
-
-
-# todo Attributes and Sources in readable are missing
