@@ -6,9 +6,12 @@ import os
 from os.path import isdir
 from os.path import isfile
 from subprocess import Popen, PIPE
+from tempfile import mkdtemp
+import shutil
+import shlex
 
 
-def main():
+def main(dir_path):
     args = demisto.args()  # type: dict
     file_entry_id = ''
     if args.get('fileName') or args.get('lastZipFileInWarroom'):
@@ -66,7 +69,9 @@ def main():
     excluded_files = [f for f in os.listdir('.') if isfile(f)]
     excluded_dirs = [d for d in os.listdir('.') if isdir(d)]
     # extracting the zip file
-    process = Popen(["7z", "x", "-p{}".format(password), file_path], stdout=PIPE, stderr=PIPE)
+    cmd = '7z x -p{} -o{} {}'.format(password, dir_path, file_path)
+    process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    # process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     if stderr:
         return_error(str(stderr))
@@ -74,7 +79,7 @@ def main():
         demisto.debug(str(stdout))
         return_error("Data Error in encrypted file. Wrong password?")
     # recursive call over the file system top down
-    for root, directories, files in os.walk('.'):
+    for root, directories, files in os.walk(dir_path):
         # removing the previously existing dirs from the search
         directories[:] = [d for d in directories if d not in excluded_dirs]
         for f in files:
@@ -96,7 +101,7 @@ def main():
         files_base_names = [os.path.basename(file_path) for file_path in filenames]  # noqa[F812]
         files_dic = {file_path: os.path.basename(file_path) for file_path in filenames}
         for file_path, file_name in files_dic.items():
-            demisto.results(file_result_existing_file(file_path, file_name))
+            demisto.results(fileResult(file_path, file_name))
         results.append(
             {
                 'Type': entryTypes['note'],
@@ -114,4 +119,10 @@ def main():
 
 
 if __name__ in ('__builtin__', 'builtins'):
-    main()
+    dir_path = mkdtemp()
+    try:
+        main(dir_path)
+    except Exception as e:
+        return_error(str(e))
+    finally:
+        shutil.rmtree(dir_path)
