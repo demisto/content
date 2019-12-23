@@ -32,7 +32,7 @@ script:
     outputs:
     - contextPath: GoogleCloudTranslate.SupportedLanguages
       description: List of supported languages
-      type: Unknown
+      type: list
   - deprecated: false
     description: Translate Text - translate text
     execution: false
@@ -55,10 +55,25 @@ script:
       required: false
       secret: false
     outputs:
-    - contextPath: GoogleCloudTranslate.TranslateText
-      description: Translated text
-      type: Unknown
-  dockerimage: demisto/google-cloud-translate:1.0.0.1575991068
+    - contextPath: GoogleCloudTranslate.TranslateText.ID
+      description: ID of the request
+      type: String
+    - contextPath: GoogleCloudTranslate.TranslateText.detected_language_code
+      description: "2 letter ISO language code of the detected text language, null if source argument is specified"
+      type: String
+    - contextPath: GoogleCloudTranslate.TranslateText.source_language_code
+      description: "Source language as specified in the source argument, null if source argument is not specified"
+      type: String
+    - contextPath: GoogleCloudTranslate.TranslateText.target_language_code
+      description: "Target language as specified in the target argument"
+      type: String
+    - contextPath: GoogleCloudTranslate.TranslateText.text
+      description: "Text to be translated"
+      type: String
+    - contextPath: GoogleCloudTranslate.TranslateText.translated_text
+      description: "Translated text"
+      type: String
+  dockerimage: demisto/google-cloud-translate:1.0.0.5038
   isfetch: false
   runonce: false
   script: '-'

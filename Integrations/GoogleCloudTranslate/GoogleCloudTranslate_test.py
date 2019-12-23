@@ -56,6 +56,7 @@ def test_translate_text_1(mocker):
     )
 
     mock_result = {
+        'ID': '95040f0a44fd692842831b107dfa9d92',
         'text': 'bar',
         'translated_text': 'foo',
         'source_language_code': None,
@@ -64,7 +65,9 @@ def test_translate_text_1(mocker):
     }
 
     assert isinstance(readable, str)
-    assert outputs == dict(GoogleCloudTranslate=dict(TranslateText=mock_result))
+    assert outputs == {
+        'GoogleCloudTranslate.TranslateText(val.ID && val.ID==obj.ID)': mock_result
+    }
     assert result == MOCK_TRANSLATE_TEXT
 
 
@@ -77,6 +80,7 @@ def test_translate_text_2(mocker):
     )
 
     mock_result = {
+        'ID': '2bda6ec4740ec87b49e90dbe6587fd14',
         'text': 'bar',
         'translated_text': 'foo',
         'source_language_code': None,
@@ -85,7 +89,9 @@ def test_translate_text_2(mocker):
     }
 
     assert isinstance(readable, str)
-    assert outputs == dict(GoogleCloudTranslate=dict(TranslateText=mock_result))
+    assert outputs == {
+        'GoogleCloudTranslate.TranslateText(val.ID && val.ID==obj.ID)': mock_result
+    }
     assert result == MOCK_TRANSLATE_TEXT
 
 
@@ -98,6 +104,7 @@ def test_translate_text_3(mocker):
     )
 
     mock_result = {
+        'ID': 'd2124c37f6b3c436a3f18a7920227a22',
         'text': 'bar',
         'translated_text': 'foo',
         'source_language_code': 'hr',
@@ -106,5 +113,7 @@ def test_translate_text_3(mocker):
     }
 
     assert isinstance(readable, str)
-    assert outputs == dict(GoogleCloudTranslate=dict(TranslateText=mock_result))
+    assert outputs == {
+        'GoogleCloudTranslate.TranslateText(val.ID && val.ID==obj.ID)': mock_result
+    }
     assert result == {'translated_text': 'foo', 'detected_language_code': None}

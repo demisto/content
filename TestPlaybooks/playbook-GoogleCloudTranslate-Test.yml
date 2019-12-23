@@ -20,8 +20,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 700,
+          "y": 30
         }
       }
     note: false
@@ -45,6 +45,7 @@ tasks:
       - "3"
       - "6"
       - "8"
+      - "10"
     scriptarguments:
       all:
         simple: "no"
@@ -57,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 700,
+          "y": 210
         }
       }
     note: false
@@ -79,8 +80,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1140
+          "x": 700,
+          "y": 1040
         }
       }
     note: false
@@ -126,7 +127,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+      - "2"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -201,7 +202,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+      - "2"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -283,7 +284,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+      - "2"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -312,34 +313,104 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 770bad14-37ae-4439-8cb7-e28e6d03f0c7
+    taskid: 58d9f355-a086-4d41-81eb-7148f7499eb8
     type: regular
     task:
-      id: 770bad14-37ae-4439-8cb7-e28e6d03f0c7
+      id: 58d9f355-a086-4d41-81eb-7148f7499eb8
       version: -1
-      name: Close Investigation
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
+      name: Translate 1
+      description: Translate Text - translate text
+      script: '|||gct-translate-text'
       type: regular
       iscommand: true
-      brand: Builtin
+      brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "11"
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
-      id:
-        simple: ${incident.id}
-      phishingsubtype: {}
+      source: {}
+      target:
+        simple: it
+      text:
+        simple: there is no justice, there is just me
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 940
+          "x": 1440,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 17392e66-b207-4d8d-8c97-0cb1a1aceda5
+    type: regular
+    task:
+      id: 17392e66-b207-4d8d-8c97-0cb1a1aceda5
+      version: -1
+      name: Translate 2
+      description: Translate Text - translate text
+      script: '|||gct-translate-text'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      source: {}
+      target:
+        simple: it
+      text:
+        simple: there is no justice, there is just me
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 016bf934-d98b-42e5-8e73-c9fafaf4343a
+    type: condition
+    task:
+      id: 016bf934-d98b-42e5-8e73-c9fafaf4343a
+      version: -1
+      name: Check Duplicates
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: GoogleCloudTranslate
+                accessor: TranslateText(val.text=="there is no justice, there is just
+                  me")
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 770
         }
       }
     note: false
@@ -350,10 +421,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1155,
-        "width": 1400,
+        "height": 1075,
+        "width": 1890,
         "x": -70,
-        "y": 50
+        "y": 30
       }
     }
   }

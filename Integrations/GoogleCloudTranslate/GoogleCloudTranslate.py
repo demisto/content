@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
+import hashlib
 import traceback
 from google.cloud import translate_v3
 
@@ -28,6 +29,9 @@ class Client():
         self.verify = verify
         self.proxy = proxy
 
+        self.client = self._get_client()
+        self.project_id = self._get_project_id()
+
     def get_supported_languages(self):
         """Returns languages supported by Google Cloud Translation API
 
@@ -39,11 +43,8 @@ class Client():
                 support_target is a bool indicating if the language is
                 a supported target for the translation.
         """
-        client = self._get_client()
-        project_id = self._get_project_id()
-
-        parent = client.location_path(project_id, 'global')
-        result = client.get_supported_languages(parent)
+        parent = self.client.location_path(self.project_id, 'global')
+        result = self.client.get_supported_languages(parent)
 
         return [
             dict(
@@ -70,11 +71,8 @@ class Client():
                 code of the detected language or None if the source language
                 was specified.
         """
-        client = self._get_client()
-        project_id = self._get_project_id()
-
-        parent = client.location_path(project_id, 'global')
-        result = client.translate_text([text], target, parent, source_language_code=source)
+        parent = self.client.location_path(self.project_id, 'global')
+        result = self.client.translate_text([text], target, parent, source_language_code=source)
 
         return {
             'detected_language_code': result.translations[0].detected_language_code,
@@ -182,15 +180,16 @@ def translate_text(client, args):
         result['detected_language_code']
     )
 
+    id_ = hashlib.md5(f'{target}-{source}-{text}'.encode('utf-8')).hexdigest()
+
     outputs = {
-        'GoogleCloudTranslate': {
-            'TranslateText': {
-                'text': text,
-                'translated_text': result['translated_text'],
-                'source_language_code': source,
-                'detected_language_code': result['detected_language_code'],
-                'target_language_code': target
-            }
+        'GoogleCloudTranslate.TranslateText(val.ID && val.ID==obj.ID)': {
+            'ID': id_,
+            'text': text,
+            'translated_text': result['translated_text'],
+            'source_language_code': source,
+            'detected_language_code': result['detected_language_code'],
+            'target_language_code': target
         }
     }
 
