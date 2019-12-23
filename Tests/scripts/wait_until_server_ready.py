@@ -122,7 +122,7 @@ def main():
     last_update_time = loop_start_time
     instance_ips_not_created = [ami_instance_ip for ami_instance_name, ami_instance_ip in instance_ips]
 
-    while len(ready_ami_list) < len(instance_ips):
+    while len(instance_ips_not_created) > 0:
         current_time = time.time()
         exit_if_timed_out(loop_start_time, current_time)
 
