@@ -1,0 +1,93 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"Malware"
+	],
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "executableswritten",
+	"closeForm": false,
+	"columns": [
+		{
+			"displayName": "Timestamp",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "timestamp",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "date",
+			"width": 150
+		},
+		{
+			"displayName": "Filename",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "filename",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "FileName",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "filename",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Filepath",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "filepath",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		}
+	],
+	"content": false,
+	"defaultRows": [
+		{},
+		{},
+		{}
+	],
+	"description": "",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_executableswritten",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "Executables Written",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": [],
+	"sla": 0,
+	"sortValues": null,
+	"system": false,
+	"systemAssociatedTypes": null,
+	"threshold": 72,
+	"type": "grid",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}

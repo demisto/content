@@ -1,0 +1,81 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"AlliancePartner"
+	],
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "mnda",
+	"closeForm": false,
+	"columns": [
+		{
+			"displayName": "Column Header 1",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "columnheader1",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Column Header 2",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "columnheader2",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Column Header 3",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "columnheader3",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		}
+	],
+	"content": false,
+	"defaultRows": [
+		{},
+		{},
+		{}
+	],
+	"description": "",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_mnda",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "MNDA",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": null,
+	"sla": 0,
+	"sortValues": null,
+	"system": false,
+	"systemAssociatedTypes": null,
+	"threshold": 0,
+	"type": "attachments",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}
