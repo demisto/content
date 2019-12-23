@@ -575,13 +575,14 @@ def fetch_incidents(client: Client, args: dict) -> None:
         last_fetch_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S")
 
     # Find component ID
-    component_id = demisto.getLastRun().get('component', {}).get(filter_field)
+    component_id = demisto.getLastRun().get('component', {}).get(name)
     if not component_id:
         component_id = client.component_id_from_name(name)
     if component_id == 'None':
         raise ValueError("Could not find component name.")
-    field_id = demisto.getLastRun().get('field', {}).get(name)
-    field_id = client.field_id_from_name(filter_field, component_id)
+    field_id = demisto.getLastRun().get('field', {}).get(filter_field)
+    if not field_id:
+        field_id = client.field_id_from_name(filter_field, component_id)
     if not field_id:
         raise ValueError("Could not find field name.")
     res = client.return_filtered_records(component_id, page_size, '0', '/ComponentService/GetDetailRecords',
