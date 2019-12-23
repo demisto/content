@@ -324,7 +324,7 @@ tasks:
         simple: File.MD5
       value:
         complex:
-          root: inputs.MD5
+          root: File.MD5
           transformers:
           - operator: uniq
           - operator: toLowerCase
@@ -401,7 +401,7 @@ tasks:
         simple: File.SHA256
       value:
         complex:
-          root: inputs.SHA256
+          root: File.SHA256
           transformers:
           - operator: uniq
           - operator: toLowerCase
@@ -478,7 +478,7 @@ tasks:
         simple: File.SHA256
       value:
         complex:
-          root: inputs.SHA256
+          root: File.SHA256
           transformers:
           - operator: uniq
           - operator: toLowerCase
