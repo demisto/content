@@ -1,0 +1,27 @@
+commonfields:
+  id: KeylightCreateIssue
+  version: -1
+name: KeylightCreateIssue
+script: ''
+
+type: python
+tags: []
+comment: Copy
+enabled: true
+args:
+- name: task_id
+  required: true
+- name: project
+  required: true
+outputs:
+- contextPath: Keylight.JSON
+  description: The format needed to create or update a record in Keylight(v2).
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - Lockpath KeyLight v2|||kl-get-records
+  - Lockpath KeyLight v2|||kl-get-component
+runonce: false
+dockerimage: demisto/python3:3.7.5.4583
+runas: DBotWeakRole
