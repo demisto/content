@@ -776,7 +776,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: URL to block
+  description: URL to block.
 - key: URLListName
   value:
     simple: Demisto Remediation - URL EDL
