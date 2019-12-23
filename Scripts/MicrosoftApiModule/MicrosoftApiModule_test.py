@@ -74,6 +74,15 @@ def test_epoch_seconds():
     assert isinstance(integer, int)
 
 
+def test_snakecase_to_camelcase():
+    assert MicrosoftClient.snakecase_to_camelcase('snake_case_snake_case') == 'SnakeCaseSnakeCase'
+
+
+def test_camel_case_to_readable():
+    assert MicrosoftClient.camel_case_to_readable('id') == 'ID'
+    assert MicrosoftClient.camel_case_to_readable('createdDateTime') == 'Created Date Time'
+
+
 @pytest.mark.parametrize('client, tokens, context', [(oproxy_client_refresh(), (TOKEN, 3600, REFRESH_TOKEN), {
         'access_token': TOKEN,
         'valid_until': 3605,
