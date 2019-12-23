@@ -1,5 +1,5 @@
 ## [Unreleased]
-Improved script implementation.
+Breaking changes: updated docker image
 
 ## [19.11.0] - 2019-11-12
 #### New Script
