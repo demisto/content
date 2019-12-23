@@ -196,12 +196,14 @@ def get_code_file(package_path, script_type):
     :rtype: str
     """
     ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|' \
-                   r'demistomock\.py|test_.*\.py|_test\.py|conftest\.py|MicrosoftApiModule\.py'
+                   r'demistomock\.py|test_.*\.py|_test\.py|conftest\.py|Module\.py'
 
     if not package_path.endswith('/'):
         package_path += '/'
     if package_path.endswith('Scripts/CommonServerPython/'):
         return package_path + 'CommonServerPython.py'
+    if package_path.endswith('Module'):
+        return os.path.join(package_path, os.path.basename(package_path) + '.py')
 
     script_path = list(filter(lambda x: not re.search(ignore_regex, x),
                               glob.glob(package_path + '*' + script_type)))[0]
@@ -279,12 +281,12 @@ def check_module_imports(script_code):
 
 
 def insert_module_code(script_code, module_import, module_name):
-    module_path = get_code_file('./Scripts/{}'.format(module_name), '.py')
+    module_path = os.path.join('./Scripts', module_name, module_name + '.py')
     try:
         with io.open(module_path, mode='r', encoding='utf-8') as script_file:
             client_code = script_file.read()
 
-        client_code = '\n### GENERATED CODE ###\n This code was inserted in place of an API module.\n{}\n'\
+        client_code = '\n### GENERATED CODE ###\n# This code was inserted in place of an API module.{}\n'\
             .format(client_code)
 
     except Exception as e:

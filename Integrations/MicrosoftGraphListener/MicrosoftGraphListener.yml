@@ -51,7 +51,7 @@ configuration:
   required: false
   type: 8
 - display: Use a self deployed Azure Application
-  name: no_oproxy
+  name: self_deployed
   required: false
   type: 8
 description: Microsoft Graph allows Demisto authorized access to a user's Outlook
