@@ -96,8 +96,8 @@ def get_tested_integrations(test_playbook_record):
         return [tested_integrations]
 
 
-def get_integration_dependencies():
-    with open('conf.json', 'r') as myfile:
+def get_integration_dependencies(tests_file_path):
+    with open(tests_file_path, 'r') as myfile:
         conf_json_string = myfile.read()
 
     conf_json_obj = json.loads(conf_json_string)
@@ -119,7 +119,7 @@ def get_integration_dependencies():
 
 
 def get_test_dependencies(tests_file_path):
-    dependent_integrations = get_integration_dependencies()[0]
+    dependent_integrations = get_integration_dependencies(tests_file_path)[0]
 
     with open(tests_file_path, 'r') as myfile:
         conf_json_string = myfile.read()
