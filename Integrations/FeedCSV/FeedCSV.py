@@ -38,8 +38,10 @@ class Client(object):
         """
         self.url = url
         self.verify_cert = not insecure
-        self.polling_timeout = int(polling_timeout)
-        credentials = credentials
+        try:
+            self.polling_timeout = int(polling_timeout)
+        except (ValueError, TypeError):
+            return_error('Please provide an integer value for "Request Timeout"')
         if not credentials:
             credentials = {}
         self.username = credentials.get('identifier', None)
@@ -85,8 +87,10 @@ class Client(object):
         rkwargs['verify'] = self.verify_cert
         rkwargs['timeout'] = self.polling_timeout
 
-        r = _session.send(prepreq, **rkwargs)
-
+        try:
+            r = _session.send(prepreq, **rkwargs)
+        except requests.ConnectionError:
+            raise requests.ConnectionError('Failed to establish a new connection. Please make sure your URL is valid.')
         try:
             r.raise_for_status()
         except Exception:
@@ -122,8 +126,11 @@ def batch(iterable, batch_size=1):
 
 
 def test_module(client, args):
-    client.build_iterator()
-    return 'ok', {}, {}
+    fieldnames = demisto.params().get('fieldnames')
+    if fieldnames == 'indicator' or any(field in fieldnames for field in ('indicator,', ',indicator')):
+        client.build_iterator()
+        return 'ok', {}, {}
+    return_error('Please provide a column named "indicator" in fieldnames')
 
 
 def fetch_indicators_command(client, itype):
@@ -142,6 +149,21 @@ def fetch_indicators_command(client, itype):
     return indicators
 
 
+def get_indicators(client, args):
+    itype = args.get('indicator_type', demisto.params().get('indicator_type'))
+    limit = int(args.get('limit'))
+    indicators_json = fetch_indicators_command(client, itype)
+    res = []
+    i = 0
+    for ind_json in indicators_json:
+        if i >= limit:
+            break
+        res.append(camelize(ind_json))
+        i += 1
+    hr = tableToMarkdown('Indicators', res, headers=['￿Value', 'Type', 'RawJSON'])
+    return hr, {'CSV.Indicator': res}, indicators_json
+
+
 def main():
     # Write configure here
     params = {k: v for k, v in demisto.params().items() if v is not None}
@@ -152,6 +174,7 @@ def main():
     # Switch case
     commands = {
         'test-module': test_module,
+        'get-indicators': get_indicators
     }
     try:
         if demisto.command() == 'fetch-indicators':
