@@ -688,14 +688,15 @@ def get_indicator_type_id(indicator_name: str) -> str:
     )
     try:
         indicator_types = indicator_types_res.json().get('data')
-        for indicator in indicator_types:
-            if indicator.get('name', '').lower() == indicator_name.lower():
-                return indicator.get('id')
-
-        raise ValueError(f'Could not find indicator')
     except ValueError:
         raise ValueError(f'Could not parse data from ThreatQ [Status code: {indicator_types_res.status_code}]'
                          f'\n[Error Message: {indicator_types_res.text}]')
+
+    for indicator in indicator_types:
+        if indicator.get('name', '').lower() == indicator_name.lower():
+            return indicator.get('id')
+
+    raise ValueError(f'Could not find indicator')
 
 
 def aggregate_search_results(indicators, default_indicator_type, generic_context=None):
