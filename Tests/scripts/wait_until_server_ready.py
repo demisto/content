@@ -138,8 +138,8 @@ def main():
                     instance_ips_not_created.remove(ami_instance_ip)
                 elif current_time - last_update_time > 30:  # printing the message every 30 seconds
                     print("{} at ip {} is not ready yet - waiting for it to start".format(ami_instance_name, ami_instance_ip))
-                    last_update_time = current_time
 
+        last_update_time = current_time
         if len(instance_ips) > len(ready_ami_list):
             sleep(1)
 
