@@ -88,54 +88,65 @@ script:
           name: password
           required: true
           secret: true
+          description: ''
       deprecated: false
       execution: true
       name: ad-authenticate
+      description: ''
     - arguments:
         - default: false
           isArray: false
           name: specific-groups
           required: false
           secret: false
+          description: ''
       deprecated: false
       execution: true
       name: ad-groups
+      description: ''
     - arguments:
         - default: false
           isArray: false
           name: username
           required: true
           secret: false
+          description: ''
         - default: false
           isArray: false
           name: password
           required: true
           secret: true
+          description: ''
         - default: false
           defaultValue: mail
           isArray: false
           name: attribute-mail
           required: false
           secret: false
+          description: ''
         - default: false
           description: name
           isArray: false
           name: attribute-name
           required: false
           secret: false
+          description: ''
         - default: false
           isArray: false
           name: attribute-name-pull
           required: false
           secret: false
+          description: ''
         - default: false
           isArray: false
           name: attribute-mail-pull
           required: false
           secret: false
+          description: ''
       deprecated: false
       execution: true
       name: ad-authenticate-and-roles
+      description: ''
   dockerimage: demisto/ldap:1.0.0.4710
   isfetch: false
   longRunning: false
@@ -144,5 +155,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-  tests:
-    - No test
+tests:
+  - No test

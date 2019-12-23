@@ -27,6 +27,7 @@ script:
       name: hash
       required: true
       secret: false
+      description: ''
     deprecated: false
     description: Retrieve details about a specific hash
     execution: false
