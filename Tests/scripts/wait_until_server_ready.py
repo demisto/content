@@ -45,10 +45,9 @@ def is_correct_content_installed(ips, content_version, api_key):
     """ Checks if specific content version is installed on server list
 
     Args:
-        username: Username of the service account
-        password: Password of the service account
         ips: list with lists of [instance_name, instance_ip]
         content_version: content version that should be installed
+        api_key: the demisto api key to create an api client with.
 
     Returns:
         True: if all tests passed, False if one failure
@@ -57,7 +56,7 @@ def is_correct_content_installed(ips, content_version, api_key):
     for ami_instance_name, ami_instance_ip in ips:
         host = "https://{}".format(ami_instance_ip)
 
-        client = demisto_client.configure(base_url=host,api_key=api_key, verify_ssl=False)
+        client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
         try:
             resp_json = None
             try:
@@ -138,7 +137,8 @@ def main():
                     # ready_ami_list.append(ami_instance_name)
                     instance_ips_not_created.remove(ami_instance_ip)
                 elif current_time - last_update_time > 30:  # printing the message every 30 seconds
-                    print("{} at ip {} is not ready yet - waiting for it to start".format(ami_instance_name, ami_instance_ip))
+                    print("{} at ip {} is not ready yet - waiting for it to start".format(ami_instance_name,
+                                                                                          ami_instance_ip))
 
         if current_time - last_update_time > 30:
             last_update_time = current_time
