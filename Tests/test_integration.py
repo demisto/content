@@ -153,8 +153,9 @@ def __create_integration_instance(client, integration_name, integration_instance
                                                   path='/settings/integration',
                                                   body=module_instance)
     except ApiException as conn_err:
-        error_message = 'Error trying to create instance for integration: {0}:\n {1}'.format(integration_name,
-                                                                                 conn_err)
+        error_message = 'Error trying to create instance for integration: {0}:\n {1}'.format(
+            integration_name, conn_err
+        )
         print_error(error_message)
         return None, error_message
 
@@ -171,7 +172,9 @@ def __create_integration_instance(client, integration_name, integration_instance
     if validate_test:
         test_succeed, failure_message = __test_integration_instance(client, module_instance)
     else:
-        print_warning("Skipping test validation for integration: {} (it has test_validate set to false)".format(integration_name))
+        print_warning(
+            "Skipping test validation for integration: {} (it has test_validate set to false)".format(integration_name)
+        )
         test_succeed = True
 
     if not test_succeed:
@@ -413,9 +416,9 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         if is_mock_run:
             configure_proxy_unsecure(integration_params)
 
-        module_instance, failure_message = __create_integration_instance(client, integration_name,
-                                                        integration_instance_name,
-                                                        integration_params, is_byoi, validate_test)
+        module_instance, failure_message = __create_integration_instance(
+            client, integration_name, integration_instance_name, integration_params, is_byoi, validate_test
+        )
         if module_instance is None:
             print_error('Failed to create instance: {}'.format(failure_message))
             __delete_integrations_instances(client, module_instances)

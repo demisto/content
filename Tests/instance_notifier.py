@@ -50,8 +50,9 @@ def test_instances(secret_conf_path, server, username, password):
         has_integration = integration.get('has_integration', True)
 
         if has_integration:
-            instance_id, failure_message = __create_integration_instance(c, integration_name, integration_instance_name,
-                                                        integration_params, is_byoi)
+            instance_id, failure_message = __create_integration_instance(
+                c, integration_name, integration_instance_name, integration_params, is_byoi
+            )
             if not instance_id:
                 print_error('Failed to create instance of %s' % (integration_name,))
                 failed_integration.append("{0} {1} - failure message: {2} devops comments: {3}".format(
