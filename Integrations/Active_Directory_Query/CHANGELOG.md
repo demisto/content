@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed a typo in the name of the **custom-field-data** argument.
 
 ## [19.12.0] - 2019-12-10
 Improved handling of error messages.
