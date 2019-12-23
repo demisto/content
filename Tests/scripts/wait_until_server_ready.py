@@ -34,12 +34,13 @@ def get_username_password():
         conf = json.load(conf_file)
 
     if options.non_ami:
-        return conf['username'], conf['username'], options.contentVersion
+        # GGG - what is the logic behind this if statement? removed username and password
+        return conf['temp_apikey'], options.contentVersion
 
-    return conf['username'], conf['userPassword'], options.contentVersion
+    return conf['temp_apikey'], options.contentVersion
 
 
-def is_correct_content_installed(ips, content_version, username, password):
+def is_correct_content_installed(ips, content_version, api_key):
     # type: (AnyStr, List[List], AnyStr) -> bool
     """ Checks if specific content version is installed on server list
 
@@ -56,7 +57,7 @@ def is_correct_content_installed(ips, content_version, username, password):
     for ami_instance_name, ami_instance_ip in ips:
         host = "https://{}".format(ami_instance_ip)
 
-        client = demisto_client.configure(base_url=host, username=username, password=password, verify_ssl=False)
+        client = demisto_client.configure(base_url=host,api_key=api_key, verify_ssl=False)
         try:
             resp_json = None
             try:
@@ -111,7 +112,7 @@ def get_instance_types_count(instance_ips):
 
 
 def main():
-    username, password, content_version = get_username_password()
+    api_key, content_version = get_username_password()
     ready_ami_list = []
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
         instance_ips = instance_file.readlines()
@@ -144,7 +145,7 @@ def main():
         if len(instance_ips) > len(ready_ami_list):
             sleep(1)
 
-    if not is_correct_content_installed(instance_ips, content_version, username=username, password=password):
+    if not is_correct_content_installed(instance_ips, content_version, api_key=api_key):
         sys.exit(1)
 
 
