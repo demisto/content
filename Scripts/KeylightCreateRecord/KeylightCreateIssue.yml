@@ -1,27 +1,36 @@
+args:
+- default: false
+  description: Example - Task ID field that is not a lookup field.
+  isArray: false
+  name: task_id
+  required: true
+  secret: false
+- default: false
+  description: Example - Project field which is a lookup field.
+  isArray: false
+  name: project
+  required: true
+  secret: false
+comment: This script is used to simplify the process of creating or updating a record
+  in Keylight (v2).
 commonfields:
   id: KeylightCreateIssue
   version: -1
-name: KeylightCreateIssue
-script: ''
-
-type: python
-tags: []
-comment: Copy
 enabled: true
-args:
-- name: task_id
-  required: true
-- name: project
-  required: true
+name: KeylightCreateIssue
 outputs:
 - contextPath: Keylight.JSON
   description: The format needed to create or update a record in Keylight(v2).
-scripttarget: 0
-subtype: python3
+  type: Unknown
+script: '-'
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.5.4583
+runas: DBotWeakRole
+runonce: false
 dependson:
   must:
   - Lockpath KeyLight v2|||kl-get-records
   - Lockpath KeyLight v2|||kl-get-component
-runonce: false
-dockerimage: demisto/python3:3.7.5.4583
-runas: DBotWeakRole
+subtype: python3
