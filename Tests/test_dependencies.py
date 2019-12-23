@@ -153,11 +153,10 @@ def get_tests_allocation(number_of_instances, tests_file_path):
     dependent_tests_clusters.sort(key=len, reverse=True)  # Sort the clusters from biggest to smallest
     tests_allocation = []
     number_of_tests_left = len(all_tests)
-
+    print(dependent_tests_clusters)
     while number_of_tests_left > 0:
         allocations_left = number_of_instances - len(tests_allocation)
-        tests_left = number_of_tests_left
-        desired_tests_per_allocation = math.ceil(tests_left / allocations_left)  # We prefer an equal division of tests.
+        desired_tests_per_allocation = math.ceil(number_of_tests_left / allocations_left)  # We prefer an equal division of tests.
         current_allocation = []
         current_allocation_size = 0
 
@@ -170,13 +169,15 @@ def get_tests_allocation(number_of_instances, tests_file_path):
             tests_allocation.append(current_allocation)
             break
 
-        first_cluster = dependent_tests_clusters.pop(0)
-        first_cluster_size = len(first_cluster)
-        current_allocation.extend(first_cluster)
-        current_allocation_size += first_cluster_size
-        number_of_tests_left -= first_cluster_size
+        if len(dependent_tests_clusters) > 0:
+            first_cluster = dependent_tests_clusters.pop(0)
+            first_cluster_size = len(first_cluster)
+            current_allocation.extend(first_cluster)
+            current_allocation_size += first_cluster_size
+            number_of_tests_left -= first_cluster_size
 
         if current_allocation_size > desired_tests_per_allocation:
+            tests_allocation.append(current_allocation)
             continue
 
         clusters_added = 0
@@ -197,5 +198,11 @@ def get_tests_allocation(number_of_instances, tests_file_path):
             current_allocation_size += 1
 
         tests_allocation.append(current_allocation)
-
+    arrrr = [len(alloca) for alloca in tests_allocation]
+    print(arrrr)
     return tests_allocation
+
+
+
+
+print(get_tests_allocation(10, "conf.json"))

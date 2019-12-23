@@ -478,12 +478,6 @@ def disable_all_integrations(demisto_api_key, server, thread_index=0, prints_man
     Arguments:
         client -- demisto py client
     """
-    # GGG
-    print_color("Server URL in disable integrations IS: {0}".format(server), LOG_COLORS.GREEN)
-    if not demisto_api_key:
-        print_color("api_key is NULL in disable integrations", LOG_COLORS.GREEN)
-    else:
-        print_color("api_key is NOT NULL in disable integrations", LOG_COLORS.GREEN)
     client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
     try:
         body = {'size': 1000}
