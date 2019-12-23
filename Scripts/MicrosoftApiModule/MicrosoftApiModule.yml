@@ -13,5 +13,4 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-alt_dockerimages: # used for unit testing
-  - demisto/python3:3.7.3.286
+dockerimage: demisto/python3:3.7.3.286

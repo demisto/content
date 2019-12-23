@@ -290,12 +290,10 @@ def check_modules(project_dir, py_num):
                 _, module_name = check_module_imports(script_file.read())
             if module_name:
                 module_path = os.path.join(CONTENT_DIR, 'Scripts', module_name, module_name + '.py')
-                print('Copying ' + os.path.join(CONTENT_DIR, 'Scripts', module_path))
+                print_v('Copying ' + os.path.join(CONTENT_DIR, 'Scripts', module_path))
                 shutil.copy(os.path.join(module_path), project_dir)
-            else:
-                print('Not copying -.-')
         except Exception as e:
-            print('Unable to retrieve the module file {}: {}'.format(module_name, str(e)))
+            print_v('Unable to retrieve the module file {}: {}'.format(module_name, str(e)))
 
 
 def main():

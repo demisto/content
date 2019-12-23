@@ -181,8 +181,10 @@ class MicrosoftClient(BaseClient):
             tuple: An access token, its expiry and refresh token.
         """
         content = self.refresh_token or self.tenant_id
+        headers = self._add_info_headers()
         oproxy_response = requests.post(
             self.token_retrieval_url,
+            headers=headers,
             json={
                 'app_name': self.app_name,
                 'registration_id': self.auth_id,
@@ -254,7 +256,7 @@ class MicrosoftClient(BaseClient):
             return_error(f'Error in Microsoft authorization: {str(e)}')
 
         access_token = body.get('access_token', '')
-        expires_in = int(body.get('expires_on', 3595))
+        expires_in = int(body.get('expires_in', 3595))
 
         return access_token, expires_in
 
@@ -338,8 +340,9 @@ class MicrosoftClient(BaseClient):
         return encrypted
 
     @staticmethod
-    def _add_info_headers(headers, expiry):
+    def _add_info_headers() -> Dict[str, str]:
         # pylint: disable=no-member
+        headers = {}
         try:
             calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
             brand_name = calling_context.get('IntegrationBrand', '')
@@ -350,3 +353,5 @@ class MicrosoftClient(BaseClient):
                 headers['X-Content-Server-Version'] = demisto.demistoVersion().get('version')
         except Exception as e:
             demisto.error('Failed getting integration info: {}'.format(str(e)))
+
+        return headers
