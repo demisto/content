@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added an argument that allows saving numbers as strings.
+Added the *stringify* argument, which enables you to save numbers as strings.
