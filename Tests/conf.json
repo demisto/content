@@ -1034,7 +1034,13 @@
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "pyEWS_Test"
+            "playbookID": "pyEWS_Test",
+            "instance_names": "ewv2_regular"
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "pyEWS_Test",
+            "instance_names": "ewsv2_separate_process"
         },
         {
             "integrations": "remedy_sr_beta",
