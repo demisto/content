@@ -83,6 +83,7 @@ script:
           name: username
           required: true
           secret: false
+          description: ''
         - default: false
           isArray: false
           name: password
