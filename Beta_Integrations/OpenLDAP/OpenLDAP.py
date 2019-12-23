@@ -12,12 +12,19 @@ from ssl import CERT_REQUIRED
 
 
 class LdapClient:
+    """
+        Base client for Ldap authentication.
+
+        :type kwargs: ``dict``
+        :param kwargs: Initialize params for ldap client
+    """
+
     GROUPS_TOKEN = 'primaryGroupToken'
     GROUPS_MEMBER = 'memberOf'
     GROUPS_PRIMARY_ID = 'primaryGroupID'
-    TIMEOUT = 120
-    DEV_BUILD_NUMBER = 'REPLACE_THIS_WITH_CI_BUILD_NUM'
-    SUPPORTED_BUILD_NUMBER = 57352
+    TIMEOUT = 120  # timeout for ssl/tls socket
+    DEV_BUILD_NUMBER = 'REPLACE_THIS_WITH_CI_BUILD_NUM'  # is used only in dev mode
+    SUPPORTED_BUILD_NUMBER = 57352  # required server build number
 
     def __init__(self, kwargs):
         self._host = kwargs.get('host')
@@ -38,36 +45,66 @@ class LdapClient:
 
     @property
     def GROUPS_OBJECT_CLASS(self):
+        """
+        :rtype: ``str``
+        :return: Group's base class object name.
+        """
         return self._groups_filter_class
 
     @property
     def GROUPS_IDENTIFIER_ATTRIBUTE(self):
+        """
+        :rtype: ``str``
+        :return: Groups identifier attribute.
+        """
         return self._group_identifier_attribute
 
     @property
     def GROUPS_MEMBERSHIP_IDENTIFIER_ATTRIBUTE(self):
+        """
+        :rtype: ``str``
+        :return: Groups membership attribute.
+        """
         return self._member_identifier_attribute
 
     @property
     def USER_OBJECT_CLASS(self):
+        """
+        :rtype: ``str``
+        :return: User's base class object name.
+        """
         return self._user_filter_class
 
     @property
     def USER_IDENTIFIER_ATTRIBUTE(self):
+        """
+        rtype: ``str``
+        :return: Users identifier attribute.
+        """
         return self._user_identifier_attribute
 
     def _initialize_ldap_server(self):
+        """
+        Initializes ldap server object with given parameters. Supports both encrypted and non encrypted connection.
+
+        :rtype: ldap3.Server
+        :return: Initialized ldap server object.
+        """
         if self._connection_type == 'ssl':
-            # todo get ca certs file
             tls = Tls(validate=CERT_REQUIRED,
                       ca_certs_file=os.environ.get('SSL_CERT_FILE')) if self._verify else None
-
+            # if certificate verification isn't required, SSL connection will be used. Otherwise secure connection
+            # will be performed over Tls.
             return Server(host=self._host, port=self._port, use_ssl=True, tls=tls, connect_timeout=LdapClient.TIMEOUT)
         else:
+            # non encrypted connection initialized
             return Server(host=self._host, port=self._port, connect_timeout=LdapClient.TIMEOUT)
 
     @staticmethod
     def _parse_ldap_group_entries(ldap_group_entries, groups_identifier_attribute):
+        """
+            Returns parsed ldap groups entries.
+        """
         return [{'DN': ldap_group.get('dn'), 'Attributes': [{'Name': LdapClient.GROUPS_TOKEN,
                                                              'Values': [str(ldap_group.get('attributes', {}).get(
                                                                  groups_identifier_attribute))]}]}
@@ -75,10 +112,16 @@ class LdapClient:
 
     @staticmethod
     def _parse_ldap_users_groups_entries(ldap_group_entries):
+        """
+            Returns parsed user's group entries.
+        """
         return [ldap_group.get('dn') for ldap_group in ldap_group_entries]
 
     @staticmethod
     def _build_entry_for_user(user_groups, user_data, mail_attribute, name_attribute):
+        """
+            Returns entry for specific ldap user.
+        """
         parsed_ldap_groups = {'Name': LdapClient.GROUPS_MEMBER, 'Values': user_groups}
         parsed_group_id = {'Name': LdapClient.GROUPS_PRIMARY_ID, 'Values': user_data['gid_number']}
         attributes = [parsed_ldap_groups, parsed_group_id]
@@ -86,7 +129,7 @@ class LdapClient:
         if 'name' in user_data:
             attributes.append({'Name': name_attribute, 'Values': [user_data['name']]})
         if 'email' in user_data:
-            attributes.append({'Name': name_attribute, 'Values': [user_data['email']]})
+            attributes.append({'Name': mail_attribute, 'Values': [user_data['email']]})
 
         return {
             'DN': user_data['dn'],
@@ -95,6 +138,9 @@ class LdapClient:
 
     @staticmethod
     def _is_valid_dn(dn, user_identifier_attribute):
+        """
+            Validates whether given input is valid ldap DN. Returns flag indicator and user's identifier value from DN.
+        """
         try:
             parsed_dn = parse_dn(dn, strip=False)
             for attribute_and_value in parsed_dn:
@@ -109,6 +155,9 @@ class LdapClient:
             raise
 
     def _fetch_all_groups(self):
+        """
+            Fetches all ldap groups under given base DN.
+        """
         with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
             search_filter = f'(objectClass={self.GROUPS_OBJECT_CLASS})'
             ldap_group_entries = ldap_conn.extend.standard.paged_search(search_base=self._base_dn,
@@ -123,6 +172,9 @@ class LdapClient:
             }
 
     def _fetch_specific_groups(self, specific_groups):
+        """
+            Fetches specific ldap groups under given base DN.
+        """
         dn_list = [group.strip() for group in argToList(specific_groups, separator="#")]
         with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
             parsed_ldap_entries = []
@@ -145,6 +197,9 @@ class LdapClient:
             }
 
     def get_ldap_groups(self, specific_group=None):
+        """
+            Implements ldap groups command.
+        """
         instance_name = demisto.integrationInstance()
         if not self._fetch_groups and not specific_group:
             demisto.info(f'Instance [{instance_name}] configured not to fetch groups')
@@ -157,6 +212,9 @@ class LdapClient:
         return searched_results
 
     def authenticate_ldap_user(self, username, password):
+        """
+            Performs simple bind operation on ldap server.
+        """
         ldap_conn = Connection(server=self._ldap_server, user=username, password=password, auto_bind=True)
 
         if ldap_conn.bound:
@@ -166,6 +224,9 @@ class LdapClient:
             raise Exception("OpenLDAP authentication connection failed")
 
     def get_user_data(self, username, pull_name, pull_mail, name_attribute, mail_attribute, search_user_by_dn=False):
+        """
+            Returns data for given ldap user.
+        """
         with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
             attributes = [self.GROUPS_IDENTIFIER_ATTRIBUTE]
 
@@ -203,6 +264,9 @@ class LdapClient:
             return user_data
 
     def get_user_groups(self, user_identifier):
+        """
+            Returns user's group.
+        """
         with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
             search_filter = (f'(&(objectClass={self.GROUPS_OBJECT_CLASS})'
                              f'({self.GROUPS_MEMBERSHIP_IDENTIFIER_ATTRIBUTE}={user_identifier}))')
@@ -215,6 +279,9 @@ class LdapClient:
 
     def authenticate_and_roles(self, username, password, pull_name=True, pull_mail=True, mail_attribute='mail',
                                name_attribute='name'):
+        """
+            Implements authenticate and roles command.
+        """
         search_user_by_dn, user_identifier = LdapClient._is_valid_dn(username, self.USER_IDENTIFIER_ATTRIBUTE)
         user_data = self.get_user_data(username=username, search_user_by_dn=search_user_by_dn, pull_name=pull_name,
                                        pull_mail=pull_mail, mail_attribute=mail_attribute,
@@ -230,6 +297,9 @@ class LdapClient:
         }
 
     def test_module(self):
+        """
+            Basic test connection and validation of the Ldap integration.
+        """
         build_number = get_demisto_version().get('buildNumber', LdapClient.DEV_BUILD_NUMBER)
 
         if build_number != LdapClient.DEV_BUILD_NUMBER \
