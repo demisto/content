@@ -4,7 +4,10 @@ import pyshark
 import re
 '''GLOBAL VARS'''
 BAD_CHARS = ['[', ']', '>', '<', "'"]
-
+EMAIL_REGEX = r'\b[A-Za-z0-9._%=+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
+IP_REGEX = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.)' \
+           r'{3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b'
+URL_REGEX = r'\b[a-fA-F\d]{64}|[a-fA-F\d]{40}|[a-fA-F\d]{32}|[a-fA-F\d]{128}\b'
 '''HELPER FUNCTIONS'''
 
 
@@ -28,7 +31,6 @@ def hierarchy_to_md(hierarchy: dict) -> str:
     for key in sorted(final_dict):
         md += f'|{key}|{final_dict[key]}|{round(final_dict[key]/num_of_all_packets,3)*100}%|\n'
     return md
-
 
 def conversations_to_md(conversations: dict, disp_num: int) -> str:
     md = '|A|B|# of Packets\n|---|---|---|\n'
@@ -73,14 +75,18 @@ def flows_to_ec(flows: dict) -> list:
 # Variables from demisto
 # filePath = "/Users/olichter/Downloads/chargen-udp.pcap"
 filePath = "/Users/olichter/Downloads/http-site.pcap"       # HTTP
-# filePath = "/Users/olichter/Downloads/dns.cap"            # DNS
+#filePath = "/Users/olichter/Downloads/dns.cap"            # DNS
 # filePath = "/Users/olichter/Downloads/tftp_rrq.pcap"       # tftp
+# filePath = "/Users/olichter/Downloads/rsasnakeoil2.cap"    # encrypted SSL
+decrypt_key = ""  # "/Users/olichter/Downloads/rsasnakeoil2.key"
 conversation_number_to_display = 15
 is_flows = False
 is_dns = True
 is_http = False
-pcap_filter = '' # 'ip.addr == 172.217.16.206'
-pcap_filter_new_file = '' # '/Users/olichter/Downloads/try.pcap'
+is_reg_extract = True
+pcap_filter = ''  # 'ip.addr == 172.217.16.206'
+pcap_filter_new_file = ''  # '/Users/olichter/Downloads/try.pcap'
+
 
 # Variables for the script
 hierarchy = {}
@@ -94,14 +100,16 @@ flows = {}
 unique_source_ip = set([])
 unique_dest_ip = set([])
 dns_data = []
+ips_extracted = set([])
+urls_extracted = set([])
+emails_extracted = set([])
 
-cap = pyshark.FileCapture(filePath, display_filter=pcap_filter, output_file=pcap_filter_new_file)
+
+cap = pyshark.FileCapture(filePath, display_filter=pcap_filter, output_file=pcap_filter_new_file,
+                          decryption_key=decrypt_key, encryption_type='WPA-PWD')
     # cap = pyshark.FileCapture(filePath) #, use_json=True
-
 try:
     for packet in cap:
-
-
         # Set hierarchy for layers
         layers = str(packet.layers)
         layers = strip(layers)
@@ -184,6 +192,16 @@ try:
             hosts = str([a, b])
             conversations[hosts] = conversations.get(hosts, 0) + 1
 
+        if is_reg_extract:
+            reg = re.compile(IP_REGEX)
+            for i in reg.finditer(str(packet)):
+                ips_extracted.add(i[0])
+            reg = re.compile(EMAIL_REGEX)
+            for i in reg.finditer(str(packet)):
+                emails_extracted.add(i[0])
+            # reg = re.compile(URL_REGEX)
+            # for i in reg.finditer(str(packet)):
+            #     hash.add(i[0])
 
 
     tcp_streams += 1
@@ -209,7 +227,7 @@ try:
            'val.SourcePort == obj.SourcePort && val.DestPort == obj.DestPort)'] = flows_to_ec(flows)
     if is_dns:
         ec['PcapResults.DNS(val.ID == obj.ID)'] = dns_data
-    print (ec)
+    print(emails_extracted)
 except pyshark.capture.capture.TSharkCrashException as e:
     raise ValueError("Filter could not be applied to file. Please make sure it is of correct syntax.")
 
