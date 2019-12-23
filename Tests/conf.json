@@ -2048,6 +2048,7 @@
         }
     ],
     "skipped_tests": {
+        "Endpoint Malware Investigation - Generic - Test": "Issue 20867",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -2072,6 +2073,7 @@
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
         "nexpose_test": "Issue 18694",
         "Recorded Future Test": "Issue 18922",
+        "Phishing v2 Test - Attachment": "Issue 20867",
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
