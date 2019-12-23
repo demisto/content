@@ -379,6 +379,8 @@ exampleDemistoUrls = {
     "workPlan": "https://test-address:8443/#/WorkPlan/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
 }
 
+callingContext = {}
+
 
 def params():
     return {}
