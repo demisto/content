@@ -69,7 +69,7 @@ def main(dir_path):
     excluded_dirs = [d for d in os.listdir('.') if isdir(d)]
     # extracting the zip file
     cmd = '7z x -p{} -o{} {}'.format(password, dir_path, file_path)
-    process = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+    process = Popen([cmd], shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     if stderr:
         return_error(str(stderr))
@@ -77,7 +77,7 @@ def main(dir_path):
         demisto.debug(str(stdout))
         return_error("Data Error in encrypted file. Wrong password?")
     # recursive call over the file system top down
-    for root, directories, files in os.walk('.'):
+    for root, directories, files in os.walk(dir_path):
         # removing the previously existing dirs from the search
         directories[:] = [d for d in directories if d not in excluded_dirs]
         for f in files:
