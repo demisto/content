@@ -1,0 +1,88 @@
+category: Vulnerability Management
+commonfields:
+  id: FeedO365
+  version: -1
+configuration:
+- defaultvalue: https://endpoints.office.com/endpoints/worldwide?noipv6&ClientRequestId=b10c5ed1-bad1-445f-b386-b919946339a7
+  display: URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: verify
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Indicator Type
+  name: indicator_type
+  required: true
+  type: 0
+- defaultvalue: F - Reliability cannot be judged
+  display: Reliability
+  name: feedInstanceReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- defaultvalue: indicator
+  display: JSON attribute to use as an indicator
+  name: indicator
+  options:
+    - ips
+    - urls
+  required: true
+  type: 15
+description: O365 Feed Integration
+display: O365 Feed
+name: FeedO365
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '100'
+      description: Limit the number of results. Default is 100.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ips
+      description: Indicator type.
+      isArray: false
+      name: indicator_type
+      predefined:
+      - ips
+      - ' urls'
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: get-indicators
+  dockerimage: demisto/python3:3.7.5.4328
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No test
