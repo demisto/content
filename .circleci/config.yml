@@ -188,6 +188,8 @@ jobs:
                 echo "Skipping - unit tests are running only in container number 1"
                 exit 0
             fi
+            echo "TESTING TESTING TESTING"
+            demisto-sdk --version
             demisto-sdk lint -a -g
       - run:
           name: Verify Base Branch for Contribution
