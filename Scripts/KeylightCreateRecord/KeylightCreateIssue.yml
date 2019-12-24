@@ -5,7 +5,7 @@ name: KeylightCreateIssue
 script: ''
 type: python
 tags: []
-comment: Copy
+comment:  Use this script to simplify the process of creating or updating a record in Keylight (v2).
 enabled: true
 args:
 - name: task_id
