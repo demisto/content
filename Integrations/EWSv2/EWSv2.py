@@ -2125,7 +2125,8 @@ def main():
     # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
     # collector. `separate_process` flag will run the integration on a separate process that will prevent
     # memory leakage.
-    separate_process = demisto.params().get("separate_process")
+    separate_process = demisto.params().get("separate_process", False)
+    demisto.debug("Running as separate_process: {}".format(separate_process))
     if separate_process:
         try:
             p = Process(target=process_main)

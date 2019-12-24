@@ -83,7 +83,7 @@ configuration:
   type: 0
 - defaultvalue: 'false'
   display: Run as a separate process (protects against memory depletion)
-  name: seperate_process
+  name: separate_process
   required: false
   type: 8
 description: Exchange Web Services and Office 365 (mail)
