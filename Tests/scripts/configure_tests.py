@@ -482,7 +482,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                     if not command_to_integration.get(integration_command) or \
                             command_to_integration.get(integration_command) == integration_id:
 
-                        tests = playbook_data.get('tests', [])
+                        tests = set(playbook_data.get('tests', []))
                         if tests:
                             catched_playbooks.add(playbook_name)
                             update_test_set(tests, tests_set)
