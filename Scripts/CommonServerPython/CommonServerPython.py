@@ -1931,7 +1931,7 @@ def camel_case_to_readable(cc, fields_to_drop=None):
     :param fields_to_drop: keys to drop from input dictionary
 
     :return: A Camel Cased string of Dict.
-    :rtype ``dict`` or ``str``
+    :rtype: ``dict`` or ``str``
     """
     if fields_to_drop is None:
         fields_to_drop = []
