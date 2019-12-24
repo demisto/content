@@ -683,7 +683,6 @@ tasks:
         as Panorama, will also push the Policies to the specified Device Group in
         the instance. "
       playbookName: PAN-OS Commit Configuration
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
