@@ -270,7 +270,8 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
         prints_manager.add_print_job(start_mock_message, print, thread_index)
         proxy.start(playbook_id)
         # run test
-        status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run=True)
+        status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run=True,
+                                          thread_index=thread_index, prints_manager=prints_manager)
         # use results
         proxy.stop()
         if status == PB_Status.COMPLETED:
@@ -657,6 +658,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
     if not tests or len(tests) == 0:
         prints_manager.add_print_job('no integrations are configured for test', print, thread_index)
+        prints_manager.execute_thread_prints(thread_index)
         return
 
     proxy = None
