@@ -61,6 +61,7 @@ def __get_integration_config(client, integration_name):
 
 # __test_integration_instance
 def __test_integration_instance(client, module_instance):
+    # type: (object, object)-> Tuple[bool, Optional[str]]
     connection_retries = 3
     response_code = 0
     print_warning("trying to connect.")
@@ -76,14 +77,14 @@ def __test_integration_instance(client, module_instance):
                 'Failed to test integration instance, error trying to communicate with demisto '
                 'server: {} '.format(
                     conn_err))
-            return False
+            return False, None
         except urllib3.exceptions.ReadTimeoutError:
             print_warning("Could not connect. Trying to connect for the {} time".format(i + 1))
 
     if int(response_code) != 200:
         print_error('Integration-instance test ("Test" button) failed.\nBad status code: ' + str(
             response_code))
-        return False
+        return False, None
 
     result_object = ast.literal_eval(response_data)
     success, failure_message = bool(result_object.get('success')), result_object.get('message')
