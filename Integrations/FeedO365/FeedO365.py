@@ -113,7 +113,7 @@ def get_indicators_command(client: Client, indicator_type: str) -> Tuple[str, Di
                 raw_json['value'] = value
                 indicators.append({
                     "Value": value,
-                    "Type": indicator_type,
+                    "Type": indicator_type[:-1],
                 })
                 raw_response.append(raw_json)
     human_readable = tableToMarkdown('Indicators from O365 Feed:', indicators,
