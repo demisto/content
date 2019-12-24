@@ -93,9 +93,34 @@ display: HTTP Feed
 name: HTTPFeed
 script:
   commands:
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Limit results returned to the output.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Indicator type.
+      isArray: false
+      name: indicator_type
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the feed indicators.
     execution: false
     name: get-indicators
+    outputs:
+    - contextPath: CSV.Indicator.Value
+      description: Indicator value.
+      type: String
+    - contextPath: CSV.Indicator.Type
+      description: Indicator type.
+      type: String
+    - contextPath: CSV.Indicator.RawJSON
+      description: Indicator rawJSON value.
+      type: Unknown
   dockerimage: demisto/python3:3.7.5.4583
   isfetch: false
   feed: true

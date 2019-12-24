@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import urllib3
-import itertools
 import requests
 
 # disable insecure warnings
@@ -13,22 +12,22 @@ urllib3.disable_warnings()
 SOURCE_NAME = demisto.params().get('source_name')
 
 
-class Client(object):
+class Client(BaseClient):
     def __init__(self, url: str, insecure: bool = False, credentials: dict = None, ignore_regex: str = None,
                  encoding: str = None, indicator: str = None, fields: str = '{}', polling_timeout: int = 20,
-                 user_agent: str = None, **kwargs):
+                 user_agent: str = None, proxy: bool = False, **kwargs):
         """Implements class for miners of plain text feeds over http/https.
         **Config parameters**
         :param: url: URL of the feed.
         :param: polling_timeout: timeout of the polling request in seconds.
             Default: 20
-        :param: verify_cert: boolean, if *true* feed HTTPS server certificate is
-            verified. Default: *true*
         :param: user_agent: string, value for the User-Agent header in HTTP
             request. If ``MineMeld``, MineMeld/<version> is used.
             Default: python ``requests`` default.
         :param: ignore_regex: Python regular expression for lines that should be
             ignored. Default: *null*
+        :param: verify_cert: boolean, if *true* feed HTTPS server certificate is
+            verified. Default: *true*
         :param: indicator: an *extraction dictionary* to extract the indicator from
             the line. If *null*, the text until the first whitespace or newline
             character is used as indicator. Default: *null*
@@ -37,6 +36,7 @@ class Client(object):
         :param: encoding: encoding of the feed, if not UTF-8. See
             ``str.decode`` for options. Default: *null*, meaning do
             nothing, (Assumes UTF-8).
+        :param: proxy: Use proxy in requests.
         **Extraction dictionary**
             Extraction dictionaries contain the following keys:
             :regex: Python regular expression for searching the text.
@@ -51,7 +51,8 @@ class Client(object):
                 url: https://www.dshield.org/block.txt
                 ignore_regex: "[#S].*"
                 indicator:
-                    regex: '^([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})\\t([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})'
+                    regex: '^([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})\\t([0-9]
+                    {1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})'
                     transform: '\\1-\\2'
                 fields:
                     dshield_nattacks:
@@ -75,9 +76,11 @@ class Client(object):
             chassis (object): parent chassis instance
             config (dict): node config.
         """
-        self.url = url
-        self.polling_timeout = int(polling_timeout)
-        self.verify_cert = not insecure
+        super().__init__(base_url=url, verify=not insecure, proxy=proxy)
+        try:
+            self.polling_timeout = int(polling_timeout)
+        except (ValueError, TypeError):
+            raise ValueError('Please provide an integer value for "Request Timeout"')
         self.user_agent = user_agent
         self.encoding = encoding
 
@@ -116,7 +119,7 @@ class Client(object):
     def build_iterator(self):
         rkwargs = dict(
             stream=True,
-            verify=self.verify_cert,
+            verify=self._verify,
             timeout=self.polling_timeout
         )
 
@@ -127,11 +130,14 @@ class Client(object):
 
         if self.username is not None and self.password is not None:
             rkwargs['auth'] = (self.username, self.password)
+        try:
+            r = requests.get(
+                self._base_url,
+                **rkwargs
+            )
+        except requests.ConnectionError:
+            raise requests.ConnectionError('Failed to establish a new connection. Please make sure your URL is valid.')
 
-        r = requests.get(
-            self.url,
-            **rkwargs
-        )
         try:
             r.raise_for_status()
         except Exception:
@@ -178,20 +184,29 @@ def fetch_indicators_command(client, itype):
     iterator = client.build_iterator()
     indicators = []
     for line in iterator:
-        line = line.strip()
-        if not line:
-            continue
+        attributes, value = get_indicator_fields(itype, line, client)
+        if value:
+            indicators.append({
+                "value": value,
+                "type": itype,
+                "rawJSON": attributes,
+            })
+    return indicators
 
+
+def get_indicator_fields(itype, line, client):
+    attributes = None
+    value = None
+    line = line.strip()
+    if line:
         if client.indicator is None:
             indicator = line.split()[0]
 
         else:
             indicator = client.indicator['regex'].search(line)
             if indicator is None:
-                continue
-
+                return attributes, value
             indicator = indicator.expand(client.indicator['transform'])
-
         attributes = {}
         for f, fattrs in client.fields.items():
             m = fattrs['regex'].search(line)
@@ -207,35 +222,30 @@ def fetch_indicators_command(client, itype):
                 pass
             else:
                 attributes[f] = i
-
-        # return [[indicator, attributes]]
-
         attributes['value'] = value = indicator
         attributes['type'] = itype
-        indicators.append({
-            "value": value,
-            "type": itype,
-            "rawJSON": attributes,
-        })
-    return indicators
+    return attributes, value
 
 
-def get_indicators(client, args):
-    indicators = fetch_indicators_command(client, demisto.params().get('indicator_type'))
-    return '', {}, indicators
+def get_indicators_command(client, args):
+    itype = args.get('indicator_type', demisto.params().get('indicator_type'))
+    limit = int(args.get('limit'))
+    indicators_list = fetch_indicators_command(client, itype)
+    entry_result = camelize(indicators_list[:limit])
+    hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
+    return hr, {'CSV.Indicator': entry_result}, indicators_list
 
 
 def main():
     # Write configure here
     params = {k: v for k, v in demisto.params().items() if v is not None}
-    handle_proxy()
     client = Client(**params)
     command = demisto.command()
     demisto.info('Command being called is {}'.format(command))
     # Switch case
     commands = {
         'test-module': test_module,
-        'get-indicators': get_indicators
+        'get-indicators': get_indicators_command
     }
     try:
         if demisto.command() == 'fetch-indicators':
