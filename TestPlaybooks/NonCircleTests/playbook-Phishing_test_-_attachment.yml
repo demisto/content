@@ -235,7 +235,7 @@ tasks:
       comment:
         simple: Malicious website for test
       indicator:
-        simple: http://www.desktop-style.de/
+        simple: http://www.desktop-style.de
       miner:
         simple: Malicious
     reputationcalc: 1

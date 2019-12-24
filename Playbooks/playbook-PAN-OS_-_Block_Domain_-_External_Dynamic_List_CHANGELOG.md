@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+- Added new playbook inputs.
+- Fixed an issue with EDL refresh for Panorama.
 
 ## [19.11.1] - 2019-11-26
 #### New Playbook
