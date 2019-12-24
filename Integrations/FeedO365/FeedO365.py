@@ -167,7 +167,8 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     unique_id = str(uuid.uuid4())
-    url = f"{PROTOTYPE_TO_URL[demisto.params().get('url')]}&ClientRequestId={unique_id}"
+    endpoint_url = PROTOTYPE_TO_URL[demisto.params().get('url')]
+    url = f"{endpoint_url}&ClientRequestId={unique_id}"
     indicator_type = demisto.params().get('indicator_type')
     insecure = demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy') == 'true'
