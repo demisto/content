@@ -1,7 +1,6 @@
-from __future__ import absolute_import
-
 from typing import Dict, List, Tuple
 
+import uuid
 import urllib3
 
 from CommonServerPython import *
@@ -9,6 +8,33 @@ from CommonServerPython import *
 # disable insecure warnings
 urllib3.disable_warnings()
 INTEGRATION_NAME = 'O365Feed'
+PROTOTYPE_TO_URL = {
+    "o365-api.china-any": "https://endpoints.office.com/endpoints/China?ServiceAreas=Any",
+    "o365-api.china-common": "https://endpoints.office.com/endpoints/China?ServiceAreas=Common",
+    "o365-api.china-exchange": "https://endpoints.office.com/endpoints/China?ServiceAreas=Exchange",
+    "o365-api.china-sharepoint": "https://endpoints.office.com/endpoints/China?ServiceAreas=SharePoint",
+    "o365-api.china-skype": "https://endpoints.office.com/endpoints/China?ServiceAreas=Skype",
+    "o365-api.germany-any": "https://endpoints.office.com/endpoints/Germany?ServiceAreas=Any",
+    "o365-api.germany-common": "https://endpoints.office.com/endpoints/Germany?ServiceAreas=Common",
+    "o365-api.germany-exchange": "https://endpoints.office.com/endpoints/Germany?ServiceAreas=Exchange",
+    "o365-api.germany-sharepoint": "https://endpoints.office.com/endpoints/Germany?ServiceAreas=SharePoint",
+    "o365-api.germany-skype": "https://endpoints.office.com/endpoints/Germany?ServiceAreas=Skype",
+    "o365-api.usgovdod-any": "https://endpoints.office.com/endpoints/USGovDoD?ServiceAreas=Any",
+    "o365-api.usgovdod-common": "https://endpoints.office.com/endpoints/USGovDoD?ServiceAreas=Common",
+    "o365-api.usgovdod-exchange": "https://endpoints.office.com/endpoints/USGovDoD?ServiceAreas=Exchange",
+    "o365-api.usgovdod-sharepoint": "https://endpoints.office.com/endpoints/USGovDoD?ServiceAreas=SharePoint",
+    "o365-api.usgovdod-skype": "https://endpoints.office.com/endpoints/USGovDoD?ServiceAreas=Skype",
+    "o365-api.usgovgcchigh-any": "https://endpoints.office.com/endpoints/USGovGCCHigh?ServiceAreas=Any",
+    "o365-api.usgovgcchigh-common": "https://endpoints.office.com/endpoints/USGovGCCHigh?ServiceAreas=Common",
+    "o365-api.usgovgcchigh-exchange": "https://endpoints.office.com/endpoints/USGovGCCHigh?ServiceAreas=Exchange",
+    "o365-api.usgovgcchigh-sharepoint": "https://endpoints.office.com/endpoints/USGovGCCHigh?ServiceAreas=SharePoint",
+    "o365-api.usgovgcchigh-skype": "https://endpoints.office.com/endpoints/USGovGCCHigh?ServiceAreas=Skype",
+    "o365-api.worldwide-any": "https://endpoints.office.com/endpoints/Worldwide?ServiceAreas=Any",
+    "o365-api.worldwide-common": "https://endpoints.office.com/endpoints/Worldwide?ServiceAreas=Common",
+    "o365-api.worldwide-exchange": "https://endpoints.office.com/endpoints/Worldwide?ServiceAreas=Exchange",
+    "o365-api.worldwide-sharepoint": "https://endpoints.office.com/endpoints/Worldwide?ServiceAreas=SharePoint",
+    "o365-api.worldwide-skype": "https://endpoints.office.com/endpoints/Worldwide?ServiceAreas=Skype",
+}
 
 
 class Client(BaseClient):
@@ -17,23 +43,15 @@ class Client(BaseClient):
     Office 365 IP address and URL web service announcement:
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
     """
-    def __init__(self, url: str, indicator_type: str, credentials: Dict[str, str],
-                 verify: bool = False, proxy: bool = False):
+    def __init__(self, url: str, indicator_type: str, insecure: bool = False, proxy: bool = False):
         """
-        Implements class for miners of O365 feeds.
+        Implements class for O365 feeds.
         :param url: URL of the feed.
         :param indicator_type: the JSON attribute to use as indicator. Can be ips or urls. Default: ips
-        :param credentials:
-            username: username for BasicAuth authentication
-            password: password for BasicAuth authentication
-        :param verify: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
+        :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         :param proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
-        super().__init__(base_url=url, verify=verify, proxy=proxy)
-        if not credentials:
-            credentials = {}
-        self.username = credentials.get('identifier', None)
-        self.password = credentials.get('password', None)
+        super().__init__(base_url=url, verify=insecure, proxy=proxy)
         self.indicator_type = indicator_type
 
     def build_iterator(self) -> List:
@@ -42,14 +60,9 @@ class Client(BaseClient):
         Returns:
             A list of objects, containing the indicators.
         """
-        auth = None
-        if self.username is not None and self.password is not None:
-            auth = (self.username, self.password)
-
         response = requests.get(
             url=self._base_url,
-            verify=self._verify,
-            auth=auth
+            verify=self._verify
         )
         try:
             response.raise_for_status()
@@ -100,13 +113,14 @@ def get_indicators_command(client: Client, indicator_type: str) -> Tuple[str, Di
         Outputs.
     """
     iterator = client.build_iterator()
+    indicator_type_lower = indicator_type.lower()
     indicators = []
     raw_response = []
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 100
-    iterator = [i for i in iterator if indicator_type in i]  # filter indicator_type specific entries
+    iterator = [i for i in iterator if indicator_type_lower in i]  # filter indicator_type specific entries
     iterator = iterator[:limit]
     for item in iterator:
-        values = item.get(indicator_type)
+        values = item.get(indicator_type_lower)
         raw_json = {'type': indicator_type[:-1]}
         if values:
             for value in values:
@@ -131,10 +145,11 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
         Indicators.
     """
     indicator_type = client.indicator_type
+    indicator_type_lower = indicator_type.lower()
     iterator = client.build_iterator()
     indicators = []
     for item in iterator:
-        values = item.get(indicator_type)
+        values = item.get(indicator_type_lower)
         raw_json = {'type': indicator_type[:-1]}
         if values:
             for value in values:
@@ -151,13 +166,13 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    url = demisto.params().get('url')
+    unique_id = str(uuid.uuid4())
+    url = f"{PROTOTYPE_TO_URL[demisto.params().get('url')]}&ClientRequestId={unique_id}"
     indicator_type = demisto.params().get('indicator_type')
-    credentials = demisto.params().get('credentials', {})
-    verify = demisto.params().get('verify', False)
+    insecure = demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy') == 'true'
 
-    client = Client(url, indicator_type, credentials, verify, proxy)
+    client = Client(url, indicator_type, insecure, proxy)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 

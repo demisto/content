@@ -4,27 +4,45 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://endpoints.office.com/endpoints/worldwide?noipv6&ClientRequestId=b10c5ed1-bad1-445f-b386-b919946339a7
-  display: URL
+  display: prototype
   name: url
+  options:
+  - o365-api.china-any
+  -  o365-api.china-common
+  -  o365-api.china-exchange
+  -  o365-api.china-sharepoint
+  -  o365-api.china-skype
+  -  o365-api.germany-any
+  -  o365-api.germany-common
+  -  o365-api.germany-exchange
+  -  o365-api.germany-sharepoint
+  -  o365-api.germany-skype
+  -  o365-api.usgovdod-any
+  -  o365-api.usgovdod-common
+  -  o365-api.usgovdod-exchange
+  -  o365-api.usgovdod-sharepoint
+  -  o365-api.usgovdod-skype
+  -  o365-api.usgovgcchigh-any
+  -  o365-api.usgovgcchigh-common
+  -  o365-api.usgovgcchigh-exchange
+  -  o365-api.usgovgcchigh-sharepoint
+  -  o365-api.usgovgcchigh-skype
+  -  o365-api.worldwide-any
+  -  o365-api.worldwide-common
+  -  o365-api.worldwide-exchange
+  -  o365-api.worldwide-sharepoint
+  -  o365-api.worldwide-skype
   required: true
-  type: 0
-- display: Username
-  name: credentials
-  required: false
-  type: 9
+  type: 15
 - defaultvalue: 'true'
   display: Trust any certificate (insecure)
-  name: verify
+  name: insecure
   required: false
   type: 8
 - display: Use system proxy
   name: proxy
   required: false
   type: 8
-- display: Indicator Type
-  name: indicator_type
-  required: true
-  type: 0
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
   name: feedInstanceReliability
@@ -37,6 +55,18 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- name: expiration
+  required: false
+  type: 17
+- defaultvalue: indicatorType
+  name: expirationPolicy
+  required: false
+  type: 0
+  hidden: true
+- name: expirationInterval
+  required: false
+  type: 1
+  hidden: true
 - display: Fetch indicators
   name: feed
   required: false
@@ -45,8 +75,8 @@ configuration:
   display: JSON attribute to use as an indicator
   name: indicator
   options:
-    - ips
-    - urls
+    - IPS
+    - URLS
   required: true
   type: 15
 description: O365 Feed Integration
