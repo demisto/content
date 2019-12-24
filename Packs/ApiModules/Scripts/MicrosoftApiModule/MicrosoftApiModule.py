@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 
 import requests
 import base64
-from typing import Union, Dict, List, Tuple
+from typing import Dict, Tuple
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 OPROXY_AUTH_TYPE = 'oproxy'
