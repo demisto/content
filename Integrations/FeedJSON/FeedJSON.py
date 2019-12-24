@@ -13,7 +13,7 @@ INTEGRATION_NAME = 'JsonFeed'
 
 class Client:
     def __init__(self, url: str, credentials: Dict[str, str], extractor: str = '@', indicator: str = 'indicator',
-                 source_name: str = 'json', fields: Union[List, str] = None, insecure: bool = True,
+                 source_name: str = 'json', fields: Union[List, str] = None, insecure: bool = False,
                  cert_file: str = None, key_file: str = None, headers: str = None, **_):
         """
         Implements class for miners of JSON feeds over http/https.
@@ -27,7 +27,7 @@ class Client:
         :param source_name: feed source name
         :param fields: list of JSON attributes to include in the indicator value.
         If None no additional attributes will be extracted.
-        :param insecure: if *true* feed HTTPS server certificate will be verified
+        :param insecure: if *False* feed HTTPS server certificate will be verified
 
         Hidden parameters:
         :param: cert_file: client certificate
@@ -51,7 +51,7 @@ class Client:
 
         # Request related attributes
         self.url = url
-        self.verify = insecure
+        self.verify = not insecure
         self.auth = (credentials.get('username'), credentials.get('password'))
 
         # Hidden params
@@ -89,7 +89,16 @@ def test_module(client) -> str:
     return 'ok'
 
 
-def fetch_indicators_command(client: Client, indicator_type: str) -> List[Dict]:
+def fetch_indicators_command(client: Client, indicator_type: str, update_context: bool = False,
+                             limit: int = None) -> Union[Dict, List[Dict]]:
+    """
+    Fetches the indicators from client.
+
+    :param client: Client of a JSON Feed
+    :param indicator_type: the type of indicators to create
+    :param update_context: if *True* will also update the context with the indicators
+    :param limit: limits the number of context indicators to output
+    """
     indicators = []
     for item in client.build_iterator():
         indicator_value = item.get(client.indicator)
@@ -103,6 +112,11 @@ def fetch_indicators_command(client: Client, indicator_type: str) -> List[Dict]:
         indicator['rawJSON'] = attributes
 
         indicators.append(indicator)
+
+    if update_context:
+        context_output = {"JSON.Indicator": jmespath.search(expression='[].rawJSON', data=indicators)[:limit or 50]}
+        return context_output
+
     return indicators
 
 
@@ -124,9 +138,10 @@ def main():
 
         elif demisto.command() == 'get-indicators':
             # dummy command for testing
-            indicators = fetch_indicators_command(client, demisto.params()['indicator_type'])
-            for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
+            limit = demisto.args().get('limit', 50)
+            indicators = fetch_indicators_command(client, demisto.params()['indicator_type'], update_context=True,
+                                                  limit=limit)
+            return_outputs('', indicators)
 
     except Exception as err:
         return_error(str(err))

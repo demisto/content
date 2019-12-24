@@ -88,14 +88,22 @@ description: Json Feed Integration
 display: JSON Feed
 name: FeedJSON
 script:
+  script: '-'
+  commands:
+  - name: get-indicators
+  arguments:
+  - name: limit
+    description: limits the number of context indicators to output
+    defaultValue: "50"
+  outputs:
+  - contextPath: JSON.Indicator
   isfetch: false
   feed: true
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/jmespath:1.0.0.5129
 tests:
-- No test
+- JSON Feed Test
