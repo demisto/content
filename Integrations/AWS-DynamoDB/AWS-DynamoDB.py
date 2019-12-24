@@ -11,11 +11,9 @@ from botocore.config import Config
 from botocore.parsers import ResponseParserError
 import urllib3.util
 
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-    
 """PARAMETERS"""
 AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
 AWS_ROLE_ARN = demisto.params().get('roleArn')
@@ -35,18 +33,20 @@ config = Config(
 )
 
 """HELPER FUNCTIONS"""
+
+
 def myconverter(o):
     if isinstance(o, datetime.datetime):
         return o.__str__()
-        
-        
+
+
 def scrub_dict(d):
     if type(d) is dict:
         return dict((k, scrub_dict(v)) for k, v in d.iteritems() if v and scrub_dict(v))
     else:
         return d
 
-    
+
 def aws_session(service='dynamodb', region=None, roleArn=None, roleSessionName=None,
                 roleSessionDuration=None, rolePolicy=None):
     kwargs = {}
@@ -148,8 +148,8 @@ def batch_get_item_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "RequestItems": json.loads(demisto.args().get("request_items", "{}")),
-    "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None)
+        "RequestItems": json.loads(demisto.args().get("request_items", "{}")),
+        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.batch_get_item(**kwargs)
@@ -169,9 +169,9 @@ def batch_write_item_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "RequestItems": json.loads(demisto.args().get("request_items", "{}")),
-    "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-    "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None)
+        "RequestItems": json.loads(demisto.args().get("request_items", "{}")),
+        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
+        "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.batch_write_item(**kwargs)
@@ -191,8 +191,8 @@ def create_backup_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None),
-    "BackupName": demisto.args().get("backup_name", None)
+        "TableName": demisto.args().get("table_name", None),
+        "BackupName": demisto.args().get("backup_name", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.create_backup(**kwargs)
@@ -212,13 +212,13 @@ def create_global_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "GlobalTableName": demisto.args().get("global_table_name", None),
-    "ReplicationGroup": {
-        "Replica": {
-            "RegionName": demisto.args().get("replica_region_name", None)
-         },
+        "GlobalTableName": demisto.args().get("global_table_name", None),
+        "ReplicationGroup": [{
+            "Replica": {
+                "RegionName": demisto.args().get("replica_region_name", None)
+            },
 
-     }
+        }],
 
     }
     kwargs = scrub_dict(kwargs)
@@ -239,94 +239,104 @@ def create_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "AttributeDefinitions": {
-        "AttributeDefinition": {
-            "AttributeName": demisto.args().get("attribute_definition_attribute_name", None),
-            "AttributeType": demisto.args().get("attribute_definition_attribute_type", None)
-         },
+        "AttributeDefinitions": [{
+            "AttributeDefinition": {
+                "AttributeName": demisto.args().get("attribute_definition_attribute_name", None),
+                "AttributeType": demisto.args().get("attribute_definition_attribute_type", None)
+            },
 
-     },
-    "TableName": demisto.args().get("table_name", None),
-    "KeySchema": {
-        "KeySchemaElement": {
-            "AttributeName": demisto.args().get("key_schema_element_attribute_name", None),
-            "KeyType": demisto.args().get("key_schema_element_key_type", None)
-         },
+        }],
+        "TableName": demisto.args().get("table_name", None),
+        "KeySchema": [{
+            "KeySchemaElement": {
+                "AttributeName": demisto.args().get("key_schema_element_attribute_name", None),
+                "KeyType": demisto.args().get("key_schema_element_key_type", None)
+            },
 
-     },
-    "LocalSecondaryIndexes": {
-        "LocalSecondaryIndex": {
-            "IndexName": demisto.args().get("local_secondary_index_index_name", None),
-            "KeySchema": {
-                "KeySchemaElement": {
-                    "AttributeName": demisto.args().get("key_schema_element_attribute_name", None),
-                    "KeyType": demisto.args().get("key_schema_element_key_type", None)
-                 },
+        }],
+        "LocalSecondaryIndexes": [{
+            "LocalSecondaryIndex": {
+                "IndexName": demisto.args().get("local_secondary_index_index_name", None),
+                "KeySchema": [{
+                    "KeySchemaElement": {
+                        "AttributeName": demisto.args().get("key_schema_element_attribute_name",
+                                                            None),
+                        "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                    },
 
-             },
-            "Projection": {
-                "ProjectionType": demisto.args().get("projection_projection_type", None),
-                "NonKeyAttributes": {
-                    "NonKeyAttributeName": demisto.args().get("non_key_attributes_non_key_attribute_name", None),
+                }],
+                "Projection": {
+                    "ProjectionType": demisto.args().get("projection_projection_type", None),
+                    "NonKeyAttributes": [{
+                        "NonKeyAttributeName": demisto.args().get(
+                            "non_key_attributes_non_key_attribute_name", None),
 
-                 },
+                    }],
 
-             }
+                }
 
-         },
+            },
 
-     },
-    "GlobalSecondaryIndexes": {
-        "GlobalSecondaryIndex": {
-            "IndexName": demisto.args().get("global_secondary_index_index_name", None),
-            "KeySchema": {
-                "KeySchemaElement": {
-                    "AttributeName": demisto.args().get("key_schema_element_attribute_name", None),
-                    "KeyType": demisto.args().get("key_schema_element_key_type", None)
-                 },
+        }],
+        "GlobalSecondaryIndexes": [{
+            "GlobalSecondaryIndex": {
+                "IndexName": demisto.args().get("global_secondary_index_index_name", None),
+                "KeySchema": [{
+                    "KeySchemaElement": {
+                        "AttributeName": demisto.args().get("key_schema_element_attribute_name",
+                                                            None),
+                        "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                    },
 
-             },
-            "Projection": {
-                "ProjectionType": demisto.args().get("projection_projection_type", None),
-                "NonKeyAttributes": {
-                    "NonKeyAttributeName": demisto.args().get("non_key_attributes_non_key_attribute_name", None),
+                }],
+                "Projection": {
+                    "ProjectionType": demisto.args().get("projection_projection_type", None),
+                    "NonKeyAttributes": [{
+                        "NonKeyAttributeName": demisto.args().get(
+                            "non_key_attributes_non_key_attribute_name", None),
 
-                 },
+                    }],
 
-             },
-            "ProvisionedThroughput": {
-                "ReadCapacityUnits": demisto.args().get("provisioned_throughput_read_capacity_units", None),
-                "WriteCapacityUnits": demisto.args().get("provisioned_throughput_write_capacity_units", None),
+                },
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": demisto.args().get(
+                        "provisioned_throughput_read_capacity_units", None),
+                    "WriteCapacityUnits": demisto.args().get(
+                        "provisioned_throughput_write_capacity_units", None),
 
-             }
+                }
 
-         },
+            },
 
-     },
-    "BillingMode": demisto.args().get("billing_mode", None),
-    "ProvisionedThroughput": {
-        "ReadCapacityUnits": demisto.args().get("provisioned_throughput_read_capacity_units", None),
-        "WriteCapacityUnits": demisto.args().get("provisioned_throughput_write_capacity_units", None),
+        }],
+        "BillingMode": demisto.args().get("billing_mode", None),
+        "ProvisionedThroughput": {
+            "ReadCapacityUnits": demisto.args().get("provisioned_throughput_read_capacity_units",
+                                                    None),
+            "WriteCapacityUnits": demisto.args().get("provisioned_throughput_write_capacity_units",
+                                                     None),
 
-     },
-    "StreamSpecification": {
-        "StreamEnabled": True if demisto.args().get("stream_specification_stream_enabled", "") == "true" else None,
-        "StreamViewType": demisto.args().get("stream_specification_stream_view_type", None),
+        },
+        "StreamSpecification": {
+            "StreamEnabled": True if demisto.args().get("stream_specification_stream_enabled",
+                                                        "") == "true" else None,
+            "StreamViewType": demisto.args().get("stream_specification_stream_view_type", None),
 
-     },
-    "SSESpecification": {
-        "Enabled": True if demisto.args().get("sse_specification_enabled", "") == "true" else None,
-        "SSEType": demisto.args().get("sse_specification_sse_type", None),
-        "KMSMasterKeyId": demisto.args().get("sse_specification_kms_master_key_id", None),
+        },
+        "SSESpecification": {
+            "Enabled": True if demisto.args().get("sse_specification_enabled",
+                                                  "") == "true" else None,
+            "SSEType": demisto.args().get("sse_specification_sse_type", None),
+            "KMSMasterKeyId": demisto.args().get("sse_specification_kms_master_key_id", None),
 
-     },
-    "Tags": {
-        "Tag": {
-            "Key": demisto.args().get("tag_key", None),
-            "Value": demisto.args().get("tag_value", None)
-         },
+        },
+        "Tags": [{
+            "Tag": {
+                "Key": demisto.args().get("tag_key", None),
+                "Value": demisto.args().get("tag_value", None)
+            },
 
-     }
+        }],
 
     }
     kwargs = scrub_dict(kwargs)
@@ -347,7 +357,7 @@ def delete_backup_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "BackupArn": demisto.args().get("backup_arn", None)
+        "BackupArn": demisto.args().get("backup_arn", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.delete_backup(**kwargs)
@@ -367,16 +377,18 @@ def delete_item_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None),
-    "Key": json.loads(demisto.args().get("key", "{}")),
-    "Expected": json.loads(demisto.args().get("expected", "{}")),
-    "ConditionalOperator": demisto.args().get("conditional_operator", None),
-    "ReturnValues": demisto.args().get("return_values", None),
-    "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-    "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None),
-    "ConditionExpression": demisto.args().get("condition_expression", None),
-    "ExpressionAttributeNames": json.loads(demisto.args().get("expression_attribute_names", "{}")),
-    "ExpressionAttributeValues": json.loads(demisto.args().get("expression_attribute_values", "{}"))
+        "TableName": demisto.args().get("table_name", None),
+        "Key": json.loads(demisto.args().get("key", "{}")),
+        "Expected": json.loads(demisto.args().get("expected", "{}")),
+        "ConditionalOperator": demisto.args().get("conditional_operator", None),
+        "ReturnValues": demisto.args().get("return_values", None),
+        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
+        "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None),
+        "ConditionExpression": demisto.args().get("condition_expression", None),
+        "ExpressionAttributeNames": json.loads(
+            demisto.args().get("expression_attribute_names", "{}")),
+        "ExpressionAttributeValues": json.loads(
+            demisto.args().get("expression_attribute_values", "{}"))
     }
     kwargs = scrub_dict(kwargs)
     response = client.delete_item(**kwargs)
@@ -396,7 +408,7 @@ def delete_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None)
+        "TableName": demisto.args().get("table_name", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.delete_table(**kwargs)
@@ -416,7 +428,7 @@ def describe_backup_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "BackupArn": demisto.args().get("backup_arn", None)
+        "BackupArn": demisto.args().get("backup_arn", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.describe_backup(**kwargs)
@@ -436,7 +448,7 @@ def describe_continuous_backups_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None)
+        "TableName": demisto.args().get("table_name", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.describe_continuous_backups(**kwargs)
@@ -476,7 +488,7 @@ def describe_global_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "GlobalTableName": demisto.args().get("global_table_name", None)
+        "GlobalTableName": demisto.args().get("global_table_name", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.describe_global_table(**kwargs)
@@ -496,7 +508,7 @@ def describe_global_table_settings_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "GlobalTableName": demisto.args().get("global_table_name", None)
+        "GlobalTableName": demisto.args().get("global_table_name", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.describe_global_table_settings(**kwargs)
@@ -536,7 +548,7 @@ def describe_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None)
+        "TableName": demisto.args().get("table_name", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.describe_table(**kwargs)
@@ -556,7 +568,7 @@ def describe_time_to_live_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None)
+        "TableName": demisto.args().get("table_name", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.describe_time_to_live(**kwargs)
@@ -576,16 +588,17 @@ def get_item_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None),
-    "Key": json.loads(demisto.args().get("key", "{}")),
-    "AttributesToGet": {
-        "AttributeName": demisto.args().get("attributes_to_get_attribute_name", None),
+        "TableName": demisto.args().get("table_name", None),
+        "Key": json.loads(demisto.args().get("key", "{}")),
+        "AttributesToGet": [{
+            "AttributeName": demisto.args().get("attributes_to_get_attribute_name", None),
 
-     },
-    "ConsistentRead": True if demisto.args().get("consistent_read", "") == "true" else None,
-    "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-    "ProjectionExpression": demisto.args().get("projection_expression", None),
-    "ExpressionAttributeNames": json.loads(demisto.args().get("expression_attribute_names", "{}"))
+        }],
+        "ConsistentRead": True if demisto.args().get("consistent_read", "") == "true" else None,
+        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
+        "ProjectionExpression": demisto.args().get("projection_expression", None),
+        "ExpressionAttributeNames": json.loads(
+            demisto.args().get("expression_attribute_names", "{}"))
     }
     kwargs = scrub_dict(kwargs)
     response = client.get_item(**kwargs)
@@ -605,9 +618,9 @@ def list_backups_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None),
-    "ExclusiveStartBackupArn": demisto.args().get("exclusive_start_backup_arn", None),
-    "BackupType": demisto.args().get("backup_type", None)
+        "TableName": demisto.args().get("table_name", None),
+        "ExclusiveStartBackupArn": demisto.args().get("exclusive_start_backup_arn", None),
+        "BackupType": demisto.args().get("backup_type", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.list_backups(**kwargs)
@@ -627,8 +640,9 @@ def list_global_tables_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "ExclusiveStartGlobalTableName": demisto.args().get("exclusive_start_global_table_name", None),
-    "RegionName": demisto.args().get("region_name", None)
+        "ExclusiveStartGlobalTableName": demisto.args().get("exclusive_start_global_table_name",
+                                                            None),
+        "RegionName": demisto.args().get("region_name", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.list_global_tables(**kwargs)
@@ -648,7 +662,7 @@ def list_tables_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "ExclusiveStartTableName": demisto.args().get("exclusive_start_table_name", None),
+        "ExclusiveStartTableName": demisto.args().get("exclusive_start_table_name", None),
 
     }
     kwargs = scrub_dict(kwargs)
@@ -669,8 +683,8 @@ def list_tags_of_resource_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "ResourceArn": demisto.args().get("resource_arn", None),
-    "NextToken": demisto.args().get("next_token", None)
+        "ResourceArn": demisto.args().get("resource_arn", None),
+        "NextToken": demisto.args().get("next_token", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.list_tags_of_resource(**kwargs)
@@ -690,16 +704,18 @@ def put_item_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None),
-    "Item": json.loads(demisto.args().get("item", "{}")),
-    "Expected": json.loads(demisto.args().get("expected", "{}")),
-    "ReturnValues": demisto.args().get("return_values", None),
-    "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-    "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None),
-    "ConditionalOperator": demisto.args().get("conditional_operator", None),
-    "ConditionExpression": demisto.args().get("condition_expression", None),
-    "ExpressionAttributeNames": json.loads(demisto.args().get("expression_attribute_names", "{}")),
-    "ExpressionAttributeValues": json.loads(demisto.args().get("expression_attribute_values", "{}"))
+        "TableName": demisto.args().get("table_name", None),
+        "Item": json.loads(demisto.args().get("item", "{}")),
+        "Expected": json.loads(demisto.args().get("expected", "{}")),
+        "ReturnValues": demisto.args().get("return_values", None),
+        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
+        "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None),
+        "ConditionalOperator": demisto.args().get("conditional_operator", None),
+        "ConditionExpression": demisto.args().get("condition_expression", None),
+        "ExpressionAttributeNames": json.loads(
+            demisto.args().get("expression_attribute_names", "{}")),
+        "ExpressionAttributeValues": json.loads(
+            demisto.args().get("expression_attribute_values", "{}"))
     }
     kwargs = scrub_dict(kwargs)
     response = client.put_item(**kwargs)
@@ -719,25 +735,28 @@ def query_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None),
-    "IndexName": demisto.args().get("index_name", None),
-    "Select": demisto.args().get("select", None),
-    "AttributesToGet": {
-        "AttributeName": demisto.args().get("attributes_to_get_attribute_name", None),
+        "TableName": demisto.args().get("table_name", None),
+        "IndexName": demisto.args().get("index_name", None),
+        "Select": demisto.args().get("select", None),
+        "AttributesToGet": [{
+            "AttributeName": demisto.args().get("attributes_to_get_attribute_name", None),
 
-     },
-    "ConsistentRead": True if demisto.args().get("consistent_read", "") == "true" else None,
-    "KeyConditions": json.loads(demisto.args().get("key_conditions", "{}")),
-    "QueryFilter": json.loads(demisto.args().get("query_filter", "{}")),
-    "ConditionalOperator": demisto.args().get("conditional_operator", None),
-    "ScanIndexForward": True if demisto.args().get("scan_index_forward", "") == "true" else None,
-    "ExclusiveStartKey": json.loads(demisto.args().get("exclusive_start_key", "{}")),
-    "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-    "ProjectionExpression": demisto.args().get("projection_expression", None),
-    "FilterExpression": demisto.args().get("filter_expression", None),
-    "KeyConditionExpression": demisto.args().get("key_condition_expression", None),
-    "ExpressionAttributeNames": json.loads(demisto.args().get("expression_attribute_names", "{}")),
-    "ExpressionAttributeValues": json.loads(demisto.args().get("expression_attribute_values", "{}"))
+        }],
+        "ConsistentRead": True if demisto.args().get("consistent_read", "") == "true" else None,
+        "KeyConditions": json.loads(demisto.args().get("key_conditions", "{}")),
+        "QueryFilter": json.loads(demisto.args().get("query_filter", "{}")),
+        "ConditionalOperator": demisto.args().get("conditional_operator", None),
+        "ScanIndexForward": True if demisto.args().get("scan_index_forward",
+                                                       "") == "true" else None,
+        "ExclusiveStartKey": json.loads(demisto.args().get("exclusive_start_key", "{}")),
+        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
+        "ProjectionExpression": demisto.args().get("projection_expression", None),
+        "FilterExpression": demisto.args().get("filter_expression", None),
+        "KeyConditionExpression": demisto.args().get("key_condition_expression", None),
+        "ExpressionAttributeNames": json.loads(
+            demisto.args().get("expression_attribute_names", "{}")),
+        "ExpressionAttributeValues": json.loads(
+            demisto.args().get("expression_attribute_values", "{}"))
     }
     kwargs = scrub_dict(kwargs)
     response = client.query(**kwargs)
@@ -757,63 +776,71 @@ def restore_table_from_backup_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TargetTableName": demisto.args().get("target_table_name", None),
-    "BackupArn": demisto.args().get("backup_arn", None),
-    "BillingModeOverride": demisto.args().get("billing_mode_override", None),
-    "GlobalSecondaryIndexOverride": {
-        "GlobalSecondaryIndex": {
-            "IndexName": demisto.args().get("global_secondary_index_index_name", None),
-            "KeySchema": {
-                "KeySchemaElement": {
-                    "AttributeName": demisto.args().get("key_schema_element_attribute_name", None),
-                    "KeyType": demisto.args().get("key_schema_element_key_type", None)
-                 },
+        "TargetTableName": demisto.args().get("target_table_name", None),
+        "BackupArn": demisto.args().get("backup_arn", None),
+        "BillingModeOverride": demisto.args().get("billing_mode_override", None),
+        "GlobalSecondaryIndexOverride": [{
+            "GlobalSecondaryIndex": {
+                "IndexName": demisto.args().get("global_secondary_index_index_name", None),
+                "KeySchema": [{
+                    "KeySchemaElement": {
+                        "AttributeName": demisto.args().get("key_schema_element_attribute_name",
+                                                            None),
+                        "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                    },
 
-             },
-            "Projection": {
-                "ProjectionType": demisto.args().get("projection_projection_type", None),
-                "NonKeyAttributes": {
-                    "NonKeyAttributeName": demisto.args().get("non_key_attributes_non_key_attribute_name", None),
+                }],
+                "Projection": {
+                    "ProjectionType": demisto.args().get("projection_projection_type", None),
+                    "NonKeyAttributes": [{
+                        "NonKeyAttributeName": demisto.args().get(
+                            "non_key_attributes_non_key_attribute_name", None),
 
-                 },
+                    }],
 
-             },
-            "ProvisionedThroughput": {
-                "ReadCapacityUnits": demisto.args().get("provisioned_throughput_read_capacity_units", None),
-                "WriteCapacityUnits": demisto.args().get("provisioned_throughput_write_capacity_units", None),
+                },
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": demisto.args().get(
+                        "provisioned_throughput_read_capacity_units", None),
+                    "WriteCapacityUnits": demisto.args().get(
+                        "provisioned_throughput_write_capacity_units", None),
 
-             }
+                }
 
-         },
+            },
 
-     },
-    "LocalSecondaryIndexOverride": {
-        "LocalSecondaryIndex": {
-            "IndexName": demisto.args().get("local_secondary_index_index_name", None),
-            "KeySchema": {
-                "KeySchemaElement": {
-                    "AttributeName": demisto.args().get("key_schema_element_attribute_name", None),
-                    "KeyType": demisto.args().get("key_schema_element_key_type", None)
-                 },
+        }],
+        "LocalSecondaryIndexOverride": [{
+            "LocalSecondaryIndex": {
+                "IndexName": demisto.args().get("local_secondary_index_index_name", None),
+                "KeySchema": [{
+                    "KeySchemaElement": {
+                        "AttributeName": demisto.args().get("key_schema_element_attribute_name",
+                                                            None),
+                        "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                    },
 
-             },
-            "Projection": {
-                "ProjectionType": demisto.args().get("projection_projection_type", None),
-                "NonKeyAttributes": {
-                    "NonKeyAttributeName": demisto.args().get("non_key_attributes_non_key_attribute_name", None),
+                }],
+                "Projection": {
+                    "ProjectionType": demisto.args().get("projection_projection_type", None),
+                    "NonKeyAttributes": [{
+                        "NonKeyAttributeName": demisto.args().get(
+                            "non_key_attributes_non_key_attribute_name", None),
 
-                 },
+                    }],
 
-             }
+                }
 
-         },
+            },
 
-     },
-    "ProvisionedThroughputOverride": {
-        "ReadCapacityUnits": demisto.args().get("provisioned_throughput_override_read_capacity_units", None),
-        "WriteCapacityUnits": demisto.args().get("provisioned_throughput_override_write_capacity_units", None),
+        }],
+        "ProvisionedThroughputOverride": {
+            "ReadCapacityUnits": demisto.args().get(
+                "provisioned_throughput_override_read_capacity_units", None),
+            "WriteCapacityUnits": demisto.args().get(
+                "provisioned_throughput_override_write_capacity_units", None),
 
-     }
+        }
 
     }
     kwargs = scrub_dict(kwargs)
@@ -834,64 +861,73 @@ def restore_table_to_point_in_time_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "SourceTableName": demisto.args().get("source_table_name", None),
-    "TargetTableName": demisto.args().get("target_table_name", None),
-    "UseLatestRestorableTime": True if demisto.args().get("use_latest_restorable_time", "") == "true" else None,
-    "BillingModeOverride": demisto.args().get("billing_mode_override", None),
-    "GlobalSecondaryIndexOverride": {
-        "GlobalSecondaryIndex": {
-            "IndexName": demisto.args().get("global_secondary_index_index_name", None),
-            "KeySchema": {
-                "KeySchemaElement": {
-                    "AttributeName": demisto.args().get("key_schema_element_attribute_name", None),
-                    "KeyType": demisto.args().get("key_schema_element_key_type", None)
-                 },
+        "SourceTableName": demisto.args().get("source_table_name", None),
+        "TargetTableName": demisto.args().get("target_table_name", None),
+        "UseLatestRestorableTime": True if demisto.args().get("use_latest_restorable_time",
+                                                              "") == "true" else None,
+        "BillingModeOverride": demisto.args().get("billing_mode_override", None),
+        "GlobalSecondaryIndexOverride": [{
+            "GlobalSecondaryIndex": {
+                "IndexName": demisto.args().get("global_secondary_index_index_name", None),
+                "KeySchema": [{
+                    "KeySchemaElement": {
+                        "AttributeName": demisto.args().get("key_schema_element_attribute_name",
+                                                            None),
+                        "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                    },
 
-             },
-            "Projection": {
-                "ProjectionType": demisto.args().get("projection_projection_type", None),
-                "NonKeyAttributes": {
-                    "NonKeyAttributeName": demisto.args().get("non_key_attributes_non_key_attribute_name", None),
+                }],
+                "Projection": {
+                    "ProjectionType": demisto.args().get("projection_projection_type", None),
+                    "NonKeyAttributes": [{
+                        "NonKeyAttributeName": demisto.args().get(
+                            "non_key_attributes_non_key_attribute_name", None),
 
-                 },
+                    }],
 
-             },
-            "ProvisionedThroughput": {
-                "ReadCapacityUnits": demisto.args().get("provisioned_throughput_read_capacity_units", None),
-                "WriteCapacityUnits": demisto.args().get("provisioned_throughput_write_capacity_units", None),
+                },
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": demisto.args().get(
+                        "provisioned_throughput_read_capacity_units", None),
+                    "WriteCapacityUnits": demisto.args().get(
+                        "provisioned_throughput_write_capacity_units", None),
 
-             }
+                }
 
-         },
+            },
 
-     },
-    "LocalSecondaryIndexOverride": {
-        "LocalSecondaryIndex": {
-            "IndexName": demisto.args().get("local_secondary_index_index_name", None),
-            "KeySchema": {
-                "KeySchemaElement": {
-                    "AttributeName": demisto.args().get("key_schema_element_attribute_name", None),
-                    "KeyType": demisto.args().get("key_schema_element_key_type", None)
-                 },
+        }],
+        "LocalSecondaryIndexOverride": [{
+            "LocalSecondaryIndex": {
+                "IndexName": demisto.args().get("local_secondary_index_index_name", None),
+                "KeySchema": [{
+                    "KeySchemaElement": {
+                        "AttributeName": demisto.args().get("key_schema_element_attribute_name",
+                                                            None),
+                        "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                    },
 
-             },
-            "Projection": {
-                "ProjectionType": demisto.args().get("projection_projection_type", None),
-                "NonKeyAttributes": {
-                    "NonKeyAttributeName": demisto.args().get("non_key_attributes_non_key_attribute_name", None),
+                }],
+                "Projection": {
+                    "ProjectionType": demisto.args().get("projection_projection_type", None),
+                    "NonKeyAttributes": [{
+                        "NonKeyAttributeName": demisto.args().get(
+                            "non_key_attributes_non_key_attribute_name", None),
 
-                 },
+                    }],
 
-             }
+                }
 
-         },
+            },
 
-     },
-    "ProvisionedThroughputOverride": {
-        "ReadCapacityUnits": demisto.args().get("provisioned_throughput_override_read_capacity_units", None),
-        "WriteCapacityUnits": demisto.args().get("provisioned_throughput_override_write_capacity_units", None),
+        }],
+        "ProvisionedThroughputOverride": {
+            "ReadCapacityUnits": demisto.args().get(
+                "provisioned_throughput_override_read_capacity_units", None),
+            "WriteCapacityUnits": demisto.args().get(
+                "provisioned_throughput_override_write_capacity_units", None),
 
-     }
+        }
 
     }
     kwargs = scrub_dict(kwargs)
@@ -912,22 +948,24 @@ def scan_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None),
-    "IndexName": demisto.args().get("index_name", None),
-    "AttributesToGet": {
-        "AttributeName": demisto.args().get("attributes_to_get_attribute_name", None),
+        "TableName": demisto.args().get("table_name", None),
+        "IndexName": demisto.args().get("index_name", None),
+        "AttributesToGet": [{
+            "AttributeName": demisto.args().get("attributes_to_get_attribute_name", None),
 
-     },
-    "Select": demisto.args().get("select", None),
-    "ScanFilter": json.loads(demisto.args().get("scan_filter", "{}")),
-    "ConditionalOperator": demisto.args().get("conditional_operator", None),
-    "ExclusiveStartKey": json.loads(demisto.args().get("exclusive_start_key", "{}")),
-    "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-    "ProjectionExpression": demisto.args().get("projection_expression", None),
-    "FilterExpression": demisto.args().get("filter_expression", None),
-    "ExpressionAttributeNames": json.loads(demisto.args().get("expression_attribute_names", "{}")),
-    "ExpressionAttributeValues": json.loads(demisto.args().get("expression_attribute_values", "{}")),
-    "ConsistentRead": True if demisto.args().get("consistent_read", "") == "true" else None
+        }],
+        "Select": demisto.args().get("select", None),
+        "ScanFilter": json.loads(demisto.args().get("scan_filter", "{}")),
+        "ConditionalOperator": demisto.args().get("conditional_operator", None),
+        "ExclusiveStartKey": json.loads(demisto.args().get("exclusive_start_key", "{}")),
+        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
+        "ProjectionExpression": demisto.args().get("projection_expression", None),
+        "FilterExpression": demisto.args().get("filter_expression", None),
+        "ExpressionAttributeNames": json.loads(
+            demisto.args().get("expression_attribute_names", "{}")),
+        "ExpressionAttributeValues": json.loads(
+            demisto.args().get("expression_attribute_values", "{}")),
+        "ConsistentRead": True if demisto.args().get("consistent_read", "") == "true" else None
     }
     kwargs = scrub_dict(kwargs)
     response = client.scan(**kwargs)
@@ -947,14 +985,14 @@ def tag_resource_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "ResourceArn": demisto.args().get("resource_arn", None),
-    "Tags": {
-        "Tag": {
-            "Key": demisto.args().get("tag_key", None),
-            "Value": demisto.args().get("tag_value", None)
-         },
+        "ResourceArn": demisto.args().get("resource_arn", None),
+        "Tags": [{
+            "Tag": {
+                "Key": demisto.args().get("tag_key", None),
+                "Value": demisto.args().get("tag_value", None)
+            },
 
-     }
+        }],
 
     }
     kwargs = scrub_dict(kwargs)
@@ -975,20 +1013,21 @@ def transact_get_items_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TransactItems": {
-        "TransactGetItem": {
-            "Get": {
-                "Key": json.loads(demisto.args().get("get_key", "{}")),
-                "TableName": demisto.args().get("get_table_name", None),
-                "ProjectionExpression": demisto.args().get("get_projection_expression", None),
-                "ExpressionAttributeNames": json.loads(demisto.args().get("get_expression_attribute_names", "{}")),
+        "TransactItems": [{
+            "TransactGetItem": {
+                "Get": {
+                    "Key": json.loads(demisto.args().get("get_key", "{}")),
+                    "TableName": demisto.args().get("get_table_name", None),
+                    "ProjectionExpression": demisto.args().get("get_projection_expression", None),
+                    "ExpressionAttributeNames": json.loads(
+                        demisto.args().get("get_expression_attribute_names", "{}")),
 
-             }
+                }
 
-         },
+            },
 
-     },
-    "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None)
+        }],
+        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.transact_get_items(**kwargs)
@@ -1008,52 +1047,65 @@ def transact_write_items_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TransactItems": {
-        "TransactWriteItem": {
-            "ConditionCheck": {
-                "Key": json.loads(demisto.args().get("condition_check_key", "{}")),
-                "TableName": demisto.args().get("condition_check_table_name", None),
-                "ConditionExpression": demisto.args().get("condition_check_condition_expression", None),
-                "ExpressionAttributeNames": json.loads(demisto.args().get("condition_check_expression_attribute_names", "{}")),
-                "ExpressionAttributeValues": json.loads(demisto.args().get("condition_check_expression_attribute_values", "{}")),
-                "ReturnValuesOnConditionCheckFailure": demisto.args().get("condition_check_return_values_on_condition_check_failure", None),
+        "TransactItems": [{
+            "TransactWriteItem": {
+                "ConditionCheck": {
+                    "Key": json.loads(demisto.args().get("condition_check_key", "{}")),
+                    "TableName": demisto.args().get("condition_check_table_name", None),
+                    "ConditionExpression": demisto.args().get(
+                        "condition_check_condition_expression", None),
+                    "ExpressionAttributeNames": json.loads(
+                        demisto.args().get("condition_check_expression_attribute_names", "{}")),
+                    "ExpressionAttributeValues": json.loads(
+                        demisto.args().get("condition_check_expression_attribute_values", "{}")),
+                    "ReturnValuesOnConditionCheckFailure": demisto.args().get(
+                        "condition_check_return_values_on_condition_check_failure", None),
 
-             },
-            "Put": {
-                "Item": json.loads(demisto.args().get("put_item", "{}")),
-                "TableName": demisto.args().get("put_table_name", None),
-                "ConditionExpression": demisto.args().get("put_condition_expression", None),
-                "ExpressionAttributeNames": json.loads(demisto.args().get("put_expression_attribute_names", "{}")),
-                "ExpressionAttributeValues": json.loads(demisto.args().get("put_expression_attribute_values", "{}")),
-                "ReturnValuesOnConditionCheckFailure": demisto.args().get("put_return_values_on_condition_check_failure", None),
+                },
+                "Put": {
+                    "Item": json.loads(demisto.args().get("put_item", "{}")),
+                    "TableName": demisto.args().get("put_table_name", None),
+                    "ConditionExpression": demisto.args().get("put_condition_expression", None),
+                    "ExpressionAttributeNames": json.loads(
+                        demisto.args().get("put_expression_attribute_names", "{}")),
+                    "ExpressionAttributeValues": json.loads(
+                        demisto.args().get("put_expression_attribute_values", "{}")),
+                    "ReturnValuesOnConditionCheckFailure": demisto.args().get(
+                        "put_return_values_on_condition_check_failure", None),
 
-             },
-            "Delete": {
-                "Key": json.loads(demisto.args().get("delete_key", "{}")),
-                "TableName": demisto.args().get("delete_table_name", None),
-                "ConditionExpression": demisto.args().get("delete_condition_expression", None),
-                "ExpressionAttributeNames": json.loads(demisto.args().get("delete_expression_attribute_names", "{}")),
-                "ExpressionAttributeValues": json.loads(demisto.args().get("delete_expression_attribute_values", "{}")),
-                "ReturnValuesOnConditionCheckFailure": demisto.args().get("delete_return_values_on_condition_check_failure", None),
+                },
+                "Delete": {
+                    "Key": json.loads(demisto.args().get("delete_key", "{}")),
+                    "TableName": demisto.args().get("delete_table_name", None),
+                    "ConditionExpression": demisto.args().get("delete_condition_expression", None),
+                    "ExpressionAttributeNames": json.loads(
+                        demisto.args().get("delete_expression_attribute_names", "{}")),
+                    "ExpressionAttributeValues": json.loads(
+                        demisto.args().get("delete_expression_attribute_values", "{}")),
+                    "ReturnValuesOnConditionCheckFailure": demisto.args().get(
+                        "delete_return_values_on_condition_check_failure", None),
 
-             },
-            "Update": {
-                "Key": json.loads(demisto.args().get("update_key", "{}")),
-                "UpdateExpression": demisto.args().get("update_update_expression", None),
-                "TableName": demisto.args().get("update_table_name", None),
-                "ConditionExpression": demisto.args().get("update_condition_expression", None),
-                "ExpressionAttributeNames": json.loads(demisto.args().get("update_expression_attribute_names", "{}")),
-                "ExpressionAttributeValues": json.loads(demisto.args().get("update_expression_attribute_values", "{}")),
-                "ReturnValuesOnConditionCheckFailure": demisto.args().get("update_return_values_on_condition_check_failure", None),
+                },
+                "Update": {
+                    "Key": json.loads(demisto.args().get("update_key", "{}")),
+                    "UpdateExpression": demisto.args().get("update_update_expression", None),
+                    "TableName": demisto.args().get("update_table_name", None),
+                    "ConditionExpression": demisto.args().get("update_condition_expression", None),
+                    "ExpressionAttributeNames": json.loads(
+                        demisto.args().get("update_expression_attribute_names", "{}")),
+                    "ExpressionAttributeValues": json.loads(
+                        demisto.args().get("update_expression_attribute_values", "{}")),
+                    "ReturnValuesOnConditionCheckFailure": demisto.args().get(
+                        "update_return_values_on_condition_check_failure", None),
 
-             }
+                }
 
-         },
+            },
 
-     },
-    "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-    "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None),
-    "ClientRequestToken": demisto.args().get("client_request_token", None)
+        }],
+        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
+        "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None),
+        "ClientRequestToken": demisto.args().get("client_request_token", None)
     }
     kwargs = scrub_dict(kwargs)
     response = client.transact_write_items(**kwargs)
@@ -1073,11 +1125,11 @@ def untag_resource_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "ResourceArn": demisto.args().get("resource_arn", None),
-    "TagKeys": {
-        "TagKeyString": demisto.args().get("tag_keys_tag_key_string", None),
+        "ResourceArn": demisto.args().get("resource_arn", None),
+        "TagKeys": [{
+            "TagKeyString": demisto.args().get("tag_keys_tag_key_string", None),
 
-     }
+        }],
 
     }
     kwargs = scrub_dict(kwargs)
@@ -1098,11 +1150,13 @@ def update_continuous_backups_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None),
-    "PointInTimeRecoverySpecification": {
-        "PointInTimeRecoveryEnabled": True if demisto.args().get("point_in_time_recovery_specification_point_in_time_recovery_enabled", "") == "true" else None,
+        "TableName": demisto.args().get("table_name", None),
+        "PointInTimeRecoverySpecification": {
+            "PointInTimeRecoveryEnabled": True if demisto.args().get(
+                "point_in_time_recovery_specification_point_in_time_recovery_enabled",
+                "") == "true" else None,
 
-     }
+        }
 
     }
     kwargs = scrub_dict(kwargs)
@@ -1123,21 +1177,21 @@ def update_global_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "GlobalTableName": demisto.args().get("global_table_name", None),
-    "ReplicaUpdates": {
-        "ReplicaUpdate": {
-            "Create": {
-                "RegionName": demisto.args().get("create_region_name", None),
+        "GlobalTableName": demisto.args().get("global_table_name", None),
+        "ReplicaUpdates": [{
+            "ReplicaUpdate": {
+                "Create": {
+                    "RegionName": demisto.args().get("create_region_name", None),
 
-             },
-            "Delete": {
-                "RegionName": demisto.args().get("delete_region_name", None),
+                },
+                "Delete": {
+                    "RegionName": demisto.args().get("delete_region_name", None),
 
-             }
+                }
 
-         },
+            },
 
-     }
+        }],
 
     }
     kwargs = scrub_dict(kwargs)
@@ -1158,93 +1212,142 @@ def update_global_table_settings_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "GlobalTableName": demisto.args().get("global_table_name", None),
-    "GlobalTableBillingMode": demisto.args().get("global_table_billing_mode", None),
-    "GlobalTableProvisionedWriteCapacityUnits": demisto.args().get("global_table_provisioned_write_capacity_units", None),
-    "GlobalTableProvisionedWriteCapacityAutoScalingSettingsUpdate": {
-        "MinimumUnits": demisto.args().get("global_table_provisioned_write_capacity_auto_scaling_settings_update_minimum_units", None),
-        "MaximumUnits": demisto.args().get("global_table_provisioned_write_capacity_auto_scaling_settings_update_maximum_units", None),
-        "AutoScalingDisabled": True if demisto.args().get("global_table_provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_disabled", "") == "true" else None,
-        "AutoScalingRoleArn": demisto.args().get("global_table_provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_role_arn", None),
-        "ScalingPolicyUpdate": {
-            "PolicyName": demisto.args().get("scaling_policy_update_policy_name", None),
-            "TargetTrackingScalingPolicyConfiguration": {
-                "DisableScaleIn": True if demisto.args().get("target_tracking_scaling_policy_configuration_disable_scale_in", "") == "true" else None,
+        "GlobalTableName": demisto.args().get("global_table_name", None),
+        "GlobalTableBillingMode": demisto.args().get("global_table_billing_mode", None),
+        "GlobalTableProvisionedWriteCapacityUnits": demisto.args().get(
+            "global_table_provisioned_write_capacity_units", None),
+        "GlobalTableProvisionedWriteCapacityAutoScalingSettingsUpdate": {
+            "MinimumUnits": demisto.args().get(
+                "global_table_provisioned_write_capacity_auto_scaling_settings_update_minimum_units",
+                None),
+            "MaximumUnits": demisto.args().get(
+                "global_table_provisioned_write_capacity_auto_scaling_settings_update_maximum_units",
+                None),
+            "AutoScalingDisabled": True if demisto.args().get(
+                "global_table_provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_disabled",
+                "") == "true" else None,
+            "AutoScalingRoleArn": demisto.args().get(
+                "global_table_provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
+                None),
+            "ScalingPolicyUpdate": {
+                "PolicyName": demisto.args().get("scaling_policy_update_policy_name", None),
+                "TargetTrackingScalingPolicyConfiguration": {
+                    "DisableScaleIn": True if demisto.args().get(
+                        "target_tracking_scaling_policy_configuration_disable_scale_in",
+                        "") == "true" else None,
 
-             },
+                },
 
-         },
+            },
 
-     },
-    "GlobalTableGlobalSecondaryIndexSettingsUpdate": {
-        "GlobalTableGlobalSecondaryIndexSettingsUpdate": {
-            "IndexName": demisto.args().get("global_table_global_secondary_index_settings_update_index_name", None),
-            "ProvisionedWriteCapacityUnits": demisto.args().get("global_table_global_secondary_index_settings_update_provisioned_write_capacity_units", None),
-            "ProvisionedWriteCapacityAutoScalingSettingsUpdate": {
-                "MinimumUnits": demisto.args().get("provisioned_write_capacity_auto_scaling_settings_update_minimum_units", None),
-                "MaximumUnits": demisto.args().get("provisioned_write_capacity_auto_scaling_settings_update_maximum_units", None),
-                "AutoScalingDisabled": True if demisto.args().get("provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_disabled", "") == "true" else None,
-                "AutoScalingRoleArn": demisto.args().get("provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_role_arn", None),
-                "ScalingPolicyUpdate": {
-                    "PolicyName": demisto.args().get("scaling_policy_update_policy_name", None),
-                    "TargetTrackingScalingPolicyConfiguration": {
-                        "DisableScaleIn": True if demisto.args().get("target_tracking_scaling_policy_configuration_disable_scale_in", "") == "true" else None,
+        },
+        "GlobalTableGlobalSecondaryIndexSettingsUpdate": [{
+            "GlobalTableGlobalSecondaryIndexSettingsUpdate": {
+                "IndexName": demisto.args().get(
+                    "global_table_global_secondary_index_settings_update_index_name", None),
+                "ProvisionedWriteCapacityUnits": demisto.args().get(
+                    "global_table_global_secondary_index_settings_update_provisioned_write_capacity_units",
+                    None),
+                "ProvisionedWriteCapacityAutoScalingSettingsUpdate": {
+                    "MinimumUnits": demisto.args().get(
+                        "provisioned_write_capacity_auto_scaling_settings_update_minimum_units",
+                        None),
+                    "MaximumUnits": demisto.args().get(
+                        "provisioned_write_capacity_auto_scaling_settings_update_maximum_units",
+                        None),
+                    "AutoScalingDisabled": True if demisto.args().get(
+                        "provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_disabled",
+                        "") == "true" else None,
+                    "AutoScalingRoleArn": demisto.args().get(
+                        "provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
+                        None),
+                    "ScalingPolicyUpdate": {
+                        "PolicyName": demisto.args().get("scaling_policy_update_policy_name", None),
+                        "TargetTrackingScalingPolicyConfiguration": {
+                            "DisableScaleIn": True if demisto.args().get(
+                                "target_tracking_scaling_policy_configuration_disable_scale_in",
+                                "") == "true" else None,
 
-                     },
+                        },
 
-                 },
+                    },
 
-             }
+                }
 
-         },
+            },
 
-     },
-    "ReplicaSettingsUpdate": {
-        "ReplicaSettingsUpdate": {
-            "RegionName": demisto.args().get("replica_settings_update_region_name", None),
-            "ReplicaProvisionedReadCapacityUnits": demisto.args().get("replica_settings_update_replica_provisioned_read_capacity_units", None),
-            "ReplicaProvisionedReadCapacityAutoScalingSettingsUpdate": {
-                "MinimumUnits": demisto.args().get("replica_provisioned_read_capacity_auto_scaling_settings_update_minimum_units", None),
-                "MaximumUnits": demisto.args().get("replica_provisioned_read_capacity_auto_scaling_settings_update_maximum_units", None),
-                "AutoScalingDisabled": True if demisto.args().get("replica_provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_disabled", "") == "true" else None,
-                "AutoScalingRoleArn": demisto.args().get("replica_provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_role_arn", None),
-                "ScalingPolicyUpdate": {
-                    "PolicyName": demisto.args().get("scaling_policy_update_policy_name", None),
-                    "TargetTrackingScalingPolicyConfiguration": {
-                        "DisableScaleIn": True if demisto.args().get("target_tracking_scaling_policy_configuration_disable_scale_in", "") == "true" else None,
+        }],
+        "ReplicaSettingsUpdate": [{
+            "ReplicaSettingsUpdate": {
+                "RegionName": demisto.args().get("replica_settings_update_region_name", None),
+                "ReplicaProvisionedReadCapacityUnits": demisto.args().get(
+                    "replica_settings_update_replica_provisioned_read_capacity_units", None),
+                "ReplicaProvisionedReadCapacityAutoScalingSettingsUpdate": {
+                    "MinimumUnits": demisto.args().get(
+                        "replica_provisioned_read_capacity_auto_scaling_settings_update_minimum_units",
+                        None),
+                    "MaximumUnits": demisto.args().get(
+                        "replica_provisioned_read_capacity_auto_scaling_settings_update_maximum_units",
+                        None),
+                    "AutoScalingDisabled": True if demisto.args().get(
+                        "replica_provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_disabled",
+                        "") == "true" else None,
+                    "AutoScalingRoleArn": demisto.args().get(
+                        "replica_provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
+                        None),
+                    "ScalingPolicyUpdate": {
+                        "PolicyName": demisto.args().get("scaling_policy_update_policy_name", None),
+                        "TargetTrackingScalingPolicyConfiguration": {
+                            "DisableScaleIn": True if demisto.args().get(
+                                "target_tracking_scaling_policy_configuration_disable_scale_in",
+                                "") == "true" else None,
 
-                     },
+                        },
 
-                 },
+                    },
 
-             },
-            "ReplicaGlobalSecondaryIndexSettingsUpdate": {
-                "ReplicaGlobalSecondaryIndexSettingsUpdate": {
-                    "IndexName": demisto.args().get("replica_global_secondary_index_settings_update_index_name", None),
-                    "ProvisionedReadCapacityUnits": demisto.args().get("replica_global_secondary_index_settings_update_provisioned_read_capacity_units", None),
-                    "ProvisionedReadCapacityAutoScalingSettingsUpdate": {
-                        "MinimumUnits": demisto.args().get("provisioned_read_capacity_auto_scaling_settings_update_minimum_units", None),
-                        "MaximumUnits": demisto.args().get("provisioned_read_capacity_auto_scaling_settings_update_maximum_units", None),
-                        "AutoScalingDisabled": True if demisto.args().get("provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_disabled", "") == "true" else None,
-                        "AutoScalingRoleArn": demisto.args().get("provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_role_arn", None),
-                        "ScalingPolicyUpdate": {
-                            "PolicyName": demisto.args().get("scaling_policy_update_policy_name", None),
-                            "TargetTrackingScalingPolicyConfiguration": {
-                                "DisableScaleIn": True if demisto.args().get("target_tracking_scaling_policy_configuration_disable_scale_in", "") == "true" else None,
+                },
+                "ReplicaGlobalSecondaryIndexSettingsUpdate": [{
+                    "ReplicaGlobalSecondaryIndexSettingsUpdate": {
+                        "IndexName": demisto.args().get(
+                            "replica_global_secondary_index_settings_update_index_name", None),
+                        "ProvisionedReadCapacityUnits": demisto.args().get(
+                            "replica_global_secondary_index_settings_update_provisioned_read_capacity_units",
+                            None),
+                        "ProvisionedReadCapacityAutoScalingSettingsUpdate": {
+                            "MinimumUnits": demisto.args().get(
+                                "provisioned_read_capacity_auto_scaling_settings_update_minimum_units",
+                                None),
+                            "MaximumUnits": demisto.args().get(
+                                "provisioned_read_capacity_auto_scaling_settings_update_maximum_units",
+                                None),
+                            "AutoScalingDisabled": True if demisto.args().get(
+                                "provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_disabled",
+                                "") == "true" else None,
+                            "AutoScalingRoleArn": demisto.args().get(
+                                "provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
+                                None),
+                            "ScalingPolicyUpdate": {
+                                "PolicyName": demisto.args().get(
+                                    "scaling_policy_update_policy_name", None),
+                                "TargetTrackingScalingPolicyConfiguration": {
+                                    "DisableScaleIn": True if demisto.args().get(
+                                        "target_tracking_scaling_policy_configuration_disable_scale_in",
+                                        "") == "true" else None,
 
-                             },
+                                },
 
-                         },
+                            },
 
-                     }
+                        }
 
-                 },
+                    },
 
-             }
+                }],
 
-         },
+            },
 
-     }
+        }],
 
     }
     kwargs = scrub_dict(kwargs)
@@ -1265,18 +1368,20 @@ def update_item_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None),
-    "Key": json.loads(demisto.args().get("key", "{}")),
-    "AttributeUpdates": json.loads(demisto.args().get("attribute_updates", "{}")),
-    "Expected": json.loads(demisto.args().get("expected", "{}")),
-    "ConditionalOperator": demisto.args().get("conditional_operator", None),
-    "ReturnValues": demisto.args().get("return_values", None),
-    "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-    "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None),
-    "UpdateExpression": demisto.args().get("update_expression", None),
-    "ConditionExpression": demisto.args().get("condition_expression", None),
-    "ExpressionAttributeNames": json.loads(demisto.args().get("expression_attribute_names", "{}")),
-    "ExpressionAttributeValues": json.loads(demisto.args().get("expression_attribute_values", "{}"))
+        "TableName": demisto.args().get("table_name", None),
+        "Key": json.loads(demisto.args().get("key", "{}")),
+        "AttributeUpdates": json.loads(demisto.args().get("attribute_updates", "{}")),
+        "Expected": json.loads(demisto.args().get("expected", "{}")),
+        "ConditionalOperator": demisto.args().get("conditional_operator", None),
+        "ReturnValues": demisto.args().get("return_values", None),
+        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
+        "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None),
+        "UpdateExpression": demisto.args().get("update_expression", None),
+        "ConditionExpression": demisto.args().get("condition_expression", None),
+        "ExpressionAttributeNames": json.loads(
+            demisto.args().get("expression_attribute_names", "{}")),
+        "ExpressionAttributeValues": json.loads(
+            demisto.args().get("expression_attribute_values", "{}"))
     }
     kwargs = scrub_dict(kwargs)
     response = client.update_item(**kwargs)
@@ -1296,74 +1401,84 @@ def update_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "AttributeDefinitions": {
-        "AttributeDefinition": {
-            "AttributeName": demisto.args().get("attribute_definition_attribute_name", None),
-            "AttributeType": demisto.args().get("attribute_definition_attribute_type", None)
-         },
+        "AttributeDefinitions": [{
+            "AttributeDefinition": {
+                "AttributeName": demisto.args().get("attribute_definition_attribute_name", None),
+                "AttributeType": demisto.args().get("attribute_definition_attribute_type", None)
+            },
 
-     },
-    "TableName": demisto.args().get("table_name", None),
-    "BillingMode": demisto.args().get("billing_mode", None),
-    "ProvisionedThroughput": {
-        "ReadCapacityUnits": demisto.args().get("provisioned_throughput_read_capacity_units", None),
-        "WriteCapacityUnits": demisto.args().get("provisioned_throughput_write_capacity_units", None),
+        }],
+        "TableName": demisto.args().get("table_name", None),
+        "BillingMode": demisto.args().get("billing_mode", None),
+        "ProvisionedThroughput": {
+            "ReadCapacityUnits": demisto.args().get("provisioned_throughput_read_capacity_units",
+                                                    None),
+            "WriteCapacityUnits": demisto.args().get("provisioned_throughput_write_capacity_units",
+                                                     None),
 
-     },
-    "GlobalSecondaryIndexUpdates": {
-        "GlobalSecondaryIndexUpdate": {
-            "Update": {
-                "IndexName": demisto.args().get("update_index_name", None),
-                "ProvisionedThroughput": {
-                    "ReadCapacityUnits": demisto.args().get("provisioned_throughput_read_capacity_units", None),
-                    "WriteCapacityUnits": demisto.args().get("provisioned_throughput_write_capacity_units", None),
+        },
+        "GlobalSecondaryIndexUpdates": [{
+            "GlobalSecondaryIndexUpdate": {
+                "Update": {
+                    "IndexName": demisto.args().get("update_index_name", None),
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": demisto.args().get(
+                            "provisioned_throughput_read_capacity_units", None),
+                        "WriteCapacityUnits": demisto.args().get(
+                            "provisioned_throughput_write_capacity_units", None),
 
-                 },
+                    },
 
-             },
-            "Create": {
-                "IndexName": demisto.args().get("create_index_name", None),
-                "KeySchema": {
-                    "KeySchemaElement": {
-                        "AttributeName": demisto.args().get("key_schema_element_attribute_name", None),
-                        "KeyType": demisto.args().get("key_schema_element_key_type", None)
-                     },
+                },
+                "Create": {
+                    "IndexName": demisto.args().get("create_index_name", None),
+                    "KeySchema": [{
+                        "KeySchemaElement": {
+                            "AttributeName": demisto.args().get("key_schema_element_attribute_name",
+                                                                None),
+                            "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                        },
 
-                 },
-                "Projection": {
-                    "ProjectionType": demisto.args().get("projection_projection_type", None),
-                    "NonKeyAttributes": {
-                        "NonKeyAttributeName": demisto.args().get("non_key_attributes_non_key_attribute_name", None),
+                    }],
+                    "Projection": {
+                        "ProjectionType": demisto.args().get("projection_projection_type", None),
+                        "NonKeyAttributes": [{
+                            "NonKeyAttributeName": demisto.args().get(
+                                "non_key_attributes_non_key_attribute_name", None),
 
-                     },
+                        }],
 
-                 },
-                "ProvisionedThroughput": {
-                    "ReadCapacityUnits": demisto.args().get("provisioned_throughput_read_capacity_units", None),
-                    "WriteCapacityUnits": demisto.args().get("provisioned_throughput_write_capacity_units", None),
+                    },
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": demisto.args().get(
+                            "provisioned_throughput_read_capacity_units", None),
+                        "WriteCapacityUnits": demisto.args().get(
+                            "provisioned_throughput_write_capacity_units", None),
 
-                 },
+                    },
 
-             },
-            "Delete": {
-                "IndexName": demisto.args().get("delete_index_name", None),
+                },
+                "Delete": {
+                    "IndexName": demisto.args().get("delete_index_name", None),
 
-             }
+                }
 
-         },
+            },
 
-     },
-    "StreamSpecification": {
-        "StreamEnabled": True if demisto.args().get("stream_specification_stream_enabled", "") == "true" else None,
-        "StreamViewType": demisto.args().get("stream_specification_stream_view_type", None),
+        }],
+        "StreamSpecification": {
+            "StreamEnabled": True if demisto.args().get("stream_specification_stream_enabled",
+                                                        "") == "true" else None,
+            "StreamViewType": demisto.args().get("stream_specification_stream_view_type", None),
 
-     },
-    "SSESpecification": {
-        "Enabled": True if demisto.args().get("sse_specification_enabled", "") == "true" else None,
-        "SSEType": demisto.args().get("sse_specification_sse_type", None),
-        "KMSMasterKeyId": demisto.args().get("sse_specification_kms_master_key_id", None),
+        },
+        "SSESpecification": {
+            "Enabled": True if demisto.args().get("sse_specification_enabled",
+                                                  "") == "true" else None,
+            "SSEType": demisto.args().get("sse_specification_sse_type", None),
+            "KMSMasterKeyId": demisto.args().get("sse_specification_kms_master_key_id", None),
 
-     }
+        }
 
     }
     kwargs = scrub_dict(kwargs)
@@ -1384,12 +1499,13 @@ def update_time_to_live_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-    "TableName": demisto.args().get("table_name", None),
-    "TimeToLiveSpecification": {
-        "Enabled": True if demisto.args().get("time_to_live_specification_enabled", "") == "true" else None,
-        "AttributeName": demisto.args().get("time_to_live_specification_attribute_name", None),
+        "TableName": demisto.args().get("table_name", None),
+        "TimeToLiveSpecification": {
+            "Enabled": True if demisto.args().get("time_to_live_specification_enabled",
+                                                  "") == "true" else None,
+            "AttributeName": demisto.args().get("time_to_live_specification_attribute_name", None),
 
-     }
+        }
 
     }
     kwargs = scrub_dict(kwargs)
@@ -1401,10 +1517,9 @@ def update_time_to_live_command(args):
     human_readable = tableToMarkdown('AWS Dynamodb UpdateTimeToLive', response)
     return_outputs(human_readable, ec)
 
-
     '''COMMAND BLOCK'''
-    
-    
+
+
 try:
     LOG('Command being called is {command}'.format(command=demisto.command()))
     if demisto.command() == 'test-module':
@@ -1413,7 +1528,7 @@ try:
         response = client.REPLACE_WITH_TEST_FUNCTION()
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
             demisto.results('ok')
-    
+
     elif demisto.command() == 'aws-dynamodb-batch_get_item':
         batch_get_item_command(demisto.args())
     elif demisto.command() == 'aws-dynamodb-batch_write_item':
@@ -1487,8 +1602,9 @@ try:
     elif demisto.command() == 'aws-dynamodb-update_time_to_live':
         update_time_to_live_command(demisto.args())
 except ResponseParserError as e:
-    return_error('Could not connect to the AWS endpoint. Please check that the region is valid. {error}'.format(
-        error=type(e)))
+    return_error(
+        'Could not connect to the AWS endpoint. Please check that the region is valid. {error}'.format(
+            error=type(e)))
     LOG(e)
 
 except Exception as e:
