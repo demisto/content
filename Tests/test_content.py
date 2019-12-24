@@ -620,7 +620,7 @@ def get_tests_records_from_names(tests_settings, tests_names_to_search):
     for test_record in tests_records:
         test_name = test_record.get("playbookID")
         if test_name and test_name in tests_names_to_search:
-            test_records_with_supplied_names.append(test_name)
+            test_records_with_supplied_names.append(test_record)
     return test_records_with_supplied_names
 
 
