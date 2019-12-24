@@ -29,7 +29,7 @@ configuration:
   required: false
   type: 0
 description: Integration Template
-display: TaniumThreatResponse
+display: Tanium Threat Response
 name: TaniumThreatResponse
 script:
   commands:
@@ -41,7 +41,7 @@ script:
       secret: false
     deprecated: false
     execution: false
-    name: tn-get-intel-doc-by-id
+    name: tanium-tr-get-intel-doc-by-id
   - arguments:
     - default: false
       defaultValue: '5'
@@ -51,7 +51,234 @@ script:
       secret: false
     deprecated: false
     execution: false
-    name: tn-list-intel-docs
+    name: tanium-tr-list-intel-docs
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: computer-ip-address
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: computer-name
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: scan-config-id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: intel-doc-id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: severity
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: priority
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: state
+      predefined:
+      - Unresolved
+      - In Progress
+      - Ignored
+      - Resolved
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-list-alerts
+  - arguments:
+    - default: false
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-get-alert-by-id
+  - arguments:
+    - default: false
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: state
+      predefined:
+      - Unresolved
+      - In Progress
+      - Ignored
+      - Resolved
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-alert-update-state
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-list-snapshots
+  - arguments:
+    - default: false
+      isArray: false
+      name: connection-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-create-snapshot
+  - arguments:
+    - default: false
+      isArray: false
+      name: connection-id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: snapshot-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-delete-snapshot
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-list-local-snapshots
+  - arguments:
+    - default: false
+      isArray: false
+      name: directory-name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: file-name
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-delete-local-snapshot
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-list-connections
+  - arguments:
+    - default: false
+      isArray: false
+      name: connection-name
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-get-connection-by-name
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: remote
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: destination-type
+      predefined:
+      - ip_address
+      - computer_name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: destination
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: connection-timeout
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-create-connection
+  - arguments:
+    - default: false
+      isArray: false
+      name: connection-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-delete-connection
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-list-labels
+  - arguments:
+    - default: false
+      isArray: false
+      name: label-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-get-label-by-id
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   longRunning: false
