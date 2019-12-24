@@ -43,7 +43,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Max Incidents Per Fetch
+- display: Maximum Number Of Incidents To Fetch
   name: rows
   defaultvalue: "10"
   type: 0
