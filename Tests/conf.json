@@ -22,6 +22,10 @@
             "fromversion": "4.5.0"
         },
         {
+            "integrations": "Lockpath KeyLight v2",
+            "playbookID": "Keylight v2 - Test"
+        },
+        {
             "integrations": "Azure Security Center v2",
             "playbookID": "Azure SecurityCenter - Test",
             "instance_names": "ms_azure_sc_prod"
@@ -73,10 +77,13 @@
             "playbookID": "PhishlabsIOC_EIR-Test"
         },
         {
+            "integrations": "PhishLabs IOC DRP",
+            "playbookID": "PhishlabsIOC_DRP-Test"
+        },
+        {
             "playbookID": "Create Phishing Classifier V2 ML Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
-
         },
         {
             "integrations": "ZeroFox",
@@ -113,6 +120,10 @@
         {
             "integrations": "ThreatX",
             "playbookID": "ThreatX-test"
+        },
+        {
+            "integrations": "Akamai WAF SIEM",
+            "playbookID": "Akamai_WAF_SIEM-Test"
         },
         {
             "integrations": "AlienVault OTX",
@@ -408,6 +419,9 @@
             "playbookID": "GetTime-Test"
         },
         {
+            "playbookID": "GetTime-ObjectVsStringTest"
+        },
+        {
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io Scan Test",
             "nightly": true,
@@ -605,6 +619,10 @@
             "playbookID": "Test Playbook McAfee ePO"
         },
         {
+            "integrations": "McAfee DXL",
+            "playbookID": "McAfee DXL - Test"
+        },
+        {
             "integrations": "activedir",
             "playbookID": "calculate_severity_-_critical_assets_-_test"
         },
@@ -736,12 +754,6 @@
         },
         {
             "playbookID": "exporttocsv_script_test"
-        },
-        {
-            "integrations": "Intezer",
-            "playbookID": "Intezer Testing",
-            "nightly": true,
-            "timeout": 500
         },
         {
             "integrations": "Intezer v2",
@@ -1138,6 +1150,16 @@
             "playbookID": "Microsoft Graph Groups - Test",
             "instance_names": "ms_graph_groups_prod"
         },
+                {
+            "integrations": "Microsoft Graph Calendar",
+            "playbookID": "Microsoft Graph Calendar - Test",
+            "instance_names": "ms_graph_calendar_dev"
+        },
+        {
+            "integrations": "Microsoft Graph Calendar",
+            "playbookID": "Microsoft Graph Calendar - Test",
+            "instance_names": "ms_graph_calendar_prod"
+        },
         {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
@@ -1462,18 +1484,18 @@
         },
         {
             "playbookID": "Active Directory Test",
-            "instance_names": "active_directory_query_v2",
-            "integrations": "Active Directory Query v2"
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
         },
         {
             "playbookID": "AD v2 - debug-mode - Test",
-            "instance_names": "active_directory_query_v2",
             "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_query_v2_with_port_configuration",
+            "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory Query V2 configuration with port"
         },
         {
@@ -1485,7 +1507,8 @@
         },
         {
             "playbookID": "Email Address Enrichment - Generic v2.1 - Test",
-            "integrations": "Active Directory Query v2"
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
         },
         {
             "integrations": "Cofense Intelligence",
@@ -1519,6 +1542,7 @@
                 "Palo Alto Minemeld",
                 "Active Directory Query v2"
             ],
+            "instance_names": "active_directory_ninja",
             "fromversion": "4.5.0"
         },
         {
@@ -1544,8 +1568,15 @@
                 "Active Directory Query v2",
                 "Demisto REST API"
             ],
+            "instance_names": "active_directory_ninja",
             "fromversion": "5.0.0",
             "timeout": 700
+        },
+        {
+            "playbookID": "Active Directory - Get User Manager Details - Test",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_80k",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Kafka V2",
@@ -1640,7 +1671,8 @@
                 "carbonblack-v2",
                 "epo",
                 "Active Directory Query v2"
-            ]
+            ],
+            "instance_names": "active_directory_ninja"
         },
         {
             "playbookID": "EmailReputationTest",
@@ -1681,7 +1713,8 @@
         },
         {
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
-            "integrations": "Active Directory Query v2"
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -1719,7 +1752,7 @@
         },
         {
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_query_v2",
+            "instance_names": "active_directory_ninja",
             "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
         },
         {
@@ -1868,7 +1901,8 @@
         },
         {
             "integrations": "AutoFocus V2",
-            "playbookID": "AutoFocus V2 test"
+            "playbookID": "AutoFocus V2 test",
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "Process Email - Generic for Rasterize"
@@ -1881,6 +1915,22 @@
         {
             "integrations": "Anomali ThreatStream v2",
             "playbookID": "ThreatStream-Test"
+        },
+        {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_event-Test"
+        },
+        {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_forum-Test"
+        },
+        {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_report-Test"
+        },
+        {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_reputation-Test"
         },
         {
             "integrations": "BluecatAddressManager",
@@ -1917,7 +1967,15 @@
         {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
-            "integrations": "VirusTotal - Private API"
+            "integrations": "VirusTotal",
+            "instance_names": "virus_total_general"
+        },
+        {
+            "playbookID": "PANW - Hunting and threat detection by indicator type Test",
+            "fromversion": "4.5.0",
+            "timeout": 1200,
+            "integrations": ["Panorama","Palo Alto Networks Cortex","AutoFocus V2","VirusTotal"],
+            "instance_names": ["palo_alto_panorama","virus_total_general"]
         },
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
@@ -1963,6 +2021,10 @@
             "playbookID": "Google-KMS-test"
         },
         {
+            "integrations": "SecBI",
+            "playbookID": "SecBI - Test"
+        },
+        {
             "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         },
         {
@@ -1971,28 +2033,32 @@
           "fromversion": "4.5.0"
         },
         {
+          "integrations": "QRadar",
+          "playbookID": "QRadar Indicator Hunting Test",
+          "timeout": 1200,
+          "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
+        },
+        {
+            "integrations": "Infoblox",
+            "playbookID": "Infoblox Test"
         }
     ],
     "skipped_tests": {
+        "Endpoint Malware Investigation - Generic - Test": "Issue 20867",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
-        "Request Debugging - Test": "Issue 20337",
-        "LogRhythm-Test-Playbook": "Issue 20331",
-        "rsa_packets_and_logs_test": "Issue 20262",
-        "Cloaken-Test": "Issue 20036",
         "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
         "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
-        "search_endpoints_by_hash_-_tie_-_test": "Issue #18350",
-        "McAfee-TIE Test": "Issue #18350",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
-        "calculate_severity_-_critical_assets_-_test": "Issue 17924",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "ArcSight Logger test": "Issue 19117",
         "TruSTAR Test": "Issue 19777",
@@ -2026,6 +2092,7 @@
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
         "ExtraHop v2": "No instance",
+        "Fidelis Elevate Network": "Issue 20735",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
         "fireeye": "Issue 19839",
@@ -2037,8 +2104,6 @@
         "ThreatQ v2": "Issue 19468",
         "Check Point": "Issue 18643",
         "RSA Archer": "Issue 20335",
-        "LogRhythmRest": "Issue 19870",
-        "Fidelis Elevate Network": "Issue 20263",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "Joe Security": "Issue 17996",
@@ -2049,7 +2114,6 @@
         "Anomali ThreatStream v2": "Issue 18561",
         "Anomali ThreatStream": "Issue 19182",
         "SCADAfence CNM": "Issue 18376",
-        "Cortex XDR - IR": "Issue #18377",
         "ArcSight ESM v2": "Issue #18328",
         "AlienVault USM Anywhere": "Issue #18273",
         "Tufin": "Issue 16441",
@@ -2072,7 +2136,6 @@
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "Issue 18940",
         "Phish.AI": "Issue 17291",
-        "QRadar": "Issue 17794",
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
@@ -2083,17 +2146,18 @@
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Issue 16115",
 
+
         "_comment": "~~~ OTHER ~~~",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
+        "Lockpath KeyLight": "Deprecated. No tests.",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
         "AWS - Athena - Beta": "Issue 19834",
         "Lastline": "issue 20323",
-        "VirusTotal - Private API": "reached api alloted quota.",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
     },
@@ -2146,10 +2210,9 @@
         "Microsoft Graph User": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
-        "RedLock": "SSL Issues",
         "SafeBreach": "SSL Issues",
-        "Gmail Single User" : "checking",
+        "Gmail Single User" : "googleclient sdk has time based challenge exchange",
+        "Gmail": "googleclient sdk has time based challenge exchange",
         "AWS - CloudWatchLogs": "Integration has no proxy checkbox"
     }
 }
