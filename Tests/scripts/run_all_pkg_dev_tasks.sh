@@ -68,4 +68,6 @@ if [[ "${PKG_DEV_TASKS_DIR}" != /* ]]; then
     PKG_DEV_TASKS_DIR="${CURRENT_DIR}/${SCRIPT_DIR}"
 fi
 
-DIFF_COMPARE="${DIFF_COMPARE}" ${PKG_DEV_TASKS_DIR}/run_parallel_pkg_dev_tasks.py $*
+DIFF_COMPARE="${DIFF_COMPARE}"
+demisto-sdk --version
+demisto-sdk lint -a --no-bc
