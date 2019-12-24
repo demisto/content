@@ -217,8 +217,8 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, build_name, is_mock_run=False,
                    thread_index=0, prints_manager=None):
-    status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run, thread_index=0,
-                                      prints_manager=prints_manager)
+    status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run,
+                                      thread_index=thread_index, prints_manager=prints_manager)
     # c.api_client.pool.close()
     if status == PB_Status.COMPLETED:
         prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
