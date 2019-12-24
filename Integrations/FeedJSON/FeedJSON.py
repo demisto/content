@@ -125,22 +125,21 @@ def main():
     handle_proxy()
 
     client = Client(**demisto.params())
-
+    indicator_type = demisto.params().get('indicator_type')
     demisto.info(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
             return_outputs(test_module(client))
 
         elif demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, demisto.params()['indicator_type'])
+            indicators = fetch_indicators_command(client, indicator_type)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
 
         elif demisto.command() == 'get-indicators':
             # dummy command for testing
             limit = demisto.args().get('limit', 50)
-            indicators = fetch_indicators_command(client, demisto.params()['indicator_type'], update_context=True,
-                                                  limit=limit)
+            indicators = fetch_indicators_command(client, indicator_type, update_context=True, limit=limit)
             return_outputs('', indicators)
 
     except Exception as err:
