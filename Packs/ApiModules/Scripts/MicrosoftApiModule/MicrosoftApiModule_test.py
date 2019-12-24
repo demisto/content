@@ -54,7 +54,7 @@ def self_deployed_client():
     base_url = BASE_URL
     scope = SCOPE
     resource = RESOURCE
-    ok_codes = (200, 201, 202)
+    ok_codes = OK_CODES
 
     return MicrosoftClient.from_self_deployed(tenant_id, client_id, client_secret, app_url=app_url, resource=resource,
                                               scope=scope, base_url=base_url,
