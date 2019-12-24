@@ -155,7 +155,7 @@ def get_indicators_command(client, args):
     itype = args.get('indicator_type', demisto.params().get('indicator_type'))
     limit = int(args.get('limit'))
     indicators_list = fetch_indicators_command(client, itype)
-    entry_result = indicators_list[:limit]
+    entry_result = camelize(indicators_list[:limit])
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
     return hr, {'CSV.Indicator': entry_result}, indicators_list
 
