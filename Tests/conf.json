@@ -2211,8 +2211,8 @@
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
-        "Gmail Single User" : "googleclient sdk has time based challenge exchange",
-        "Gmail": "googleclient sdk has time based challenge exchange",
         "AWS - CloudWatchLogs": "Integration has no proxy checkbox"
+        "Gmail Single User" : "googleclient sdk has time based challenge exchange",
+        "Gmail": "googleclient sdk has time based challenge exchange"
     }
 }
