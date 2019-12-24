@@ -49,7 +49,7 @@ class Client(object):
 
         self.ignore_regex = ignore_regex
         if self.ignore_regex is not None:
-            self.ignore_regex = re.compile(self.ignore_regex)
+            self.ignore_regex = re.compile(self.ignore_regex)  # type: ignore
         self.fieldnames = argToList(fieldnames)
 
         self.dialect = {
@@ -154,12 +154,10 @@ def get_indicators(client, args):
     limit = int(args.get('limit'))
     indicators_json = fetch_indicators_command(client, itype)
     res = []
-    i = 0
-    for ind_json in indicators_json:
+    for i, ind_json in enumerate(indicators_json):
         if i >= limit:
             break
         res.append(camelize(ind_json))
-        i += 1
     hr = tableToMarkdown('Indicators', res, headers=['Value', 'Type', 'Rawjson'])
     return hr, {'CSV.Indicator': res}, indicators_json
 
@@ -181,7 +179,7 @@ def main():
             indicators = fetch_indicators_command(client, params.get('indicator_type'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
+                demisto.createIndicators(b)  # type: ignore
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output, outputs, raw_response)
