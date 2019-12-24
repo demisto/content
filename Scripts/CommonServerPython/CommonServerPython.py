@@ -1920,6 +1920,55 @@ def assign_params(keys_to_ignore=None, values_to_ignore=None, **kwargs):
     }
 
 
+def camel_case_to_readable(cc, fields_to_drop=None):
+    """
+    'camelCase' -> 'Camel Case' (text or dictionary keys)
+
+    :type  cc: ``dict`` or ``str``
+    :param cc: either a dictionary or a text to transform
+
+    :type  fields_to_drop: ``list``
+    :param fields_to_drop: keys to drop from input dictionary
+
+    :return: A Camel Cased string of Dict.
+    :rtype ``dict`` or ``str``
+    """
+    if fields_to_drop is None:
+        fields_to_drop = []
+    if isinstance(cc, str):
+        if cc == 'id':
+            return 'ID'
+        return ''.join(' ' + char if char.isupper() else char.strip() for char in cc).strip().title()
+
+    elif isinstance(cc, dict):
+        return {camel_case_to_readable(field): value for field, value in cc.items()
+                if field not in fields_to_drop}
+    return cc
+
+def snakecase_to_camelcase(sc, fields_to_drop=None):
+    """
+    'snake_case' -> 'snakeCase' (text or dictionary keys)
+
+    :type sc: ``dict`` or ``str``
+    :param sc: either a dictionary or a text to transform
+
+    :type  fields_to_drop: ``list``
+    :param fields_to_drop: keys to drop from input dictionary
+
+    :return: A connectedCamelCased string of Dict.
+    :rtype: ``dict`` or ``str``
+    """
+    if fields_to_drop is None:
+        fields_to_drop = []
+    if isinstance(sc, str):
+        return ''.join([word.title() for word in sc.split('_')])
+
+    elif isinstance(sc, dict):
+        return {snakecase_to_camelcase(field): value for field, value in sc.items()
+                if field not in fields_to_drop}
+    return sc
+
+
 def get_demisto_version():
     """Returns the Demisto version and build number.
 

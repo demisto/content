@@ -38,19 +38,25 @@ class MicrosoftClient(BaseClient):
         self.verify = verify
 
     @classmethod
-    def from_oproxy(cls, auth_id: str, enc_key: str, token_retrieval_url: str, app_name: str,
+    def from_oproxy(cls, auth_id_and_token_url: str, enc_key: str, app_name: str,
                     tenant_id: str = '', refresh_token: str = '', *args, **kwargs):
         """
         Args:
-            auth_id: Authentication ID
+            auth_id_and_token_url: Authentication ID and the oproxy url to use
             enc_key: Encryption key
-            token_retrieval_url: The oproxy url to use
             app_name: The application name in oproxy
             tenant_id: The tenant ID
             refresh_token: The current refresh token
         Returns:
             An instance of Microsoft Client with oproxy authentication.
         """
+        auth_id_and_token_retrieval_url = auth_id_and_token_url.split('@')
+        auth_id = auth_id_and_token_retrieval_url[0]
+        if len(auth_id_and_token_retrieval_url) != 2:
+            token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+        else:
+            token_retrieval_url = auth_id_and_token_retrieval_url[1]
+
         return cls(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key,  # type: ignore[misc]
                    token_retrieval_url=token_retrieval_url, auth_type=OPROXY_AUTH_TYPE,
                    app_name=app_name, refresh_token=refresh_token, *args, **kwargs)
@@ -126,52 +132,6 @@ class MicrosoftClient(BaseClient):
             integration_context['current_refresh_token'] = refresh_token
         demisto.setIntegrationContext(integration_context)
         return access_token
-
-    @staticmethod
-    def camel_case_to_readable(cc: Union[str, Dict], fields_to_drop: List[str] = None) -> Union[str, Dict]:
-        """
-        'camelCase' -> 'Camel Case' (text or dictionary keys)
-
-        Args:
-            cc: either a dictionary or a text to transform
-            fields_to_drop: keys to drop from input dictionary
-
-        Returns:
-            union: A Camel Cased string of Dict.
-        """
-        if fields_to_drop is None:
-            fields_to_drop = []
-        if isinstance(cc, str):
-            if cc == 'id':
-                return 'ID'
-            return ''.join(' ' + char if char.isupper() else char.strip() for char in cc).strip().title()
-
-        elif isinstance(cc, Dict):
-            return {MicrosoftClient.camel_case_to_readable(field): value for field, value in cc.items()
-                    if field not in fields_to_drop}
-        return cc
-
-    @staticmethod
-    def snakecase_to_camelcase(sc: Union[str, Dict], fields_to_drop: List[str] = None) -> Union[str, Dict]:
-        """
-        'snake_case' -> 'snakeCase' (text or dictionary keys)
-
-        Args:
-            sc: either a dictionary or a text to transform
-            fields_to_drop: keys to drop from input dictionary
-
-        Returns:
-            union: A connectedCamelCased string of Dict.
-        """
-        if fields_to_drop is None:
-            fields_to_drop = []
-        if isinstance(sc, str):
-            return ''.join([word.title() for word in sc.split('_')])
-
-        elif isinstance(sc, Dict):
-            return {MicrosoftClient.snakecase_to_camelcase(field): value for field, value in sc.items()
-                    if field not in fields_to_drop}
-        return sc
 
     def _oproxy_authorize(self) -> Tuple[str, int, str]:
         """
@@ -296,8 +256,16 @@ class MicrosoftClient(BaseClient):
              int: timestamp in epoch
         """
         if not d:
-            d = datetime.utcnow()
-        return int((d - datetime.utcfromtimestamp(0)).total_seconds())
+            d = MicrosoftClient._get_utcnow()
+        return int((d - MicrosoftClient._get_utcfromtimestamp(0)).total_seconds())
+
+    @staticmethod
+    def _get_utcnow() -> datetime:
+        return datetime.utcnow()
+
+    @staticmethod
+    def _get_utcfromtimestamp(_time) -> datetime:
+        return datetime.utcfromtimestamp(_time)
 
     @staticmethod
     def get_encrypted(content: str, key: str) -> str:

@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+Added a function to convert snake case words to camel case words
+Added a function to convert camel case words to readable format
 
 ## [19.12.0] - 2019-12-10
 -

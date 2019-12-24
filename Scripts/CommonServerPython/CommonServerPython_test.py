@@ -692,6 +692,17 @@ def test_assign_params():
     assert res == {'a': '1', 'b': True}
 
 
+def test_snakecase_to_camelcase():
+    from CommonServerPython import snakecase_to_camelcase
+    assert snakecase_to_camelcase('snake_case_snake_case') == 'SnakeCaseSnakeCase'
+
+
+def test_camel_case_to_readable():
+    from CommonServerPython import camel_case_to_readable
+    assert camel_case_to_readable('id') == 'ID'
+    assert camel_case_to_readable('createdDateTime') == 'Created Date Time'
+
+
 class TestBuildDBotEntry(object):
     def test_build_dbot_entry(self):
         from CommonServerPython import build_dbot_entry
