@@ -136,7 +136,6 @@ def module_test_command(client, args):
 
 
 def fetch_indicators_command(client, itype):
-    # write _process_itemdoublequote here
     iterator = client.build_iterator()
     indicators = []
     for item in iterator:
@@ -161,7 +160,6 @@ def get_indicators_command(client, args):
 
 
 def main():
-    # Write configure here
     params = {k: v for k, v in demisto.params().items() if v is not None}
     handle_proxy()
     client = Client(**params)
