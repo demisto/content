@@ -61,7 +61,6 @@ def __get_integration_config(client, integration_name):
 
 # __test_integration_instance
 def __test_integration_instance(client, module_instance):
-    # type: (object, object)-> Tuple[bool, Optional[str]]
     connection_retries = 3
     response_code = 0
     print_warning("trying to connect.")
