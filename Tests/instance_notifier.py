@@ -36,7 +36,7 @@ def test_instances(secret_conf_path, server, username, password):
     integrations = get_integrations(secret_conf_path)
 
     instance_ids = []
-    failed_integration = []
+    failed_integrations = []
     integrations_counter = 0
     for integration in integrations:
         c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
@@ -55,14 +55,14 @@ def test_instances(secret_conf_path, server, username, password):
             )
             if not instance_id:
                 print_error('Failed to create instance of {} with message: {}'.format(integration_name, failure_message))
-                failed_integration.append("{0} {1} - failure message: {2} devops comments: {3}".format(
+                failed_integrations.append("{0} {1} - failure message: {2} devops comments: {3}".format(
                     integration_name, product_description, failure_message, devops_comments))
             else:
                 instance_ids.append(instance_id)
                 print('Create integration %s succeed' % (integration_name,))
                 __delete_integrations_instances(c, instance_ids)
 
-    return failed_integration, integrations_counter
+    return failed_integrations, integrations_counter
 
 
 def get_attachments(secret_conf_path, server, user, password, build_url):
@@ -104,6 +104,7 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
         attachments=attachments,
         text="You have {0} instances configurations".format(integrations_counter)
     )
+    print_color(attachments, LOG_COLORS.GREEN)
 
 
 if __name__ == "__main__":

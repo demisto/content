@@ -90,7 +90,7 @@ def __test_integration_instance(client, module_instance):
     if not success:
         if failure_message:
             print_error('Test integration failed.\nFailure message: {}'.format(failure_message))
-        else: 
+        else:
             print_error('Test integration failed\nNo failure message.')
     return success, failure_message
 
@@ -420,12 +420,13 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
             client, integration_name, integration_instance_name, integration_params, is_byoi, validate_test
         )
         if module_instance is None:
+            failure_message = failure_message if failure_message else 'No failure message could be found'
             print_error('Failed to create instance: {}'.format(failure_message))
             __delete_integrations_instances(client, module_instances)
             return False, -1
 
         module_instances.append(module_instance)
-        print('Create integration {} succeed'.format(integration_name, ''))
+        print('Create integration {} succeed'.format(integration_name))
 
     # create incident with playbook
     incident, inc_id = __create_incident_with_playbook(client, 'inc_{}'.format(playbook_id,),
