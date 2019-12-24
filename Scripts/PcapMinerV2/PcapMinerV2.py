@@ -74,10 +74,12 @@ def flows_to_ec(flows: dict) -> list:
 
 # Variables from demisto
 # filePath = "/Users/olichter/Downloads/chargen-udp.pcap"
-filePath = "/Users/olichter/Downloads/http-site.pcap"       # HTTP
-#filePath = "/Users/olichter/Downloads/dns.cap"            # DNS
+#filePath = "/Users/olichter/Downloads/http-site.pcap"       # HTTP
+filePath = "/Users/olichter/Downloads/dns.cap"            # DNS
 # filePath = "/Users/olichter/Downloads/tftp_rrq.pcap"       # tftp
 # filePath = "/Users/olichter/Downloads/rsasnakeoil2.cap"    # encrypted SSL
+entry_id = ''
+
 decrypt_key = ""  # "/Users/olichter/Downloads/rsasnakeoil2.key"
 conversation_number_to_display = 15
 is_flows = False
@@ -93,6 +95,7 @@ hierarchy = {}
 num_of_packets = 0
 tcp_streams = 0
 udp_streams = 0
+bytes_transmitted = 0
 min_time = float('inf')
 max_time = -float('inf')
 conversations = {}
@@ -122,6 +125,9 @@ try:
 
         # count packets
         num_of_packets += 1
+
+        # count bytes
+        bytes_transmitted += int(packet.length)
 
 
         # count num of streams + get src/dest ports
@@ -221,13 +227,24 @@ try:
     print(md)
 
     # Entry Context
-    ec = {}
+    general_context = {
+        'EntryID': entry_id,
+        'Bytes': bytes_transmitted,
+        'Packets': num_of_packets,
+        'StreamCount': tcp_streams+udp_streams,
+        'UniqueSourceIP': len(unique_source_ip),
+        'UniqueDestIP': len(unique_dest_ip),
+        'StartTime': min_time,
+        'EndTime': max_time
+    }
+    ec = {'PcapResults': general_context}
     if is_flows:
         ec['PcapResults.Flows(val.SourceIP == obj.SourceIP && val.DestIP == obj.DestIP && ' \
            'val.SourcePort == obj.SourcePort && val.DestPort == obj.DestPort)'] = flows_to_ec(flows)
     if is_dns:
         ec['PcapResults.DNS(val.ID == obj.ID)'] = dns_data
-    print(emails_extracted)
+    print(dns_data)
+
 except pyshark.capture.capture.TSharkCrashException as e:
     raise ValueError("Filter could not be applied to file. Please make sure it is of correct syntax.")
 
