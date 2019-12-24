@@ -75,9 +75,10 @@ def flows_to_ec(flows: dict) -> list:
 # Variables from demisto
 # filePath = "/Users/olichter/Downloads/chargen-udp.pcap"
 #filePath = "/Users/olichter/Downloads/http-site.pcap"       # HTTP
-filePath = "/Users/olichter/Downloads/dns.cap"            # DNS
+#filePath = "/Users/olichter/Downloads/dns.cap"            # DNS
 # filePath = "/Users/olichter/Downloads/tftp_rrq.pcap"       # tftp
 # filePath = "/Users/olichter/Downloads/rsasnakeoil2.cap"    # encrypted SSL
+filePath = "/Users/olichter/Downloads/smb-legacy-implementation.pcapng"
 entry_id = ''
 
 decrypt_key = ""  # "/Users/olichter/Downloads/rsasnakeoil2.key"
@@ -86,7 +87,8 @@ is_flows = False
 is_dns = True
 is_http = False
 is_reg_extract = True
-pcap_filter = ''  # 'ip.addr == 172.217.16.206'
+is_llmnr = True
+pcap_filter = 'llmnr'
 pcap_filter_new_file = ''  # '/Users/olichter/Downloads/try.pcap'
 
 
@@ -107,10 +109,15 @@ ips_extracted = set([])
 urls_extracted = set([])
 emails_extracted = set([])
 
+if is_llmnr:
+    llmnr_type = re.compile('Type: (.*)\n')
+    llmnr_class = re.compile('Class: (.*)\n')
+    llmnr_dict = {}
 
 cap = pyshark.FileCapture(filePath, display_filter=pcap_filter, output_file=pcap_filter_new_file,
                           decryption_key=decrypt_key, encryption_type='WPA-PWD')
     # cap = pyshark.FileCapture(filePath) #, use_json=True
+print(cap[0])
 try:
     for packet in cap:
         # Set hierarchy for layers
@@ -209,6 +216,20 @@ try:
             # for i in reg.finditer(str(packet)):
             #     hash.add(i[0])
 
+        if is_llmnr:
+            llmnr_layer = packet.get_multiple_layers('llmnr')
+            if llmnr_layer:
+                llmnr_layer_string = str(llmnr_layer[0])
+                llmnr_data = {
+                    'ID': llmnr_layer[0].get('dns_id'),
+                    'QueryType': None if len(llmnr_type.findall(llmnr_layer_string)) == 0 else
+                    llmnr_type.findall(llmnr_layer_string)[0],
+                    'QueryClass': None if len(llmnr_class.findall(llmnr_layer_string)) == 0 else
+                    llmnr_class.findall(llmnr_layer_string)[0],
+                    'QueryName': str(llmnr_layer[0].get('dns_qry_name')),
+                    'Questions': int(llmnr_layer[0].get('dns_count_queries'))
+                }
+                llmnr_dict[llmnr_data['ID']] = llmnr_data
 
     tcp_streams += 1
     udp_streams += 1
@@ -243,7 +264,9 @@ try:
            'val.SourcePort == obj.SourcePort && val.DestPort == obj.DestPort)'] = flows_to_ec(flows)
     if is_dns:
         ec['PcapResults.DNS(val.ID == obj.ID)'] = dns_data
-    print(dns_data)
+    if is_llmnr:
+        ec['PcapResults.LLMNR(val.ID == obj.ID)'] = list(llmnr_dict.values())
+    print(list(llmnr_dict.values()))
 
 except pyshark.capture.capture.TSharkCrashException as e:
     raise ValueError("Filter could not be applied to file. Please make sure it is of correct syntax.")
