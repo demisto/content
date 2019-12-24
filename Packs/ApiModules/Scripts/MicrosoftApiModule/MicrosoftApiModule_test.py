@@ -2,6 +2,7 @@ from requests import Response
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 import pytest
+import datetime
 
 
 TOKEN = 'dummy_token'
@@ -20,29 +21,28 @@ APP_URL = 'mock://app_url'
 SCOPE = 'https://graph.microsoft.com/.default'
 RESOURCE = 'https://defender.windows.com/shtak'
 
+
 def oproxy_client_tenant():
     tenant_id = TENANT
-    auth_id = AUTH_ID
+    auth_id = f'{AUTH_ID}@{TOKEN_URL}'
     enc_key = ENC_KEY
-    token_retrieval_url = TOKEN_URL
     app_name = APP_NAME
     base_url = BASE_URL
     ok_codes = OK_CODES
 
-    return MicrosoftClient.from_oproxy(auth_id, enc_key, token_retrieval_url, app_name, tenant_id=tenant_id,
+    return MicrosoftClient.from_oproxy(auth_id, enc_key, app_name, tenant_id=tenant_id,
                                        base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
 def oproxy_client_refresh():
     refresh_token = REFRESH_TOKEN
-    auth_id = AUTH_ID
+    auth_id = f'{AUTH_ID}@{TOKEN_URL}'
     enc_key = ENC_KEY
-    token_retrieval_url = TOKEN_URL
     app_name = APP_NAME
     base_url = BASE_URL
     ok_codes = OK_CODES
 
-    return MicrosoftClient.from_oproxy(auth_id, enc_key, token_retrieval_url, app_name, refresh_token=refresh_token,
+    return MicrosoftClient.from_oproxy(auth_id, enc_key, app_name, refresh_token=refresh_token,
                                        base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
@@ -69,31 +69,22 @@ def test_error_parser():
     assert response == 'code: message'
 
 
-def test_epoch_seconds():
+def test_epoch_seconds(mocker):
+    mocker.patch.object(MicrosoftClient, '_get_utcnow', return_value=datetime.datetime(2019, 12, 24, 14, 12, 0, 586636))
+    mocker.patch.object(MicrosoftClient, '_get_utcfromtimestamp', return_value=datetime.datetime(1970, 1, 1, 0, 0))
     integer = MicrosoftClient.epoch_seconds()
-    assert isinstance(integer, int)
+    assert integer == 1577196720
 
 
-def test_snakecase_to_camelcase():
-    assert MicrosoftClient.snakecase_to_camelcase('snake_case_snake_case') == 'SnakeCaseSnakeCase'
-
-
-def test_camel_case_to_readable():
-    assert MicrosoftClient.camel_case_to_readable('id') == 'ID'
-    assert MicrosoftClient.camel_case_to_readable('createdDateTime') == 'Created Date Time'
-
-
-@pytest.mark.parametrize('client, tokens, context', [(oproxy_client_refresh(), (TOKEN, 3600, REFRESH_TOKEN), {
-        'access_token': TOKEN,
-        'valid_until': 3605,
-        'current_refresh_token': REFRESH_TOKEN
-    }), (oproxy_client_tenant(), (TOKEN, 3600, ''), {
-        'access_token': TOKEN,
-        'valid_until': 3605
-    }), (self_deployed_client(), (TOKEN, 3600), {
-        'access_token': TOKEN,
-        'valid_until': 3605
-    })])
+@pytest.mark.parametrize('client, tokens, context', [(oproxy_client_refresh(), (TOKEN, 3600, REFRESH_TOKEN),
+                                                      {'access_token': TOKEN,
+                                                       'valid_until': 3605,
+                                                       'current_refresh_token': REFRESH_TOKEN}),
+                                                     (oproxy_client_tenant(), (TOKEN, 3600, ''),
+                                                      {'access_token': TOKEN,
+                                                       'valid_until': 3605}), (self_deployed_client(), (TOKEN, 3600),
+                                                                               {'access_token': TOKEN,
+                                                                                'valid_until': 3605})])
 def test_get_access_token_no_context(mocker, client, tokens, context):
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
     mocker.patch.object(demisto, 'setIntegrationContext')
@@ -112,17 +103,17 @@ def test_get_access_token_no_context(mocker, client, tokens, context):
     assert integration_context == context
 
 
-@pytest.mark.parametrize('client, tokens, context', [(oproxy_client_refresh(), (TOKEN, 3600, REFRESH_TOKEN), {
-        'access_token': TOKEN,
-        'valid_until': 3605,
-        'current_refresh_token': REFRESH_TOKEN
-    }), (oproxy_client_tenant(), (TOKEN, 3600, ''), {
-        'access_token': TOKEN,
-        'valid_until': 3605
-    }), (self_deployed_client(), (TOKEN, 3600), {
-        'access_token': TOKEN,
-        'valid_until': 3605
-    })])
+@pytest.mark.parametrize('client, tokens, context', [(oproxy_client_refresh(),
+                                                      (TOKEN, 3600, REFRESH_TOKEN),
+                                                      {'access_token': TOKEN,
+                                                       'valid_until': 3605,
+                                                       'current_refresh_token': REFRESH_TOKEN}),
+                                                     (oproxy_client_tenant(), (TOKEN, 3600, ''),
+                                                      {'access_token': TOKEN,
+                                                       'valid_until': 3605}),
+                                                     (self_deployed_client(), (TOKEN, 3600),
+                                                      {'access_token': TOKEN,
+                                                       'valid_until': 3605})])
 def test_get_access_token_with_context_valid(mocker, client, tokens, context):
     # Set
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=context)
@@ -147,27 +138,19 @@ def test_get_access_token_with_context_valid(mocker, client, tokens, context):
 
 
 @pytest.mark.parametrize('client, tokens, context_invalid, context_valid',
-                         [(oproxy_client_refresh(), (TOKEN, 3600, REFRESH_TOKEN), {
-                            'access_token': TOKEN,
+                         [(oproxy_client_refresh(),
+                           (TOKEN, 3600, REFRESH_TOKEN),
+                           {'access_token': TOKEN,
                             'valid_until': 3605,
-                            'current_refresh_token': REFRESH_TOKEN
-                         }, {
-                             'access_token': TOKEN,
-                             'valid_until': 8595,
-                             'current_refresh_token': REFRESH_TOKEN
-                         }), (oproxy_client_tenant(), (TOKEN, 3600, ''), {
-                            'access_token': TOKEN,
-                            'valid_until': 3605
-                         }, {
-                            'access_token': TOKEN,
-                            'valid_until': 8595
-                         }), (self_deployed_client(), (TOKEN, 3600), {
-                            'access_token': TOKEN,
-                            'valid_until': 3605
-                         }, {
-                             'access_token': TOKEN,
-                             'valid_until': 8595
-                         })])
+                            'current_refresh_token': REFRESH_TOKEN},
+                           {'access_token': TOKEN,
+                            'valid_until': 8595,
+                            'current_refresh_token': REFRESH_TOKEN}),
+                          (oproxy_client_tenant(), (TOKEN, 3600, ''), {'access_token': TOKEN, 'valid_until': 3605},
+                           {'access_token': TOKEN, 'valid_until': 8595}), (self_deployed_client(), (TOKEN, 3600),
+                                                                           {'access_token': TOKEN, 'valid_until': 3605},
+                                                                           {'access_token': TOKEN,
+                                                                            'valid_until': 8595})])
 def test_get_access_token_with_context_invalid(mocker, client, tokens, context_invalid, context_valid):
     # Set
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=context_invalid)

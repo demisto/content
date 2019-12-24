@@ -1,6 +1,5 @@
 from CommonServerPython import *
-from MicrosoftGraphMail import build_mail_object, assert_pages, build_folders_path, error_parser, epoch_seconds
-from requests.models import Response
+from MicrosoftGraphMail import build_mail_object, assert_pages, build_folders_path
 
 
 def test_build_mail_object():
@@ -31,16 +30,3 @@ def test_build_folders_path():
     inp = 'i,s,f,q'
     response = build_folders_path(inp)
     assert response == 'mailFolders/i/childFolders/s/childFolders/f/childFolders/q'
-
-
-def test_error_parser():
-    err = Response()
-    err.status_code = 401
-    err._content = b'{"error":{"code":"code","message":"message"}}'
-    response = error_parser(err)
-    assert response == 'code: message'
-
-
-def test_epoch_seconds():
-    integer = epoch_seconds()
-    assert isinstance(integer, int)

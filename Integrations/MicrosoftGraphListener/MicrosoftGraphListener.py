@@ -812,19 +812,13 @@ def main():
                                                        base_url=base_url, verify=verify, proxy=proxy, ok_codes=ok_codes)
     else:
         # params related to oproxy
-        auth_id_and_token_retrieval_url = params.get('auth_id', '').split('@')
-        auth_id = auth_id_and_token_retrieval_url[0]
-        if len(auth_id_and_token_retrieval_url) != 2:
-            token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
-        else:
-            token_retrieval_url = auth_id_and_token_retrieval_url[1]
         # In case the script is running for the first time, refresh token is retrieved from integration parameters,
         # in other case it's retrieved from integration context.
         refresh_token = (demisto.getIntegrationContext().get('current_refresh_token')
                          or params.get('refresh_token', ''))
         enc_key = params.get('enc_key')
         app_name = 'ms-graph-mail-listener'
-        ms_client = MicrosoftClient.from_oproxy(auth_id, enc_key, token_retrieval_url, app_name,
+        ms_client = MicrosoftClient.from_oproxy(params.get('auth_id', ''), enc_key, app_name,
                                                 refresh_token=refresh_token,
                                                 base_url=base_url, verify=verify, proxy=proxy, ok_codes=ok_codes)
     client = MsGraphClient(ms_client, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit)
