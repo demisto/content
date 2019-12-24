@@ -153,7 +153,7 @@ class MicrosoftClient(BaseClient):
             verify=self.verify
         )
 
-        if oproxy_response.status_code not in {200, 201}:
+        if not oproxy_response.ok:
             msg = 'Error in authentication. Try checking the credentials you entered.'
             try:
                 demisto.info('Authentication failure from server: {} {} {}'.format(
@@ -318,7 +318,9 @@ class MicrosoftClient(BaseClient):
             headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
             headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
             if hasattr(demisto, 'demistoVersion'):
-                headers['X-Content-Server-Version'] = demisto.demistoVersion().get('version')
+                demisto_version = demisto.demistoVersion()
+                headers['X-Content-Server-Version'] = '{}-{}'.format(demisto_version.get('version'),
+                                                                     demisto_version.get("buildNumber"))
         except Exception as e:
             demisto.error('Failed getting integration info: {}'.format(str(e)))
 
