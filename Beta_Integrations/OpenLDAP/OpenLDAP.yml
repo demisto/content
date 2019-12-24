@@ -79,52 +79,52 @@ script:
   commands:
     - arguments:
         - default: false
+          description: ''
           isArray: false
           name: username
           required: true
           secret: false
-          description: ''
         - default: false
+          description: ''
           isArray: false
           name: password
           required: true
           secret: true
-          description: ''
       deprecated: false
+      description: ''
       execution: true
       name: ad-authenticate
-      description: ''
     - arguments:
         - default: false
           isArray: false
           name: specific-groups
+          description: ''
           required: false
           secret: false
-          description: ''
       deprecated: false
+      description: ''
       execution: true
       name: ad-groups
-      description: ''
     - arguments:
         - default: false
+          description: ''
           isArray: false
           name: username
           required: true
           secret: false
-          description: ''
         - default: false
+          description: ''
           isArray: false
           name: password
           required: true
           secret: true
-          description: ''
         - default: false
+          description: ''
           defaultValue: mail
           isArray: false
           name: attribute-mail
           required: false
           secret: false
-          description: ''
         - default: false
           description: name
           isArray: false
@@ -132,21 +132,21 @@ script:
           required: false
           secret: false
         - default: false
+          description: ''
           isArray: false
           name: attribute-name-pull
           required: false
           secret: false
-          description: ''
         - default: false
+          description: ''
           isArray: false
           name: attribute-mail-pull
           required: false
           secret: false
-          description: ''
       deprecated: false
+      description: ''
       execution: true
       name: ad-authenticate-and-roles
-      description: ''
   dockerimage: demisto/ldap:1.0.0.4710
   isfetch: false
   longRunning: false
