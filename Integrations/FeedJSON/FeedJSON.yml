@@ -1,5 +1,5 @@
 commonfields:
-  id: JSON Feed
+  id: FeedJSON
   version: -1
 name: FeedJSON
 display: JSON Feed
@@ -16,12 +16,12 @@ configuration:
   defaultvalue: ""
   type: 9
   required: false
-- display: Trust any certificate (insecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ''
   type: 8
   required: false
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
@@ -81,31 +81,32 @@ configuration:
 - display: Source Name
   name: source_name
   defaultvalue: json
-  hidden: 'true'
+  hidden: true
   type: 0
   required: false
 - display: cert_file
   name: cert_file
   defaultvalue: ""
-  hidden: 'true'
+  hidden: true
   type: 0
   required: false
 - display: key_file
   name: key_file
   defaultvalue: ""
-  hidden: 'true'
+  hidden: true
   type: 0
   required: false
 - display: headers
   name: headers
   defaultvalue: ""
-  hidden: 'true'
+  hidden: true
   type: 0
   required: false
 script:
   script: "-"
   commands:
   - name: get-indicators
+    description: Fetches indicators into the context data.
     arguments:
     - name: limit
       description: limits the number of context indicators to output
