@@ -261,14 +261,8 @@ if service is None:
     demisto.error("Could not connect to SplunkPy")
     sys.exit(0)
 
-# The command demisto.command() holds the command sent from the user.
-if demisto.command() == 'test-module':
-    # for app in service.apps:
-    #    print app.name
-    if len(service.jobs) >= 0:
-        demisto.results('ok')
-    sys.exit(0)
-if demisto.command() == 'splunk-search':
+
+def splunk_search_command():
     t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
     # When we run  a blocking search, it runs synchronously, and returns a job when it's finished.
@@ -283,7 +277,7 @@ if demisto.command() == 'splunk-search':
 
     query = demisto.args()['query']
     query = query.encode('utf-8')
-    if not query.startswith('search') and not query.startswith('Search')\
+    if not query.startswith('search') and not query.startswith('Search') \
             and not query.startswith('|'):
         query = 'search ' + query
 
@@ -348,7 +342,9 @@ if demisto.command() == 'splunk-search':
     })
 
     sys.exit(0)
-if demisto.command() == 'splunk-job-create':
+
+
+def splunk_job_create_command():
     searchquery_normal = demisto.args()['query']
     if not searchquery_normal.startswith('search'):
         searchquery_normal = 'search ' + searchquery_normal
@@ -360,7 +356,9 @@ if demisto.command() == 'splunk-job-create':
     demisto.results({"Type": 1, "ContentsFormat": formats['text'],
                      "Contents": "Splunk Job created with SID: " + job.sid, "EntryContext": ec})
     sys.exit(0)
-if demisto.command() == 'splunk-results':
+
+
+def splunk_results_command():
     jobs = service.jobs
     found = False
     res = []
@@ -379,7 +377,9 @@ if demisto.command() == 'splunk-results':
     if found:
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
     sys.exit(0)
-if demisto.command() == 'fetch-incidents':
+
+
+def fetch_incidents():
     lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
     search_offset = demisto.getLastRun().get('offset', 0)
 
@@ -425,7 +425,8 @@ if demisto.command() == 'fetch-incidents':
         demisto.setLastRun({'time': lastRun, 'offset': search_offset + FETCH_LIMIT})
     sys.exit(0)
 
-if demisto.command() == 'splunk-get-indexes':
+
+def splunk_get_indexes_command():
     indexes = service.indexes
     indexesNames = []
     for index in indexes:
@@ -435,7 +436,8 @@ if demisto.command() == 'splunk-get-indexes':
                      'HumanReadable': tableToMarkdown("Splunk Indexes names", indexesNames, '')})
     sys.exit(0)
 
-if demisto.command() == 'splunk-submit-event':
+
+def splunk_submit_event_command():
     try:
         index = service.indexes[demisto.args()['index']]
     except KeyError:
@@ -449,7 +451,8 @@ if demisto.command() == 'splunk-submit-event':
         demisto.results('Event was created in Splunk index: ' + r.name)
     sys.exit(0)
 
-if demisto.command() == 'splunk-notable-event-edit':
+
+def splunk_edit_notable_event_command():
     if not proxy:
         os.environ["HTTPS_PROXY"] = ""
         os.environ["HTTP_PROXY"] = ""
@@ -480,10 +483,39 @@ if demisto.command() == 'splunk-notable-event-edit':
         sys.exit(0)
     demisto.results('Splunk ES Notable events: ' + response_info['message'])
     sys.exit(0)
-if demisto.command() == 'splunk-parse-raw':
+
+
+def splunk_parse_raw_command():
     raw = demisto.args()['raw']
     rawDict = rawToDict(raw)
     ec = {}
     ec['Splunk.Raw.Parsed'] = rawDict
     demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(rawDict), "EntryContext": ec})
     sys.exit(0)
+
+
+def test_module():
+    if len(service.jobs) >= 0:
+        demisto.results('ok')
+    sys.exit(0)
+
+
+# The command demisto.command() holds the command sent from the user.
+if demisto.command() == 'test-module':
+    test_module()
+if demisto.command() == 'splunk-search':
+    splunk_search_command()
+if demisto.command() == 'splunk-job-create':
+    splunk_job_create_command()
+if demisto.command() == 'splunk-results':
+    splunk_results_command()
+if demisto.command() == 'fetch-incidents':
+    fetch_incidents()
+if demisto.command() == 'splunk-get-indexes':
+    splunk_get_indexes_command()
+if demisto.command() == 'splunk-submit-event':
+    splunk_submit_event_command()
+if demisto.command() == 'splunk-notable-event-edit':
+    splunk_edit_notable_event_command()
+if demisto.command() == 'splunk-parse-raw':
+    splunk_parse_raw_command()
