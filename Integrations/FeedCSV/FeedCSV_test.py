@@ -17,7 +17,7 @@ def test_get_indicators():
             url="https://ipstack.com",
             fieldnames='indicator',
         )
-        hr, indicators_ec, raw_json = get_indicators(client, args)
+        hr, indicators_ec, raw_json = get_indicators_command(client, args)
         indicators_ec = indicators_ec.get('CSV.Indicator')
         assert len(indicators_ec) == 35
         for ind_json in raw_json:

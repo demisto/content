@@ -12,10 +12,11 @@ urllib3.disable_warnings()
 SOURCE_NAME = demisto.params().get('source_name')
 
 
-class Client(object):
+class Client(BaseClient):
     def __init__(self, url: str, fieldnames: str, insecure: bool = False, credentials: dict = None,
                  ignore_regex: str = None, delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
-                 quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, **kwargs):
+                 quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
+                 **kwargs):
         """
         :param url: URL of the feed.
         :param fieldnames: list of field names in the file. If *null* the values in the first row of the file are
@@ -34,18 +35,23 @@ class Client(object):
         :param skipinitialspace: see `csv Python module
             <https://docs.python.org/2/library/csv.html#dialects-and-formatting-parameters>`. Default False
         :param polling_timeout: timeout of the polling request in seconds. Default: 20
+        :param proxy: Sets whether use proxy when sending requests
         :param kwargs:
         """
-        self.url = url
-        self.verify_cert = not insecure
+        if not credentials:
+            credentials = {}
+        username = credentials.get('identifier', None)
+        password = credentials.get('password', None)
+        auth = None
+        if username is not None and password is not None:
+            auth = (username, password)
+
+        super().__init__(base_url=url, proxy=proxy, verify=not insecure, auth=auth)
+
         try:
             self.polling_timeout = int(polling_timeout)
         except (ValueError, TypeError):
             return_error('Please provide an integer value for "Request Timeout"')
-        if not credentials:
-            credentials = {}
-        self.username = credentials.get('identifier', None)
-        self.password = credentials.get('password', None)
 
         self.ignore_regex = ignore_regex
         if self.ignore_regex is not None:
@@ -61,14 +67,10 @@ class Client(object):
         }
 
     def _build_request(self):
-        auth = None
-        if self.username is not None and self.password is not None:
-            auth = (self.username, self.password)
-
         r = requests.Request(
             'GET',
-            self.url,
-            auth=auth
+            self._base_url,
+            auth=self._auth
         )
 
         return r.prepare()
@@ -84,7 +86,7 @@ class Client(object):
             {}, None, None, None  # defaults
         )
         rkwargs['stream'] = True
-        rkwargs['verify'] = self.verify_cert
+        rkwargs['verify'] = self._verify
         rkwargs['timeout'] = self.polling_timeout
 
         try:
@@ -125,7 +127,7 @@ def batch(iterable, batch_size=1):
         yield current_batch
 
 
-def test_module(client, args):
+def module_test_command(client, args):
     fieldnames = demisto.params().get('fieldnames')
     if fieldnames == 'indicator' or any(field in fieldnames for field in ('indicator,', ',indicator')):
         client.build_iterator()
@@ -149,17 +151,13 @@ def fetch_indicators_command(client, itype):
     return indicators
 
 
-def get_indicators(client, args):
+def get_indicators_command(client, args):
     itype = args.get('indicator_type', demisto.params().get('indicator_type'))
     limit = int(args.get('limit'))
-    indicators_json = fetch_indicators_command(client, itype)
-    res = []
-    for i, ind_json in enumerate(indicators_json):
-        if i >= limit:
-            break
-        res.append(camelize(ind_json))
-    hr = tableToMarkdown('Indicators', res, headers=['Value', 'Type', 'Rawjson'])
-    return hr, {'CSV.Indicator': res}, indicators_json
+    indicators_list = fetch_indicators_command(client, itype)
+    entry_result = indicators_list[:limit]
+    hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
+    return hr, {'CSV.Indicator': entry_result}, indicators_list
 
 
 def main():
@@ -171,8 +169,8 @@ def main():
     demisto.info('Command being called is {}'.format(command))
     # Switch case
     commands = {
-        'test-module': test_module,
-        'get-indicators': get_indicators
+        'test-module': module_test_command,
+        'get-indicators': get_indicators_command
     }
     try:
         if demisto.command() == 'fetch-indicators':
