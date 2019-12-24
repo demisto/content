@@ -869,6 +869,7 @@ def timestamp_length_equalization(timestamp1, timestamp2):
 ''' COMMANDS FUNCTIONS '''
 
 
+
 def fetch_incidents():
     """
         Fetches incident using the detections API

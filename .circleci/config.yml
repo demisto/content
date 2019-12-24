@@ -188,7 +188,7 @@ jobs:
                 echo "Skipping - unit tests are running only in container number 1"
                 exit 0
             fi
-            SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+            demisto-sdk lint -a -g
       - run:
           name: Verify Base Branch for Contribution
           when: always

@@ -391,7 +391,7 @@ def test_timestamp_to_date_converter_seconds():
 def test_timestamp_to_date_converter_milliseconds():
     from Elasticsearch_v2 import timestamp_to_date
     milliseconds_since_epoch = "1572164838123"
-    assert str(timestamp_to_date(milliseconds_since_epoch)) == "2019-10-27 08:27:18.123000"
+    assert str(timestamp_to_date(milliseconds_since_epoch)) == "2019-10-27 08:27:18.12300"
 
 
 @patch("Elasticsearch_v2.TIME_METHOD", 'Timestamp-Seconds')
