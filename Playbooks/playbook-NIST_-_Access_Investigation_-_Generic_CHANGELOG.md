@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+- Fixed 'IP Enrichment - Generic v2' inputs.
+- Removed Change severity task.
 
 ## [19.11.1] - 2019-11-26
 #### New Playbook
