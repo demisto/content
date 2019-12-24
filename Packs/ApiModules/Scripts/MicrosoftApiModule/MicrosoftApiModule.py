@@ -193,7 +193,7 @@ class MicrosoftClient(BaseClient):
             verify=self.verify
         )
 
-        if oproxy_response.status_code not in {200, 201}:
+        if not oproxy_response.ok:
             msg = 'Error in authentication. Try checking the credentials you entered.'
             try:
                 demisto.info('Authentication failure from server: {} {} {}'.format(
