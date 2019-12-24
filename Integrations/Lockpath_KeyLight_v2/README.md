@@ -1,7 +1,7 @@
 <p>
 Use the LockPath KeyLight integration to manage GRC tickets in the Keylight platform.
 
-This integration was integrated and tested with version 5.3.035.7 of Lockpath KeyLight v2
+This integration was integrated and tested with version 5.3.035 of Lockpath KeyLight v2
 </p>
 <h2>Use Cases</h2>
 <ul>
