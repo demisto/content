@@ -1503,7 +1503,8 @@
         },
         {
             "playbookID": "Email Address Enrichment - Generic v2.1 - Test",
-            "integrations": "Active Directory Query v2"
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
         },
         {
             "integrations": "Cofense Intelligence",
