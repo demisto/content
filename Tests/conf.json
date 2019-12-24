@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CSVFeed",
+            "playbookID": "CSV_Feed_Test"
+        },
+        {
             "integrations": "Digital Shadows",
             "playbookID": "Digital Shadows - Test"
         },

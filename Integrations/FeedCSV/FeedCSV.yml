@@ -123,7 +123,7 @@ script:
     - contextPath: CSV.Indicator.Type
       description: Indicator type.
       type: String
-    - contextPath: CSV.Indicator.RawJSON
+    - contextPath: CSV.Indicator.Rawjson
       description: Indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/python3:3.7.5.4583
@@ -134,3 +134,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+  - CSV_Feed_Test

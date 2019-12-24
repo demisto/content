@@ -160,7 +160,7 @@ def get_indicators(client, args):
             break
         res.append(camelize(ind_json))
         i += 1
-    hr = tableToMarkdown('Indicators', res, headers=['￿Value', 'Type', 'RawJSON'])
+    hr = tableToMarkdown('Indicators', res, headers=['Value', 'Type', 'Rawjson'])
     return hr, {'CSV.Indicator': res}, indicators_json
 
 
