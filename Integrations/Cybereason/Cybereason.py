@@ -995,15 +995,15 @@ def query_file_command():
         file_outputs = []
         endpoint_outputs = []
         files = data.get('resultIdToElementDataMap')
-        for file in files.keys():
-            raw_machine_details = get_file_machine_details(file)['data']['resultIdToElementDataMap']
+        for file_ in files.keys():
+            raw_machine_details = get_file_machine_details(file_)['data']['resultIdToElementDataMap']
             machine_details = raw_machine_details[raw_machine_details.keys()[0]]
-            simple_values = files[file]['simpleValues']
+            simple_values = files[file_]['simpleValues']
             file_name = simple_values['elementDisplayName']['values'][0]
             md5 = simple_values['md5String']['values'][0]
             sha1 = simple_values['sha1String']['values'][0]
             path = simple_values['correctedPath']['values'][0]
-            machine = files[file].get('elementValues', {}).get('ownerMachine', {}).get('elementValues')[0]['name']
+            machine = files[file_].get('elementValues', {}).get('ownerMachine', {}).get('elementValues')[0]['name']
 
             machine_element_values = machine_details['elementValues']
             machine_simple_values = machine_details['simpleValues']
@@ -1029,21 +1029,21 @@ def query_file_command():
 
             created_time = None
             if 'createdTime' in simple_values:
-                created_time = timestamp_to_datestring(simple_values['createdTime']['values'][0])
+                created_time = timestamp_to_datestring(simple_values.get('createdTime').get('values')[0])
 
             modified_time = None
             if 'modifiedTime' in simple_values:
-                modified_time = timestamp_to_datestring(simple_values['modifiedTime']['values'][0])
+                modified_time = timestamp_to_datestring(simple_values.get('modifiedTime').get('values')[0])
 
             is_signed = None
             if 'isSigned' in simple_values:
-                is_signed = simple_values['isSigned']['values'][0]
+                is_signed = True if simple_values['isSigned']['values'][0] == 'true' else False
 
             cybereason_outputs.append({
                 'Name': file_name,
                 'CreationTime': created_time,
                 'ModifiedTime': modified_time,
-                'Malicious': files[file]['isMalicious'],
+                'Malicious': files[file_].get('isMalicious'),
                 'MD5': md5,
                 'SHA1': sha1,
                 'Path': path,
@@ -1068,7 +1068,6 @@ def query_file_command():
                 'Hostname': machine,
                 'OSVersion': os_version
             })
-
         ec = {
             'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
             'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs
