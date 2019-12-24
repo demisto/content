@@ -281,16 +281,16 @@ def splunk_search_command():
             and not query.startswith('|'):
         query = 'search ' + query
 
-    res = []
+    res = []  # mypy: ignore
     dbot_scores = []  # type: List[Dict[str,Any]]
 
-    job = service.jobs.create(query, **kwargs_normalsearch)
+    job = service.jobs.create(query, **kwargs_normalsearch)  # mypy: ignore
     num_of_results = job["resultCount"]
 
     results_limit = int(demisto.args().get("event_limit", 100))
     if results_limit == 0:
         # In Splunk, a result limit of 0 means no limit.
-        results_limit = float("inf")
+        results_limit = float("inf")  # mypy: ignore
     batch_limit = int(demisto.args().get("batch_limit", 25000))
     offset = 0
     while len(res) < int(num_of_results) and len(res) < results_limit:
@@ -349,7 +349,7 @@ def splunk_job_create_command():
     if not searchquery_normal.startswith('search'):
         searchquery_normal = 'search ' + searchquery_normal
     kwargs_normalsearch = {"exec_mode": "normal"}
-    job = service.jobs.create(searchquery_normal, **kwargs_normalsearch)
+    job = service.jobs.create(searchquery_normal, **kwargs_normalsearch)  # mypy: ignore
 
     ec = {}
     ec['Splunk.Job'] = job.sid
@@ -359,7 +359,7 @@ def splunk_job_create_command():
 
 
 def splunk_results_command():
-    jobs = service.jobs
+    jobs = service.jobs  # mypy: ignore
     found = False
     res = []
     for job in jobs:
@@ -412,7 +412,7 @@ def fetch_incidents():
             field_trimmed = field.strip()
             searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
 
-    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
+    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # mypy: ignore
     reader = results.ResultsReader(oneshotsearch_results)
     for item in reader:
         inc = notable_to_incident(item)
@@ -427,7 +427,7 @@ def fetch_incidents():
 
 
 def splunk_get_indexes_command():
-    indexes = service.indexes
+    indexes = service.indexes  # mypy: ignore
     indexesNames = []
     for index in indexes:
         index_json = {'name': index.name, 'count': index["totalEventCount"]}
@@ -439,7 +439,7 @@ def splunk_get_indexes_command():
 
 def splunk_submit_event_command():
     try:
-        index = service.indexes[demisto.args()['index']]
+        index = service.indexes[demisto.args()['index']]  # mypy: ignore
     except KeyError:
         demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
                          'Contents': "Found no Splunk index: " + demisto.args()['index']})
@@ -495,7 +495,7 @@ def splunk_parse_raw_command():
 
 
 def test_module():
-    if len(service.jobs) >= 0:
+    if len(service.jobs) >= 0:  # mypy: ignore
         demisto.results('ok')
     sys.exit(0)
 
