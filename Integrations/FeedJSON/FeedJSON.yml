@@ -1,109 +1,122 @@
-category: Vulnerability Management
 commonfields:
   id: JSON Feed
   version: -1
-configuration:
-  - display: URL
-    name: url
-    required: true
-    type: 0
-  - display: Username
-    name: credentials
-    required: false
-    type: 9
-  - defaultvalue: 'true'
-    display: Trust any certificate (insecure)
-    name: insecure
-    required: false
-    type: 8
-  - display: Use system proxy
-    name: proxy
-    required: false
-    type: 8
-  - display: Indicator Type
-    name: indicator_type
-    required: true
-    type: 0
-  - defaultvalue: F - Reliability cannot be judged
-    display: Reliability
-    name: feedInstanceReliability
-    options:
-      - A - Completely reliable
-      - B - Usually reliable
-      - C - Fairly reliable
-      - D - Not usually reliable
-      - E - Unreliable
-      - F - Reliability cannot be judged
-    required: true
-    type: 15
-  - name: expiration
-    required: false
-    type: 17
-  - defaultvalue: indicatorType
-    name: expirationPolicy
-    required: false
-    type: 0
-  - name: expirationInterval
-    required: false
-    type: 1
-  - display: Fetch indicators
-    name: feed
-    required: false
-    type: 8
-  - display: Extractor (JMESPath expression, for further details see (?))
-    name: extractor
-    required: true
-    type: 0
-  - display: JSON attribute to use as an indicator
-    defaultvalue: indicator
-    name: indicator
-    required: false
-    type: 0
-  - display: additional JSON attributes to include in the indicator value.
-    name: fields
-    required: false
-    type: 0
-  - display: Source Name
-    defaultvalue: json
-    name: source_name
-    required: false
-    hidden: 'true'
-    type: 0
-  - display: cert_file
-    name: cert_file
-    required: false
-    hidden: 'true'
-    type: 0
-  - display: key_file
-    name: key_file
-    required: false
-    hidden: 'true'
-    type: 0
-  - display: headers
-    name: headers
-    required: false
-    hidden: 'true'
-    type: 0
-description: Json Feed Integration
+name: FeedJSON
 display: JSON Feed
-name: JSON Feed
+category: Vulnerability Management
+image: data:image/png;base64,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
+description: Json Feed Integration
+detaileddescription: http://jmespath.org/
+configuration:
+- display: URL
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+- display: Trust any certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Indicator Type
+  name: indicator_type
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Reliability
+  name: feedInstanceReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- display: ""
+  name: expiration
+  defaultvalue: ""
+  type: 17
+  required: false
+- display: ""
+  name: expirationPolicy
+  defaultvalue: indicatorType
+  type: 0
+  required: false
+- display: ""
+  name: expirationInterval
+  defaultvalue: ""
+  type: 1
+  required: false
+- display: Fetch indicators
+  name: feed
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Extractor (JMESPath expression, for further details see (?))
+  name: extractor
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: JSON attribute to use as an indicator
+  name: indicator
+  defaultvalue: indicator
+  type: 0
+  required: false
+- display: additional JSON attributes to include in the indicator value.
+  name: fields
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Source Name
+  name: source_name
+  defaultvalue: json
+  hidden: 'true'
+  type: 0
+  required: false
+- display: cert_file
+  name: cert_file
+  defaultvalue: ""
+  hidden: 'true'
+  type: 0
+  required: false
+- display: key_file
+  name: key_file
+  defaultvalue: ""
+  hidden: 'true'
+  type: 0
+  required: false
+- display: headers
+  name: headers
+  defaultvalue: ""
+  hidden: 'true'
+  type: 0
+  required: false
 script:
-  script: '-'
+  script: ""
+   type: python
   commands:
   - name: get-indicators
-  arguments:
-  - name: limit
-    description: limits the number of context indicators to output
-    defaultValue: "50"
-  outputs:
-  - contextPath: JSON.Indicator
-  isfetch: false
-  feed: true
-  longRunning: false
-  longRunningPort: false
-  runonce: false
-  type: python
-  subtype: python3
+    arguments:
+    - name: limit
+      description: limits the number of context indicators to output
+      defaultValue: "50"
+    outputs:
+    - contextPath: JSON.Indicator
+      description: The indicators from client.
   dockerimage: demisto/jmespath:1.0.0.5129
-tests:
-- JSON Feed Test
+  feed: true
+  runonce: false
+  subtype: python3
