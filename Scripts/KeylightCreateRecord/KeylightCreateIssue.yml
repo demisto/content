@@ -13,10 +13,11 @@ args:
   description: The task ID (task name) of the task to create. This is not a lookup field.
 - name: project
   required: true
-  description: The project name to create. This is a lookup field.
+  description: The project name to create. This is a lookup field. 
 outputs:
 - contextPath: Keylight.JSON
   description: The format needed to create or update a record in Keylight(v2).
+  type: Unknown
 scripttarget: 0
 subtype: python3
 dependson:
