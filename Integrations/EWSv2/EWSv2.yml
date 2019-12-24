@@ -82,7 +82,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 'false'
-  display: Run as a separate process (may prevent memory depletion)
+  display: Run as a separate process (protects against memory depletion)
   name: seperate_process
   required: false
   type: 8
