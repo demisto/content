@@ -1,0 +1,40 @@
+{
+  "total": 1,
+  "limit": 10,
+  "count": 1,
+  "skip": 0,
+  "data": [
+    {
+      "id": "fakeid",
+      "title": "fakexyz",
+      "summary": "summary fakexyz",
+      "tags": [
+        "tag1",
+        "tag2"
+      ],
+      "body": "fakebody",
+      "title_asset": "/assets/fakeid",
+      "title_asset_id": "fakeid",
+      "assets": [],
+      "asset_ids": [],
+      "sources": [
+        {
+          "original": "",
+          "platform_url": null,
+          "source_id": null,
+          "source": null,
+          "title": "",
+          "type": "type"
+        }
+      ],
+      "is_featured": false,
+      "ingested_at": "2019-11-21T22:20:14.576+00:00",
+      "posted_at": "2019-11-21T22:20:14.576+00:00",
+      "platform_url": "http://123-fake-api.com/home/intelligence/reports/report/fakeid",
+      "notified_at": "2019-11-21T22:20:14.576+00:00",
+      "updated_at": "2019-11-21T22:20:14.576+00:00",
+      "version_posted_at": "2019-11-21T22:20:14.576+00:00",
+      "published_status": "published"
+    }
+  ]
+}
