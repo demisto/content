@@ -1,0 +1,2 @@
+VirusTotal Intelligence Notifications feed.
+VirusTotal is a free service that analyzes suspicious files and URLs and facilitates the quick detection of viruses, worms, trojans, and all kinds of malware.

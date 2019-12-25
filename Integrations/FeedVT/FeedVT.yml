@@ -1,0 +1,73 @@
+category: Vulnerability Management
+commonfields:
+  id: FeedVT
+  version: -1
+configuration:
+  - display: URL
+    name: url
+    required: true
+    type: 0
+  - defaultvalue: 'true'
+    display: Trust any certificate (insecure)
+    name: insecure
+    required: false
+    type: 8
+  - display: Use system proxy
+    name: proxy
+    required: false
+    type: 8
+  - display: Indicator Type
+    name: indicator_type
+    required: false
+    type: 0
+  - defaultvalue: F - Reliability cannot be judged
+    display: Reliability
+    name: feedInstanceReliability
+    options:
+      - A - Completely reliable
+      - B - Usually reliable
+      - C - Fairly reliable
+      - D - Not usually reliable
+      - E - Unreliable
+      - F - Reliability cannot be judged
+    required: true
+    type: 15
+  - name: expiration
+    required: false
+    type: 17
+  - defaultvalue: indicatorType
+    name: expirationPolicy
+    required: false
+    type: 0
+  - name: expirationInterval
+    required: false
+    type: 1
+  - display: Fetch indicators
+    name: feed
+    required: false
+    type: 8
+  - display: additional JSON attributes to include in the indicator value.
+    name: fields
+    required: false
+    type: 0
+  - display: Source Name
+    defaultvalue: json
+    name: source_name
+    required: false
+    hidden: 'true'
+    type: 0
+description: VirusTotal Intelligence Notifications feed.
+display: VirusTotal Feed
+name: FeedVT
+script:
+  isfetch: false
+  feed: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/jmespath:1.0.0.5129
+tests:
+- No test
