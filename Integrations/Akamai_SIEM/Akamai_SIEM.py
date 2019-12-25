@@ -172,7 +172,7 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
                     "RuleSelectors": decode_message(event.get('attackData', {}).get('ruleSelectors')),
                     "RuleActions": decode_message(event.get('attackData', {}).get('ruleActions'))
                 }),
-                "HttpMessage":assign_params(**{
+                "HttpMessage": assign_params(**{
                     "RequestId": event.get('httpMessage', {}).get('requestId'),
                     "Start": event.get('httpMessage', {}).get('start'),
                     "Protocol": event.get('httpMessage', {}).get('protocol'),
