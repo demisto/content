@@ -49,7 +49,7 @@ MACHINE_OUTPUTS = {
                 "malicious": 'false',
                 "filterData": {
                     "sortInGroupValue": "-1879720569.-2277552225461983666",
-                    "groupByValue": "FileHashRuntime:0.4272124792099163455 "
+                    "groupByValue": "FileHashRuntime:0.4272124792099163455 "  # disable-secrets-detection
                 },
                 "suspicions": {
                     "reportedByAntiMalwareSuspicion": 1576499740291
@@ -79,7 +79,7 @@ MACHINE_OUTPUTS = {
                     "correctedPath": {
                         "totalValues": 1,
                         "values": [
-                            "c:\\windows\\temp\\sb-sim-temp-yavwth\\sb_11246909_bs_7jtkho\\bdata.bin"
+                            "c:\\windows\\temp\\sb-sim-temp-yavwth\\sb_11246909_bs_7jtkho\\bdata.bin"  # disable-secrets-detection
                         ]
                     },
                     "ownerMachine.osVersionType": {
@@ -194,7 +194,7 @@ FILE_OUTPUTS = {
             "malicious": 'false',
             "filterData": {
                 "sortInGroupValue": "1899624463.3738670480412115128",
-                "groupByValue": "FileHashRuntime:0.4272124792099163455 "
+                "groupByValue": "FileHashRuntime:0.4272124792099163455 "  # disable-secrets-detection
             },
             "suspicions": {
                 "reportedByAntiMalwareSuspicion": 1573393767860
@@ -218,7 +218,7 @@ FILE_OUTPUTS = {
                 "correctedPath": {
                     "totalValues": 1,
                     "values": [
-                        "c:\\windows\\temp\\sb-sim-temp-ymrc7u\\sb_5313815_bs_jwnggm\\bdata.bin"
+                        "c:\\windows\\temp\\sb-sim-temp-ymrc7u\\sb_5313815_bs_jwnggm\\bdata.bin"  # disable-secrets-detection
                     ]
                 },
                 "md5String": {
