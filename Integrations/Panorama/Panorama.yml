@@ -531,7 +531,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a static or dynamic address book.
+    description: Creates a static or dynamic address group.
     execution: false
     name: panorama-create-address-group
     outputs:
