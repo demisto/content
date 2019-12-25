@@ -279,7 +279,6 @@ tasks:
     nexttasks:
       '#none#':
       - '9'
-      - '15'
     scriptarguments:
       attributes: {}
       custom-field-data: {}
@@ -416,7 +415,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '12'
+      - '15'
     scriptarguments:
       append: {}
       key:
@@ -466,7 +465,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1660
+          "y": 2090
         }
       }
     note: false
@@ -579,8 +578,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -430,
-          "y": 1250
+          "x": 450,
+          "y": 1630
         }
       }
     note: false
@@ -588,10 +587,10 @@ tasks:
     ignoreworker: false
   '16':
     id: '16'
-    taskid: ed939125-7125-4822-8684-d38388341d88
+    taskid: 53f0e4a9-72fd-4e7d-8cef-5383bc64e539
     type: regular
     task:
-      id: ed939125-7125-4822-8684-d38388341d88
+      id: 53f0e4a9-72fd-4e7d-8cef-5383bc64e539
       version: -1
       name: Set manager display name to outputs
       description: Sets the email of the manager to the output context key of the
@@ -610,26 +609,41 @@ tasks:
         simple: UserManagerDisplayName
       value:
         complex:
-          root: ActiveDirectory
-          accessor: Users.displayName
+          root: Account
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Email
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.UserEmail
+                iscontext: true
           transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: DisplayName
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -430,
-          "y": 1450
+          "x": 450,
+          "y": 1850
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "15_12_#default#": 0.25,
+      "15_12_#default#": 0.23,
       "15_16_Yes": 0.56,
       "1_13_#default#": 0.22,
       "1_2_yes": 0.58,
@@ -642,9 +656,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1675,
-        "width": 1900,
-        "x": -430,
+        "height": 2105,
+        "width": 1450,
+        "x": 20,
         "y": 50
       }
     }
