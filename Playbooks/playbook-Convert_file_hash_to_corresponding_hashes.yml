@@ -200,6 +200,7 @@ tasks:
       sha256: {}
       threshold: {}
       wait: {}
+    reputationcalc: 2
     continueonerror: true
     separatecontext: false
     view: |-
@@ -243,6 +244,7 @@ tasks:
       sha256: {}
       threshold: {}
       wait: {}
+    reputationcalc: 2
     continueonerror: true
     separatecontext: false
     view: |-
@@ -286,6 +288,7 @@ tasks:
       sha256: {}
       threshold: {}
       wait: {}
+    reputationcalc: 2
     continueonerror: true
     separatecontext: false
     view: |-
