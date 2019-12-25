@@ -76,22 +76,23 @@ def __test_integration_instance(client, module_instance):
                 'Failed to test integration instance, error trying to communicate with demisto '
                 'server: {} '.format(
                     conn_err))
-            return False
+            return False, None
         except urllib3.exceptions.ReadTimeoutError:
             print_warning("Could not connect. Trying to connect for the {} time".format(i + 1))
 
     if int(response_code) != 200:
         print_error('Integration-instance test ("Test" button) failed.\nBad status code: ' + str(
             response_code))
-        return False
+        return False, None
 
     result_object = ast.literal_eval(response_data)
-    success = result_object['success']
+    success, failure_message = bool(result_object.get('success')), result_object.get('message')
     if not success:
-        print_error('Test integration failed.\n Failure message: ' + result_object['message'])
-        return False
-
-    return True
+        if failure_message:
+            print_error('Test integration failed.\nFailure message: {}'.format(failure_message))
+        else:
+            print_error('Test integration failed\nNo failure message.')
+    return success, failure_message
 
 
 # return instance name if succeed, None otherwise
@@ -102,7 +103,7 @@ def __create_integration_instance(client, integration_name, integration_instance
     # get configuration config (used for later rest api
     configuration = __get_integration_config(client, integration_name)
     if not configuration:
-        return None
+        return None, 'No configuration'
 
     module_configuration = configuration['configuration']
     if not module_configuration:
@@ -152,31 +153,35 @@ def __create_integration_instance(client, integration_name, integration_instance
                                                   path='/settings/integration',
                                                   body=module_instance)
     except ApiException as conn_err:
-        print_error(
-            'Error trying to create instance for integration: {0}:\n {1}'.format(integration_name,
-                                                                                 conn_err))
-        return None
+        error_message = 'Error trying to create instance for integration: {0}:\n {1}'.format(
+            integration_name, conn_err
+        )
+        print_error(error_message)
+        return None, error_message
 
     if res[1] != 200:
-        print_error('create instance failed with status code ' + str(res[1]))
+        error_message = 'create instance failed with status code ' + str(res[1])
+        print_error(error_message)
         print_error(pformat(res[0]))
-        return None
+        return None, error_message
 
     integration_config = ast.literal_eval(res[0])
     module_instance['id'] = integration_config['id']
 
     # test integration
     if validate_test:
-        test_succeed = __test_integration_instance(client, module_instance)
+        test_succeed, failure_message = __test_integration_instance(client, module_instance)
     else:
-        print_warning("Skipping test validation for integration: {} (it has test_validate set to false)".format(integration_name))
+        print_warning(
+            "Skipping test validation for integration: {} (it has test_validate set to false)".format(integration_name)
+        )
         test_succeed = True
 
     if not test_succeed:
         __disable_integrations_instances(client, [module_instance])
-        return None
+        return None, failure_message
 
-    return module_instance
+    return module_instance, ''
 
 
 def __disable_integrations_instances(client, module_instances):
@@ -411,16 +416,17 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         if is_mock_run:
             configure_proxy_unsecure(integration_params)
 
-        module_instance = __create_integration_instance(client, integration_name,
-                                                        integration_instance_name,
-                                                        integration_params, is_byoi, validate_test)
+        module_instance, failure_message = __create_integration_instance(
+            client, integration_name, integration_instance_name, integration_params, is_byoi, validate_test
+        )
         if module_instance is None:
-            print_error('Failed to create instance')
+            failure_message = failure_message if failure_message else 'No failure message could be found'
+            print_error('Failed to create instance: {}'.format(failure_message))
             __delete_integrations_instances(client, module_instances)
             return False, -1
 
         module_instances.append(module_instance)
-        print('Create integration {} succeed'.format(integration_name, ''))
+        print('Create integration {} succeed'.format(integration_name))
 
     # create incident with playbook
     incident, inc_id = __create_incident_with_playbook(client, 'inc_{}'.format(playbook_id,),
