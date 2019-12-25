@@ -1404,6 +1404,7 @@ LOG('command is %s' % (demisto.command(), ))
 
 session = requests.session()
 
+
 def main():
     if CERTIFICATE:
         client_certificate()
