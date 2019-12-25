@@ -695,11 +695,13 @@
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "get_original_email_-_ews-_test"
+            "playbookID": "get_original_email_-_ews-_test",
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": ["EWS v2", "EWS Mail Sender"],
             "playbookID": "EWS search-mailbox test",
+            "instance_names": "ewv2_regular",
             "timeout": 300
         },
         {
@@ -848,11 +850,13 @@
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "EWSv2_empty_attachment_test"
+            "playbookID": "EWSv2_empty_attachment_test",
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "EWS Public Folders Test"
+            "playbookID": "EWS Public Folders Test",
+            "instance_names": "ewv2_regular"
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -1038,7 +1042,13 @@
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "pyEWS_Test"
+            "playbookID": "pyEWS_Test",
+            "instance_names": "ewv2_regular"
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "pyEWS_Test",
+            "instance_names": "ewsv2_separate_process"
         },
         {
             "integrations": "remedy_sr_beta",
@@ -2030,7 +2040,8 @@
         {
           "integrations": "EWS v2",
           "playbookID": "Get EWS Folder Test",
-          "fromversion": "4.5.0"
+          "fromversion": "4.5.0",
+          "instance_names": "ewv2_regular"
         },
         {
           "integrations": "QRadar",

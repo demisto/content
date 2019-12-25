@@ -557,3 +557,6 @@ def demistoVersion():
 
 def integrationInstance():
     return ""
+
+def createIndicators(indicators_batch):
+    return ""
