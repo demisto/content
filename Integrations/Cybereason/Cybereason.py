@@ -24,10 +24,10 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
-USERNAME = demisto.params().get('credentials').get('identifier')
-PASSWORD = demisto.params().get('credentials').get('password')
+USERNAME = demisto.params().get('credentials', {}).get('identifier')
+PASSWORD = demisto.params().get('credentials', {}).get('password')
 USE_SSL = not demisto.params().get('unsecure', False)
-CERTIFICATE = demisto.params().get('credentials').get('credentials').get('sshkey')
+CERTIFICATE = demisto.params().get('credentials', {}).get('credentials', {}).get('sshkey')
 FETCH_TIME_DEFAULT = '3 days'
 FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
 FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
@@ -124,7 +124,7 @@ def http_request(method, url_suffix, data=None, json=None, headers=HEADERS):
         )
         if res.status_code not in {200, 204}:
             raise Exception('Your request failed with the following error: ' + res.content + str(res.status_code))
-    except Exception, e:
+    except Exception as e:
         LOG(e)
         raise
     return res
@@ -729,7 +729,7 @@ def add_comment_command():
     try:
         add_comment(malop_guid, comment.encode('utf-8'))
         demisto.results('Comment added successfully')
-    except Exception, e:
+    except Exception as e:
         return_error('Failed to add new comment. Orignal Error: ' + e.message)
 
 
@@ -1404,82 +1404,86 @@ LOG('command is %s' % (demisto.command(), ))
 
 session = requests.session()
 
+def main():
+    if CERTIFICATE:
+        client_certificate()
+        AUTH = 'CERT'
+    if USERNAME and PASSWORD:
+        login()
+        AUTH = 'BASIC'
+    else:
+        return_error('No credentials were provided')
 
-if CERTIFICATE:
-    client_certificate()
-    AUTH = 'CERT'
-if USERNAME and PASSWORD:
-    login()
-    AUTH = 'BASIC'
-else:
-    return_error('No credentials were provided')
+    try:
+        if demisto.command() == 'test-module':
+            # Tests connectivity and credentails on login
+            query_user([])
+            demisto.results('ok')
 
-try:
-    if demisto.command() == 'test-module':
-        # Tests connectivity and credentails on login
-        query_user([])
-        demisto.results('ok')
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
 
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
+        elif demisto.command() == 'cybereason-is-probe-connected':
+            is_probe_connected_command()
 
-    elif demisto.command() == 'cybereason-is-probe-connected':
-        is_probe_connected_command()
+        elif demisto.command() == 'cybereason-query-processes':
+            query_processes_command()
 
-    elif demisto.command() == 'cybereason-query-processes':
-        query_processes_command()
+        elif demisto.command() == 'cybereason-query-malops':
+            query_malops_command()
 
-    elif demisto.command() == 'cybereason-query-malops':
-        query_malops_command()
+        elif demisto.command() == 'cybereason-query-connections':
+            query_connections_command()
 
-    elif demisto.command() == 'cybereason-query-connections':
-        query_connections_command()
+        elif demisto.command() == 'cybereason-isolate-machine':
+            isolate_machine_command()
 
-    elif demisto.command() == 'cybereason-isolate-machine':
-        isolate_machine_command()
+        elif demisto.command() == 'cybereason-unisolate-machine':
+            unisolate_machine_command()
 
-    elif demisto.command() == 'cybereason-unisolate-machine':
-        unisolate_machine_command()
+        elif demisto.command() == 'cybereason-malop-processes':
+            malop_processes_command()
 
-    elif demisto.command() == 'cybereason-malop-processes':
-        malop_processes_command()
+        elif demisto.command() == 'cybereason-add-comment':
+            add_comment_command()
 
-    elif demisto.command() == 'cybereason-add-comment':
-        add_comment_command()
+        elif demisto.command() == 'cybereason-update-malop-status':
+            update_malop_status_command()
 
-    elif demisto.command() == 'cybereason-update-malop-status':
-        update_malop_status_command()
+        elif demisto.command() == 'cybereason-prevent-file':
+            prevent_file_command()
 
-    elif demisto.command() == 'cybereason-prevent-file':
-        prevent_file_command()
+        elif demisto.command() == 'cybereason-unprevent-file':
+            unprevent_file_command()
 
-    elif demisto.command() == 'cybereason-unprevent-file':
-        unprevent_file_command()
+        elif demisto.command() == 'cybereason-kill-process':  # To be added as a command in the future
+            kill_process_command()
 
-    elif demisto.command() == 'cybereason-kill-process':  # To be added as a command in the future
-        kill_process_command()
+        elif demisto.command() == 'cybereason-quarantine-file':  # To be added as a command in the future
+            quarantine_file_command()
 
-    elif demisto.command() == 'cybereason-quarantine-file':  # To be added as a command in the future
-        quarantine_file_command()
+        elif demisto.command() == 'cybereason-delete-registry-key':  # To be added as a command in the future
+            delete_registry_key_command()
 
-    elif demisto.command() == 'cybereason-delete-registry-key':  # To be added as a command in the future
-        delete_registry_key_command()
+        elif demisto.command() == 'cybereason-query-file':
+            query_file_command()
 
-    elif demisto.command() == 'cybereason-query-file':
-        query_file_command()
+        elif demisto.command() == 'cybereason-query-domain':
+            query_domain_command()
 
-    elif demisto.command() == 'cybereason-query-domain':
-        query_domain_command()
+        elif demisto.command() == 'cybereason-query-user':
+            query_user_command()
 
-    elif demisto.command() == 'cybereason-query-user':
-        query_user_command()
+    except Exception as e:
+        LOG(e.message)
+        LOG.print_log()
+        return_error(e.message)
+    finally:
+        logout()
+        if AUTH == 'CERT':
+            os.remove(os.path.abspath('client.pem'))
+            os.remove(os.path.abspath('client.cert'))
 
-except Exception as e:
-    LOG(e.message)
-    LOG.print_log()
-    return_error(e.message)
-finally:
-    logout()
-    if AUTH == 'CERT':
-        os.remove(os.path.abspath('client.pem'))
-        os.remove(os.path.abspath('client.cert'))
+
+if __name__ in ('__builtin__', 'builtins'):
+    main()
