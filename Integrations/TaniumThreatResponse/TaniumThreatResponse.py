@@ -219,8 +219,7 @@ def get_alerts(client, data_args):
     type_ = data_args.get('type')
     state = data_args.get('state')
 
-    params = {'state': ALERT_TYPE_TO_REQUEST[state],
-              'type': type_,
+    params = {'type': type_,
               'priority': priority,
               'severity': severity,
               'intelDocId': intel_doc_id,
@@ -229,6 +228,8 @@ def get_alerts(client, data_args):
               'computerIpAddress': ip_address,
               'limit': limit,
               'offset': offset}
+    if state:
+        params['state'] = ALERT_TYPE_TO_REQUEST[state]
 
     raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/alerts/', params=params)
 
@@ -296,7 +297,7 @@ def get_local_snapshots(client, data_args):
     raw_response = client.do_request('GET', '/plugin/products/trace/locals/')
     snapshots = client.get_local_snapshot_items(raw_response, limit)
     context = createContext(snapshots, removeNull=True)
-    outputs = {'Tanium.LocalSnapshot(val.FileName && val.FileName === obj.FileName)': context}
+    outputs = {'Tanium.LocalSnapshot.DirectoryName(val.FileName && val.FileName === obj.FileName)': context}
     human_readable = tableToMarkdown('Local snapshots', snapshots)
     return human_readable, outputs, raw_response
 
@@ -305,7 +306,7 @@ def delete_local_snapshot(client, data_args):
     directory_name = data_args.get('directory-name')
     file_name = data_args.get('file-name')
     client.do_request('DELETE', f'/plugin/products/trace/locals/{directory_name}/{file_name}', resp_type='content')
-    return f"Snapshot {file_name} deleted successfully.", {}, {}
+    return f"Local snapshot from Directory {directory_name} and File {file_name} is deleted successfully.", {}, {}
 
 
 def get_connections(client, data_args):

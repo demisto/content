@@ -28,79 +28,147 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-description: Integration Template
+description: Tanium Threat Response
 display: Tanium Threat Response
 name: TaniumThreatResponse
 script:
   commands:
   - arguments:
     - default: false
+      description: The intel document ID.
       isArray: false
       name: intel-doc-id
       required: true
       secret: false
     deprecated: false
+    description: Returns a intel document object based on ID.
     execution: false
     name: tanium-tr-get-intel-doc-by-id
+    outputs:
+    - contextPath: Tanium.IntelDoc.AlertCount
+      description: The number of alerts that currently exist for this intel.
+      type: Number
+    - contextPath: Tanium.IntelDoc.CreatedAt
+      description: The date at which this intel was first added to the system.
+      type: Date
+    - contextPath: Tanium.IntelDoc.Description
+      description: The description of the intel, as declared in the document or as
+        updated by a user.
+      type: String
+    - contextPath: Tanium.IntelDoc.ID
+      description: The unique identifier for this intel in this instance of the system.
+      type: Number
+    - contextPath: Tanium.IntelDoc.LabelIds
+      description: The IDs of all labels applied to this intel.
+      type: Number
+    - contextPath: Tanium.IntelDoc.Name
+      description: The name of the intel, as declared in the document or as updated
+        by a user.
+      type: String
+    - contextPath: Tanium.IntelDoc.UnresolvedAlertCount
+      description: The number of unresolved alerts that currently exist for this intel.
+      type: Number
+    - contextPath: Tanium.IntelDoc.UpdatedAt
+      description: The date when this intel was last updated.
+      type: Date
   - arguments:
     - default: false
       defaultValue: '5'
+      description: The maximum number of intel documents to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
+    description: Returns a list of all intel documents.
     execution: false
     name: tanium-tr-list-intel-docs
+    outputs:
+    - contextPath: Tanium.IntelDoc.AlertCount
+      description: The number of alerts that currently exist for this intel.
+      type: Number
+    - contextPath: Tanium.IntelDoc.CreatedAt
+      description: The date at which this intel was first added to the system.
+      type: Date
+    - contextPath: Tanium.IntelDoc.Description
+      description: The description of the intel, as declared in the document or as
+        updated by a user.
+      type: String
+    - contextPath: Tanium.IntelDoc.ID
+      description: The unique identifier for this intel in this instance of the system.
+      type: Number
+    - contextPath: Tanium.IntelDoc.LabelIds
+      description: The IDs of all labels applied to this intel.
+      type: Number
+    - contextPath: Tanium.IntelDoc.Name
+      description: The name of the intel, as declared in the document or as updated
+        by a user.
+      type: String
+    - contextPath: Tanium.IntelDoc.UnresolvedAlertCount
+      description: The number of unresolved alerts that currently exist for this intel.
+      type: Number
+    - contextPath: Tanium.IntelDoc.UpdatedAt
+      description: The date when this intel was last updated.
+      type: Date
   - arguments:
     - default: false
       defaultValue: '5'
+      description: The maximum number of alerts to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
+      description: The offset number to begin listing alerts.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
+      description: Filter alerts by the specified computer IP Addresses.
       isArray: false
       name: computer-ip-address
       required: false
       secret: false
     - default: false
+      description: Filter alerts by the specified computer name.
       isArray: false
       name: computer-name
       required: false
       secret: false
     - default: false
+      description: Filter alerts by the specified scan config ID.
       isArray: false
       name: scan-config-id
       required: false
       secret: false
     - default: false
+      description: Filter alerts by the specified intel document ID.
       isArray: false
       name: intel-doc-id
       required: false
       secret: false
     - default: false
+      description: Filter alerts by the specified severity.
       isArray: false
       name: severity
       required: false
       secret: false
     - default: false
+      defaultValue: Filter alerts by the specified priority.
       isArray: false
       name: priority
       required: false
       secret: false
     - default: false
+      description: Filter alerts by the specified type.
       isArray: false
       name: type
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
+      description: Filter alerts by the specified state.
       isArray: false
       name: state
       predefined:
@@ -111,25 +179,110 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Returns a list of all alerts.
     execution: false
     name: tanium-tr-list-alerts
+    outputs:
+    - contextPath: Tanium.Alert.Priority
+      description: The priority of the alert.
+      type: String
+    - contextPath: Tanium.Alert.ComputerName
+      description: The hostname of the computer that generated the alert.
+      type: String
+    - contextPath: Tanium.Alert.GUID
+      description: A globally unique identifier for this alert in the customer environment.
+      type: String
+    - contextPath: Tanium.Alert.AlertedAt
+      description: The moment that the alert was generated.
+      type: Date
+    - contextPath: Tanium.Alert.UpdatedAt
+      description: The last time the alert state was updated.
+      type: Date
+    - contextPath: Tanium.Alert.State
+      description: The current state of the alert. For example, "unresolved", "inprogress",
+        etc.
+      type: String
+    - contextPath: Tanium.Alert.ComputerIpAddress
+      description: The IP address of the computer that generated the alert.
+      type: String
+    - contextPath: Tanium.Alert.Type
+      description: The type name of the alert. For example, "detect.endpoint.match",
+        etc.
+      type: String
+    - contextPath: Tanium.Alert.ID
+      description: The type name of the alert. For example, "detect.endpoint.match",
+        etc.
+      type: Number
+    - contextPath: Tanium.Alert.CreatedAt
+      description: The moment that the alert was received by the Detect product.
+      type: Date
+    - contextPath: Tanium.Alert.IntelDocId
+      description: The intel document revision, if intelDocId is present.
+      type: Number
+    - contextPath: Tanium.Alert.Severity
+      description: The severity of the alert.
+      type: String
   - arguments:
     - default: false
+      description: The alert ID.
       isArray: false
       name: alert-id
       required: true
       secret: false
     deprecated: false
+    description: Returns alert object based on ID.
     execution: false
     name: tanium-tr-get-alert-by-id
+    outputs:
+    - contextPath: Tanium.Alert.Priority
+      description: The priority of the alert.
+      type: String
+    - contextPath: Tanium.Alert.ComputerName
+      description: The hostname of the computer that generated the alert.
+      type: String
+    - contextPath: Tanium.Alert.GUID
+      description: A globally unique identifier for this alert in the customer environment.
+      type: String
+    - contextPath: Tanium.Alert.AlertedAt
+      description: The moment that the alert was generated.
+      type: Date
+    - contextPath: Tanium.Alert.UpdatedAt
+      description: The last time the alert state was updated.
+      type: Date
+    - contextPath: Tanium.Alert.State
+      description: The current state of the alert. For example, "unresolved", "inprogress",
+        etc.
+      type: String
+    - contextPath: Tanium.Alert.ComputerIpAddress
+      description: The IP address of the computer that generated the alert.
+      type: String
+    - contextPath: Tanium.Alert.Type
+      description: The type name of the alert. For example, "detect.endpoint.match",
+        etc.
+      type: String
+    - contextPath: Tanium.Alert.ID
+      description: The type name of the alert. For example, "detect.endpoint.match",
+        etc.
+      type: Number
+    - contextPath: Tanium.Alert.CreatedAt
+      description: The moment that the alert was received by the Detect product.
+      type: Date
+    - contextPath: Tanium.Alert.IntelDocId
+      description: The intel document revision, if intelDocId is present.
+      type: Number
+    - contextPath: Tanium.Alert.Severity
+      description: The severity of the alert.
+      type: String
   - arguments:
     - default: false
+      description: The ID of the alert to update.
       isArray: false
       name: alert-id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
+      description: The new state for the alert.
       isArray: false
       name: state
       predefined:
@@ -140,87 +293,196 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Update the state of a single alert.
     execution: false
     name: tanium-tr-alert-update-state
+    outputs:
+    - contextPath: Tanium.Alert.Priority
+      description: The priority of the alert.
+      type: String
+    - contextPath: Tanium.Alert.ComputerName
+      description: The hostname of the computer that generated the alert.
+      type: String
+    - contextPath: Tanium.Alert.GUID
+      description: A globally unique identifier for this alert in the customer environment.
+      type: String
+    - contextPath: Tanium.Alert.AlertedAt
+      description: The moment that the alert was generated.
+      type: Date
+    - contextPath: Tanium.Alert.UpdatedAt
+      description: The last time the alert state was updated.
+      type: Date
+    - contextPath: Tanium.Alert.State
+      description: The current state of the alert. For example, "unresolved", "inprogress",
+        etc.
+      type: String
+    - contextPath: Tanium.Alert.ComputerIpAddress
+      description: The IP address of the computer that generated the alert.
+      type: String
+    - contextPath: Tanium.Alert.Type
+      description: The type name of the alert. For example, "detect.endpoint.match",
+        etc.
+      type: String
+    - contextPath: Tanium.Alert.ID
+      description: The type name of the alert. For example, "detect.endpoint.match",
+        etc.
+      type: Number
+    - contextPath: Tanium.Alert.CreatedAt
+      description: The moment that the alert was received by the Detect product.
+      type: Date
+    - contextPath: Tanium.Alert.IntelDocId
+      description: The intel document revision, if intelDocId is present.
+      type: Number
+    - contextPath: Tanium.Alert.Severity
+      description: The severity of the alert.
+      type: String
   - arguments:
     - default: false
       defaultValue: '5'
+      description: The maximin number of snapshots to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
+    description: Returns all snapshots.
     execution: false
     name: tanium-tr-list-snapshots
+    outputs:
+    - contextPath: Tanium.Snapshot.DirectoryName
+      description: The snapshot directory name.
+      type: String
+    - contextPath: Tanium.Snapshot.Error
+      description: The snapshot error message.
+      type: String
+    - contextPath: Tanium.Snapshot.FileName
+      description: The snapshot file name.
+      type: String
+    - contextPath: Tanium.Snapshot.Started
+      description: The moment that the snapshot was created.
+      type: Date
+    - contextPath: Tanium.Snapshot.State
+      description: The current state of the snapshot.
+      type: String
   - arguments:
     - default: false
+      description: The connection ID.
       isArray: false
       name: connection-id
       required: true
       secret: false
     deprecated: false
+    description: Capture a new snapshot by connection ID.
     execution: false
     name: tanium-tr-create-snapshot
   - arguments:
     - default: false
+      description: The connection ID.
       isArray: false
       name: connection-id
       required: true
       secret: false
     - default: false
+      description: The snapshot ID.
       isArray: false
       name: snapshot-id
       required: true
       secret: false
     deprecated: false
+    description: Delete a snapshot by connection ID and snapshot ID.
     execution: false
     name: tanium-tr-delete-snapshot
   - arguments:
     - default: false
       defaultValue: '5'
+      description: The maximin number of local snapshots to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
+    description: Returns all local snapshots.
     execution: false
     name: tanium-tr-list-local-snapshots
+    outputs:
+    - contextPath: Tanium.LocalSnapshot.DirectoryName
+      description: The snapshot directory name.
+      type: String
+    - contextPath: Tanium.LocalSnapshot.FileName
+      description: The snapshot file name.
+      type: String
   - arguments:
     - default: false
+      description: The directory name.
       isArray: false
       name: directory-name
       required: true
       secret: false
     - default: false
+      description: The file name.
       isArray: false
       name: file-name
       required: true
       secret: false
     deprecated: false
+    description: Delete a local snapshot by directory name and file name.
     execution: false
     name: tanium-tr-delete-local-snapshot
   - arguments:
     - default: false
       defaultValue: '5'
+      description: The maximum number of connections to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
+    description: Returns all connections.
     execution: false
     name: tanium-tr-list-connections
+    outputs:
+    - contextPath: Tanium.Connection.CreateTime
+      description: Time when the connection was first created.
+      type: Date
+    - contextPath: Tanium.Connection.Name
+      description: The connection name.
+      type: String
+    - contextPath: Tanium.Connection.Remote
+      description: True if remote connection.
+      type: Boolean
+    - contextPath: Tanium.Connection.State
+      description: Current connection state ('closed', 'pending', 'active', 'timeout',
+        'migrating').
+      type: String
   - arguments:
     - default: false
+      description: The connection name.
       isArray: false
       name: connection-name
       required: true
       secret: false
     deprecated: false
+    description: Returns a connection object based on name.
     execution: false
     name: tanium-tr-get-connection-by-name
+    outputs:
+    - contextPath: Tanium.Connection.CreateTime
+      description: Time when the connection was first created.
+      type: Date
+    - contextPath: Tanium.Connection.Name
+      description: The connection name.
+      type: String
+    - contextPath: Tanium.Connection.Remote
+      description: True if remote connection.
+      type: Boolean
+    - contextPath: Tanium.Connection.State
+      description: Current connection state ('closed', 'pending', 'active', 'timeout',
+        'migrating').
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
+      description: True if remote connection.
       isArray: false
       name: remote
       predefined:
@@ -230,6 +492,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      description: 'Type of destination: ip_address or computer_name.'
       isArray: false
       name: destination-type
       predefined:
@@ -238,47 +501,104 @@ script:
       required: true
       secret: false
     - default: false
+      description: computer name or IP address.
       isArray: false
       name: destination
       required: true
       secret: false
     - default: false
       defaultValue: '5'
+      description: connection timeout.
       isArray: false
       name: connection-timeout
       required: false
       secret: false
     deprecated: false
+    description: Creates a local or remote connection.
     execution: false
     name: tanium-tr-create-connection
   - arguments:
     - default: false
+      description: The connection ID.
       isArray: false
       name: connection-id
       required: true
       secret: false
     deprecated: false
+    description: Delete a connection by connection ID.
     execution: false
     name: tanium-tr-delete-connection
   - arguments:
     - default: false
       defaultValue: '5'
+      description: The maximin number of labels to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
+    description: Returns all available labels in the system.
     execution: false
     name: tanium-tr-list-labels
+    outputs:
+    - contextPath: Tanium.Label.CreatedAt
+      description: The date this label was created.
+      type: Date
+    - contextPath: Tanium.Label.Description
+      description: An extended description of the label.
+      type: String
+    - contextPath: Tanium.Label.ID
+      description: The unique identifier for this label.
+      type: Number
+    - contextPath: Tanium.Label.IndicatorCount
+      description: The number of indicator-based intel documents associated with this
+        label, not including Tanium Signals.
+      type: Number
+    - contextPath: Tanium.Label.Name
+      description: The display name of the label.
+      type: String
+    - contextPath: Tanium.Label.SignalCount
+      description: The number of Tanium Signal documents associated with this label.
+      type: Number
+    - contextPath: Tanium.Label.UpdatedAt
+      description: The date this label was last updated, not including the intel and
+        signal counts.
+      type: Date
   - arguments:
     - default: false
+      description: The label ID.
       isArray: false
       name: label-id
       required: true
       secret: false
     deprecated: false
+    description: Returns label object based on ID.
     execution: false
     name: tanium-tr-get-label-by-id
+    outputs:
+    - contextPath: Tanium.Label.CreatedAt
+      description: The date this label was created.
+      type: Date
+    - contextPath: Tanium.Label.Description
+      description: An extended description of the label.
+      type: String
+    - contextPath: Tanium.Label.ID
+      description: The unique identifier for this label.
+      type: Number
+    - contextPath: Tanium.Label.IndicatorCount
+      description: The number of indicator-based intel documents associated with this
+        label, not including Tanium Signals.
+      type: Number
+    - contextPath: Tanium.Label.Name
+      description: The display name of the label.
+      type: String
+    - contextPath: Tanium.Label.SignalCount
+      description: The number of Tanium Signal documents associated with this label.
+      type: Number
+    - contextPath: Tanium.Label.UpdatedAt
+      description: The date this label was last updated, not including the intel and
+        signal counts.
+      type: Date
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   longRunning: false
