@@ -165,6 +165,8 @@ class MicrosoftClient(BaseClient):
                     detail = err_response.get('detail')
                     if title:
                         server_msg = f'{title}. {detail}'
+                    elif detail:
+                        server_msg = detail
                 if server_msg:
                     msg += ' Server message: {}'.format(server_msg)
             except Exception as ex:
