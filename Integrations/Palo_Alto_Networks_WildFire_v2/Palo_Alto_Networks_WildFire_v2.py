@@ -109,12 +109,12 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
                 })
                 sys.exit(0)
             else:
-                return_error(f'Request Failed with status: {result.status_code}'
+                raise Exception(f'Request Failed with status: {result.status_code}'
                              f' Reason is: {ERROR_DICT[str(result.status_code)]}')
         else:
-            return_error(f'Request Failed with status: {result.status_code} Reason is: {result.reason}')
+            raise Exception(f'Request Failed with status: {result.status_code} Reason is: {result.reason}')
     if result.text.find("Forbidden. (403)") != -1:
-        return_error('Request Forbidden - 403, check SERVER URL and API Key')
+        raise Exception('Request Forbidden - 403, check SERVER URL and API Key')
 
     if result.headers['Content-Type'] == 'application/octet-stream':
         return result
@@ -122,7 +122,7 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
         json_res = json.loads(xml2json(result.text))
         return json_res
     except Exception:
-        return_error(f'Failed to parse response to json. response: {result.text}')
+        raise Exception(f'Failed to parse response to json. response: {result.text}')
 
 
 def prettify_upload(upload_body):
@@ -173,9 +173,9 @@ def prettify_verdict(verdict_data):
 
 def create_dbot_score_from_verdict(pretty_verdict):
     if 'SHA256' not in pretty_verdict and 'MD5' not in pretty_verdict:
-        return_error('Hash is missing in WildFire verdict.')
+        raise Exception('Hash is missing in WildFire verdict.')
     if pretty_verdict["Verdict"] not in VERDICTS_TO_DBOTSCORE:
-        return_error('This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
+        raise Exception('This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
     dbot_score = {
         'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
         'Type': 'hash',
@@ -209,9 +209,9 @@ def create_dbot_score_from_verdicts(pretty_verdicts):
     for pretty_verdict in pretty_verdicts:
 
         if 'SHA256' not in pretty_verdict and 'MD5' not in pretty_verdict:
-            return_error('Hash is missing in WildFire verdict.')
+            raise Exception('Hash is missing in WildFire verdict.')
         if pretty_verdict["Verdict"] not in VERDICTS_TO_DBOTSCORE:
-            return_error(
+            raise Exception(
                 'This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
 
         dbot_score = {
@@ -246,7 +246,7 @@ def hash_args_handler(sha256=None, md5=None):
     for element in inputs:
         if sha256Regex.match(element) or md5Regex.match(element):
             continue
-        return_error('Invalid hash. Only SHA256 and MD5 are supported.')
+        raise Exception('Invalid hash. Only SHA256 and MD5 are supported.')
 
     return inputs
 
@@ -264,10 +264,10 @@ def file_args_handler(file=None, sha256=None, md5=None):
         for element in inputs:
             if sha256Regex.match(element) or md5Regex.match(element) or sha1Regex.match(element):
                 continue
-            return_error('Invalid hash. Only SHA256 and MD5 are supported.')
+            raise Exception('Invalid hash. Only SHA256 and MD5 are supported.')
 
         return inputs
-    return_error('Specify exactly 1 of the following arguments: file, sha256, md5.')
+    raise Exception('Specify exactly 1 of the following arguments: file, sha256, md5.')
 
 
 def hash_list_to_file(hash_list):
@@ -297,7 +297,7 @@ def wildfire_upload_file(upload):
     try:
         shutil.copy(file_path, file_name)
     except Exception:
-        return_error('Failed to prepare file for upload.')
+        raise Exception('Failed to prepare file for upload.')
 
     try:
         with open(file_name, 'rb') as file:
@@ -445,7 +445,7 @@ def wildfire_get_verdicts(file_path):
 def wildfire_get_verdicts_command():
     if ('EntryID' in demisto.args() and 'hash_list' in demisto.args()) or (
             'EntryID' not in demisto.args() and 'hash_list' not in demisto.args()):
-        return_error('Specify exactly 1 of the following arguments: EntryID, hash_list.')
+        raise Exception('Specify exactly 1 of the following arguments: EntryID, hash_list.')
 
     if 'EntryID' in demisto.args():
         inputs = argToList(demisto.args().get('EntryID'))
