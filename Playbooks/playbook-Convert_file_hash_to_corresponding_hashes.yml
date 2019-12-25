@@ -1,7 +1,7 @@
 id: Convert file hash to corresponding hashes
 version: -1
-name: Convert file hash to corresponding hashes
 fromversion: 4.5.0
+name: Convert file hash to corresponding hashes
 description: |
   The playbook enables you to get all of the corresponding file hashes for a file even if there is only one hash type available.
   For example, if we have only the SHA256 hash, the playbook will get the SHA1 and MD5 hashes as long as the
@@ -72,7 +72,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "34"
+      - "2"
       "yes":
       - "18"
     separatecontext: false
@@ -88,8 +88,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
-          "y": 230
+          "x": 970,
+          "y": 240
         }
       }
     note: false
@@ -109,7 +109,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "32"
+      - "2"
       "yes":
       - "16"
     separatecontext: false
@@ -125,8 +125,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -870,
-          "y": 230
+          "x": -250,
+          "y": 240
         }
       }
     note: false
@@ -177,16 +177,15 @@ tasks:
       id: 65ff1c51-6bc1-4171-8bde-eb6ecb862f4e
       version: -1
       name: Get hashes by SHA1
-      description: Uses the SHA1 hash as a reference to check for other corresponding hashes of the same file.
+      description: Uses the SHA1 hash as a reference to check for other corresponding
+        hashes of the same file.
       script: '|||file'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
-      - "26"
-      - "24"
+      - "2"
     scriptarguments:
       confidenceThreshold: {}
       file:
@@ -201,13 +200,14 @@ tasks:
       sha256: {}
       threshold: {}
       wait: {}
+    reputationcalc: 2
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": 430
+          "x": 310,
+          "y": 410
         }
       }
     note: false
@@ -221,16 +221,15 @@ tasks:
       id: 9e3c8b51-dbc6-464a-8af7-f5d43b663bd4
       version: -1
       name: Get hashes by MD5
-      description: Uses the MD5 hash as a reference to check for other corresponding hashes of the same file.
+      description: Uses the MD5 hash as a reference to check for other corresponding
+        hashes of the same file.
       script: '|||file'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
-      - "31"
-      - "33"
+      - "2"
     scriptarguments:
       confidenceThreshold: {}
       file:
@@ -245,13 +244,14 @@ tasks:
       sha256: {}
       threshold: {}
       wait: {}
+    reputationcalc: 2
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -1120,
-          "y": 430
+          "x": -490,
+          "y": 410
         }
       }
     note: false
@@ -265,16 +265,15 @@ tasks:
       id: 29ef7703-de75-4ff3-844c-a852e333bdbe
       version: -1
       name: Get Hashes by SHA256
-      description: Uses the SHA256 hash as a reference to check for other corresponding hashes of the same file.
+      description: Uses the SHA256 hash as a reference to check for other corresponding
+        hashes of the same file.
       script: '|||file'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
-      - "28"
-      - "29"
+      - "2"
     scriptarguments:
       confidenceThreshold: {}
       file:
@@ -289,407 +288,14 @@ tasks:
       sha256: {}
       threshold: {}
       wait: {}
+    reputationcalc: 2
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "24":
-    id: "24"
-    taskid: 5ea09cf0-1554-4f77-8ab9-0dd3e6137803
-    type: regular
-    task:
-      id: 5ea09cf0-1554-4f77-8ab9-0dd3e6137803
-      version: -1
-      name: Set MD5
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: File.MD5
-      value:
-        complex:
-          root: inputs.MD5
-          transformers:
-          - operator: uniq
-          - operator: toLowerCase
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 742.5,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "25":
-    id: "25"
-    taskid: 7058583d-4f90-4ce6-8f0f-9e40ede488e9
-    type: regular
-    task:
-      id: 7058583d-4f90-4ce6-8f0f-9e40ede488e9
-      version: -1
-      name: Set SHA1
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: FIle.SHA1
-      value:
-        complex:
-          root: File
-          accessor: SHA1
-          transformers:
-          - operator: uniq
-          - operator: toLowerCase
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -110,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "26":
-    id: "26"
-    taskid: 87217c82-ab0c-4328-85fd-4ff6593ad14d
-    type: regular
-    task:
-      id: 87217c82-ab0c-4328-85fd-4ff6593ad14d
-      version: -1
-      name: Set SHA256
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: File.SHA256
-      value:
-        complex:
-          root: inputs.SHA256
-          transformers:
-          - operator: uniq
-          - operator: toLowerCase
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 300,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "27":
-    id: "27"
-    taskid: 71114ac7-c4e6-43f9-8abc-fb1578a05dc1
-    type: regular
-    task:
-      id: 71114ac7-c4e6-43f9-8abc-fb1578a05dc1
-      version: -1
-      name: Set SHA1
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: FIle.SHA1
-      value:
-        complex:
-          root: File
-          accessor: SHA1
-          transformers:
-          - operator: uniq
-          - operator: toLowerCase
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1330,
-          "y": 660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "28":
-    id: "28"
-    taskid: 5717038c-5ab2-4418-8942-acce24c6d8b3
-    type: regular
-    task:
-      id: 5717038c-5ab2-4418-8942-acce24c6d8b3
-      version: -1
-      name: Set SHA256
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: File.SHA256
-      value:
-        complex:
-          root: inputs.SHA256
-          transformers:
-          - operator: uniq
-          - operator: toLowerCase
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1750,
-          "y": 660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "29":
-    id: "29"
-    taskid: 8fdf592a-71e8-42dc-8484-fe2b66efbce4
-    type: regular
-    task:
-      id: 8fdf592a-71e8-42dc-8484-fe2b66efbce4
-      version: -1
-      name: Set MD5
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: File.MD5
-      value:
-        complex:
-          root: File
-          accessor: MD5
-          transformers:
-          - operator: uniq
-          - operator: toLowerCase
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2160,
-          "y": 660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "30":
-    id: "30"
-    taskid: 96100822-f6d5-403b-8025-cd8351aeb86c
-    type: regular
-    task:
-      id: 96100822-f6d5-403b-8025-cd8351aeb86c
-      version: -1
-      name: Set SHA1
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "32"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: FIle.SHA1
-      value:
-        complex:
-          root: File
-          accessor: SHA1
-          transformers:
-          - operator: uniq
-          - operator: toLowerCase
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1540,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "31":
-    id: "31"
-    taskid: ad7c5518-e2a9-4a51-8165-d7c30c8ffd51
-    type: regular
-    task:
-      id: ad7c5518-e2a9-4a51-8165-d7c30c8ffd51
-      version: -1
-      name: Set SHA256
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "32"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: File.SHA256
-      value:
-        complex:
-          root: File
-          accessor: SHA256
-          transformers:
-          - operator: uniq
-          - operator: toLowerCase
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1120,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "32":
-    id: "32"
-    taskid: 3411dbdc-9cbd-4a12-8420-d560cbdb3983
-    type: title
-    task:
-      id: 3411dbdc-9cbd-4a12-8420-d560cbdb3983
-      version: -1
-      name: Done
-      description: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -870,
-          "y": 970
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "33":
-    id: "33"
-    taskid: 53e657e8-0532-4ce9-8644-cf28472a7865
-    type: regular
-    task:
-      id: 53e657e8-0532-4ce9-8644-cf28472a7865
-      version: -1
-      name: Set MD5
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "32"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: File.MD5
-      value:
-        complex:
-          root: File
-          accessor: MD5
-          transformers:
-          - operator: uniq
-          - operator: toLowerCase
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -640,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "34":
-    id: "34"
-    taskid: 21900c0e-069c-4ff2-85bd-c535093e2180
-    type: title
-    task:
-      id: 21900c0e-069c-4ff2-85bd-c535093e2180
-      version: -1
-      name: Done
-      description: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1540,
-          "y": 960
+          "x": 1230,
+          "y": 410
         }
       }
     note: false
@@ -714,7 +320,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -870,
+          "x": -250,
           "y": 115
         }
       }
@@ -766,13 +372,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
-          "y": 100
+          "x": 970,
+          "y": 110
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -782,8 +389,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1135,
-        "width": 4080,
-        "x": -1540,
+        "width": 2100,
+        "x": -490,
         "y": -100
       }
     }
