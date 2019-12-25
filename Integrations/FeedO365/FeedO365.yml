@@ -1,6 +1,7 @@
 category: Vulnerability Management
 commonfields:
   id: FeedO365
+  fromversion: 5.5.0
   version: -1
 configuration:
 - defaultvalue: https://endpoints.office.com/endpoints/worldwide?noipv6&ClientRequestId=b10c5ed1-bad1-445f-b386-b919946339a7
