@@ -22,7 +22,7 @@ MACHINE_OUTPUTS = {
                         "totalMalicious": 0,
                         "elementValues": [
                             {
-                                "guid": "-1879720569.1198775089551518743",
+                                "guid": "-1879720555.1198775089551512345",
                                 "hasSuspicions": 'false',
                                 "elementType": "Machine",
                                 "name": "desktop-p0m5vad",
@@ -37,7 +37,7 @@ MACHINE_OUTPUTS = {
                         "totalMalicious": 0,
                         "elementValues": [
                             {
-                                "guid": "-1879720569.-2277552225461983666",
+                                "guid": "-1879720555.-2277552225461966666",
                                 "hasSuspicions": 'true',
                                 "elementType": "File",
                                 "name": "bdata.bin",
@@ -79,7 +79,7 @@ MACHINE_OUTPUTS = {
                     "correctedPath": {
                         "totalValues": 1,
                         "values": [
-                            "c:\\windows\\temp\\sb-sim-temp-yavwth\\sb_11246909_bs_7jtkho\\bdata.bin"  # disable-secrets-detection
+                            "c:\\windows\\temp\\sb-sim-temp-yavwth\\sb_11243939_bs_7jtkho\\bdata.bin"  # disable-secrets-detection
                         ]
                     },
                     "ownerMachine.osVersionType": {
@@ -97,7 +97,7 @@ MACHINE_OUTPUTS = {
                     "sha1String": {
                         "totalValues": 1,
                         "values": [
-                            "984e5a25910edafd2398c0f51c6f2d779530451d"
+                            "984e5a25910edafd1234c0f51c6f2d779530451d"
                         ]
                     },
                     "isSuspicious": {
@@ -182,7 +182,7 @@ FILE_OUTPUTS = {
                     "totalMalicious": 0,
                     "elementValues": [
                         {
-                            "guid": "1899624463.1198775089551518743",
+                            "guid": "1899624444.1198775089551234567",
                             "hasSuspicions": 'false',
                             "elementType": "Machine",
                             "name": "desktop-p0m5vad",
@@ -201,12 +201,12 @@ FILE_OUTPUTS = {
             },
             "labelsIds": 'null',
             "suspect": 'true',
-            "guidString": "1899624463.3738670480412115128",
+            "guidString": "1899624444.1198775089551234567",
             "simpleValues": {
                 "sha1String": {
                     "totalValues": 1,
                     "values": [
-                        "984e5a25910edafd2398c0f51c6f2d779530451d"
+                        "984e5a25910edafd4567c0f51c6f2d779530451d"
                     ]
                 },
                 "elementDisplayName": {
@@ -218,13 +218,13 @@ FILE_OUTPUTS = {
                 "correctedPath": {
                     "totalValues": 1,
                     "values": [
-                        "c:\\windows\\temp\\sb-sim-temp-ymrc7u\\sb_5313815_bs_jwnggm\\bdata.bin"  # disable-secrets-detection
+                        "c:\\windows\\temp\\sb-sim-temp-ymrc7u\\sb_5313555_bs_jwnggm\\bdata.bin"  # disable-secrets-detection
                     ]
                 },
                 "md5String": {
                     "totalValues": 1,
                     "values": [
-                        "4778901e54f55d54435b2626923054a8"
+                        "4778901e54f55d54435b2626123456a8"
                     ]
                 },
                 "maliciousClassificationType": {
@@ -250,6 +250,13 @@ def test_query_file(mocker):
     mocker.patch('Cybereason.client_certificate', side_effect=lambda: None, autospec=False)
     mocker.patch('Cybereason.get_file_machine_details', return_value=MACHINE_OUTPUTS)
     mocker.patch('Cybereason.query_file', return_value=FILE_OUTPUTS)
-
+    mocker.patch.object(demisto, 'results')
     import Cybereason
     Cybereason.query_file_command()
+    result = demisto.results.call_args[0]
+
+    assert result[0]['ContentsFormat'] == 'json'
+    assert 'Cybereason file query results' in result[0]['HumanReadable']
+    assert result[0]['EntryContext']['Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)'
+           ][0]['Machine'] == 'desktop-p0m5vad'
+
