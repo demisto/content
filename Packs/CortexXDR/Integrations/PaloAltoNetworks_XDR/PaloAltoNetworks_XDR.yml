@@ -508,7 +508,22 @@ script:
       successfully in related incidents and views. You can send 600 alerts per minute. Each request can contain a
       maximum of 60 alerts.
     execution: false
-    name: xdr-insert-alert
+    name: xdr-insert-single-alert
+  - arguments:
+    - default: false
+      description: Comma-separated list of alerts in CEF format. Supports list of
+        alerts.
+      isArray: true
+      name: alerts
+      required: true
+      secret: false
+    deprecated: false
+    description: Upload alerts in CEF format from external alert sources. After you
+      map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in
+      related incidents and views. You can send 600 requests per minute. Each request
+      can contain a maximum of 60 alerts.
+    execution: false
+    name: xdr-insert-cef-alerts
   - arguments:
     - default: false
       description: String that identifies the endpoint. You can it from xdr-get-endpoints
@@ -738,6 +753,89 @@ script:
     - contextPath: PaloAltoNetworksXDR.Endpoint.group_name
       description: Group name
       type: String
+  - deprecated: false
+    description: Get a list of all the agent versions to use for creating a distribution
+      list.
+    execution: false
+    name: xdr-get-distribution-versions
+    outputs:
+    - contextPath: PaloAltoNetworks_XDR.DistributionVersions.windows
+      description: String list of Windows agent versions.
+      type: Unknown
+    - contextPath: PaloAltoNetworks_XDR.DistributionVersions.linux
+      description: String list of Linux agent versions.
+      type: Unknown
+    - contextPath: PaloAltoNetworks_XDR.DistributionVersions.macos
+      description: String list of Mac agent versions.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: A string representing the name of the installation package.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "String, valid values are:\n• windows \n• linux\n• macos \n• android"
+      isArray: false
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        A string representing the type of package to create.
+        standalone - An installation for a new agent
+        upgrade - An upgrade of an agent from ESM
+      isArray: false
+      name: package_type
+      predefined:
+      - standalone
+      - upgrade
+      required: true
+      secret: false
+    - default: false
+      description: agent_version returned from xdr-get-distribution-versions. Not
+        required for Android platfom
+      isArray: false
+      name: agent_version
+      required: true
+      secret: false
+    - default: false
+      description: String representing information about the package.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Create an installation package. This is an async call that returns
+      the distribution ID, it does not mean that the creation succeeded. To confirm
+      the package has been created, check the status of the distribution by running
+      the Get Distribution Status API.
+    execution: false
+    name: xdr-create-distribution
+    outputs:
+    - contextPath: PaloAltoNetwokrs_XDR.Distribution.id
+      description: The installation package ID.
+      type: String
+    - contextPath: PaloAltoNetwokrs_XDR.Distribution.name
+      description: A string representing the name of the installation package.
+      type: String
+    - contextPath: PaloAltoNetwokrs_XDR.Distribution.platform
+      description: windows,linux,macos,android
+      type: String
+    - contextPath: PaloAltoNetwokrs_XDR.Distribution.agent_version
+      description: Agent version
+      type: String
+    - contextPath: PaloAltoNetwokrs_XDR.Distribution.description
+      description: String representing information about the package.
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -776,8 +874,29 @@ script:
     execution: false
     name: xdr-get-distribution-url
     outputs:
-    - contextPath: PaloAltoNetwoksXDR.DistributionURL
-      description: Distribution URL for download
+    - contextPath: PaloAltoNetwoks_XDR.Distribution.id
+      description: Distribution ID
+      type: String
+    - contextPath: PaloAltoNetwoks_XDR.Distribution.url
+      description: URL for downloading the installation package.
+      type: String
+  - arguments:
+    - default: false
+      description: List of distribution IDs
+      isArray: true
+      name: distribution_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Check the status of the installation package.
+    execution: false
+    name: xdr-get-distribution-status
+    outputs:
+    - contextPath: PaloAltoNetworks_XDR.Distribution.id
+      description: Distribution ID
+      type: String
+    - contextPath: PaloAltoNetworks_XDR.Distribution.status
+      description: A string representing the status of installation package.
       type: String
   - arguments:
     - default: false

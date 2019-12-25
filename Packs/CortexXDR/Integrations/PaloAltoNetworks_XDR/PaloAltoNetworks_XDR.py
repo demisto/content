@@ -20,7 +20,7 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
 
-INTEGRATION_CONTEXT_PREFIX = 'PaloAltoNetworksXDR'
+INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 
 
 def convert_epoch_to_milli(ts):
@@ -471,6 +471,17 @@ class Client(BaseClient):
             }
         )
 
+    def insert_cef_alerts(self, alerts):
+        self._http_request(
+            method='POST',
+            url_suffix='/alerts/insert_cef_alerts/',
+            json_data={
+                'request_data': {
+                    'alerts': alerts
+                }
+            }
+        )
+
     def get_distribution_url(self, distribution_id, package_type):
         reply = self._http_request(
             method='POST',
@@ -484,6 +495,61 @@ class Client(BaseClient):
         )
 
         return reply.get('reply').get('distribution_url')
+
+    def get_distribution_status(self, distribution_id):
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/distributions/get_status/',
+            json_data={
+                'request_data': {
+                    'distribution_id': distribution_id
+                }
+            }
+        )
+
+        return reply.get('reply').get('status')
+
+    def get_distribution_versions(self):
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/distributions/get_versions/',
+            json_data={}
+        )
+
+        return reply.get('reply')
+
+    def create_distribution(self, name, platform, package_type, agent_version, description):
+        if package_type == 'standalone':
+            request_data = {
+                'name': name,
+                'platform': platform,
+                'package_type': package_type,
+                'agent_version': agent_version,
+                'description': description
+            }
+        elif package_type == 'upgrade':
+            request_data = {
+                'name': name,
+                'package_type': package_type,
+                'description': description
+            }
+
+            if platform == 'windows':
+                request_data['windows_version'] = agent_version
+            elif platform == 'linux':
+                request_data['linux_version'] = agent_version
+            elif platform == 'macos':
+                request_data['macos_version'] = agent_version
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/distributions/create/',
+            json_data={
+                'request_data': request_data
+            }
+        )
+
+        return reply.get('reply').get('distribution_id')
 
     def audit_management_logs(self, email, result, _type, sub_type, search_from, search_to, timestamp_gte,
                               timestamp_lte, sort_by, sort_order):
@@ -674,7 +740,7 @@ def get_incidents_command(client, args):
     return (
         tableToMarkdown('Incidents', raw_incidents),
         {
-            f'{INTEGRATION_CONTEXT_PREFIX}.Incident(val.incident_id==obj.incident_id)': raw_incidents
+            f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': raw_incidents
         },
         raw_incidents
     )
@@ -717,7 +783,7 @@ def get_incident_extra_data_command(client, args):
     return (
         '\n'.join(readable_output),
         {
-            f'{INTEGRATION_CONTEXT_PREFIX}.Incident(val.incident_id==obj.incident_id)': incident
+            f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident
         },
         raw_incident
     )
@@ -792,7 +858,7 @@ def get_endpoints_command(client, args):
 
     return (
         tableToMarkdown('Endpoints', endpoints),
-        {f'{INTEGRATION_CONTEXT_PREFIX}.Endpoint(val.endpoint_id == val.endpoint_id)': endpoints},
+        {f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == val.endpoint_id)': endpoints},
         endpoints
     )
 
@@ -815,7 +881,7 @@ def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote
     return alert
 
 
-def insert_alert_command(client, args):
+def insert_single_alert_command(client, args):
     product = args.get('product')
     vendor = args.get('vendor')
     local_ip = args.get('local_ip')
@@ -849,6 +915,18 @@ def insert_alert_command(client, args):
 
     return (
         'Alert inserted successfully',
+        None,
+        None
+    )
+
+
+def insert_cef_alerts_command(client, args):
+    alerts = argToList(args.get('cef_alerts'))
+
+    client.insert_cef_alerts(alerts)
+
+    return (
+        'Alerts inserted successfully',
         None,
         None
     )
@@ -904,19 +982,6 @@ def unisolate_endpoint_command(client, args):
     )
 
 
-def get_distribution_url_command(client, args):
-    distribution_id = args.get('distribution_id')
-    package_type = args.get('package_type')
-
-    url = client.get_distribution_url(distribution_id, package_type)
-
-    return (
-        f'[Distribution URL]({url})',
-        {f'{INTEGRATION_CONTEXT_PREFIX}.DistributionURL': url},
-        url
-    )
-
-
 def get_audit_management_logs_command(client, args):
     email = argToList(args.get('email'))
     result = argToList(args.get('result'))
@@ -954,7 +1019,7 @@ def get_audit_management_logs_command(client, args):
     return (
         tableToMarkdown('Audit Management Logs', audit_logs),
         {
-            f'{INTEGRATION_CONTEXT_PREFIX}.AuditManagementLogs(val.AUDIT_ID == obj.AUDIT_ID)': audit_logs
+            f'{INTEGRATION_CONTEXT_BRAND}.AuditManagementLogs(val.AUDIT_ID == obj.AUDIT_ID)': audit_logs
         },
         audit_logs
     )
@@ -999,9 +1064,101 @@ def get_audit_agent_reports_command(client, args):
     return (
         tableToMarkdown('Audit Agent Reports', audit_logs),
         {
-            f'{INTEGRATION_CONTEXT_PREFIX}.AuditAgentReports': audit_logs
+            f'{INTEGRATION_CONTEXT_BRAND}.AuditAgentReports': audit_logs
         },
         audit_logs
+    )
+
+
+def get_distribution_url_command(client, args):
+    distribution_id = args.get('distribution_id')
+    package_type = args.get('package_type')
+
+    url = client.get_distribution_url(distribution_id, package_type)
+
+    return (
+        f'[Distribution URL]({url})',
+        {
+            'PaloAltoNetworksXDR.Distribution(val.id == obj.id)': {
+                'id': distribution_id,
+                'url': url
+            }
+        },
+        url
+    )
+
+
+def get_distribution_status_command(client, args):
+    distribution_ids = argToList(args.get('distribution_ids'))
+
+    distribution_list = []
+    for distribution_id in distribution_ids:
+        status = client.get_distribution_status(distribution_id)
+
+        distribution_list.append({
+            'id': distribution_id,
+            'status': status
+        })
+
+    return (
+        tableToMarkdown('Distribution Status', distribution_list, ['id', 'status']),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.Distribution(val.id == obj.id)': distribution_list
+        },
+        distribution_list
+    )
+
+
+def get_distribution_versions_command(client, args):
+    versions = client.get_distribution_versions()
+
+    readable_output = []
+    for operation_system in versions.keys():
+        os_versions = versions[operation_system]
+
+        readable_output.append(
+            tableToMarkdown(operation_system, os_versions or [], ['versions'])
+        )
+
+    return (
+        '\n\n'.join(readable_output),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.DistributionVersions': versions
+        },
+        versions
+    )
+
+
+def create_distribution_command(client, args):
+    name = args.get('name')
+    platform = args.get('platform')
+    package_type = args.get('package_type')
+    agent_version = args.get('agent_version')
+    description = args.get('description')
+
+    distribution_id = client.create_distribution(
+        name=name,
+        platform=platform,
+        package_type=package_type,
+        agent_version=agent_version,
+        description=description
+    )
+
+    distribution = {
+        'id': distribution_id,
+        'name': name,
+        'platform': platform,
+        'package_type': package_type,
+        'agent_version': agent_version,
+        'description': description
+    }
+
+    return (
+        f'Distribution {distribution_id} created successfully',
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.Distribution(val.id == obj.id)': distribution
+        },
+        distribution
     )
 
 
@@ -1064,12 +1221,6 @@ def main():
         "Authorization": api_key_hash
     }
 
-    # if not demisto.params().get('proxy'):
-    #     del os.environ['HTTP_PROXY']
-    #     del os.environ['HTTPS_PROXY']
-    #     del os.environ['http_proxy']
-    #     del os.environ['https_proxy']
-
     client = Client(
         base_url=base_url,
         proxy=proxy,
@@ -1099,8 +1250,11 @@ def main():
         elif demisto.command() == 'xdr-get-endpoints':
             return_outputs(*get_endpoints_command(client, demisto.args()))
 
-        elif demisto.command() == 'xdr-insert-alert':
-            return_outputs(*insert_alert_command(client, demisto.args()))
+        elif demisto.command() == 'xdr-insert-single-alert':
+            return_outputs(*insert_single_alert_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-insert-cef-alerts':
+            return_outputs(*insert_cef_alerts_command(client, demisto.args()))
 
         elif demisto.command() == 'xdr-isolate-endpoint':
             return_outputs(*isolate_endpoint_command(client, demisto.args()))
@@ -1110,6 +1264,15 @@ def main():
 
         elif demisto.command() == 'xdr-get-distribution-url':
             return_outputs(*get_distribution_url_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-get-distribution-status':
+            return_outputs(*get_distribution_status_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-get-distribution-versions':
+            return_outputs(*get_distribution_versions_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-create-distribution':
+            return_outputs(*create_distribution_command(client, demisto.args()))
 
         elif demisto.command() == 'xdr-get-audit-management-logs':
             return_outputs(*get_audit_management_logs_command(client, demisto.args()))
