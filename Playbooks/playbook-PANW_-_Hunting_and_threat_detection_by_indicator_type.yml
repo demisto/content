@@ -1,7 +1,7 @@
 id: PANW - Hunting and threat detection by indicator type
 version: -1
 name: PANW - Hunting and threat detection by indicator type
-fromversion: 5.0.0
+fromversion: 4.5.0
 description: |-
   Integrations list: Cortex (Traps, PAN-OS, Analytics)
   This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. 
