@@ -357,7 +357,7 @@ def __delete_integrations_instances(client, module_instances):
 
 def __print_investigation_error(client, playbook_id, investigation_id, color=LOG_COLORS.RED):
     try:
-        empty_json = {"pageSize": 1}
+        empty_json = {"pageSize": 1000}
         res = demisto_client.generic_request_func(self=client, method='POST',
                                                   path='/investigation/' + urllib.quote(
                                                       investigation_id), body=empty_json)
@@ -371,10 +371,10 @@ def __print_investigation_error(client, playbook_id, investigation_id, color=LOG
         entries = resp_json['entries']
         print_color('Playbook ' + playbook_id + ' has failed:', color)
         for entry in entries:
-            if entry['type'] == ENTRY_TYPE_ERROR:
-                if entry['parentContent']:
-                    print_color('\t- Command: ' + entry['parentContent'].encode('utf-8'), color)
-                print_color('\t- Body: ' + entry['contents'].encode('utf-8'), color)
+            if entry['type'] == ENTRY_TYPE_ERROR and entry['parentContent']:
+                print_color('- Task ID: ' + entry['taskId'].encode('utf-8'), color)
+                print_color('  Command: ' + entry['parentContent'].encode('utf-8'), color)
+                print_color('  Body:\n' + entry['contents'].encode('utf-8') + '\n', color)
 
 
 # Configure integrations to work with mock
