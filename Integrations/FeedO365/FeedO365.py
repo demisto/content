@@ -132,7 +132,8 @@ def get_indicators_command(client: Client, indicator_type: str) -> Tuple[str, Di
                 raw_response.append(raw_json)
     human_readable = tableToMarkdown('Indicators from O365 Feed:', indicators,
                                      headers=['Value', 'Type'], removeNull=True)
-    return human_readable, {}, raw_response
+
+    return human_readable, {'O365.Indicator': indicators}, raw_response
 
 
 def fetch_indicators_command(client: Client) -> List[Dict]:

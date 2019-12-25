@@ -62,11 +62,11 @@ configuration:
   name: expirationPolicy
   required: false
   type: 0
-  hidden: true
+  hidden: True
 - name: expirationInterval
   required: false
   type: 1
-  hidden: true
+  hidden: True
 - display: Fetch indicators
   name: feed
   required: false
