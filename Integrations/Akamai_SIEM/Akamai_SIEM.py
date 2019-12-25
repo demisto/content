@@ -5,8 +5,8 @@ from base64 import b64decode
 
 # 3-rd party imports
 from typing import Dict, Tuple, Union, Optional, List, Any, Sequence
-import urllib3
 import urllib.parse
+import urllib3
 from akamai.edgegrid import EdgeGridAuth
 
 # Local imports
