@@ -139,8 +139,8 @@ tasks:
     task:
       id: 2553eebc-777a-4018-8595-f55c16a1fcfb
       version: -1
-      name: BPA Integration
-      playbookName: BPA Integration
+      name: Run Panorama Best Practice Assessment
+      playbookName: Run Panorama Best Practice Assessment
       type: playbook
       iscommand: false
       brand: ""

@@ -155,6 +155,7 @@ def get_results_command(client: Client, args: Dict):
     raw: Dict = client.get_results_request(task_id)
 
     status = raw.get('status')
+    results = raw.get('results', {})
 
     if not status:
         raise Exception("Invalid response from BPA")
@@ -165,7 +166,6 @@ def get_results_command(client: Client, args: Dict):
         raise Exception("Job ID not valid or doesn't exist")
 
     if status == 'complete':
-        results = raw.get('results', {})
         bpa = results.get('bpa', {})
         if not bpa:
             raise Exception("Invalid response from BPA")
