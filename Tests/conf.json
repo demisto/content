@@ -2056,6 +2056,10 @@
         {
             "integrations": "Infoblox",
             "playbookID": "Infoblox Test"
+        },
+        {
+            "integrations": "Tanium Threat Response",
+            "playbookID": "Tanium Threat Response Test"
         }
     ],
     "skipped_tests": {

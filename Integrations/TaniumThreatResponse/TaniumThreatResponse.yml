@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: TaniumThreatResponse
+  id: Tanium Threat Response
   version: -1
 configuration:
 - display: Hostname, IP address, or server URL.
@@ -30,7 +30,7 @@ configuration:
   type: 0
 description: Tanium Threat Response
 display: Tanium Threat Response
-name: TaniumThreatResponse
+name: Tanium Threat Response
 script:
   commands:
   - arguments:
@@ -155,7 +155,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: Filter alerts by the specified priority.
+      description: Filter alerts by the specified priority.
       isArray: false
       name: priority
       required: false
@@ -606,3 +606,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
+  tests:
+    - Tanium Threat Response Test

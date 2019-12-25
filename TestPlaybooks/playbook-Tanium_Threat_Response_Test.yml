@@ -1,0 +1,575 @@
+id: Tanium Threat Response Test
+version: 3
+name: Tanium Threat Response Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9cbd4b9f-2e0e-48f5-8fc3-5023bd75521d
+    type: start
+    task:
+      id: 9cbd4b9f-2e0e-48f5-8fc3-5023bd75521d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 280d11da-9fbc-4802-8508-1e6ea938f888
+    type: regular
+    task:
+      id: 280d11da-9fbc-4802-8508-1e6ea938f888
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 05ab25cf-e1f9-40bf-8981-bdef03c47a6b
+    type: regular
+    task:
+      id: 05ab25cf-e1f9-40bf-8981-bdef03c47a6b
+      version: -1
+      name: Get intel doc by ID
+      description: Returns a intel document object based on ID.
+      script: '|||tanium-tr-get-intel-doc-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      intel-doc-id:
+        simple: "64"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 30de1152-ec20-41d0-8223-c43b9a354c86
+    type: title
+    task:
+      id: 30de1152-ec20-41d0-8223-c43b9a354c86
+      version: -1
+      name: Query lists commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 7d7fcd0f-b545-44ad-8f3a-a2d72933f4af
+    type: title
+    task:
+      id: 7d7fcd0f-b545-44ad-8f3a-a2d72933f4af
+      version: -1
+      name: Other commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 24676873-14ba-432a-8baa-58ecae3519fb
+    type: regular
+    task:
+      id: 24676873-14ba-432a-8baa-58ecae3519fb
+      version: -1
+      name: Get intel docs list
+      description: Returns a list of all intel documents.
+      script: '|||tanium-tr-list-intel-docs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 5fa000aa-a026-4170-8378-9c93e368ce3b
+    type: regular
+    task:
+      id: 5fa000aa-a026-4170-8378-9c93e368ce3b
+      version: -1
+      name: Get alerts list
+      description: Returns a list of all alerts.
+      script: '|||tanium-tr-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      computer-ip-address: {}
+      computer-name: {}
+      intel-doc-id: {}
+      limit: {}
+      offset: {}
+      priority: {}
+      scan-config-id: {}
+      severity: {}
+      state: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 82b377ad-cdc3-4ae8-85c3-db0ebbb4cd0e
+    type: regular
+    task:
+      id: 82b377ad-cdc3-4ae8-85c3-db0ebbb4cd0e
+      version: -1
+      name: Get connections list
+      description: Returns all connections.
+      script: '|||tanium-tr-list-connections'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: c43f9451-10dd-4a5e-8313-83ca190c63da
+    type: regular
+    task:
+      id: c43f9451-10dd-4a5e-8313-83ca190c63da
+      version: -1
+      name: Get snapshots list
+      description: Returns all snapshots.
+      script: '|||tanium-tr-list-snapshots'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 8626618e-3ee2-4b62-8a81-20107cab9617
+    type: regular
+    task:
+      id: 8626618e-3ee2-4b62-8a81-20107cab9617
+      version: -1
+      name: Get local snapshots list
+      description: Returns all local snapshots.
+      script: '|||tanium-tr-list-local-snapshots'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 42ea048a-44a0-4204-8668-62784bb2bf57
+    type: regular
+    task:
+      id: 42ea048a-44a0-4204-8668-62784bb2bf57
+      version: -1
+      name: Get labels list
+      description: Returns all available labels in the system.
+      script: '|||tanium-tr-list-labels'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 81be2b1f-7484-42f0-8738-502b5ac55eff
+    type: title
+    task:
+      id: 81be2b1f-7484-42f0-8738-502b5ac55eff
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: f37fd289-8c9f-44a6-8e72-1a58190ddad0
+    type: regular
+    task:
+      id: f37fd289-8c9f-44a6-8e72-1a58190ddad0
+      version: -1
+      name: Get alert by ID
+      description: Returns alert object based on ID.
+      script: '|||tanium-tr-get-alert-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      alert-id:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: eb3823f1-ab41-4fd6-8e23-f86946b23cb8
+    type: regular
+    task:
+      id: eb3823f1-ab41-4fd6-8e23-f86946b23cb8
+      version: -1
+      name: Update alert state
+      description: Update the state of a single alert.
+      script: '|||tanium-tr-alert-update-state'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      alert-id:
+        simple: "1"
+      state:
+        simple: Resolved
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 1b01b919-aeea-4f0a-84eb-eaeb17a42fe9
+    type: condition
+    task:
+      id: 1b01b919-aeea-4f0a-84eb-eaeb17a42fe9
+      version: -1
+      name: Validate alert state
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Tanium.Alert.State
+            iscontext: true
+          right:
+            value:
+              simple: Resolved
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: f794aea1-2c70-4c23-840a-76e3a8575206
+    type: regular
+    task:
+      id: f794aea1-2c70-4c23-840a-76e3a8575206
+      version: -1
+      name: Update alert state
+      description: Update the state of a single alert.
+      script: '|||tanium-tr-alert-update-state'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      alert-id:
+        simple: "1"
+      state:
+        simple: Unresolved
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 40feac34-e5d5-4cb9-8d54-0a33ebb98056
+    type: regular
+    task:
+      id: 40feac34-e5d5-4cb9-8d54-0a33ebb98056
+      version: -1
+      name: Get connection by name
+      description: Returns a connection object based on name.
+      script: '|||tanium-tr-get-connection-by-name'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      connection-name:
+        simple: ip-172-31-44-5.eu-central-1.compute.internal
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: e31dee6c-2fc3-43e6-8d8d-e741e0ab498a
+    type: regular
+    task:
+      id: e31dee6c-2fc3-43e6-8d8d-e741e0ab498a
+      version: -1
+      name: Get label by ID
+      description: Returns label object based on ID.
+      script: '|||tanium-tr-get-label-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      label-id:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 27cc81fd-57c4-4d34-85da-8df70c141a36
+    type: title
+    task:
+      id: 27cc81fd-57c4-4d34-85da-8df70c141a36
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1755,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
