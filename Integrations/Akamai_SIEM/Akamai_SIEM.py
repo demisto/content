@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from base64 import b64decode
 
 # 3-rd party imports
-from typing import Dict, Tuple, Union, Optional, List, Any
+from typing import Dict, Tuple, Union, Optional, List, Any, Sequence
 import urllib3
 import urllib.parse
 from akamai.edgegrid import EdgeGridAuth
@@ -116,7 +116,7 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
     return str(converted_date)
 
 
-def decode_message(msg: str) -> List[Optional[str]]:
+def decode_message(msg: str) -> Sequence[Optional[str]]:
     """
         Follow these steps for data members that appear within the event’s attackData section:
             1. If the member name is prefixed rule, URL-decode the value.
