@@ -93,6 +93,29 @@ description: Ingest indicator feeds from TAXII 1.x servers
 display: TAXII Feed
 name: Taxii
 script:
+  commands:
+    - arguments:
+        - default: false
+          defaultValue: '50'
+          description: Limit results returned to the output.
+          isArray: false
+          name: limit
+          required: false
+          secret: false
+      deprecated: false
+      description: Get the feed indicators.
+      execution: false
+      name: get-indicators
+      outputs:
+        - contextPath: TAXII.Indicator.Value
+          description: Indicator value.
+          type: String
+        - contextPath: TAXII.Indicator.Type
+          description: Indicator type.
+          type: String
+        - contextPath: TAXII.Indicator.Rawjson
+          description: Indicator rawJSON value.
+          type: Unknown
   dockerimage: devtesting/taxii:1.0.0.1577190883
   feed: true
   isfetch: false

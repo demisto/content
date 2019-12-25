@@ -871,7 +871,7 @@ def test_module(client, args):
     return 'ok', {}, {}
 
 
-def fetch_indicators_command(client, params):
+def fetch_indicators_command(client):
     iterator = client.build_iterator(date_to_timestamp(datetime.now()))
     indicators = []
     for item in iterator:
@@ -886,6 +886,14 @@ def fetch_indicators_command(client, params):
     return indicators
 
 
+def get_indicators_command(client, args):
+    limit = int(args.get('limit'))
+    indicators_list = fetch_indicators_command(client)
+    entry_result = camelize(indicators_list[:limit])
+    hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
+    return hr, {'TAXII.Indicator': entry_result}, indicators_list
+
+
 def main():
     # Write configure here
     params = demisto.params()
@@ -896,10 +904,11 @@ def main():
     # Switch case
     commands = {
         'test-module': test_module,
+        'get-indicators': get_indicators_command
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, params)
+            indicators = fetch_indicators_command(client)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
