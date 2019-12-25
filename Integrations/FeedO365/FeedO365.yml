@@ -7,33 +7,32 @@ configuration:
   display: prototype
   name: url
   options:
-  - o365-api.china-any
-  -  o365-api.china-common
-  -  o365-api.china-exchange
-  -  o365-api.china-sharepoint
-  -  o365-api.china-skype
-  -  o365-api.germany-any
-  -  o365-api.germany-common
-  -  o365-api.germany-exchange
-  -  o365-api.germany-sharepoint
-  -  o365-api.germany-skype
-  -  o365-api.usgovdod-any
-  -  o365-api.usgovdod-common
-  -  o365-api.usgovdod-exchange
-  -  o365-api.usgovdod-sharepoint
-  -  o365-api.usgovdod-skype
-  -  o365-api.usgovgcchigh-any
-  -  o365-api.usgovgcchigh-common
-  -  o365-api.usgovgcchigh-exchange
-  -  o365-api.usgovgcchigh-sharepoint
-  -  o365-api.usgovgcchigh-skype
-  -  o365-api.worldwide-any
-  -  o365-api.worldwide-common
-  -  o365-api.worldwide-exchange
-  -  o365-api.worldwide-sharepoint
-  -  o365-api.worldwide-skype
+  - o365-api.china-common
+  - o365-api.china-exchange
+  - o365-api.china-sharepoint
+  - o365-api.china-skype
+  - o365-api.germany-any
+  - o365-api.germany-common
+  - o365-api.germany-exchange
+  - o365-api.germany-sharepoint
+  - o365-api.germany-skype
+  - o365-api.usgovdod-any
+  - o365-api.usgovdod-common
+  - o365-api.usgovdod-exchange
+  - o365-api.usgovdod-sharepoint
+  - o365-api.usgovdod-skype
+  - o365-api.usgovgcchigh-any
+  - o365-api.usgovgcchigh-common
+  - o365-api.usgovgcchigh-exchange
+  - o365-api.usgovgcchigh-sharepoint
+  - o365-api.usgovgcchigh-skype
+  - o365-api.worldwide-any
+  - o365-api.worldwide-common
+  - o365-api.worldwide-exchange
+  - o365-api.worldwide-sharepoint
+  - o365-api.worldwide-skype
   required: true
-  type: 15
+  type: 16
 - defaultvalue: 'true'
   display: Trust any certificate (insecure)
   name: insecure
@@ -62,11 +61,9 @@ configuration:
   name: expirationPolicy
   required: false
   type: 0
-  hidden: True
 - name: expirationInterval
   required: false
   type: 1
-  hidden: True
 - display: Fetch indicators
   name: feed
   required: false
@@ -75,8 +72,8 @@ configuration:
   display: JSON attribute to use as an indicator
   name: indicator
   options:
-    - IPS
-    - URLS
+  - IPS
+  - URLS
   required: true
   type: 15
 description: O365 Feed Integration

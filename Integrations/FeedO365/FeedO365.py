@@ -9,7 +9,6 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 INTEGRATION_NAME = 'O365Feed'
 PROTOTYPE_TO_URL = {
-    "o365-api.china-any": "https://endpoints.office.com/endpoints/China?ServiceAreas=Any",
     "o365-api.china-common": "https://endpoints.office.com/endpoints/China?ServiceAreas=Common",
     "o365-api.china-exchange": "https://endpoints.office.com/endpoints/China?ServiceAreas=Exchange",
     "o365-api.china-sharepoint": "https://endpoints.office.com/endpoints/China?ServiceAreas=SharePoint",
@@ -43,15 +42,15 @@ class Client(BaseClient):
     Office 365 IP address and URL web service announcement:
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
     """
-    def __init__(self, url: str, indicator_type: str, insecure: bool = False, proxy: bool = False):
+    def __init__(self, url_list: List[str], indicator_type: str, insecure: bool = False, proxy: bool = False):
         """
         Implements class for O365 feeds.
-        :param url: URL of the feed.
+        :param url_list: URL of the feed.
         :param indicator_type: the JSON attribute to use as indicator. Can be ips or urls. Default: ips
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         :param proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
-        super().__init__(base_url=url, verify=insecure, proxy=proxy)
+        super().__init__(base_url=url_list, verify=insecure, proxy=proxy)
         self.indicator_type = indicator_type
 
     def build_iterator(self) -> List:
@@ -60,19 +59,19 @@ class Client(BaseClient):
         Returns:
             A list of objects, containing the indicators.
         """
-        response = requests.get(
-            url=self._base_url,
-            verify=self._verify
-        )
-        try:
-            response.raise_for_status()
-
-            data = response.json()
-            result = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries
-            return result
-
-        except ValueError as err:
-            raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
+        result = []
+        for url in self._base_url:
+            response = requests.get(
+                url=url,
+                verify=self._verify
+            )
+            try:
+                response.raise_for_status()
+                data = response.json()
+                result.extend([i for i in data if 'ips' in i or 'urls' in i])  # filter empty entries
+            except ValueError as err:
+                raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
+        return result
 
 
 def batch_indicators(sequence, batch_size=1) -> List:
@@ -128,6 +127,7 @@ def get_indicators_command(client: Client, indicator_type: str) -> Tuple[str, Di
                 indicators.append({
                     "Value": value,
                     "Type": indicator_type[:-1],
+                    'rawJSON': {"Value": value, "Type": indicator_type[:-1]}
                 })
                 raw_response.append(raw_json)
     human_readable = tableToMarkdown('Indicators from O365 Feed:', indicators,
@@ -168,13 +168,13 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     unique_id = str(uuid.uuid4())
-    endpoint_url = PROTOTYPE_TO_URL[demisto.params().get('url')]
-    url = f"{endpoint_url}&ClientRequestId={unique_id}"
+    prototype_list = argToList(demisto.params().get('url'))
+    url_list = [f"{PROTOTYPE_TO_URL[prototype]}&ClientRequestId={unique_id}" for prototype in prototype_list]
     indicator_type = demisto.params().get('indicator_type')
     insecure = demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy') == 'true'
 
-    client = Client(url, indicator_type, insecure, proxy)
+    client = Client(url_list, indicator_type, insecure, proxy)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
