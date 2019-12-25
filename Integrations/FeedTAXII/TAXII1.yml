@@ -46,18 +46,6 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: ip_version_auto_detect
-  name: ip_version_auto_detect
-  required: false
-  type: 8
-- display: ignore_composition_operator
-  name: ignore_composition_operator
-  required: false
-  type: 8
-- display: create_fake_indicator
-  name: create_fake_indicator
-  required: false
-  type: 8
 - display: Discovery Service
   name: discovery_service
   required: true
@@ -74,46 +62,43 @@ configuration:
   name: subscription_id
   required: false
   type: 0
-- display: Polling Timeout
+- defaultvalue: '20'
+  display: Polling Timeout
   name: polling_timeout
   required: false
   type: 0
-- display: Initial Interval
-  name: initial_interval
-  required: false
-  type: 0
-- display: Max Poll DT
-  name: max_poll_dt
-  required: false
-  type: 0
-- display: Lower Timestamp Precision
-  name: lower_timestamp_precision
-  required: false
-  type: 8
 - display: Poll Service
   name: poll_service
   required: false
   type: 0
-- display: Confidence Map
-  name: confidence_map
-  required: false
-  type: 0
-- display: API Key
+- additionalInfo: API key to be used with the API
+  display: API Key
   name: api_key
   required: false
   type: 0
-- name: api_header
+- additionalInfo: Name of the API header to save the API Key to
+  display: API Header Name
+  name: api_header
+  required: false
+  type: 0
+- additionalInfo: Time range to fetch first indicators. <number><time unit>, e.g.
+    22m (minutes), 30h (hours), 42d (days)
+  defaultvalue: 1d
+  display: First Fetch Time
+  hidden: false
+  name: initial_interval
   required: false
   type: 0
 description: Ingest indicator feeds from TAXII 1.x servers
 display: TAXII Feed
 name: Taxii
 script:
-  dockerimage: demisto/taxii:1.0.0.5055
-  isfetch: false
+  dockerimage: devtesting/taxii:1.0.0.1577190883
   feed: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
+  subtype: python3
   type: python

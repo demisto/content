@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 import urllib3
 import collections
 
-import json
 import requests
 from lxml import etree
 import dateutil.parser
@@ -31,20 +30,18 @@ INTEGRATION_NAME = 'TAXII1'
 
 class AddressObject(object):
     @staticmethod
-    def decode(props, ip_version_auto_detect=False, **kwargs):
+    def decode(props, **kwargs):
         indicator = props.find('Address_Value')
         if indicator is None:
             return []
         indicator = indicator.string.encode('ascii', 'replace')
 
         acategory = props.get('category', None)
-        if acategory is None or ip_version_auto_detect:
+        if acategory is None:
             try:
                 ip = IPAddress(indicator)
-                if ip.version == 4:
-                    type_ = 'IPv4'
-                elif ip.version == 6:
-                    type_ = 'IPv6'
+                if ip.version in (4, 6):
+                    type_ = 'IP'
                 else:
                     LOG('Unknown ip version: {!r}'.format(ip.version))
                     return []
@@ -52,10 +49,8 @@ class AddressObject(object):
             except Exception:
                 return []
 
-        elif acategory == 'ipv4-addr':
-            type_ = 'IPv4'
-        elif acategory == 'ipv6-addr':
-            type_ = 'IPv6'
+        elif acategory in ('ipv4-addr', 'ipv6-addr'):
+            type_ = 'IP'
         elif acategory == 'e-mail':
             type_ = 'email-addr'
         else:
@@ -443,33 +438,24 @@ class Client(object):
         self.last_taxii_content_ts = None
         self.verify_cert = not params.get('insecure', True)
         self.polling_timeout = params.get('polling_timeout')
-        self.polling_timeout = int(self.polling_timeout) if self.polling_timeout else 20
+        try:
+            self.polling_timeout = int(self.polling_timeout) if self.polling_timeout else 20
+        except (ValueError, TypeError):
+            raise TypeError('Please provide a valid integer for "Polling Timeout"')
         self.initial_interval = params.get('initial_interval', '1d')
         self.initial_interval = interval_in_sec(self.initial_interval)
         if self.initial_interval is None:
             self.initial_interval = 86400
-        self.max_poll_dt = params.get('max_poll_dt', )
-        self.max_poll_dt = int(self.max_poll_dt) if self.max_poll_dt else 86400
-
-        # options for processing
-        self.ip_version_auto_detect = params.get('ip_version_auto_detect', True)
-        self.ignore_composition_operator = params.get('ignore_composition_operator', False)
-        self.create_fake_indicator = params.get('create_fake_indicator', False)
-        self.lower_timestamp_precision = params.get('lower_timestamp_precision', False)
 
         self.discovery_service = params.get('discovery_service', None)
         self.poll_service = params.get('poll_service', None)
         self.collection = params.get('collection', None)
 
-        self.confidence_map = params.get('confidence_map')
-        if self.confidence_map:
-            self.confidence_map = json.loads(self.confidence_map)
-        else:
-            self.confidence_map = {
-                'low': 40,
-                'medium': 60,
-                'high': 80
-            }
+        self.confidence_map = {
+            'low': 40,
+            'medium': 60,
+            'high': 80
+        }
 
         # authentication
         self.api_key = params.get('api_key', None)
@@ -682,8 +668,8 @@ class Client(object):
                                     continue
 
                                 content = etree.tostring(c[0], encoding='unicode')
+                                timestamp, indicators = StixDecode.decode(content)
 
-                                timestamp, indicators = StixDecode.decode(content, ip_version_auto_detect=self.ip_version_auto_detect)
                                 for indicator in indicators:
                                     yield indicator
 
@@ -728,7 +714,7 @@ class Client(object):
 
     def _incremental_poll_collection(self, poll_service, begin, end):
         cbegin = begin
-        dt = timedelta(seconds=self.max_poll_dt)
+        dt = timedelta(seconds=86400)
 
         self.last_stix_package_ts = None
         self.last_taxii_content_ts = None
@@ -751,7 +737,7 @@ class Client(object):
 
             cbegin = cend
 
-    def _build_iterator(self, now):
+    def build_iterator(self, now):
         if self.poll_service is not None:
             discovered_poll_service = self.poll_service
         else:
@@ -769,9 +755,9 @@ class Client(object):
         end = datetime.utcfromtimestamp(now / 1000)
         end = end.replace(tzinfo=pytz.UTC)
 
-        if self.lower_timestamp_precision:
-            end = end.replace(second=0, microsecond=0)
-            begin = begin.replace(second=0, microsecond=0)
+        # lower time precision - solve issues with certain taxii servers
+        end = end.replace(second=0, microsecond=0)
+        begin = begin.replace(second=0, microsecond=0)
 
         return self._incremental_poll_collection(
             discovered_poll_service,
@@ -886,8 +872,7 @@ def test_module(client, args):
 
 
 def fetch_indicators_command(client, params):
-    # write _process_item here
-    iterator = client._build_iterator(date_to_timestamp(datetime.now()))
+    iterator = client.build_iterator(date_to_timestamp(datetime.now()))
     indicators = []
     for item in iterator:
         indicator = item.get('indicator')
@@ -922,7 +907,7 @@ def main():
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = 'Error in {name} Integration [{e}]'.format(name=INTEGRATION_NAME, e=e)
+        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
 
 
