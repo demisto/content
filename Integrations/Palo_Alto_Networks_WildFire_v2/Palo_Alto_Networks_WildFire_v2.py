@@ -110,7 +110,7 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
                 sys.exit(0)
             else:
                 raise Exception(f'Request Failed with status: {result.status_code}'
-                             f' Reason is: {ERROR_DICT[str(result.status_code)]}')
+                                f' Reason is: {ERROR_DICT[str(result.status_code)]}')
         else:
             raise Exception(f'Request Failed with status: {result.status_code} Reason is: {result.reason}')
     if result.text.find("Forbidden. (403)") != -1:
