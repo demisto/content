@@ -103,6 +103,13 @@ script:
     deprecated: false
     execution: false
     name: get-indicators
+    outputs:
+    - contextPath: O365.Indicator.Value
+      description: Indicator value.
+      type: String
+    - contextPath: O365.Indicator.Type
+      description: Indicator type.
+      type: Unknown
   dockerimage: demisto/python3:3.7.5.4328
   isfetch: false
   longRunning: false
