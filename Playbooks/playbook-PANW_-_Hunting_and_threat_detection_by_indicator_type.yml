@@ -3482,4 +3482,4 @@ outputs:
   type: string
 
 tests:
-  - PANW - Hunting and threat detection by indicator type Test
+- PANW - Hunting and threat detection by indicator type Test
