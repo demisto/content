@@ -1982,7 +1982,7 @@
         },
         {
             "playbookID": "PANW - Hunting and threat detection by indicator type Test",
-            "fromversion": "5.0.0",
+            "fromversion": "4.5.0",
             "timeout": 1200,
             "integrations": ["Panorama","Palo Alto Networks Cortex","AutoFocus V2","VirusTotal"],
             "instance_names": ["palo_alto_panorama","virus_total_general"]
