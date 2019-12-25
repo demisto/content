@@ -68,7 +68,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- defaultvalue: indicator
+- defaultvalue: IPS
   display: JSON attribute to use as an indicator
   name: indicator
   options:
