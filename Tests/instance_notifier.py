@@ -120,4 +120,4 @@ if __name__ == "__main__":
         with open("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', '')), 'a'):
             pass
     else:
-         print_error("Not instance tests build, stopping Slack Notifications about instances")
+        print_error("Not instance tests build, stopping Slack Notifications about instances")
