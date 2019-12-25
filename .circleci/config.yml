@@ -8,7 +8,7 @@ jobs:
     environment:
       CONTENT_VERSION: "19.12.1"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "32878409f9232f9f96ee6766345d1a30641754f1" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "16e3aa92e52bcc0771eaced661f6f077431dddd2" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
