@@ -402,14 +402,13 @@ jobs:
       - run:
           name: Instance Test
           command: |
-            ./Tests/scripts/instance_test.sh
-#            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
-#              then
-#                ./Tests/scripts/instance_test.sh
-#              else
-#                echo "Skipping instance tests"
-#                exit 0
-#            fi
+            if [ -n "${INSTANCE_TESTS}" ] && [ $CIRCLE_NODE_INDEX -ne 1 ] ;
+              then
+                ./Tests/scripts/instance_test.sh
+              else
+                echo "Skipping instance tests"
+                exit 0
+            fi
           when: always
       - run:
           name: Destroy Instances
