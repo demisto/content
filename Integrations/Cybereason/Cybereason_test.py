@@ -257,5 +257,5 @@ def test_query_file(mocker):
 
     assert result[0]['ContentsFormat'] == 'json'
     assert 'Cybereason file query results' in result[0]['HumanReadable']
-    assert result[0]['EntryContext']['Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && ' \
+    assert result[0]['EntryContext']['Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && '
                                      'val.SHA1===obj.SHA1)'][0]['Machine'] == 'desktop-p0m5vad'
