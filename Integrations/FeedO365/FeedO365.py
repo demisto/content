@@ -61,15 +61,27 @@ class Client(BaseClient):
         """
         result = []
         for url in self._base_url:
-            response = requests.get(
-                url=url,
-                verify=self._verify
-            )
             try:
+                response = requests.get(
+                    url=url,
+                    verify=self._verify
+                )
                 response.raise_for_status()
                 data = response.json()
                 result.extend([i for i in data if 'ips' in i or 'urls' in i])  # filter empty entries
+            except requests.exceptions.SSLError as err:
+                demisto.debug(str(err))
+                raise Exception(f'Connection error in the API call to O365.\n'
+                                f'Check your not secure parameter.\n\n{err}')
+            except requests.ConnectionError as err:
+                demisto.debug(str(err))
+                raise Exception(f'Connection error in the API call to O365.\n'
+                                f'Check your Server URL parameter.\n\n{err}')
+            except requests.exceptions.HTTPError as err:
+                demisto.debug(str(err))
+                raise Exception(f'Error issuing the request call to O365.\n\n{err}')
             except ValueError as err:
+                demisto.debug(str(err))
                 raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
         return result
 
@@ -115,21 +127,21 @@ def get_indicators_command(client: Client, indicator_type: str) -> Tuple[str, Di
     indicator_type_lower = indicator_type.lower()
     indicators = []
     raw_response = []
-    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 100
+    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
     iterator = [i for i in iterator if indicator_type_lower in i]  # filter indicator_type specific entries
     iterator = iterator[:limit]
     for item in iterator:
         values = item.get(indicator_type_lower)
-        raw_json = {'type': indicator_type[:-1]}
+        raw_data = {'type': indicator_type[:-1]}
         if values:
             for value in values:
-                raw_json['value'] = value
+                raw_data['value'] = value
                 indicators.append({
                     "Value": value,
                     "Type": indicator_type[:-1],
                     'rawJSON': {"Value": value, "Type": indicator_type[:-1]}
                 })
-                raw_response.append(raw_json)
+                raw_response.append(raw_data)
     human_readable = tableToMarkdown('Indicators from O365 Feed:', indicators,
                                      headers=['Value', 'Type'], removeNull=True)
 
@@ -151,14 +163,14 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
     indicators = []
     for item in iterator:
         values = item.get(indicator_type_lower)
-        raw_json = {'type': indicator_type[:-1]}
+        raw_data = {'type': indicator_type[:-1]}
         if values:
             for value in values:
-                raw_json['value'] = value
+                raw_data['value'] = value
                 indicators.append({
                     "value": value,
                     "type": indicator_type,
-                    "rawJSON": raw_json,
+                    "rawJSON": raw_data,
                 })
     return indicators
 
