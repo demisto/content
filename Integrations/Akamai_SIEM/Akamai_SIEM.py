@@ -4,9 +4,9 @@ from datetime import datetime, timezone
 from base64 import b64decode
 
 # 3-rd party imports
-from typing import Dict, Tuple, Union, Optional, List, Any
-import urllib3
+from typing import Dict, Tuple, Union, Optional, List, Any, Sequence
 import urllib.parse
+import urllib3
 from akamai.edgegrid import EdgeGridAuth
 
 # Local imports
@@ -116,7 +116,7 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
     return str(converted_date)
 
 
-def decode_message(msg: str) -> List[Optional[str]]:
+def decode_message(msg: str) -> Sequence[Optional[str]]:
     """
         Follow these steps for data members that appear within the event’s attackData section:
             1. If the member name is prefixed rule, URL-decode the value.
@@ -172,7 +172,7 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
                     "RuleSelectors": decode_message(event.get('attackData', {}).get('ruleSelectors')),
                     "RuleActions": decode_message(event.get('attackData', {}).get('ruleActions'))
                 }),
-                "HttpMessage":assign_params(**{
+                "HttpMessage": assign_params(**{
                     "RequestId": event.get('httpMessage', {}).get('requestId'),
                     "Start": event.get('httpMessage', {}).get('start'),
                     "Protocol": event.get('httpMessage', {}).get('protocol'),
