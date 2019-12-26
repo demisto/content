@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [19.12.1] - 2019-12-25
+-
+
 ## [19.12.0] - 2019-12-10
   - Updated the detailed description.
   - Fixed an issue where the ***pan-os-edl-update*** command failed when the file path included space characters at *scp_execute()*.

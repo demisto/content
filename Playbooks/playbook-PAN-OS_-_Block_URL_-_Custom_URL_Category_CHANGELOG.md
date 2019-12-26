@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [19.12.1] - 2019-12-25
+Added new playbook inputs.
+
 ## [19.9.1] - 2019-09-18
 #### New Playbook
 This playbook blocks URLs using Palo Alto Networks Panorama or Firewall through Custom URL Categories.

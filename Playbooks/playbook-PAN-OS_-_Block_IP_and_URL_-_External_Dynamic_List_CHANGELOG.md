@@ -1,6 +1,10 @@
 ## [Unreleased]
 
 
+## [19.12.1] - 2019-12-25
+- Added new playbook inputs.
+- Fixed an issue with EDL refresh for Panorama.
+
 ## [19.9.1] - 2019-09-18
 #### New Playbook
 This playbook blocks IP addresses and URLs using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
