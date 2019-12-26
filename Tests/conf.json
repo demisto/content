@@ -2209,7 +2209,7 @@
         "Forcepoint": "Nightly - Checking",
         "palo_alto_firewall": "Need to check test module",
         "Signal Sciences WAF": "error with certificate",
-        "google": "unsecure parameter not working",
+        "google": "'unsecure' parameter not working",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Anomali ThreatStream": "proxy parameter not working",
