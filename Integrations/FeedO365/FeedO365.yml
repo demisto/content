@@ -1,4 +1,4 @@
-category: Threat Intelligence Feeds
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: FeedO365
   version: -1
