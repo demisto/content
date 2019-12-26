@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.12.1] - 2019-12-25
   - Added a new command:
     - ***gmail-get-role***
   - Improved the outputs for the following commands:
