@@ -171,6 +171,11 @@ jobs:
                 exit 0
             fi
             demisto-sdk create -a $CIRCLE_ARTIFACTS
+            # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
+            cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
+            unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
+            zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
+            rm -r test_content_dir
       - store_artifacts:
           path: artifacts
           destination: artifacts
@@ -275,6 +280,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
+
                 python ./Tests/scripts/run_content_installation.py
                 python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION
 
