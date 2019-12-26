@@ -519,13 +519,13 @@ script:
     name: tanium-tr-create-connection
   - arguments:
     - default: false
-      description: The connection ID.
+      description: The name of the connection.
       isArray: false
-      name: connection-id
+      name: connection-name
       required: true
       secret: false
     deprecated: false
-    description: Delete a connection by connection ID.
+    description: Delete a connection by connection name.
     execution: false
     name: tanium-tr-delete-connection
   - arguments:

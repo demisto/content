@@ -147,13 +147,15 @@ class Client(BaseClient):
 
         return snapshots
 
-    def get_connection_item(self, connection, name):
+    def get_connection_item(self, connection):
+        info = connection.get('info')
         return {
-            'Name': name,
-            'State': connection.get('state'),
-            'CreateTime': connection.get('createTime'),
-            'DST': connection.get('dst'),
-            'Remote': connection.get('remote')}
+            'Name': connection.get('name'),
+            'State': info.get('state'),
+            'CreateTime': info.get('createTime'),
+            'DST': info.get('dst'),
+            'Remote': info.get('remote'),
+            'OsName': connection.get('osName')}
 
     def get_label_item(self, label):
         return {
@@ -315,7 +317,7 @@ def get_connections(client, data_args):
     connections = []
 
     for conn in raw_response[:limit]:
-        connections.append(client.get_connection_item(conn.get('info'), conn.get('name')))
+        connections.append(client.get_connection_item(conn))
 
     context = createContext(connections, removeNull=True)
     outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
@@ -325,13 +327,24 @@ def get_connections(client, data_args):
 
 def get_connection(client, data_args):
     conn_name = data_args.get('connection-name')
-    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}')
-    connection = client.get_connection_item(raw_response, conn_name)
+    raw_response = client.do_request('GET', '/plugin/products/trace/conns')
+    connection_raw_response = {}
+    found = False
+    for conn in raw_response:
+        if conn.get('name') and conn['name'] == conn_name:
+            connection_raw_response = conn
+            found = True
+            break
+
+    if not found:
+        return 'Connection not found.', {}, {}
+
+    connection = client.get_connection_item(connection_raw_response)
 
     context = createContext(connection, removeNull=True)
     outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
     human_readable = tableToMarkdown('Connection details', connection)
-    return human_readable, outputs, raw_response
+    return human_readable, outputs, connection_raw_response
 
 
 def create_connection(client, data_args):
@@ -354,9 +367,9 @@ def create_connection(client, data_args):
 
 
 def delete_connection(client, data_args):
-    conn_id = data_args.get('connection-id')
-    client.do_request('DELETE', f'/plugin/products/trace/conns/{conn_id}', resp_type='text')
-    return f"Connection {conn_id} deleted successfully.", {}, {}
+    conn_name = data_args.get('connection-name')
+    client.do_request('DELETE', f'/plugin/products/trace/conns/{conn_name}', resp_type='text')
+    return f"Connection {conn_name} deleted successfully.", {}, {}
 
 
 def get_labels(client, data_args):
