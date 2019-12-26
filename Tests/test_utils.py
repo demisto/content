@@ -342,3 +342,8 @@ def get_pack_name(file_path):
 
 def pack_name_to_path(pack_name):
     return os.path.join(PACKS_DIR, pack_name)
+
+
+
+playbook_id = "{0} - reason: {1}".format("google","'unsecure' parameter not working")
+print_warning('\t - ' + playbook_id)
