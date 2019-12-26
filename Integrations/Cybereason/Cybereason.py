@@ -1175,22 +1175,22 @@ def query_domain_command():
                 'Name': domain_input,
             })
 
-            ec = {
-                'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs
-            }
-            ec[outputPaths['domain']] = domain_outputs
+        ec = {
+            'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs
+        }
+        ec[outputPaths['domain']] = domain_outputs
 
-            demisto.results({
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': data,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Cybereason domain query results', cybereason_outputs,
-                                                 ['Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved',
-                                                  'WasEverResolvedAsASecondLevelDomain', 'Malicious',
-                                                  'SuspicionsCount']),
-                'EntryContext': ec
-            })
+        demisto.results({
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Cybereason domain query results', cybereason_outputs,
+                                             ['Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved',
+                                              'WasEverResolvedAsASecondLevelDomain', 'Malicious',
+                                              'SuspicionsCount']),
+            'EntryContext': ec
+        })
     else:
         demisto.results('No results found.')
 
