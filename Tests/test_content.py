@@ -147,7 +147,7 @@ class TestsDataKeeper:
 
 
 def print_test_summary(tests_data_keeper, is_ami=True):
-    succeed_playbooks = tests_data_keeper.susucceed_playbooks
+    succeed_playbooks = tests_data_keeper.succeed_playbooks
     failed_playbooks = tests_data_keeper.failed_playbooks
     skipped_tests = tests_data_keeper.skipped_tests
     unmocklable_integrations = tests_data_keeper.unmocklable_integrations
