@@ -2389,3 +2389,51 @@ if 'requests' in sys.modules:
 
 class DemistoException(Exception):
     pass
+
+
+def arg_to_boolean(value):
+    """
+        Boolean-ish arguments passed through demisto.args() could have type bool or type string.
+        This takes the guesswork out and will return a bool, regardless of value's type.
+        It will also return True for 'yes' and False for 'no'.
+
+        :type value: ``string|bool``
+        :param value: the value to evaluate
+
+        :rtype: ``bool``
+        :return: a boolean representatation of 'value'
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, STRING_OBJ_TYPES):
+        if value.lower() in ['true', 'yes']:
+            return True
+        elif value.lower() in ['false', 'no']:
+            return False
+        else:
+            return_error('Argument does not contain a valid boolean-ish value')
+    else:
+        return_error('Argument is neither a string nor a boolean')
+
+
+def csv_or_array_to_array(value_raw, delimiter=','):
+    """
+        Makes it easy to pass either a CSV list or an array to a demisto.args() argument.
+        Automations can be more flexible in their input types by passing array-like inputs through this function.
+        It will return a value of type list, regardless of value_raw's type.
+        CSV's will split by argument 'delimiter'.
+
+        :type value_raw: ``string,list``
+        :param value_raw: the value to evaluate.
+
+        :type delimiter: ``string``
+        :param delimiter: The delimiter to split value_raw, if it is a string.
+
+        :type: ``list``
+        :return: a list representation of raw_value
+    """
+    if isinstance(value_raw, list):
+        value = value_raw
+    else:
+        value = value_raw.split(delimiter)
+    return value

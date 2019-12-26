@@ -10,7 +10,8 @@ import pytest
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs
+    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
+    arg_to_boolean, csv_or_array_to_array
 
 try:
     from StringIO import StringIO
@@ -995,3 +996,21 @@ class TestReturnOutputs:
         assert outputs == results['Contents']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
+
+
+def test_arg_to_boolean():
+    assert arg_to_boolean('true') is True
+    assert arg_to_boolean('yes') is True
+    assert arg_to_boolean('TrUe') is True
+    assert arg_to_boolean(True) is True
+
+    assert arg_to_boolean('false') is False
+    assert arg_to_boolean('no') is False
+    assert arg_to_boolean(False) is False
+
+
+def test_csv_or_array_to_array():
+    assert csv_or_array_to_array([1,2,3]) == [1,2,3]
+    assert csv_or_array_to_array('x,y,z') == ['x', 'y', 'z']
+    assert csv_or_array_to_array('a;b;c', delimiter=';') == ['a', 'b', 'c']
+    assert csv_or_array_to_array('test') == ['test']
