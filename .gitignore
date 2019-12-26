@@ -20,4 +20,3 @@ Beta_Integrations/*/*_unified.yml
 conftest.py
 !Tests/scripts/dev_envs/pytest/conftest.py
 venv
-/Integrations/FeedTAXII/TAXII1_test.py

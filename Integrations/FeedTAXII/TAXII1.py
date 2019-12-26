@@ -34,7 +34,7 @@ class AddressObject(object):
         indicator = props.find('Address_Value')
         if indicator is None:
             return []
-        indicator = indicator.string.encode('ascii', 'replace')
+        indicator = indicator.string.encode('ascii', 'replace').decode()
 
         acategory = props.get('category', None)
         if acategory is None:
@@ -52,7 +52,7 @@ class AddressObject(object):
         elif acategory in ('ipv4-addr', 'ipv6-addr'):
             type_ = 'IP'
         elif acategory == 'e-mail':
-            type_ = 'email-addr'
+            type_ = 'Email'
         else:
             LOG('Unknown AddressObjectType category: {!r}'.format(acategory))
             return []
@@ -78,8 +78,8 @@ class DomainNameObject(object):
             return []
 
         return [{
-            'indicator': domain.string.encode('ascii', 'replace'),
-            'type': 'domain'
+            'indicator': domain.string.encode('ascii', 'replace').decode(),
+            'type': 'Domain'
         }]
 
 
@@ -127,15 +127,16 @@ class FileObject(object):
 
             result.append({
                 'indicator': value,
-                'type': htype
+                'htype': htype,
+                'type': 'File'
             })
 
         for r in result:
             for r2 in result:
-                if r['type'] == r2['type']:
+                if r['htype'] == r2['htype']:
                     continue
 
-                r['stix_file_{}'.format(r2['type'])] = r2['indicator']
+                r['stix_file_{}'.format(r2['htype'])] = r2['indicator']
 
             r.update(bprops)
 
@@ -152,7 +153,7 @@ class URIObject(object):
         if utype == 'URL':
             type_ = 'URL'
         elif utype == 'Domain Name':
-            type_ = 'domain'
+            type_ = 'Domain'
         else:
             return []
 
@@ -161,7 +162,7 @@ class URIObject(object):
             return []
 
         return [{
-            'indicator': url.string.encode('ascii', 'replace'),
+            'indicator': url.string.encode('utf8', 'replace').decode(),
             'type': type_
         }]
 
@@ -429,38 +430,47 @@ class Taxii11(object):
 
 
 class Client(object):
-    def __init__(self, params):
+    def __init__(self, insecure: bool = True, polling_timeout: int = 20, initial_interval: str = '1 day',
+                 discovery_service: str = None, poll_service: str = None, collection: str = None, api_key: str = None,
+                 api_header: str = None, credentials: dict = None, **kwargs):
+        """
+        TAXII Client
+        :param insecure: Set to true to ignore https certificate
+        :param polling_timeout: Time before send request timeout
+        :param initial_interval: Interval between each read from TAXII server
+        :param discovery_service: TAXII server discovery service
+        :param poll_service: TAXII poll service
+        :param collection: TAXII collection
+        :param api_key: TAXII server API key
+        :param api_header: TAXII server API key header
+        :param credentials: Username and password dict for basic auth
+        :param kwargs:
+        """
         self.discovered_poll_service = None
         self.last_taxii_run = demisto.getLastRun()
         if isinstance(self.last_taxii_run, dict):
             self.last_taxii_run = self.last_taxii_run.get('time')
         self.last_stix_package_ts = None
         self.last_taxii_content_ts = None
-        self.verify_cert = not params.get('insecure', True)
-        self.polling_timeout = params.get('polling_timeout')
+        self.verify_cert = not insecure
+        self.polling_timeout = polling_timeout
         try:
-            self.polling_timeout = int(self.polling_timeout) if self.polling_timeout else 20
+            self.polling_timeout = int(self.polling_timeout)
         except (ValueError, TypeError):
             raise TypeError('Please provide a valid integer for "Polling Timeout"')
-        self.initial_interval = params.get('initial_interval', '1d')
+        self.initial_interval = initial_interval
         self.initial_interval = interval_in_sec(self.initial_interval)
         if self.initial_interval is None:
             self.initial_interval = 86400
 
-        self.discovery_service = params.get('discovery_service', None)
-        self.poll_service = params.get('poll_service', None)
-        self.collection = params.get('collection', None)
-
-        self.confidence_map = {
-            'low': 40,
-            'medium': 60,
-            'high': 80
-        }
+        self.discovery_service = discovery_service
+        self.poll_service = poll_service
+        self.collection = collection
 
         # authentication
-        self.api_key = params.get('api_key', None)
-        self.api_header = params.get('api_header', None)
-        credentials = params.get('credentials')
+        self.api_key = api_key
+        self.api_header = api_header
+        credentials = credentials
         if not credentials:
             credentials = {}
         self.username = credentials.get('identifier', None)
@@ -714,7 +724,7 @@ class Client(object):
 
     def _incremental_poll_collection(self, poll_service, begin, end):
         cbegin = begin
-        dt = timedelta(seconds=86400)
+        dt = timedelta(days=10)
 
         self.last_stix_package_ts = None
         self.last_taxii_content_ts = None
@@ -746,8 +756,10 @@ class Client(object):
         demisto.debug('{} - poll service: {!r}'.format(INTEGRATION_NAME, discovered_poll_service))
 
         last_run = self.last_taxii_run
+
         if last_run is None:
             last_run = now - (self.initial_interval * 1000)
+            self.last_taxii_run = last_run
 
         begin = datetime.utcfromtimestamp(last_run / 1000)
         begin = begin.replace(microsecond=0, tzinfo=pytz.UTC)
@@ -758,7 +770,6 @@ class Client(object):
         # lower time precision - solve issues with certain taxii servers
         end = end.replace(second=0, microsecond=0)
         begin = begin.replace(second=0, microsecond=0)
-
         return self._incremental_poll_collection(
             discovered_poll_service,
             begin=begin,
@@ -788,7 +799,7 @@ def package_extract_properties(package):
         if 'tlpmarkingstructuretype' not in type_:
             continue
 
-        result['share_level'] = color.lower()  # TODO: confidence: https://www.us-cert.gov/tlp
+        result['share_level'] = color.lower()  # https://www.us-cert.gov/tlp
         break
 
     # decode title
@@ -839,19 +850,24 @@ def interval_in_sec(val):
         return None
     if isinstance(val, int):
         return val
+    range_split = val.split()
+    if len(range_split) != 2:
+        raise ValueError('Interval must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day.')
+    number = int(range_split[0])
+    range_unit = range_split[1].lower()
+    if range_unit not in ['minute', 'minutes', 'hour', 'hours', 'day', 'days']:
+        return_error('The unit of Interval is invalid. Must be minutes, hours or days')
 
     multipliers = {
-        '': 1,
-        'm': 60,
-        'h': 3600,
-        'd': 86400
+        'minute': 60,
+        'hour': 3600,
+        'day': 86400,
     }
+    for m, m_value in multipliers.items():
+        if m in range_unit:
+            return number * m_value
 
-    mo = re.match("([0-9]+)([dmh]?)", val)
-    if mo is None:
-        return None
-
-    return int(mo.group(1)) * multipliers[mo.group(2)]
+    return None
 
 
 # simple function to iterate list in batches
@@ -877,17 +893,20 @@ def fetch_indicators_command(client):
     for item in iterator:
         indicator = item.get('indicator')
         if indicator:
+            indicator = indicator
+            item['value'] = indicator
             indicators.append({
                 "value": indicator,
                 "type": item.get('type'),
                 "rawJSON": item,
             })
-    demisto.setLastRun({'time': client.last_taxii_run})
     return indicators
 
 
 def get_indicators_command(client, args):
-    limit = int(args.get('limit'))
+    limit = int(args.get('limit', 10))
+    client.initial_interval = interval_in_sec(args.get('initial_interval'))
+    client.last_taxii_run = None
     indicators_list = fetch_indicators_command(client)
     entry_result = camelize(indicators_list[:limit])
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
@@ -896,9 +915,9 @@ def get_indicators_command(client, args):
 
 def main():
     # Write configure here
-    params = demisto.params()
+    params = {k: v for k, v in demisto.params().items() if v is not None}
     handle_proxy()
-    client = Client(params)
+    client = Client(**params)
     command = demisto.command()
     demisto.info('Command being called is {command}'.format(command=command))
     # Switch case
@@ -912,6 +931,7 @@ def main():
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
+            demisto.setLastRun({'time': client.last_taxii_run})
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output, outputs, raw_response)

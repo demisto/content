@@ -1,8 +1,36 @@
 category: Threat Intelligence Feeds
 commonfields:
-  id: Taxii
+  id: TAXIIFeed
   version: -1
 configuration:
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- defaultvalue: F - Reliability cannot be judged
+  display: Reliability
+  name: feedInstanceReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- name: expiration
+  required: false
+  type: 17
+- defaultvalue: indicatorType
+  hidden: true
+  name: expirationPolicy
+  required: false
+  type: 0
+- hidden: true
+  name: expirationInterval
+  required: false
+  type: 1
 - defaultvalue: 'true'
   display: Trust any certificate (insecure)
   name: insecure
@@ -12,40 +40,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Reliability
-  name: feedInstanceReliability
-  defaultvalue: F - Reliability cannot be judged
-  type: 15
-  required: true
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-- display: ""
-  name: expiration
-  defaultvalue: ""
-  type: 17
-  required: false
-- display: ""
-  name: expirationPolicy
-  defaultvalue: indicatorType
-  type: 0
-  required: false
-  hidden: true
-- display: ""
-  name: expirationInterval
-  defaultvalue: ""
-  type: 1
-  required: false
-  hidden: true
-- display: Fetch indicators
-  name: feed
-  defaultvalue: ""
-  type: 8
-  required: false
 - display: Discovery Service
   name: discovery_service
   required: true
@@ -54,16 +48,16 @@ configuration:
   name: collection
   required: true
   type: 0
+- display: Subscription ID
+  name: subscription_id
+  required: false
+  type: 0
 - display: Username
   name: credentials
   required: false
   type: 9
-- display: subscription_id
-  name: subscription_id
-  required: false
-  type: 0
 - defaultvalue: '20'
-  display: Polling Timeout
+  display: Request Timeout
   name: polling_timeout
   required: false
   type: 0
@@ -71,19 +65,17 @@ configuration:
   name: poll_service
   required: false
   type: 0
-- additionalInfo: API key to be used with the API
-  display: API Key
+- display: API Key
   name: api_key
   required: false
   type: 0
-- additionalInfo: Name of the API header to save the API Key to
-  display: API Header Name
+- display: API Header Name
   name: api_header
   required: false
   type: 0
-- additionalInfo: Time range to fetch first indicators. <number><time unit>, e.g.
-    22m (minutes), 30h (hours), 42d (days)
-  defaultvalue: 1d
+- additionalInfo: <number> <time unit> of type minute/hour/day, e.g., 1 minute, 12
+    hours, 7 days
+  defaultvalue: 1 day
   display: First Fetch Time
   hidden: false
   name: initial_interval
@@ -91,31 +83,38 @@ configuration:
   type: 0
 description: Ingest indicator feeds from TAXII 1.x servers
 display: TAXII Feed
-name: Taxii
+name: TAXIIFeed
 script:
   commands:
-    - arguments:
-        - default: false
-          defaultValue: '50'
-          description: Limit results returned to the output.
-          isArray: false
-          name: limit
-          required: false
-          secret: false
-      deprecated: false
-      description: Get the feed indicators.
-      execution: false
-      name: get-indicators
-      outputs:
-        - contextPath: TAXII.Indicator.Value
-          description: Indicator value.
-          type: String
-        - contextPath: TAXII.Indicator.Type
-          description: Indicator type.
-          type: String
-        - contextPath: TAXII.Indicator.Rawjson
-          description: Indicator rawJSON value.
-          type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Limit results returned to the output.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1 day'
+      description: Limit how long back to look indicators for.
+      isArray: false
+      name: initial_interval
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the feed indicators.
+    execution: false
+    name: get-indicators
+    outputs:
+    - contextPath: TAXII.Indicator.Value
+      description: Indicator value.
+      type: String
+    - contextPath: TAXII.Indicator.Type
+      description: Indicator type.
+      type: String
+    - contextPath: TAXII.Indicator.Rawjson
+      description: Indicator rawJSON value.
+      type: Unknown
   dockerimage: devtesting/taxii:1.0.0.1577190883
   feed: true
   isfetch: false
@@ -125,3 +124,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+  - TAXII_Feed_Test
