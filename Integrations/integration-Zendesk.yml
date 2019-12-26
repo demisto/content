@@ -25,10 +25,10 @@ configuration:
   required: true
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ''
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
@@ -345,7 +345,7 @@ script:
                     email: args.email
                 }
         };
-        res = sendRequest('POST', 'users/create_or_update.json', JSON.stringify(body));
+        res = sendRequest('POST', 'users.json', JSON.stringify(body));
         md = 'Zendesk user added successfuly - ' + args.name + ' (' + args.email + ')\n';
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
     };
