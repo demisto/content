@@ -83,7 +83,7 @@ configuration:
   type: 1
   required: false
   hidden: true
-description: O365 Feed Integration
+description: O365 Feed Integration.
 display: O365 Feed
 name: FeedO365
 script:
