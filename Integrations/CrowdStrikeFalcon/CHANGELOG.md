@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.12.1] - 2019-12-25
   - Added the following real-time response API commands:
     - ***cs-falcon-run-command***
     - ***cs-falcon-upload-script***
