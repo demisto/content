@@ -3,28 +3,11 @@ commonfields:
   id: HTTPFeed
   version: -1
 configuration:
-- display: URL
-  name: url
-  required: true
-  type: 0
-- display: Username
-  name: credentials
-  required: false
-  type: 9
-- defaultvalue: 'true'
-  display: Trust any certificate (insecure)
-  name: insecure
-  required: false
+- display: Fetch indicators
+  name: feed
+  defaultvalue: ""
   type: 8
-- display: Use system proxy
-  name: proxy
   required: false
-  type: 8
-- defaultvalue: '20'
-  display: Request Timeout
-  name: polling_timeout
-  required: false
-  type: 0
 - display: Indicator Type
   name: indicator_type
   required: true
@@ -58,11 +41,28 @@ configuration:
   type: 1
   required: false
   hidden: true
-- display: Fetch indicators
-  name: feed
-  defaultvalue: ""
-  type: 8
+- display: URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
   required: false
+  type: 9
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '20'
+  display: Request Timeout
+  name: polling_timeout
+  required: false
+  type: 0
 - display: Ignore Regex
   name: ignore_regex
   required: false
@@ -70,6 +70,7 @@ configuration:
 - defaultvalue: HTTP
   name: source_name
   required: false
+  hidden: true
   type: 0
 - display: Encoding
   name: encoding
