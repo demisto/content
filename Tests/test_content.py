@@ -147,10 +147,10 @@ class TestsDataKeeper:
 
 
 def print_test_summary(tests_data_keeper, is_ami=True):
-    succeed_playbooks = tests_data_keeper.succeed_playbooks
+    succeed_playbooks = tests_data_keeper.succeeded_playbooks
     failed_playbooks = tests_data_keeper.failed_playbooks
     skipped_tests = tests_data_keeper.skipped_tests
-    unmocklable_integrations = tests_data_keeper.unmocklable_integrations
+    unmocklable_integrations = tests_data_keeper.unmockable_integrations
     skipped_integration = tests_data_keeper.skipped_integrations
     rerecorded_tests = tests_data_keeper.rerecorded_tests
     empty_files = tests_data_keeper.empty_files
@@ -664,7 +664,6 @@ def get_tests_records_from_names(tests_settings, tests_names_to_search):
 def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_tests_names, is_ami=True,
                     thread_index=0, prints_manager=None, tests_data_keeper=None):
     server = SERVER_URL.format(server_ip)
-    server_version = tests_settings.serverVersion
     server_numeric_version = tests_settings.serverNumericVersion
     start_message = "Executing tests with the server {} - and the server ip {}".format(server, server_ip)
     prints_manager.add_print_job(start_message, print, thread_index)
