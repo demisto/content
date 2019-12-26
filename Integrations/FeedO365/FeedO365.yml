@@ -1,4 +1,4 @@
-category: Vulnerability Management
+category: Threat Intelligence Feeds
 commonfields:
   id: FeedO365
   version: -1
@@ -66,19 +66,23 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- name: expiration
-  display: expiration
-  required: false
+- display: ""
+  name: expiration
+  defaultvalue: ""
   type: 17
-- defaultvalue: indicatorType
+  required: false
+- display: ""
   name: expirationPolicy
-  display: expirationPolicy
-  required: false
+  defaultvalue: indicatorType
   type: 0
-- name: expirationInterval
-  display: expirationInterval
   required: false
+  hidden: true
+- display: ""
+  name: expirationInterval
+  defaultvalue: ""
   type: 1
+  required: false
+  hidden: true
 description: O365 Feed Integration
 display: O365 Feed
 name: FeedO365
@@ -94,13 +98,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: ips
+      defaultValue: 'ips'
       description: Indicator type.
       isArray: false
       name: indicator_type
       predefined:
-      - ips
-      - ' urls'
+      - 'ips'
+      - 'urls'
       required: true
       secret: false
     deprecated: false
@@ -116,6 +120,7 @@ script:
       type: Unknown
   dockerimage: demisto/python3:3.7.5.4328
   isfetch: false
+  feed: true
   longRunning: false
   longRunningPort: false
   runonce: false

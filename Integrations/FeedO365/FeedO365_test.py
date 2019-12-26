@@ -1,6 +1,16 @@
 import pytest
-from FeedO365 import Client, get_indicators_command
+import requests_mock
+from FeedO365 import Client, get_indicators_command, fetch_indicators_command
 from test_data.feed_data import RESPOSNE_DATA
+
+
+def test_fetch_indicators_command():
+    with requests_mock.Mocker() as mock:
+        mock.get('https://endpoints.office.com', json=RESPOSNE_DATA)
+        client = Client(["https://endpoints.office.com"], indicator_type='ips')
+        indicators = fetch_indicators_command(client)
+        print(indicators)
+        assert len(indicators) == 4
 
 
 @pytest.mark.parametrize('command, args, response, length', [

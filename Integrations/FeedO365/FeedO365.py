@@ -42,16 +42,16 @@ class Client(BaseClient):
     Office 365 IP address and URL web service announcement:
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
     """
-    def __init__(self, url_list: List[str], indicator_type: str, insecure: bool = False, proxy: bool = False):
+    def __init__(self, url_list: List[str], indicator: str, insecure: bool = False, proxy: bool = False):
         """
         Implements class for O365 feeds.
         :param url_list: URL of the feed.
-        :param indicator_type: the JSON attribute to use as indicator. Can be ips or urls. Default: ips
+        :param indicator: the JSON attribute to use as indicator. Can be ips or urls. Default: ips
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         :param proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
         super().__init__(base_url=url_list, verify=insecure, proxy=proxy)
-        self.indicator_type = indicator_type
+        self.indicator = indicator
 
     def build_iterator(self) -> List:
         """Retrieves all non entries from the feed.
@@ -148,7 +148,7 @@ def get_indicators_command(client: Client, indicator_type: str) -> Tuple[str, Di
     return human_readable, {'O365.Indicator': indicators}, raw_response
 
 
-def fetch_indicators_command(client: Client) -> List[Dict]:
+def fetch_indicators_command(client: Client, *_) -> List[Dict]:
     """Fetches indicators from the feed to the indicators tab.
 
     Args:
@@ -157,7 +157,10 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
     Returns:
         Indicators.
     """
-    indicator_type = client.indicator_type
+    indicator_type = client.indicator
+    demisto.info('11111')
+    demisto.info(str(demisto.params()))
+    demisto.info(str(indicator_type))
     indicator_type_lower = indicator_type.lower()
     iterator = client.build_iterator()
     indicators = []
@@ -169,7 +172,7 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
                 raw_data['value'] = value
                 indicators.append({
                     "value": value,
-                    "type": indicator_type,
+                    "type": indicator_type[:-1],
                     "rawJSON": raw_data,
                 })
     return indicators
@@ -182,11 +185,11 @@ def main():
     unique_id = str(uuid.uuid4())
     prototype_list = argToList(demisto.params().get('url'))
     url_list = [f"{PROTOTYPE_TO_URL[prototype]}&ClientRequestId={unique_id}" for prototype in prototype_list]
-    indicator_type = demisto.params().get('indicator_type')
+    indicator = demisto.params().get('indicator')
     insecure = demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy') == 'true'
 
-    client = Client(url_list, indicator_type, insecure, proxy)
+    client = Client(url_list, indicator, insecure, proxy)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
