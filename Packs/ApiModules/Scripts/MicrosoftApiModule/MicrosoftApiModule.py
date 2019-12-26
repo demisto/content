@@ -1,8 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
-
 import requests
 import base64
 from typing import Dict, Tuple
