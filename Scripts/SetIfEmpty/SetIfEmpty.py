@@ -13,10 +13,10 @@ def get_value_to_set(args):
 
 
 def is_value_empty(value):
-    if hasattr(value, '__iter__') and len(value) == 1:
+    if hasattr(value, '__iter__') and len(value) == 1 and not isinstance(value, dict):
         value = value[0]
 
-    return value is None or value is "" or (hasattr(value, '__iter__') and len(value) == 0)
+    return value is None or value == "" or (hasattr(value, '__iter__') and len(value) == 0)
 
 
 def main(args):
