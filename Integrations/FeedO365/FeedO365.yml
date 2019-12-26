@@ -33,6 +33,18 @@ configuration:
   - o365-api.worldwide-skype
   required: true
   type: 16
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- defaultvalue: IPS
+  display: JSON attribute to use as an indicator
+  name: indicator
+  options:
+  - IPS
+  - URLS
+  required: true
+  type: 15
 - defaultvalue: ''
   display: Trust any certificate (not secure)
   name: insecure
@@ -67,18 +79,6 @@ configuration:
   display: expirationInterval
   required: false
   type: 1
-- display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
-- defaultvalue: IPS
-  display: JSON attribute to use as an indicator
-  name: indicator
-  options:
-  - IPS
-  - URLS
-  required: true
-  type: 15
 description: O365 Feed Integration
 display: O365 Feed
 name: FeedO365
