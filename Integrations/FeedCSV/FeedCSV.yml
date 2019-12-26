@@ -3,28 +3,10 @@ commonfields:
   id: CSVFeed
   version: -1
 configuration:
-- display: URL
-  name: url
-  required: true
-  type: 0
-- display: Username
-  name: credentials
-  required: false
-  type: 9
-- defaultvalue: 'true'
-  display: Trust any certificate (insecure)
-  name: insecure
+- display: Fetch indicators
+  name: feed
   required: false
   type: 8
-- display: Use system proxy
-  name: proxy
-  required: false
-  type: 8
-- display: Request Timeout
-  name: polling_timeout
-  required: true
-  type: 0
-  defaultvalue: 20
 - display: Indicator Type
   name: indicator_type
   required: true
@@ -53,10 +35,28 @@ configuration:
   required: false
   type: 1
   hidden: true
-- display: Fetch indicators
-  name: feed
+- display: URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
   required: false
   type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Request Timeout
+  name: polling_timeout
+  required: true
+  type: 0
+  defaultvalue: 20
 - display: Ignore Regex
   name: ignore_regex
   required: false
