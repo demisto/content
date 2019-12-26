@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 84da32d3-2769-407c-8c01-6593e0ca01ce
+    taskid: 7a2c8c3b-ce55-4853-815b-3c1aed3776f6
     type: start
     task:
-      id: 84da32d3-2769-407c-8c01-6593e0ca01ce
+      id: 7a2c8c3b-ce55-4853-815b-3c1aed3776f6
       version: -1
       name: ""
       iscommand: false
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 25
+          "x": 175,
+          "y": 235
         }
       }
     note: false
@@ -32,12 +32,12 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 4b2f4d73-2377-4906-80ea-a7fc0e2823a3
+    taskid: 523651f7-e3df-4ae3-84ee-b050e6d87e51
     type: regular
     task:
-      id: 4b2f4d73-2377-4906-80ea-a7fc0e2823a3
+      id: 523651f7-e3df-4ae3-84ee-b050e6d87e51
       version: -1
-      name: Create matter "playbook test matter 1"
+      name: Create matter "playbook test matter + date"
       description: Creates a new matter with the given name and description. The initial
         state is open, and the owner is the method caller. First, checks if a matter
         with the same name already exists.
@@ -58,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 370
+          "x": 175,
+          "y": 580
         }
       }
     note: false
@@ -67,10 +67,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: f43da280-2de9-4730-8c6c-9b621762efad
+    taskid: ea01ad04-66f7-4368-8dd5-aceff1d0915f
     type: regular
     task:
-      id: f43da280-2de9-4730-8c6c-9b621762efad
+      id: ea01ad04-66f7-4368-8dd5-aceff1d0915f
       version: -1
       name: Verify matter name
       description: |-
@@ -85,7 +85,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "4"
     scriptarguments:
       expectedValue: {}
       fields: {}
@@ -95,8 +95,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": -40,
+          "y": 755
         }
       }
     note: false
@@ -104,10 +104,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 90c1fb94-fb4c-4d95-84a3-9ad69986f3e8
+    taskid: 775067f5-bd39-45f8-800a-726e9d17b040
     type: regular
     task:
-      id: 90c1fb94-fb4c-4d95-84a3-9ad69986f3e8
+      id: 775067f5-bd39-45f8-800a-726e9d17b040
       version: -1
       name: Verify matter ID
       description: |-
@@ -122,7 +122,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "4"
     scriptarguments:
       expectedValue: {}
       fields: {}
@@ -132,8 +132,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 390,
+          "y": 755
         }
       }
     note: false
@@ -141,12 +141,12 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 87705353-bbc9-4167-8aaa-dcbd4b360dc0
+    taskid: 30af7658-f234-4001-826d-fe1ca93bb406
     type: regular
     task:
-      id: 87705353-bbc9-4167-8aaa-dcbd4b360dc0
+      id: 30af7658-f234-4001-826d-fe1ca93bb406
       version: -1
-      name: Get matter "playbook test matter 1"
+      name: Get created matter
       description: Checks if we can get the matter information of the matter that
         was previously created.
       script: '|||gvault-get-matter'
@@ -155,52 +155,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "15"
+      - "24"
     scriptarguments:
       matterID: {}
       matterName:
-        simple: playbook test matter 1
+        simple: ${GoogleVault.Matter.Name}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: bd8078f1-9941-439b-81cd-961c7e465da9
-    type: regular
-    task:
-      id: bd8078f1-9941-439b-81cd-961c7e465da9
-      version: -1
-      name: Delete Context
-      description: Deletes the current context to prevent interference of previous
-        data with the rest of the playbook.
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 720
+          "x": 175,
+          "y": 1000
         }
       }
     note: false
@@ -208,10 +174,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 7b9d062b-a95e-43ec-89f2-ce570fb5c457
+    taskid: 99e04b36-1f84-459c-881a-7acc99bad1e6
     type: regular
     task:
-      id: 7b9d062b-a95e-43ec-89f2-ce570fb5c457
+      id: 99e04b36-1f84-459c-881a-7acc99bad1e6
       version: -1
       name: Delete Context
       description: Deletes the current context to prevent interference of old remaining
@@ -235,74 +201,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: d82bf06f-3680-4c34-8605-73729b6f8728
-    type: regular
-    task:
-      id: d82bf06f-3680-4c34-8605-73729b6f8728
-      version: -1
-      name: Delete Context
-      description: Deleting context so that we can get an updated list of matters
-        later
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-      - "24"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1085
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: 40a9a9b8-043e-4b60-8a2e-95947b9f8030
-    type: regular
-    task:
-      id: 40a9a9b8-043e-4b60-8a2e-95947b9f8030
-      version: -1
-      name: Get "First matter" Matter
-      script: '|||gvault-get-matter'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      matterID: {}
-      matterName:
-        simple: First matter
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 335,
-          "y": 1310
+          "x": 175,
+          "y": 405
         }
       }
     note: false
@@ -310,10 +210,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 52d8916b-f246-4780-8ca3-22143791d171
+    taskid: cdc93238-db7e-41e9-8fab-b5993bc25342
     type: regular
     task:
-      id: 52d8916b-f246-4780-8ca3-22143791d171
+      id: cdc93238-db7e-41e9-8fab-b5993bc25342
       version: -1
       name: Create Hold For Account ID 116238185592796178843
       script: '|||gvault-create-hold'
@@ -341,8 +241,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 335,
-          "y": 1520
+          "x": 365,
+          "y": 1250
         }
       }
     note: false
@@ -350,10 +250,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 75905f67-d6d2-4647-8cb0-b69ccf5eee17
+    taskid: 3f3a515d-31df-4139-895d-185c846d48a7
     type: regular
     task:
-      id: 75905f67-d6d2-4647-8cb0-b69ccf5eee17
+      id: 3f3a515d-31df-4139-895d-185c846d48a7
       version: -1
       name: Add Held Account 103020731686044834269
       script: '|||gvault-add-heldAccount'
@@ -376,8 +276,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 335,
-          "y": 1695
+          "x": 365,
+          "y": 1425
         }
       }
     note: false
@@ -385,10 +285,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 27af4152-d2cd-4fc3-8671-872a17ced35b
+    taskid: 1ed908c5-1333-40db-85e6-3557529cee7c
     type: regular
     task:
-      id: 27af4152-d2cd-4fc3-8671-872a17ced35b
+      id: 1ed908c5-1333-40db-85e6-3557529cee7c
       version: -1
       name: Remove Held Account
       script: '|||gvault-remove-heldAccount'
@@ -410,8 +310,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 1870
+          "x": 580,
+          "y": 1600
         }
       }
     note: false
@@ -419,10 +319,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 627a0daa-3152-44e1-8b09-05f757209865
+    taskid: 51be6650-90cd-4d2a-80bd-084ec3da3a67
     type: regular
     task:
-      id: 627a0daa-3152-44e1-8b09-05f757209865
+      id: 51be6650-90cd-4d2a-80bd-084ec3da3a67
       version: -1
       name: 'Remove Held Account '
       script: '|||gvault-remove-heldAccount'
@@ -444,8 +344,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 120,
-          "y": 1870
+          "x": 150,
+          "y": 1600
         }
       }
     note: false
@@ -453,10 +353,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: be980b62-097d-4185-832b-c746134c12a6
+    taskid: b6b05a20-8cca-4548-8067-74980eb88073
     type: regular
     task:
-      id: be980b62-097d-4185-832b-c746134c12a6
+      id: b6b05a20-8cca-4548-8067-74980eb88073
       version: -1
       name: Delete Hold
       script: '|||gvault-delete-hold'
@@ -472,8 +372,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 335,
-          "y": 2045
+          "x": 365,
+          "y": 1775
         }
       }
     note: false
@@ -481,10 +381,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 2288d52e-6785-490d-828b-8baa950d5592
+    taskid: 4d4132f9-3850-4087-8324-fddef1bef647
     type: regular
     task:
-      id: 2288d52e-6785-490d-828b-8baa950d5592
+      id: 4d4132f9-3850-4087-8324-fddef1bef647
       version: -1
       name: Create mail export
       description: Creates a Google Vault Export in order to perform search actions
@@ -543,13 +443,12 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 4b923e23-6505-4f11-8642-50ebbd426f2c
+    taskid: e1414a9a-ab96-43c9-850a-5a5bb67c06a6
     type: regular
     task:
-      id: 4b923e23-6505-4f11-8642-50ebbd426f2c
+      id: e1414a9a-ab96-43c9-850a-5a5bb67c06a6
       version: -1
       name: Get Export Status
-      description: ""
       script: '|||gvault-export-status'
       type: regular
       iscommand: true
@@ -580,13 +479,12 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: dbc6b740-f0ab-4039-8556-af1b1e868444
+    taskid: 994b6c12-66ab-4948-89d5-64c6010e19da
     type: title
     task:
-      id: dbc6b740-f0ab-4039-8556-af1b1e868444
+      id: 994b6c12-66ab-4948-89d5-64c6010e19da
       version: -1
       name: Create Exports
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -606,10 +504,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 5fdff004-b194-4406-84bb-e6ce1a92a108
+    taskid: 25eea044-0b8d-4043-8d38-52ff6635b5a2
     type: regular
     task:
-      id: 5fdff004-b194-4406-84bb-e6ce1a92a108
+      id: 25eea044-0b8d-4043-8d38-52ff6635b5a2
       version: -1
       name: GeneratePassword
       description: "This function generates a password and allows various parameters
@@ -659,10 +557,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: 4c7d4623-3ca2-4840-854b-eb2c8f8289c1
+    taskid: a8e8eac0-1bdb-4d66-8a08-241deb99b5ff
     type: regular
     task:
-      id: 4c7d4623-3ca2-4840-854b-eb2c8f8289c1
+      id: a8e8eac0-1bdb-4d66-8a08-241deb99b5ff
       version: -1
       name: Create groups export
       description: Creates a Google Vault Export in order to perform search actions
@@ -713,10 +611,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: 2dc4b4c5-e275-454a-87fc-acd41e5cfe89
+    taskid: da60bf49-b9d1-49ca-8553-44ba6731f5c8
     type: regular
     task:
-      id: 2dc4b4c5-e275-454a-87fc-acd41e5cfe89
+      id: da60bf49-b9d1-49ca-8553-44ba6731f5c8
       version: -1
       name: Create drive export
       description: Creates a Google Vault Export in order to perform search actions
@@ -771,10 +669,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: 7607fc0f-a069-475c-85a0-0458475b4b57
+    taskid: e10fcf76-1065-4749-85c5-ab6c8ba83427
     type: regular
     task:
-      id: 7607fc0f-a069-475c-85a0-0458475b4b57
+      id: e10fcf76-1065-4749-85c5-ab6c8ba83427
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -801,10 +699,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: d9d6e9d6-fd75-4ec9-8b0b-2981bcaef9ea
+    taskid: 81936428-4c73-481e-8391-a7b2c2a2eeee
     type: regular
     task:
-      id: d9d6e9d6-fd75-4ec9-8b0b-2981bcaef9ea
+      id: 81936428-4c73-481e-8391-a7b2c2a2eeee
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -831,10 +729,10 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: 918b18b7-d7b5-44bc-8597-00adc1f1d4f0
+    taskid: 512b7482-750e-4fc7-8fca-98727a385f5b
     type: regular
     task:
-      id: 918b18b7-d7b5-44bc-8597-00adc1f1d4f0
+      id: 512b7482-750e-4fc7-8fca-98727a385f5b
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -861,10 +759,10 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: 2e9aeb92-6017-49e4-80c4-d0fa176fddf5
+    taskid: cab9c43c-a976-401a-8b6a-a549cfd1ac00
     type: title
     task:
-      id: 2e9aeb92-6017-49e4-80c4-d0fa176fddf5
+      id: cab9c43c-a976-401a-8b6a-a549cfd1ac00
       version: -1
       name: Get results
       type: title
@@ -888,10 +786,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: f579f39f-60ff-4317-8679-84f0adcce357
+    taskid: 0db67db1-dd85-408a-82b0-aefae9c53206
     type: regular
     task:
-      id: f579f39f-60ff-4317-8679-84f0adcce357
+      id: 0db67db1-dd85-408a-82b0-aefae9c53206
       version: -1
       name: Get Drive Results
       script: '|||gvault-get-drive-results'
@@ -918,10 +816,10 @@ tasks:
     ignoreworker: false
   "35":
     id: "35"
-    taskid: 6ea4c93e-cbf5-4b9b-8e15-9544b4cabd46
+    taskid: f71ffe38-295b-462e-8699-35507cf2101b
     type: regular
     task:
-      id: 6ea4c93e-cbf5-4b9b-8e15-9544b4cabd46
+      id: f71ffe38-295b-462e-8699-35507cf2101b
       version: -1
       name: Get Mail Results
       script: '|||gvault-get-mail-results'
@@ -948,10 +846,10 @@ tasks:
     ignoreworker: false
   "36":
     id: "36"
-    taskid: c0f97951-3694-43d2-8407-b163b4014f96
+    taskid: 35313cb5-5e21-461d-83a2-69ca7642c0c7
     type: regular
     task:
-      id: c0f97951-3694-43d2-8407-b163b4014f96
+      id: 35313cb5-5e21-461d-83a2-69ca7642c0c7
       version: -1
       name: Get Groups Results
       script: '|||gvault-get-groups-results'
@@ -978,10 +876,10 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: c9cc5151-8695-4dbc-8641-b747ed46efcd
+    taskid: 915007e1-564a-4d57-8680-9f6348405c3a
     type: regular
     task:
-      id: c9cc5151-8695-4dbc-8641-b747ed46efcd
+      id: 915007e1-564a-4d57-8680-9f6348405c3a
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1008,10 +906,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: edcf063d-92f3-4d43-8a5e-52a33b017f18
+    taskid: 170b2010-0d0f-46d5-8a05-5579d7f95bb0
     type: regular
     task:
-      id: edcf063d-92f3-4d43-8a5e-52a33b017f18
+      id: 170b2010-0d0f-46d5-8a05-5579d7f95bb0
       version: -1
       name: Create empty drive export
       description: Creates a Google Vault Export in order to perform search actions
@@ -1067,10 +965,10 @@ tasks:
     ignoreworker: false
   "39":
     id: "39"
-    taskid: d4525663-3fd2-453d-81c1-5884a38bfcb0
+    taskid: 71a21ce3-fb27-4067-870e-f0d5cba93fdd
     type: regular
     task:
-      id: d4525663-3fd2-453d-81c1-5884a38bfcb0
+      id: 71a21ce3-fb27-4067-870e-f0d5cba93fdd
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1097,10 +995,10 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: f6eda315-8bd5-4ca4-8dcd-08d29f6abdb5
+    taskid: 860ede8b-9225-4fdb-83ba-6eed8e945cb3
     type: regular
     task:
-      id: f6eda315-8bd5-4ca4-8dcd-08d29f6abdb5
+      id: 860ede8b-9225-4fdb-83ba-6eed8e945cb3
       version: -1
       name: Create empty groups export
       description: Creates a Google Vault Export in order to perform search actions
@@ -1152,10 +1050,10 @@ tasks:
     ignoreworker: false
   "41":
     id: "41"
-    taskid: b9f2b6b5-a5e5-4a51-8883-bd1e62bd0bf1
+    taskid: 4114c295-a2fc-4161-8849-83cb608b38b0
     type: regular
     task:
-      id: b9f2b6b5-a5e5-4a51-8883-bd1e62bd0bf1
+      id: 4114c295-a2fc-4161-8849-83cb608b38b0
       version: -1
       name: Create empty mail export
       description: Creates a Google Vault Export in order to perform search actions
@@ -1214,10 +1112,10 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: d157a502-9c91-4e1c-809d-6f5fb9a941a2
+    taskid: 7e687615-6807-41fa-870b-e9b7c822e591
     type: regular
     task:
-      id: d157a502-9c91-4e1c-809d-6f5fb9a941a2
+      id: 7e687615-6807-41fa-870b-e9b7c822e591
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1244,10 +1142,10 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: 3fb57c36-0cc1-42cc-8af2-f4c346591147
+    taskid: 5265a26a-c0e3-4b32-80a9-3a53ba5a4e99
     type: regular
     task:
-      id: 3fb57c36-0cc1-42cc-8af2-f4c346591147
+      id: 5265a26a-c0e3-4b32-80a9-3a53ba5a4e99
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -1277,10 +1175,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3620,
-        "width": 1780,
+        "height": 3410,
+        "width": 1810,
         "x": -850,
-        "y": 25
+        "y": 235
       }
     }
   }
