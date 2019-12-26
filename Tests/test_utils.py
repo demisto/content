@@ -23,8 +23,8 @@ class LOG_COLORS:
 
 
 # print srt in the given color
-def print_color(obj, color):
-    print('{}{}{}'.format(color, obj, LOG_COLORS.NATIVE))
+def print_color(str, color):
+    print(color + str + LOG_COLORS.NATIVE)
 
 
 def print_error(error_str):
@@ -342,3 +342,8 @@ def get_pack_name(file_path):
 
 def pack_name_to_path(pack_name):
     return os.path.join(PACKS_DIR, pack_name)
+
+
+
+playbook_id = "{0} - reason: {1}".format("google","'unsecure' parameter not working")
+print_warning('\t - ' + playbook_id)
