@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.12.1] - 2019-12-25
 Improved script implementation.
 Breaking changes: updated docker image
 

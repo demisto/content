@@ -512,9 +512,9 @@ script:
             'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incident
         }
         hr_incident = result_incident[:]
-        if hr_incident[0]['NistAttackVectors']:
+        if hr_incident[0].get('NistAttackVectors'):
             nist_vectors_str = ''
-            for vector in hr_incident[0]['NistAttackVectors']:
+            for vector in hr_incident[0].get('NistAttackVectors', []):
                 nist_vectors_str += vector + '\n'
             hr_incident[0]['NistAttackVectors'] = nist_vectors_str
         title = 'IBM Resilient Systems incident ID ' + incident_id
