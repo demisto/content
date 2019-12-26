@@ -470,7 +470,6 @@ class Client(object):
         # authentication
         self.api_key = api_key
         self.api_header = api_header
-        credentials = credentials
         if not credentials:
             credentials = {}
         self.username = credentials.get('identifier', None)
@@ -893,7 +892,6 @@ def fetch_indicators_command(client):
     for item in iterator:
         indicator = item.get('indicator')
         if indicator:
-            indicator = indicator
             item['value'] = indicator
             indicators.append({
                 "value": indicator,
