@@ -93,7 +93,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: donald@demisto.local
+              simple: remove_manager@demistodev.com
           ignorecase: true
     view: |-
       {

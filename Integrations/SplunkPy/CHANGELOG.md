@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.12.1] - 2019-12-25
 Enhanced the execution speed of the ***splunk-search*** command.
 
 ## [19.11.0] - 2019-11-12

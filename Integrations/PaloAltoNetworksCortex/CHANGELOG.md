@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.12.1] - 2019-12-25
 Fixed an issue with the fetch incidents function in which failed jobs raised an exception.
 
 ## [19.11.0] - 2019-11-12
