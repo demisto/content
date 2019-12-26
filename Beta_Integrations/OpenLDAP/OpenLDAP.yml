@@ -67,7 +67,7 @@ configuration:
     name: insecure
     required: false
     type: 8
-  - display: Use system proxy
+  - display: Use system proxy settings
     name: proxy
     required: false
     type: 8
@@ -79,39 +79,47 @@ script:
   commands:
     - arguments:
         - default: false
+          description: ''
           isArray: false
           name: username
           required: true
           secret: false
         - default: false
+          description: ''
           isArray: false
           name: password
           required: true
           secret: true
       deprecated: false
+      description: ''
       execution: true
       name: ad-authenticate
     - arguments:
         - default: false
           isArray: false
           name: specific-groups
+          description: ''
           required: false
           secret: false
       deprecated: false
+      description: ''
       execution: true
       name: ad-groups
     - arguments:
         - default: false
+          description: ''
           isArray: false
           name: username
           required: true
           secret: false
         - default: false
+          description: ''
           isArray: false
           name: password
           required: true
           secret: true
         - default: false
+          description: ''
           defaultValue: mail
           isArray: false
           name: attribute-mail
@@ -124,16 +132,19 @@ script:
           required: false
           secret: false
         - default: false
+          description: ''
           isArray: false
           name: attribute-name-pull
           required: false
           secret: false
         - default: false
+          description: ''
           isArray: false
           name: attribute-mail-pull
           required: false
           secret: false
       deprecated: false
+      description: ''
       execution: true
       name: ad-authenticate-and-roles
   dockerimage: demisto/ldap:1.0.0.4710
@@ -144,5 +155,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-  tests:
-    - No test
+tests:
+- No test
