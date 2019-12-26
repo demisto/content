@@ -812,6 +812,7 @@ def manage_tests(tests_settings):
         test_allocation = get_tests_allocation(number_of_instances, tests_settings.conf_path)
         current_thread_index = 0
         all_unmockable_tests_list = get_unmockable_tests(tests_settings)
+        threads_array = []
         for ami_instance_name, ami_instance_ip in instances_ips:
             current_instance = ami_instance_ip
             tests_allocation_for_instance = test_allocation[current_thread_index]
@@ -827,8 +828,11 @@ def manage_tests(tests_settings):
                 "tests_data_keeper": tests_data_keeper
             }
             t = threading.Thread(target=execute_testing, args=thread_args, kwargs=thread_kwargs)
+            threads_array.append(t)
             t.start()
             current_thread_index += 1
+        for t in threads_array:
+            t.join()
 
     else:
         for ami_instance_name, ami_instance_ip in instances_ips:
