@@ -1,0 +1,619 @@
+id: 6329be25-faf0-4fd5-8dc0-3aa5499cc10a
+version: 185
+name: Microsoft Intune Endpoints EDL
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6383f335-e064-4781-88db-03fa76b440c6
+    type: start
+    task:
+      id: 6383f335-e064-4781-88db-03fa76b440c6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 24fb1670-b404-4b6b-87f1-6a4a462fcf67
+    type: regular
+    task:
+      id: 24fb1670-b404-4b6b-87f1-6a4a462fcf67
+      version: -1
+      name: Assign Analyst
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assignBy:
+        simple: machine-learning
+      email: {}
+      roles: {}
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 9eb8534d-234b-42a2-8cc1-5466f38de9ea
+    type: condition
+    task:
+      id: 9eb8534d-234b-42a2-8cc1-5466f38de9ea
+      version: -1
+      name: Analyst Aproval Needed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "Yes":
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 04f54956-53d7-47c5-8ee5-e18f5a97c4a4
+    type: title
+    task:
+      id: 04f54956-53d7-47c5-8ee5-e18f5a97c4a4
+      version: -1
+      name: Update EDL's
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: efd4376a-cb50-46ab-876f-48821a321209
+    type: regular
+    task:
+      id: efd4376a-cb50-46ab-876f-48821a321209
+      version: -1
+      name: Review Microsoft Intune Website and Scraping Script
+      description: |-
+        Please check if there have been changes to the Microsoft Intune site that break the scraping script.
+
+        Microsoft Inute Site:
+        https://docs.microsoft.com/en-us/intune/fundamentals/intune-endpoints
+
+        Scraping Script:
+        GetMSFTIntuneEndpointsList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 1b6558f5-20fa-4e0f-89a1-7526d8081038
+    type: title
+    task:
+      id: 1b6558f5-20fa-4e0f-89a1-7526d8081038
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      type: title
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 64d6f84d-952b-4224-8f0b-55261a5533b5
+    type: regular
+    task:
+      id: 64d6f84d-952b-4224-8f0b-55261a5533b5
+      version: -1
+      name: Add indicatores to MineMeld
+      description: Add indicator to a miner.
+      script: Palo Alto Minemeld|||minemeld-add-to-miner
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      comment:
+        simple: MSFT-Domain
+      indicator:
+        complex:
+          root: MSFT
+          accessor: MSFTDomains
+      miner:
+        complex:
+          root: inputs.Miner
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 1645
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 193b811b-e50c-417e-80ca-4829dd222f70
+    type: regular
+    task:
+      id: 193b811b-e50c-417e-80ca-4829dd222f70
+      version: -1
+      name: Update list file on EDL Web Server
+      description: Updates a remote file with the contents of an internal list.
+      script: palo_alto_networks_pan_os_edl_management|||pan-os-edl-update-external-file
+      type: regular
+      iscommand: true
+      brand: palo_alto_networks_pan_os_edl_management
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      file_path:
+        complex:
+          root: inputs.EDL-Filename
+      list_name:
+        simple: msft-intune
+      verbose: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 1820
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 8bd256ec-30d6-48c8-876d-436e0ff5e7af
+    type: regular
+    task:
+      id: 8bd256ec-30d6-48c8-876d-436e0ff5e7af
+      version: -1
+      name: Update Demisto Internal List
+      description: commands.local.cmd.list.set
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      listData:
+        complex:
+          root: MSFT
+          accessor: MSFTDomains
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+          - operator: Stringify
+      listName:
+        simple: msft-intune
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 54cc718e-5e92-4474-8dda-5d4d4dc17bf4
+    type: title
+    task:
+      id: 54cc718e-5e92-4474-8dda-5d4d4dc17bf4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: a541969f-3ac4-4e84-8a85-efe56ffd2689
+    type: condition
+    task:
+      id: a541969f-3ac4-4e84-8a85-efe56ffd2689
+      version: -1
+      name: Is there an MSFT Intune Internal List?
+      description: Check if list exist in demisto lists.
+      scriptName: IsListExist
+      type: condition
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    scriptarguments:
+      listName:
+        simple: msft-intune
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Current EDL Entries
+      output:
+        complex:
+          root: lists
+          accessor: msft-intune
+  "23":
+    id: "23"
+    taskid: 0846b812-b488-4672-80db-94fa12d04460
+    type: condition
+    task:
+      id: 0846b812-b488-4672-80db-94fa12d04460
+      version: -1
+      name: Is MineMeld Integration enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Palo Alto Minemeld
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: d86acca7-098f-4cc6-854e-23a62a53658b
+    type: regular
+    task:
+      id: d86acca7-098f-4cc6-854e-23a62a53658b
+      version: -1
+      name: Create MSFT Intune Internal List
+      description: commands.local.cmd.list.create
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      listData:
+        simple: microsoft.com
+      listName:
+        simple: msft-intune
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: cbeffbe0-f33f-4f14-8246-75126865f761
+    type: condition
+    task:
+      id: cbeffbe0-f33f-4f14-8246-75126865f761
+      version: -1
+      name: Any difference between current EDL and Microsoft Intune site?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notIn
+          left:
+            value:
+              complex:
+                root: MSFT
+                accessor: MSFTDomains
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: lists
+                accessor: msft-intune
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: ', '
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 12b95766-dc5b-4c55-8578-4f4d74930a80
+    type: condition
+    task:
+      id: 12b95766-dc5b-4c55-8578-4f4d74930a80
+      version: -1
+      name: Confirm the list is not empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: lists
+                accessor: msft-intune
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 1645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 653ac25a-0e61-4bd0-8afe-182a738816ff
+    type: regular
+    task:
+      id: 653ac25a-0e61-4bd0-8afe-182a738816ff
+      version: -1
+      name: Scrape and parse entries from Microsoft Intune website
+      scriptName: GetMSFTIntuneEndpointsList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 535
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Scraped Entries
+      output:
+        complex:
+          root: MSFT
+          accessor: MSFTDomains
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+    - incidentfield: Total Current EDL
+      output:
+        complex:
+          root: MSFT
+          accessor: TotalCurrent
+    - incidentfield: Total Scraped
+      output:
+        complex:
+          root: MSFT
+          accessor: TotalNum
+    - incidentfield: EDL Delta Entries
+      output:
+        complex:
+          root: MSFT
+          accessor: DiffEntries
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+view: |-
+  {
+    "linkLabelsPosition": {
+      "23_8_yes": 0.6,
+      "26_7_#default#": 0.23,
+      "27_13_yes": 0.55,
+      "3_4_Yes": 0.4,
+      "3_5_#default#": 0.24
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2225,
+        "width": 1400,
+        "x": 480,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: Miner
+  value:
+    simple: localDB-hs
+  required: false
+  description: Specifiy the MineMeld Miner to update
+- key: EDL-Filename
+  value:
+    simple: msft-intune.txt
+  required: false
+  description: 'Specify the filename of the EDL text file on the Web Server (i.e.:
+    msft-intune.txt)'
+outputs: []

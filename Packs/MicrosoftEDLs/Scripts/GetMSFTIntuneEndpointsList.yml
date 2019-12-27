@@ -1,0 +1,56 @@
+commonfields:
+  id: 1c27aa55-1d8f-4195-84c8-953c39598f3c
+  version: 186
+name: GetMSFTIntuneEndpointsList
+script: |
+  import requests
+  import re
+  from bs4 import BeautifulSoup
+
+  requests.packages.urllib3.disable_warnings()
+
+
+  url = 'https://docs.microsoft.com/en-us/intune/fundamentals/intune-endpoints'
+  r = requests.get(url, verify=False, timeout=3).text
+
+  soup = BeautifulSoup(r, 'html.parser')
+
+  def subs(text):
+      patterns = (('comp', 'com p'), ('comm', 'com m'), ('comf', 'com f'), ('\*\.', ''), ('\n', ''))
+      for e in patterns:
+          text = re.sub(e[0], e[1], text)
+      return text
+
+  domains_list = sum([subs(cell.text).rstrip().split() for cell in soup.select("tbody tr td") if re.findall(r'microsoft\.(com|net)', cell.text)], [])
+
+  get_current_list = demisto.executeCommand("getList", {"listName":"msft-intune"})
+  current_list = get_current_list[0]['Contents'].split(", ")
+  num_current = len(current_list)
+  num_scraped = len(domains_list)
+  intersection = set(domains_list).difference(current_list)
+  num_changes = len(intersection)
+  delta = ",\n".join(intersection)
+
+  result_text = "Number of entries in current EDL: {} \n".format(num_current)
+  result_text += 'Number of scraped entries: {} \n\n'.format(str(num_scraped))
+  if num_changes > 0:
+      result_text += 'Entries that are different between the two lists: \n{}'.format(str(delta))
+  else:
+      result_text += 'Nothing has changed, no need to update the EDL\n'
+
+  demisto.results(
+      {
+          "Type": entryTypes["note"],
+          "ContentsFormat": formats["text"],
+          "Contents": result_text,
+          "EntryContext": {'MSFT': [{'MSFTDomains': [e for e in domains_list]}, {'TotalNum': num_scraped}, {'TotalCurrent': num_current}, {'DiffEntries': [e for e in intersection]}]}
+          }
+      )
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: webscrapper:latest
+runas: DBotWeakRole

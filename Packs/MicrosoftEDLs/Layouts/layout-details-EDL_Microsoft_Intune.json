@@ -1,0 +1,374 @@
+{
+	"TypeName": "EDL Microsoft Intune",
+	"kind": "details",
+	"layout": {
+		"TypeName": "",
+		"commitMessage": "",
+		"id": "EDL Microsoft Intune",
+		"kind": "details",
+		"modified": "2019-12-26T16:43:43.036340177+08:00",
+		"name": "",
+		"prevKind": "details",
+		"prevTypeId": "EDL Microsoft Intune",
+		"shouldCommit": false,
+		"sortValues": null,
+		"system": false,
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 24,
+								"id": "incident-type-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 24,
+								"id": "incident-severity-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 24,
+								"id": "incident-owner-field",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotsource",
+								"height": 24,
+								"id": "incident-source-field",
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 24,
+								"id": "incident-sourceBrand-field",
+								"index": 4,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 24,
+								"id": "incident-sourceInstance-field",
+								"index": 5,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 24,
+								"id": "incident-playbookId-field",
+								"index": 6,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 6
+					},
+					{
+						"h": 3,
+						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 1,
+						"y": 6
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 24,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 24,
+								"id": "incident-modified-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 24,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 24,
+								"id": "incident-created-field",
+								"index": 0,
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 24,
+								"id": "incident-closed-field",
+								"index": 1,
+								"startCol": 1
+							}
+						],
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 8
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 24,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 24,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 24,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"startCol": 0
+							}
+						],
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-613192d0-2558-11ea-9984-3f4c3c8ca57c",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 3,
+								"fieldId": "currentedlentries",
+								"height": 48,
+								"id": "6d513610-2558-11ea-9984-3f4c3c8ca57c",
+								"index": 0,
+								"listId": "caseinfoid-613192d0-2558-11ea-9984-3f4c3c8ca57c",
+								"startCol": 0
+							},
+							{
+								"endCol": 6,
+								"fieldId": "scrapedentires",
+								"height": 48,
+								"id": "cceb3100-2631-11ea-9de0-15277bb10106",
+								"index": 0,
+								"startCol": 3
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "scrapedentries",
+								"height": 24,
+								"id": "894b06f0-2631-11ea-9de0-15277bb10106",
+								"index": 1,
+								"listId": "caseinfoid-613192d0-2558-11ea-9984-3f4c3c8ca57c",
+								"startCol": 3
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "entriesfromlatestwebscrap",
+								"height": 24,
+								"id": "74214a70-2558-11ea-9984-3f4c3c8ca57c",
+								"index": 1,
+								"listId": "caseinfoid-613192d0-2558-11ea-9984-3f4c3c8ca57c",
+								"startCol": 3
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "EDL Information",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-c6cd48f0-255d-11ea-a1b8-ab5c0f2581e1",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "totalscrappededlentries",
+								"height": 24,
+								"id": "fae26a30-255d-11ea-a1b8-ab5c0f2581e1",
+								"index": 0,
+								"listId": "caseinfoid-c6cd48f0-255d-11ea-a1b8-ab5c0f2581e1",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "totalcurrentedlentries",
+								"height": 24,
+								"id": "10750740-255e-11ea-a1b8-ab5c0f2581e1",
+								"index": 0,
+								"listId": "caseinfoid-c6cd48f0-255d-11ea-a1b8-ab5c0f2581e1",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "totalcurrentedl",
+								"height": 24,
+								"id": "81c6bdc0-2631-11ea-9de0-15277bb10106",
+								"index": 0,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "totalscraped",
+								"height": 24,
+								"id": "a1d9a5f0-2631-11ea-9de0-15277bb10106",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "edldeltaentries",
+								"height": 24,
+								"id": "7beadf30-27b7-11ea-88e8-c9eb05ca7c85",
+								"index": 2,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "EDL Calculation",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		],
+		"typeId": "EDL Microsoft Intune",
+		"vcShouldIgnore": false,
+		"version": 19
+	},
+	"typeId": "EDL Microsoft Intune",
+	"version": -1
+}
