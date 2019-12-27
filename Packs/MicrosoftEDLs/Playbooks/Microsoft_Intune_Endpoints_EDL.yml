@@ -1,5 +1,5 @@
 id: 6329be25-faf0-4fd5-8dc0-3aa5499cc10a
-version: 185
+version: 188
 name: Microsoft Intune Endpoints EDL
 starttaskid: "0"
 tasks:
@@ -157,19 +157,50 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 1b6558f5-20fa-4e0f-89a1-7526d8081038
-    type: title
+    taskid: 4325aae4-2cf2-4a6e-8788-772aa5adaed1
+    type: regular
     task:
-      id: 1b6558f5-20fa-4e0f-89a1-7526d8081038
+      id: 4325aae4-2cf2-4a6e-8788-772aa5adaed1
       version: -1
       name: Close Investigation
       description: commands.local.cmd.close.inv
-      type: title
-      iscommand: false
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
       - "21"
+    scriptarguments:
+      action: {}
+      alertcategory: {}
+      alertdescription: {}
+      alertdescriptionextended: {}
+      alertseverity: {}
+      alerttype: {}
+      assetid: {}
+      attacktype: {}
+      autofocustaggroups: {}
+      closeNotes: {}
+      closeReason: {}
+      containerid: {}
+      containername: {}
+      containerscanresults: {}
+      emailclassification: {}
+      hostname: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      imageid: {}
+      imagename: {}
+      phishingsubtype: {}
+      process: {}
+      processid: {}
+      relatedalerts: {}
+      rulename: {}
+      twistlockindicator: {}
+      username: {}
     separatecontext: false
     view: |-
       {
@@ -606,13 +637,11 @@ view: |-
   }
 inputs:
 - key: Miner
-  value:
-    simple: localDB-hs
+  value: {}
   required: false
   description: Specifiy the MineMeld Miner to update
 - key: EDL-Filename
-  value:
-    simple: msft-intune.txt
+  value: {}
   required: false
   description: 'Specify the filename of the EDL text file on the Web Server (i.e.:
     msft-intune.txt)'
