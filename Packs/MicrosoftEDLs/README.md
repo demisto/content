@@ -22,6 +22,12 @@ The result of the scrape will clearly indicate when there have been relevant cha
 The playbook requires the following inputs:
 - MineMeld Miner name (based on localdb prototype). This is needed in order to update Minemeld when there are any changes
 - EDL Filename. Name of the file with the EDL entries hosted on the Web Server (i.e.: msft-intune.txt)
+- An internal Demisto list named "msft-intune" will be created (unless already existed). This name should not be changed
+
+
+
+
+
 
 
 
