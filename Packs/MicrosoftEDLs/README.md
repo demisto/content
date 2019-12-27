@@ -2,7 +2,7 @@ Most IT services are moving from on-premise solutions to cloud-based solutions. 
 
 This fact makes it very difficult for IT and Security teams to provide these services with an appropriate level of security and automation. Any changes in the HTML schema of the provider website, will break the automation and has the potential to cause serious disruption to the users and the business.
 
-One example of these providers is Microsoft, and an example of their services is Microsoft Intune.
+One example of these providers is Microsoft, and an example of their services is [Microsoft Intune] (https://en.wikipedia.org/wiki/Microsoft_Intune)
 
 The goal of this pack is to address this issue by automating the collection of endpoint data, performing validation and pushing the changes to an EDL that can be consumed automatically by security enforcement technologies (i.e.: NGFW).
 
