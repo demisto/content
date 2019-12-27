@@ -2397,11 +2397,11 @@ def arg_to_boolean(value):
         This takes the guesswork out and will return a bool, regardless of value's type.
         It will also return True for 'yes' and False for 'no'.
 
-        :type value: ``string|bool``
         :param value: the value to evaluate
+        :type value: ``string|bool``
 
-        :rtype: ``bool``
         :return: a boolean representatation of 'value'
+        :rtype: ``bool``
     """
     if isinstance(value, bool):
         return value
@@ -2423,14 +2423,14 @@ def csv_or_array_to_array(value_raw, delimiter=','):
         It will return a value of type list, regardless of value_raw's type.
         CSV's will split by argument 'delimiter'.
 
-        :type value_raw: ``string,list``
-        :param value_raw: the value to evaluate.
+        :param value_raw: the value to evaluate
+        :type value_raw: ``string|list``
 
+        :param delimiter: The delimiter to split value_raw, if it is a string
         :type delimiter: ``string``
-        :param delimiter: The delimiter to split value_raw, if it is a string.
 
-        :type: ``list``
         :return: a list representation of raw_value
+        :rtype: ``list``
     """
     if isinstance(value_raw, list):
         value = value_raw
