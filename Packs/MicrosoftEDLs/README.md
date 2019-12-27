@@ -14,5 +14,14 @@ Integrations:
 - Palo Alto Networks MineMeld
 
 Scripts:
-- GetMSFTIntuneEndpointsList
+- GetMSFTIntuneEndpointsList. This script scrapes Microsoft Intune endpoints website, compares the list of entries with the current list and provides the results of the analysis to the analyst.
+
+The result of the scrape will clearly indicate when there have been relevant changes to the website. In such case, the analyst will need to review the script and/or open a ticket with Demisto Support notifying the issue.
+
+## Playbook Instructions
+The playbook requires the following inputs:
+- MineMeld Miner name (based on localdb prototype). This is needed in order to update Minemeld when there are any changes
+- EDL Filename. Name of the file with the EDL entries hosted on the Web Server (i.e.: msft-intune.txt)
+
+
 
