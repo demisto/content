@@ -310,7 +310,7 @@ class Client(BaseClient):
                       dist_name=None,
                       ip_list=None,
                       group_name=None,
-                      platform_name=None,
+                      platform=None,
                       alias_name=None,
                       isolate=None,
                       hostname=None,
@@ -354,11 +354,11 @@ class Client(BaseClient):
                 'value': group_name
             })
 
-        if platform_name:
+        if platform:
             filters.append({
-                'field': 'platform_name',
+                'field': 'platform',
                 'operator': 'in',
-                'value': [platform_name]
+                'value': platform
             })
 
         if alias_name:
@@ -816,7 +816,7 @@ def get_endpoints_command(client, args):
     dist_name = argToList(args.get('dist_name'))
     ip_list = argToList(args.get('ip_list'))
     group_name = argToList(args.get('group_name'))
-    platform_name = argToList(args.get('platform_name'))
+    platform = argToList(args.get('platform'))
     alias_name = argToList(args.get('alias_name'))
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
@@ -842,7 +842,7 @@ def get_endpoints_command(client, args):
         dist_name=dist_name,
         ip_list=ip_list,
         group_name=group_name,
-        platform_name=platform_name,
+        platform=platform,
         alias_name=alias_name,
         isolate=isolate,
         hostname=hostname,

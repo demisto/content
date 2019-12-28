@@ -251,7 +251,7 @@ script:
       description: Number of users involved in the incident.
       type: number
     - contextPath: PaloAltoNetworksXDR.Incident.severity
-      description: Calculated severity of the incident (LOW, MEDIUM, HIGH).
+      description: Calculated severity of the incident (low, medium, high).
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.low_severity_alert_count
       description: Number of alerts with the severity LOW.
@@ -579,11 +579,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Platform name.
-        Examples: windows,linux
+      description: 'Platform: windows,linux,macos,android'
       isArray: true
-      name: platform_name
+      name: platform
       predefined:
       - windows
       - linux
