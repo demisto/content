@@ -19,59 +19,58 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Google Cloud Translate is an API-based translation service offered by
-  Google Cloud.
+description: A Google API cloud based translation service.
 display: Google Cloud Translate
 name: GoogleCloudTranslate
 script:
   commands:
   - deprecated: false
-    description: Supported Languages - list supported languages
+    description: Returns the list of supported two-letter ISO language codes.
     execution: false
     name: gct-supported-languages
     outputs:
     - contextPath: GoogleCloudTranslate.SupportedLanguages
-      description: List of supported languages
+      description: The list of supported two-letter ISO language codes.
       type: list
   - deprecated: false
-    description: Translate Text - translate text
+    description: Returns the translated text.
     execution: false
     name: gct-translate-text
     arguments:
     - default: false
-      description: The text to translate
+      description: The text to translate.
       isArray: false
       name: text
       required: true
       secret: false
     - default: false
-      description: "The target language (default: en)"
+      description: The two-letter ISO language code of the target language. Default is "en" (English).
       name: target
       required: false
       secret: false
     - default: false
-      description: "The source language (default: autodetect)"
+      description: The two-letter ISO language code of the source language. Default is "autodetect".
       name: source
       required: false
       secret: false
     outputs:
     - contextPath: GoogleCloudTranslate.TranslateText.ID
-      description: ID of the request
+      description: The ID of the request.
       type: String
     - contextPath: GoogleCloudTranslate.TranslateText.detected_language_code
-      description: "2 letter ISO language code of the detected text language, null if source argument is specified"
+      description: The detected two-letter ISO language code of the source language. Null, if no source argument is defined.
       type: String
     - contextPath: GoogleCloudTranslate.TranslateText.source_language_code
-      description: "Source language as specified in the source argument, null if source argument is not specified"
+      description: The source language as specified in the source argument. Null, if no source argument is defined.
       type: String
     - contextPath: GoogleCloudTranslate.TranslateText.target_language_code
-      description: "Target language as specified in the target argument"
+      description: The two letter ISO language code to which the text was translated.
       type: String
     - contextPath: GoogleCloudTranslate.TranslateText.text
-      description: "Text to be translated"
+      description: The source (original) text that was translated.
       type: String
     - contextPath: GoogleCloudTranslate.TranslateText.translated_text
-      description: "Translated text"
+      description: The translated text.
       type: String
   dockerimage: demisto/google-cloud-translate:1.0.0.5038
   isfetch: false
