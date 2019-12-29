@@ -8,7 +8,6 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 import json
 import requests
-from distutils.util import strtobool
 from urllib.parse import urlencode, urlparse, parse_qs
 from datetime import datetime
 
@@ -21,8 +20,6 @@ requests.packages.urllib3.disable_warnings()
 
 
 # Headers to be sent in requests
-SITE_ID = 'Demistodev.sharepoint.com,142d3744-cd7e-4f4c-bbe9-f3dae7ebdc83,9e632eea-5727-4232-b68a-ecd4b9a460d4'
-# TODO: this is only for debugging. remove it when test it in demisto.
 VERSION = 'v1.0'
 NETLOC = 'graph.microsoft.com'
 BASE_URL = f'https://{NETLOC}/{VERSION}'
@@ -89,7 +86,7 @@ class Client(BaseClient):
         self.tenant_id = demisto.params().get('tenant_id')  # TODO: remove to const
         self.enc_key = demisto.params().get('enc_key')
         self.host = demisto.params().get('host')
-        self.auto_url = f"https://login.microsoftonline.com/{demisto.params().get('tenant_id')}/oauth2/v2.0/token"  # TODO: remove to const
+        self.auto_url = f"https://login.microsoftonline.com/{demisto.params().get('tenant_id')}/oauth2/v2.0/token"
         self.tenant_domain = demisto.params().get('share_point_domain')
         self.access_token = self.get_access_token()
         self.headers = {'Authorization': f'Bearer {self.access_token}'}
@@ -101,32 +98,6 @@ class Client(BaseClient):
             self.access_token = self.get_access_token()
             res = self._http_request(*args, **kwargs)
         return res
-    # def _http_request(self, method, url, params=None, data=None, json=None, headers=None, files=None):
-    #     # A wrapper for requests lib to send our requests and handle requests and responses better
-    #     res = requests.request(
-    #         method,
-    #         url,
-    #         verify=self._verify,
-    #         params=params,
-    #         data=data,
-    #         json=json,
-    #         headers=headers,
-    #         files=files
-    #     )
-    #     if res.status_code == 401:
-    #         self.get_access_token()
-    #
-    #     # Handle error responses gracefully
-    #     if res.status_code not in {200, 204, 201}:
-    #         return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
-    #
-    #     if 'json' in res.headers.get('Content-Type'):
-    #         demisto.log(f'{res.json()}')
-    #         return res.json()
-    #     else:
-    #         demisto.log('Response content is not in JSON format.')  # in DELETE the response returns as text
-    #         return res.status_code
-
 
     def return_valid_access_token_if_exist_in_context(self):
         integration_context = demisto.getIntegrationContext()
@@ -171,7 +142,6 @@ class Client(BaseClient):
         else:
             return self.return_token_and_save_it_in_context(access_token_res)
 
-
     def convert_site_name_to_site_id(self, site_name):
         url = BASE_URL + '/sites/' + self.tenant_domain + f':/sites/{site_name}?'
         query_string = {"$select": "id"}
@@ -204,24 +174,6 @@ class Client(BaseClient):
             demisto.error('could not get site id')
         else:
             return documents_id
-
-    def find_documents_folder_id(self, site_id):
-        # access_token = self.get_access_token()  # TODO: put this in a class and access token will be an attribute
-        # # see premissions - why can't  I find sites
-        # headers = {'Authorization': f'Bearer {access_token}'}
-        # if not access_token:
-        #     return False  # TODO: return an error
-        # url = BASE_URL + '/sites/' + site_id + '/drive/root?'
-        # query_string = {"$select": "id"}
-        #
-        # res = self._http_request('GET', url, params=query_string, headers=headers)
-        # try:
-        #     documents_id = res['id']
-        # except KeyError:
-        #     demisto.error('could not get site id')
-        # else:
-        #     return documents_id
-        pass
 
     def get_item_id_by_path(self, path, site_id):
         # site_id = convert_site_name_to_site_id(site_name)  # TODO comment out
@@ -268,7 +220,6 @@ class Client(BaseClient):
         url = 'https://graph.microsoft.com/v1.0/sites/root'
         return self.http_call(method='GET', full_url=url, headers=self.headers, url_suffix='')
 
-
     def list_drives_in_site(self, site_id=None, limit=None, next_page_url=None):
         # check if got site_id or next_page args
         # if next_page -> do validation to next_page
@@ -278,7 +229,7 @@ class Client(BaseClient):
             raise DemistoException('Please pass at least one argument to this command: \n'
                                    'site_id: if you want to get all sites.\n'
                                    'limit: if you want to limit the number of command\'s results. \n'
-                                   'next_page_url: if you have used the limit argument')
+                                   'next_page_url: if you have used the limit argument.')
 
         if limit:
             params = urlencode({'$top': limit})
@@ -339,10 +290,9 @@ class Client(BaseClient):
         # send request
         url = BASE_URL + f'/{url}'
         self.headers['Content-Type'] = 'text/plain'  # request returned empty and can not decoded to json
-        if '' is self.http_call('DELETE', full_url=url, headers=self.headers, url_suffix='', resp_type='text'):
+        if '' == self.http_call('DELETE', full_url=url, headers=self.headers, url_suffix='', resp_type='text'):
             # resp_type='text' returned empty and can not decoded to json
             return f'\"{item_id}\" was deleted successfully'
-
 
     def upload_new_file(self, object_type, object_type_id, parent_id, file_name, entry_id):
         """
@@ -366,7 +316,6 @@ class Client(BaseClient):
             self.headers['Content-Type'] = 'application/octet-stream'
             return self.http_call('PUT', full_url=url, headers=self.headers, url_suffix='', data=file)
 
-
     def download_file(self, object_type, object_type_id, item_id):
         if object_type == 'drives':
             url = f'{object_type}/{object_type_id}/items/{item_id}/content'
@@ -380,7 +329,6 @@ class Client(BaseClient):
         # resp_type='' to stay empty because if response type is empty http_requests returned the raw response.
         # I need it because graph api returnes an response as text without content so res.text fails
         return res
-
 
     def create_new_folder(self, object_type, object_type_id, parent_id, folder_name):
         if object_type == 'drives':
@@ -408,32 +356,8 @@ def download_file_command(client, args):
     item_id = args.get('item_id')
 
     result = client.download_file(object_type=object_type, object_type_id=object_type_id, item_id=item_id)
-    screen_path = result.url
-
     stored_img = fileResult(item_id, result.content)
-
-    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
-
-    title = f'{INTEGRATION_NAME} - File information:'
-    # Creating human readable for War room
-    human_readable = tableToMarkdown(title, context_entry.content.decode("utf-8"), headers=item_id)
-
-    # context == output
-    context = {
-        f'{INTEGRATION_NAME}.File(val.ID && val.ID === obj.ID)': context_entry.content.decode("utf-8"),
-        'File': stored_img['File'],
-        'FileID': stored_img['FileID'],
-    }
-
-    return (
-        {
-            'Type': entryTypes['file'],
-            'ContentsFormat': formats['text'],
-            'File': stored_img['File'],
-            'FileID': stored_img['FileID'],
-            'Contents': ''
-        }
-    )
+    return stored_img
 
 
 def list_drive_children_command(client, args):
@@ -517,7 +441,6 @@ def replace_an_existing_file_command(client, args):
     object_type_id = args.get('object_type_id')
 
     result = client.replace_existing_file(object_type, object_type_id, item_id, entry_id)
-
     context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
 
     title = f'{INTEGRATION_NAME} - File information:'
@@ -526,7 +449,7 @@ def replace_an_existing_file_command(client, args):
 
     # context == output
     context = {
-        f'{INTEGRATION_NAME}.Document(val.ID && val.ID === obj.ID)': context_entry
+        f'{INTEGRATION_NAME}.File(val.id && val.ID === obj.id)': context_entry
     }
 
     return (
@@ -544,7 +467,6 @@ def upload_new_file_command(client, args):
     entry_id = args.get('entry_id')
 
     result = client.upload_new_file(object_type, object_type_id, parent_id, file_name, entry_id)
-
     context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
 
     title = f'{INTEGRATION_NAME} - File information:'
@@ -553,7 +475,7 @@ def upload_new_file_command(client, args):
 
     # context == output
     context = {
-        f'{INTEGRATION_NAME}.Document(val.ID && val.ID === obj.ID)': context_entry
+        f'{INTEGRATION_NAME}.File(val.id && val.id === obj.id)': context_entry
     }
 
     return (
@@ -655,6 +577,7 @@ def main():
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}', e)
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 

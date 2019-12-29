@@ -102,74 +102,52 @@ script:
     execution: false
     name: msgraph-upload-new-file
     outputs:
-      - contextPath: MsGraphFiles.ParentReference.driveId
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.ParentReference.driveType
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.ParentReference.id
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.ParentReference.path
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.CTag
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.LastModifiedDateTime
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.File.mimeType
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.File.hashes.quickXorHash
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.CreatedDateTime
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.WebUrl
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.@odata.context # disable-secrets-detection
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.FileSystemInfo.createdDateTime
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.FileSystemInfo.lastModifiedDateTime
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.LastModifiedBy.application.displayName
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.LastModifiedBy.application.id
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.ETag
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.CreatedBy.application.displayName
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.CreatedBy.application.id
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.@microsoft.graph.downloadUrl # disable-secrets-detection
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.Size
-        description: ''
-        type: Number
-      - contextPath: MsGraphFiles.Id
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.Name
-        description: ''
-        type: String
-      - contextPath: MsGraph.File
-        type: String
+    - contextPath: MsGraphFiles.UploadedFiles.ParentReference.driveId
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.ParentReference.driveType
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.ParentReference.id
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.ParentReference.path
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.CTag
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.LastModifiedDateTime
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.File.mimeType
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.File.hashes.quickXorHash
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.CreatedDateTime
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.WebUrl
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.odata.context
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.FileSystemInfo.createdDateTime
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.FileSystemInfo.lastModifiedDateTime
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.LastModifiedBy.displayName
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.LastModifiedBy.application.id
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.ETag
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.displayName
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.id
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.downloadUrl
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.Size
+      type: Number
+    - contextPath: MsGraphFiles.UploadedFiles.Id
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.Name
+      type: String
+    - contextPath: MsGraph.UploadedFiles.File
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -202,74 +180,52 @@ script:
     execution: false
     name: msgraph-replace-existing-file
     outputs:
-      - contextPath: MsGraphFiles.ParentReference.driveId
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.ParentReference.driveType
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.ParentReference.id
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.ParentReference.path
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.CTag
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.LastModifiedDateTime
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.File.mimeType
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.File.hashes.quickXorHash
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.CreatedDateTime
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.WebUrl
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.@odata.context # disable-secrets-detection
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.FileSystemInfo.createdDateTime
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.FileSystemInfo.lastModifiedDateTime
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.LastModifiedBy.application.displayName
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.LastModifiedBy.application.id
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.ETag
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.CreatedBy.application.displayName
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.CreatedBy.application.id
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.@microsoft.graph.downloadUrl # disable-secrets-detection
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.Size
-        description: ''
-        type: Number
-      - contextPath: MsGraphFiles.Id
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.Name
-        description: ''
-        type: String
-      - contextPath: MsGraphFiles.File
-        type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.ParentReference.driveId
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.ParentReference.driveType
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.ParentReference.id
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.ParentReference.path
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.CTag
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.LastModifiedDateTime
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.File.mimeType
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.File.hashes.quickXorHash
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.CreatedDateTime
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.WebUrl
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.odata.context
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.FileSystemInfo.createdDateTime
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.FileSystemInfo.lastModifiedDateTime
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.LastModifiedBy.displayName
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.LastModifiedBy.id
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.ETag
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.CreatedBy.displayName
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.CreatedBy.id
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.downloadUrl
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.Size
+      type: Number
+    - contextPath: MsGraphFiles.ReplacedFiles.Id
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.Name
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.File
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -303,6 +259,61 @@ script:
     outputs:
     - contextPath: MsGraph.Folder
       type: Unknown
+    - contextPath: Msgraphfiles.CreatedFolder.parentReference.driveId
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.parentReference.driveType
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.parentReference.id
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.parentReference.path
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.lastModifiedDateTime
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.name
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.createdDateTime
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.webUrl
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.odata.context
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.fileSystemInfo.createdDateTime
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.fileSystemInfo.lastModifiedDateTime
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.lastModifiedBy.displayName
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.lastModifiedBy.id
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.createdBy.displayName
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.createdBy.id
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.childCount
+      description: ''
+      type: Number
+    - contextPath: Msgraphfiles.CreatedFolder.id
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.CreatedFolder.size
+      description: ''
+      type: Number
+
   - arguments:
     - default: false
       isArray: false
@@ -325,6 +336,39 @@ script:
     outputs:
     - contextPath: MsGraph-Drives
       type: Unknown
+    - contextPath: Msgraphfiles.ListDrives.lastModifiedDateTime
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListDrives.description
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListDrives.createdDateTime
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListDrives.webUrl
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListDrives.createdBy.user.displayName
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListDrives.owner.group.displayName
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListDrives.owner.group.id
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListDrives.driveType
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListDrives.id
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListDrives.name
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListDrives.odata.context
+      description: ''
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -363,6 +407,69 @@ script:
     outputs:
     - contextPath: MsGraph.Drive.Children
       type: Unknown
+    - contextPath: MsGraphFiles.ListChildren.odata.nextLink
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.parentReference.driveId
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.parentReference.driveType
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.parentReference.id
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.parentReference.path
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.cTag
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.lastModifiedDateTime
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.name
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.createdDateTime
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.webUrl
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.fileSystemInfo.createdDateTime
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.fileSystemInfo.lastModifiedDateTime
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.lastModifiedBy.displayName
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.lastModifiedBy.id
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.eTag
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.createdBy.displayName
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.createdBy.id
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.folder.childCount
+      description: ''
+      type: Number
+    - contextPath: MsGraphFiles.ListChildren.id
+      description: ''
+      type: String
+    - contextPath: MsGraphFiles.ListChildren.size
+      description: ''
+      type: Number
+    - contextPath: MsGraphFiles.ListChildren.odata.context
+      description: ''
+      type: String
   - arguments:
     - default: false
       isArray: false
@@ -374,6 +481,40 @@ script:
     outputs:
     - contextPath: MsGraph.Sites
       type: String
+    - contextPath: Msgraphfiles.odata.context
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.odata.nextLink
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListSites.lastModifiedDateTime
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListSites.displayName
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListSites.description
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListSites.createdDateTime
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListSites.webUrl
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListSites.odata.context
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListSites.siteCollection.hostname
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListSites.id
+      description: ''
+      type: String
+    - contextPath: Msgraphfiles.ListSites.name
+      description: ''
+      type: String
+
   - arguments:
     - auto: PREDEFINED
       default: false
