@@ -1,5 +1,4 @@
 import demistomock as demisto
-from CommonServerPython import *
 
 from itertools import product
 
@@ -7,6 +6,7 @@ from itertools import product
 def parse_list(lst):
     lst = lst if isinstance(lst, list) else lst.split(',')
     return map(lambda _: str(_).strip(), lst)  # clean and convert to str for join
+
 
 def product_join(args):
     sep = args.get('join')
