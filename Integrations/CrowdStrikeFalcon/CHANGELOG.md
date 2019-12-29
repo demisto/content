@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [19.12.1] - 2019-12-25
   - Added the following real-time response API commands:
@@ -13,7 +13,7 @@
     - ***cs-falcon-get-file***
     - ***cs-falcon-list-files***
     - ***cs-falcon-run-script***
-  - Added the *email* argument to the ***cs-falcon-resolve-detection*** command, which can be used instead of the *ids* argument. 
+  - Added the *email* argument to the ***cs-falcon-resolve-detection*** command, which can be used instead of the *ids* argument.
 
 
 ## [19.12.0] - 2019-12-10
