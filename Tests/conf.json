@@ -1967,6 +1967,10 @@
         {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
+        },
+        {
+            "integrations": "GoogleCloudTranslate",
+            "playbookID": "GoogleCloudTranslate-Test"
         }
     ],
     "skipped_tests": {
