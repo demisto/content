@@ -120,9 +120,9 @@ class TestsDataKeeper:
         self.failed_playbooks = []
         self.skipped_tests = []
         self.skipped_integrations = []
-        self.unmockable_integrations = []
         self.rerecorded_tests = []
         self.empty_files = []
+        self.unmockable_integrations = {}
 
     def add_tests_data(self, succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration,
                        unmockable_integrations):
@@ -135,8 +135,8 @@ class TestsDataKeeper:
             self.skipped_tests.append(playbook)
         for playbook in skipped_integration:
             self.skipped_integrations.append(playbook)
-        for playbook in unmockable_integrations:
-            self.unmockable_integrations.append(playbook)
+        for playbook_id, reason in unmockable_integrations.items():
+            self.unmockable_integrations[playbook_id] = reason
 
     def add_proxy_related_test_data(self, proxy):
         # Using multiple appends and not extend since append is guaranteed to be thread safe
