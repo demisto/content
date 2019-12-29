@@ -937,6 +937,10 @@
             "playbookID": "TestHttpPlaybook"
         },
         {
+            "integrations": "HTTPFeed",
+            "playbookID": "HTTP_Feed_Test"
+        },
+        {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test"
         },
