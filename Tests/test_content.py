@@ -288,13 +288,13 @@ def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succee
                    test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
                    thread_index=0, prints_manager=None):
     proxy.set_tmp_folder()
-    proxy.start(playbook_id, record=True)
+    proxy.start(playbook_id, record=True, thread_index=thread_index, prints_manager=prints_manager)
     succeed = run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
                              test_options, slack, circle_ci, build_number, server_url, build_name, is_mock_run=True,
                              thread_index=thread_index, prints_manager=prints_manager)
     proxy.stop()
     if succeed:
-        proxy.move_mock_file_to_repo(playbook_id)
+        proxy.move_mock_file_to_repo(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
 
     proxy.set_repo_folder()
     return succeed
@@ -308,7 +308,7 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
     if proxy.has_mock_file(playbook_id):
         start_mock_message = '{} (Mock: Playback)'.format(start_message)
         prints_manager.add_print_job(start_mock_message, print, thread_index)
-        proxy.start(playbook_id)
+        proxy.start(playbook_id, thread_index=thread_index, prints_manager=prints_manager)
         # run test
         status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run=True,
                                           thread_index=thread_index, prints_manager=prints_manager)
@@ -751,7 +751,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
     if is_ami and build_name == 'master':
         updating_mocks_msg = "Pushing new/updated mock files to mock git repo."
-        print(updating_mocks_msg)
+        prints_manager.add_print_job(updating_mocks_msg, print, thread_index)
         ami.upload_mock_files(build_name, build_number)
 
 
