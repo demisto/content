@@ -1,5 +1,7 @@
 id: Detonate URL - WildFire-v2 - Test
 version: -1
+contentitemfields:
+  propagationLabels: []
 name: Detonate URL - WildFire-v2 - Test
 description: |-
   test pb of:
@@ -8,11 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7b08d14f-61ff-4c65-8e9a-34916f9a1c80
+    taskid: 9d96aea8-1fac-4828-8ed9-e6b0d5489627
     type: start
-    description: ""
     task:
-      id: 7b08d14f-61ff-4c65-8e9a-34916f9a1c80
+      id: 9d96aea8-1fac-4828-8ed9-e6b0d5489627
       version: -1
       name: ""
       iscommand: false
@@ -24,19 +25,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "1":
     id: "1"
-    taskid: f261928d-18cb-45f5-81f0-e7b3cbd725d0
+    taskid: 56faf649-c942-40d2-8cd5-9d8d1a3fcec9
     type: regular
     task:
-      id: f261928d-18cb-45f5-81f0-e7b3cbd725d0
+      id: 56faf649-c942-40d2-8cd5-9d8d1a3fcec9
       version: -1
       name: set remote file url
       description: Sets a value into the context with the given context key
@@ -57,21 +59,141 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 210
+          "x": 50,
+          "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
   "2":
     id: "2"
-    taskid: fe26ed3b-d9ac-4235-8f23-602d1e85ca48
+    taskid: 7f491fe6-aa7f-450c-8bda-797c9b140a20
     type: playbook
     task:
-      id: fe26ed3b-d9ac-4235-8f23-602d1e85ca48
+      id: 7f491fe6-aa7f-450c-8bda-797c9b140a20
       version: -1
       name: Detonate URL - WildFire-v2
+      description: |-
+        Detonate a webpage or a remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+        The detonation supports the following file types -
+        APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
+      playbookName: Detonate URL - WildFire-v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Interval:
+        simple: "1"
+      ReportFileType: {}
+      Timeout:
+        simple: "15"
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: 38798132-af2b-43ff-89f3-235c1ba139d3
+    type: regular
+    task:
+      id: 38798132-af2b-43ff-89f3-235c1ba139d3
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: "4"
+    taskid: d056018e-21c5-4faa-818b-446ea4a57abe
+    type: regular
+    task:
+      id: d056018e-21c5-4faa-818b-446ea4a57abe
+      version: -1
+      name: set webpage
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append: {}
+      key:
+        simple: URL.Data
+      value:
+        simple: www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "5":
+    id: "5"
+    taskid: c93d7dde-1c2b-479a-86c5-839b7048c775
+    type: playbook
+    task:
+      id: c93d7dde-1c2b-479a-86c5-839b7048c775
+      version: -1
+      name: Detonate URL - WildFire-v2
+      description: |-
+        Detonate a webpage or a remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+        The detonation supports the following file types -
+        APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
       playbookName: Detonate URL - WildFire-v2
       type: playbook
       iscommand: false
@@ -80,21 +202,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 390
+          "x": 50,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 435,
+        "height": 940,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
