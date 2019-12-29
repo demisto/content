@@ -616,16 +616,13 @@ def wildfire_get_report(file_hash):
         'format': 'xml',
         'hash': file_hash
     }
-    not_found = False
-    try:
-        json_res = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
-    except NotFoundError:
-        not_found = True
-
     # necessarily one of them as passed the hash_args_handler
     hash_type = 'SHA256' if sha256Regex.match(file_hash) else 'MD5'
     entry_context = {hash_type: file_hash}
-    if not_found:
+
+    try:
+        json_res = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
+    except NotFoundError:
         entry_context['Status'] = 'NotFound'
         demisto.results({
             'Type': entryTypes['note'],
