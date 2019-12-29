@@ -39,10 +39,10 @@ tasks:
       version: -1
       name: Get Indicators
       description: Get the feed indicators.
-      script: Taxii|||get-indicators
+      script: TAXIIFeed|||get-indicators
       type: regular
       iscommand: true
-      brand: Taxii
+      brand: TAXIIFeed
     nexttasks:
       '#none#':
       - "2"
