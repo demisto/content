@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+Fix for failed Convert file hash to corresponding hashes.
+Simplified playbook structure by removing set tasks.
 
 ## [19.11.1] - 2019-11-26
 #### New Playbook

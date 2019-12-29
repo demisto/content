@@ -10,6 +10,14 @@ def test_when_value_is_a_valid_string_should_return_value():
     assert expectedOutput == result
 
 
+def test_when_value_is_a_number_should_return_value():
+    number = 0
+    expectedOutput = number
+    result = get_value_to_set({'value': number, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'true'})
+
+    assert expectedOutput == result
+
+
 def test_when_value_is_a_dictionary_should_return_value():
     dictionary = {'name': "John", 'lastName': 'Doe'}
     expectedOutput = dictionary
@@ -65,6 +73,21 @@ def test_when_value_is_empty_array_and_apply_if_empty_is_true_should_return_defa
     result = get_value_to_set({'value': [""], 'defaultValue': 'defaultValue', 'applyIfEmpty': 'true'})
 
     assert expectedOutput == result
+
+
+def test_when_value_is_empty_dict():
+    value = {}
+    expectedOutput = "defaultValue"
+    result = get_value_to_set({'value': value, 'defaultValue': expectedOutput, 'applyIfEmpty': 'true'})
+
+    assert expectedOutput == result
+
+
+def test_when_value_is_dict():
+    value = {1: 2}
+    result = get_value_to_set({'value': value, 'defaultValue': "defaultValue", 'applyIfEmpty': 'true'})
+
+    assert result == value
 
 
 def test_when_value_is_empty_and_default_value_is_unicode():
