@@ -499,21 +499,25 @@
 	},
 	"transformer": {
 		"complex": {
-			"accessor": "",
+			"accessor": "policyId",
 			"filters": [],
-			"root": "id",
+			"root": "policy",
 			"transformers": [
 				{
 					"args": {
-						"dt": {
+						"convertTo": {
 							"isContext": false,
 							"value": {
 								"complex": null,
-								"simple": ".=\"Prisma Cloud\""
+								"simple": "Prisma Cloud"
 							}
+						},
+						"except": {
+							"isContext": false,
+							"value": null
 						}
 					},
-					"operator": "DT"
+					"operator": "ConvertAllExcept"
 				}
 			]
 		},
