@@ -3,7 +3,7 @@ commonfields:
   id: FeedOffice365
   version: -1
 configuration:
-- defaultvalue: worldwide
+- defaultvalue: Worldwide
   display: Regions
   name: regions
   options:
@@ -14,7 +14,7 @@ configuration:
   - Worldwide
   required: true
   type: 16
-- defaultvalue: any
+- defaultvalue: Any
   display: Services
   name: services
   options:

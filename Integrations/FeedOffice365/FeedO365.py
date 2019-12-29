@@ -7,33 +7,7 @@ from CommonServerPython import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
-INTEGRATION_NAME = 'Office365Feed'
-PROTOTYPE_TO_URL = {
-    "o365-api.china-common": "https://endpoints.office.com/endpoints/China?ServiceAreas=Common",
-    "o365-api.china-exchange": "https://endpoints.office.com/endpoints/China?ServiceAreas=Exchange",
-    "o365-api.china-sharepoint": "https://endpoints.office.com/endpoints/China?ServiceAreas=SharePoint",
-    "o365-api.china-skype": "https://endpoints.office.com/endpoints/China?ServiceAreas=Skype",
-    "o365-api.germany-any": "https://endpoints.office.com/endpoints/Germany?ServiceAreas=Any",
-    "o365-api.germany-common": "https://endpoints.office.com/endpoints/Germany?ServiceAreas=Common",
-    "o365-api.germany-exchange": "https://endpoints.office.com/endpoints/Germany?ServiceAreas=Exchange",
-    "o365-api.germany-sharepoint": "https://endpoints.office.com/endpoints/Germany?ServiceAreas=SharePoint",
-    "o365-api.germany-skype": "https://endpoints.office.com/endpoints/Germany?ServiceAreas=Skype",
-    "o365-api.usgovdod-any": "https://endpoints.office.com/endpoints/USGovDoD?ServiceAreas=Any",
-    "o365-api.usgovdod-common": "https://endpoints.office.com/endpoints/USGovDoD?ServiceAreas=Common",
-    "o365-api.usgovdod-exchange": "https://endpoints.office.com/endpoints/USGovDoD?ServiceAreas=Exchange",
-    "o365-api.usgovdod-sharepoint": "https://endpoints.office.com/endpoints/USGovDoD?ServiceAreas=SharePoint",
-    "o365-api.usgovdod-skype": "https://endpoints.office.com/endpoints/USGovDoD?ServiceAreas=Skype",
-    "o365-api.usgovgcchigh-any": "https://endpoints.office.com/endpoints/USGovGCCHigh?ServiceAreas=Any",
-    "o365-api.usgovgcchigh-common": "https://endpoints.office.com/endpoints/USGovGCCHigh?ServiceAreas=Common",
-    "o365-api.usgovgcchigh-exchange": "https://endpoints.office.com/endpoints/USGovGCCHigh?ServiceAreas=Exchange",
-    "o365-api.usgovgcchigh-sharepoint": "https://endpoints.office.com/endpoints/USGovGCCHigh?ServiceAreas=SharePoint",
-    "o365-api.usgovgcchigh-skype": "https://endpoints.office.com/endpoints/USGovGCCHigh?ServiceAreas=Skype",
-    "o365-api.worldwide-any": "https://endpoints.office.com/endpoints/Worldwide?ServiceAreas=Any",
-    "o365-api.worldwide-common": "https://endpoints.office.com/endpoints/Worldwide?ServiceAreas=Common",
-    "o365-api.worldwide-exchange": "https://endpoints.office.com/endpoints/Worldwide?ServiceAreas=Exchange",
-    "o365-api.worldwide-sharepoint": "https://endpoints.office.com/endpoints/Worldwide?ServiceAreas=SharePoint",
-    "o365-api.worldwide-skype": "https://endpoints.office.com/endpoints/Worldwide?ServiceAreas=Skype",
-}
+INTEGRATION_NAME = 'Office365'
 
 
 def build_urls_dict(regions_list: list, services_list: list, unique_id) -> Dict:
@@ -50,16 +24,16 @@ def build_urls_dict(regions_list: list, services_list: list, unique_id) -> Dict:
     urls_list = []
     for region in regions_list:
         for service in services_list:
-            if service == 'any':
+            if service == 'Any':
                 url = f'https://endpoints.office.com/endpoints/{region}?ClientRequestId={unique_id}'
             else:
                 url = f'https://endpoints.office.com/endpoints/{region}?ServiceAreas={service}'\
                       f'&ClientRequestId={unique_id}'
-            urls_list.extend = [{
+            urls_list.append({
                 'Region': region,
                 'Service': service,
                 'FeedURL': url
-            }]
+            })
     return urls_list
 
 
@@ -99,11 +73,14 @@ class Client(BaseClient):
                 )
                 response.raise_for_status()
                 data = response.json()
-                result.extend([i.update({
-                    "Region": region,
-                    "Service": service,
-                    "FeedURL": feed_url
-                }) for i in data if 'ips' in i or 'urls' in i])  # filter empty entries and add metadata
+                indicators = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries and add metadata]
+                for i in indicators:  # add relevant fields of sub feeds
+                    i.update({
+                        "Region": region,
+                        "Service": service,
+                        "FeedURL": feed_url
+                    })
+                result.extend(indicators)
             except requests.exceptions.SSLError as err:
                 demisto.debug(str(err))
                 raise Exception(f'Connection error in the API call to Office365.\n'
@@ -162,9 +139,13 @@ def get_indicators_command(client: Client, indicator_type: str) -> Tuple[str, Di
     indicator_type_lower = indicator_type.lower()
     indicators = []
     raw_response = []
+
+    # filter indicator_type specific entries
+    iterator = [i for i in iterator if indicator_type_lower in i or indicator_type_lower == 'both']
+
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    iterator = [i for i in iterator if indicator_type_lower in i]  # filter indicator_type specific entries
     iterator = iterator[:limit]
+
     for item in iterator:
         values = item.get(indicator_type_lower)
         raw_data = {'type': indicator_type[:-1]}
@@ -180,7 +161,7 @@ def get_indicators_command(client: Client, indicator_type: str) -> Tuple[str, Di
     human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
                                      headers=['Value', 'Type'], removeNull=True)
 
-    return human_readable, {'Office365.Indicator': indicators}, raw_response
+    return human_readable, {f'{INTEGRATION_NAME}.Indicator': indicators}, raw_response
 
 
 def fetch_indicators_command(client: Client, *_) -> List[Dict]:
