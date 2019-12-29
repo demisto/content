@@ -1029,15 +1029,15 @@ def query_file_command():
 
             created_time = None
             if 'createdTime' in simple_values:
-                created_time = timestamp_to_datestring(simple_values.get('createdTime').get('values')[0])
+                created_time = timestamp_to_datestring(simple_values.get('createdTime', {}).get('values')[0])
 
             modified_time = None
             if 'modifiedTime' in simple_values:
-                modified_time = timestamp_to_datestring(simple_values.get('modifiedTime').get('values')[0])
+                modified_time = timestamp_to_datestring(simple_values.get('modifiedTime', {}).get('values')[0])
 
             is_signed = None
             if 'isSigned' in simple_values:
-                is_signed = True if simple_values['isSigned']['values'][0] == 'true' else False
+                is_signed = True if simple_values.get('isSigned', {}).get('values')[0] == 'true' else False
 
             cybereason_outputs.append({
                 'Name': file_name,

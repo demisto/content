@@ -1,5 +1,6 @@
 import demistomock as demisto
 
+
 """ API RAW RESULTS """
 
 MACHINE_OUTPUTS = {
