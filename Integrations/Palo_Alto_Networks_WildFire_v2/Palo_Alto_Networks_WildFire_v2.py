@@ -625,12 +625,12 @@ def wildfire_get_report(file_hash):
     # necessarily one of them as passed the hash_args_handler
     hash_type = 'SHA256' if sha256Regex.match(file_hash) else 'MD5'
     entry_context = {hash_type: file_hash}
-    if not_found or not json_res:
+    if not_found:
         entry_context['Status'] = 'NotFound'
         demisto.results({
             'Type': entryTypes['note'],
             'HumanReadable': 'Report not found.',
-            'Contents': json_res,
+            'Contents': None,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['text'],
             'EntryContext': {
@@ -696,13 +696,8 @@ def wildfire_get_sample(file_hash):
         'apikey': TOKEN,
         'hash': file_hash
     }
-    not_found = False
-    result = None
-    try:
-        result = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
-    except NotFoundError:
-        not_found = True
-    return result, not_found
+    result = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
+    return result
 
 
 def wildfire_get_sample_command():
@@ -714,20 +709,18 @@ def wildfire_get_sample_command():
     inputs = hash_args_handler(sha256, md5)
 
     for element in inputs:
-        result, not_found = wildfire_get_sample(element)
-        if not_found:
+        try:
+            result = wildfire_get_sample(element)
+            headers_string = str(result.headers)
+            file_name = headers_string.split("filename=", 1)[1]
+            # will be saved under 'File' in the context, can be farther investigated.
+            file_entry = fileResult(file_name, result.content)
+            demisto.results(file_entry)
+        except NotFoundError:
             demisto.results(
                 'Sample was not found. '
                 'Please note that grayware and benign samples are available for 14 days only. '
                 'For more info contact your WildFire representative.')
-            sys.exit(0)
-        headers_string = str(result.headers)
-        file_name = headers_string.split("filename=", 1)[1]
-
-        # will be saved under 'File' in the context, can be farther investigated.
-        file_entry = fileResult(file_name, result.content)
-
-        demisto.results(file_entry)
 
 
 ''' EXECUTION '''
