@@ -791,6 +791,7 @@ def manage_tests(tests_settings):
     tests_settings.serverNumericVersion = get_and_print_server_numeric_version(tests_settings)
     instances_ips = get_instances_ips_and_names()
     is_nightly = tests_settings.nightly
+    server_version = tests_settings.serverVersion
     number_of_instances = len(instances_ips)
     prints_manager = ParallelPrintsManager(number_of_instances)
     tests_data_keeper = TestsDataKeeper()
@@ -813,6 +814,7 @@ def manage_tests(tests_settings):
         all_unmockable_tests_list = get_unmockable_tests(tests_settings)
         threads_array = []
         for ami_instance_name, ami_instance_ip in instances_ips:
+            if
             current_instance = ami_instance_ip
             tests_allocation_for_instance = test_allocation[current_thread_index]
 
