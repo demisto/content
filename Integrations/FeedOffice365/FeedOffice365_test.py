@@ -1,6 +1,6 @@
 import pytest
 import requests_mock
-from FeedO365 import Client, get_indicators_command, fetch_indicators_command
+from FeedOffice365 import Client, get_indicators_command, fetch_indicators_command
 from test_data.feed_data import RESPOSNE_DATA
 
 
@@ -27,9 +27,9 @@ def test_commands(command, args, response, length, mocker):
         "Region": 'Worldwide',
         "Service": 'Any'
     }
-    client = Client([url_dict], args.get('indicator'), False, False)
+    client = Client([url_dict], args, False, False)
     mocker.patch.object(client, 'build_iterator', return_value=response)
-    human_readable, indicators_ec, raw_json = command(client, args.get('indicator'))
+    human_readable, indicators_ec, raw_json = command(client, args)
     indicators_ec = indicators_ec.get('Office365.Indicator')
     assert len(indicators_ec) == length
     for indicator_json in indicators_ec:

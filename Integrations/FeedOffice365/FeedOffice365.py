@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any, Generator, Callable
 
 import uuid
 import urllib3
@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 INTEGRATION_NAME = 'Office365'
 
 
-def build_urls_dict(regions_list: list, services_list: list, unique_id) -> Dict:
+def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[Dict[str, Any]]:
     """Builds a URL dictionary with the relevant data for each Sub feed
 
     Args:
@@ -98,7 +98,7 @@ class Client(BaseClient):
         return result
 
 
-def batch_indicators(sequence, batch_size=1) -> List:
+def batch_indicators(sequence, batch_size=1) -> Generator:
     """Batch the indicators to balance load on the server.
 
     Args:
@@ -113,7 +113,7 @@ def batch_indicators(sequence, batch_size=1) -> List:
         yield sequence[i:min(i + batch_size, sequence_length)]
 
 
-def test_module(client: Client) -> Tuple[str, Dict, Dict]:
+def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -125,7 +125,7 @@ def test_module(client: Client) -> Tuple[str, Dict, Dict]:
     return 'ok', {}, {}
 
 
-def get_indicators_command(client: Client, indicator_type: str) -> Tuple[str, Dict, Dict]:
+def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Retrieves indicators from the feed to the war-room.
 
     Args:
@@ -135,6 +135,7 @@ def get_indicators_command(client: Client, indicator_type: str) -> Tuple[str, Di
     Returns:
         Outputs.
     """
+    indicator_type = str(args.get('indicator'))
     iterator = client.build_iterator()
     indicator_type_lower = indicator_type.lower()
     indicators = []
@@ -161,7 +162,7 @@ def get_indicators_command(client: Client, indicator_type: str) -> Tuple[str, Di
     human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
                                      headers=['Value', 'Type'], removeNull=True)
 
-    return human_readable, {f'{INTEGRATION_NAME}.Indicator': indicators}, raw_response
+    return human_readable, {f'{INTEGRATION_NAME}.Indicator': indicators}, {'raw_response': raw_response}
 
 
 def fetch_indicators_command(client: Client, *_) -> List[Dict]:
@@ -203,18 +204,17 @@ def main():
     insecure = demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy') == 'true'
 
-    client = Client(urls_list, indicator, insecure, proxy)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     try:
-        if command == 'test-module':
-            readable_output, outputs, raw_response = test_module(client)
-            return_outputs(readable_output, outputs, raw_response)
-
-        elif command == 'get-indicators':
-            readable_output, outputs, raw_response = get_indicators_command(client, demisto.args()['indicator_type'])
-            return_outputs(readable_output, outputs, raw_response)
+        client = Client(urls_list, indicator, insecure, proxy)
+        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+            'test-module': test_module,
+            'get-indicators': get_indicators_command
+        }
+        if command in commands:
+            return_outputs(*commands[command](client, demisto.args()))
 
         elif command == 'fetch-indicators':
             indicators = fetch_indicators_command(client)
