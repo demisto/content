@@ -40,6 +40,7 @@ class Client(BaseClient):
     """
     Client to use in the O365 Feed integration. Overrides BaseClient.
     Office 365 IP address and URL web service announcement:
+    https://docs.microsoft.com/en-us/office365/enterprise/managing-office-365-endpoints?redirectSourcePath=%252fen-us%252farticle%252fmanaging-office-365-endpoints-99cab9d4-ef59-4207-9f2b-3728eb46bf9a#webservice
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
     """
     def __init__(self, url_list: List[str], indicator: str, insecure: bool = False, proxy: bool = False):
