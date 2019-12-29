@@ -2067,6 +2067,7 @@
         }
     ],
     "skipped_tests": {
+        "Test-Shodan_v2": "Skipping to chack if related to shodan",
         "Endpoint Malware Investigation - Generic - Test": "Issue 20867",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
@@ -2164,7 +2165,6 @@
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tanium": "issue 15497",
         "Tenable.sc": "unstable instance",
-        "Tenable.io": "Issue 16115",
 
 
         "_comment": "~~~ OTHER ~~~",
