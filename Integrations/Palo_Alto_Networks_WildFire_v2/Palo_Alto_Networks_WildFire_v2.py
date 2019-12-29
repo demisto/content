@@ -697,6 +697,7 @@ def wildfire_get_sample(file_hash):
         'hash': file_hash
     }
     not_found = False
+    result = None
     try:
         result = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
     except NotFoundError:

@@ -169,7 +169,7 @@ tasks:
       key:
         simple: URL.Data
       value:
-        simple: www.google.com
+        simple: http://www.google.com
     separatecontext: false
     view: |-
       {
