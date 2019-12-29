@@ -40,8 +40,10 @@ class AddressObject(object):
         if acategory is None:
             try:
                 ip = IPAddress(indicator)
-                if ip.version in (4, 6):
+                if ip.version == 4:
                     type_ = 'IP'
+                elif ip.version == 6:
+                    type_ = 'IPv6'  # todo: depends on https://github.com/demisto/etc/issues/20662
                 else:
                     LOG('Unknown ip version: {!r}'.format(ip.version))
                     return []
@@ -49,8 +51,10 @@ class AddressObject(object):
             except Exception:
                 return []
 
-        elif acategory in ('ipv4-addr', 'ipv6-addr'):
+        elif acategory == 'ipv4-addr':
             type_ = 'IP'
+        elif acategory == 'ipv6-addr':
+            type_ = 'IPv6'  # todo: depends on https://github.com/demisto/etc/issues/20662
         elif acategory == 'e-mail':
             type_ = 'Email'
         else:
