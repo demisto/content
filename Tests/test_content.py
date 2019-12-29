@@ -814,24 +814,24 @@ def manage_tests(tests_settings):
         all_unmockable_tests_list = get_unmockable_tests(tests_settings)
         threads_array = []
         for ami_instance_name, ami_instance_ip in instances_ips:
-            if
-            current_instance = ami_instance_ip
-            tests_allocation_for_instance = test_allocation[current_thread_index]
+            if ami_instance_name == server_version:  # Only run tests for server master
+                current_instance = ami_instance_ip
+                tests_allocation_for_instance = test_allocation[current_thread_index]
 
-            unmockable_tests = [test for test in all_unmockable_tests_list if test in tests_allocation_for_instance]
-            mockable_tests = [test for test in tests_allocation_for_instance if test not in unmockable_tests]
-            print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
-            print("Starts tests with server url - https://{}".format(ami_instance_ip))
-            thread_args = (tests_settings, current_instance, mockable_tests, unmockable_tests)
-            thread_kwargs = {
-                "thread_index": current_thread_index,
-                "prints_manager": prints_manager,
-                "tests_data_keeper": tests_data_keeper
-            }
-            t = threading.Thread(target=execute_testing, args=thread_args, kwargs=thread_kwargs)
-            threads_array.append(t)
-            t.start()
-            current_thread_index += 1
+                unmockable_tests = [test for test in all_unmockable_tests_list if test in tests_allocation_for_instance]
+                mockable_tests = [test for test in tests_allocation_for_instance if test not in unmockable_tests]
+                print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
+                print("Starts tests with server url - https://{}".format(ami_instance_ip))
+                thread_args = (tests_settings, current_instance, mockable_tests, unmockable_tests)
+                thread_kwargs = {
+                    "thread_index": current_thread_index,
+                    "prints_manager": prints_manager,
+                    "tests_data_keeper": tests_data_keeper
+                }
+                t = threading.Thread(target=execute_testing, args=thread_args, kwargs=thread_kwargs)
+                threads_array.append(t)
+                t.start()
+                current_thread_index += 1
         for t in threads_array:
             t.join()
 
