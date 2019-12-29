@@ -261,14 +261,8 @@ if service is None:
     demisto.error("Could not connect to SplunkPy")
     sys.exit(0)
 
-# The command demisto.command() holds the command sent from the user.
-if demisto.command() == 'test-module':
-    # for app in service.apps:
-    #    print app.name
-    if len(service.jobs) >= 0:
-        demisto.results('ok')
-    sys.exit(0)
-if demisto.command() == 'splunk-search':
+
+def splunk_search_command():
     t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
     # When we run  a blocking search, it runs synchronously, and returns a job when it's finished.
@@ -283,20 +277,20 @@ if demisto.command() == 'splunk-search':
 
     query = demisto.args()['query']
     query = query.encode('utf-8')
-    if not query.startswith('search') and not query.startswith('Search')\
+    if not query.startswith('search') and not query.startswith('Search') \
             and not query.startswith('|'):
         query = 'search ' + query
 
-    res = []
+    res = []  # type: ignore
     dbot_scores = []  # type: List[Dict[str,Any]]
 
-    job = service.jobs.create(query, **kwargs_normalsearch)
+    job = service.jobs.create(query, **kwargs_normalsearch)  # type: ignore
     num_of_results = job["resultCount"]
 
     results_limit = int(demisto.args().get("event_limit", 100))
     if results_limit == 0:
         # In Splunk, a result limit of 0 means no limit.
-        results_limit = float("inf")
+        results_limit = float("inf")  # type: ignore
     batch_limit = int(demisto.args().get("batch_limit", 25000))
     offset = 0
     while len(res) < int(num_of_results) and len(res) < results_limit:
@@ -348,20 +342,24 @@ if demisto.command() == 'splunk-search':
     })
 
     sys.exit(0)
-if demisto.command() == 'splunk-job-create':
+
+
+def splunk_job_create_command():
     searchquery_normal = demisto.args()['query']
     if not searchquery_normal.startswith('search'):
         searchquery_normal = 'search ' + searchquery_normal
     kwargs_normalsearch = {"exec_mode": "normal"}
-    job = service.jobs.create(searchquery_normal, **kwargs_normalsearch)
+    job = service.jobs.create(searchquery_normal, **kwargs_normalsearch)  # type: ignore
 
     ec = {}
     ec['Splunk.Job'] = job.sid
     demisto.results({"Type": 1, "ContentsFormat": formats['text'],
                      "Contents": "Splunk Job created with SID: " + job.sid, "EntryContext": ec})
     sys.exit(0)
-if demisto.command() == 'splunk-results':
-    jobs = service.jobs
+
+
+def splunk_results_command():
+    jobs = service.jobs  # type: ignore
     found = False
     res = []
     for job in jobs:
@@ -379,7 +377,9 @@ if demisto.command() == 'splunk-results':
     if found:
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
     sys.exit(0)
-if demisto.command() == 'fetch-incidents':
+
+
+def fetch_incidents():
     lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
     search_offset = demisto.getLastRun().get('offset', 0)
 
@@ -412,7 +412,7 @@ if demisto.command() == 'fetch-incidents':
             field_trimmed = field.strip()
             searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
 
-    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
+    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
     for item in reader:
         inc = notable_to_incident(item)
@@ -425,8 +425,9 @@ if demisto.command() == 'fetch-incidents':
         demisto.setLastRun({'time': lastRun, 'offset': search_offset + FETCH_LIMIT})
     sys.exit(0)
 
-if demisto.command() == 'splunk-get-indexes':
-    indexes = service.indexes
+
+def splunk_get_indexes_command():
+    indexes = service.indexes  # type: ignore
     indexesNames = []
     for index in indexes:
         index_json = {'name': index.name, 'count': index["totalEventCount"]}
@@ -435,9 +436,10 @@ if demisto.command() == 'splunk-get-indexes':
                      'HumanReadable': tableToMarkdown("Splunk Indexes names", indexesNames, '')})
     sys.exit(0)
 
-if demisto.command() == 'splunk-submit-event':
+
+def splunk_submit_event_command():
     try:
-        index = service.indexes[demisto.args()['index']]
+        index = service.indexes[demisto.args()['index']]  # type: ignore
     except KeyError:
         demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
                          'Contents': "Found no Splunk index: " + demisto.args()['index']})
@@ -449,7 +451,8 @@ if demisto.command() == 'splunk-submit-event':
         demisto.results('Event was created in Splunk index: ' + r.name)
     sys.exit(0)
 
-if demisto.command() == 'splunk-notable-event-edit':
+
+def splunk_edit_notable_event_command():
     if not proxy:
         os.environ["HTTPS_PROXY"] = ""
         os.environ["HTTP_PROXY"] = ""
@@ -480,10 +483,39 @@ if demisto.command() == 'splunk-notable-event-edit':
         sys.exit(0)
     demisto.results('Splunk ES Notable events: ' + response_info['message'])
     sys.exit(0)
-if demisto.command() == 'splunk-parse-raw':
+
+
+def splunk_parse_raw_command():
     raw = demisto.args()['raw']
     rawDict = rawToDict(raw)
     ec = {}
     ec['Splunk.Raw.Parsed'] = rawDict
     demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(rawDict), "EntryContext": ec})
     sys.exit(0)
+
+
+def test_module():
+    if len(service.jobs) >= 0:  # type: ignore
+        demisto.results('ok')
+    sys.exit(0)
+
+
+# The command demisto.command() holds the command sent from the user.
+if demisto.command() == 'test-module':
+    test_module()
+if demisto.command() == 'splunk-search':
+    splunk_search_command()
+if demisto.command() == 'splunk-job-create':
+    splunk_job_create_command()
+if demisto.command() == 'splunk-results':
+    splunk_results_command()
+if demisto.command() == 'fetch-incidents':
+    fetch_incidents()
+if demisto.command() == 'splunk-get-indexes':
+    splunk_get_indexes_command()
+if demisto.command() == 'splunk-submit-event':
+    splunk_submit_event_command()
+if demisto.command() == 'splunk-notable-event-edit':
+    splunk_edit_notable_event_command()
+if demisto.command() == 'splunk-parse-raw':
+    splunk_parse_raw_command()
