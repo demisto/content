@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [19.12.1] - 2019-12-25
   - Added the following real-time response API commands:
@@ -13,8 +13,8 @@
     - ***cs-falcon-get-file***
     - ***cs-falcon-list-files***
     - ***cs-falcon-run-script***
-  - Added the *email* argument to the ***cs-falcon-resolve-detection*** command, which can be used instead of the *ids* argument. 
-  - Fixed an issue where ***fetch incidents*** would not take milliseconds into consideration when updating last fetch time. 
+  - Added the *email* argument to the ***cs-falcon-resolve-detection*** command, which can be used instead of the *ids* argument.
+  - Fixed an issue where ***fetch incidents*** would not take milliseconds into consideration when updating last fetch time.
 
 ## [19.12.0] - 2019-12-10
 Fixed an issue with ***fetch incidents*** which caused incident duplication.
