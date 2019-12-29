@@ -387,6 +387,11 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
+            if [ -n "${INSTANCE_TESTS}" ];
+              then
+                echo "Skipping - not running in INSTANCE_TESTS build"
+                exit 0
+            fi
             ./Tests/scripts/slack_notifier.sh ./env_results.json
           when: always
       - run:
