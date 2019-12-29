@@ -36,6 +36,33 @@ PROTOTYPE_TO_URL = {
 }
 
 
+def build_urls_dict(regions_list: list, services_list: list, unique_id) -> Dict:
+    """Builds a URL dictionary with the relevant data for each Sub feed
+
+    Args:
+        regions_list: list of regions
+        services_list: list of services
+        unique_id: unique uuid
+
+    Returns:
+        URLs sub feeds list
+    """
+    urls_list = []
+    for region in regions_list:
+        for service in services_list:
+            if service == 'any':
+                url = f'https://endpoints.office.com/endpoints/{region}?ClientRequestId={unique_id}'
+            else:
+                url = f'https://endpoints.office.com/endpoints/{region}?ServiceAreas={service}'\
+                      f'&ClientRequestId={unique_id}'
+            urls_list.extend = [{
+                'Region': region,
+                'Service': service,
+                'FeedURL': url
+            }]
+    return urls_list
+
+
 class Client(BaseClient):
     """
     Client to use in the Office365 Feed integration. Overrides BaseClient.
@@ -43,33 +70,40 @@ class Client(BaseClient):
     https://docs.microsoft.com/en-us/office365/enterprise/managing-office-365-endpoints?redirectSourcePath=%252fen-us%252farticle%252fmanaging-office-365-endpoints-99cab9d4-ef59-4207-9f2b-3728eb46bf9a#webservice
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
     """
-    def __init__(self, url_list: List[str], indicator: str, insecure: bool = False, proxy: bool = False):
+    def __init__(self, urls_list: list, indicator: str, insecure: bool = False, proxy: bool = False):
         """
         Implements class for Office365 feeds.
-        :param url_list: URL of the feed.
+        :param urls_list: List of url, regions and service of each sub feed.
         :param indicator: the JSON attribute to use as indicator. Can be ips or urls. Default: ips
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         :param proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
-        super().__init__(base_url=url_list, verify=insecure, proxy=proxy)
+        super().__init__(base_url=urls_list, verify=insecure, proxy=proxy)
         self.indicator = indicator
 
     def build_iterator(self) -> List:
-        """Retrieves all non entries from the feed.
+        """Retrieves all entries from the feed.
 
         Returns:
             A list of objects, containing the indicators.
         """
         result = []
-        for url in self._base_url:
+        for feed_obj in self._base_url:
+            feed_url = feed_obj.get('FeedURL')
+            region = feed_obj.get('Region')
+            service = feed_obj.get('Service')
             try:
                 response = requests.get(
-                    url=url,
+                    url=feed_url,
                     verify=self._verify
                 )
                 response.raise_for_status()
                 data = response.json()
-                result.extend([i for i in data if 'ips' in i or 'urls' in i])  # filter empty entries
+                result.extend([i.update({
+                    "Region": region,
+                    "Service": service,
+                    "FeedURL": feed_url
+                }) for i in data if 'ips' in i or 'urls' in i])  # filter empty entries and add metadata
             except requests.exceptions.SSLError as err:
                 demisto.debug(str(err))
                 raise Exception(f'Connection error in the API call to Office365.\n'
@@ -146,7 +180,7 @@ def get_indicators_command(client: Client, indicator_type: str) -> Tuple[str, Di
     human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
                                      headers=['Value', 'Type'], removeNull=True)
 
-    return human_readable, {'Ofice365.Indicator': indicators}, raw_response
+    return human_readable, {'Office365.Indicator': indicators}, raw_response
 
 
 def fetch_indicators_command(client: Client, *_) -> List[Dict]:
@@ -159,9 +193,6 @@ def fetch_indicators_command(client: Client, *_) -> List[Dict]:
         Indicators.
     """
     indicator_type = client.indicator
-    demisto.info('11111')
-    demisto.info(str(demisto.params()))
-    demisto.info(str(indicator_type))
     indicator_type_lower = indicator_type.lower()
     iterator = client.build_iterator()
     indicators = []
@@ -184,13 +215,14 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     unique_id = str(uuid.uuid4())
-    prototype_list = argToList(demisto.params().get('url'))
-    url_list = [f"{PROTOTYPE_TO_URL[prototype]}&ClientRequestId={unique_id}" for prototype in prototype_list]
+    regions_list = argToList(demisto.params().get('regions'))
+    services_list = argToList(demisto.params().get('services'))
+    urls_list = build_urls_dict(regions_list, services_list, unique_id)
     indicator = demisto.params().get('indicator')
     insecure = demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy') == 'true'
 
-    client = Client(url_list, indicator, insecure, proxy)
+    client = Client(urls_list, indicator, insecure, proxy)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
