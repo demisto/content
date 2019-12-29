@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: FeedO365
+  id: FeedOffice365
   version: -1
 configuration:
 - defaultvalue: https://endpoints.office.com/endpoints/worldwide?noipv6&ClientRequestId=b10c5ed1-bad1-445f-b386-b919946339a7
@@ -83,9 +83,9 @@ configuration:
   type: 1
   required: false
   hidden: true
-description: O365 Feed Integration.
-display: O365 Feed
-name: FeedO365
+description: Office365 Feed Integration.
+display: Office365 Feed
+name: FeedOffice365
 script:
   commands:
   - arguments:

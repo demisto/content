@@ -7,7 +7,7 @@ from CommonServerPython import *
 
 # disable insecure warnings
 urllib3.disable_warnings()
-INTEGRATION_NAME = 'O365Feed'
+INTEGRATION_NAME = 'Office365Feed'
 PROTOTYPE_TO_URL = {
     "o365-api.china-common": "https://endpoints.office.com/endpoints/China?ServiceAreas=Common",
     "o365-api.china-exchange": "https://endpoints.office.com/endpoints/China?ServiceAreas=Exchange",
@@ -38,14 +38,14 @@ PROTOTYPE_TO_URL = {
 
 class Client(BaseClient):
     """
-    Client to use in the O365 Feed integration. Overrides BaseClient.
+    Client to use in the Office365 Feed integration. Overrides BaseClient.
     Office 365 IP address and URL web service announcement:
     https://docs.microsoft.com/en-us/office365/enterprise/managing-office-365-endpoints?redirectSourcePath=%252fen-us%252farticle%252fmanaging-office-365-endpoints-99cab9d4-ef59-4207-9f2b-3728eb46bf9a#webservice
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
     """
     def __init__(self, url_list: List[str], indicator: str, insecure: bool = False, proxy: bool = False):
         """
-        Implements class for O365 feeds.
+        Implements class for Office365 feeds.
         :param url_list: URL of the feed.
         :param indicator: the JSON attribute to use as indicator. Can be ips or urls. Default: ips
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
@@ -72,15 +72,15 @@ class Client(BaseClient):
                 result.extend([i for i in data if 'ips' in i or 'urls' in i])  # filter empty entries
             except requests.exceptions.SSLError as err:
                 demisto.debug(str(err))
-                raise Exception(f'Connection error in the API call to O365.\n'
+                raise Exception(f'Connection error in the API call to Office365.\n'
                                 f'Check your not secure parameter.\n\n{err}')
             except requests.ConnectionError as err:
                 demisto.debug(str(err))
-                raise Exception(f'Connection error in the API call to O365.\n'
+                raise Exception(f'Connection error in the API call to Office365.\n'
                                 f'Check your Server URL parameter.\n\n{err}')
             except requests.exceptions.HTTPError as err:
                 demisto.debug(str(err))
-                raise Exception(f'Error issuing the request call to O365.\n\n{err}')
+                raise Exception(f'Error issuing the request call to Office365.\n\n{err}')
             except ValueError as err:
                 demisto.debug(str(err))
                 raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
@@ -143,10 +143,10 @@ def get_indicators_command(client: Client, indicator_type: str) -> Tuple[str, Di
                     'rawJSON': {"Value": value, "Type": indicator_type[:-1]}
                 })
                 raw_response.append(raw_data)
-    human_readable = tableToMarkdown('Indicators from O365 Feed:', indicators,
+    human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
                                      headers=['Value', 'Type'], removeNull=True)
 
-    return human_readable, {'O365.Indicator': indicators}, raw_response
+    return human_readable, {'Ofice365.Indicator': indicators}, raw_response
 
 
 def fetch_indicators_command(client: Client, *_) -> List[Dict]:
