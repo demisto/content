@@ -18,12 +18,20 @@ Scripts:
 
 The result of the scrape will clearly indicate when there have been relevant changes to the website. In such case, the analyst will need to review the script and/or open a ticket with Demisto Support notifying the issue.
 
+Docker Image:
+The script above requires a Docker image with Python3 and BeautifulSoup.
+
+This image can be created from the War Room with the following command:
+
+```
+/docker_image_create msft-scraper base=demisto/python3:3.7.5.4583 dependencies=bs4
+```
+
 ## Playbook Instructions
 The playbook requires the following inputs:
 - MineMeld Miner name (based on localdb prototype). This is needed in order to update Minemeld when there are any changes
 - EDL Filename. Name of the file with the EDL entries hosted on the Web Server (i.e.: msft-intune.txt)
 - An internal Demisto list named "msft-intune" will be created (unless already existed). This name should not be changed
-
 
 
 
