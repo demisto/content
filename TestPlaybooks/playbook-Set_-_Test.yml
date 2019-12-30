@@ -102,10 +102,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: a1c4418f-df6a-4464-81bc-4eea72a7dc63
+    taskid: 73c819ed-b4dd-4b21-8a79-7966dcc981fe
     type: condition
     task:
-      id: a1c4418f-df6a-4464-81bc-4eea72a7dc63
+      id: 73c819ed-b4dd-4b21-8a79-7966dcc981fe
       version: -1
       name: Was the number saved as string?
       type: condition
@@ -128,7 +128,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "90000000000000000"
+              simple: "14444444444444444444"
     view: |-
       {
         "position": {
@@ -197,10 +197,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 01f78ebd-7adb-448b-8078-afefe7608506
+    taskid: 614f707c-fb36-485a-8b84-30452496f1f6
     type: condition
     task:
-      id: 01f78ebd-7adb-448b-8078-afefe7608506
+      id: 614f707c-fb36-485a-8b84-30452496f1f6
       version: -1
       name: Was the number saved as number?
       type: condition
@@ -215,7 +215,7 @@ tasks:
     conditions:
     - label: "Yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isEqualNumber
           left:
             value:
               complex:
