@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [19.12.0] - 2019-12-10
+
+
 ## [19.12.1] - 2019-12-01
 #### New Playbook
 Use this playbook to query PANW PAN-OS for indicators. The playbook searches in each of the five log types according to the inputted indicators to search, such as ip addresses, urls/domains, file hashes (sha256).

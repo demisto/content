@@ -8,22 +8,19 @@ from slackclient import SlackClient
 
 from Tests.test_utils import str2bool, run_command, LOG_COLORS, print_color
 
-DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/uploads/2018/07/Demisto-Icon-Dark.png'
+DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
+                    'uploads/2018/07/Demisto-Icon-Dark.png'
 
 
 def http_request(url, params_dict=None):
-    try:
-        res = requests.request("GET",
-                               url,
-                               verify=True,
-                               params=params_dict,
-                               )
-        res.raise_for_status()
+    res = requests.request("GET",
+                           url,
+                           verify=True,
+                           params=params_dict,
+                           )
+    res.raise_for_status()
 
-        return res.json()
-
-    except Exception as e:
-        raise e
+    return res.json()
 
 
 def options_handler():
@@ -33,20 +30,25 @@ def options_handler():
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
     parser.add_argument('-c', '--circleci', help='The token for circleci', required=True)
-    parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address', required=True)
+    parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address',
+                        required=True)
     options = parser.parse_args()
 
     return options
 
 
 def get_attachments(build_url, env_results_file_name):
-    content_team_fields, content_fields, failed_tests, failed_unittests = get_fields()
-    color = 'good' if not (failed_tests or failed_unittests) else 'danger'
-    title = 'Content Build - Success' if not (failed_tests or failed_unittests) else 'Content Build - Failure'
-
     with open(env_results_file_name, 'r') as env_results_file_content:
         env_results = json.load(env_results_file_content)
-        instance_dns = env_results[0]['InstanceDNS']
+
+    # TODO: update this code after switching to parallel tests using multiple server for nightly build
+    instance_dns = env_results[0]['InstanceDNS']
+    role = env_results[0]['Role']
+    success_file_path = "./Tests/is_build_passed_{}.txt".format(role.replace(' ', ''))
+
+    content_team_fields, content_fields, _, _ = get_fields()
+    color = 'good' if os.path.isfile(success_file_path) else 'danger'
+    title = 'Content Build - Success' if os.path.isfile(success_file_path) else 'Content Build - Failure'
 
     content_team_attachment = [{
         'fallback': title,
@@ -144,17 +146,17 @@ def get_fields():
 
 def slack_notifier(build_url, slack_token, env_results_file_name):
     branches = run_command("git branch")
-    branch_name_reg = re.search("\* (.*)", branches)
+    branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
     if branch_name == 'master':
         print_color("Starting Slack notifications about nightly build", LOG_COLORS.GREEN)
         print("Extracting build status")
-        content_team_attachments, content_attachments = get_attachments(build_url, env_results_file_name)
+        content_team_attachments, _ = get_attachments(build_url, env_results_file_name)
 
         print("Sending Slack messages to #content-team")
-        sc = SlackClient(slack_token)
-        sc.api_call(
+        slack_client = SlackClient(slack_token)
+        slack_client.api_call(
             "chat.postMessage",
             channel="dmst-content-team",
             username="Content CircleCI",
@@ -163,14 +165,13 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
         )
 
 
-if __name__ == "__main__":
+def main():
     options = options_handler()
     if options.nightly:
         slack_notifier(options.url, options.slack, options.env_results_file_name)
     else:
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
-    os.remove('./Tests/failed_tests.txt')
-    os.remove('./Tests/failed_unittests.txt')
-    os.remove('./Tests/skipped_tests.txt')
-    os.remove('./Tests/skipped_integrations.txt')
+
+if __name__ == '__main__':
+    main()
