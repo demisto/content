@@ -15,14 +15,6 @@ configuration:
   name: password
   required: true
   type: 4
-- display: Trust any certificate (not secure)
-  name: unsecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - defaultvalue: All
   display: Incidents to fetch
   name: incident_status
@@ -41,6 +33,14 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Use the Securonix integration to manage incidents and watchlists.
 display: Securonix
 name: Securonix
@@ -688,6 +688,8 @@ script:
       name: action
       predefined:
       - CLAIM
+      - ASSIGN TO SECOPS
+      - ASSIGN TO ANALYST
       - RELEASE
       - COMMENT
       required: true
