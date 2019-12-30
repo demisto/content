@@ -2090,7 +2090,8 @@
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Manual test",
-        "PANW - Hunting and threat detection by indicator type Test": "Issue 20952"
+        "PANW - Hunting and threat detection by indicator type Test": "Issue 20952",
+        "ssdeepreputationtest": "Issue #20953"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
