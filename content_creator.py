@@ -34,7 +34,6 @@ CONTENT_DIRS = [
 ]
 
 PACKAGES_TO_SKIP = [
-    'HelloWorld',
     'HelloWorldSimple',
     'HelloWorldScript'
 ]
