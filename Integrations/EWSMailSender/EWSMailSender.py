@@ -1,3 +1,7 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
 from cStringIO import StringIO
 import logging
 import warnings
