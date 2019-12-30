@@ -728,7 +728,7 @@
         },
         {
             "playbookID": "Indicators reputation-.json Test",
-            "toversion": "5.5.0"
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "Test IP Indicator Fields",
