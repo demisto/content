@@ -9,7 +9,7 @@ def parse_list(lst):
             lst = str(lst[0]).split(',')
     else:
         lst = str(lst).split(',')
-    
+
     return map(lambda _: str(_).strip(), lst)  # clean and convert to str for join
 
 
