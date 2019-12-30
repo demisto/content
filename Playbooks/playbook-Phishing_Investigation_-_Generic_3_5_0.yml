@@ -425,7 +425,6 @@ tasks:
       id: 9ade9816-a5c9-4f6b-8252-351173d62086
       version: -1
       name: Extract Indicators - Generic
-      description: ""
       description: Extract indicators from input data
       playbookName: Extract Indicators - Generic
       type: playbook
@@ -515,3 +514,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+  - No tests

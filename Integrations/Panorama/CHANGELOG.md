@@ -1,5 +1,12 @@
 ## [Unreleased]
-  - Added support for get, create and edit custom URL categories objects, including using categories in PAN-OS v9.x and above.
+
+
+## [19.12.0] - 2019-12-10
+  - Fixed an issue where the status log queries that returned zero results did not update to *Completed*.
+  - Added 2 commands.
+    - ***panorama-get-url-category-from-cloud***
+    - ***panorama-get-url-category-from-host***
+  - Added support to get, create, and edit custom URL category objects, including using the categories attribute in PAN-OS v9.x and above.
 
 
 ## [19.11.1] - 2019-11-26
