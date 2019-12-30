@@ -65,3 +65,5 @@ args:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
+tests:
+  - Set - Test
