@@ -1,2 +1,2 @@
-Get email incident reports from the PhishLabs IOC service.
-Each incident includes email details with general information and indicators information with threat analysis.
+[Phishlabs Email Incident Response (EIR)](https://www.phishlabs.com/email-incident-response) is a solution that protects
+against threats that make it past your email security stack and into your employee inboxes.

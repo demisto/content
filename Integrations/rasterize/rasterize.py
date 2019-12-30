@@ -68,6 +68,24 @@ def init_driver(offline_mode=False):
     return driver
 
 
+def quit_driver_and_reap_children(driver):
+    """
+    Quits the driver's session and reaps all of child processes
+    :param driver: The driver
+    :return: None
+    """
+    demisto.debug(f'Quitting driver session: {driver.session_id}')
+    driver.quit()
+    try:
+        child_pid = 1
+        while child_pid:
+            # waiting for child process to terminate
+            child_pid = os.waitpid(-1, os.WNOHANG)[0]
+            demisto.debug(f'Child {str(child_pid)} was reaped successfully.')
+    except ChildProcessError:
+        pass
+
+
 def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time: int = 0, offline_mode: bool = False):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
@@ -105,6 +123,8 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
             return_error(err_msg) if WITH_ERRORS else return_warning(err_msg, exit=True)
         else:
             return_error(str(ex)) if WITH_ERRORS else return_warning(str(ex), exit=True)
+    finally:
+        quit_driver_and_reap_children(driver)
 
 
 def get_image(driver, width: int, height: int):
@@ -273,7 +293,7 @@ def rasterize_pdf_command():
         demisto.results(res)
 
 
-def test():
+def module_test():
     # setting up a mock email file
     with tempfile.NamedTemporaryFile('w+') as test_file:
         test_file.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
@@ -290,7 +310,7 @@ def test():
 def main():
     try:
         if demisto.command() == 'test-module':
-            test()
+            module_test()
 
         elif demisto.command() == 'rasterize-image':
             rasterize_image_command()
