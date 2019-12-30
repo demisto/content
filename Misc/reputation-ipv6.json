@@ -11,7 +11,7 @@
     "details": "IPv6",
     "prevDetails": "IPv6",
     "reputationScriptName": "",
-    "reputationCommand": "ip",
+    "reputationCommand": "",
     "enhancementScriptNames": "",
     "system": true,
     "locked": false,
@@ -20,7 +20,7 @@
     "updateAfter": 0,
     "mergeContext": false,
     "formatScript": "",
-    "contextPath": "IP(val.Address \u0026\u0026 val.Address === obj.Address)",
+    "contextPath": "IPv6(val.Address \u0026\u0026 val.Address === obj.Address)",
     "contextValue": "Address",
     "excludedBrands": [],
     "defaultMapping": {

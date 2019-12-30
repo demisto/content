@@ -20,7 +20,7 @@
     "updateAfter": 0,
     "mergeContext": false,
     "formatScript": "",
-    "contextPath": "IP(val.Address \u0026\u0026 val.Address === obj.Address)",
+    "contextPath": "IPv6CIDR(val.Address \u0026\u0026 val.Address === obj.Address)",
     "contextValue": "Address",
     "excludedBrands": [],
     "defaultMapping": {
