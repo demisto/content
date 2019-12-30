@@ -262,82 +262,124 @@ if service is None:
     sys.exit(0)
 
 
-def splunk_search_command():
+
+
+
+
+
+
+
+def build_search_kwargs(args):
     t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
-    # When we run  a blocking search, it runs synchronously, and returns a job when it's finished.
+
     kwargs_normalsearch = {
         "earliest_time": time_str,
-        "exec_mode": "blocking"
+        "exec_mode": "blocking"  # A blocking search runs synchronously, and returns a job when it's finished.
     }  # type: Dict[str,Any]
-    if demisto.get(demisto.args(), 'earliest_time'):
-        kwargs_normalsearch['earliest_time'] = demisto.args()['earliest_time']
-    if demisto.get(demisto.args(), 'latest_time'):
-        kwargs_normalsearch['latest_time'] = demisto.args()['latest_time']
+    if demisto.get(args, 'earliest_time'):
+        kwargs_normalsearch['earliest_time'] = args['earliest_time']
+    if demisto.get(args, 'latest_time'):
+        kwargs_normalsearch['latest_time'] = args['latest_time']
+    return kwargs_normalsearch
 
-    query = demisto.args()['query']
+
+def build_search_query(args):
+    query = args['query']
     query = query.encode('utf-8')
-    if not query.startswith('search') and not query.startswith('Search') \
-            and not query.startswith('|'):
+    if not query.startswith('search') and not query.startswith('Search') and not query.startswith('|'):
         query = 'search ' + query
+    return query
 
-    res = []  # type: ignore
-    dbot_scores = []  # type: List[Dict[str,Any]]
 
-    job = service.jobs.create(query, **kwargs_normalsearch)  # type: ignore
-    num_of_results = job["resultCount"]
+def create_entry_context(args, parsed_search_results, dbot_scores):
+    ec = {}
+
+    if args.get('update_context', "true") == "true":
+        ec['Splunk.Result'] = parsed_search_results
+        if len(dbot_scores) > 0:
+            ec['DBotScore'] = dbot_scores
+    return ec
+
+
+def build_search_human_readable(args, parsed_search_results):
+    headers = ""
+    if parsed_search_results and len(parsed_search_results) > 0:
+        if not isinstance(parsed_search_results[0], dict):
+            headers = "results"
+
+    human_readable = tableToMarkdown("Splunk Search results \n\n Results for query: {}".format(args['query']),
+                                     parsed_search_results, headers)
+    return human_readable
+
+
+def get_current_results_batch(search_job, batch_size, results_offset):
+    current_batch_kwargs = {
+        "count": batch_size,
+        "offset": results_offset
+    }
+
+    results_batch = search_job.results(**current_batch_kwargs)
+    return results_batch
+
+
+def parse_batch_of_results(current_batch_of_results, max_results_to_add):
+    parsed_batch_results = []
+    batch_dbot_scores = []
+    results_reader = results.ResultsReader(io.BufferedReader(ResponseReaderWrapper(current_batch_of_results)))
+    for item in results_reader:
+        if isinstance(item, results.Message):
+            if "Error in" in item.message:
+                raise ValueError(item.message)
+            parsed_batch_results.append(convert_to_str(item.message))
+
+        elif isinstance(item, dict):
+            if demisto.get(item, 'host'):
+                batch_dbot_scores.append({'Indicator': item['host'], 'Type': 'hostname',
+                                          'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True})
+            # Normal events are returned as dicts
+            parsed_batch_results.append(item)
+
+        if len(parsed_batch_results) >= max_results_to_add:
+            break
+    return parsed_batch_results, batch_dbot_scores
+
+
+def splunk_search_command():
+    args = demisto.args()
+
+    query = build_search_query(args)
+    search_kwargs = build_search_kwargs(args)
+    search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
+    num_of_results = search_job["resultCount"]
 
     results_limit = int(demisto.args().get("event_limit", 100))
     if results_limit == 0:
         # In Splunk, a result limit of 0 means no limit.
-        results_limit = float("inf")  # type: ignore
-    batch_limit = int(demisto.args().get("batch_limit", 25000))
-    offset = 0
-    while len(res) < int(num_of_results) and len(res) < results_limit:
-        batch_kwargs = {
-            "count": batch_limit,
-            "offset": offset
-        }
+        results_limit = float("inf")
+    batch_size = int(demisto.args().get("batch_limit", 25000))
 
-        results_batch = job.results(**batch_kwargs)
-        results_reader = results.ResultsReader(io.BufferedReader(ResponseReaderWrapper(results_batch)))
-        for item in results_reader:
-            if isinstance(item, results.Message):
-                if "Error in" in item.message:
-                    raise ValueError(item.message)
-                res.append(convert_to_str(item.message))
+    results_offset = 0
+    parsed_search_results = []  # type: List[Dict[str,Any]]
+    dbot_scores = []  # type: List[Dict[str,Any]]
 
-            elif isinstance(item, dict):
-                if demisto.get(item, 'host'):
-                    dbot_scores.append({'Indicator': item['host'], 'Type': 'hostname',
-                                        'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True})
-                # Normal events are returned as dicts
-                res.append(item)
+    while len(parsed_search_results) < int(num_of_results) and len(parsed_search_results) < results_limit:
+        current_batch_of_results = get_current_results_batch(search_job, batch_size, results_offset)
+        max_results_to_add = results_limit - len(parsed_search_results)
+        parsed_batch_results, batch_dbot_scores = parse_batch_of_results(current_batch_of_results, max_results_to_add)
+        parsed_search_results.extend(parsed_batch_results)
+        dbot_scores.extend(batch_dbot_scores)
 
-            if len(res) >= results_limit:
-                break
+        results_offset += batch_size
 
-        offset += batch_limit
+    entry_context = create_entry_context(args, parsed_search_results, dbot_scores)
+    human_readable = build_search_human_readable(args, parsed_search_results)
 
-    ec = {}
-
-    if demisto.args().get('update_context', "true") == "true":
-        ec['Splunk.Result'] = res
-        if len(dbot_scores) > 0:
-            ec['DBotScore'] = dbot_scores
-
-    headers = ""
-    if res and len(res) > 0:
-        if not isinstance(res[0], dict):
-            headers = "results"
-
-    human_readable = tableToMarkdown("Splunk Search results \n\n Results for query: {}".format(demisto.args()['query']),
-                                     res, headers)
     demisto.results({
         "Type": 1,
-        "Contents": res,
+        "Contents": parsed_search_results,
         "ContentsFormat": "json",
-        "EntryContext": ec,
+        "EntryContext": entry_context,
         "HumanReadable": human_readable
     })
 
