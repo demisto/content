@@ -1,5 +1,5 @@
 <p>
-Google Cloud Translate is an API-based translation service offered by Google Cloud.
+A Google API cloud based translation service.
 
 This integration was integrated and tested with version 2.0.0 of the Python Client of Google Cloud Translate API.
 </p>
@@ -54,12 +54,12 @@ In order to use this integration you need the following:
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
-  <li><a href="#gct-supported-languages" target="_self">Supported Languages - list supported languages: gct-supported-languages</a></li>
-  <li><a href="#gct-translate-text" target="_self">Translate Text - translate text: gct-translate-text</a></li>
+  <li><a href="#gct-supported-languages" target="_self">Returns the list of supported two-letter ISO language codes: gct-supported-languages</a></li>
+  <li><a href="#gct-translate-text" target="_self">Returns the translated text: gct-translate-text</a></li>
 </ol>
 <h3 id="gct-supported-languages">1. gct-supported-languages</h3>
 <hr>
-<p>Supported Languages - list supported languages</p>
+<p>Returns the list of supported two-letter ISO language codes.</p>
 <h5>Base Command</h5>
 <p>
   <code>gct-supported-languages</code>
@@ -87,7 +87,7 @@ There are no input arguments for this command.
     <tr>
       <td>GoogleCloudTranslate.SupportedLanguages</td>
       <td>Unknown</td>
-      <td>List of supported languages</td>
+      <td>The list of supported two-letter ISO language codes.</td>
     </tr>
   </tbody>
 </table>
@@ -136,7 +136,7 @@ Languages: af, am, ar, az, be, bg, bn, bs, ca, ceb, co, cs, cy, da, de, el, en, 
 
 <h3 id="gct-translate-text">2. gct-translate-text</h3>
 <hr>
-<p>Translate Text - translate text</p>
+<p>Returns the translated text.</p>
 <h5>Base Command</h5>
 <p>
   <code>gct-translate-text text="hello world" target="hr"</code>
@@ -160,17 +160,17 @@ Languages: af, am, ar, az, be, bg, bn, bs, ca, ceb, co, cs, cy, da, de, el, en, 
   <tbody>
     <tr>
       <td>text</td>
-      <td>The text to translate</td>
+      <td>The text to translate.</td>
       <td>Required</td>
     </tr>
     <tr>
       <td>target</td>
-      <td>The target language (default: en)</td>
+      <td>The two-letter ISO language code of the target language. Default is "en" (English).</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>source</td>
-      <td>The source language (default: autodetect)</td>
+      <td>The two-letter ISO language code of the source language. Default is "autodetect".</td>
       <td>Optional</td>
     </tr>
   </tbody>
@@ -196,32 +196,32 @@ Languages: af, am, ar, az, be, bg, bn, bs, ca, ceb, co, cs, cy, da, de, el, en, 
     <tr>
       <td>GoogleCloudTranslate.TranslateText.ID</td>
       <td>String</td>
-      <td>ID of the request</td>
+      <td>The ID of the request.</td>
     </tr>
     <tr>
       <td>GoogleCloudTranslate.TranslateText.detected_language_code</td>
       <td>String</td>
-      <td>2 letter ISO language code of the detected text language, null if source argument is specified</td>
+      <td>The detected two-letter ISO language code of the source language. Null, if no source argument is defined.</td>
     </tr>
     <tr>
       <td>GoogleCloudTranslate.TranslateText.source_language_code</td>
       <td>String</td>
-      <td>Source language as specified in the source argument, null if source argument is not specified</td>
+      <td>The source language as specified in the source argument. Null, if no source argument is defined.</td>
     </tr>
     <tr>
       <td>GoogleCloudTranslate.TranslateText.target_language_code</td>
       <td>String</td>
-      <td>Target language as specified in the target argument</td>
+      <td>The two letter ISO language code to which the text was translated.</td>
     </tr>
     <tr>
       <td>GoogleCloudTranslate.TranslateText.text</td>
       <td>String</td>
-      <td>Text to be translated</td>
+      <td>The source (original) text that was translated.</td>
     </tr>
     <tr>
       <td>GoogleCloudTranslate.TranslateText.translated_text</td>
       <td>String</td>
-      <td>Translated text</td>
+      <td>The translated text.</td>
     </tr>
   </tbody>
 </table>
