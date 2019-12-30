@@ -1,0 +1,14 @@
+{
+    "header": {
+        "id": "51029ec9-1445-11ea-8f4c-0efb1918365c",
+        "queryParams": {
+            "format": "json",
+            "maxRecords": 0
+        },
+        "requestDate": "2019-12-01T14:17:33.264669831Z",
+        "returnResult": 0,
+        "totalResult": 0,
+        "user": "api.ioc.demisto"
+    },
+    "data": []
+}

@@ -133,13 +133,21 @@ class Client(BaseClient):
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get('access_token')
         valid_until = integration_context.get('valid_until')
+        calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
+        brand_name = calling_context.get('IntegrationBrand', '')
+        instance_name = calling_context.get('IntegrationInstance', '')
         if access_token and valid_until:
             if epoch_seconds() < valid_until:
                 return access_token
+
+        headers = {'Accept': 'application/json'}
+        headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
+        headers['X-Branch-Name'] = CONTENT_BRANCH_NAME
+        headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
         try:
             dbot_response = requests.post(
                 self.token_retrieval_url,
-                headers={'Accept': 'application/json'},
+                headers=headers,
                 data=json.dumps({
                     'app_name': APP_NAME,
                     'registration_id': self.auth_id,

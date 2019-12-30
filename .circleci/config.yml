@@ -6,9 +6,9 @@ jobs:
     resource_class: medium+
     parallelism: 2
     environment:
-      CONTENT_VERSION: "19.12.0"
+      CONTENT_VERSION: "19.12.1"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "2def75d4e64ea5f8f10a7ea6976eaaa7cc9eb410" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "16e3aa92e52bcc0771eaced661f6f077431dddd2" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -67,7 +67,7 @@ jobs:
             fi
             python ./Tests/scripts/update_id_set.py -r
       - run:
-          name: Infrastucture testing
+          name: Infrastructure testing
           when: always
           command: |
             if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
@@ -86,8 +86,6 @@ jobs:
             python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
 
             python -m pytest ./Tests/scripts/test_configure_tests.py -v
-            python3 -m pytest ./Tests/scripts/infrastructure_tests/update_id_set_test.py -v
-            python3 -m pytest ./Tests/scripts/infrastructure_tests/secrets_test.py -v
       - run:
           name: Validate Files and Yaml
           when: always
@@ -104,7 +102,7 @@ jobs:
 
             [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
 
-            python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
+            demisto-sdk validate -g -c true -b $CHECK_BACKWARD
       - run:
           name: Secrets
           when: always
@@ -115,7 +113,7 @@ jobs:
                 exit 0
             fi
 
-            python3 ./Tests/scripts/hook_validations/secrets.py -c true
+            demisto-sdk secrets -c true
       - run:
           name: Configure Test Filter
           when: always
@@ -172,7 +170,12 @@ jobs:
                 echo "Skipping - running only in container number 0"
                 exit 0
             fi
-            python3 content_creator.py $CIRCLE_ARTIFACTS  $CONTENT_VERSION
+            demisto-sdk create -a $CIRCLE_ARTIFACTS
+            # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
+            cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
+            unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
+            zip -j "$CIRCLE_ARTIFACTS/all_content.zip" test_content_dir/*
+            rm -r test_content_dir
       - store_artifacts:
           path: artifacts
           destination: artifacts
@@ -187,7 +190,7 @@ jobs:
             fi
             SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
       - run:
-          name: Verify Base Branch for Contirbution
+          name: Verify Base Branch for Contribution
           when: always
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
@@ -277,6 +280,7 @@ jobs:
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
+
                 python ./Tests/scripts/run_content_installation.py
                 python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION
 
@@ -383,9 +387,9 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
+            if [ -n "${INSTANCE_TESTS}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                echo "Skipping - not running in INSTANCE_TESTS build"
                 exit 0
             fi
             ./Tests/scripts/slack_notifier.sh ./env_results.json
