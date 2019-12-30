@@ -4,7 +4,7 @@ This fact makes it very difficult for IT and Security teams to provide these ser
 
 One example of these providers is Microsoft, and an example of their services is [Microsoft Intune](https://en.wikipedia.org/wiki/Microsoft_Intune).
 
-The goal of this pack is to address this issue by automating the collection of endpoint data, performing validation and pushing the changes to an EDL that can be consumed automatically by security enforcement technologies (i.e.: firealls, proxies, etc.).
+The goal of this pack is to address this issue by automating the collection of endpoint data, performing validation and pushing the changes to an EDL that can be consumed automatically by security enforcement technologies (i.e.: firewalls, proxies, etc.).
 
 The most important element in the provided playbook is the inclusion of a human decision checkpoint in the process. Any changes in the list of endpoints will halt the process until a human analyst reviews the information (which is neatly provided) and takes the appropriate decision.
 
