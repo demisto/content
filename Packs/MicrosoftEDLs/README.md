@@ -24,7 +24,7 @@ The most important element in the provided playbook is the inclusion of a human 
 
     The script above requires a Docker image with Python3 and BeautifulSoup.
 
-    The image can be created from the War Room or Playground with the following command:
+    The image can be created from the War Room or Playground with the command below ("msft scraper" is an arbitrary name):
 
     ```
     /docker_image_create msft-scraper base=demisto/python3:3.7.5.4583 dependencies=bs4
