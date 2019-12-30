@@ -1,5 +1,5 @@
-id: Microsoft Intune Endpoints EDL
-version: -1
+id: 6329be25-faf0-4fd5-8dc0-3aa5499cc10a
+version: 202
 name: Microsoft Intune Endpoints EDL
 description: This playbook is triggered by scheduling a job or manually creating an
   incident of type  "EDL Microsoft Intune".  It scrapes Microsoft Intune website for
@@ -35,10 +35,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 24fb1670-b404-4b6b-87f1-6a4a462fcf67
+    taskid: 61b67410-74f4-4576-8fad-40303efc05ac
     type: regular
     task:
-      id: 24fb1670-b404-4b6b-87f1-6a4a462fcf67
+      id: 61b67410-74f4-4576-8fad-40303efc05ac
       version: -1
       name: Assign Analyst
       description: |-
@@ -77,12 +77,13 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 9eb8534d-234b-42a2-8cc1-5466f38de9ea
+    taskid: e4b4ad3f-2232-4cc8-8124-e3ffbdb8c250
     type: condition
     task:
-      id: 9eb8534d-234b-42a2-8cc1-5466f38de9ea
+      id: e4b4ad3f-2232-4cc8-8124-e3ffbdb8c250
       version: -1
       name: Analyst Aproval Needed
+      description: Analyst to review the Incident Info details and take a decision.
       type: condition
       iscommand: false
       brand: ""
@@ -130,10 +131,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: efd4376a-cb50-46ab-876f-48821a321209
+    taskid: e3d92e13-db91-4cd8-84a5-1d9287d1f81a
     type: regular
     task:
-      id: efd4376a-cb50-46ab-876f-48821a321209
+      id: e3d92e13-db91-4cd8-84a5-1d9287d1f81a
       version: -1
       name: Review Microsoft Intune Website and Scraping Script
       description: |-
@@ -163,10 +164,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 490779a7-1057-4b3f-88ab-0ad1aba53057
+    taskid: 4d1ac59d-b179-4914-869f-4503873c4a27
     type: regular
     task:
-      id: 490779a7-1057-4b3f-88ab-0ad1aba53057
+      id: 4d1ac59d-b179-4914-869f-4503873c4a27
       version: -1
       name: Close Task
       description: commands.local.cmd.close.inv
@@ -220,10 +221,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 64d6f84d-952b-4224-8f0b-55261a5533b5
+    taskid: 5092b425-05b1-41e5-805c-f5b8263bb0fe
     type: regular
     task:
-      id: 64d6f84d-952b-4224-8f0b-55261a5533b5
+      id: 5092b425-05b1-41e5-805c-f5b8263bb0fe
       version: -1
       name: Add indicatores to MineMeld
       description: Add indicator to a miner.
@@ -258,10 +259,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 193b811b-e50c-417e-80ca-4829dd222f70
+    taskid: 35fd7d2e-5b87-4f10-8617-0bdba8dd5252
     type: regular
     task:
-      id: 193b811b-e50c-417e-80ca-4829dd222f70
+      id: 35fd7d2e-5b87-4f10-8617-0bdba8dd5252
       version: -1
       name: Update list file on EDL Web Server
       description: Updates a remote file with the contents of an internal list.
@@ -293,10 +294,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 8bd256ec-30d6-48c8-876d-436e0ff5e7af
+    taskid: 935cb839-25cb-4e34-883b-98e1c9132c32
     type: regular
     task:
-      id: 8bd256ec-30d6-48c8-876d-436e0ff5e7af
+      id: 935cb839-25cb-4e34-883b-98e1c9132c32
       version: -1
       name: Update Demisto Internal List
       description: commands.local.cmd.list.set
@@ -335,10 +336,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 54cc718e-5e92-4474-8dda-5d4d4dc17bf4
+    taskid: c69e97b6-1a40-4c77-8f2a-7c5009fa7599
     type: title
     task:
-      id: 54cc718e-5e92-4474-8dda-5d4d4dc17bf4
+      id: c69e97b6-1a40-4c77-8f2a-7c5009fa7599
       version: -1
       name: Done
       type: title
@@ -396,12 +397,13 @@ tasks:
           accessor: msft-intune
   "23":
     id: "23"
-    taskid: 0846b812-b488-4672-80db-94fa12d04460
+    taskid: 4399e328-6664-4cd2-89d0-bd8c11845876
     type: condition
     task:
-      id: 0846b812-b488-4672-80db-94fa12d04460
+      id: 4399e328-6664-4cd2-89d0-bd8c11845876
       version: -1
       name: Is MineMeld Integration enabled?
+      description: Check if MineMeld integration is enabled before running the branch.
       type: condition
       iscommand: false
       brand: ""
@@ -481,12 +483,14 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: cbeffbe0-f33f-4f14-8246-75126865f761
+    taskid: 0ca759d5-b5ea-4c7b-82f6-c93167071b69
     type: condition
     task:
-      id: cbeffbe0-f33f-4f14-8246-75126865f761
+      id: 0ca759d5-b5ea-4c7b-82f6-c93167071b69
       version: -1
       name: Any difference between current EDL and Microsoft Intune site?
+      description: Checks if there are any differences between current EDL and scraped
+        one.
       type: condition
       iscommand: false
       brand: ""
@@ -530,12 +534,13 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: 12b95766-dc5b-4c55-8578-4f4d74930a80
+    taskid: a54bbf40-df36-4b24-8660-07322fe6869a
     type: condition
     task:
-      id: 12b95766-dc5b-4c55-8578-4f4d74930a80
+      id: a54bbf40-df36-4b24-8660-07322fe6869a
       version: -1
       name: Confirm the list is not empty
+      description: Check if list is empty before proceeding to update the EDL file.
       type: condition
       iscommand: false
       brand: ""
@@ -565,12 +570,16 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: 653ac25a-0e61-4bd0-8afe-182a738816ff
+    taskid: 12aacb86-4313-4478-8b66-b8a419faff28
     type: regular
     task:
-      id: 653ac25a-0e61-4bd0-8afe-182a738816ff
+      id: 12aacb86-4313-4478-8b66-b8a419faff28
       version: -1
       name: Scrape and parse entries from Microsoft Intune website
+      description: |-
+        This script scrapes Microsoft Intune endpoints website, compares the list of entries with the current list and provides the results of the analysis to the analyst.
+
+        The result of the scrape will clearly indicate when there have been relevant changes to the website. In such case, the analyst will need to review the script and/or open a ticket with Demisto Support notifying the issue.
       scriptName: GetMSFTIntuneEndpointsList
       type: regular
       iscommand: false
@@ -625,12 +634,14 @@ tasks:
                   simple: ', '
   "29":
     id: "29"
-    taskid: 4e28cda9-c7b6-478a-8386-326146954bfc
+    taskid: 25e03f49-2a05-49fe-88dc-574a8bc85290
     type: condition
     task:
-      id: 4e28cda9-c7b6-478a-8386-326146954bfc
+      id: 25e03f49-2a05-49fe-88dc-574a8bc85290
       version: -1
       name: Is EDL Management integration enabled?
+      description: Check if EDL Management integration is enabled before running the
+        branch.
       type: condition
       iscommand: false
       brand: ""

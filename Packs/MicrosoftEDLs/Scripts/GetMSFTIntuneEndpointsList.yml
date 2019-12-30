@@ -54,5 +54,5 @@ enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: msft-scraper:latest
+dockerimage:
 runas: DBotWeakRole
