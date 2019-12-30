@@ -1,7 +1,7 @@
 {
     "id": "ipv6_cidr",
     "version": -1,
-    "fromVersion": "5.0.0",
+    "fromVersion": "5.5.0",
     "modified": "2019-07-18T07:17:53.843554502Z",
     "sortValues": null,
     "commitMessage": "",
@@ -12,10 +12,7 @@
     "prevDetails": "IPv6 CIDR",
     "reputationScriptName": "",
     "reputationCommand": "ip",
-    "enhancementScriptNames": [
-        "IPReputation",
-        "SplunkPySearch"
-    ],
+    "enhancementScriptNames": "",
     "system": true,
     "locked": false,
     "disabled": false,
