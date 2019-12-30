@@ -131,6 +131,16 @@ script:
       name: event_limit
       required: false
       secret: false
+    - name: batch_limit
+      description: The maximum number of returned results to  process at a time. For example, if 100 results are returned, and you specify a batch_limit of 10, the results will be processed 10 at a time over 10 iterations. This does not effect the search or the context and outputs returned. In some cases, specifying a batch_size enhances search performance. If you think that the search execution is suboptimal, we recommend trying several batch_size values to determine which works best for your search. Default is 25,000.
+      defaultValue: "25000"
+    - name: update_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      description: Determines whether the results will be entered into the context.
+      defaultValue: "true"
     deprecated: false
     description: Searches Splunk for events.
     execution: false

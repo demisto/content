@@ -1,4 +1,11 @@
 ## [Unreleased]
+
+
+## [19.12.1] - 2019-12-25
+Improved performance and functionality of the integration.
+
+
+## [19.12.0] - 2019-12-10
 Fixed issue where threads not closed after executing the command.
 
 ## [19.9.1] - 2019-09-18
