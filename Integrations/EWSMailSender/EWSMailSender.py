@@ -1,7 +1,3 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 from cStringIO import StringIO
 import logging
 import warnings
@@ -219,7 +215,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
-        'subject': subject,
+        'subject': subject.encode('utf-8'),
         'attachments': attachments_names
     }
 
