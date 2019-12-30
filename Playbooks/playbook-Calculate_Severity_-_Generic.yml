@@ -757,3 +757,5 @@ inputs:
   required: false
   description: Nexpose Vulnerability Severity score (Moderate, Severe, Critical)
 outputs: []
+tests:
+  - no test
