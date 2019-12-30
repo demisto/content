@@ -135,7 +135,7 @@ This command requires the following permissions.
          "BCCRecipients":null,
          "LastModifiedTime":"2019-04-24T13:58:24Z",
          "Subject":"jn",
-         "ID":"AAMkADMzZWNjMjBNFPVsAqlO3YRKNFAAAF0dZUAAA=",
+         "ID":"message_id_1",
          "Categories":[ 
 
          ],
@@ -160,7 +160,7 @@ This command requires the following permissions.
          "BCCRecipients":null,
          "LastModifiedTime":"2019-04-24T13:57:07Z",
          "Subject":"this is test 2",
-         "ID":"AAMkADMzoON8u7AAAF0dZTAAA=",
+         "ID":"message_id_2",
          "Categories":[ 
 
          ],
@@ -185,7 +185,7 @@ This command requires the following permissions.
          "BCCRecipients":null,
          "LastModifiedTime":"2019-04-24T13:55:22Z",
          "Subject":"this is a test",
-         "ID":"AAMkADMzZ8u7AAAF0dZSAAA=",
+         "ID":"message_id_3",
          "Categories":[ 
 
          ],
@@ -210,7 +210,7 @@ This command requires the following permissions.
          "BCCRecipients":null,
          "LastModifiedTime":"2019-04-24T13:47:58Z",
          "Subject":"dasdas",
-         "ID":"AAMkADMzZWu7AAAF0Z_AAAA=",
+         "ID":"message_id_4",
          "Categories":[ 
 
          ],
@@ -235,7 +235,7 @@ This command requires the following permissions.
          "BCCRecipients":null,
          "LastModifiedTime":"2019-04-24T13:47:58Z",
          "Subject":"dasdas",
-         "ID":"AAMkADMzZWNj3YRKNF6ZoON8u7AAAF0dZRAAA=",
+         "ID":"message_id_5",
          "Categories":[ 
 
          ],
@@ -334,7 +334,7 @@ This command requires the following permissions.
 
 
 ##### Command Example
-```!msgraph-mail-get-email message_id=AAMkADMzZWNjMgBGAAAAZoON8u7AAAF0Z9-AAA= user_id=ex@example.com get_body=true```
+```!msgraph-mail-get-email message_id=message_id user_id=ex@example.com get_body=true```
 
 #### Context Example
 ```
@@ -371,7 +371,7 @@ This command requires the following permissions.
       "LastModifiedTime":"2019-04-24T06:48:35Z",
       "Subject":"\u05e7\u05d1\u05dc 
   \u05e7\u05d5\u05d1\u05e5 \u05e8\u05e0\u05d3\u05d5\u05de\u05d0\u05dc\u05d9",
-      "ID":"AAMkADMzZWNjMjBkZoON8u7AAAF0Z9-AAA=",
+      "ID":"message_id",
       "Categories":[  
 
       ],
@@ -381,7 +381,7 @@ This command requires the following permissions.
 ```
 
 ##### Human Readable 
-### Results for message ID AAMkADMzZCPVsAqlO3YRKNF6ZoON8u7AAAF0Z9-AAA=
+### Results for message ID message_id
 ID|Subject|SendTime|Sender|From|HasAttachments|Body|
 |---|---|---|---|---|---|---|
 |AAMkADMzZWF0Z9-AAA=|Get a random file|2019-04-24T06:41:56Z|Name: Ba Hoch Address: se@example.com|Name: Ba Hoch Address: se@example.com|true|File goes here|
@@ -449,7 +449,7 @@ This command requires the following permissions.
 
 
 ##### Command Example
-```!msgraph-mail-list-attachments user_id=ex@example.com message_id=AAMkADMzZWNjMjBkLTE2PVsAqlO3YRKNF6ZoON8u7AAAF0Z9-AAA=```
+```!msgraph-mail-list-attachments user_id=ex@example.com message_id=message_id```
 
 ####Context Example
 ```
@@ -459,17 +459,17 @@ This command requires the following permissions.
       "Attachment":[  
          {  
             "Type":"image/png",
-            "ID":"AAMkADMzZWNjMjBkLTE2ZGQqF1VbAHI=",
+            "ID":"attachment_id",
             "Name":"download-1.png"
          }
       ],
-      "ID":"AAMkADMzZWNjMjBkLTE2ZGQtNDN8u7AAAAAAEMAACPVsAqlO3YRKNF6ZoON8u7AAAF0Z9-AAA="
+      "ID":"message_id"
    }
 }
 ```
 
 ##### Human Readable Output
-### Total of 1 attachments found in message AAMkADMzZWNjMjBkLTENF6ZoON8u7AAAAAAEMAACPVsAqlO3YRKNF6ZoON8u7AAAF0Z9-AAA= from user ex@example.com
+### Total of 1 attachments found in message message_id from user ex@example.com
 File names|
 |---|
 |download-1.png|
