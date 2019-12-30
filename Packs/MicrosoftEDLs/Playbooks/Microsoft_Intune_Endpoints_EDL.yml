@@ -1,6 +1,12 @@
-id: 6329be25-faf0-4fd5-8dc0-3aa5499cc10a
-version: 198
+id: Microsoft Intune Endpoints EDL
+version: -1
 name: Microsoft Intune Endpoints EDL
+description: This playbook is triggered by scheduling a job or manually creating an
+  incident of type  "EDL Microsoft Intune".  It scrapes Microsoft Intune website for
+  endpoints information, compares the current list of  endpoint entries with the new
+  one and, if there are any relevant changes, assigns the incident to an analyst in
+  order to decide whether or not to update the internal list and the enabled integrations
+  EDL entries.
 starttaskid: "0"
 tasks:
   "0":

@@ -1,6 +1,6 @@
 commonfields:
-  id: 1c27aa55-1d8f-4195-84c8-953c39598f3c
-  version: 186
+  id: GetMSFTIntuneEndpointsList
+  version: -1
 name: GetMSFTIntuneEndpointsList
 script: |
   import requests
@@ -48,9 +48,11 @@ script: |
       )
 type: python
 tags: []
+comment: This script scrapes Microsoft Intune endpoints informtion website. extract
+  the relavant domains and compares the list of entries with the current list.
 enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: webscrapper:latest
+dockerimage: msft-scraper:latest
 runas: DBotWeakRole
