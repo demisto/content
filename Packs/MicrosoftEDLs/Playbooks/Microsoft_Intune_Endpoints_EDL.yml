@@ -1,5 +1,5 @@
 id: 6329be25-faf0-4fd5-8dc0-3aa5499cc10a
-version: 188
+version: 198
 name: Microsoft Intune Endpoints EDL
 starttaskid: "0"
 tasks:
@@ -110,7 +110,7 @@ tasks:
     nexttasks:
       '#none#':
       - "23"
-      - "16"
+      - "29"
     separatecontext: false
     view: |-
       {
@@ -157,12 +157,12 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 4325aae4-2cf2-4a6e-8788-772aa5adaed1
+    taskid: 490779a7-1057-4b3f-88ab-0ad1aba53057
     type: regular
     task:
-      id: 4325aae4-2cf2-4a6e-8788-772aa5adaed1
+      id: 490779a7-1057-4b3f-88ab-0ad1aba53057
       version: -1
-      name: Close Investigation
+      name: Close Task
       description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
@@ -206,7 +206,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1990
+          "y": 2230
         }
       }
     note: false
@@ -279,7 +279,7 @@ tasks:
       {
         "position": {
           "x": 1500,
-          "y": 1820
+          "y": 2020
         }
       }
     note: true
@@ -321,7 +321,7 @@ tasks:
       {
         "position": {
           "x": 1500,
-          "y": 1450
+          "y": 1630
         }
       }
     note: false
@@ -343,7 +343,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2160
+          "y": 2410
         }
       }
     note: false
@@ -551,7 +551,7 @@ tasks:
       {
         "position": {
           "x": 1500,
-          "y": 1645
+          "y": 1815
         }
       }
     note: false
@@ -617,18 +617,73 @@ tasks:
               separator:
                 value:
                   simple: ', '
+  "29":
+    id: "29"
+    taskid: 4e28cda9-c7b6-478a-8386-326146954bfc
+    type: condition
+    task:
+      id: 4e28cda9-c7b6-478a-8386-326146954bfc
+      version: -1
+      name: Is EDL Management integration enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: palo_alto_networks_pan_os_edl_management
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
       "23_8_yes": 0.6,
       "26_7_#default#": 0.23,
       "27_13_yes": 0.55,
+      "29_7_#default#": 0.44,
       "3_4_Yes": 0.4,
       "3_5_#default#": 0.24
     },
     "paper": {
       "dimensions": {
-        "height": 2225,
+        "height": 2475,
         "width": 1400,
         "x": 480,
         "y": 0
