@@ -39,7 +39,7 @@ configuration:
   required: false
   type: 13
 description: Get live feeds of IOC data from PhishLabs.
-display: PhishLabs IOC EIR
+display: PhishLabs IOC
 name: PhishLabs IOC
 script:
   commands:

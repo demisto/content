@@ -38,7 +38,7 @@ class Client(BaseClient):
     def get_incidents(self, status: Optional[str] = None, created_after: Optional[str] = None,
                       created_before: Optional[str] = None, closed_before: Optional[str] = None,
                       closed_after: Optional[str] = None, sort: Optional[str] = None, direction: Optional[str] = None,
-                      limit: Union[str, int] = 25, offset: Union[str, int] = 0) -> Dict:
+                      limit: Union[str, int] = 25, offset: Union[str, int] = 0, period: str = None) -> Dict:
         """
         Query the specified kwargs with default parameters if not defined
         Args:
@@ -51,22 +51,34 @@ class Client(BaseClient):
             direction: asc,desc
             limit: Limit amounts of incidents (0-50, default 50)
             offset: Offset from last incident
+            period: timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
 
         Returns:
             Raw response json as dictionary
         """
         suffix = "/incidents/EIR"
-        params = {
+        params: Dict[str, Any] = {}
+        if period:
+            created_after, created_before = parse_date_range(date_range=period,
+                                                             date_format='%Y-%m-%dT%H:%M:%SZ')
+            params = {
+                'created_after': created_after,
+                'created_before': created_before
+            }
+        else:
+            params = {
+                'created_after': created_after,
+                'created_before': created_before,
+                'closed_before': closed_before,
+                'closed_after': closed_after
+            }
+        params.update({
             'status': status,
-            'created_after': created_after,
-            'created_before': created_before,
-            'closed_before': closed_before,
-            'closed_after': closed_after,
             'sort': sort,
             'direction': direction,
             'limit': limit,
             'offset': offset
-        }
+        })
         return self._http_request('GET',
                                   url_suffix=suffix,
                                   params=assign_params(**params))
@@ -342,7 +354,7 @@ def fetch_incidents_command(
             incidents_report.append({
                 'name': f"{INTEGRATION_NAME}: {incident_raw.get('id')}",
                 'occurred': occurred,
-                'rawJSON': incident_raw
+                'rawJSON': json.dumps(incident_raw)
             })
 
         new_last_run = incidents_report[-1].get('occurred')
