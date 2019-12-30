@@ -262,13 +262,6 @@ if service is None:
     sys.exit(0)
 
 
-
-
-
-
-
-
-
 def build_search_kwargs(args):
     t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
