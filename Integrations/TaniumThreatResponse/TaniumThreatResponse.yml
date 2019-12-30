@@ -599,13 +599,33 @@ script:
       description: The date this label was last updated, not including the intel and
         signal counts.
       type: Date
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-list-file-downloads
+  - arguments:
+    - default: false
+      isArray: false
+      name: file-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-get-downloaded-file
   dockerimage: demisto/python3:3.7.4.977
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - Tanium Threat Response Test

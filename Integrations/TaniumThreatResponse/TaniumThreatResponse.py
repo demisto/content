@@ -48,9 +48,9 @@ class Client(BaseClient):
         if resp_type == 'json':
             return res.json()
         if resp_type == 'text':
-            return res.text
+            return res.text, res.headers.get('Content-Disposition')
         if resp_type == 'content':
-            return res.content
+            return res.text, res.headers.get('Content-Disposition')
 
     def update_session(self):
         body = {
@@ -166,6 +166,25 @@ class Client(BaseClient):
             'SignalCount': label.get('signalCount'),
             'CreatedAt': label.get('createdAt'),
             'UpdatedAt': label.get('updatedAt')}
+
+    def get_file_item(self, file):
+        return {
+            'ID': file.get('id'),
+            'Host': file.get('host'),
+            'Path': file.get('path'),
+            'SPath': file.get('spath'),
+            'Hash': file.get('hash'),
+            'Size': file.get('size'),
+            'Created': file.get('created'),
+            'CreatedBy': file.get('created_by'),
+            'CreatedByProc': file.get('created_by_proc'),
+            'LastModified': file.get('last_modified'),
+            'LastModifiedBy': file.get('last_modified_by'),
+            'LastModifiedByProc': file.get('last_modified_by_proc'),
+            'Downloaded': file.get('downloaded'),
+            'Comments': file.get('comments'),
+            'Tags': file.get('tags')
+        }
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -398,6 +417,32 @@ def get_label(client, data_args):
     return human_readable, outputs, raw_response
 
 
+def get_file_downloads(client, data_args):
+    limit = int(data_args.get('limit'))
+    raw_response = client.do_request('GET', '/plugin/products/trace/filedownloads/', params={'limit': limit})
+
+    files = []
+    for item in raw_response:
+        file = client.get_file_item(item)
+        files.append(file)
+
+    context = createContext(files, removeNull=True)
+    outputs = {'Tanium.FileDownloads(val.ID && val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('File downloads', files)
+    return human_readable, outputs, raw_response
+
+
+def get_downloaded_file(client, data_args):
+    file_id = data_args.get('file-id')
+    file_content, content_desc = client.do_request('GET', f'/plugin/products/trace/filedownloads/{file_id}', resp_type='text')
+
+    content_disposition = content_desc.split(';')[1]
+    filename = re.findall("[A-Za-z0-9_-]*\.*[A-Za-z0-9]{3,4}", content_disposition)[-1]
+
+    demisto.results(
+        fileResult(filename, file_content))
+
+
 def fetch_incidents(client):
     """
     Fetch events from this integration and return them as Demisto incidents
@@ -472,20 +517,29 @@ def main():
         f'tanium-tr-create-connection': create_connection,
         f'tanium-tr-delete-connection': delete_connection,
         f'tanium-tr-list-labels': get_labels,
-        f'tanium-tr-get-label-by-id': get_label
+        f'tanium-tr-get-label-by-id': get_label,
+        f'tanium-tr-list-file-downloads': get_file_downloads
     }
 
     try:
         if command == 'fetch-incidents':
             return fetch_incidents(client)
+        if command == 'tanium-tr-get-downloaded-file':
+            return get_downloaded_file(client, demisto.args())
 
         if command in commands:
             human_readable, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
         # Log exceptions
     except Exception as e:
-        err_msg = f'Error in Tanium v2 Integration [{e}]'
-        return_error(err_msg, error=e)
+        import traceback
+        if command == 'fetch-incidents':
+            LOG(traceback.format_exc())
+            LOG.print_log()
+            raise
+
+        else:
+            return_error('Error in Tanium v2 Integration: {}'.format(str(e)), traceback.format_exc())
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
