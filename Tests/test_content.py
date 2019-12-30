@@ -740,7 +740,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
         if status_code != 200:
             error_msg = 'Request to reset containers failed with status code "{}"\n{}'.format(status_code, body)
             prints_manager.add_print_job(error_msg, print_error, thread_index)
-            print_manager.execute_thread_prints(thread_index)
+            prints_manager.execute_thread_prints(thread_index)
             sys.exit(1)
         sleep(10)
     for t in unmockable_tests:
