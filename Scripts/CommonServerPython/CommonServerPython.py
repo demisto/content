@@ -841,6 +841,31 @@ def argToList(arg, separator=','):
     return arg
 
 
+def argToBoolean(value):
+    """
+        Boolean-ish arguments passed through demisto.args() could have type bool or type string.
+        This takes the guesswork out and will return a bool, regardless of value's type.
+        It will also return True for 'yes' and False for 'no'.
+
+        :param value: the value to evaluate
+        :type value: ``string|bool``
+
+        :return: a boolean representatation of 'value'
+        :rtype: ``bool``
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, STRING_OBJ_TYPES):
+        if value.lower() in ['true', 'yes']:
+            return True
+        elif value.lower() in ['false', 'no']:
+            return False
+        else:
+            raise ValueError('Argument does not contain a valid boolean-like value')
+    else:
+        raise ValueError('Argument is neither a string nor a boolean')
+
+
 def appendContext(key, data, dedup=False):
     """
        Append data to the investigation context
@@ -2389,51 +2414,3 @@ if 'requests' in sys.modules:
 
 class DemistoException(Exception):
     pass
-
-
-def arg_to_boolean(value):
-    """
-        Boolean-ish arguments passed through demisto.args() could have type bool or type string.
-        This takes the guesswork out and will return a bool, regardless of value's type.
-        It will also return True for 'yes' and False for 'no'.
-
-        :param value: the value to evaluate
-        :type value: ``string|bool``
-
-        :return: a boolean representatation of 'value'
-        :rtype: ``bool``
-    """
-    if isinstance(value, bool):
-        return value
-    if isinstance(value, STRING_OBJ_TYPES):
-        if value.lower() in ['true', 'yes']:
-            return True
-        elif value.lower() in ['false', 'no']:
-            return False
-        else:
-            return_error('Argument does not contain a valid boolean-ish value')
-    else:
-        return_error('Argument is neither a string nor a boolean')
-
-
-def csv_or_array_to_array(value_raw, delimiter=','):
-    """
-        Makes it easy to pass either a CSV list or an array to a demisto.args() argument.
-        Automations can be more flexible in their input types by passing array-like inputs through this function.
-        It will return a value of type list, regardless of value_raw's type.
-        CSV's will split by argument 'delimiter'.
-
-        :param value_raw: the value to evaluate
-        :type value_raw: ``string|list``
-
-        :param delimiter: The delimiter to split value_raw, if it is a string
-        :type delimiter: ``string``
-
-        :return: a list representation of raw_value
-        :rtype: ``list``
-    """
-    if isinstance(value_raw, list):
-        value = value_raw
-    else:
-        value = value_raw.split(delimiter)
-    return value
