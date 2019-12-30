@@ -89,10 +89,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 553f6a38-724c-44df-8be5-57e43d34a1e8
+    taskid: d8aa9ca9-1af0-4c39-81b4-46c18e53167b
     type: condition
     task:
-      id: 553f6a38-724c-44df-8be5-57e43d34a1e8
+      id: d8aa9ca9-1af0-4c39-81b4-46c18e53167b
       version: -1
       name: Is there a URL to block?
       description: ""
@@ -126,10 +126,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: ec3b99aa-0d76-42b4-849a-8579ed8dd9fe
+    taskid: 2aeda206-4805-4701-8e03-baea02453361
     type: regular
     task:
-      id: ec3b99aa-0d76-42b4-849a-8579ed8dd9fe
+      id: 2aeda206-4805-4701-8e03-baea02453361
       version: -1
       name: PAN-OS - Create Custom URL Category
       description: Creates a custom URL category
@@ -141,9 +141,14 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
+      categories:
+        complex:
+          root: inputs.categories
       description:
         simple: Malicious URLs
-      device-group: {}
+      device-group:
+        complex:
+          root: inputs.device-group
       name:
         complex:
           root: inputs.CustomURLCategory
@@ -156,6 +161,9 @@ tasks:
               separator:
                 value:
                   simple: ','
+      type:
+        complex:
+          root: inputs.type
     separatecontext: false
     view: |-
       {
@@ -169,10 +177,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 62ccb2be-da01-4aa4-8772-de4e7f62d107
+    taskid: a76fc659-c352-4025-88c6-1dff4bc36b6d
     type: regular
     task:
-      id: 62ccb2be-da01-4aa4-8772-de4e7f62d107
+      id: a76fc659-c352-4025-88c6-1dff4bc36b6d
       version: -1
       name: PAN-OS - Block Malicious URL Category
       description: Creates a custom block policy rule to block communication to URLs in this category.
@@ -184,7 +192,9 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
-      device-group: {}
+      device-group:
+        complex:
+          root: inputs.device-group
       direction: {}
       log_forwarding:
         complex:
@@ -201,9 +211,11 @@ tasks:
         complex:
           root: inputs.CustomURLCategory
       pre_post:
-        simple: pre-rulebase
+        complex:
+          root: inputs.pre-post
       rulename:
         simple: Demisto Block Rule - ${incident.id}
+      tags: {}
       target: {}
     separatecontext: false
     view: |-
@@ -241,10 +253,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: e22ada48-750d-42ec-8bd4-7d1c2b5f8b60
+    taskid: 287ee829-b825-42c7-8566-fe61135f7087
     type: regular
     task:
-      id: e22ada48-750d-42ec-8bd4-7d1c2b5f8b60
+      id: 287ee829-b825-42c7-8566-fe61135f7087
       version: -1
       name: PAN-OS - Get Custom URL Category
       description: Returns information for a specified custom URL category
@@ -256,7 +268,9 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      device-group: {}
+      device-group:
+        complex:
+          root: inputs.device-group
       name:
         complex:
           root: inputs.CustomURLCategory
@@ -349,10 +363,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: b6fe22ef-4d81-4088-8368-d830bc741950
+    taskid: 54a0f680-1ec6-4843-8611-028d029f584c
     type: regular
     task:
-      id: b6fe22ef-4d81-4088-8368-d830bc741950
+      id: 54a0f680-1ec6-4843-8611-028d029f584c
       version: -1
       name: PAN-OS - Add malicious URLs to Custom URL Category
       description: Add sites to, or remove sites from, a custom URL category
@@ -366,6 +380,9 @@ tasks:
     scriptarguments:
       action:
         simple: add
+      categories:
+        complex:
+          root: inputs.categories
       name:
         complex:
           root: inputs.CustomURLCategory
@@ -577,10 +594,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 8030a6cc-ac26-4307-8a1a-d7dab0441d18
+    taskid: 42127c8f-922d-4c5c-8b7a-4e428e6b2f11
     type: regular
     task:
-      id: 8030a6cc-ac26-4307-8a1a-d7dab0441d18
+      id: 42127c8f-922d-4c5c-8b7a-4e428e6b2f11
       version: -1
       name: PAN-OS - Block Malicious URL Category
       description: Creates a custom block policy rule to block communication to URLs in this category.
@@ -592,7 +609,9 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      device-group: {}
+      device-group:
+        complex:
+          root: inputs.device-group
       direction: {}
       log_forwarding:
         complex:
@@ -609,9 +628,11 @@ tasks:
         complex:
           root: inputs.CustomURLCategory
       pre_post:
-        simple: pre-rulebase
+        complex:
+          root: inputs.pre-post
       rulename:
         simple: Demisto Block Rule - ${incident.id}
+      tags: {}
       target: {}
     separatecontext: false
     view: |-
@@ -662,7 +683,6 @@ tasks:
         as Panorama, will also push the Policies to the specified Device Group in
         the instance. "
       playbookName: PAN-OS Commit Configuration
-      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -730,6 +750,23 @@ inputs:
     This input establishes whether to commit the configuration automatically.
     Yes - Commit automatically.
     No - Commit manually.
+- key: type
+  value: {}
+  required: false
+  description: Custom URL category type. Insert "URL List"/ "Category Match".
+- key: device-group
+  value: {}
+  required: false
+  description: Device group for the Custom URL Category (Panorama instances).
+- key: categories
+  value: {}
+  required: false
+  description: The list of categories. Relevant from PAN-OS v9.x.
+- key: pre-post
+  value:
+    simple: pre-rulebase
+  required: false
+  description: Specify pre-rulebase or post-rulebase. (Panorama instances).
 outputs: []
 tests:
   - PAN-OS - Block URL - Custom URL Category Test
