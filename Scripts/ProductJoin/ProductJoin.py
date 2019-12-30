@@ -4,7 +4,12 @@ from itertools import product
 
 
 def parse_list(lst):
-    lst = lst if isinstance(lst, list) else lst.split(',')
+    if isinstance(lst, list):  # handle list
+        if len(lst) == 1:
+            lst = str(lst[0]).split(',')
+    else:
+        lst = str(lst).split(',')
+    
     return map(lambda _: str(_).strip(), lst)  # clean and convert to str for join
 
 
