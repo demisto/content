@@ -1,5 +1,5 @@
-id: Microsoft Intune Endpoints EDL
-version: -1
+id: 6329be25-faf0-4fd5-8dc0-3aa5499cc10a
+version: 208
 name: Microsoft Intune Endpoints EDL
 description: This playbook is triggered by scheduling a job or manually creating an
   incident of type  "EDL Microsoft Intune".  It scrapes Microsoft Intune website for
@@ -7,6 +7,7 @@ description: This playbook is triggered by scheduling a job or manually creating
   one and, if there are any relevant changes, assigns the incident to an analyst in
   order to decide whether or not to update the internal list and the enabled integrations
   EDL entries.
+fromversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -131,18 +132,16 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: e3d92e13-db91-4cd8-84a5-1d9287d1f81a
+    taskid: 9d26bf69-cc3b-4b5b-8f62-481ea68283f8
     type: regular
     task:
-      id: e3d92e13-db91-4cd8-84a5-1d9287d1f81a
+      id: 9d26bf69-cc3b-4b5b-8f62-481ea68283f8
       version: -1
       name: Review Microsoft Intune Website and Scraping Script
       description: |-
         Please check if there have been changes to the Microsoft Intune site that break the scraping script.
-
         Microsoft Inute Site:
         https://docs.microsoft.com/en-us/intune/fundamentals/intune-endpoints
-
         Scraping Script:
         GetMSFTIntuneEndpointsList
       type: regular
@@ -221,10 +220,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 5092b425-05b1-41e5-805c-f5b8263bb0fe
+    taskid: a776eb6e-3c74-4782-8ae9-560dd3764487
     type: regular
     task:
-      id: 5092b425-05b1-41e5-805c-f5b8263bb0fe
+      id: a776eb6e-3c74-4782-8ae9-560dd3764487
       version: -1
       name: Add indicatores to MineMeld
       description: Add indicator to a miner.
@@ -259,10 +258,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 35fd7d2e-5b87-4f10-8617-0bdba8dd5252
+    taskid: d62991e2-8437-4d36-8f4e-93b223e60448
     type: regular
     task:
-      id: 35fd7d2e-5b87-4f10-8617-0bdba8dd5252
+      id: d62991e2-8437-4d36-8f4e-93b223e60448
       version: -1
       name: Update list file on EDL Web Server
       description: Updates a remote file with the contents of an internal list.
@@ -358,13 +357,13 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: a541969f-3ac4-4e84-8a85-efe56ffd2689
+    taskid: 906a3fa6-54a6-47bc-8928-5d03caf0fc84
     type: condition
     task:
-      id: a541969f-3ac4-4e84-8a85-efe56ffd2689
+      id: 906a3fa6-54a6-47bc-8928-5d03caf0fc84
       version: -1
       name: Is there an MSFT Intune Internal List?
-      description: Check if list exist in demisto lists.
+      description: Check if the list exists in Demisto internal lists.
       scriptName: IsListExist
       type: condition
       iscommand: false
@@ -397,10 +396,10 @@ tasks:
           accessor: msft-intune
   "23":
     id: "23"
-    taskid: 4399e328-6664-4cd2-89d0-bd8c11845876
+    taskid: d0ae9588-5e86-4d6c-8e2a-ac7ab4b89bd8
     type: condition
     task:
-      id: 4399e328-6664-4cd2-89d0-bd8c11845876
+      id: d0ae9588-5e86-4d6c-8e2a-ac7ab4b89bd8
       version: -1
       name: Is MineMeld Integration enabled?
       description: Check if MineMeld integration is enabled before running the branch.
@@ -570,15 +569,14 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: 12aacb86-4313-4478-8b66-b8a419faff28
+    taskid: ae82a256-d0da-4442-853d-7af3529da41a
     type: regular
     task:
-      id: 12aacb86-4313-4478-8b66-b8a419faff28
+      id: ae82a256-d0da-4442-853d-7af3529da41a
       version: -1
       name: Scrape and parse entries from Microsoft Intune website
       description: |-
         This script scrapes Microsoft Intune endpoints website, compares the list of entries with the current list and provides the results of the analysis to the analyst.
-
         The result of the scrape will clearly indicate when there have been relevant changes to the website. In such case, the analyst will need to review the script and/or open a ticket with Demisto Support notifying the issue.
       scriptName: GetMSFTIntuneEndpointsList
       type: regular
@@ -593,7 +591,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 535
+          "y": 525
         }
       }
     note: true
@@ -634,10 +632,10 @@ tasks:
                   simple: ', '
   "29":
     id: "29"
-    taskid: 25e03f49-2a05-49fe-88dc-574a8bc85290
+    taskid: 7f6fad42-79ff-4a02-8265-150db68a2af9
     type: condition
     task:
-      id: 25e03f49-2a05-49fe-88dc-574a8bc85290
+      id: 7f6fad42-79ff-4a02-8265-150db68a2af9
       version: -1
       name: Is EDL Management integration enabled?
       description: Check if EDL Management integration is enabled before running the
