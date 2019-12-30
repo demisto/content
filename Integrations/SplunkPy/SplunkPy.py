@@ -345,16 +345,23 @@ def splunk_search_command():
 
 
 def splunk_job_create_command():
-    searchquery_normal = demisto.args()['query']
-    if not searchquery_normal.startswith('search'):
-        searchquery_normal = 'search ' + searchquery_normal
-    kwargs_normalsearch = {"exec_mode": "normal"}
-    job = service.jobs.create(searchquery_normal, **kwargs_normalsearch)  # type: ignore
+    query = demisto.args()['query']
+    if not query.startswith('search'):
+        query = 'search ' + query
+    search_kwargs = {
+        "exec_mode": "normal"
+    }
+    search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
 
-    ec = {}
-    ec['Splunk.Job'] = job.sid
-    demisto.results({"Type": 1, "ContentsFormat": formats['text'],
-                     "Contents": "Splunk Job created with SID: " + job.sid, "EntryContext": ec})
+    entry_context = {
+        'Splunk.Job': search_job.sid
+    }
+    demisto.results({
+        "Type": 1,
+        "ContentsFormat": formats['text'],
+        "Contents": "Splunk Job created with SID: " + search_job.sid,
+        "EntryContext": entry_context
+    })
     sys.exit(0)
 
 
