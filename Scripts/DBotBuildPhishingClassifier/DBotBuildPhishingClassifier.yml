@@ -14,16 +14,16 @@ args:
   secret: false
 - default: false
   description: 'The start date by which to filter incidents. Date format will be the
-        same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
-        +0200")'
+    same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+    +0200")'
   isArray: false
   name: fromDate
   required: false
   secret: false
 - default: false
   description: 'The end date by which to filter incidents. Date format will be the
-        same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
-        +0200")'
+    same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+    +0200")'
   isArray: false
   name: toDate
   required: false
@@ -58,25 +58,16 @@ args:
   required: false
   secret: false
 - default: false
-  description: The field name with the label. Supports a comma-separated list, the first
-    non-empty value will be taken.
+  description: The field name with the label. Supports a comma-separated list, the
+    first non-empty value will be taken.
   isArray: false
   name: tagField
   required: true
   secret: false
 - default: false
-  defaultValue: emailsubject|name,emailbody|emailbodyhtml
-  description: A comma-separated list of incident fields names with the email text to process.
-    You can also use "|" if you want to choose the first non-empty value from a list
-    of fields.
-  isArray: false
-  name: emailContentFields
-  required: false
-  secret: false
-- default: false
   defaultValue: '15'
-  description: Sample text of which the total number words are less than or equal to this number
-    will be ignored.
+  description: Sample text of which the total number words are less than or equal
+    to this number will be ignored.
   isArray: false
   name: removeShortTextThreshold
   required: false
@@ -104,25 +95,48 @@ args:
 - default: false
   defaultValue: '*'
   description: 'A comma-separated list of email tags values and mapping. The script
-      considers only the tags specified in this field. You can map label to another
-      value by using this format: LABEL:MAPPED_LABEL. For example, for
-      4 values in email tag: malicious, credentials harvesting, inner communitcation,
-      external legit email, unclassified. While training, we want to ignore "unclassified"
-      tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to     merge
-      "inner communitcation" and "external legit email" to one tag called "non-malicious".
-      The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
-      external legit email:non-malicious'
+    considers only the tags specified in this field. You can map label to another
+    value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email
+    tag: malicious, credentials harvesting, inner communitcation, external legit email,
+    unclassified. While training, we want to ignore "unclassified" tag, and refer
+    to "credentials harvesting" as "malicious" too. Also, we want to     merge "inner
+    communitcation" and "external legit email" to one tag called "non-malicious".
+    The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
+    external legit email:non-malicious'
   isArray: false
   name: phishingLabels
   required: false
   secret: false
-comment: Create a phishing classifier using machine learning technique, based on email content.
+- default: false
+  defaultValue: emailsubject
+  description: Incident field name with the email subject.
+  isArray: false
+  name: emailsubject
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailbody
+  description: Incident field name with the email body (text).
+  isArray: false
+  name: emailbody
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailbodyhtml
+  description: Incident field name with the email body (html).
+  isArray: false
+  name: emailbodyhtml
+  required: false
+  secret: false
+comment: Create a phishing classifier using machine learning technique, based on email
+  content.
 commonfields:
   id: DBotBuildPhishingClassifier
   version: -1
 enabled: false
 name: DBotBuildPhishingClassifier
 script: '-'
+subtype: python2
 system: false
 tags:
 - ml
@@ -130,5 +144,4 @@ timeout: 12µs
 type: python
 tests:
 - Create Phishing Classifier V2 ML Test
-subtype: python2
 fromversion: 4.5.0
