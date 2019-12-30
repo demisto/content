@@ -1,4 +1,8 @@
 ## [Unreleased]
+
+
+## [19.12.0] - 2019-12-10
+  - Fixed an issue where the status log queries that returned zero results did not update to *Completed*.
   - Added 2 commands.
     - ***panorama-get-url-category-from-cloud***
     - ***panorama-get-url-category-from-host***
