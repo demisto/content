@@ -1,0 +1,36 @@
+commonfields:
+  id: IncidentFields
+  version: -1
+name: IncidentFields
+script: ''
+type: python
+tags: []
+comment: Returns all incident fields.
+enabled: true
+args:
+- name: custom
+  default: true
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Only output non-system fields
+  defaultValue: "false"
+- name: short_names
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: If true, output dictionary keys will be field short names rather than
+    long names.
+  defaultValue: "true"
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - '|||demisto-api-get'
+runonce: false
+dockerimage: demisto/python3:3.7.5.4583
+runas: DBotWeakRole
+tests:
+  - No test - unit test
