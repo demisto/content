@@ -1,0 +1,45 @@
+{
+  "DBotScore": {
+    "Indicator": "fakeemail@test.com",
+    "Type": "email",
+    "Vendor": "Flashpoint",
+    "Score": 3
+  },
+  "Account.Email(val.Address && val.Address == obj.Address)": {
+    "Name": "fakeemail@test.com",
+    "Malicious": {
+      "Vendor": "Flashpoint",
+      "Description": "Found in malicious indicators dataset"
+    }
+  },
+  "Flashpoint.Email.Event(val.Fpid && val.Fpid == obj.Fpid)": [
+    {
+      "EventDetails": {
+        "RelatedEvent": [],
+        "Tags": [
+          "Tags1",
+          "Tags2",
+          "Tags3",
+          "Tags4",
+          "Tags5"
+        ],
+        "attack_ids": [],
+        "fpid": "abcdefghij-fffffffffff",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/abcdefghij-fffffffffff",
+        "info": "LockerGoga",
+        "reports": [
+          "http://123-fake-api.com/home/intelligence/reports/report/abcdefghij-fffffffffff",
+          "http://123-fake-api.com/home/intelligence/reports/report/abcdefghij-fffffffffff"
+        ],
+        "timestamp": "1571934618"
+      },
+      "Category": "category1",
+      "Fpid": "abcdefghij-fffffffffff",
+      "Href": "http://123-fake-api.com/api/v4/indicators/attribute/abcdefghij-fffffffffff",
+      "Timestamp": "1553280098",
+      "Type": "email-dst",
+      "Uuid": "5d8bb545-3eds-2222-1111-aaaaaaaaaaaa",
+      "Comment": ""
+    }
+  ]
+}

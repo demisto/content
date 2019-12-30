@@ -9,6 +9,7 @@ import urllib3
 from time import sleep
 from datetime import datetime
 from Tests.test_dependencies import get_tested_integrations, get_tests_allocation
+
 import demisto_client.demisto_api
 from slackclient import SlackClient
 import threading
@@ -465,6 +466,7 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
             integration['params'] = matched_integration_params.get('params', {})
             integration['byoi'] = matched_integration_params.get('byoi', True)
             integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
+            integration['validate_test'] = matched_integration_params.get('validate_test', True)
         elif 'Demisto REST API' == integration['name']:
             integration['params'] = {
                 'url': 'https://localhost',
@@ -731,10 +733,16 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                               prints_manager=prints_manager)
         prints_manager.add_print_job("\nRunning mock-disabled tests", print, thread_index)
         proxy.configure_proxy_in_demisto(demisto_api_key, server, '')
-        prints_manager.add_print_job("Restarting demisto service", print, thread_index)
-        restart_demisto_service(ami, demisto_api_key, server, thread_index=thread_index, prints_manager=prints_manager)
-        prints_manager.add_print_job("Demisto service restarted\n", print, thread_index)
-        prints_manager.execute_thread_prints(thread_index)
+        prints_manager.add_print_job('Resetting containers', print, thread_index)
+        client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
+        body, status_code, headers = demisto_client.generic_request_func(self=client, method='POST',
+                                                                         path='/containers/reset')
+        if status_code != 200:
+            error_msg = 'Request to reset containers failed with status code "{}"\n{}'.format(status_code, body)
+            prints_manager.add_print_job(error_msg, print_error, thread_index)
+            print_manager.execute_thread_prints(thread_index)
+            sys.exit(1)
+        sleep(10)
     for t in unmockable_tests:
         run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
