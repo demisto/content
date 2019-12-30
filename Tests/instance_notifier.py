@@ -54,8 +54,8 @@ def test_instances(secret_conf_path, server, username, password):
             )
             if not instance_id:
                 print_error('Failed to create instance of {} with message: {}'.format(integration_name, failure_message))
-                failed_integrations.append("{0} {1} - devops comments: {3}".format(
-                    integration_name, product_description, failure_message, devops_comments))
+                failed_integrations.append("{} {} - devops comments: {}".format(
+                    integration_name, product_description, devops_comments))
             else:
                 instance_ids.append(instance_id)
                 print('Create integration %s succeed' % (integration_name,))
