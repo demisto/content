@@ -50,7 +50,7 @@ def camel_case_to_readable(text: str) -> str:
     return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
 
 
-def parse_data_arr(data_arr, fields_to_drop=[], fields_to_include=[]):
+def parse_data_arr(data_arr: Any, fields_to_drop: list = [], fields_to_include: list = []):
     """Parse data as received from Microsoft Graph API into Demisto's conventions
     Args:
         data_arr: a dictionary containing the data
@@ -631,11 +631,9 @@ def list_policies(client: Client, *_) -> Tuple[str, Dict, Dict]:
         Outputs.
     """
     policies_xml = client.list_policies_request()
-
     policies_json = xml2json(policies_xml)
     policies = json.loads(policies_json)
     policies_arr = policies.get('policies').get('policy')
-
     policies_readable, policies_outputs = parse_data_arr(policies_arr)
     headers = ['ID', 'Name', 'Criticality', 'Created On', 'Created By', 'Description']
     human_readable = tableToMarkdown(name="Policies:", t=policies_readable, headers=headers, removeNull=True)
@@ -879,17 +877,19 @@ def get_incident_available_actions(client: Client, args: Dict) -> Tuple[str, Dic
     """
     incident_id = str(args.get('incident_id'))
 
-    incident = client.get_incident_available_actions_request(incident_id)
-    if not incident:
-        return f'Incident {incident_id} does not have any available actions.', {}, incident
+    incident_actions = client.get_incident_available_actions_request(incident_id)
+    if not incident_actions:
+        return f'Incident {incident_id} does not have any available actions.', {}, incident_actions
+    actions = []
+    for action_details in incident_actions:
+        actions.append(action_details.get('actionName'))
 
-    incident_actions = incident.get('actions')  # TODO - incident which is not closed
     incident_outputs = {
         'IncidentID': incident_id,
-        'AvailableActions': incident_actions
+        'AvailableActions': actions
     }
     entry_context = {f'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incident_outputs}
-    return f'Incident {incident_id} available actions: {incident_actions}.', entry_context, incident
+    return f'Incident {incident_id} available actions: {actions}.', entry_context, incident_actions
 
 
 def perform_action_on_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -904,11 +904,10 @@ def perform_action_on_incident(client: Client, args: Dict) -> Tuple[str, Dict, D
     """
     incident_id = str(args.get('incident_id'))
     action = str(args.get('action'))
-    incident = client.perform_action_on_incident_request(incident_id, action)
-    incident_result = incident.get('result')  # TODO - real api action on a non closed incident
+    incident_result = client.perform_action_on_incident_request(incident_id, action)
     if incident_result != 'submitted':
         raise Exception(f'Failed to perform the action {action} on incident {incident_id}.')
-    return f'Action {action} was performed on incident {incident_id}.', {}, incident
+    return f'Action {action} was performed on incident {incident_id}.', {}, incident_result
 
 
 def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -955,7 +954,6 @@ def add_comment_to_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     incident = client.add_comment_to_incident_request(incident_id, comment)
     if not incident:
         raise Exception(f'Failed to add comment to the incident {incident_id}.')
-    demisto.log('really check it worksssssss')  # TODO - see comment in UI
     return f'Comment was added to the incident {incident_id} successfully.', {}, incident
 
 
