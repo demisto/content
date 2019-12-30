@@ -104,7 +104,8 @@ def __test_integration_instance(client, module_instance, thread_index=0, prints_
 def __create_integration_instance(client, integration_name, integration_instance_name,
                                   integration_params, is_byoi, validate_test=True, thread_index=0,
                                   prints_manager=None):
-    start_message = 'Configuring instance for {} (instance name: {}, validate "Test": {})'.format(integration_name, integration_instance_name, validate_test)
+    start_message = 'Configuring instance for {} (instance name: {}, ' \
+                    'validate "Test": {})'.format(integration_name, integration_instance_name, validate_test)
     prints_manager.add_print_job(start_message, print, thread_index)
 
     # get configuration config (used for later rest api
@@ -179,7 +180,7 @@ def __create_integration_instance(client, integration_name, integration_instance
     # test integration
     if validate_test:
         test_succeed, failure_message = __test_integration_instance(client, module_instance, thread_index=thread_index,
-                                               prints_manager=prints_manager)
+                                                                    prints_manager=prints_manager)
     else:
         print_warning(
             "Skipping test validation for integration: {} (it has test_validate set to false)".format(integration_name)
@@ -391,11 +392,12 @@ def __print_investigation_error(client, playbook_id, investigation_id, color=LOG
             if entry['type'] == ENTRY_TYPE_ERROR and entry['parentContent']:
                 prints_manager.add_print_job('- Task ID: ' + entry['taskId'].encode('utf-8'), print_color, thread_index,
                                              message_color=color)
-                prints_manager.add_print_job('  Command: ' + entry['parentContent'].encode('utf-8'), print_color, thread_index,
-                                         message_color=color)
+                prints_manager.add_print_job('  Command: ' + entry['parentContent'].encode('utf-8'), print_color,
+                                             thread_index, message_color=color)
                 body_contents_str = '  Body:\n' + entry['contents'].encode('utf-8') + '\n'
                 prints_manager.add_print_job(body_contents_str, print_color,
                                              thread_index, message_color=color)
+
 
 # Configure integrations to work with mock
 def configure_proxy_unsecure(integration_params):
@@ -433,11 +435,10 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
             configure_proxy_unsecure(integration_params)
 
         module_instance, failure_message = __create_integration_instance(client, integration_name,
-                                                        integration_instance_name,
-                                                        integration_params, is_byoi, validate_test,
-                                                         thread_index=thread_index,
-                                                         prints_manager=prints_manager
-                                                         )
+                                                                         integration_instance_name, integration_params,
+                                                                         is_byoi, validate_test,
+                                                                         thread_index=thread_index,
+                                                                         prints_manager=prints_manager)
         if module_instance is None:
             failure_message = failure_message if failure_message else 'No failure message could be found'
             msg = 'Failed to create instance: {}'.format(failure_message)
