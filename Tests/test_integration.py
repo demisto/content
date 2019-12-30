@@ -161,11 +161,10 @@ def __create_integration_instance(client, integration_name, integration_instance
                                                   path='/settings/integration',
                                                   body=module_instance)
     except ApiException as conn_err:
-        prints_manager.add_print_job(error_message, print_error, thread_index)
         error_message = 'Error trying to create instance for integration: {0}:\n {1}'.format(
             integration_name, conn_err
         )
-        print_error(error_message)
+        prints_manager.add_print_job(error_message, print_error, thread_index)
         return None, error_message
 
     if res[1] != 200:
