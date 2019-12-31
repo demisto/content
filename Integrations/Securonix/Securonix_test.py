@@ -1,5 +1,5 @@
 import pytest
-from Securonix import camel_case_to_readable, parse_data_arr, Client, list_workflows,\
+from Securonix import reformat_resource_groups_outputs, reformat_outputs, parse_data_arr, Client, list_workflows,\
     get_default_assignee_for_workflow, list_possible_threat_actions, list_resource_groups, list_users,\
     list_incidents, get_incident, list_watchlists, get_watchlist, check_entity_in_watchlist
 from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAULT_ASSIGNEE,\
@@ -10,9 +10,23 @@ from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT
     EXPECTED_GET_INCIDENT, EXPECTED_LIST_WATCHLISTS, EXPECTED_GET_WATCHLIST, EXPECTED_ENTITY_IN_WATCHLIST
 
 
-def test_camel_case_to_readable():
-    assert camel_case_to_readable('id') == 'ID'
-    assert camel_case_to_readable('invalidEventAction') == 'Invalid Event Action'
+def test_reformat_resource_groups_outputs():
+    assert reformat_resource_groups_outputs('rg_category') == 'ResourceGroupCategory'
+    assert reformat_resource_groups_outputs('rg_id') == 'ResourceGroupID'
+    assert reformat_resource_groups_outputs('rg_name') == 'ResourceGroupName'
+    assert reformat_resource_groups_outputs('rg_vendor') == 'ResourceGroupVendor'
+    assert reformat_resource_groups_outputs('rg_functionality') == 'ResourceGroupFunctionality'
+    assert reformat_resource_groups_outputs('rg_resourcetypeid') == 'ResourceGroupTypeID'
+
+
+def test_reformat_outputs():
+    assert reformat_outputs('id') == 'ID'
+    assert reformat_outputs('eventId') == 'EventID'
+    assert reformat_outputs('entityId') == 'EntityID'
+    assert reformat_outputs('jobId') == 'JobID'
+    assert reformat_outputs('U_name') == 'Name'
+    assert reformat_outputs('u_hostname') == 'Hostname'
+    assert reformat_outputs('invalidEventAction') == 'Invalid Event Action'
 
 
 def test_parse_data_arr():

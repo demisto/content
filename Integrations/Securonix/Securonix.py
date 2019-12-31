@@ -9,13 +9,32 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 
-def camel_case_to_readable(text: str) -> str:
-    """'camelCase' -> 'Camel Case'
+def reformat_resource_groups_outputs(text: str) -> str:
+    """rg_*text -> ResourceGroupText
     Args:
         text: the text to transform
     Returns:
         A Camel Cased string.
     """
+    suffix = text[3:]
+    if suffix == 'id':
+        suffix = 'ID'
+    elif suffix == 'resourcetypeid':
+        suffix = 'TypeID'
+    else:
+        suffix = suffix.title()
+    return f'ResourceGroup{suffix}'
+
+
+def reformat_outputs(text: str) -> str:
+    """camelCase -> Camel Case, id -> ID
+    Args:
+        text: the text to transform
+    Returns:
+        A Demisto output standard string
+    """
+    if text.startswith('rg_'):
+        return reformat_resource_groups_outputs(text)
     if text == 'id':
         return 'ID'
     if text == 'lanId':
@@ -24,7 +43,7 @@ def camel_case_to_readable(text: str) -> str:
         return 'JobID'
     if text == 'eventId':
         return 'EventID'
-    if text == 'entitytId':
+    if text == 'entityId':
         return 'EntityID'
     if text in ['tenantId', 'tenantid']:
         return 'TenantID'
@@ -56,14 +75,14 @@ def parse_data_arr(data_arr: Any, fields_to_drop: list = [], fields_to_include: 
     if isinstance(data_arr, list):
         readable_arr, outputs_arr = [], []
         for data in data_arr:
-            readable = {camel_case_to_readable(i): j for i, j in data.items() if i not in fields_to_drop}
+            readable = {reformat_outputs(i): j for i, j in data.items() if i not in fields_to_drop}
             if fields_to_include:
                 readable = {i: j for i, j in readable.items() if i in fields_to_include}
             readable_arr.append(readable)
             outputs_arr.append({k.replace(' ', ''): v for k, v in readable.copy().items()})
         return readable_arr, outputs_arr
 
-    readable = {camel_case_to_readable(i): j for i, j in data_arr.items() if i not in fields_to_drop}
+    readable = {reformat_outputs(i): j for i, j in data_arr.items() if i not in fields_to_drop}
     if fields_to_include:
         readable = {i: j for i, j in readable.items() if i in fields_to_include}
     outputs = {k.replace(' ', ''): v for k, v in readable.copy().items()}
