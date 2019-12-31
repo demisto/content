@@ -24,6 +24,8 @@ try:
 except Exception:
     pass
 
+CONTENT_RELEASE_VERSION = '0.0.0'
+CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
@@ -76,6 +78,7 @@ thresholds = {
     'vtPositives': 10,
     'vtPositiveUrlsForIP': 30
 }
+# The dictionary below does not represent DBot Scores correctly, and should not be used
 dbotscores = {
     'Critical': 4,
     'High': 3,
