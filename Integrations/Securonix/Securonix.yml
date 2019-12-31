@@ -44,6 +44,7 @@ configuration:
 description: Use the Securonix integration to manage incidents and watchlists.
 display: Securonix
 name: Securonix
+fromversion: 4.5.0
 script:
   commands:
   - deprecated: false
@@ -260,23 +261,23 @@ script:
     - contextPath: Securonix.ActivityData.Resourcename
       description: Resource name.
       type: String
-    - contextPath: Securonix.ActivityData.Rg_category
-      description: RG category.
+    - contextPath: Securonix.ActivityData.ResourceGroupCategory
+      description: Resource group category.
       type: String
-    - contextPath: Securonix.ActivityData.Rg_functionality
-      description: RG functionality.
+    - contextPath: Securonix.ActivityData.ResourceGroupFunctionality
+      description: Resource group functionality.
       type: String
-    - contextPath: Securonix.ActivityData.Rg_id
-      description: RG ID.
+    - contextPath: Securonix.ActivityData.ResourceGroupID
+      description: Resource group ID.
       type: String
-    - contextPath: Securonix.ActivityData.Rg_name
-      description: RG name.
+    - contextPath: Securonix.ActivityData.ResourceGroupName
+      description: Resource group name.
       type: String
-    - contextPath: Securonix.ActivityData.Rg_resourcetypeid
-      description: RG resource type ID.
+    - contextPath: Securonix.ActivityData.ResourceGroupTypeID
+      description: Resource group resource type ID.
       type: String
-    - contextPath: Securonix.ActivityData.Rg_vendor
-      description: RG vendor.
+    - contextPath: Securonix.ActivityData.ResourceGroupVendor
+      description: Resource group vendor.
       type: String
     - contextPath: Securonix.ActivityData.Sourcehostname
       description: Source hostname.
@@ -390,11 +391,11 @@ script:
     - contextPath: Securonix.ViolationData.Resourcename
       description: Resource name.
       type: String
-    - contextPath: Securonix.ViolationData.Rg_id
-      description: RG ID.
+    - contextPath: Securonix.ViolationData.ResourceGroupID
+      description: Resource group ID.
       type: String
-    - contextPath: Securonix.ViolationData.Rg_name
-      description: RG name.
+    - contextPath: Securonix.ViolationData.ResourceGroupName
+      description: Resource group name.
       type: String
     - contextPath: Securonix.ViolationData.Riskscore
       description: Risk score.
