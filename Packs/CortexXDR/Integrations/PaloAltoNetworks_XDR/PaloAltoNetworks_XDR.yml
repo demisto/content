@@ -219,98 +219,188 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.incident_id
       description: Unique ID assigned to each returned incident.
       type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.manual_severity
-      description: Incident severity assigned by the user. This does not affect the
-        calculated severity (LOW, MEDIUM, HIGH).
+    - contextPath: PaloAltoNetworksXDR.Incident.creation_time
+      description: Date and time the incident was created on XDR.
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.Incident.modification_time
+      description: Date and time that the incident was last modified.
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.Incident.detection_time
+      description: Date and time that the first alert occurred in the incident.
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.Incident.status
+      description: Current status of the incident (NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_OTHER).
       type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.manual_description
-      description: Incident description provided by the user.
+    - contextPath: PaloAltoNetworksXDR.Incident.severity
+      description: Calculated severity of the incident (low, medium, high).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.description
+      description: Dynamic calculated description of the incident.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.assigned_user_mail
       description: Email address of the assigned user.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.high_severity_alert_count
-      description: Number of alerts with the severity HIGH.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.host_count
-      description: Number of hosts involved in the incident
-      type: number
-    - contextPath: PaloAltoNetworksXDR.Incident.xdr_url
-      description: A link to the incident view on XDR.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.assigned_user_pretty_name
       description: Full name of the user assigned to the incident.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alert_count
       description: Total number of alerts in the incident.
-      type: number
-    - contextPath: PaloAltoNetworksXDR.Incident.med_severity_alert_count
-      description: Number of alerts with the severity MEDIUM.
-      type: number
-    - contextPath: PaloAltoNetworksXDR.Incident.user_count
-      description: Number of users involved in the incident.
-      type: number
-    - contextPath: PaloAltoNetworksXDR.Incident.severity
-      description: Calculated severity of the incident (low, medium, high).
-      type: String
+      type: Number
     - contextPath: PaloAltoNetworksXDR.Incident.low_severity_alert_count
       description: Number of alerts with the severity LOW.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.status
-      description: Current status of the incident (NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED,
-        RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_OTHER).
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.description
-      description: Dynamic calculated description of the incident.
-      type: String
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Incident.med_severity_alert_count
+      description: Number of alerts with the severity MEDIUM.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Incident.high_severity_alert_count
+      description: Number of alerts with the severity HIGH.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Incident.user_count
+      description: Number of users involved in the incident.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Incident.host_count
+      description: Number of hosts involved in the incident
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Incident.notes
+      description: Comments entered by the user regarding the incident.
+      type: Unknown
     - contextPath: PaloAltoNetworksXDR.Incident.resolve_comment
       description: Comments entered by the user when the incident was resolved.
       type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.notes
-      description: Comments entered by the user regarding the incident.
+    - contextPath: PaloAltoNetworksXDR.Incident.manual_severity
+      description: Incident severity assigned by the user. This does not affect the calculated severity (low, medium, high).
       type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.creation_time
-      description: Date and time the incident was created on XDR.
-      type: date
-    - contextPath: PaloAltoNetworksXDR.Incident.detection_time
-      description: Date and time that the first alert occurred in the incident.
-      type: date
-    - contextPath: PaloAltoNetworksXDR.Incident.modification_time
-      description: Date and time that the incident was last modified.
-      type: date
+    - contextPath: PaloAltoNetworksXDR.Incident.manual_description
+      description: Incident description provided by the user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.xdr_url
+      description: A link to the incident view on XDR.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.starred
+      description: ''
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.alert_id
+      description: Unique ID for each alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.detection_timestamp
+      description: Date and time that the alert occurred.
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.source
+      description: Source of the alert. The product/vendor this alert came from.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.severity
+      description: Severity of the alert. (low, medium, high)
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.name
+      description: Calculated name of the alert.
+      type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.category
-      description: Category of the alert, for example, Spyware Detected via Anti-Spyware
-        profile.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_pretty
-      description: The action that triggered the alert.
+      description: Category of the alert, for example, Spyware Detected via Anti-Spyware profile.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.description
       description: Textual description of the alert.
       type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.alerts.severity
-      description: Severity of the alert.
-      type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_ip
       description: Host IP involved in the alert.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.alerts.source
-      description: Source of the alert.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.alerts.user_name
-      description: User name involved with the alert.
-      type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.alerts.alert_id
-      description: Unique ID for each alert.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_name
       description: Host name involved in the alert.
       type: String
-    - contextPath: PaloAltoNetworksXDR.Incident.alerts.detection_timestamp
-      description: Date and time that the alert occurred.
-      type: date
-    - contextPath: PaloAltoNetworksXDR.Incident.alerts.name
-      description: Calculated name of the alert.
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.user_name
+      description: User name involved with the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.event_type
+      description: Event type (Network Event, which other types available??)
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_pretty
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_image_name
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_command_line
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_status
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_vendor
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_image_name
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_command_line
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_signature_status
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_signature_vendor
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_causality_id
+      description: ''
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_image_name
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_image_command_line
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_image_sha256
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_signature_status
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_signature_vendor
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_file_path
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_file_md5
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_file_sha256
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_registry_data
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_registry_full_key
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_local_ip
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_local_port
+      description: ''
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_remote_ip
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_remote_port
+      description: ''
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_external_hostname
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.fw_app_id
+      description: ''
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.is_whitelisted
+      description: ''
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.starred
+      description: ''
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.type
+      description: ''
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_port
       description: The remote port related to the artifact.
@@ -330,6 +420,9 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.type
       description: The artifact type, for example, IP.
       type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_country
+      description: The country related to the artifact
+      type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_status
       description: Digital signature status of the file.
       type: String
@@ -346,7 +439,7 @@ script:
       description: Number of alerts related to the artifact.
       type: number
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_malicious
-      description: Whether the artifact is malicious, decided by the Wildfire verdict.
+      description: Whether the artifact is malicious, decided by the Wildfire verdic
       type: boolean
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_manual
       description: Whether the artifact was created by the user (manually).
@@ -356,6 +449,9 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
       description: SHA-256 hash of the file
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_vendor_name
+      description: ''
       type: String
   - arguments:
     - default: false
@@ -757,13 +853,13 @@ script:
     execution: false
     name: xdr-get-distribution-versions
     outputs:
-    - contextPath: PaloAltoNetworks_XDR.DistributionVersions.windows
+    - contextPath: PaloAltoNetworksXDR.DistributionVersions.windows
       description: String list of Windows agent versions.
       type: Unknown
-    - contextPath: PaloAltoNetworks_XDR.DistributionVersions.linux
+    - contextPath: PaloAltoNetworksXDR.DistributionVersions.linux
       description: String list of Linux agent versions.
       type: Unknown
-    - contextPath: PaloAltoNetworks_XDR.DistributionVersions.macos
+    - contextPath: PaloAltoNetworksXDR.DistributionVersions.macos
       description: String list of Mac agent versions.
       type: Unknown
   - arguments:
@@ -819,19 +915,19 @@ script:
     execution: false
     name: xdr-create-distribution
     outputs:
-    - contextPath: PaloAltoNetwokrs_XDR.Distribution.id
+    - contextPath: PaloAltoNetworksXDR.Distribution.id
       description: The installation package ID.
       type: String
-    - contextPath: PaloAltoNetwokrs_XDR.Distribution.name
+    - contextPath: PaloAltoNetworksXDR.Distribution.name
       description: A string representing the name of the installation package.
       type: String
-    - contextPath: PaloAltoNetwokrs_XDR.Distribution.platform
+    - contextPath: PaloAltoNetworksXDR.Distribution.platform
       description: windows,linux,macos,android
       type: String
-    - contextPath: PaloAltoNetwokrs_XDR.Distribution.agent_version
+    - contextPath: PaloAltoNetworksXDR.Distribution.agent_version
       description: Agent version
       type: String
-    - contextPath: PaloAltoNetwokrs_XDR.Distribution.description
+    - contextPath: PaloAltoNetworksXDR.Distribution.description
       description: String representing information about the package.
       type: String
   - arguments:
@@ -872,10 +968,10 @@ script:
     execution: false
     name: xdr-get-distribution-url
     outputs:
-    - contextPath: PaloAltoNetwoks_XDR.Distribution.id
+    - contextPath: PaloAltoNetworksXDR.Distribution.id
       description: Distribution ID
       type: String
-    - contextPath: PaloAltoNetwoks_XDR.Distribution.url
+    - contextPath: PaloAltoNetworksXDR.Distribution.url
       description: URL for downloading the installation package.
       type: String
   - arguments:
@@ -890,10 +986,10 @@ script:
     execution: false
     name: xdr-get-distribution-status
     outputs:
-    - contextPath: PaloAltoNetworks_XDR.Distribution.id
+    - contextPath: PaloAltoNetworksXDR.Distribution.id
       description: Distribution ID
       type: String
-    - contextPath: PaloAltoNetworks_XDR.Distribution.status
+    - contextPath: PaloAltoNetworksXDR.Distribution.status
       description: A string representing the status of installation package.
       type: String
   - arguments:

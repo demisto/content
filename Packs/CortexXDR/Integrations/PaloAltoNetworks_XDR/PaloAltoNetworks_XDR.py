@@ -691,8 +691,17 @@ def get_incidents_command(client, args):
     """
     Retrieve a list of incidents from XDR, filtered by some filters.
     """
-
-    incident_id_list = argToList(args.get('incident_id_list'))
+    
+    # sometimes incident id can be passed as integer from the playbook
+    incident_id_list = args.get('incident_id_list')
+    if isinstance(incident_id_list, (int)):
+        incident_id_list = str(incident_id_list)
+        
+    incident_id_list = argToList(incident_id_list)
+    # make sure all the ids passed are strings and not integers
+    for index, id in enumerate(incident_id_list):
+        if isinstance(id, (int, float)):
+            incident_id_list[index] = str(id)
 
     lte_modification_time = args.get('lte_modification_time')
     gte_modification_time = args.get('gte_modification_time')
