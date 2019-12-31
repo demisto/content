@@ -1,4 +1,4 @@
-### [Unreleased]
+## [Unreleased]
 Fixed email subject unicode issue for command **send-mail**.
 
 
