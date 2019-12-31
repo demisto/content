@@ -7,7 +7,7 @@
   "commitMessage": "",
   "shouldPublish": false,
   "shouldCommit": false,
-  "regex": "",
+  "regex": "CVE-\\d{4}-\\d{4,7}",
   "details": "CVE",
   "prevDetails": "CVE",
   "reputationScriptName": "",
