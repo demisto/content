@@ -1,0 +1,64 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Sixgill
+  version: -1
+configuration:
+- display: Sixgill API client ID
+  name: client_id
+  required: true
+  type: 0
+- display: Sixgill API client secret
+  name: client_secret
+  required: true
+  type: 4
+description: Fetching Sixgill alerts as incidents
+display: Sixgill
+name: Sixgill
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Filter by field read
+      isArray: false
+      name: is_read
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter by alert template severity
+      isArray: false
+      name: severity
+      predefined:
+      - low
+      - ' med'
+      - ' high'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter by alert threat level
+      isArray: false
+      name: threat_level
+      predefined:
+      - imminent
+      - ' emerging'
+      required: false
+      secret: false
+    - default: false
+      description: Filter by field threat type
+      isArray: false
+      name: threat_type
+      required: false
+      secret: false
+    deprecated: false
+    description: Get bulk of Sixgill alerts
+    execution: false
+    name: fetch-incidents
+  dockerimage: demisto/sixgill
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
