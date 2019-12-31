@@ -2059,6 +2059,7 @@
         }
     ],
     "skipped_tests": {
+        "Phishing - core": "Issue 20983",
         "Test-Shodan_v2": "Skipping to chack if related to shodan",
         "Endpoint Malware Investigation - Generic - Test": "Issue 20867",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
