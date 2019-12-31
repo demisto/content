@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import pyshark
 import re
+from typing import Dict
 '''GLOBAL VARS'''
 BAD_CHARS = ['[', ']', '>', '<', "'"]
 EMAIL_REGEX = r'\b[A-Za-z0-9._%=+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
@@ -53,6 +54,14 @@ def flows_to_md(flows: dict, disp_num: int) -> str:
 
 
 def flows_to_ec(flows: dict) -> list:
+    """
+
+    Args:
+        flows: A dictionary that hold the flows data
+
+    Returns:
+        flows data in ec format.
+    """
     flows_ec = []
     for flow in flows.keys():
         flow_data = flows[flow]
@@ -70,6 +79,38 @@ def flows_to_ec(flows: dict) -> list:
         flows_ec.append(flow_ec)
     return flows_ec
 
+
+def remove_nones(d: dict) -> dict:
+    """
+
+    Args:
+        d: a dictionary
+
+    Returns: A new dictionary that does not contain keys with None values.
+
+    """
+    return {k: v for k, v in d.items() if v is not None}
+
+
+def add_to_data(d: dict, data: dict) -> None:
+    """
+
+    Args:
+        d: a Dictionary of ID: data to which we want to update the data accordint to ID
+        data: the data to update. data must have an "ID" field.
+
+    Returns:
+        updates dictionard d to include/update the data.
+    """
+    data_id = data.get('ID')
+    if not data_id:
+        return
+    else:
+        if not d.get(data_id):
+            d[data_id] = remove_nones(data)
+        else:
+            d[data_id].update(remove_nones(data))
+
 '''MAIN'''
 
 
@@ -77,20 +118,20 @@ def main():
     # Variables from demisto
     # file_path = "/Users/olichter/Downloads/chargen-udp.pcap"
     #file_path = "/Users/olichter/Downloads/http-site.pcap"                 # HTTP
-    #file_path = "/Users/olichter/Downloads/dns.cap"                        # DNS
+    file_path = "/Users/olichter/Downloads/dns.cap"                        # DNS
     # file_path = "/Users/olichter/Downloads/tftp_rrq.pcap"                 # tftp
     # file_path = "/Users/olichter/Downloads/rsasnakeoil2.cap"              # encrypted SSL
     #file_path = "/Users/olichter/Downloads/smb-legacy-implementation.pcapng"  # llmnr/netbios/smb
     # file_path = "/Users/olichter/Downloads/smtp.pcap"                      # SMTP
     #file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
     #file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
-    file_path = "/Users/olichter/Downloads/iseries.cap"
+    # file_path = "/Users/olichter/Downloads/iseries.cap"
     entry_id = ''
 
     decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
     conversation_number_to_display = 15
     is_flows = True
-    is_dns = False
+    is_dns = True
     is_http = False
     is_reg_extract = True
     is_llmnr = False
@@ -111,7 +152,7 @@ def main():
     flows = {}
     unique_source_ip = set([])
     unique_dest_ip = set([])
-    dns_data = []
+    dns_data = {}
     ips_extracted = set([])
     urls_extracted = set([])
     emails_extracted = set([])
@@ -174,14 +215,13 @@ def main():
             if is_dns:
                 dns_layer = packet.get_multiple_layers('dns')
                 if dns_layer:
-                    if int(dns_layer[0].get('flags_response')):
-                        temp_dns = {
-                            'ID': dns_layer[0].get('id'),
-                            'Request': dns_layer[0].get('qry_name'),
-                            'Response': dns_layer[0].get('a'),
-                            'Type': dns_layer[0].get('resp_type')
-                        }
-                        dns_data.append(temp_dns)
+                    temp_dns = {
+                        'ID': dns_layer[0].get('id'),
+                        'Request': dns_layer[0].get('qry_name'),
+                        'Response': dns_layer[0].get('a'),
+                        'Type': dns_layer[0].get('resp_type')
+                    }
+                    add_to_data(dns_data, temp_dns)
 
             # add conversations
             ip_layer = packet.get_multiple_layers('ip')
@@ -288,10 +328,10 @@ def main():
             ec['PcapResults.Flows(val.SourceIP == obj.SourceIP && val.DestIP == obj.DestIP && ' \
                'val.SourcePort == obj.SourcePort && val.DestPort == obj.DestPort)'] = flows_to_ec(flows)
         if is_dns:
-            ec['PcapResults.DNS(val.ID == obj.ID)'] = dns_data
+            ec['PcapResults.DNS(val.ID == obj.ID)'] = dns_data.values()
         if is_llmnr:
             ec['PcapResults.LLMNR(val.ID == obj.ID)'] = list(llmnr_dict.values())
-        # print(syslogs)
+        print(dns_data.values())
 
     except pyshark.capture.capture.TSharkCrashException as e:
         raise ValueError("Filter could not be applied to file. Please make sure it is of correct syntax.")
