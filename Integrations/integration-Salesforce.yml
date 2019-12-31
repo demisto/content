@@ -346,9 +346,12 @@ script:
                 {to: 'Name', from: 'Name'},
                 {to: 'Alias', from: 'Alias'},
                 {to: 'CommunityNickname', from: 'CommunityNickname'},
+                {to: 'Title', from: 'Title'},
+                {to: 'Phone', from: 'Phone'},
                 {to: 'Email', from: 'Email'},
                 {to: 'FirstName', from: 'FirstName'},
-                {to: 'Username', from: 'Username'}
+                {to: 'Username', from: 'Username'},
+
             ]
         });
     }
