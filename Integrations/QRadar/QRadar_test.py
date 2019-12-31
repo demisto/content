@@ -155,7 +155,8 @@ def test_create_incident_from_offense():
     """
     import QRadar as qradar
     incident = qradar.create_incident_from_offense(OFFENSE_RAW_RESULT[0])
-    assert incident == INCIDENT_RESULT
+    assert incident['name'] == INCIDENT_RESULT['name']
+    assert incident['rawJSON'] == INCIDENT_RESULT['rawJSON']
 
 
 def test_create_incident_from_offense_no_description():
