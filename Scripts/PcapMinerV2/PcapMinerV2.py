@@ -7,7 +7,7 @@ BAD_CHARS = ['[', ']', '>', '<', "'"]
 EMAIL_REGEX = r'\b[A-Za-z0-9._%=+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
 IP_REGEX = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.)' \
            r'{3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b'
-URL_REGEX = r'\b[a-fA-F\d]{64}|[a-fA-F\d]{40}|[a-fA-F\d]{32}|[a-fA-F\d]{128}\b'
+URL_REGEX = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 '''HELPER FUNCTIONS'''
 
 
@@ -72,204 +72,230 @@ def flows_to_ec(flows: dict) -> list:
 
 '''MAIN'''
 
-# Variables from demisto
-# filePath = "/Users/olichter/Downloads/chargen-udp.pcap"
-#filePath = "/Users/olichter/Downloads/http-site.pcap"       # HTTP
-#filePath = "/Users/olichter/Downloads/dns.cap"            # DNS
-# filePath = "/Users/olichter/Downloads/tftp_rrq.pcap"       # tftp
-# filePath = "/Users/olichter/Downloads/rsasnakeoil2.cap"    # encrypted SSL
-filePath = "/Users/olichter/Downloads/smb-legacy-implementation.pcapng"
-entry_id = ''
 
-decrypt_key = ""  # "/Users/olichter/Downloads/rsasnakeoil2.key"
-conversation_number_to_display = 15
-is_flows = False
-is_dns = True
-is_http = False
-is_reg_extract = True
-is_llmnr = True
-pcap_filter = 'llmnr'
-pcap_filter_new_file = ''  # '/Users/olichter/Downloads/try.pcap'
+def main():
+    # Variables from demisto
+    # file_path = "/Users/olichter/Downloads/chargen-udp.pcap"
+    #file_path = "/Users/olichter/Downloads/http-site.pcap"                 # HTTP
+    #file_path = "/Users/olichter/Downloads/dns.cap"                        # DNS
+    # file_path = "/Users/olichter/Downloads/tftp_rrq.pcap"                 # tftp
+    # file_path = "/Users/olichter/Downloads/rsasnakeoil2.cap"              # encrypted SSL
+    #file_path = "/Users/olichter/Downloads/smb-legacy-implementation.pcapng"  # llmnr/netbios/smb
+    # file_path = "/Users/olichter/Downloads/smtp.pcap"                      # SMTP
+    #file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
+    #file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
+    file_path = "/Users/olichter/Downloads/iseries.cap"
+    entry_id = ''
 
+    decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
+    conversation_number_to_display = 15
+    is_flows = True
+    is_dns = False
+    is_http = False
+    is_reg_extract = True
+    is_llmnr = False
+    is_syslog = True
+    pcap_filter = ''
+    pcap_filter_new_file = ''  # '/Users/olichter/Downloads/try.pcap'
+    homemade_regex = 'Layer (.+):'
 
-# Variables for the script
-hierarchy = {}
-num_of_packets = 0
-tcp_streams = 0
-udp_streams = 0
-bytes_transmitted = 0
-min_time = float('inf')
-max_time = -float('inf')
-conversations = {}
-flows = {}
-unique_source_ip = set([])
-unique_dest_ip = set([])
-dns_data = []
-ips_extracted = set([])
-urls_extracted = set([])
-emails_extracted = set([])
+    # Variables for the script
+    hierarchy = {}
+    num_of_packets = 0
+    tcp_streams = 0
+    udp_streams = 0
+    bytes_transmitted = 0
+    min_time = float('inf')
+    max_time = -float('inf')
+    conversations = {}
+    flows = {}
+    unique_source_ip = set([])
+    unique_dest_ip = set([])
+    dns_data = []
+    ips_extracted = set([])
+    urls_extracted = set([])
+    emails_extracted = set([])
+    homemade_extracted = set([])
+    syslogs = []
 
-if is_llmnr:
-    llmnr_type = re.compile('Type: (.*)\n')
-    llmnr_class = re.compile('Class: (.*)\n')
-    llmnr_dict = {}
-
-cap = pyshark.FileCapture(filePath, display_filter=pcap_filter, output_file=pcap_filter_new_file,
-                          decryption_key=decrypt_key, encryption_type='WPA-PWD')
-    # cap = pyshark.FileCapture(filePath) #, use_json=True
-print(cap[0])
-try:
-    for packet in cap:
-        # Set hierarchy for layers
-        layers = str(packet.layers)
-        layers = strip(layers)
-        hierarchy[layers] = hierarchy.get(layers, 0) + 1
-
-        # update times
-        packet_epoch_time = float(packet.frame_info.get('time_epoch'))
-        max_time = max(max_time, packet_epoch_time)
-        min_time = min(min_time, packet_epoch_time)
-
-        # count packets
-        num_of_packets += 1
-
-        # count bytes
-        bytes_transmitted += int(packet.length)
-
-
-        # count num of streams + get src/dest ports
-        tcp = packet.get_multiple_layers('tcp')
-
-        if tcp:
-            tcp_streams = max(int(tcp[0].get('stream', 0)), tcp_streams)
-            src_port = int(tcp[0].get('srcport', 0))
-            dest_port = int(tcp[0].get('dstport', 0))
-
-        udp = packet.get_multiple_layers('udp')
-        if udp:
-            udp_streams = max(int(udp[0].get('stream', 0)),udp_streams)
-            src_port = int(udp[0].get('srcport', 0))
-            dest_port = int(udp[0].get('dstport', 0))
-
-        # extract DNS layer
-        if is_dns:
-            dns_layer = packet.get_multiple_layers('dns')
-            if dns_layer:
-                if int(dns_layer[0].get('flags_response')):
-                    temp_dns = {
-                        'ID': dns_layer[0].get('id'),
-                        'Request': dns_layer[0].get('qry_name'),
-                        'Response': dns_layer[0].get('a'),
-                        'Type': dns_layer[0].get('resp_type')
-                    }
-                    dns_data.append(temp_dns)
-
-        # add conversations
-        ip_layer = packet.get_multiple_layers('ip')
-        if ip_layer:
-            a = ip_layer[0].get('src_host', '')
-            b = ip_layer[0].get('dst_host')
-            unique_source_ip.add(a)
-            unique_dest_ip.add(b)
-            # generate flow data
-            if is_flows:
-                if str([b, dest_port, a, src_port]) in flows.keys():
-                    b, a, src_port, dest_port = a, b, dest_port, src_port
-                flow = str([a, src_port, b, dest_port])
-                flow_data = flows.get(flow, {'min_time': float('inf'),
-                                             'max_time': -float('inf'),
-                                             'bytes': 0,
-                                             'counter': 0})
-                flow_data['min_time'] = min(flow_data['min_time'], packet_epoch_time)
-                flow_data['max_time'] = max(flow_data['min_time'], packet_epoch_time)
-                flow_data['bytes'] += int(packet.length)
-                flow_data['counter'] += 1
-                flows[flow] = flow_data
-
-            # gather http data
-            if is_http:
-                http_layer = packet.get_multiple_layers('http')
-                if http_layer:
-                    all_fields = http_layer[0]._all_fields
-                    more_data = http_layer[0].get('1\\r\\n', {})
-                    agent = all_fields.get("http.user_agent")
-                    host = all_fields.get('http.host')
-                    source_ip = a
-                    full_uri = all_fields.get('http.request.full_uri')
-                    uri = more_data.get('uri')
-                    method = more_data.get('method')
-                    version = more_data.get('version')
-
-            if str([b, a]) in conversations.keys():
-                a, b = b, a
-            hosts = str([a, b])
-            conversations[hosts] = conversations.get(hosts, 0) + 1
-
-        if is_reg_extract:
-            reg = re.compile(IP_REGEX)
-            for i in reg.finditer(str(packet)):
-                ips_extracted.add(i[0])
-            reg = re.compile(EMAIL_REGEX)
-            for i in reg.finditer(str(packet)):
-                emails_extracted.add(i[0])
-            # reg = re.compile(URL_REGEX)
-            # for i in reg.finditer(str(packet)):
-            #     hash.add(i[0])
-
-        if is_llmnr:
-            llmnr_layer = packet.get_multiple_layers('llmnr')
-            if llmnr_layer:
-                llmnr_layer_string = str(llmnr_layer[0])
-                llmnr_data = {
-                    'ID': llmnr_layer[0].get('dns_id'),
-                    'QueryType': None if len(llmnr_type.findall(llmnr_layer_string)) == 0 else
-                    llmnr_type.findall(llmnr_layer_string)[0],
-                    'QueryClass': None if len(llmnr_class.findall(llmnr_layer_string)) == 0 else
-                    llmnr_class.findall(llmnr_layer_string)[0],
-                    'QueryName': str(llmnr_layer[0].get('dns_qry_name')),
-                    'Questions': int(llmnr_layer[0].get('dns_count_queries'))
-                }
-                llmnr_dict[llmnr_data['ID']] = llmnr_data
-
-    tcp_streams += 1
-    udp_streams += 1
-
-    # Human Readable
-    md = f'## PCAP Info:\n' \
-        f'Between {formatEpochDate(min_time)} and {formatEpochDate(max_time)} there were {num_of_packets} ' \
-        f'packets transmitted in {tcp_streams + udp_streams} streams.\n'
-    md += '#### Protocol Breakdown\n'
-    md += hierarchy_to_md(hierarchy)
-    md += f'#### Top {conversation_number_to_display} Conversations\n'
-    md += conversations_to_md(conversations, conversation_number_to_display)
-    if is_flows:
-        md += f'#### Top {conversation_number_to_display} Flows\n'
-        md += flows_to_md(flows, conversation_number_to_display)
-    print(md)
-
-    # Entry Context
-    general_context = {
-        'EntryID': entry_id,
-        'Bytes': bytes_transmitted,
-        'Packets': num_of_packets,
-        'StreamCount': tcp_streams+udp_streams,
-        'UniqueSourceIP': len(unique_source_ip),
-        'UniqueDestIP': len(unique_dest_ip),
-        'StartTime': min_time,
-        'EndTime': max_time
-    }
-    ec = {'PcapResults': general_context}
-    if is_flows:
-        ec['PcapResults.Flows(val.SourceIP == obj.SourceIP && val.DestIP == obj.DestIP && ' \
-           'val.SourcePort == obj.SourcePort && val.DestPort == obj.DestPort)'] = flows_to_ec(flows)
-    if is_dns:
-        ec['PcapResults.DNS(val.ID == obj.ID)'] = dns_data
+    # Regex compilation
     if is_llmnr:
-        ec['PcapResults.LLMNR(val.ID == obj.ID)'] = list(llmnr_dict.values())
-    print(list(llmnr_dict.values()))
+        llmnr_type = re.compile('Type: (.*)\n')
+        llmnr_class = re.compile('Class: (.*)\n')
+        llmnr_dict = {}
 
-except pyshark.capture.capture.TSharkCrashException as e:
-    raise ValueError("Filter could not be applied to file. Please make sure it is of correct syntax.")
+    if is_reg_extract:
+        reg_ip = re.compile(IP_REGEX)
+        reg_email = re.compile(EMAIL_REGEX)
+        reg_url = re.compile(URL_REGEX)
 
-# TIPS:
-# cap.load_packets() - Loads packets to cap. Then we can use len(cap)
+    if homemade_regex:
+        reg_homemad = re.compile(homemade_regex)
+
+
+    cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file,
+                              decryption_key=decrypt_key, encryption_type='WPA-PWD')
+        # cap = pyshark.FileCapture(file_path) #, use_json=True
+    # print(cap[0])
+    try:
+        for packet in cap:
+            # Set hierarchy for layers
+            layers = str(packet.layers)
+            layers = strip(layers)
+            hierarchy[layers] = hierarchy.get(layers, 0) + 1
+
+            # update times
+            packet_epoch_time = float(packet.frame_info.get('time_epoch'))
+            max_time = max(max_time, packet_epoch_time)
+            min_time = min(min_time, packet_epoch_time)
+
+            # count packets
+            num_of_packets += 1
+
+            # count bytes
+            bytes_transmitted += int(packet.length)
+
+
+            # count num of streams + get src/dest ports
+            tcp = packet.get_multiple_layers('tcp')
+
+            if tcp:
+                tcp_streams = max(int(tcp[0].get('stream', 0)), tcp_streams)
+                src_port = int(tcp[0].get('srcport', 0))
+                dest_port = int(tcp[0].get('dstport', 0))
+
+            udp = packet.get_multiple_layers('udp')
+            if udp:
+                udp_streams = max(int(udp[0].get('stream', 0)), udp_streams)
+                src_port = int(udp[0].get('srcport', 0))
+                dest_port = int(udp[0].get('dstport', 0))
+
+            # extract DNS layer
+            if is_dns:
+                dns_layer = packet.get_multiple_layers('dns')
+                if dns_layer:
+                    if int(dns_layer[0].get('flags_response')):
+                        temp_dns = {
+                            'ID': dns_layer[0].get('id'),
+                            'Request': dns_layer[0].get('qry_name'),
+                            'Response': dns_layer[0].get('a'),
+                            'Type': dns_layer[0].get('resp_type')
+                        }
+                        dns_data.append(temp_dns)
+
+            # add conversations
+            ip_layer = packet.get_multiple_layers('ip')
+            if ip_layer:
+                a = ip_layer[0].get('src_host', '')
+                b = ip_layer[0].get('dst_host')
+                unique_source_ip.add(a)
+                unique_dest_ip.add(b)
+                # generate flow data
+                if is_flows:
+                    if str([b, dest_port, a, src_port]) in flows.keys():
+                        b, a, src_port, dest_port = a, b, dest_port, src_port
+                    flow = str([a, src_port, b, dest_port])
+                    flow_data = flows.get(flow, {'min_time': float('inf'),
+                                                 'max_time': -float('inf'),
+                                                 'bytes': 0,
+                                                 'counter': 0})
+                    flow_data['min_time'] = min(flow_data['min_time'], packet_epoch_time)
+                    flow_data['max_time'] = max(flow_data['min_time'], packet_epoch_time)
+                    flow_data['bytes'] += int(packet.length)
+                    flow_data['counter'] += 1
+                    flows[flow] = flow_data
+
+                # gather http data
+                if is_http:
+                    http_layer = packet.get_multiple_layers('http')
+                    if http_layer:
+                        all_fields = http_layer[0]._all_fields
+                        more_data = http_layer[0].get('1\\r\\n', {})
+                        agent = all_fields.get("http.user_agent")
+                        host = all_fields.get('http.host')
+                        source_ip = a
+                        full_uri = all_fields.get('http.request.full_uri')
+                        uri = more_data.get('uri')
+                        method = more_data.get('method')
+                        version = more_data.get('version')
+
+                if str([b, a]) in conversations.keys():
+                    a, b = b, a
+                hosts = str([a, b])
+                conversations[hosts] = conversations.get(hosts, 0) + 1
+
+            if is_llmnr:
+                llmnr_layer = packet.get_multiple_layers('llmnr')
+                if llmnr_layer:
+                    llmnr_layer_string = str(llmnr_layer[0])
+                    llmnr_data = {
+                        'ID': llmnr_layer[0].get('dns_id'),
+                        'QueryType': None if len(llmnr_type.findall(llmnr_layer_string)) == 0 else
+                        llmnr_type.findall(llmnr_layer_string)[0],
+                        'QueryClass': None if len(llmnr_class.findall(llmnr_layer_string)) == 0 else
+                        llmnr_class.findall(llmnr_layer_string)[0],
+                        'QueryName': str(llmnr_layer[0].get('dns_qry_name')),
+                        'Questions': int(llmnr_layer[0].get('dns_count_queries'))
+                    }
+                    llmnr_dict[llmnr_data['ID']] = llmnr_data
+
+            if is_syslog:
+                syslog_layer = packet.get_multiple_layers('syslog')
+                if syslog_layer:
+                    syslogs.append(syslog_layer[0].get('msg'))
+
+            if is_reg_extract:
+                for i in reg_ip.finditer(str(packet)):
+                    ips_extracted.add(i[0])
+                for i in reg_email.finditer(str(packet)):
+                    emails_extracted.add(i[0])
+                for i in reg_url.finditer(str(packet)):
+                     urls_extracted.add(i[0])
+
+            if homemade_regex:
+                for i in reg_homemad.findall((str(packet))):
+                    homemade_extracted.add(i)
+
+        tcp_streams += 1
+        udp_streams += 1
+
+        # Human Readable
+        md = f'## PCAP Info:\n' \
+            f'Between {formatEpochDate(min_time)} and {formatEpochDate(max_time)} there were {num_of_packets} ' \
+            f'packets transmitted in {tcp_streams + udp_streams} streams.\n'
+        md += '#### Protocol Breakdown\n'
+        md += hierarchy_to_md(hierarchy)
+        md += f'#### Top {conversation_number_to_display} Conversations\n'
+        md += conversations_to_md(conversations, conversation_number_to_display)
+        if is_flows:
+            md += f'#### Top {conversation_number_to_display} Flows\n'
+            md += flows_to_md(flows, conversation_number_to_display)
+        print(md)
+
+        # Entry Context
+        general_context = {
+            'EntryID': entry_id,
+            'Bytes': bytes_transmitted,
+            'Packets': num_of_packets,
+            'StreamCount': tcp_streams+udp_streams,
+            'UniqueSourceIP': len(unique_source_ip),
+            'UniqueDestIP': len(unique_dest_ip),
+            'StartTime': min_time,
+            'EndTime': max_time
+        }
+        ec = {'PcapResults': general_context}
+        if is_flows:
+            ec['PcapResults.Flows(val.SourceIP == obj.SourceIP && val.DestIP == obj.DestIP && ' \
+               'val.SourcePort == obj.SourcePort && val.DestPort == obj.DestPort)'] = flows_to_ec(flows)
+        if is_dns:
+            ec['PcapResults.DNS(val.ID == obj.ID)'] = dns_data
+        if is_llmnr:
+            ec['PcapResults.LLMNR(val.ID == obj.ID)'] = list(llmnr_dict.values())
+        # print(syslogs)
+
+    except pyshark.capture.capture.TSharkCrashException as e:
+        raise ValueError("Filter could not be applied to file. Please make sure it is of correct syntax.")
+
+
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()
