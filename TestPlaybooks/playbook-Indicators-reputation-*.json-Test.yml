@@ -1608,7 +1608,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: ${CIDR.Address}
+              simple: CIDR.Address
             iscontext: true
           right:
             value:
@@ -1616,7 +1616,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: ${ICIDR.Address}
+              simple: CIDR.Address
             iscontext: true
           right:
             value:
@@ -1624,7 +1624,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: ${CIDR.Address}
+              simple: CIDR.Address
             iscontext: true
           right:
             value:
@@ -1632,7 +1632,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: ${CIDR.Address}
+              simple: CIDR.Address
             iscontext: true
           right:
             value:
@@ -1735,7 +1735,7 @@ tasks:
       - - operator: notContainsString
           left:
             value:
-              simple: ${CIDR.Address}
+              simple: CIDR.Address
             iscontext: true
           right:
             value:
@@ -1743,7 +1743,7 @@ tasks:
       - - operator: notContainsString
           left:
             value:
-              simple: ${CIDR.Address}
+              simple: CIDR.Address
             iscontext: true
           right:
             value:
@@ -1751,7 +1751,7 @@ tasks:
       - - operator: notContainsString
           left:
             value:
-              simple: ${CIDR.Address}
+              simple: CIDR.Address
             iscontext: true
           right:
             value:
@@ -1880,7 +1880,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: ${IPv6.Address}
+              simple: IPv6.Address
             iscontext: true
           right:
             value:
@@ -1888,7 +1888,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: ${IPv6.Address}
+              simple: IPv6.Address
             iscontext: true
           right:
             value:
@@ -1896,7 +1896,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: ${IPv6.Address}
+              simple: IPv6.Address
             iscontext: true
           right:
             value:
@@ -1999,7 +1999,7 @@ tasks:
       - - operator: notContainsString
           left:
             value:
-              simple: ${IPv6.Address}
+              simple: IPv6.Address
             iscontext: true
           right:
             value:
@@ -2007,7 +2007,7 @@ tasks:
       - - operator: notContainsString
           left:
             value:
-              simple: ${IPv6.Address}
+              simple: IPv6.Address
             iscontext: true
           right:
             value:
@@ -2136,7 +2136,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: ${CIDRv6.Address}
+              simple: CIDRv6.Address
             iscontext: true
           right:
             value:
@@ -2239,7 +2239,7 @@ tasks:
       - - operator: notContainsString
           left:
             value:
-              simple: ${CIDRv6.Address}
+              simple: CIDRv6.Address
             iscontext: true
           right:
             value:
