@@ -1,5 +1,6 @@
 id: Run Panorama Best Practice Assessment
 version: -1
+fromversion: 4.5.0
 name: Run Panorama Best Practice Assessment
 starttaskid: "0"
 description: |-

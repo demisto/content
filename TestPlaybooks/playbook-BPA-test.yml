@@ -3,7 +3,7 @@ version: -1
 contentitemfields:
   propagationLabels: []
 name: Test-BPA
-fromversion: 5.0.0
+fromversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
