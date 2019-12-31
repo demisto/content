@@ -3019,7 +3019,7 @@ script:
       defaultValue: 'false'
       description: Whether to show an uncommitted configuration.
       isArray: false
-      name: show_uncommitted_configuration
+      name: show_uncommitted
       predefined:
       - 'true'
       - 'false'
