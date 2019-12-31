@@ -1814,7 +1814,7 @@ tasks:
       key:
         simple: valid_ipv6s
       value:
-        simple: '"2001:db8:85a3:8d3:1319:8a2e:370:7348", "2a01:111:f406:1805::", "2001:0db8:0000:0000:0000:ff00:0042:8329"'
+        simple: '"2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:0db8:0000:0000:0000:ff00:0042:8329"'
     separatecontext: false
     view: |-
       {
@@ -1885,14 +1885,6 @@ tasks:
           right:
             value:
               simple: 2001:db8:85a3:8d3:1319:8a2e:370:7348
-      - - operator: containsString
-          left:
-            value:
-              simple: IPv6.Address
-            iscontext: true
-          right:
-            value:
-              simple: '2a01:111:f406:1805::'
       - - operator: containsString
           left:
             value:
