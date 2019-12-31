@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Added 4 commands:
+- Added 4 commands.
     - ***panorama-list-static-routes***
     - ***panorama-get-static-route***
     - ***panorama-add-static-route***
