@@ -350,8 +350,7 @@ script:
                 {to: 'Phone', from: 'Phone'},
                 {to: 'Email', from: 'Email'},
                 {to: 'FirstName', from: 'FirstName'},
-                {to: 'Username', from: 'Username'},
-
+                {to: 'Username', from: 'Username'}
             ]
         });
     }
@@ -1780,6 +1779,40 @@ script:
     arguments:
     - name: oid
     - name: caseNumber
+    outputs:
+    - contextPath: ID
+      description: uniq ID
+      type: string
+    - contextPath: ParentId
+      description: Required. ID of the parent Case of the CaseComment.
+      type: string
+    - contextPath: IsPublished
+      description: Indicates whether the CaseComment is visible to customers in the
+        Self-Service portal (true) or not (false). Label is Published. This is the
+        only CaseComment field that can be updated via the API.
+      type: boolean
+    - contextPath: CommentBody
+      description: Text of the CaseComment. The maximum size of the comment body is
+        4,000 bytes. Label is Body.
+      type: string
+    - contextPath: CreatedById
+      description: 'Created Date By Id '
+    - contextPath: CreatedDate
+      description: Created Date
+      type: string
+    - contextPath: SystemModstamp
+      description: 'SystemMod stamp '
+      type: string
+    - contextPath: LastModifiedDate
+      description: 'Last Modified  date '
+      type: string
+    - contextPath: LastModifiedById
+      description: 'Last Modified  date By id '
+      type: string
+    - contextPath: IsDeleted
+      description: Indicates whether the object has been moved to the Recycle Bin
+        (true) or not (false). Label is Deleted.
+      type: boolean
     description: Get comment Via Case Number
   - name: salesforce-post-casecomment
     arguments:
@@ -1791,10 +1824,63 @@ script:
     arguments:
     - name: oid
     - name: caseNumber
+    outputs:
+    - contextPath: ID
+      description: Unique Id
+      type: string
+    - contextPath: Alias
+      description: Required. The user’s alias. For example, jsmith.
+      type: string
+    - contextPath: CommunityNickname
+      description: Name used to identify this user in the Community application, which
+        includes the ideas and answers features.
+      type: string
+    - contextPath: CreatedById
+      description: 'created by id '
+      type: string
+    - contextPath: Email
+      description: Required. The user’s email address.
+      type: string
+    - contextPath: LastLoginDate
+      description: The date and time when the user last successfully logged in. This
+        value is updated if 60 seconds have elapsed since the user’s last login.
+      type: string
+    - contextPath: LastModifiedDate
+      description: last modified date
+      type: string
+    - contextPath: LastName
+      description: Required. The user’s last name.
+      type: string
+    - contextPath: Name
+      description: Concatenation of FirstName and LastName. Limited to 121 characters.
+      type: string
+    - contextPath: Username
+      description: Required. Contains the name that a user enters to log in to the
+        API or the user interface. The value for this field must be in the form of
+        an email address, and all characters should be lowercase. It must also be
+        unique across all organizations. If you try to create or update a User with
+        a duplicate value for this field, the operation is rejected.Each inserted
+        User also counts as a license. Every organization has a maximum number of
+        licenses. If you attempt to exceed the maximum number of licenses by inserting
+        User records, the create is rejected.
+      type: string
+    - contextPath: UserRoleId
+      description: ID of the user’s UserRole. Label is Role ID.
+      type: string
     description: Get UserName Via CaseNumber
   - name: salesforce-get-org
     arguments:
     - name: caseNumber
+    outputs:
+    - contextPath: ID
+      description: Unique ID
+      type: string
+    - contextPath: Name
+      description: 'Required. Label is Account Name. Name of the account. Maximum
+        size is 255 characters. If the account has a record type of Person Account:
+        This value is the concatenation of the FirstName, MiddleName, LastName, and
+        Suffix of the associated person contact. You can''t modify this value.'
+      type: string
     description: 'Get organisation  Via Case Number '
   isfetch: true
   runonce: false
