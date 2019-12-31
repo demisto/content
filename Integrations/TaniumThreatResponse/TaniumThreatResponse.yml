@@ -618,6 +618,38 @@ script:
     deprecated: false
     execution: false
     name: tanium-tr-get-downloaded-file
+  - arguments:
+    - default: false
+      isArray: false
+      name: connection-name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: combined
+      isArray: false
+      name: event-type
+      predefined:
+      - file
+      - network
+      - registry
+      - process
+      - driver
+      - sid
+      - combined
+      - dns
+      - image
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-list-events-by-connection
   dockerimage: demisto/python3:3.7.4.977
   feed: false
   isfetch: true

@@ -443,6 +443,22 @@ def get_downloaded_file(client, data_args):
         fileResult(filename, file_content))
 
 
+def get_events_by_connection(client, data_args):
+    limit = int(data_args.get('limit'))
+    connection = data_args.get('connection-name')
+    event_type = data_args.get('event-type')
+    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{connection}/{event_type}/events/', params={'limit': limit})
+
+    events = []
+    for item in raw_response:
+        events.append(item)
+
+    context = createContext(events, removeNull=True)
+    outputs = {'Tanium.Event(val.ID && val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Events for a connection', events)
+    return human_readable, outputs, raw_response
+
+
 def fetch_incidents(client):
     """
     Fetch events from this integration and return them as Demisto incidents
@@ -518,7 +534,8 @@ def main():
         f'tanium-tr-delete-connection': delete_connection,
         f'tanium-tr-list-labels': get_labels,
         f'tanium-tr-get-label-by-id': get_label,
-        f'tanium-tr-list-file-downloads': get_file_downloads
+        f'tanium-tr-list-file-downloads': get_file_downloads,
+        f'tanium-tr-list-events-by-connection': get_events_by_connection
     }
 
     try:
