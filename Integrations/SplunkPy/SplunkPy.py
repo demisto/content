@@ -184,7 +184,10 @@ def notable_to_incident(event):
         incident["severity"] = severity_to_level(event['urgency'])
     if demisto.get(event, 'rule_description'):
         incident["details"] = event["rule_description"]
-    incident["occurred"] = event["_time"]
+    if demisto.get(event, "occurred"):
+        incident["occurred"] = event["_time"]
+    else:
+        incident["occurred"] = datetime.now()
     incident["rawJSON"] = json.dumps(event)
     labels = []
     if demisto.get(demisto.params(), 'parseNotableEventsRaw'):
