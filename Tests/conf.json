@@ -2055,8 +2055,8 @@
             "playbookID": "Tanium v2 - Test"
         },
         {
-          "integrations": "FeedO365",
-          "playbookID": "O365_Feed_Test",
+          "integrations": "FeedOffice365",
+          "playbookID": "Office365_Feed_Test",
           "fromversion": "5.5.0"
         },
         {

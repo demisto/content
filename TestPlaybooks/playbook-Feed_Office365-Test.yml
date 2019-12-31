@@ -1,8 +1,8 @@
-id: O365_Feed_Test
+id: Office365_Feed_Test
 version: -1
 contentitemfields:
   propagationLabels: []
-name: O365_Feed_Test
+name: Office365_Feed_Test
 starttaskid: "0"
 tasks:
   "0":
@@ -37,11 +37,11 @@ tasks:
     task:
       id: f6c1a59c-1389-4678-8a27-11a5424ed832
       version: -1
-      name: Get Indicators - O365
-      script: FeedO365|||get-indicators
+      name: Get Indicators - Ofiice365
+      script: FeedOffice365|||get-indicators
       type: regular
       iscommand: true
-      brand: FeedO365
+      brand: FeedOffice365
     nexttasks:
       '#none#':
       - "2"
@@ -85,7 +85,7 @@ tasks:
           left:
             value:
               complex:
-                root: O365
+                root: Office365
                 accessor: Indicator.Value
             iscontext: true
       - - operator: containsGeneral
