@@ -853,20 +853,16 @@ script:
 
             var cases = queryObjects(properties, "Case", condition).records;
 
-            // throw '1';
             if (cases.length > 0) {
                 new_time = stringToDate(cases[0].CreatedDate, "%Y-%m-%dT%H:%M:%S.%fZ");
                 lastRun.last_case_time = dateToString(new_time, "%Y-%m-%dT%H:%M:%S.%fZ");
-                // throw '2';
 
                 setLastRun(lastRun);
                 var userMapping = getUserNames();
                 incidents = casesToIncidents(cases, userMapping);
             }
-            // throw '3';
 
         } else { //fetchType === 'comment'
-            throw 'asdfg';
 
             //query comments from last time
 
