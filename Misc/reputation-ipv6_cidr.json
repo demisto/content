@@ -20,7 +20,7 @@
     "updateAfter": 0,
     "mergeContext": false,
     "formatScript": "",
-    "contextPath": "CIDRv6(val.Range \u0026\u0026 val.Range === obj.Range)",
+    "contextPath": "CIDRv6(val.Address \u0026\u0026 val.Address === obj.Address)",
     "contextValue": "Address",
     "excludedBrands": [],
     "defaultMapping": {
