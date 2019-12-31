@@ -1,5 +1,4 @@
-To use the common Microsoft API logic (authentication and API requests), the `MicrosoftApiModule` 
-should be imported in the following manner:
+To use the common Microsoft API logic (authentication and API requests), run the following command to import the `MicrosoftApiModule`.
 
 ```python
 def main():
