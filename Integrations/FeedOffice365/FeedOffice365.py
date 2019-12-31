@@ -130,12 +130,12 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
 
     Args:
         client: Client object with request
-        indicator_type: indicator_type to be retrieved.
+        args: demisto.args()
 
     Returns:
         Outputs.
     """
-    indicator_type = str(args.get('indicator'))
+    indicator_type = str(args.get('indicator_type'))
     iterator = client.build_iterator()
     indicator_type_lower = indicator_type.lower()
     indicators = []
@@ -143,7 +143,6 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
 
     # filter indicator_type specific entries
     iterator = [i for i in iterator if indicator_type_lower in i or indicator_type_lower == 'both']
-
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
     iterator = iterator[:limit]
 

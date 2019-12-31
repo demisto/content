@@ -83,22 +83,23 @@ script:
   commands:
   - arguments:
     - default: false
-      defaultValue: '100'
-      description: Limit the number of results. Default is 100.
+      defaultValue: '10'
+      description: Limit the number of results. Default is 10.
       isArray: false
       name: limit
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'ips'
+      defaultValue: 'IPS'
       description: Indicator type.
       isArray: false
       name: indicator_type
       predefined:
-      - 'ips'
-      - 'urls'
-      required: true
+      - 'IPS'
+      - 'URLS'
+      - 'Both'
+      required: false
       secret: false
     deprecated: false
     description: Get indicators from the feed.
