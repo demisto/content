@@ -1,0 +1,100 @@
+category: Analytics & SIEM
+commonfields:
+  id: SyslogMirror
+  version: -1
+configuration:
+- display: IP Address (e.g. 127.0.0.1)
+  name: address
+  required: true
+  type: 0
+- defaultvalue: '514'
+  display: Port
+  name: port
+  required: true
+  type: 0
+- defaultvalue: UDP
+  display: Protocol (TCP / UDP)
+  name: protocol
+  required: true
+  type: 0
+- defaultvalue: Low
+  display: Minimum severity of messages to send
+  name: severity
+  options:
+  - Unknown
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: false
+  type: 15
+- defaultvalue: INFO
+  display: Log level to send
+  name: logging_level
+  options:
+  - DEBUG
+  - INFO
+  - WARNING
+  - ERROR
+  - CRITICAL
+  required: false
+  type: 15
+description: Send messages to Syslog
+display: Syslog Sender
+name: SyslogMirror
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all
+      description: The mirroring type. Can be "all", which mirrors everything, "chat",
+        which mirrors only chats (not commands), or "none", which stops all mirroring.
+      isArray: false
+      name: type
+      predefined:
+      - all
+      - chat
+      - none
+      required: false
+      secret: false
+    deprecated: false
+    description: Mirrors the investigation between syslog and the Demisto War Room.
+    execution: false
+    name: mirror-investigation
+  - arguments:
+    - default: true
+      description: The message content.
+      isArray: false
+      name: message
+      required: false
+      secret: false
+    - default: false
+      description: An entry ID to send as a link.
+      isArray: false
+      name: entry
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to include a URL to the relevant component in Demisto.
+        Can be "true" or "false". Default value is "false".
+      isArray: false
+      name: ignoreAddURL
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends a message to syslog.
+    execution: false
+    name: send-notification
+  dockerimage: demisto/python3:3.7.4.977
+  isfetch: false
+  longRunning: true
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
