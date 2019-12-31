@@ -9,16 +9,6 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 
-def get_now():
-    """ A wrapper function of datetime.now
-    helps handle tests
-
-    Returns:
-        datetime: time right now
-    """
-    return datetime.now()
-
-
 def camel_case_to_readable(text: str) -> str:
     """'camelCase' -> 'Camel Case'
     Args:
@@ -40,6 +30,8 @@ def camel_case_to_readable(text: str) -> str:
         return 'TenantID'
     if text == 'incidentId':
         return 'IncidentID'
+    if text == 'Datasourceid':
+        return 'DataSourceID'
     if text in ['employeeId', 'employeeid', 'u_employeeid']:
         return 'EmployeeID'
     if text == 'violatorId':
@@ -51,7 +43,7 @@ def camel_case_to_readable(text: str) -> str:
 
 
 def parse_data_arr(data_arr: Any, fields_to_drop: list = [], fields_to_include: list = []):
-    """Parse data as received from Microsoft Graph API into Demisto's conventions
+    """Parse data as received from Securonix into Demisto's conventions
     Args:
         data_arr: a dictionary containing the data
         fields_to_drop: Fields to drop from the array of the data
@@ -781,7 +773,7 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
     from_, _ = parse_date_range(args.get('from'), utc=True)
     from_epoch = date_to_timestamp(from_, date_format=timestamp_format)
-    to_ = args.get('to') if 'to_' in args else get_now()
+    to_ = args.get('to') if 'to_' in args else datetime.now()
     to_epoch = date_to_timestamp(to_, date_format=timestamp_format)
     incident_types = str(args.get('incident_types')) if 'incident_types' in args else 'opened'
     incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types)
@@ -1100,10 +1092,11 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
         new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
         new_last_run = last_run
+    demisto.setLastRun(last_run)
 
     demisto_incidents: List = list()
     from_epoch = date_to_timestamp(new_last_run.get('time'), date_format=timestamp_format)
-    to_epoch = date_to_timestamp(get_now(), date_format=timestamp_format)
+    to_epoch = date_to_timestamp(datetime.now(), date_format=timestamp_format)
 
     # Get incidents from Securonix
     securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types)
@@ -1182,7 +1175,6 @@ def main():
             incidents, last_run = fetch_incidents(client, fetch_time, incident_types,
                                                   last_run=demisto.getLastRun())  # type: ignore
             demisto.incidents(incidents)
-            demisto.setLastRun(last_run)
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:
