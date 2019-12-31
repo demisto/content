@@ -3014,6 +3014,17 @@ script:
       name: template
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Show uncommitted configuration
+      isArray: false
+      name: show_uncommitted_configuration
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: List the static routes of a virtual router.
     execution: false
@@ -3045,6 +3056,9 @@ script:
       description: The template in which the static route is defined(relevant to Panorama
         instances only).
       type: String
+    - contextPath: Panorama.StaticRoutes.Uncommitted
+      description: Whether the static route is committed or not.
+      type: Boolean
   - arguments:
     - default: false
       description: Name of the virtual router to display its static route.
@@ -3243,6 +3257,7 @@ script:
       description: Whether the static route is deleted or not.
       type: Boolean
   dockerimage: demisto/python3:3.7.3.221
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -4208,19 +4208,25 @@ def prettify_static_route(static_route: Dict, virtual_router: str, template: Opt
     if 'bfd' in static_route and 'profile' in static_route['bfd']:
         pretty_static_route['BFDprofile'] = static_route['bfd']['profile']
     if 'destination' in static_route:
-        pretty_static_route['Destination'] = static_route['destination']
+        if '@dirtyId' in static_route['destination']:
+            pretty_static_route['Uncommitted'] = True
+        else:
+            pretty_static_route['Destination'] = static_route['destination']
     if 'metric' in static_route:
         pretty_static_route['Metric'] = int(static_route['metric'])
     if 'nexthop' in static_route:
-        nexthop: Dict[str, str] = static_route['nexthop']
-        if 'ip-address' in nexthop:
-            pretty_static_route['NextHop'] = nexthop['ip-address']
-        elif 'next-vr' in static_route['nexthop']:
-            pretty_static_route['NextHop'] = nexthop['next-vr']
-        elif 'fqdn' in static_route['nexthop']:
-            pretty_static_route['NextHop'] = nexthop['fqdn']
-        elif 'discard' in static_route['nexthop']:
-            pretty_static_route['NextHop'] = nexthop['discard']
+        if '@dirtyId' in static_route['destination']:
+            pretty_static_route['Uncommitted'] = True
+        else:
+            nexthop: Dict[str, str] = static_route['nexthop']
+            if 'ip-address' in nexthop:
+                pretty_static_route['NextHop'] = nexthop['ip-address']
+            elif 'next-vr' in static_route['nexthop']:
+                pretty_static_route['NextHop'] = nexthop['next-vr']
+            elif 'fqdn' in static_route['nexthop']:
+                pretty_static_route['NextHop'] = nexthop['fqdn']
+            elif 'discard' in static_route['nexthop']:
+                pretty_static_route['NextHop'] = nexthop['discard']
     if 'route-table' in static_route:
         route_table = static_route['route-table']
         if 'unicast' in route_table:
@@ -4251,9 +4257,11 @@ def prettify_static_routes(static_routes, virtual_router: str, template: Optiona
 
 
 @logger
-def panorama_list_static_routes(xpath_network: str, virtual_router: str) -> Dict[str, str]:
+def panorama_list_static_routes(xpath_network: str, virtual_router: str,
+                                show_uncommitted_configuration: str) -> Dict[str, str]:
+    action = 'get' if show_uncommitted_configuration else 'show'
     params = {
-        'action': 'show',
+        'action': action,
         'type': 'config',
         'xpath': f'{xpath_network}/virtual-router/entry[@name=\'{virtual_router}\']/routing-table/ip/static-route',
         'key': API_KEY
@@ -4269,7 +4277,8 @@ def panorama_list_static_routes_command():
     template = demisto.args().get('template')
     xpath_network, template = set_xpath_network(template)
     virtual_router = demisto.args()['virtual_router']
-    virtual_router_object = panorama_list_static_routes(xpath_network, virtual_router)
+    show_uncommitted_configuration = demisto.args().get('show_uncommitted_configuration') == 'true'
+    virtual_router_object = panorama_list_static_routes(xpath_network, virtual_router, show_uncommitted_configuration)
 
     if 'static-route' not in virtual_router_object or 'entry' not in virtual_router_object['static-route']:
         human_readable = 'The Virtual Router has does not exist or has no static routes configured.'
@@ -4277,7 +4286,7 @@ def panorama_list_static_routes_command():
     else:
         static_routes = prettify_static_routes(virtual_router_object['static-route']['entry'], virtual_router, template)
         table_header = f'Displaying all Static Routes for the Virtual Router: {virtual_router}'
-        headers = ['Name', 'Destination', 'NextHop', 'RouteTable', 'Metric', 'BFDprofile']
+        headers = ['Name', 'Destination', 'NextHop', 'Uncommitted', 'RouteTable', 'Metric', 'BFDprofile']
         human_readable = tableToMarkdown(name=table_header, t=static_routes, headers=headers, removeNull=True)
 
     demisto.results({
