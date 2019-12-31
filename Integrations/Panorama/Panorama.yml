@@ -3113,7 +3113,7 @@ script:
       secret: false
     - default: false
       description: 'Enter an IP address and network mask in Classless Inter-domain
-        Routing (CIDR) notation: ip_address/mask (for example, 192.168.2.0/24 for
+        Routing (CIDR) notation: ip_address/mask (for example, 192.168.0.1/24 for
         IPv4 or 2001:db8::/32 for IPv6).'
       isArray: false
       name: destination
