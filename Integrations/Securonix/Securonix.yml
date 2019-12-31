@@ -435,7 +435,7 @@ script:
     - contextPath: Securonix.ViolationData.Criticality
       description: Criticality.
       type: String
-    - contextPath: Securonix.ViolationData.Datasourceid
+    - contextPath: Securonix.ViolationData.DataSourceID
       description: Data source ID.
       type: String
     - contextPath: Securonix.ViolationData.Department
@@ -660,7 +660,7 @@ script:
     - contextPath: Securonix.Incidents.Workflow
       description: Incident workflow.
       type: String
-    - contextPath: Securonix.Incidents.IncidentId
+    - contextPath: Securonix.Incidents.IncidentID
       description: Incident ID.
       type: String
   - arguments:

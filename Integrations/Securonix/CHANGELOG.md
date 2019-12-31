@@ -1,2 +1,3 @@
 ## [Unreleased]
-New Integration
+**Securonix**
+Use the Securonix integration to manage, update and fetch incidents and manage watchlists.
