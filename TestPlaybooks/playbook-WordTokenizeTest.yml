@@ -73,7 +73,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "7"
     scriptarguments:
       cleanHtml: {}
       encoding: {}
@@ -94,37 +94,7 @@ tasks:
       }
     note: false
     timertriggers: []
-  "3":
-    id: "3"
-    taskid: 89012289-bfb7-4ed5-861e-acb7a9f80ea0
-    type: regular
-    task:
-      id: 89012289-bfb7-4ed5-861e-acb7a9f80ea0
-      version: -1
-      name: Check value
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      expectedValue:
-        simple: this is a test
-      fields: {}
-      path:
-        simple: WordTokenizeOutput
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 580
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
     taskid: 6a8eda53-e18a-4f4c-8a09-120a0a25de2c
@@ -219,6 +189,44 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 443cf11e-5404-4cf1-8bb0-2546f22f5cdd
+    type: condition
+    task:
+      id: 443cf11e-5404-4cf1-8bb0-2546f22f5cdd
+      version: -1
+      name: Validate context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: WordTokenizeOutput
+            iscontext: true
+          right:
+            value:
+              simple: this is a test
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
