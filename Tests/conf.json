@@ -2059,11 +2059,13 @@
         },
         {
             "integrations": "BPA",
-            "playbookID": "Test-BPA"
+            "playbookID": "Test-BPA",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "BPA",
-            "playbookID": "Test-BPA_Integration"
+            "playbookID": "Test-BPA_Integration",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
