@@ -5,7 +5,6 @@ name: Run Panorama Best Practice Assessment
 starttaskid: "0"
 description: |-
   This playbook runs Palo Alto Best Practice Assessment checks for a Panorama instance.
-fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
