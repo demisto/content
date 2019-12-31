@@ -1778,6 +1778,7 @@ script:
   - name: salesforce-get-casecomment
     arguments:
     - name: oid
+      description: Get info on a case
     - name: caseNumber
     outputs:
     - contextPath: ID
@@ -1817,13 +1818,18 @@ script:
   - name: salesforce-post-casecomment
     arguments:
     - name: oid
+      description: Object ID of desired case
     - name: caseNumber
+      description: Case number of desired case
     - name: text
+      description: Added Text to context
     description: Post comment Via Case Number
   - name: salesforce-get-user
     arguments:
     - name: oid
+      description: Object ID of desired case
     - name: caseNumber
+      description: Case number of desired case
     outputs:
     - contextPath: ID
       description: Unique Id
@@ -1871,6 +1877,7 @@ script:
   - name: salesforce-get-org
     arguments:
     - name: caseNumber
+      description: Case number of desired case
     outputs:
     - contextPath: ID
       description: Unique ID
