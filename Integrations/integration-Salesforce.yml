@@ -1780,6 +1780,7 @@ script:
     - name: oid
       description: Get info on a case
     - name: caseNumber
+      description: Case number of desired case
     outputs:
     - contextPath: ID
       description: uniq ID
