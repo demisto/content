@@ -3017,9 +3017,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Show uncommitted configuration
+      description: Show uncommitted static routes configuration.
       isArray: false
-      name: show_uncommitted_configuration
+      name: show_uncommitted
       predefined:
       - 'true'
       - 'false'

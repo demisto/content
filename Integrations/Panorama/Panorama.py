@@ -4257,9 +4257,8 @@ def prettify_static_routes(static_routes, virtual_router: str, template: Optiona
 
 
 @logger
-def panorama_list_static_routes(xpath_network: str, virtual_router: str,
-                                show_uncommitted_configuration: str) -> Dict[str, str]:
-    action = 'get' if show_uncommitted_configuration else 'show'
+def panorama_list_static_routes(xpath_network: str, virtual_router: str, show_uncommitted: str) -> Dict[str, str]:
+    action = 'get' if show_uncommitted else 'show'
     params = {
         'action': action,
         'type': 'config',
@@ -4277,8 +4276,8 @@ def panorama_list_static_routes_command():
     template = demisto.args().get('template')
     xpath_network, template = set_xpath_network(template)
     virtual_router = demisto.args()['virtual_router']
-    show_uncommitted_configuration = demisto.args().get('show_uncommitted_configuration') == 'true'
-    virtual_router_object = panorama_list_static_routes(xpath_network, virtual_router, show_uncommitted_configuration)
+    show_uncommitted = demisto.args().get('show_uncommitted') == 'true'
+    virtual_router_object = panorama_list_static_routes(xpath_network, virtual_router, show_uncommitted)
 
     if 'static-route' not in virtual_router_object or 'entry' not in virtual_router_object['static-route']:
         human_readable = 'The Virtual Router has does not exist or has no static routes configured.'
