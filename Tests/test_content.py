@@ -2,24 +2,23 @@ from __future__ import print_function
 import re
 import sys
 import json
+import urllib3
 import argparse
 import requests
+import threading
 import subprocess
-import urllib3
 from time import sleep
 from datetime import datetime
-from Tests.test_dependencies import get_tested_integrations, get_tests_allocation
 
 import demisto_client.demisto_api
 from slackclient import SlackClient
-import threading
-# from typing import List, Any
 
-
-from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.mock_server import MITMProxy, AMIConnection
-from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool, server_version_compare
+from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
+from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
+from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool, server_version_compare
+
 
 
 # Disable insecure warnings
@@ -602,32 +601,6 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
              build_number, server, build_name, is_ami, thread_index=thread_index, prints_manager=prints_manager)
 
 
-def restart_demisto_service(ami, demisto_api_key, server, thread_index=0, prints_manager=None):
-    client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
-    ami.check_call(['sudo', 'service', 'demisto', 'restart'])
-    exit_code = 1
-    for _ in range(0, SERVICE_RESTART_TIMEOUT, SERVICE_RESTART_POLLING_INTERVAL):
-        sleep(SERVICE_RESTART_POLLING_INTERVAL)
-        if exit_code != 0:
-            exit_code = ami.call(['/usr/sbin/service', 'demisto', 'status', '--lines', '0'])
-        if exit_code == 0:
-            check_login_message = "{}: Checking login to the server... ".format(datetime.now())
-            prints_manager.add_print_job(check_login_message, print, thread_index)
-            try:
-                res = demisto_client.generic_request_func(self=client, path='/health', method='GET')
-                if int(res[1]) == 200:
-                    return
-                else:
-                    failed_verify_login_message = "Failed verifying login (will retry). status: {}. " \
-                                                  "text: {}".format(res.status_code, res.text)
-                    prints_manager.add_print_job(failed_verify_login_message, print, thread_index)
-            except Exception as ex:
-                error_message = "Failed verifying server start via login: {}".format(ex)
-                prints_manager.add_print_job(error_message, print_error, thread_index)
-
-    raise Exception('Timeout waiting for demisto service to restart')
-
-
 def get_and_print_server_numeric_version(tests_settings):
     with open('./Tests/images_data.txt', 'r') as image_data_file:
         image_data = [line for line in image_data_file if line.startswith(tests_settings.serverVersion)]
@@ -652,7 +625,7 @@ def get_instances_ips_and_names():
         return instance_ips
 
 
-def get_tests_records_from_names(tests_settings, tests_names_to_search):
+def get_test_records_of_given_test_names(tests_settings, tests_names_to_search):
     conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
     tests_records = conf['tests']
     test_records_with_supplied_names = []
@@ -711,8 +684,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
 
     disable_all_integrations(demisto_api_key, server, thread_index=thread_index, prints_manager=prints_manager)
     prints_manager.execute_thread_prints(thread_index)
-    mockable_tests = get_tests_records_from_names(tests_settings, mockable_tests_names)
-    unmockable_tests = get_tests_records_from_names(tests_settings, unmockable_tests_names)
+    mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
+    unmockable_tests = get_test_records_of_given_test_names(tests_settings, unmockable_tests_names)
 
     if is_nightly and is_memory_check:
         mem_lim, err = get_docker_limit()
@@ -770,7 +743,7 @@ def get_unmockable_tests(tests_settings):
     unmockable_tests = []
     for test_record in tests:
         test_name = test_record.get("playbookID")
-        integrations_used_in_test = get_tested_integrations(test_record)
+        integrations_used_in_test = get_used_integrations(test_record)
         unmockable_integrations_used = [integration_name for integration_name in integrations_used_in_test if
                                         integration_name in unmockable_integrations]
         if test_name and (not integrations_used_in_test or unmockable_integrations_used):
@@ -794,6 +767,7 @@ def manage_tests(tests_settings):
     This function manages the execution of Demisto's tests.
 
     Args:
+        tests_settings (TestsSettings): An object containing all the relevant data regarding how the tests should be ran
 
     """
     tests_settings.serverNumericVersion = get_and_print_server_numeric_version(tests_settings)
@@ -817,7 +791,7 @@ def manage_tests(tests_settings):
         """
         If the build is a nightly build, run tests in parallel.
         """
-        test_allocation = get_tests_allocation(number_of_instances, tests_settings.conf_path)
+        test_allocation = get_tests_allocation_for_threads(number_of_instances, tests_settings.conf_path)
         current_thread_index = 0
         all_unmockable_tests_list = get_unmockable_tests(tests_settings)
         threads_array = []
@@ -830,13 +804,16 @@ def manage_tests(tests_settings):
                 mockable_tests = [test for test in tests_allocation_for_instance if test not in unmockable_tests]
                 print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                 print("Starts tests with server url - https://{}".format(ami_instance_ip))
-                thread_args = (tests_settings, current_instance, mockable_tests, unmockable_tests)
                 thread_kwargs = {
+                    "tests_settings": tests_settings,
+                    "server_ip": current_instance,
+                    "mockable_tests_names": mockable_tests,
+                    "unmockable_tests_names": unmockable_tests,
                     "thread_index": current_thread_index,
                     "prints_manager": prints_manager,
                     "tests_data_keeper": tests_data_keeper
                 }
-                t = threading.Thread(target=execute_testing, args=thread_args, kwargs=thread_kwargs)
+                t = threading.Thread(target=execute_testing, kwargs=thread_kwargs)
                 threads_array.append(t)
                 t.start()
                 current_thread_index += 1

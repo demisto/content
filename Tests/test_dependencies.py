@@ -24,6 +24,13 @@ class TestVertex:
 
 
 class TestsGraph:
+    """A graph representing the tests in Demisto and whether they use mutual integrations.
+
+    Attributes:
+        test_vertices (list): A list of vertices (of type TestVertex), each representing a test.
+        clusters (list): A list of test clusters, where the tests of each cluster need to be run sequentially.
+
+    """
     def __init__(self):
         self.test_vertices = {}
         self.clusters = []
@@ -59,12 +66,11 @@ class TestsGraph:
                 clusters.append(test_connected_component)
         self.clusters = clusters
 
-    def build_tests_graph_from_conf_json(self, tests_file_path):
+    def build_tests_graph_from_conf_json(self, tests_file_path, dependent_tests):
         with open(tests_file_path, 'r') as myfile:
             conf_json_string = myfile.read()
 
         tests_data = json.loads(conf_json_string)["tests"]
-        dependent_tests = get_test_dependencies(tests_file_path)[0]
 
         dependent_tests_data = [test_record for test_record in tests_data
                                 if test_record.get("playbookID") in dependent_tests]
@@ -78,7 +84,7 @@ def get_integration_to_tests_mapping(tests_data):
     integration_to_tests_mapping = {}
     for test_playbook_record in tests_data:
         record_playbook_name = test_playbook_record.get("playbookID", None)
-        record_integrations = get_tested_integrations(test_playbook_record)
+        record_integrations = get_used_integrations(test_playbook_record)
         for integration_name in record_integrations:
             if integration_name in integration_to_tests_mapping:
                 if record_playbook_name not in integration_to_tests_mapping[integration_name]:
@@ -88,7 +94,7 @@ def get_integration_to_tests_mapping(tests_data):
     return integration_to_tests_mapping
 
 
-def get_tested_integrations(test_playbook_record):
+def get_used_integrations(test_playbook_record):
     tested_integrations = test_playbook_record.get("integrations", [])
     if isinstance(tested_integrations, list):
         return tested_integrations
@@ -96,7 +102,7 @@ def get_tested_integrations(test_playbook_record):
         return [tested_integrations]
 
 
-def get_integration_dependencies(tests_file_path):
+def get_dependent_and_independent_integrations(tests_file_path):
     with open(tests_file_path, 'r') as myfile:
         conf_json_string = myfile.read()
 
@@ -104,7 +110,7 @@ def get_integration_dependencies(tests_file_path):
 
     integration_tests_count = {}
     for test_record in conf_json_obj["tests"]:
-        integrations_used = get_tested_integrations(test_record)
+        integrations_used = get_used_integrations(test_record)
         for integration_name in integrations_used:
             if integration_name in integration_tests_count:
                 integration_tests_count[integration_name] += 1
@@ -119,7 +125,7 @@ def get_integration_dependencies(tests_file_path):
 
 
 def get_test_dependencies(tests_file_path):
-    dependent_integrations = get_integration_dependencies(tests_file_path)[0]
+    dependent_integrations = get_dependent_and_independent_integrations(tests_file_path)[0]
 
     with open(tests_file_path, 'r') as myfile:
         conf_json_string = myfile.read()
@@ -128,7 +134,7 @@ def get_test_dependencies(tests_file_path):
     dependent_tests = []
     all_tests = []
     for test_record in conf_json_obj["tests"]:
-        integrations_used = get_tested_integrations(test_record)
+        integrations_used = get_used_integrations(test_record)
         playbook = test_record.get("playbookID", None)
         if playbook not in all_tests:
             all_tests.append(playbook)
@@ -141,15 +147,15 @@ def get_test_dependencies(tests_file_path):
     return dependent_tests, independent_tests, all_tests
 
 
-def get_dependent_integrations_clusters_data(tests_file_path):
+def get_dependent_integrations_clusters_data(tests_file_path, dependent_tests):
     tests_graph = TestsGraph()
-    tests_graph.build_tests_graph_from_conf_json(tests_file_path)
+    tests_graph.build_tests_graph_from_conf_json(tests_file_path, dependent_tests)
     return tests_graph.clusters
 
 
-def get_tests_allocation(number_of_instances, tests_file_path):
+def get_tests_allocation_for_threads(number_of_instances, tests_file_path):
     dependent_tests, independent_tests, all_tests = get_test_dependencies(tests_file_path)
-    dependent_tests_clusters = get_dependent_integrations_clusters_data(tests_file_path)
+    dependent_tests_clusters = get_dependent_integrations_clusters_data(tests_file_path, dependent_tests)
     dependent_tests_clusters.sort(key=len, reverse=True)  # Sort the clusters from biggest to smallest
     tests_allocation = []
     number_of_tests_left = len(all_tests)
@@ -157,7 +163,6 @@ def get_tests_allocation(number_of_instances, tests_file_path):
         allocations_left = number_of_instances - len(tests_allocation)
         desired_tests_per_allocation = math.ceil(number_of_tests_left / allocations_left)  # We prefer an equal division of tests.
         current_allocation = []
-        current_allocation_size = 0
 
         # If we have one allocation left, add all tests to it and finish
         if allocations_left == 1:
@@ -169,32 +174,33 @@ def get_tests_allocation(number_of_instances, tests_file_path):
             break
 
         if len(dependent_tests_clusters) > 0:
+            # Even if the first cluster is bigger than the desired amount, we have to add it to the allocation.
+            # If we don't, it will not be added to any allocation.
             first_cluster = dependent_tests_clusters.pop(0)
             first_cluster_size = len(first_cluster)
             current_allocation.extend(first_cluster)
-            current_allocation_size += first_cluster_size
             number_of_tests_left -= first_cluster_size
 
-        if current_allocation_size > desired_tests_per_allocation:
+        if len(current_allocation) >= desired_tests_per_allocation:
             tests_allocation.append(current_allocation)
             continue
 
         clusters_added = 0
         for cluster in dependent_tests_clusters:
             cluster_size = len(cluster)
-            if current_allocation_size + cluster_size > desired_tests_per_allocation:
+            if len(current_allocation) + cluster_size > desired_tests_per_allocation:
+                # Will fill the quota from the independent test lists.
                 break
             current_allocation.extend(cluster)
-            current_allocation_size += cluster_size
             number_of_tests_left -= cluster_size
             clusters_added += 1
 
         del dependent_tests_clusters[:clusters_added]
 
-        while current_allocation_size < desired_tests_per_allocation and len(independent_tests) > 0:
-            current_allocation.append(independent_tests.pop(0))
-            number_of_tests_left -= 1
-            current_allocation_size += 1
+        num_of_tests_to_add = desired_tests_per_allocation - len(current_allocation)
+        independent_tests_to_add = independent_tests[:num_of_tests_to_add]
+        current_allocation.extend(independent_tests_to_add)
+        del independent_tests[:num_of_tests_to_add]
 
         tests_allocation.append(current_allocation)
     return tests_allocation
