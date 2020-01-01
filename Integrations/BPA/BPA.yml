@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - defaultvalue: '443'
-  display: Panorama Server Port (e.g 443)
+  display: Panorama Server Port (e.g., 443)
   name: port
   required: false
   type: 0
@@ -35,15 +35,15 @@ name: BPA
 script:
   commands:
   - deprecated: false
-    description: Gets the documentation of all BPA checks
+    description: Gets the documentation of all BPA checks.
     execution: false
     name: pan-os-get-documentation
     outputs:
     - contextPath: PAN-OS-BPA.Documentation
-      description: List of BPA checks
+      description: The list of BPA checks.
       type: Unknown
   - deprecated: false
-    description: Submits a job to BPA job queue.
+    description: Submits a job to the BPA job queue.
     execution: false
     name: pan-os-bpa-submit-job
     outputs:
@@ -52,7 +52,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The job id to get results from
+      description: The job ID for which to return results.
       isArray: false
       name: task_id
       required: true
@@ -63,13 +63,13 @@ script:
     name: pan-os-bpa-get-job-results
     outputs:
     - contextPath: PAN-OS-BPA.JobResults.JobID
-      description: Submitted job ID
+      description: The submitted job ID.
       type: String
     - contextPath: PAN-OS-BPA.JobResults.Status
-      description: Job status in queue (in progress or completed)
+      description: The job status in the queue (in progress or completed).
       type: String
     - contextPath: PAN-OS-BPA.JobResults.Checks
-      description: List of checks
+      description: The list of checks.
       type: Unknown
   dockerimage: demisto/python3:3.7.5.4583
   isfetch: false
