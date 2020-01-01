@@ -14,6 +14,7 @@ CSV_FIRST_LINE_KEY: str = 'csv_first_line'
 FORMAT_CSV: str = 'csv'
 FORMAT_TEXT: str = 'text'
 FORMAT_JSON_SEQ: str = 'json-seq'
+FORMAT_JSON: str = 'json'
 
 ''' HELPER FUNCTIONS '''
 
@@ -93,31 +94,43 @@ def create_values_out_dict(iocs, out_format, ip_grouping):
     # TODO: Add FORMAT_JSON treatment
     if ip_grouping:
         iocs = group_ips(iocs)
-    for ioc in iocs:
-        value = ioc.get('value')
-        if value:
-            ctx[value] = out_format_func[out_format](ioc, iocs)
-    if out_format == 'csv' and len(iocs) > 0:  # add csv headers
-        headers = list(iocs[0].keys())
-        ctx[CSV_FIRST_LINE_KEY] = list_to_str(headers, ',')
-    return ctx
+    return create_formatted_values_out_dict(iocs, out_format, out_format_func.get(out_format))
 
 
-def out_text_format(ioc, iocs):
+def create_formatted_values_out_dict(iocs, out_format, out_format_func):
+    """
+    Create a dictionary for output values formatted in the selected out_format
+    """
+    ctx = {}
+    if out_format == FORMAT_JSON:
+        iocs_list = [ioc for ioc in iocs]
+        return {'iocs_list': json.dumps(iocs_list, indent=4)}
+    else:
+        for ioc in iocs:
+            value = ioc.get('value')
+            if value:
+                ctx[value] = out_format_func(ioc)
+        if out_format == 'csv' and len(iocs) > 0:  # add csv headers
+            headers = list(iocs[0].keys())
+            ctx[CSV_FIRST_LINE_KEY] = list_to_str(headers, ',')
+        return ctx
+
+
+def out_text_format(ioc):
     """
     Return output in text format
     """
     return ioc.get('value')
 
 
-def out_json_seq_format(ioc, iocs):
+def out_json_seq_format(ioc):
     """
     Return output in json seq format
     """
     return json.dumps(ioc)
 
 
-def out_csv_format(ioc, iocs):
+def out_csv_format(ioc):
     """
     Return output in csv format
     """
@@ -127,7 +140,7 @@ def out_csv_format(ioc, iocs):
 
 def group_ips(iocs):
     """
-    Groups together ips and returns them as a list of strs
+    Groups together ips in a list of strings
     """
     # TODO Implement ips grouping
     return iocs
@@ -165,8 +178,11 @@ def route_edl_values() -> Response:
     """
     Main handler for values saved in the integration context
     """
+    params = demisto.params()
+    out_format = params.get('format', 'text')
+    mimetype = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
     values = list_to_str(get_edl_ioc_list())
-    return Response(values, status=200, mimetype='text/plain')
+    return Response(values, status=200, mimetype=mimetype)
 
 
 ''' COMMAND FUNCTIONS '''
