@@ -2239,6 +2239,7 @@ tasks:
     task:
       id: c7322fac-04f1-4fc9-8ffc-f921999c6055
       version: -1
+      description: Is ip detected by QRadar?
       name: Is ip detected by QRadar?
       type: condition
       iscommand: false
@@ -2279,6 +2280,7 @@ tasks:
     task:
       id: d5936c9a-3729-492d-8078-25447f3cb947
       version: -1
+      description: Is domain or url detected by QRadar?
       name: Is domain or url detected by QRadar?
       type: condition
       iscommand: false
@@ -2319,6 +2321,7 @@ tasks:
     task:
       id: 8b6062b1-a634-41df-81bf-ef45308835f4
       version: -1
+      description: Is SHA256 file hash detected by QRadar?
       name: Is SHA256 file hash detected by QRadar?
       type: condition
       iscommand: false
@@ -2359,6 +2362,7 @@ tasks:
     task:
       id: 92788afe-0612-42f7-883f-bf15289262a9
       version: -1
+      description: Is SHA1 file hash detected by QRadar?
       name: Is SHA1 file hash detected by QRadar?
       type: condition
       iscommand: false
@@ -2399,6 +2403,7 @@ tasks:
     task:
       id: 8e7e7606-a281-48fb-8199-8bffc46c8c9d
       version: -1
+      description: Is MD5 file hash detected by QRadar?
       name: Is MD5 file hash detected by QRadar?
       type: condition
       iscommand: false
