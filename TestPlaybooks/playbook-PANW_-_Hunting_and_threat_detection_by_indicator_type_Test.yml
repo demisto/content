@@ -1,7 +1,7 @@
 id: PANW - Hunting and threat detection by indicator type Test
 version: -1
 name: PANW - Hunting and threat detection by indicator type Test
-fromversion: 5.0.0
+fromversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
