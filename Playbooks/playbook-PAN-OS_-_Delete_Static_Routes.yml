@@ -1,7 +1,7 @@
-id: PAN-OS - Delete Static Route
+id: PAN-OS - Delete Static Routes
 version: -1
 fromversion: 5.0.0
-name: PAN-OS - Delete Static Route
+name: PAN-OS - Delete Static Routes
 description: This playbook accepts a PAN-OS static route name and deletes it from
   the PAN-OS instance.
 starttaskid: "0"
