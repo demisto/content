@@ -66,7 +66,8 @@
         },
         {
             "integrations": "ThreatQ v2",
-            "playbookID": "ThreatQ - Test"
+            "playbookID": "ThreatQ - Test",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "AttackIQFireDrill",
@@ -2062,7 +2063,8 @@
         }
     ],
     "skipped_tests": {
-        "Test-Shodan_v2": "Skipping to chack if related to shodan",
+        "Phishing - Core - Test": "Issue 20983",
+        "Phishing v2 Test - Attachment": "Issue 20983",
         "Endpoint Malware Investigation - Generic - Test": "Issue 20867",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
@@ -2091,7 +2093,7 @@
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
-        "Test Playbook TrendMicroDDA": "Manual test",
+        "Test Playbook TrendMicroDDA": "Issue 16501",
         "PANW - Hunting and threat detection by indicator type Test": "Issue 20952",
         "ssdeepreputationtest": "Issue #20953"
     },
@@ -2118,7 +2120,6 @@
         "ProtectWise": "Issue 20486",
         "ThreatMiner": "Issue 20469",
         "DomainTools Iris": "Issue 20433",
-        "ThreatQ v2": "Issue 19468",
         "Check Point": "Issue 18643",
         "RSA Archer": "Issue 20335",
         "Preempt": "Issue 20268",
