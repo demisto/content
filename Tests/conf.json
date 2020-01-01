@@ -759,6 +759,9 @@
             "playbookID": "exporttocsv_script_test"
         },
         {
+            "playbookID": "Set - Test"
+        },
+        {
             "integrations": "Intezer v2",
             "playbookID": "Intezer Testing v2",
             "fromversion": "4.1.0",
