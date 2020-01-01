@@ -3,7 +3,7 @@ commonfields:
   id: EDL
   version: -1
 configuration:
-- display: EDL Port
+- display: Listen Port
   name: longRunningPort
   required: true
   type: 0
@@ -15,74 +15,62 @@ configuration:
   name: key
   required: false
   type: 14
-- display: Use system proxy settings
-  name: proxy
+- display: HTTP Server
+  hidden: false
+  name: http_flag
   required: false
   type: 8
-- display: Trust any certificate (not secure)
-  name: insecure
+- display: Update EDL On Demand
+  name: on_demand
   required: false
   type: 8
+- additionalInfo: <number> <time unit>, e.g., 5 minutes, 12 hours, 7 days
+  defaultvalue: 5 minutes
+  display: Cache Refresh Rate
+  name: cache_refresh_rate
+  required: false
+  type: 0
+- display: Indicator Query
+  name: indicators_query
+  required: false
+  type: 0
 - defaultvalue: 'true'
-  display: Long running instance. Required for investigation mirroring and direct
-    messages.
+  display: Long Running Instance
   name: longRunning
   required: false
   type: 8
+- defaultvalue: text
+  display: EDL Format
+  hidden: false
+  name: format
+  options:
+  - text
+  - json
+  - csv
+  required: false
+  type: 15
 description: Provides External Dynamic List as a service. An EDL is a text file that
   is hosted on an external web server so that the firewall can import objects—IP addresses,
   URLs, domains—included in the list and enforce policy. The integration allows users
   to add values to the list, remove values from the list, and to consume it as an
   EDL service.
-display: External Dynamic List (EDL)
+display: Palo Alto Networks PAN-OS EDL Service
 name: EDL
 script:
   commands:
   - arguments:
-    - default: true
-      description: Value to add to the EDL service.
-      isArray: true
-      name: value
-      required: true
+    - default: false
+      description: FindIndicators query
+      isArray: false
+      name: query
+      required: false
       secret: false
     deprecated: false
-    description: Adds a value to the EDL service. Can be a single value, or several
-      comma seperated values.
+    description: Update values stored in the EDL.
     execution: false
-    name: add-to-edl
-  - arguments:
-    - default: true
-      description: Value to delete from the EDL service.
-      isArray: true
-      name: value
-      required: true
-      secret: false
-    deprecated: false
-    description: Deletes a value from the EDL service. Can be a single value, or several
-      comma seperated values.
-    execution: false
-    name: del-from-edl
-  - deprecated: false
-    description: Lists the values stored in the EDL service.
-    execution: false
-    name: list-edl-values
-    outputs:
-    - contextPath: EDL.Value
-      description: Value stored in the EDL service.
-      type: String
-  - arguments:
-    - default: true
-      description: Value to add to the EDL service.
-      isArray: true
-      name: value
-      required: true
-      secret: false
-    deprecated: false
-    description: Replace all the values in the EDL service with the given values.
-      Can be a single value, or several comma seperated values.
-    execution: false
-    name: replace-edl-values
+    name: update-edl
   dockerimage: demisto/teams:1.0.0.1701
+  feed: false
   isfetch: false
   longRunning: true
   longRunningPort: true
@@ -90,6 +78,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
-  - No test
+- No test
+fromversion: 5.5.0
