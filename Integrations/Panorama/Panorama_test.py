@@ -178,3 +178,13 @@ def test_prettify_matching_rule():
     response = prettify_matching_rule(matching_rule)
     expected = {'Action': 'my_action1', 'Name': 'very_important_rule', 'Source': '6.7.8.9', 'Destination': 'any'}
     assert response == expected
+
+
+def test_prettify_static_route():
+    from Panorama import prettify_static_route
+    static_route = {'@name': 'name1', 'destination': '1.2.3.4', 'metric': '10', 'nexthop': {'fqdn': 'demisto.com'}}
+    virtual_router = 'my_virtual_router'
+    response = prettify_static_route(static_route, virtual_router)
+    expected = {'Name': 'name1', 'Destination': '1.2.3.4', 'Metric': 10,
+                'NextHop': 'demisto.com', 'VirtualRouter': 'my_virtual_router'}
+    assert response == expected
