@@ -1,5 +1,5 @@
 ## [Unreleased]
-Removed newlines from incident names for incidents with newlines in their description.
+Fixed an issue with ***fetch-incidents*** which caused incident name to be cut short if it had newlines in its description.
 
 ## [19.12.1] - 2019-12-25
 Fixed an issue in which the ***qradar-get-assets*** command failed when a user would supply a value for the *fields* parameter.
