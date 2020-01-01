@@ -1,14 +1,19 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+import json
 from flask import Flask, Response
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'EDL'
-PAGE_SIZE: int = 100
+PAGE_SIZE: int = 200
 APP: Flask = Flask('demisto-edl')
+CSV_FIRST_LINE_KEY: str = 'csv_first_line'
+FORMAT_CSV: str = 'csv'
+FORMAT_TEXT: str = 'text'
+FORMAT_JSON_SEQ: str = 'json-seq'
 
 ''' HELPER FUNCTIONS '''
 
@@ -42,27 +47,97 @@ def get_params_port(params: dict = demisto.params()) -> int:
     return port
 
 
-def refresh_indicators_cache(indicator_query):
+def refresh_value_cache(indicator_query, out_format, ip_grouping, limit=None):
+    """
+    Refresh the cache values and format using an indicator_query to call demisto.findIndicators
+    """
     iocs = []
     page = 0
     fetched_iocs = demisto.findIndicators(query=indicator_query, page=page, size=PAGE_SIZE).get('iocs')
     iocs.extend(fetched_iocs)
-    while len(fetched_iocs) == PAGE_SIZE:
+    # poll indicators into edl from demisto
+    # TODO: Increase edl size if ip_grouping
+    while len(fetched_iocs) == PAGE_SIZE and limit and len(iocs) < limit:
         page += 1
         fetched_iocs = demisto.findIndicators(query=indicator_query, page=page, size=PAGE_SIZE).get('iocs')
         iocs.extend(fetched_iocs)
-    ctx = {}
-    for ioc in iocs:
-        value = ioc.get('value', '')
-        if value:
-            ctx[value] = ioc
+    ctx = create_values_out_dict(iocs[:limit], out_format, ip_grouping)
     demisto.setLastRun({'last_run': date_to_timestamp(datetime.now())})
     demisto.setIntegrationContext(ctx)
+    if out_format == FORMAT_CSV:
+        return create_csv_out_list(ctx)
     return list(ctx.values())
 
 
-def get_edl_values():
-    on_demand = demisto.params().get('on_demand')
+def create_csv_out_list(cache_dict):
+    """
+    Creates a csv output result
+    """
+    csv_headers = cache_dict.pop(CSV_FIRST_LINE_KEY, '')
+    values_list = list(cache_dict.values())
+    if csv_headers:
+        values_list.insert(0, csv_headers)
+    return values_list
+
+
+def create_values_out_dict(iocs, out_format, ip_grouping):
+    """
+    Create a dictionary for output values using the selected format
+    """
+    ctx = {}
+    out_format_func = {
+        FORMAT_TEXT: out_text_format,
+        FORMAT_JSON_SEQ: out_json_seq_format,
+        FORMAT_CSV: out_csv_format
+    }
+    # TODO: Add FORMAT_JSON treatment
+    if ip_grouping:
+        iocs = group_ips(iocs)
+    for ioc in iocs:
+        value = ioc.get('value')
+        if value:
+            ctx[value] = out_format_func[out_format](ioc, iocs)
+    if out_format == 'csv' and len(iocs) > 0:  # add csv headers
+        headers = list(iocs[0].keys())
+        ctx[CSV_FIRST_LINE_KEY] = list_to_str(headers, ',')
+    return ctx
+
+
+def out_text_format(ioc, iocs):
+    """
+    Return output in text format
+    """
+    return ioc.get('value')
+
+
+def out_json_seq_format(ioc, iocs):
+    """
+    Return output in json seq format
+    """
+    return json.dumps(ioc)
+
+
+def out_csv_format(ioc, iocs):
+    """
+    Return output in csv format
+    """
+    values = list(ioc.values())
+    return list_to_str(values, ',')
+
+
+def group_ips(iocs):
+    """
+    Groups together ips and returns them as a list of strs
+    """
+    # TODO Implement ips grouping
+    return iocs
+
+
+def get_edl_ioc_list():
+    params = demisto.params()
+    ip_grouping = params.get('ip_grouping')
+    out_format = params.get('out_format')
+    on_demand = params.get('on_demand')
     # on_demand ignores cache
     if on_demand:
         values = demisto.getIntegrationContext()
@@ -74,11 +149,13 @@ def get_edl_values():
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
             td = last_run - cache_time
             if td <= 0:  # last_run is before cache_time
-                values = refresh_indicators_cache(indicator_query)
+                values = refresh_value_cache(indicator_query, out_format, ip_grouping)
             else:
-                values = demisto.getIntegrationContext()
+                cache_dict = demisto.getIntegrationContext()
+
+                values = create_csv_out_list(cache_dict) if out_format == FORMAT_CSV else list(cache_dict.values())
         else:
-            values = refresh_indicators_cache(indicator_query)
+            values = refresh_value_cache(indicator_query, out_format, ip_grouping)
     return values
 
 
@@ -88,18 +165,17 @@ def route_edl_values() -> Response:
     """
     Main handler for values saved in the integration context
     """
-    values = list_to_str(get_edl_values())
+    values = list_to_str(get_edl_ioc_list())
     return Response(values, status=200, mimetype='text/plain')
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(args):
+def test_module(args, params):
     """
     Validates that the port is integer
     """
-    params = demisto.params()
     get_params_port(params)
     cache_refresh_rate = params.get('cache_refresh_rate', '')
     if cache_refresh_rate:
@@ -163,13 +239,15 @@ def run_long_running(params):
         raise ValueError(str(e))
 
 
-def update_edl_command(args):
+def update_edl_command(args, params):
     on_demand = demisto.params().get('on_demand')
     if not on_demand:
         raise DemistoException(
             '"Update EDL On Demand" is turned off. If you want to update the EDL manually please turn it on.')
     query = args.get('query')
-    indicators = refresh_indicators_cache(query)
+    out_format = params.get('format')
+    ip_grouping = params.get('ip_grouping')
+    indicators = refresh_value_cache(query, out_format, ip_grouping)
     hr = tableToMarkdown('EDL was updated successfully with the following values', indicators, ['indicators'])
     return hr, {}, {}
 
@@ -190,7 +268,7 @@ def main():
         if command == 'long-running-execution':
             run_long_running(params)
         else:
-            readable_output, outputs, raw_response = commands[command](demisto.args())
+            readable_output, outputs, raw_response = commands[command](demisto.args(), params)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'

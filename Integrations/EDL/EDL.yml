@@ -24,8 +24,7 @@ configuration:
   name: on_demand
   required: false
   type: 8
-- additionalInfo: <number> <time unit>, e.g., 5 minutes, 12 hours, 7 days
-  defaultvalue: 5 minutes
+- defaultvalue: 5 minutes
   display: Cache Refresh Rate
   name: cache_refresh_rate
   required: false
@@ -49,6 +48,13 @@ configuration:
   - csv
   required: false
   type: 15
+- additionalInfo: Group together IPs in the EDL into range when possible. This might
+    increase the number of indicators in your feed.
+  display: Group IPs Into Range
+  hidden: false
+  name: ip_grouping
+  required: false
+  type: 8
 description: Provides External Dynamic List as a service. An EDL is a text file that
   is hosted on an external web server so that the firewall can import objects—IP addresses,
   URLs, domains—included in the list and enforce policy. The integration allows users
