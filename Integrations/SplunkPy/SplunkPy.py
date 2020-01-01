@@ -344,7 +344,7 @@ def splunk_search_command():
     query = build_search_query(args)
     search_kwargs = build_search_kwargs(args)
     search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
-    num_of_results = search_job["resultCount"]
+    num_of_results_from_query = search_job["resultCount"]
 
     results_limit = int(demisto.args().get("event_limit", 100))
     if results_limit == 0:
@@ -353,24 +353,24 @@ def splunk_search_command():
     batch_size = int(demisto.args().get("batch_limit", 25000))
 
     results_offset = 0
-    parsed_search_results = []  # type: List[Dict[str,Any]]
+    total_parsed_results = []  # type: List[Dict[str,Any]]
     dbot_scores = []  # type: List[Dict[str,Any]]
 
-    while len(parsed_search_results) < int(num_of_results) and len(parsed_search_results) < results_limit:
+    while len(total_parsed_results) < int(num_of_results_from_query) and len(total_parsed_results) < results_limit:
         current_batch_of_results = get_current_results_batch(search_job, batch_size, results_offset)
-        max_results_to_add = results_limit - len(parsed_search_results)
+        max_results_to_add = results_limit - len(total_parsed_results)
         parsed_batch_results, batch_dbot_scores = parse_batch_of_results(current_batch_of_results, max_results_to_add)
-        parsed_search_results.extend(parsed_batch_results)
+        total_parsed_results.extend(parsed_batch_results)
         dbot_scores.extend(batch_dbot_scores)
 
         results_offset += batch_size
 
-    entry_context = create_entry_context(args, parsed_search_results, dbot_scores)
-    human_readable = build_search_human_readable(args, parsed_search_results)
+    entry_context = create_entry_context(args, total_parsed_results, dbot_scores)
+    human_readable = build_search_human_readable(args, total_parsed_results)
 
     demisto.results({
         "Type": 1,
-        "Contents": parsed_search_results,
+        "Contents": total_parsed_results,
         "ContentsFormat": "json",
         "EntryContext": entry_context,
         "HumanReadable": human_readable
