@@ -1,5 +1,5 @@
 ## [Unreleased]
-- 
+Fixed access to non-existing key when fetching non-ES events.
 
 ## [19.12.1] - 2019-12-25
 Enhanced the execution speed of the ***splunk-search*** command.
