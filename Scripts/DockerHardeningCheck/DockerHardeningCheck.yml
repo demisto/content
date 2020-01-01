@@ -11,9 +11,9 @@ comment: 'Check if the Docker container running this script has been hardend acc
 enabled: true
 args:
 - name: memory
-  description: The amount of memory to check. Can specify bytes size or append m/g
-    fror mega/giga bytes.
-  defaultValue: 1g
+  description: The amount of memory to check. Can specify bytes size or append MB/GB
+    fror Mega/Giga bytes.
+  defaultValue: 1GB
 - name: pids
   description: Number of max pids to check.
   defaultValue: "256"

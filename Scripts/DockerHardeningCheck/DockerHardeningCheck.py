@@ -61,9 +61,9 @@ def check_pids(pid_num: int) -> str:
 def check_fd_limits(soft, hard) -> str:
     s, h = resource.getrlimit(resource.RLIMIT_NOFILE)
     if s > soft:
-        return "Soft limit: {} is above target: {}".format(s, soft)
+        return "FD soft limit: {} is above desired limt: {}.".format(s, soft)
     if h > hard:
-        return "Hard limit: {} is above target: {}".format(h, hard)
+        return "FD hard limit: {} is above desired limit: {}.".format(h, hard)
     return ""
 
 
@@ -71,28 +71,43 @@ def check_non_root():
     uid = os.getuid()
     if uid == 0:
         return ("Running as root with uid: {}."
-                " It seems that you haven't set the docker container to run with non-root internal user.".format(uid))
+                " It seems that you haven't set the docker container to run with a non-root internal user.".format(uid))
     return ""
 
 
 def main():
     mem = demisto.args().get('memory', "1g")
-    pids = demisto.args().get('pids', 256)
-    fds_soft = demisto.args().get('fds_soft', 1024)
-    fds_hard = demisto.args().get('fds_hard', 8192)
-    success = "Passed"
-    res = {
-        "Non-root User Check": check_non_root() or success,
-        "Memory Check": check_memory(mem) or success,
-        "Pids Check": check_pids(pids) or success,
-        "File Descriptors Check": check_fd_limits(fds_soft, fds_hard) or success,
-    }
-    table = tableToMarkdown("Docker Hardening Results Check", res)
-    return_outputs(table)
+    pids = int(demisto.args().get('pids', 256))
+    fds_soft = int(demisto.args().get('fds_soft', 1024))
+    fds_hard = int(demisto.args().get('fds_hard', 8192))
+    success = "Success"
+    check = "Check"
+    status = "Status"
+    res = [
+        {
+            check: "Non-root User",
+            status: check_non_root() or success,
+        },
+        {
+            check: "Memory",
+            status: check_memory(mem) or success,
+        },
+        {
+            check: "PIDs",
+            status: check_pids(pids) or success,
+        },
+        {
+            check: "File Descriptors",
+            status: check_fd_limits(fds_soft, fds_hard) or success,
+        },
+    ]
     failed = False
-    for v in res.values():
-        if v != success:
+    for v in res:
+        if v[status] != success:
             failed = True
+            v[status] = "Failed: " + v[status]
+    table = tableToMarkdown("Docker Hardening Results Check", res, [check, status])
+    return_outputs(table)
     if failed:
         return_error("Failed verifying docker hardening. "
                      "More details at: https://support.demisto.com/hc/en-us/articles/360040922194")
