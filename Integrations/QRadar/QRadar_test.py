@@ -195,7 +195,7 @@ def test_create_incident_from_offense_new_line_description():
     incident = qradar.create_incident_from_offense(raw_offense)
 
     # assert incident['name'] was altered correctly
-    assert incident['name'] == '49473 Activacion'
+    assert incident['name'] == '49473  Activacion '
 
     # assert offense['description'] wasn't altered
     description_asserted = False
