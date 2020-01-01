@@ -4,21 +4,22 @@ fromversion: 4.5.0
 name: QRadar Indicator Hunting
 description: 'The Playbook queries QRadar SIEM for indicators such as file hashes,
   IP addresses, domains, or urls. '
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 1e5e03be-198e-4770-8916-4ffd95d48c98
     type: start
     task:
       id: 1e5e03be-198e-4770-8916-4ffd95d48c98
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "55"
+      - '55'
     separatecontext: false
     view: |-
       {
@@ -30,8 +31,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: bea2047c-5391-4dc3-82f5-c96f766492e2
     type: title
     task:
@@ -40,10 +41,11 @@ tasks:
       name: Hash Search
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     separatecontext: false
     view: |-
       {
@@ -55,8 +57,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: e4218549-fb05-494c-885e-e4fa5835ddb6
     type: title
     task:
@@ -65,10 +67,11 @@ tasks:
       name: IP Search
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     separatecontext: false
     view: |-
       {
@@ -80,8 +83,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: e29b63fc-bf8d-42d5-8b0d-c5ce615dace5
     type: title
     task:
@@ -90,10 +93,11 @@ tasks:
       name: Domain/Url Search
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     separatecontext: false
     view: |-
       {
@@ -105,8 +109,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 1a18ea0d-2566-47eb-8a8d-e4f5d939891b
     type: condition
     task:
@@ -116,15 +120,15 @@ tasks:
       description: Is there an IP on which to search?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "48"
-      "yes":
-      - "50"
+      - '48'
+      'yes':
+      - '50'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -141,8 +145,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 1bbded0d-8f2e-4a71-85d6-17ab7efeae16
     type: condition
     task:
@@ -152,17 +156,17 @@ tasks:
       description: Is there a hash on which to search?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "25"
-      "yes":
-      - "26"
-      - "27"
-      - "38"
+      - '25'
+      'yes':
+      - '26'
+      - '27'
+      - '38'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -189,8 +193,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: 63a54990-a021-4b30-8357-3f4dc5e7c57e
     type: condition
     task:
@@ -200,15 +204,15 @@ tasks:
       description: Is there a domain or URL on which to search?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "11"
+      - '10'
+      'yes':
+      - '11'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -225,8 +229,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: 6f6689d7-3842-47d7-8b9c-bb95ed164305
     type: title
     task:
@@ -235,7 +239,8 @@ tasks:
       name: Domain/Url hunting done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -247,8 +252,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 518a8b2f-ef9f-4c67-8af5-8a3ce325aa34
     type: condition
     task:
@@ -258,15 +263,15 @@ tasks:
       description: Is there a custom domain or url field?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "56"
-      "yes":
-      - "57"
+      - '56'
+      'yes':
+      - '57'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -283,27 +288,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: 101e1496-1b11-4b1d-8f14-393fcb2ca712
     type: playbook
     task:
       id: 101e1496-1b11-4b1d-8f14-393fcb2ca712
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "89"
+      - '89'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: DomainURL
@@ -360,11 +364,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -376,8 +380,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: 45eab1bc-ad42-42cc-85db-d16642b0eb5c
     type: condition
     task:
@@ -387,15 +391,15 @@ tasks:
       description: Is there a custom MD5 field?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "64"
-      "yes":
-      - "65"
+      - '64'
+      'yes':
+      - '65'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -412,8 +416,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: 1c5c9a65-b8fb-410a-8538-8d3598597f51
     type: condition
     task:
@@ -423,15 +427,15 @@ tasks:
       description: Is there an MD5 on which to search?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "25"
-      "yes":
-      - "21"
+      - '25'
+      'yes':
+      - '21'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -448,27 +452,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: 936b47d8-c766-40d7-8d62-48bee6c581f3
     type: playbook
     task:
       id: 936b47d8-c766-40d7-8d62-48bee6c581f3
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "93"
+      - '93'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: File
@@ -526,11 +529,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -542,8 +545,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: 1e2c6a3b-eede-4ff6-8611-04b8540c1485
     type: title
     task:
@@ -552,7 +555,8 @@ tasks:
       name: Hash hunting done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -564,8 +568,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     taskid: d4dd1ef1-2acc-4232-8b95-c4dc67f159fd
     type: title
     task:
@@ -574,10 +578,11 @@ tasks:
       name: MD5 Search
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     separatecontext: false
     view: |-
       {
@@ -589,8 +594,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     taskid: d19803f2-69a0-44a7-872d-f17248a78c9e
     type: title
     task:
@@ -599,10 +604,11 @@ tasks:
       name: SHA1 Search
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "29"
+      - '29'
     separatecontext: false
     view: |-
       {
@@ -614,8 +620,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "29":
-    id: "29"
+  '29':
+    id: '29'
     taskid: d3d7c62a-842c-4393-8716-c2a832fac69c
     type: condition
     task:
@@ -625,15 +631,15 @@ tasks:
       description: Is there a SHA1 hash on which to search?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "25"
-      "yes":
-      - "31"
+      - '25'
+      'yes':
+      - '31'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -650,8 +656,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     taskid: 3d3b678e-4311-4cc5-8311-a9c72c337320
     type: condition
     task:
@@ -661,15 +667,15 @@ tasks:
       description: Was there a custom SHA1 field?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "62"
-      "yes":
-      - "63"
+      - '62'
+      'yes':
+      - '63'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -687,27 +693,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     taskid: 571a58e3-85e7-451b-8611-ec00dabd7968
     type: playbook
     task:
       id: 571a58e3-85e7-451b-8611-ec00dabd7968
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "91"
+      - '91'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: File
@@ -765,11 +770,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -781,27 +786,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "37":
-    id: "37"
+  '37':
+    id: '37'
     taskid: 45b95677-8cf6-4e11-85fa-82710e87168f
     type: playbook
     task:
       id: 45b95677-8cf6-4e11-85fa-82710e87168f
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "93"
+      - '93'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: inputs.QradarMD5Field
@@ -810,7 +814,7 @@ tasks:
             args:
               join:
                 value:
-                  simple: =
+                  simple: '='
               list2:
                 value:
                   simple: inputs.MD5
@@ -824,7 +828,7 @@ tasks:
             args:
               regex:
                 value:
-                  simple: =
+                  simple: '='
               replaceWith:
                 value:
                   simple: '" = '''
@@ -875,11 +879,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -891,8 +895,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "38":
-    id: "38"
+  '38':
+    id: '38'
     taskid: 18fd0abf-37a0-40e4-89b0-c4e986b6289f
     type: title
     task:
@@ -901,10 +905,11 @@ tasks:
       name: SHA256 Search
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "39"
+      - '39'
     separatecontext: false
     view: |-
       {
@@ -916,8 +921,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "39":
-    id: "39"
+  '39':
+    id: '39'
     taskid: 00831ce4-cf7d-4d0c-89b5-e1659108d08a
     type: condition
     task:
@@ -927,15 +932,15 @@ tasks:
       description: Is there a SHA256 hash on which to search?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "25"
-      "yes":
-      - "41"
+      - '25'
+      'yes':
+      - '41'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -952,8 +957,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "41":
-    id: "41"
+  '41':
+    id: '41'
     taskid: c880afa7-6b2d-4d23-8636-d4e670b56121
     type: condition
     task:
@@ -963,15 +968,15 @@ tasks:
       description: Is there a custom SHA256 field?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "60"
-      "yes":
-      - "61"
+      - '60'
+      'yes':
+      - '61'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -989,8 +994,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "47":
-    id: "47"
+  '47':
+    id: '47'
     taskid: 0dce9208-4682-42e3-8ad8-eea7fbf6e2ed
     type: playbook
     task:
@@ -1000,14 +1005,15 @@ tasks:
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "90"
+      - '90'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: File
@@ -1065,11 +1071,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -1081,8 +1087,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "48":
-    id: "48"
+  '48':
+    id: '48'
     taskid: 50ddc182-a26f-4f2f-8344-d86868e0670f
     type: title
     task:
@@ -1091,7 +1097,8 @@ tasks:
       name: IP hunting done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1103,8 +1110,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "50":
-    id: "50"
+  '50':
+    id: '50'
     taskid: 754f9d36-709c-48c2-881f-3e048c9a3428
     type: condition
     task:
@@ -1114,15 +1121,15 @@ tasks:
       description: Is there a custom IP field?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "59"
-      "yes":
-      - "58"
+      - '59'
+      'yes':
+      - '58'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -1140,27 +1147,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "53":
-    id: "53"
+  '53':
+    id: '53'
     taskid: b5ec5d8f-c252-4830-8382-ffba0ca7f050
     type: playbook
     task:
       id: b5ec5d8f-c252-4830-8382-ffba0ca7f050
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "88"
+      - '88'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: IP
@@ -1217,11 +1223,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -1233,8 +1239,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "55":
-    id: "55"
+  '55':
+    id: '55'
     taskid: 108a0511-052f-44a2-8eee-15db47fb94c4
     type: condition
     task:
@@ -1244,17 +1250,17 @@ tasks:
       description: Is Qradar enabled?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "48"
-      "yes":
-      - "2"
-      - "5"
-      - "6"
+      - '48'
+      'yes':
+      - '2'
+      - '5'
+      - '6'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -1287,8 +1293,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "56":
-    id: "56"
+  '56':
+    id: '56'
     taskid: 99f1dc9b-9e82-4de6-8c76-cfb278dc3f47
     type: title
     task:
@@ -1297,10 +1303,11 @@ tasks:
       name: QRadar query without custom fields
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "102"
+      - '102'
     separatecontext: false
     view: |-
       {
@@ -1312,8 +1319,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "57":
-    id: "57"
+  '57':
+    id: '57'
     taskid: 6ddf4d44-82fa-4c19-8c94-0ebf66def8ce
     type: title
     task:
@@ -1322,10 +1329,11 @@ tasks:
       name: QRadar query with custom fields
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "97"
+      - '97'
     separatecontext: false
     view: |-
       {
@@ -1337,8 +1345,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "58":
-    id: "58"
+  '58':
+    id: '58'
     taskid: b809f64f-9089-4002-89cf-232ae4a7a3d2
     type: title
     task:
@@ -1347,10 +1355,11 @@ tasks:
       name: QRadar query with custom fields
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "96"
+      - '96'
     separatecontext: false
     view: |-
       {
@@ -1362,8 +1371,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "59":
-    id: "59"
+  '59':
+    id: '59'
     taskid: 92106ff5-01cc-4309-8448-2d819ee7ec11
     type: title
     task:
@@ -1372,10 +1381,11 @@ tasks:
       name: QRadar query without custom fields
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "101"
+      - '101'
     separatecontext: false
     view: |-
       {
@@ -1387,8 +1397,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "60":
-    id: "60"
+  '60':
+    id: '60'
     taskid: 048e7dcc-fdac-4abb-8417-8d5a61c373c7
     type: title
     task:
@@ -1397,10 +1407,11 @@ tasks:
       name: QRadar query without custom fields
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "100"
+      - '100'
     separatecontext: false
     view: |-
       {
@@ -1412,8 +1423,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "61":
-    id: "61"
+  '61':
+    id: '61'
     taskid: 22af88bf-5f8c-43cd-85d7-ebf3625f478c
     type: title
     task:
@@ -1422,10 +1433,11 @@ tasks:
       name: QRadar query with custom fields
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "95"
+      - '95'
     separatecontext: false
     view: |-
       {
@@ -1437,8 +1449,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "62":
-    id: "62"
+  '62':
+    id: '62'
     taskid: 89f75ae1-32c3-4803-8ca0-f4417919905f
     type: title
     task:
@@ -1447,10 +1459,11 @@ tasks:
       name: QRadar query without custom fields
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "99"
+      - '99'
     separatecontext: false
     view: |-
       {
@@ -1462,8 +1475,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "63":
-    id: "63"
+  '63':
+    id: '63'
     taskid: b72bb120-83f8-4709-8744-f787368850f9
     type: title
     task:
@@ -1472,10 +1485,11 @@ tasks:
       name: QRadar query with custom fields
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "94"
+      - '94'
     separatecontext: false
     view: |-
       {
@@ -1487,8 +1501,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "64":
-    id: "64"
+  '64':
+    id: '64'
     taskid: 6839984f-3bd3-4555-85df-2939bfe6a52f
     type: title
     task:
@@ -1497,10 +1511,11 @@ tasks:
       name: QRadar query without custom fields
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "98"
+      - '98'
     separatecontext: false
     view: |-
       {
@@ -1512,8 +1527,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "65":
-    id: "65"
+  '65':
+    id: '65'
     taskid: 37165d4b-8f84-4192-8788-06f1f4144d00
     type: title
     task:
@@ -1522,10 +1537,11 @@ tasks:
       name: QRadar query with custom fields
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
     separatecontext: false
     view: |-
       {
@@ -1537,8 +1553,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "67":
-    id: "67"
+  '67':
+    id: '67'
     taskid: 051075c2-9d98-4bf3-8875-93e7bce02bde
     type: regular
     task:
@@ -1549,13 +1565,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "68"
+      - '68'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedUsers
       value:
@@ -1576,8 +1592,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "68":
-    id: "68"
+  '68':
+    id: '68'
     taskid: c86c0ac8-aa25-42eb-872e-2ccfef3f5670
     type: regular
     task:
@@ -1588,10 +1604,10 @@ tasks:
       script: '|||qradar-get-assets'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "70"
+      - '70'
     scriptarguments:
       fields: {}
       filter:
@@ -1626,8 +1642,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "70":
-    id: "70"
+  '70':
+    id: '70'
     taskid: da9287e8-cce3-436a-80b1-e5ffeb88e0dd
     type: regular
     task:
@@ -1638,13 +1654,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "48"
+      - '48'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedHosts
       value:
@@ -1665,8 +1681,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "72":
-    id: "72"
+  '72':
+    id: '72'
     taskid: d9cbfce6-7ef2-4479-8138-040bf6a8fdc4
     type: regular
     task:
@@ -1677,13 +1693,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "73"
+      - '73'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedUsers
       value:
@@ -1704,8 +1720,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "73":
-    id: "73"
+  '73':
+    id: '73'
     taskid: 860cd5cc-03e7-47f8-876c-c0a7ae6f9ee2
     type: regular
     task:
@@ -1716,10 +1732,10 @@ tasks:
       script: '|||qradar-get-assets'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "74"
+      - '74'
     scriptarguments:
       fields: {}
       filter:
@@ -1754,8 +1770,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "74":
-    id: "74"
+  '74':
+    id: '74'
     taskid: 33ccc60b-b967-494f-8cc6-35a50ec3bbdb
     type: regular
     task:
@@ -1766,13 +1782,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedHosts
       value:
@@ -1793,8 +1809,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "76":
-    id: "76"
+  '76':
+    id: '76'
     taskid: c7a290f9-8824-40cf-8396-05c5e5cf282e
     type: regular
     task:
@@ -1805,13 +1821,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "77"
+      - '77'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedUsers
       value:
@@ -1832,8 +1848,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "77":
-    id: "77"
+  '77':
+    id: '77'
     taskid: 68f08255-35ba-4753-8312-bf6e0d5f47d3
     type: regular
     task:
@@ -1844,10 +1860,10 @@ tasks:
       script: '|||qradar-get-assets'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "78"
+      - '78'
     scriptarguments:
       fields: {}
       filter:
@@ -1882,8 +1898,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "78":
-    id: "78"
+  '78':
+    id: '78'
     taskid: bed65866-2d10-4ae6-8002-953bd37c9e64
     type: regular
     task:
@@ -1894,13 +1910,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedHosts
       value:
@@ -1921,8 +1937,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "80":
-    id: "80"
+  '80':
+    id: '80'
     taskid: a9ad7d34-1000-43a9-8420-8cdab06c339d
     type: regular
     task:
@@ -1933,13 +1949,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "81"
+      - '81'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedUsers
       value:
@@ -1960,8 +1976,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "81":
-    id: "81"
+  '81':
+    id: '81'
     taskid: 5f358135-faaa-42f4-8494-18f385dd93df
     type: regular
     task:
@@ -1972,10 +1988,10 @@ tasks:
       script: '|||qradar-get-assets'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "82"
+      - '82'
     scriptarguments:
       fields: {}
       filter:
@@ -2010,8 +2026,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "82":
-    id: "82"
+  '82':
+    id: '82'
     taskid: a94d12b3-ea67-418e-84e8-58355bf88287
     type: regular
     task:
@@ -2022,13 +2038,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedHosts
       value:
@@ -2049,8 +2065,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "83":
-    id: "83"
+  '83':
+    id: '83'
     taskid: eb011cdd-8c0a-414b-8b8c-77f6fce6720a
     type: regular
     task:
@@ -2061,13 +2077,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "103"
+      - '103'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedSourceIPs
       value:
@@ -2088,8 +2104,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "84":
-    id: "84"
+  '84':
+    id: '84'
     taskid: 5adbe1df-1b40-4b36-8a4f-0e9c647b753c
     type: regular
     task:
@@ -2100,13 +2116,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "85"
+      - '85'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedUsers
       value:
@@ -2127,8 +2143,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "85":
-    id: "85"
+  '85':
+    id: '85'
     taskid: 0fb24dbb-ee32-4bb5-848e-79fc9f8b3435
     type: regular
     task:
@@ -2139,10 +2155,10 @@ tasks:
       script: '|||qradar-get-assets'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "86"
+      - '86'
     scriptarguments:
       fields: {}
       filter:
@@ -2177,8 +2193,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "86":
-    id: "86"
+  '86':
+    id: '86'
     taskid: 78b64c88-eabd-4d1e-845d-d4820952aa59
     type: regular
     task:
@@ -2189,13 +2205,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedHosts
       value:
@@ -2216,8 +2232,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "88":
-    id: "88"
+  '88':
+    id: '88'
     taskid: c7322fac-04f1-4fc9-8ffc-f921999c6055
     type: condition
     task:
@@ -2226,15 +2242,15 @@ tasks:
       name: Is ip detected by QRadar?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "48"
-      "yes":
-      - "108"
+      - '48'
+      'yes':
+      - '108'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -2256,8 +2272,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "89":
-    id: "89"
+  '89':
+    id: '89'
     taskid: d5936c9a-3729-492d-8078-25447f3cb947
     type: condition
     task:
@@ -2266,15 +2282,15 @@ tasks:
       name: Is domain or url detected by QRadar?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "110"
+      - '10'
+      'yes':
+      - '110'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -2296,8 +2312,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "90":
-    id: "90"
+  '90':
+    id: '90'
     taskid: 8b6062b1-a634-41df-81bf-ef45308835f4
     type: condition
     task:
@@ -2306,15 +2322,15 @@ tasks:
       name: Is SHA256 file hash detected by QRadar?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "25"
-      "yes":
-      - "107"
+      - '25'
+      'yes':
+      - '107'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -2336,8 +2352,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "91":
-    id: "91"
+  '91':
+    id: '91'
     taskid: 92788afe-0612-42f7-883f-bf15289262a9
     type: condition
     task:
@@ -2346,15 +2362,15 @@ tasks:
       name: Is SHA1 file hash detected by QRadar?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "25"
-      "yes":
-      - "104"
+      - '25'
+      'yes':
+      - '104'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -2376,8 +2392,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "93":
-    id: "93"
+  '93':
+    id: '93'
     taskid: 8e7e7606-a281-48fb-8199-8bffc46c8c9d
     type: condition
     task:
@@ -2386,15 +2402,15 @@ tasks:
       name: Is MD5 file hash detected by QRadar?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "25"
-      "yes":
-      - "83"
+      - '25'
+      'yes':
+      - '83'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -2416,27 +2432,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "94":
-    id: "94"
+  '94':
+    id: '94'
     taskid: a464ed17-e568-46da-835d-f2b20546e580
     type: playbook
     task:
       id: a464ed17-e568-46da-835d-f2b20546e580
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "91"
+      - '91'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: inputs.QradarSHA1Field
@@ -2445,7 +2460,7 @@ tasks:
             args:
               join:
                 value:
-                  simple: =
+                  simple: '='
               list2:
                 value:
                   simple: inputs.SHA1
@@ -2459,7 +2474,7 @@ tasks:
             args:
               regex:
                 value:
-                  simple: =
+                  simple: '='
               replaceWith:
                 value:
                   simple: '" = '''
@@ -2510,11 +2525,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -2526,27 +2541,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "95":
-    id: "95"
+  '95':
+    id: '95'
     taskid: e91cfc92-d4a6-4820-83e2-710c08a07661
     type: playbook
     task:
       id: e91cfc92-d4a6-4820-83e2-710c08a07661
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "90"
+      - '90'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: inputs.QradarSHA256Field
@@ -2555,7 +2569,7 @@ tasks:
             args:
               join:
                 value:
-                  simple: =
+                  simple: '='
               list2:
                 value:
                   simple: inputs.SHA256
@@ -2569,7 +2583,7 @@ tasks:
             args:
               regex:
                 value:
-                  simple: =
+                  simple: '='
               replaceWith:
                 value:
                   simple: '" = '''
@@ -2620,11 +2634,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -2636,27 +2650,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "96":
-    id: "96"
+  '96':
+    id: '96'
     taskid: 3862f463-3040-4c40-827c-091650fda1fc
     type: playbook
     task:
       id: 3862f463-3040-4c40-827c-091650fda1fc
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "88"
+      - '88'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: inputs.QradarIPfield
@@ -2665,7 +2678,7 @@ tasks:
             args:
               join:
                 value:
-                  simple: =
+                  simple: '='
               list2:
                 value:
                   simple: inputs.IPAddress
@@ -2679,7 +2692,7 @@ tasks:
             args:
               regex:
                 value:
-                  simple: =
+                  simple: '='
               replaceWith:
                 value:
                   simple: '" = '''
@@ -2730,11 +2743,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -2746,27 +2759,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "97":
-    id: "97"
+  '97':
+    id: '97'
     taskid: f2d87ce7-8d5b-405d-8d90-d189d88a01a6
     type: playbook
     task:
       id: f2d87ce7-8d5b-405d-8d90-d189d88a01a6
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: ''
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "89"
+      - '89'
     scriptarguments:
       headers: {}
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
         complex:
           root: inputs.URLDomainField
@@ -2840,11 +2852,11 @@ tasks:
                 iscontext: true
       range: {}
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -2856,8 +2868,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "98":
-    id: "98"
+  '98':
+    id: '98'
     taskid: 9a5a3054-e5df-4f62-886f-8a12d5e54556
     type: regular
     task:
@@ -2868,13 +2880,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: File.MD5
       value:
@@ -2897,8 +2909,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "99":
-    id: "99"
+  '99':
+    id: '99'
     taskid: b5161e12-e312-4544-848e-120bf2ed02e0
     type: regular
     task:
@@ -2909,13 +2921,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: File.SHA1
       value:
@@ -2938,8 +2950,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "100":
-    id: "100"
+  '100':
+    id: '100'
     taskid: 4df207a9-fcb7-4f89-8f39-be0514945f8b
     type: regular
     task:
@@ -2950,13 +2962,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "47"
+      - '47'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: File.SHA256
       value:
@@ -2979,8 +2991,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "101":
-    id: "101"
+  '101':
+    id: '101'
     taskid: 3a320e32-b6cb-4558-8245-ee4f339ea892
     type: regular
     task:
@@ -2991,13 +3003,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "53"
+      - '53'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: IP
       value:
@@ -3020,8 +3032,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "102":
-    id: "102"
+  '102':
+    id: '102'
     taskid: 80705900-f12b-4a0e-8e97-5866fc295226
     type: regular
     task:
@@ -3032,13 +3044,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: DomainURL
       value:
@@ -3061,8 +3073,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "103":
-    id: "103"
+  '103':
+    id: '103'
     taskid: ce06e1a2-670d-46a6-801b-25765dd41b7b
     type: regular
     task:
@@ -3073,13 +3085,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "84"
+      - '84'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedDestinationIPs
       value:
@@ -3106,8 +3118,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "104":
-    id: "104"
+  '104':
+    id: '104'
     taskid: b72aca85-34d2-4fd3-8785-86c9997ae96f
     type: regular
     task:
@@ -3118,13 +3130,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "105"
+      - '105'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedSourceIPs
       value:
@@ -3145,8 +3157,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "105":
-    id: "105"
+  '105':
+    id: '105'
     taskid: dbfdd170-42cc-4c11-8524-bb7b1b88defc
     type: regular
     task:
@@ -3157,13 +3169,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "80"
+      - '80'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedDestinationIPs
       value:
@@ -3190,8 +3202,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "106":
-    id: "106"
+  '106':
+    id: '106'
     taskid: e03311d9-bf0b-4009-8a64-a666289696f7
     type: regular
     task:
@@ -3202,13 +3214,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "76"
+      - '76'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedDestinationIPs
       value:
@@ -3235,8 +3247,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "107":
-    id: "107"
+  '107':
+    id: '107'
     taskid: 6aa43b0e-92be-496b-8963-ef25f29d0f5a
     type: regular
     task:
@@ -3247,13 +3259,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "106"
+      - '106'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedSourceIPs
       value:
@@ -3274,8 +3286,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "108":
-    id: "108"
+  '108':
+    id: '108'
     taskid: 7ebc475c-9795-41f8-897c-b0b633215015
     type: regular
     task:
@@ -3286,13 +3298,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "109"
+      - '109'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedSourceIPs
       value:
@@ -3313,8 +3325,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "109":
-    id: "109"
+  '109':
+    id: '109'
     taskid: e63ebaf9-4ac2-4056-80cf-b861f1f7f1d1
     type: regular
     task:
@@ -3325,13 +3337,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "67"
+      - '67'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedDestinationIPs
       value:
@@ -3358,8 +3370,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "110":
-    id: "110"
+  '110':
+    id: '110'
     taskid: b3bd0f71-baa8-4390-8e3e-0fb431b7c77b
     type: regular
     task:
@@ -3370,13 +3382,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "111"
+      - '111'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedSourceIPs
       value:
@@ -3397,8 +3409,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "111":
-    id: "111"
+  '111':
+    id: '111'
     taskid: 8564d8a8-3dac-4b40-8491-7288b66e932a
     type: regular
     task:
@@ -3409,13 +3421,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "72"
+      - '72'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: QRadar.DetectedDestinationIPs
       value:
