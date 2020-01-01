@@ -261,7 +261,6 @@ if service is None:
     demisto.error("Could not connect to SplunkPy")
 
 
-
 def splunk_search_command():
     t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
@@ -342,8 +341,6 @@ def splunk_search_command():
     })
 
 
-
-
 def splunk_job_create_command():
     query = demisto.args()['query']
     if not query.startswith('search'):
@@ -364,7 +361,6 @@ def splunk_job_create_command():
     })
 
 
-
 def splunk_results_command():
     jobs = service.jobs  # type: ignore
     found = False
@@ -383,7 +379,6 @@ def splunk_results_command():
         demisto.results("Found no job for sid: " + demisto.args()['sid'])
     if found:
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
-
 
 
 def fetch_incidents():
@@ -432,7 +427,6 @@ def fetch_incidents():
         demisto.setLastRun({'time': lastRun, 'offset': search_offset + FETCH_LIMIT})
 
 
-
 def splunk_get_indexes_command():
     indexes = service.indexes  # type: ignore
     indexesNames = []
@@ -441,7 +435,6 @@ def splunk_get_indexes_command():
         indexesNames.append(index_json)
     demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indexesNames),
                      'HumanReadable': tableToMarkdown("Splunk Indexes names", indexesNames, '')})
-
 
 
 def splunk_submit_event_command():
@@ -456,7 +449,6 @@ def splunk_submit_event_command():
         data_formatted = data.encode('utf8')
         r = index.submit(data_formatted, sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
         demisto.results('Event was created in Splunk index: ' + r.name)
-
 
 
 def splunk_edit_notable_event_command():
@@ -491,7 +483,6 @@ def splunk_edit_notable_event_command():
     demisto.results('Splunk ES Notable events: ' + response_info['message'])
 
 
-
 def splunk_parse_raw_command():
     raw = demisto.args()['raw']
     rawDict = rawToDict(raw)
@@ -500,11 +491,9 @@ def splunk_parse_raw_command():
     demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(rawDict), "EntryContext": ec})
 
 
-
 def test_module():
     if len(service.jobs) >= 0:  # type: ignore
         demisto.results('ok')
-
 
 
 # The command demisto.command() holds the command sent from the user.
