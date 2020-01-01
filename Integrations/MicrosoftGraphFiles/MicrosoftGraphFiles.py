@@ -305,6 +305,7 @@ class Client(BaseClient):
         :return:
         """
         file_path = demisto.getFilePath(entry_id).get('path')
+
         if 'drives' == object_type:
             url = f'{object_type}/{object_type_id}/items/{parent_id}:/{file_name}:/content'
 
@@ -350,6 +351,47 @@ class Client(BaseClient):
         return self.http_call('POST', full_url=url, json_data=payload, headers=self.headers, url_suffix='')
 
 
+def camel_case_to_readable(text: str) -> str:
+    """'camelCase' -> 'Camel Case'
+
+    Args:
+        text: the text to transform
+
+    Returns:
+        A Camel Cased string.
+    """
+    if text == 'id':
+        return 'ID'
+    return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
+
+
+def parse_outputs(raw_data, exclude=None):
+    # Unnecessary fields, dropping as to not load the incident context.
+    if exclude is None:
+        exclude = []
+    fields_to_drop = exclude
+    if isinstance(raw_data, list):
+        files_readable, files_outputs = [], []
+        for data in raw_data:
+            # TODO: need to make sure that i convert it to camel case as well
+            data['CreatedBy'] = remove_identity_key(data['createdBy'])
+            data['LastModifiedBy'] = remove_identity_key(data['lastModifiedBy'])
+
+            group_readable = {camel_case_to_readable(i): j for i, j in data.items() if i not in fields_to_drop}
+            files_readable.append(group_readable)
+            files_outputs.append({k.replace(' ', ''): v for k, v in group_readable.copy().items()})
+
+        return files_readable, files_outputs
+
+    raw_data['CreatedBy'] = remove_identity_key(raw_data['createdBy'])
+    raw_data['LastModifiedBy'] = remove_identity_key(raw_data['lastModifiedBy'])
+
+    group_readable = {camel_case_to_readable(i): j for i, j in raw_data.items() if i not in fields_to_drop}
+    group_outputs = {k.replace(' ', ''): v for k, v in group_readable.copy().items()}
+
+    return group_readable, group_outputs
+
+
 def download_file_command(client, args):
     object_type = args.get('object_type')
     object_type_id = args.get('object_type_id')
@@ -368,17 +410,21 @@ def list_drive_children_command(client, args):
     next_page_url = args.get('next_page_url')
 
     result = client.list_drive_children(object_type=object_type, object_type_id=object_type_id, item_id=item_id,
-                                        limit=limit, next_page_url=next_page_url)
 
-    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+                                        limit=limit, next_page_url=next_page_url)
+    # with open('/Users/gberger/dev/demisto/content/Integrations/MicrosoftGraphFiles/tests.json', 'r') as f:
+        # result = json.load(f)
+        # result = result['list_drive_children']
+
+    files_readable, files_outputs = parse_outputs(result['value'], ['eTag', 'cTag'])
 
     title = f'{INTEGRATION_NAME} - drivesItems information:'
     # Creating human readable for War room
-    human_readable = tableToMarkdown(title, context_entry)
+    human_readable = tableToMarkdown(title, files_readable)
 
     # context == output
     context = {
-        f'{INTEGRATION_NAME}.drivesItems(val.ID && val.ID === obj.ID)': context_entry
+        f'{INTEGRATION_NAME}.ListChildren(val.ItemID == obj.ItemID)': {"ItemID": item_id, "Children": files_outputs}
     }
 
     return (
@@ -391,7 +437,7 @@ def list_drive_children_command(client, args):
 def list_tenant_sites_command(client, args):
     result = client.list_tenant_sites()
 
-    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+    context_entry = parse_outputs(result)
 
     title = f'{INTEGRATION_NAME} - Sites information:'
     # Creating human readable for War room
@@ -399,7 +445,7 @@ def list_tenant_sites_command(client, args):
 
     # context == output
     context = {
-        f'{INTEGRATION_NAME}.Sites(val.ID && val.ID === obj.ID)': context_entry
+        f'{INTEGRATION_NAME}.￿ListSites(val.ID === obj.ID)': context_entry
     }
 
     return (
@@ -413,18 +459,22 @@ def list_drives_in_site_command(client, args):
     site_id = args.get('site_id')
     limit = args.get('limit')
     next_page_url = args.get('next_page_url')
+    with open('/Users/gberger/dev/demisto/content/Integrations/MicrosoftGraphFiles/tests.json', 'r') as f:
+        result = json.load(f)
 
     result = client.list_drives_in_site(site_id=site_id, limit=limit, next_page_url=next_page_url)
+    files_readable, files_outputs = parse_outputs(result['list_drive']['value'], ['quota'])
 
-    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+    context_entry = files_outputs
 
     title = f'{INTEGRATION_NAME} - Drives information:'
     # Creating human readable for War room
-    human_readable = tableToMarkdown(title, context_entry)
+    human_readable = tableToMarkdown(title, files_readable)
 
     # context == output
     context = {
-        f'{INTEGRATION_NAME}.Drives(val.ID && val.ID === obj.ID)': context_entry
+        # TODO: add in here @odata.nextLink and @data.context
+        f'{INTEGRATION_NAME}.ListDrives(val.ID === obj.ID)': context_entry
     }
 
     return (
@@ -441,7 +491,7 @@ def replace_an_existing_file_command(client, args):
     object_type_id = args.get('object_type_id')
 
     result = client.replace_existing_file(object_type, object_type_id, item_id, entry_id)
-    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+    context_entry = create_file_and_folder_context(result)
 
     title = f'{INTEGRATION_NAME} - File information:'
     # Creating human readable for War room
@@ -449,7 +499,7 @@ def replace_an_existing_file_command(client, args):
 
     # context == output
     context = {
-        f'{INTEGRATION_NAME}.File(val.id && val.ID === obj.id)': context_entry
+        f'{INTEGRATION_NAME}.replacedFiles(val.ID === obj.ID)': context_entry
     }
 
     return (
@@ -457,6 +507,42 @@ def replace_an_existing_file_command(client, args):
         context,
         result
     )
+
+
+def remove_identity_key(source):
+    dict_keys = list(source.keys())
+    if len(dict_keys) != 1:
+        demisto.log('got more then one identity creator. exit function')
+        return source
+
+    identity_key = dict_keys[0]
+    new_source = {}
+    new_source['ID'] = source[identity_key]['id']
+    new_source['DisplayName'] = source[identity_key]['displayName']
+    new_source['Type'] = identity_key
+
+    return new_source
+
+
+def create_file_and_folder_context(source):
+    file_metadata = {
+        'OdataContext': source.get('@odata.context'),
+        'DownloadUrl': source.get('@microsoft.graph.downloadUrl'),
+        'CreatedDateTime': source.get('createdDateTime'),
+        'ETag': source.get('eTag'),
+        'ID': source.get('id'),
+        'LastModifiedDateTime': source.get('lastModifiedDateTime'),
+        'Name': source.get('name'),
+        'WebUrl': source.get('weburl'),
+        'CTag': source.get('cTag'),
+        'Size': source.get('size'),
+        'CreatedBy': remove_identity_key(source.get('createdBy')),
+        'LastModifiedBy': remove_identity_key(source.get('lastModifiedBy')),
+        'ParentReference': source.get('parentReference'),
+        'File': source.get('file'),
+        'FileSystemInfo': source.get('fileSystemInfo')
+    }
+    return file_metadata
 
 
 def upload_new_file_command(client, args):
@@ -467,7 +553,7 @@ def upload_new_file_command(client, args):
     entry_id = args.get('entry_id')
 
     result = client.upload_new_file(object_type, object_type_id, parent_id, file_name, entry_id)
-    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+    context_entry = create_file_and_folder_context(result)
 
     title = f'{INTEGRATION_NAME} - File information:'
     # Creating human readable for War room
@@ -475,7 +561,7 @@ def upload_new_file_command(client, args):
 
     # context == output
     context = {
-        f'{INTEGRATION_NAME}.File(val.id && val.id === obj.id)': context_entry
+        f'{INTEGRATION_NAME}.UploadedFiles(val.ID === obj.ID)': context_entry
     }
 
     return (
@@ -493,7 +579,7 @@ def create_new_folder_command(client, args):
 
     result = client.create_new_folder(object_type, object_type_id, parent_id, folder_name)
 
-    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+    context_entry = create_file_and_folder_context(result)
 
     title = f'{INTEGRATION_NAME} - Folder information:'
     # Creating human readable for War room
@@ -501,7 +587,7 @@ def create_new_folder_command(client, args):
 
     # context == output
     context = {
-        f'{INTEGRATION_NAME}.Folder(val.ID && val.ID === obj.ID)': context_entry
+        f'{INTEGRATION_NAME}.CreatedFolders(val.ID === obj.ID)': context_entry
     }
 
     return (
@@ -524,14 +610,8 @@ def delete_file_command(client, args):
     # Creating human readable for War room
     human_readable = tableToMarkdown(title, context_entry, headers=deleted_file_id)
 
-    # context == output
-    context = {
-        f'{INTEGRATION_NAME}.File(val.ID && val.ID === obj.ID)': context_entry
-    }
-
     return (
         human_readable,
-        context,
         text  # == raw response
     )
 
