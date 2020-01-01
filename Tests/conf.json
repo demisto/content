@@ -1508,6 +1508,12 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "Docker Hardening Test",
+            "_comment": "Not testing on 5.5 yet. Waiting for #20951",
+            "fromversion": "5.0.0",
+            "toversion": "5.4.9"
+        },
+        {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory Query V2 configuration with port"
