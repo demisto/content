@@ -3554,4 +3554,5 @@ outputs:
 - contextPath: QRadar.DetectedDestinationIPs
   description: IP addresses detected based on destinationip fields in your search.
   type: string
+tests:
 - QRadar Indicator Hunting Test
