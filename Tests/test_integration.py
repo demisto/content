@@ -87,11 +87,6 @@ def __test_integration_instance(client, module_instance):
 
     result_object = ast.literal_eval(response_data)
     success, failure_message = bool(result_object.get('success')), result_object.get('message')
-    if not success:
-        if failure_message:
-            print_error('Test integration failed.\nFailure message: {}'.format(failure_message))
-        else:
-            print_error('Test integration failed\nNo failure message.')
     return success, failure_message
 
 
