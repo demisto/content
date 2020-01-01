@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed email subject unicode issue for command **send-mail**.
+Fixed an issue with email subject unicode for the ***send-mail*** command.
 
 
 ## [19.12.1] - 2019-12-25
