@@ -1,6 +1,5 @@
 ## [Unreleased]
-  - Added arg_to_boolean command
-  - Added csv_or_array_to_array command
+  - Added argToBoolean command
 
 ## [19.12.0] - 2019-12-10
 -
