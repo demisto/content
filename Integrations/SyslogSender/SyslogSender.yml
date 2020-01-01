@@ -39,6 +39,12 @@ configuration:
   - CRITICAL
   required: false
   type: 15
+- defaultvalue: 'true'
+  display: Long running instance. Required for investigation mirroring and direct
+    messages.
+  name: longRunning
+  required: false
+  type: 8
 description: Send messages to Syslog
 display: Syslog Sender
 name: SyslogMirror
@@ -59,7 +65,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Mirrors the investigation between syslog and the Demisto War Room.
+    description: Mirrors the investigation's War Room to syslog.
     execution: false
     name: mirror-investigation
   - arguments:
@@ -79,12 +85,24 @@ script:
       default: false
       defaultValue: 'false'
       description: Whether to include a URL to the relevant component in Demisto.
-        Can be "true" or "false". Default value is "false".
       isArray: false
       name: ignoreAddURL
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Log level to send
+      isArray: false
+      name: level
+      predefined:
+      - DEBUG
+      - INFO
+      - WARNING
+      - ERROR
+      - CRITICAL
       required: false
       secret: false
     deprecated: false
@@ -98,3 +116,4 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
