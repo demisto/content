@@ -1,7 +1,7 @@
 <p>
 Infoblox enables you to receive metadata about IPs in your network and manages the DNS Firewall by configuring RPZs. It defines RPZ rules to block DNS resolution for malicious or unauthorized hostnames, or redirect clients to a walled garden by substituting responses.
 
-This integration was integrated and tested with version xx of Infoblox
+This integration was integrated and tested with version V2 of Infoblox
 </p>
 <h2>Configure Infoblox on Demisto</h2>
 <ol>
