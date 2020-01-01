@@ -66,7 +66,8 @@
         },
         {
             "integrations": "ThreatQ v2",
-            "playbookID": "ThreatQ - Test"
+            "playbookID": "ThreatQ - Test",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "AttackIQFireDrill",
@@ -2059,8 +2060,8 @@
         }
     ],
     "skipped_tests": {
-        "Phishing - core": "Issue 20983",
-        "Test-Shodan_v2": "Skipping to chack if related to shodan",
+        "Phishing - Core - Test": "Issue 20983",
+        "Phishing v2 Test - Attachment": "Issue 20983",
         "Endpoint Malware Investigation - Generic - Test": "Issue 20867",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
@@ -2076,7 +2077,6 @@
         "ArcSight Logger test": "Issue 19117",
         "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
-        "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "Carbon Black Enterprise Protection V2 Test": "Issue 19838",
@@ -2090,8 +2090,9 @@
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
-        "Test Playbook TrendMicroDDA": "Manual test",
-        "PANW - Hunting and threat detection by indicator type Test": "Issue 20952"
+        "Test Playbook TrendMicroDDA": "Issue 16501",
+        "PANW - Hunting and threat detection by indicator type Test": "Issue 20952",
+        "ssdeepreputationtest": "Issue #20953"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
@@ -2116,7 +2117,6 @@
         "ProtectWise": "Issue 20486",
         "ThreatMiner": "Issue 20469",
         "DomainTools Iris": "Issue 20433",
-        "ThreatQ v2": "Issue 19468",
         "Check Point": "Issue 18643",
         "RSA Archer": "Issue 20335",
         "Preempt": "Issue 20268",
@@ -2225,6 +2225,7 @@
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
+        "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange"
     }
