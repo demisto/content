@@ -197,7 +197,6 @@ def syslog_send(manager: SyslogManager, min_severity: int):
             severity = int(severity)
         except Exception:
             severity = None
-            pass
 
     if message_type == INCIDENT_OPENED and (severity is not None and severity < min_severity):
         return
