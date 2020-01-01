@@ -2,7 +2,7 @@ id: PAN-OS - Add Static Routes
 version: -1
 fromversion: 5.0.0
 name: PAN-OS - Add Static Routes
-description: This playbook accepts PAN-OS static route configuration and creates it
+description: This playbook accepts a PAN-OS static route configuration and creates it
   in the PAN-OS instance.
 starttaskid: "0"
 tasks:
@@ -263,7 +263,7 @@ tasks:
       id: e892374b-5d9a-4ee0-8c4d-1b0635a0cb3d
       version: -1
       name: PAN-OS - list static routes
-      description: Lists the static routes of a virtual router.
+      description: Lists the static routes for a virtual router.
       script: '|||panorama-list-static-routes'
       type: regular
       iscommand: true
@@ -467,12 +467,11 @@ inputs:
 - key: interface_name
   value: {}
   required: false
-  description: Interface name where the Static Route will be added
+  description: Interface name where the static route will be added.
 - key: destination
   value: {}
   required: true
-  description: 'Enter an IP address and network mask in Classless Inter-domain Routing
-    (CIDR) notation: ip_address/mask (for example, 192.168.2.0/24 for IPv4 or 2001:db8::/32
+  description: 'Enter an IP address and network mask in CIDR notation: ip_address/mask (for example, 192.168.2.0/24 for IPv4 or 2001:db8::/32
     for IPv6).'
 - key: nexthop_type
   value: {}
@@ -487,7 +486,7 @@ inputs:
   value:
     simple: "No"
   required: false
-  description: This input established whether to auto-commit the configuration to
+  description: This input determines whether to auto-commit the configuration to
     PAN-OS. Specify Yes/No.
 outputs: []
 tests:
