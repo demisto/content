@@ -1,0 +1,34 @@
+commonfields:
+  id: DockerHardeningCheck
+  version: -1
+name: DockerHardeningCheck
+script: ''
+type: python
+subtype: python3
+fromversion: 5.0.0
+tags:
+- Utility
+comment: 'Check if the Docker container running this script has been hardend according to the recommended settings at: https://support.demisto.com/hc/en-us/articles/360040922194'
+enabled: true
+args:
+- name: entry_id
+  required: true
+  default: true
+  description: The War Room entryID of the file to convert.
+- name: format
+  description: 'Output format to which to convert. Can specify only file extension, such as: "pdf" or <ext:writer> such  as  "txt:Text (Encoded)". Default is "pdf".'
+  defaultValue: pdf
+- name: all_files
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: If "yes", will return all generated files. If "no", will return only the main file. Relevant
+    for formats that might generate multiple files, such as html (which will generate
+    image files additionally to the main html file). Default is "no".
+  defaultValue: "no"
+outputs:
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.7.5.4583
+runas: DBotWeakRole
