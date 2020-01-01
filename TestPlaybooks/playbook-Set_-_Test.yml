@@ -38,7 +38,7 @@ tasks:
       version: -1
       name: Set number as number
       description: Sets a value into the context with the given context key
-      scriptName: Set_ido
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
@@ -73,7 +73,7 @@ tasks:
       version: -1
       name: Set number as string
       description: Sets a value into the context with the given context key
-      scriptName: Set_ido
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
