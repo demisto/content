@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from distutils.util import strtobool
+
 from sixgill.sixgill_alert_client import SixgillAlertClient
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 
@@ -84,9 +84,5 @@ try:
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
 
-# Log exceptions
 except Exception as e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
-
+    return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)))
