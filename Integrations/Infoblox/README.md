@@ -3,12 +3,6 @@ Infoblox enables you to receive metadata about IPs in your network and manages t
 
 This integration was integrated and tested with version xx of Infoblox
 </p>
-<h2>Use Cases</h2>
-<ul>
-<li>Use case 1</li>
-<li>Use case 2</li>
-</ul><h2>Detailed Description</h2><h2>Fetch Incidents</h2>
-<p>Populate this section with Fetch incidents data</p>
 <h2>Configure Infoblox on Demisto</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
@@ -20,6 +14,7 @@ This integration was integrated and tested with version xx of Infoblox
       <li><strong>Name</strong>: a textual name for the integration instance.</li>
    <li><strong>Server URL (e.g. https://example.net)</strong></li>
    <li><strong>User Name</strong></li>
+   <li><strong>Password</strong></li>
    <li><strong>Trust any certificate (not secure)</strong></li>
    <li><strong>Use system proxy settings</strong></li>
     </ul>
