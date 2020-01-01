@@ -1,18 +1,30 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 import pyshark
 import re
-from typing import Dict
+from typing import Dict, Any
+
 '''GLOBAL VARS'''
 BAD_CHARS = ['[', ']', '>', '<', "'"]
 EMAIL_REGEX = r'\b[A-Za-z0-9._%=+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
 IP_REGEX = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.)' \
            r'{3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b'
 URL_REGEX = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+PRAGMA_REGEX = r'Pragma: ([^\\]+)'
 '''HELPER FUNCTIONS'''
 
 
 def strip(s: str, bad_chars=BAD_CHARS):
+    """
+
+    Args:
+        s: string to strip
+        bad_chars: all characters to remove from string.
+
+    Returns:
+        The input s without the bac_chars
+    """
     temp = s
     for char in bad_chars:
         temp = temp.replace(char, '')
@@ -20,23 +32,42 @@ def strip(s: str, bad_chars=BAD_CHARS):
 
 
 def hierarchy_to_md(hierarchy: dict) -> str:
-    final_dict = {}
+    """
+
+    Args:
+        hierarchy: a dictionary of layer hierarchy for all packets
+
+    Returns:
+        A markdown string for displaying the hierarchy in a nice view. The script also counts the number of occurrences
+        each hierarchy.
+    """
+    final_dict = {}  # type: Dict[str, Any]
     num_of_all_packets = 0
     for k in hierarchy.keys():
         layer_heir = ''
         for layer in k.split(','):
-            layer_heir += ' -> '+layer
+            layer_heir += ' -> ' + layer
             final_dict[layer_heir] = final_dict.get(layer_heir, 0) + hierarchy[k]
         num_of_all_packets += hierarchy[k]
     md = '|Layer| # of Packets|% of Packets|\n|---|----|---|\n'
     for key in sorted(final_dict):
-        md += f'|{key}|{final_dict[key]}|{round(final_dict[key]/num_of_all_packets,3)*100}%|\n'
+        md += f'|{key}|{final_dict[key]}|{round(final_dict[key] / num_of_all_packets, 3) * 100}%|\n'
     return md
 
+
 def conversations_to_md(conversations: dict, disp_num: int) -> str:
+    """
+
+    Args:
+        conversations: a raw dictionary of conversations.
+        disp_num: The limit of conversations to display.
+
+    Returns:
+        A mardkown of <=disp_num of conversations, ordered in descending order.
+    """
     md = '|A|B|# of Packets\n|---|---|---|\n'
     ordered_conv_list = sorted(conversations.items(), key=lambda x: x[1], reverse=True)
-    disp_num = min(disp_num,len(ordered_conv_list))
+    disp_num = min(disp_num, len(ordered_conv_list))
     for i in range(disp_num):
         hosts = strip(ordered_conv_list[i][0]).split(',')
         md += f'|{hosts[0]}|{hosts[1]}|{ordered_conv_list[i][1]}|\n'
@@ -44,9 +75,19 @@ def conversations_to_md(conversations: dict, disp_num: int) -> str:
 
 
 def flows_to_md(flows: dict, disp_num: int) -> str:
+    """
+
+    Args:
+        flows: a raw dictionary of flows.
+        disp_num: The limit of flows to display.
+
+    Returns:
+        A mardkown of <=disp_num of flows, ordered in descending order.
+
+    """
     md = '|A|port|B|port|# of Packets\n|---|---|---|---|---|\n'
     ordered_flow_list = sorted(flows.items(), key=lambda x: x[1].get('counter'), reverse=True)
-    disp_num = min(disp_num,len(ordered_flow_list))
+    disp_num = min(disp_num, len(ordered_flow_list))
     for i in range(disp_num):
         hosts = strip(ordered_flow_list[i][0]).split(',')
         md += f'|{hosts[0]}|{hosts[1]}|{hosts[2]}|{hosts[3]}|{ordered_flow_list[i][1].get("counter", 0)}|\n'
@@ -111,48 +152,79 @@ def add_to_data(d: dict, data: dict) -> None:
         else:
             d[data_id].update(remove_nones(data))
 
+
 '''MAIN'''
 
 
 def main():
     # Variables from demisto
     # file_path = "/Users/olichter/Downloads/chargen-udp.pcap"
-    #file_path = "/Users/olichter/Downloads/http-site.pcap"                 # HTTP
-    file_path = "/Users/olichter/Downloads/dns.cap"                        # DNS
+    # file_path = "/Users/olichter/Downloads/http-site.pcap"                 # HTTP
+    # file_path = "/Users/olichter/Downloads/dns.cap"                        # DNS
     # file_path = "/Users/olichter/Downloads/tftp_rrq.pcap"                 # tftp
     # file_path = "/Users/olichter/Downloads/rsasnakeoil2.cap"              # encrypted SSL
-    #file_path = "/Users/olichter/Downloads/smb-legacy-implementation.pcapng"  # llmnr/netbios/smb
+    # file_path = "/Users/olichter/Downloads/smb-legacy-implementation.pcapng"  # llmnr/netbios/smb
     # file_path = "/Users/olichter/Downloads/smtp.pcap"                      # SMTP
-    #file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
-    #file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
+    # file_path = "/Users/olichter/Downloads/nb6-hotspot.pcap"                #syslog
+    # file_path = "/Users/olichter/Downloads/wpa-Induction.pcap"               #wpa - Password is Induction
     # file_path = "/Users/olichter/Downloads/iseries.cap"
-    entry_id = ''
+
+    # PC Script
+    # file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise (1).pcap"
+    # entry_id = ''
+
+    # decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
+    # conversation_number_to_display = 15
+    # is_flows = True
+    # is_dns = False
+    # is_http = True
+    # is_reg_extract = True
+    # is_llmnr = False
+    # is_syslog = False
+    # pcap_filter = 'http'
+    # pcap_filter_new_file = ''  # '/Users/olichter/Downloads/try.pcap'
+    # homemade_regex = ''  # 'Layer (.+):'
+
+    # Demisto Script
+    entry_id = demisto.args().get('entry_id', '')
+    file_path = demisto.executeCommand('getFilePath', {'id': entry_id})
+    if is_error(file_path):
+        return_error(get_error(file_path))
+
+    file_path = file_path[0]["Contents"]["path"]
 
     decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
     conversation_number_to_display = 15
+    context_outputs = argToList(demisto.args().get('context_output', ''))
     is_flows = True
-    is_dns = True
-    is_http = False
-    is_reg_extract = True
-    is_llmnr = False
-    is_syslog = True
-    pcap_filter = ''
-    pcap_filter_new_file = ''  # '/Users/olichter/Downloads/try.pcap'
-    homemade_regex = 'Layer (.+):'
+    is_dns = 'DNS' in context_outputs
+    is_http = 'HTTP' in context_outputs
+    is_reg_extract = bool(demisto.args().get('extract_regex', 'False'))
+    is_llmnr = 'LLMNR' in context_outputs
+    is_syslog = 'SYSLOG' in context_outputs
+    pcap_filter = demisto.args().get('pcap_filter', '')
+    homemade_regex = demisto.args().get('regex', '')  # 'Layer (.+):'
+    pcap_filter_new_file_path = ''
+    pcap_filter_new_file_name = 'temp.pcap'
+
+    if pcap_filter_new_file_name:
+        temp = demisto.uniqueFile()
+        pcap_filter_new_file_path = demisto.investigation()['id'] + '_' + temp
 
     # Variables for the script
-    hierarchy = {}
+    hierarchy = {}  # type: Dict[str, int]
     num_of_packets = 0
     tcp_streams = 0
     udp_streams = 0
     bytes_transmitted = 0
     min_time = float('inf')
     max_time = -float('inf')
-    conversations = {}
-    flows = {}
+    conversations = {}  # type: Dict[str, Any]
+    flows = {}  # type: Dict[str, Any]
     unique_source_ip = set([])
     unique_dest_ip = set([])
-    dns_data = {}
+    dns_data = {}  # type: Dict[str, Any]
+    http_data = {}  # type: Dict[str, Any]
     ips_extracted = set([])
     urls_extracted = set([])
     emails_extracted = set([])
@@ -170,17 +242,18 @@ def main():
         reg_email = re.compile(EMAIL_REGEX)
         reg_url = re.compile(URL_REGEX)
 
+    if is_http:
+        reg_pragma = re.compile(PRAGMA_REGEX)
+
     if homemade_regex:
         reg_homemad = re.compile(homemade_regex)
 
-
-    cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file,
-                              decryption_key=decrypt_key, encryption_type='WPA-PWD')
-        # cap = pyshark.FileCapture(file_path) #, use_json=True
-    # print(cap[0])
     try:
+
+        cap = pyshark.FileCapture(file_path, display_filter=pcap_filter, output_file=pcap_filter_new_file_path,
+                                  decryption_key=decrypt_key, encryption_type='WPA-PWD')
         for packet in cap:
-            # Set hierarchy for layers
+
             layers = str(packet.layers)
             layers = strip(layers)
             hierarchy[layers] = hierarchy.get(layers, 0) + 1
@@ -195,7 +268,6 @@ def main():
 
             # count bytes
             bytes_transmitted += int(packet.length)
-
 
             # count num of streams + get src/dest ports
             tcp = packet.get_multiple_layers('tcp')
@@ -250,14 +322,32 @@ def main():
                     http_layer = packet.get_multiple_layers('http')
                     if http_layer:
                         all_fields = http_layer[0]._all_fields
-                        more_data = http_layer[0].get('1\\r\\n', {})
-                        agent = all_fields.get("http.user_agent")
-                        host = all_fields.get('http.host')
-                        source_ip = a
-                        full_uri = all_fields.get('http.request.full_uri')
-                        uri = more_data.get('uri')
-                        method = more_data.get('method')
-                        version = more_data.get('version')
+                        temp_http = {
+                            "ID": http_layer[0].get('request_in', packet.number),
+                            'RequestAgent': all_fields.get("http.user_agent"),
+                            'RequestHost': all_fields.get('http.host'),
+                            'RequestSourceIP': a,
+                            'RequestURI': http_layer[0].get('request_full_uri'),
+                            'RequestMethod': http_layer[0].get('request_method'),
+                            'RequestVersion': http_layer[0].get('request_version'),
+                            'RequestAcceptEncoding': http_layer[0].get('accept_encoding'),
+                            'RequestPragma': reg_pragma.findall(str(http_layer[0]))[0]
+                            if reg_pragma.findall(str(http_layer[0])) else None,
+                            'RequestAcceptLanguage': http_layer[0].get('accept_language'),
+                            'RequestCacheControl': http_layer[0].get('cache_control')
+
+                        }
+                        # if the packet is a response
+                        if all_fields.get('http.response'):
+                            temp_http.update({
+                                'ResponseStatusCode': http_layer[0].get('response_code'),
+                                'ResponseVersion': all_fields.get('http.response.version'),
+                                'ResponseCodeDesc': http_layer[0].get('response_code_desc'),
+                                'ResponseContentLength': http_layer[0].get('content_length'),
+                                'ResponseContentType': http_layer[0].get('content_type'),
+                                'ResponseDate': packet_epoch_time
+                            })
+                        add_to_data(http_data, temp_http)
 
                 if str([b, a]) in conversations.keys():
                     a, b = b, a
@@ -290,7 +380,7 @@ def main():
                 for i in reg_email.finditer(str(packet)):
                     emails_extracted.add(i[0])
                 for i in reg_url.finditer(str(packet)):
-                     urls_extracted.add(i[0])
+                    urls_extracted.add(i[0])
 
             if homemade_regex:
                 for i in reg_homemad.findall((str(packet))):
@@ -310,32 +400,42 @@ def main():
         if is_flows:
             md += f'#### Top {conversation_number_to_display} Flows\n'
             md += flows_to_md(flows, conversation_number_to_display)
-        print(md)
 
         # Entry Context
         general_context = {
             'EntryID': entry_id,
             'Bytes': bytes_transmitted,
             'Packets': num_of_packets,
-            'StreamCount': tcp_streams+udp_streams,
+            'StreamCount': tcp_streams + udp_streams,
             'UniqueSourceIP': len(unique_source_ip),
             'UniqueDestIP': len(unique_dest_ip),
             'StartTime': min_time,
             'EndTime': max_time
         }
-        ec = {'PcapResults': general_context}
         if is_flows:
-            ec['PcapResults.Flows(val.SourceIP == obj.SourceIP && val.DestIP == obj.DestIP && ' \
-               'val.SourcePort == obj.SourcePort && val.DestPort == obj.DestPort)'] = flows_to_ec(flows)
+            general_context['Flow'] = flows_to_ec(flows)
         if is_dns:
-            ec['PcapResults.DNS(val.ID == obj.ID)'] = dns_data.values()
+            general_context['DNS'] = list(dns_data.values())
         if is_llmnr:
-            ec['PcapResults.LLMNR(val.ID == obj.ID)'] = list(llmnr_dict.values())
-        print(dns_data.values())
+            general_context['LLMNR'] = list(llmnr_dict.values())
+        if is_http:
+            general_context['HTTP'] = list(http_data.values())
+        if is_reg_extract:
+            general_context['IP'] = list(ips_extracted)
+            general_context['URL'] = list(urls_extracted)
+            general_context['Email'] = list(emails_extracted)
+        if homemade_regex:
+            general_context['Regex'] = list(homemade_extracted)
+        ec = {'PcapResults(val.EntryID == obj.EntryID)': general_context}
+        return_outputs(md, ec, ec)
+        if pcap_filter_new_file_name:
+            demisto.results({'Contents': '', 'ContentsFormat': formats['text'], 'Type': 3,
+                             'File': pcap_filter_new_file_name, 'FileID': temp})
 
-    except pyshark.capture.capture.TSharkCrashException as e:
+    except pyshark.capture.capture.TSharkCrashException:
         raise ValueError("Filter could not be applied to file. Please make sure it is of correct syntax.")
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
+    # print(timeit.timeit(main, number=3)/3)
