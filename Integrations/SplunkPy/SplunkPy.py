@@ -346,8 +346,8 @@ def splunk_search_command():
     search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
     num_of_results_from_query = search_job["resultCount"]
 
-    results_limit = int(demisto.args().get("event_limit", 100))
-    if results_limit == 0:
+    results_limit = float(demisto.args().get("event_limit", 100))
+    if results_limit == 0.0:
         # In Splunk, a result limit of 0 means no limit.
         results_limit = float("inf")
     batch_size = int(demisto.args().get("batch_limit", 25000))
