@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SyslogMirror
+  id: Syslog Sender
   version: -1
 configuration:
 - display: IP Address (e.g. 127.0.0.1)
@@ -47,7 +47,7 @@ configuration:
   type: 8
 description: Send messages to Syslog
 display: Syslog Sender
-name: SyslogMirror
+name: Syslog Sender
 script:
   commands:
   - arguments:
