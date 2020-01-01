@@ -4,31 +4,27 @@ commonfields:
 name: DockerHardeningCheck
 script: ''
 type: python
-subtype: python3
-fromversion: 5.0.0
 tags:
 - Utility
-comment: 'Check if the Docker container running this script has been hardend according to the recommended settings at: https://support.demisto.com/hc/en-us/articles/360040922194'
+comment: 'Check if the Docker container running this script has been hardend according
+  to the recommended settings at: https://support.demisto.com/hc/en-us/articles/360040922194'
 enabled: true
 args:
-- name: entry_id
-  required: true
-  default: true
-  description: The War Room entryID of the file to convert.
-- name: format
-  description: 'Output format to which to convert. Can specify only file extension, such as: "pdf" or <ext:writer> such  as  "txt:Text (Encoded)". Default is "pdf".'
-  defaultValue: pdf
-- name: all_files
-  auto: PREDEFINED
-  predefined:
-  - "yes"
-  - "no"
-  description: If "yes", will return all generated files. If "no", will return only the main file. Relevant
-    for formats that might generate multiple files, such as html (which will generate
-    image files additionally to the main html file). Default is "no".
-  defaultValue: "no"
-outputs:
+- name: memory
+  description: The amount of memory to check. Can specify bytes size or append m/g
+    fror mega/giga bytes.
+  defaultValue: 1g
+- name: pids
+  description: Number of max pids to check.
+  defaultValue: "256"
+- name: fds_soft
+  description: Soft file descriptor limit to check.
+  defaultValue: "1024"
+- name: fds_hard
+  description: Hard file descriptor limit to check.
+  defaultValue: "8192"
 scripttarget: 0
+subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.7.5.4583
 runas: DBotWeakRole
