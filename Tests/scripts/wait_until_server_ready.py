@@ -34,7 +34,6 @@ def get_username_password():
         conf = json.load(conf_file)
 
     if options.non_ami:
-        # GGG - what is the logic behind this if statement? removed username and password
         return conf['temp_apikey'], options.contentVersion
 
     return conf['temp_apikey'], options.contentVersion
@@ -100,16 +99,6 @@ def exit_if_timed_out(loop_start_time, current_time):
         sys.exit(1)
 
 
-def get_instance_types_count(instance_ips):
-    instance_types_count = {}
-    for ami_instance_name, ami_instance_ip in instance_ips:
-        if ami_instance_name in instance_types_count:
-            instance_types_count[ami_instance_name] += 1
-        else:
-            instance_types_count[ami_instance_name] = 1
-    return instance_types_count
-
-
 def main():
     api_key, content_version = get_username_password()
     ready_ami_list = []
@@ -117,7 +106,6 @@ def main():
         instance_ips = instance_file.readlines()
         instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
-    # instance_types_to_create = get_instance_types_count(instance_ips)
     loop_start_time = time.time()
     last_update_time = loop_start_time
     instance_ips_not_created = [ami_instance_ip for ami_instance_name, ami_instance_ip in instance_ips]
