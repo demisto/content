@@ -481,37 +481,37 @@ script:
     outputs:
     - contextPath: MsGraph.Sites
       type: String
-    - contextPath: Msgraphfiles.odata.context
+    - contextPath: MsGraphFiles.odata.context
       description: ''
       type: String
-    - contextPath: Msgraphfiles.odata.nextLink
+    - contextPath: MsGraphFiles.odata.nextLink
       description: ''
       type: String
-    - contextPath: Msgraphfiles.ListSites.lastModifiedDateTime
+    - contextPath: MsGraphFiles.ListSites.lastModifiedDateTime
       description: ''
       type: String
-    - contextPath: Msgraphfiles.ListSites.displayName
+    - contextPath: MsGraphFiles.ListSites.displayName
       description: ''
       type: String
-    - contextPath: Msgraphfiles.ListSites.description
+    - contextPath: MsGraphFiles.ListSites.description
       description: ''
       type: String
-    - contextPath: Msgraphfiles.ListSites.createdDateTime
+    - contextPath: MsGraphFiles.ListSites.createdDateTime
       description: ''
       type: String
-    - contextPath: Msgraphfiles.ListSites.webUrl
+    - contextPath: MsGraphFiles.ListSites.webUrl
       description: ''
       type: String
-    - contextPath: Msgraphfiles.ListSites.odata.context
+    - contextPath: MsGraphFiles.ListSites.odata.context
       description: ''
       type: String
-    - contextPath: Msgraphfiles.ListSites.siteCollection.hostname
+    - contextPath: MsGraphFiles.ListSites.siteCollection.hostname
       description: ''
       type: String
-    - contextPath: Msgraphfiles.ListSites.id
+    - contextPath: MsGraphFiles.ListSites.id
       description: ''
       type: String
-    - contextPath: Msgraphfiles.ListSites.name
+    - contextPath: MsGraphFiles.ListSites.name
       description: ''
       type: String
 
