@@ -12,6 +12,7 @@ IP_REGEX = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.)' \
            r'{3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b'
 URL_REGEX = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 PRAGMA_REGEX = r'Pragma: ([^\\]+)'
+TYPE_REGEX = r'Type: (.+)'
 '''HELPER FUNCTIONS'''
 
 
@@ -114,7 +115,7 @@ def flows_to_ec(flows: dict) -> list:
             'DestPort': hosts[3],
             'Duration': round(flow_data.get('max_time', 0) - flow_data.get('min_time', 0)),
             'StartTime': formatEpochDate(flow_data.get('min_time', 0)),
-            'Endtime': formatEpochDate(flow_data.get('max_time', 0)),
+            'EndTime': formatEpochDate(flow_data.get('max_time', 0)),
             'Bytes': flow_data.get('bytes', 0)
         }
         flows_ec.append(flow_ec)
@@ -172,18 +173,19 @@ def main():
     # PC Script
     # file_path = "/Users/olichter/Downloads/2019-12-03-traffic-analysis-exercise (1).pcap"
     # entry_id = ''
-
+    #
     # decrypt_key = "Induction"  # "/Users/olichter/Downloads/rsasnakeoil2.key"
     # conversation_number_to_display = 15
     # is_flows = True
-    # is_dns = False
+    # is_dns = True
     # is_http = True
     # is_reg_extract = True
     # is_llmnr = False
     # is_syslog = False
-    # pcap_filter = 'http'
-    # pcap_filter_new_file = ''  # '/Users/olichter/Downloads/try.pcap'
+    # pcap_filter = 'dns'
+    # pcap_filter_new_file_name = ''  # '/Users/olichter/Downloads/try.pcap'
     # homemade_regex = ''  # 'Layer (.+):'
+    # pcap_filter_new_file_path = ''
 
     # Demisto Script
     entry_id = demisto.args().get('entry_id', '')
@@ -205,7 +207,7 @@ def main():
     pcap_filter = demisto.args().get('pcap_filter', '')
     homemade_regex = demisto.args().get('regex', '')  # 'Layer (.+):'
     pcap_filter_new_file_path = ''
-    pcap_filter_new_file_name = 'temp.pcap'
+    pcap_filter_new_file_name = demisto.args().get('filtered_file_name', '')
 
     if pcap_filter_new_file_name:
         temp = demisto.uniqueFile()
@@ -245,6 +247,8 @@ def main():
     if is_http:
         reg_pragma = re.compile(PRAGMA_REGEX)
 
+    if is_dns:
+        reg_type = re.compile(TYPE_REGEX)
     if homemade_regex:
         reg_homemad = re.compile(homemade_regex)
 
@@ -291,7 +295,7 @@ def main():
                         'ID': dns_layer[0].get('id'),
                         'Request': dns_layer[0].get('qry_name'),
                         'Response': dns_layer[0].get('a'),
-                        'Type': dns_layer[0].get('resp_type')
+                        'Type': reg_type.findall(str(dns_layer[0]))[0] if reg_type.findall(str(dns_layer[0])) else None
                     }
                     add_to_data(dns_data, temp_dns)
 
@@ -345,7 +349,7 @@ def main():
                                 'ResponseCodeDesc': http_layer[0].get('response_code_desc'),
                                 'ResponseContentLength': http_layer[0].get('content_length'),
                                 'ResponseContentType': http_layer[0].get('content_type'),
-                                'ResponseDate': packet_epoch_time
+                                'ResponseDate': formatEpochDate(packet_epoch_time)
                             })
                         add_to_data(http_data, temp_http)
 
@@ -409,8 +413,8 @@ def main():
             'StreamCount': tcp_streams + udp_streams,
             'UniqueSourceIP': len(unique_source_ip),
             'UniqueDestIP': len(unique_dest_ip),
-            'StartTime': min_time,
-            'EndTime': max_time
+            'StartTime': formatEpochDate(min_time),
+            'EndTime': formatEpochDate(max_time)
         }
         if is_flows:
             general_context['Flow'] = flows_to_ec(flows)
