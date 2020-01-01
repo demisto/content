@@ -32,7 +32,7 @@ jobs:
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
-              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
+              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME, INSTANCE_TESTS: $INSTANCE_TESTS"
               if [ ! -e "venv" ]; then
                 echo "installing venv"
                 NO_HOOKS=1 .hooks/bootstrap
