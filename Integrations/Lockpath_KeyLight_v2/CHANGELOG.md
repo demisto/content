@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.12.1] - 2019-12-25
 - Updating the ***Lockpath KeyLight*** integration. 
 - Changes and additions:
     - New fetch-incidents option.

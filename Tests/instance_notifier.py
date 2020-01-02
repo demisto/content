@@ -3,7 +3,6 @@ import argparse
 
 import demisto_client
 from slackclient import SlackClient
-
 from test_integration import __create_integration_instance, __delete_integrations_instances
 from Tests.test_utils import str2bool, print_color, print_error, LOG_COLORS
 
@@ -36,7 +35,7 @@ def test_instances(secret_conf_path, server, username, password):
     integrations = get_integrations(secret_conf_path)
 
     instance_ids = []
-    failed_integration = []
+    failed_integrations = []
     integrations_counter = 0
     for integration in integrations:
         c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
@@ -50,18 +49,19 @@ def test_instances(secret_conf_path, server, username, password):
         has_integration = integration.get('has_integration', True)
 
         if has_integration:
-            instance_id = __create_integration_instance(c, integration_name, integration_instance_name,
-                                                        integration_params, is_byoi)
+            instance_id, failure_message = __create_integration_instance(
+                c, integration_name, integration_instance_name, integration_params, is_byoi
+            )
             if not instance_id:
-                print_error('Failed to create instance of %s' % (integration_name,))
-                failed_integration.append("{0} {1} - devops comments: {2}".format(integration_name,
-                                                                                  product_description, devops_comments))
+                print_error('Failed to create instance of {} with message: {}'.format(integration_name, failure_message))
+                failed_integrations.append("{} {} - devops comments: {}".format(
+                    integration_name, product_description, devops_comments))
             else:
                 instance_ids.append(instance_id)
                 print('Create integration %s succeed' % (integration_name,))
                 __delete_integrations_instances(c, instance_ids)
 
-    return failed_integration, integrations_counter
+    return failed_integrations, integrations_counter
 
 
 def get_attachments(secret_conf_path, server, user, password, build_url):
@@ -70,7 +70,7 @@ def get_attachments(secret_conf_path, server, user, password, build_url):
     fields = []
     if failed_integration:
         field_failed_tests = {
-            "title": "{0} Problematic Instances".format(len(failed_integration)),
+            "title": "Found {0} Problematic Instances. See CircleCI for errors.".format(len(failed_integration)),
             "value": '\n'.join(failed_integration),
             "short": False
         }

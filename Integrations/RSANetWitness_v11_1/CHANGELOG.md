@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.12.1] - 2019-12-25
   - Fixed an issue where environment proxy effects the integration when even though no proxy should be used.
 
 
