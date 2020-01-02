@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Exposed *type* in the list of arguments for `minemeld-add-to-miner` and `minemeld-remove-from-miner` commands.
 
 ## [19.10.2] - 2019-10-29
 Fixed lowercase hash types in the outputs.

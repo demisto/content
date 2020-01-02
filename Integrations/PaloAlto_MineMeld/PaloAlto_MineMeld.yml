@@ -44,6 +44,12 @@ script:
       required: true
       secret: false
     - default: false
+      description: The type of the indicator to add.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
       description: Comment for the indicator.
       isArray: false
       name: comment
@@ -66,6 +72,12 @@ script:
       isArray: false
       name: indicator
       required: true
+      secret: false
+    - default: false
+      description: The type of the indicator  to remove.
+      isArray: false
+      name: type
+      required: false
       secret: false
     deprecated: false
     description: Remove an indicator from a miner.
