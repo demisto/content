@@ -25,7 +25,7 @@ script:
       name: include_delivered_items
       predefined:
       - 'true'
-      - ' false'
+      - 'false'
       required: false
       secret: false
     deprecated: false

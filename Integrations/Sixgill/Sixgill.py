@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+from distutils.util import strtobool
 
 from sixgill.sixgill_darkfeed_client import SixgillDarkFeedClient
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
@@ -55,9 +56,10 @@ def test_module():
 def fetch_incidents():
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
-
     if last_fetch is None:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+
+    include_delivered_items = bool(strtobool(demisto.args().get('include_delivered_items', False)))
 
     sixgill_darkfeed_client = SixgillDarkFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
                                                     CHANNEL_CODE)
