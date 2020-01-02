@@ -7,10 +7,6 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Domain
-  name: domain
-  required: false
-  type: 0
 - display: Credentials
   name: credentials
   required: true
@@ -602,24 +598,72 @@ script:
   - arguments:
     - default: false
       defaultValue: '5'
+      description: The maximin number of files to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
+    description: Returns all downloaded files in the system.
     execution: false
     name: tanium-tr-list-file-downloads
+    outputs:
+    - contextPath: Tanium.FileDownloads.Size
+      description: The size of the file, in bytes.
+      type: Number
+    - contextPath: Tanium.FileDownloads.Path
+      description: The path of the file.
+      type: String
+    - contextPath: Tanium.FileDownloads.Downloaded
+      description: The date this file was downloaded.
+      type: Date
+    - contextPath: Tanium.FileDownloads.Host
+      description: The hostname of the dowloaded file.
+      type: String
+    - contextPath: Tanium.FileDownloads.Created
+      description: The file creation timestamp.
+      type: Date
+    - contextPath: Tanium.FileDownloads.Hash
+      description: The file hash.
+      type: String
+    - contextPath: Tanium.FileDownloads.SPath
+      type: String
+    - contextPath: Tanium.FileDownloads.ID
+      description: The downloaded file ID.
+      type: Number
+    - contextPath: Tanium.FileDownloads.LastModified
+      description: The date that the file was last modified.
+      type: Date
+    - contextPath: Tanium.FileDownloads.CreatedBy
+      description: User that created this file.
+      type: String
+    - contextPath: Tanium.FileDownloads.CreatedByProc
+      type: String
+    - contextPath: Tanium.FileDownloads.LastModifiedBy
+      description: The last user that modified this file.
+      type: String
+    - contextPath: Tanium.FileDownloads.LastModifiedByProc
+      type: String
+    - contextPath: Tanium.FileDownloads.Comments
+      description: The downloaded file comments.
+      type: String
+    - contextPath: Tanium.FileDownloads.Tags
+      description: The downloaded file tags.
+      type: String
   - arguments:
     - default: false
+      description: The file ID.
       isArray: false
       name: file-id
       required: true
       secret: false
     deprecated: false
+    description: Get the actual content of a downloaded file by file ID.
     execution: false
     name: tanium-tr-get-downloaded-file
   - arguments:
     - default: false
+      description: The connection name.
       isArray: false
       name: connection-name
       required: true
@@ -627,29 +671,125 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: combined
+      description: The type of event.
       isArray: false
       name: event-type
       predefined:
-      - file
-      - network
-      - registry
-      - process
-      - driver
-      - sid
-      - combined
-      - dns
-      - image
+      - File
+      - Network
+      - Registry
+      - Process
+      - Driver
+      - SID
+      - Combined
+      - DNS
+      - Image
       required: true
       secret: false
     - default: false
       defaultValue: '5'
+      description: The maximin number of events to return.
       isArray: false
       name: limit
       required: false
       secret: false
+    - default: false
+      defaultValue: '0'
+      description: Offset into the result set.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
     deprecated: false
+    description: Queries events for a connection.
     execution: false
     name: tanium-tr-list-events-by-connection
+    outputs:
+    - contextPath: Tanium.Event.Domain
+      description: The domain of the event.
+      type: String
+    - contextPath: Tanium.Event.File
+      description: The path of the file in the event.
+      type: String
+    - contextPath: Tanium.Event.Operation
+      description: The event operation.
+      type: String
+    - contextPath: Tanium.Event.ProcessID
+      description: The ID of the process.
+      type: Number
+    - contextPath: Tanium.Event.ProcessName
+      description: The name of the process.
+      type: String
+    - contextPath: Tanium.Event.ProcessTableID
+      description: The ID of the process table.
+      type: Number
+    - contextPath: Tanium.Event.Timestamp
+      description: The moment that the event was created.
+      type: Date
+    - contextPath: Tanium.Event.Username
+      description: The username of the event.
+      type: String
+    - contextPath: Tanium.Event.DestinationAddress
+      description: The network event destinetion address.
+      type: String
+    - contextPath: Tanium.Event.DestinationPort
+      description: The network event destinetion port.
+      type: Number
+    - contextPath: Tanium.Event.SourceAddress
+      description: The network event source address.
+      type: String
+    - contextPath: Tanium.Event.SourcePort
+      description: The network event source port.
+      type: Number
+    - contextPath: Tanium.Event.KeyPath
+      description: The registry key path.
+      type: String
+    - contextPath: Tanium.Event.ValueName
+      description: The registry value name.
+      type: String
+    - contextPath: Tanium.Event.EndTime
+      description: The process end time.
+      type: Date
+    - contextPath: Tanium.Event.ExitCode
+      description: The process exit code.
+      type: Number
+    - contextPath: Tanium.Event.ProcessCommandLine
+      description: The process command line.
+      type: String
+    - contextPath: Tanium.Event.ProcessHash
+      description: The hash value of the process.
+      type: String
+    - contextPath: Tanium.Event.SID
+      type: Number
+    - contextPath: Tanium.Event.Hashes
+      description: The hashes of the driver.
+      type: String
+    - contextPath: Tanium.Event.ImageLoaded
+      description: The image loaded path of the driver.
+      type: String
+    - contextPath: Tanium.Event.Signature
+      description: The signature of the driver.
+      type: String
+    - contextPath: Tanium.Event.Signed
+      description: If the value is true, The driver is signed.
+      type: Boolean
+    - contextPath: Tanium.Event.EventId
+      description: The ID of the event.
+      type: Number
+    - contextPath: Tanium.Event.EventOpcode
+      type: Number
+    - contextPath: Tanium.Event.EventRecordID
+      description: The ID of the event record.
+      type: Number
+    - contextPath: Tanium.Event.EventTaskID
+      description: The ID of the event task.
+      type: Number
+    - contextPath: Tanium.Event.Query
+      description: The query of the DNS.
+      type: String
+    - contextPath: Tanium.Event.Response
+      description: The response of the DNS.
+      type: String
   dockerimage: demisto/python3:3.7.4.977
   feed: false
   isfetch: true

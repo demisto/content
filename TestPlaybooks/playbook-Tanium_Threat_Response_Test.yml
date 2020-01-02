@@ -1,5 +1,5 @@
 id: Tanium Threat Response Test
-version: 3
+version: -1
 name: Tanium Threat Response Test
 starttaskid: "0"
 tasks:
@@ -460,7 +460,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "17"
     scriptarguments:
       alert-id:
         simple: "1"
@@ -492,7 +492,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "19"
     scriptarguments:
       connection-name:
         simple: ip-172-31-44-5.eu-central-1.compute.internal
@@ -501,7 +501,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1390
+          "y": 1565
         }
       }
     note: false
@@ -522,7 +522,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+      - "16"
     scriptarguments:
       label-id:
         simple: "1"
@@ -531,7 +531,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1565
+          "y": 1390
         }
       }
     note: false
@@ -553,7 +553,109 @@ tasks:
       {
         "position": {
           "x": 480,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 29962c77-f20f-4669-8783-590564c445e3
+    type: playbook
+    task:
+      id: 29962c77-f20f-4669-8783-590564c445e3
+      version: -1
+      name: Tanium Threat Response - Create connection
+      playbookName: Tanium Threat Response - Create connection
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      destination:
+        simple: EC2AMAZ-KGMRO60
+      destination-type:
+        simple: computer_name
+      remote:
+        simple: "True"
+      timeout: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
           "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 2fbd12ff-6a25-46c0-8bbd-dcbc8b82798c
+    type: regular
+    task:
+      id: 2fbd12ff-6a25-46c0-8bbd-dcbc8b82798c
+      version: -1
+      name: Get file events by connection
+      description: Queries events for a connection.
+      script: '|||tanium-tr-list-events-by-connection'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      connection-name:
+        simple: EC2AMAZ-KGMRO60
+      event-type:
+        simple: File
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: d5d3b18f-66e6-4286-869c-7bf73a5138b2
+    type: regular
+    task:
+      id: d5d3b18f-66e6-4286-869c-7bf73a5138b2
+      version: -1
+      name: Delete connection
+      description: Delete a connection by connection name.
+      script: '|||tanium-tr-delete-connection'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      connection-name:
+        simple: EC2AMAZ-KGMRO60
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2090
         }
       }
     note: false
@@ -564,7 +666,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1755,
+        "height": 2280,
         "width": 810,
         "x": 50,
         "y": 50

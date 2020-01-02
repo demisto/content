@@ -16,11 +16,16 @@ ALERT_TYPE_FROM_REQUEST = {'unresolved': 'Unresolved', 'inprogress': 'In Progres
 ALERT_TYPE_TO_REQUEST = {'Unresolved': 'unresolved', 'In Progress': 'inprogress', 'Ignored': 'ignored', 'Resolved': 'resolved'}
 
 
+EVENT_TYPE_FROM_REQUEST = {'combined': 'Combined', 'dns': 'DNS', 'driver': 'Driver', 'file': 'File', 'image': 'Image',
+                           'network': 'Network', 'process': 'Process', 'registry': 'Registry', 'sid': 'SID'}
+EVENT_TYPE_TO_REQUEST = {'Combined': 'combined', 'DNS': 'dns', 'Driver': 'driver', 'File': 'file', 'Image': 'image',
+                         'Network': 'network', 'Process': 'process', 'Registry': 'registry', 'SID': 'sid'}
+
+
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, domain, **kwargs):
+    def __init__(self, base_url, username, password, **kwargs):
         self.username = username
         self.password = password
-        self.domain = domain
         self.session = ''
         super(Client, self).__init__(base_url, **kwargs)
 
@@ -55,7 +60,6 @@ class Client(BaseClient):
     def update_session(self):
         body = {
             'username': self.username,
-            'domain': self.domain,
             'password': self.password
         }
 
@@ -185,6 +189,48 @@ class Client(BaseClient):
             'Comments': file.get('comments'),
             'Tags': file.get('tags')
         }
+
+    def get_event_item(self, raw_event, event_type):
+        event = {
+            'ID': raw_event.get('id'),
+            'Domain': raw_event.get('domain'),
+            'File': raw_event.get('file'),
+            'Operation': raw_event.get('operation'),
+            'ProcessID': raw_event.get('process_id'),
+            'ProcessName': raw_event.get('process_name'),
+            'ProcessTableID': raw_event.get('process_table_id'),
+            'Timestamp': raw_event.get('timestamp'),
+            'Username': raw_event.get('username'),
+            'DestinationAddress': raw_event.get('destination_addr'),
+            'DestinationPort': raw_event.get('destination_port'),
+            'SourceAddress': raw_event.get('source_addr'),
+            'SourcePort': raw_event.get('source_port'),
+            'KeyPath': raw_event.get('key_path'),
+            'ValueName': raw_event.get('value_name'),
+            'EndTime': raw_event.get('end_time'),
+            'ExitCode': raw_event.get('exit_code'),
+            'ProcessCommandLine': raw_event.get('process_command_line'),
+            'ProcessHash': raw_event.get('process_hash'),
+            'SID': raw_event.get('sid'),
+            'Hashes': raw_event.get('Hashes'),
+            'ImageLoaded': raw_event.get('ImageLoaded'),
+            'Signature': raw_event.get('Signature'),
+            'Signed': raw_event.get('Signed'),
+            'EventId': raw_event.get('event_id'),
+            'EventOpcode': raw_event.get('event_opcode'),
+            'EventRecordID': raw_event.get('event_record_id'),
+            'EventTaskID': raw_event.get('event_task_id'),
+            'Query': raw_event.get('query'),
+            'Response': raw_event.get('response')
+        }
+
+        if(event_type == 'combined'):
+            event['Type'] = raw_event.get('type')
+        else:
+            event['Type'] = EVENT_TYPE_FROM_REQUEST[event_type]
+
+        # remove empty values from the event item
+        return {k: v for k, v in event.items() if v is not None}
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -445,13 +491,19 @@ def get_downloaded_file(client, data_args):
 
 def get_events_by_connection(client, data_args):
     limit = int(data_args.get('limit'))
+    offset = data_args.get('offset')
     connection = data_args.get('connection-name')
     event_type = data_args.get('event-type')
-    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{connection}/{event_type}/events/', params={'limit': limit})
+
+    event_type = EVENT_TYPE_TO_REQUEST[event_type]
+
+    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{connection}/{event_type}/events/',
+                                     params={'limit': limit, 'offset': offset})
 
     events = []
     for item in raw_response:
-        events.append(item)
+        event = client.get_event_item(item, event_type)
+        events.append(event)
 
     context = createContext(events, removeNull=True)
     outputs = {'Tanium.Event(val.ID && val.ID === obj.ID)': context}
@@ -504,7 +556,7 @@ def main():
     params = demisto.params()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
-    domain = params.get('domain')
+
     # Remove trailing slash to prevent wrong URL path to service
     server = params['url'].strip('/')
     # Should we use SSL
@@ -513,7 +565,7 @@ def main():
     # Remove proxy if not set to true in params
     handle_proxy()
     command = demisto.command()
-    client = Client(server, username, password, domain, verify=use_ssl)
+    client = Client(server, username, password, verify=use_ssl)
     demisto.info(f'Command being called is {command}')
 
     commands = {
