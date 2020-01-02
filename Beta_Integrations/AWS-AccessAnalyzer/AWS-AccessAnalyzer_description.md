@@ -2,8 +2,8 @@
 
 ### Prerequisites
 - Attach an instance profile with the required permissions to the Demisto server or engine that is running on your AWS environment.
-- Instance profile requires minimum permission: sts:AssumeRole.
-- Instance profile requires permission to assume the roles needed by the AWS integrations.
+- Instance Profile requires minimum permission: sts:AssumeRole.
+- Instance Profile requires permission to assume the roles needed by the AWS integrations.
 
 ### Configure AWS Settings
 - Create an IAM Role for the Instance Profile.
@@ -24,6 +24,6 @@
 }
 ```
 
-For detailed instructions, [see the AWS Integrations Configuration Guide](https://support.demisto.com/hc/en-us/articles/360005686854-AWS-Integrations-Configuration-Guide).
+For detailed instructions, see the [AWS Integrations Configuration Guide](https://support.demisto.com/hc/en-us/articles/360005686854-AWS-Integrations-Configuration-Guide).
 
 Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
