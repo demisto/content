@@ -54,7 +54,7 @@ script:
     description: Get bulk of Sixgill alerts
     execution: false
     name: fetch-incidents
-  dockerimage: demisto/sixgill
+  dockerimage: demisto/sixgill:1.0.0.5233
   isfetch: false
   longRunning: false
   longRunningPort: false
