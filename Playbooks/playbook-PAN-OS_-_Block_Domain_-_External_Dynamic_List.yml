@@ -75,7 +75,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "16"
     scriptarguments:
       add_or_remove:
         simple: add
@@ -139,7 +139,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 755
+          "y": 1090
         }
       }
     note: false
@@ -162,7 +162,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 930
+          "y": 1260
         }
       }
     note: false
@@ -326,15 +326,106 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 38da7cf3-84fe-4d4d-85cb-9850815a20d3
+    type: condition
+    task:
+      id: 38da7cf3-84fe-4d4d-85cb-9850815a20d3
+      version: -1
+      name: Is the instance type Panorama?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: panorama.model
+            iscontext: true
+          right:
+            value:
+              simple: Panorama
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 25857a23-4e34-425c-868e-310fdc1a7a5f
+    type: regular
+    task:
+      id: 25857a23-4e34-425c-868e-310fdc1a7a5f
+      version: -1
+      name: Fetch instance info
+      description: Run any command supported in the API.
+      script: '|||panorama'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      action: {}
+      category: {}
+      cmd:
+        simple: <show><system><info></info></system></show>
+      command: {}
+      dst: {}
+      element: {}
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
-      "11_9_#default#": 0.44,
-      "14_9_#default#": 0.84
+      "11_9_#default#": 0.19,
+      "14_9_#default#": 0.21
     },
     "paper": {
       "dimensions": {
-        "height": 1205,
+        "height": 1535,
         "width": 952.5,
         "x": 387.5,
         "y": -210
