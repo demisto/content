@@ -1,0 +1,188 @@
+id: Tanium Threat Response - Create connection
+version: -1
+fromversion: ""
+name: Tanium Threat Response - Create connection
+description: 'This playbook used generic polling to create connection.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 32d628e4-c09f-48a9-88ec-4e4514d24590
+    type: start
+    task:
+      id: 32d628e4-c09f-48a9-88ec-4e4514d24590
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: d597c171-5ce9-4b06-8edf-bc6d6e1c2dd7
+    type: playbook
+    task:
+      id: d597c171-5ce9-4b06-8edf-bc6d6e1c2dd7
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: inputs.destination
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: connection-name
+      PollingCommandName:
+        simple: tanium-tr-get-connection-by-name
+      Timeout:
+        simple: "60"
+      dt:
+        simple: Tanium.Connection(val.State != 'active').Name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 8b37d8be-988b-46c9-8cb4-2e6ce78bbe6c
+    type: regular
+    task:
+      id: 8b37d8be-988b-46c9-8cb4-2e6ce78bbe6c
+      version: -1
+      name: Create connection
+      description: Creates a local or remote connection.
+      script: '|||tanium-tr-create-connection'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      connection-timeout:
+        complex:
+          root: inputs.timeout
+      destination:
+        complex:
+          root: inputs.destination
+      destination-type:
+        complex:
+          root: inputs.destination-type
+      remote:
+        complex:
+          root: inputs.remote
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 1d6cdef3-422e-494b-82cc-b6c6a0a5466c
+    type: regular
+    task:
+      id: 1d6cdef3-422e-494b-82cc-b6c6a0a5466c
+      version: -1
+      name: Get connection
+      description: Returns a connection object based on name.
+      script: '|||tanium-tr-get-connection-by-name'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      connection-name:
+        complex:
+          root: inputs.destination
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: destination
+  value:
+    simple: ip-172-31-44-5.eu-central-1.compute.internal
+  required: false
+  description: ""
+- key: destination-type
+  value: {}
+  required: false
+  description: computer_name
+- key: remote
+  value:
+    simple: "True"
+  required: false
+  description: ""
+- key: timeout
+  value: {}
+  required: false
+  description: ""
+outputs: []
+tests:
+  - Tanium Threat Response Test
