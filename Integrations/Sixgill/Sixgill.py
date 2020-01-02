@@ -74,8 +74,6 @@ def fetch_incidents():
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('Command being called is %s' % (demisto.command()))
-
 try:
     if demisto.command() == 'test-module':
         test_module()
