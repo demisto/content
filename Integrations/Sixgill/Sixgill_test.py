@@ -23,6 +23,7 @@ alerts = [{'alert_name': 'someSecretAlert2', 'content': '', 'date': '2019-08-06 
            'read': False, 'severity': 10, 'threat_level': 'imminent',
            'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert1', 'user_id': '123'}]
 
+
 expected_output = [{'name': 'someSecretAlert2', 'occurred': '2019-08-06T23:20:35.000000Z', 'details': '', 'severity': 2,
                     'type': 'SixgillAlert',
                     'rawJSON': '{"alert_name": "someSecretAlert2", "content": "", "date": "2019-08-06 23:20:35", '
@@ -85,6 +86,7 @@ def test_test_module(mocker):
 
     from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
     mocker.patch.object(SixgillAuthRequest, 'send', return_value=MockedResponse(200))
+
     from Sixgill import test_module
     test_module()
 
