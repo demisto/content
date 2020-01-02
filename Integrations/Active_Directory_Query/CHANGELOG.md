@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.12.1] - 2019-12-25
 Fixed a typo in the name of the **custom-field-data** argument.
 
 ## [19.12.0] - 2019-12-10
