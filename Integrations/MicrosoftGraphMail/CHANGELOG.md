@@ -1,5 +1,5 @@
 ## [Unreleased]
-Allow authenticating with a self deployed Azure application.
+Added support to authenticate using a self-deployed Azure application.
 
 ## [19.12.0] - 2019-12-10
 Added 7 new commands.
