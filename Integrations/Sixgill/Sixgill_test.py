@@ -2,26 +2,26 @@ import pytest
 import demistomock as demisto
 
 
-incidents = [{'alert_name': 'someSecretAlert2', 'content': '', 'date': '2019-08-06 23:20:35', 'id': '1',
-              'lang': 'English', 'langcode': 'en', 'read': False, 'severity': 10,
-              'threat_level': 'emerging', 'threats': ['Phishing'], 'title': 'someSecretAlert2',
-              'user_id': '123'},
-             {'alert_name': 'someSecretAlert4', 'content': '', 'date': '2019-08-18 09:58:10', 'id': '2',
-              'read': False, 'severity': 10, 'threat_level': 'imminent',
-              'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert4', 'user_id': '132'},
-             {'alert_name': 'someSecretAlert1', 'content': '', 'date': '2019-08-18 22:58:23', 'id': '3',
-              'read': False, 'severity': 10, 'threat_level': 'imminent',
-              'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert1', 'user_id': '123'},
-             {'alert_name': 'someSecretAlert2', 'content': '', 'date': '2019-08-19 19:27:24', 'id': '4',
-              'lang': 'English', 'langcode': 'en', 'read': False, 'severity': 10,
-              'threat_level': 'emerging', 'threats': ['Phishing'], 'title': 'someSecretAlert2',
-              'user_id': '123'},
-             {'alert_name': 'someSecretAlert3', 'content': '', 'date': '2019-08-22 08:27:19', 'id': '5',
-              'read': False, 'severity': 10, 'threat_level': 'imminent',
-              'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert3', 'user_id': '123'},
-             {'alert_name': 'someSecretAlert1', 'content': '', 'date': '2019-08-22 08:43:15', 'id': '6',
-              'read': False, 'severity': 10, 'threat_level': 'imminent',
-              'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert1', 'user_id': '123'}]
+incidents_list = [{'alert_name': 'someSecretAlert2', 'content': '', 'date': '2019-08-06 23:20:35', 'id': '1',
+                   'lang': 'English', 'langcode': 'en', 'read': False, 'severity': 10,
+                   'threat_level': 'emerging', 'threats': ['Phishing'], 'title': 'someSecretAlert2',
+                   'user_id': '123'},
+                  {'alert_name': 'someSecretAlert4', 'content': '', 'date': '2019-08-18 09:58:10', 'id': '2',
+                   'read': False, 'severity': 10, 'threat_level': 'imminent',
+                   'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert4', 'user_id': '132'},
+                  {'alert_name': 'someSecretAlert1', 'content': '', 'date': '2019-08-18 22:58:23', 'id': '3',
+                   'read': False, 'severity': 10, 'threat_level': 'imminent',
+                   'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert1', 'user_id': '123'},
+                  {'alert_name': 'someSecretAlert2', 'content': '', 'date': '2019-08-19 19:27:24', 'id': '4',
+                   'lang': 'English', 'langcode': 'en', 'read': False, 'severity': 10,
+                   'threat_level': 'emerging', 'threats': ['Phishing'], 'title': 'someSecretAlert2',
+                   'user_id': '123'},
+                  {'alert_name': 'someSecretAlert3', 'content': '', 'date': '2019-08-22 08:27:19', 'id': '5',
+                   'read': False, 'severity': 10, 'threat_level': 'imminent',
+                   'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert3', 'user_id': '123'},
+                  {'alert_name': 'someSecretAlert1', 'content': '', 'date': '2019-08-22 08:43:15', 'id': '6',
+                   'read': False, 'severity': 10, 'threat_level': 'imminent',
+                   'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert1', 'user_id': '123'}]
 
 
 expected_output = [{'name': 'someSecretAlert2', 'occurred': '2019-08-06T23:20:35.000000Z', 'details': '', 'severity': 2,
@@ -98,7 +98,7 @@ def test_fetch_incidents(mocker):
 
     from sixgill.sixgill_darkfeed_client import SixgillDarkFeedClient
 
-    mocker.patch.object(SixgillDarkFeedClient, 'get_incidents', return_value=incidents)
+    mocker.patch.object(SixgillDarkFeedClient, 'get_incidents', return_value=incidents_list)
     mocker.patch.object(SixgillDarkFeedClient, 'mark_digested_item', return_value=None)
 
     from Sixgill import fetch_incidents
@@ -113,5 +113,5 @@ def test_fetch_incidents(mocker):
 
 def test_item_to_incident():
     from Sixgill import item_to_incident
-    output = item_to_incident(alerts[0])
+    output = item_to_incident(incidents_list[0])
     assert output == expected_output[0]
