@@ -5,14 +5,14 @@ name: DemistoVersion
 script: ''
 type: python
 tags: []
-comment: Return the Demisto Server Version
+comment: Return the Demisto server version.
 enabled: true
 outputs:
 - contextPath: DemistoVersion.version
-  description: Version of the Demisto Server
+  description: The version of the Demisto server.
   type: string
 - contextPath: DemistoVersion.buildNumber
-  description: Build number of the Demisto Server
+  description: The build number of the Demisto server.
   type: string
 scripttarget: 0
 subtype: python3
