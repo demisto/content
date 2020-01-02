@@ -68,13 +68,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value of the indicator  to remove.
+      description: The value of the indicator to remove.
       isArray: false
       name: indicator
       required: true
       secret: false
     - default: false
-      description: The type of the indicator  to remove.
+      description: The type of the indicator to remove.
       isArray: false
       name: type
       required: false
