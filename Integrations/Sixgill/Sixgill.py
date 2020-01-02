@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import json
 import requests
 
-from sixgill.sixgill_alert_client import SixgillAlertClient
+from sixgill.sixgill_darkfeed_client import SixgillDarkFeedClient
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 
 # Disable insecure warnings
@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-CHANNEL_CODE = '31335bc6357f0eb6e3370803b9a6a318'
+CHANNEL_CODE = '7698e8287dfde53dcd13082be750a85a'
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 DEMISTO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 FETCH_TIME = demisto.params().get('fetch_time', '30 days')
@@ -59,13 +59,13 @@ def fetch_incidents():
     if last_fetch is None:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
-    sixgill_alert_client = SixgillAlertClient(demisto.params()['client_id'], demisto.params()['client_secret'],
-                                              CHANNEL_CODE)
+    sixgill_darkfeed_client = SixgillDarkFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
+                                                    CHANNEL_CODE)
 
     incidents = []
-    for alert in sixgill_alert_client.get_alerts():
-        sixgill_alert_client.mark_digested_item(alert)
-        incident = item_to_incident(alert)
+    for raw_incident in sixgill_darkfeed_client.get_incidents():
+        sixgill_darkfeed_client.mark_digested_item(raw_incident)
+        incident = item_to_incident(raw_incident)
         incidents.append(incident)
 
     demisto.setLastRun({'time': last_fetch})

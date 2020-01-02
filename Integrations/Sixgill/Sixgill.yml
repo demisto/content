@@ -17,37 +17,15 @@ name: Sixgill
 script:
   commands:
   - arguments:
-    - default: false
-      description: Filter by field read
-      isArray: false
-      name: is_read
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
-      description: Filter by alert template severity
+      defaultValue: 'False'
+      description: Should delivered items be included
       isArray: false
-      name: severity
+      name: include_delivered_items
       predefined:
-      - low
-      - ' med'
-      - ' high'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Filter by alert threat level
-      isArray: false
-      name: threat_level
-      predefined:
-      - imminent
-      - ' emerging'
-      required: false
-      secret: false
-    - default: false
-      description: Filter by field threat type
-      isArray: false
-      name: threat_type
+      - 'true'
+      - ' false'
       required: false
       secret: false
     deprecated: false
