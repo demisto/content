@@ -1,4 +1,8 @@
 ## [Unreleased]
+Fixed an issue with email subject unicode for the ***send-mail*** command.
+
+
+## [19.12.1] - 2019-12-25
 Improved performance and functionality of the integration.
 
 

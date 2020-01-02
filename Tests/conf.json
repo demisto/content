@@ -71,7 +71,8 @@
         },
         {
             "integrations": "ThreatQ v2",
-            "playbookID": "ThreatQ - Test"
+            "playbookID": "ThreatQ - Test",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "AttackIQFireDrill",
@@ -700,11 +701,13 @@
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "get_original_email_-_ews-_test"
+            "playbookID": "get_original_email_-_ews-_test",
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": ["EWS v2", "EWS Mail Sender"],
             "playbookID": "EWS search-mailbox test",
+            "instance_names": "ewv2_regular",
             "timeout": 300
         },
         {
@@ -759,6 +762,9 @@
         },
         {
             "playbookID": "exporttocsv_script_test"
+        },
+        {
+            "playbookID": "Set - Test"
         },
         {
             "integrations": "Intezer v2",
@@ -853,11 +859,13 @@
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "EWSv2_empty_attachment_test"
+            "playbookID": "EWSv2_empty_attachment_test",
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "EWS Public Folders Test"
+            "playbookID": "EWS Public Folders Test",
+            "instance_names": "ewv2_regular"
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -1043,7 +1051,13 @@
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "pyEWS_Test"
+            "playbookID": "pyEWS_Test",
+            "instance_names": "ewv2_regular"
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "pyEWS_Test",
+            "instance_names": "ewsv2_separate_process"
         },
         {
             "integrations": "remedy_sr_beta",
@@ -2035,7 +2049,8 @@
         {
           "integrations": "EWS v2",
           "playbookID": "Get EWS Folder Test",
-          "fromversion": "4.5.0"
+          "fromversion": "4.5.0",
+          "instance_names": "ewv2_regular"
         },
         {
           "integrations": "QRadar",
@@ -2053,7 +2068,8 @@
         }
     ],
     "skipped_tests": {
-        "Endpoint Malware Investigation - Generic - Test": "Issue 20867",
+        "Phishing - Core - Test": "Issue 20983",
+        "Phishing v2 Test - Attachment": "Issue 20983",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -2068,7 +2084,6 @@
         "ArcSight Logger test": "Issue 19117",
         "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
-        "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "Carbon Black Enterprise Protection V2 Test": "Issue 19838",
@@ -2082,7 +2097,9 @@
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
-        "Test Playbook TrendMicroDDA": "Manual test"
+        "Test Playbook TrendMicroDDA": "Issue 16501",
+        "PANW - Hunting and threat detection by indicator type Test": "Issue 20952",
+        "ssdeepreputationtest": "Issue #20953"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
@@ -2107,7 +2124,6 @@
         "ProtectWise": "Issue 20486",
         "ThreatMiner": "Issue 20469",
         "DomainTools Iris": "Issue 20433",
-        "ThreatQ v2": "Issue 19468",
         "Check Point": "Issue 18643",
         "RSA Archer": "Issue 20335",
         "Preempt": "Issue 20268",
@@ -2150,7 +2166,6 @@
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tanium": "issue 15497",
         "Tenable.sc": "unstable instance",
-        "Tenable.io": "Issue 16115",
 
 
         "_comment": "~~~ OTHER ~~~",
@@ -2217,6 +2232,7 @@
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
+        "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange"
     }
