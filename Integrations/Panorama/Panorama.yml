@@ -2050,6 +2050,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: replace
+      description: Whether to replace, add, or remove the element_value from the current
+        rule object value.
       isArray: false
       name: behaviour
       predefined:
