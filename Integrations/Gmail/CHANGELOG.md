@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue where setting autoreply for, or delegating the mailbox of another user did not work.
 
 ## [19.12.1] - 2019-12-25
   - Added a new command:
