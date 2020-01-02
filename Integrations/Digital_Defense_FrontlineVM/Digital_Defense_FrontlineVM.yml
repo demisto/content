@@ -2,15 +2,12 @@ commonfields:
   id: Digital Defense FrontlineVM
   version: -1
 name: Digital Defense FrontlineVM
-display: Digital Defense FrontlineVM
+display: Digital Defense Frontline VM
 category: Vulnerability Management
-description: Digital Defense Inc.'s Frontline Vulnerability Management solution comprehensively
-  identifies and evaluates the security and business risk postures of network devices
+description: Use the Digital Defense Frontline VM to identify and evaluate the security and business risks of network devices
   and applications deployed as premise, cloud, or hybrid network-based implementations.
-  Now residing entirely in Amazon Web Services (AWS), Frontline VM easily addresses
-  the security compliance requirements of organizations around the globe.
 configuration:
-- display: FrontlineVM URL
+- display: Frontline VM URL
   name: frontlineURL
   defaultvalue: https://vm.frontline.cloud
   type: 0
@@ -20,7 +17,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: API Token to access FrontlineVM
+- display: API Token to access Frontline VM
   name: apiToken
   defaultvalue: ""
   type: 0
@@ -35,7 +32,7 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Min vulnerability severity for fetching incidents
+- display: Minimum vulnerability severity for fetching incidents
   name: incidentSeverity
   defaultvalue: medium
   type: 15
@@ -69,35 +66,34 @@ script:
   - name: frontline-get-assets
     arguments:
     - name: ip_address
-      description: Get assets for given IP Address
+      description: The IP address for which to return assets.
     - name: label_name
-      description: Get assets with given label name (put name in quotes if spaces
-        are required).
+      description: The label name for which to return assets.
     - name: max_days_since_scan
-      description: Get hosts scanned within the given max day
+      description: The number of days (retroactive) since the last scan.
     - name: hostname
-      description: Get asset for given hostname
+      description: The hostname for which to return assets.
     outputs:
     - contextPath: FrontlineVM.Hosts
-      description: Returned host data pulled from Frontline.Cloud
+      description: The host data from Frontline.Cloud.
       type: unknown
     - contextPath: FrontlineVM.Hosts.ID
-      description: Host ID number
+      description: The ID number of the host.
     - contextPath: FrontlineVM.Hosts.Hostname
-      description: Hostname of asset
+      description: The hostname of the asset.
     - contextPath: FrontlineVM.Hosts.IP
-      description: IP address
+      description: The IP address of the host.
     - contextPath: FrontlineVM.Hosts.DNSHostname
-      description: DNS Hostname
+      description: The DNS hostname of the host.
     - contextPath: FrontlineVM.Hosts.MAC
-      description: MAC Address
+      description: The MAC address of the host.
     - contextPath: FrontlineVM.Hosts.OS
-      description: Operating System
+      description: The operating system of the host. 
     - contextPath: FrontlineVM.Hosts.OSType
-      description: Operating System Type
+      description: The operating system type of the host.
     - contextPath: FrontlineVM.Hosts.CriticalVulnCount
-      description: DDI critical vulnerability severity count
-    description: Pull asset information from FrontlineVM
+      description: The severity count of critical vulnerabilities.
+    description: Retrieves the asset's information from Frontline VM.
   - name: frontline-get-vulns
     arguments:
     - name: min_severity
@@ -109,9 +105,8 @@ script:
       - low
       - trivial
       - info
-      description: Select a minimum severity level of vulnerabilities to pull from
-        Frontline. Selecting this argument along with the severity argument will yield
-        only to min_severity.
+      description: 'The minimum severity level for which to return vulnerabilities. This argument overrides the "severity" argument when used together. 
+        Can be: "critical","high","medium","low","trivial", or "info".'
     - name: severity
       auto: PREDEFINED
       predefined:
@@ -121,59 +116,58 @@ script:
       - low
       - trivial
       - info
-      description: Will pull all vulnerabilities from Frontline with this severity.
+      description: 'Returns all vulnerabilities from Frontline with the specified severity level.
+        Can be: "critical","high","medium","low","trivial", or "info".'
     - name: max_days_since_created
-      description: Will pull vulnerabilities first found older than the given input
-        (in days from now).
+      description: Retrieves vulnerabilities found prior to the specified date (in days).
     - name: min_days_since_created
-      description: Will pull vulnerabilities first found to be newer than the given
-        input (in days from now).
+      description: Retrieves vulnerabilities found after the specified date (in days).
     - name: host_id
-      description: Pull vulnerabilities from specific host given the host ID.
+      description: Retrieves vulnerabilities from a specific host based on the Host ID.
     - name: ip_address
-      description: IP address of host to pull vulnerability data from.
+      description: The IP address of the host for which to retrieve the vulnerability data.
     outputs:
     - contextPath: FrontlineVM.Vulns
-      description: Returned vulnerability data pulled from Frontline.Cloud
+      description: Retrieved vulnerability data pulled from Frontline.Cloud.
       type: unknown
     - contextPath: FrontlineVM.Stat
-      description: Statistic overview of vulnerabilities pulled.
+      description: The statistical overview of vulnerabilities pulled.
     - contextPath: FrontlineVM.Vulns.vuln-id
-      description: DDI Vulnerability ID
+      description: The ID of the vulnerability.
     - contextPath: FrontlineVM.Vulns.hostname
-      description: Asset hostname
+      description: The hostname of the asset.
     - contextPath: FrontlineVM.Vulns.ip-address
-      description: IP address of asset
+      description: The IP address of the asset.
     - contextPath: FrontlineVM.Vulns.vuln-title
-      description: Title name of vulnerability
+      description: The title of the vulnerability.
     - contextPath: FrontlineVM.Vulns.date-created
-      description: Vulnerability date created
+      description: The date the vulnerability was created.
     - contextPath: FrontlineVM.Vulns.ddi-severity
-      description: Digital Defense Inc. severity of vulnerability
+      description: The severity level of the vulnerability.
     - contextPath: FrontlineVM.Vulns.vuln-info
-      description: Vulnerability information
-    description: Pull vulnerability information from FrontlineVM
+      description: Information related to the vulnerability.
+    description: Retrieves vulnerability information from Frontline VM.
   - name: frontline-scan-asset
     arguments:
     - name: ip_address
-      description: IP address of asset to scan.
+      description: The IP address of the asset to scan.
     - name: scan_policy
-      description: Policy of scan (case sensitive)
+      description: The policy of the scan (case sensitive).
       defaultValue: Default
     - name: ip_range_start
-      description: Starting ip address range of asset to scan
+      description: The IP address start range of the asset to scan.
     - name: ip_range_end
-      description: Ending ip address range of asset to scan
+      description: The IP address end range of the asset to scan.
     outputs:
     - contextPath: FrontlineVM.Scan.ID
-      description: Scan ID number
+      description: The ID number of the scan.
     - contextPath: FrontlineVM.Scan.Name
-      description: Scan name
+      description: The name of the scan.
     - contextPath: FrontlineVM.Scan.Policy
-      description: Scan policy name
+      description: The policy name of the scan.
     - contextPath: FrontlineVM.Scan.IP
-      description: Scan IP (can be single IP or an IP range)
-    description: Performs a scan on a given asset.
+      description: The IP address of the scan (can be a single IP address or a range of IP addresses).
+    description: Performs a scan on the specified asset.
   dockerimage: demisto/python3:3.7.4.1150
   isfetch: true
   runonce: false
