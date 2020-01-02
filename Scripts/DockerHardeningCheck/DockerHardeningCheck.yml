@@ -6,22 +6,22 @@ script: ''
 type: python
 tags:
 - Utility
-comment: 'Check if the Docker container running this script has been hardend according
+comment: 'Checks if the Docker container running this script has been hardened according
   to the recommended settings at: https://support.demisto.com/hc/en-us/articles/360040922194'
 enabled: true
 args:
 - name: memory
-  description: The amount of memory to check. Can specify bytes size or append MB/GB
-    fror Mega/Giga bytes.
+  description: The amount of memory to check. Can specify in bytes or append MB/GB
+    for Mega/Giga bytes. Default is 1 GB.
   defaultValue: 1GB
 - name: pids
-  description: Number of max pids to check.
+  description: The maximum number of PIDs to check.
   defaultValue: "256"
 - name: fds_soft
-  description: Soft file descriptor limit to check.
+  description: The soft file descriptor limit to check.
   defaultValue: "1024"
 - name: fds_hard
-  description: Hard file descriptor limit to check.
+  description: The hard file descriptor limit to check.
   defaultValue: "8192"
 scripttarget: 0
 subtype: python3
