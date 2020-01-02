@@ -662,7 +662,7 @@ class IntegrationLogger(object):
         set whether the logger buffers messages or writes staight to the demisto log
 
         :param state: True/False
-        :type state: an-an
+        :type state: boolean
         """
         self.buffering = state
 
