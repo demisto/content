@@ -662,7 +662,7 @@ class IntegrationLogger(object):
         set whether the logger buffers messages or writes staight to the demisto log
 
         :param state: True/False
-        :type state: boolean
+        :type state: an-an
         """
         self.buffering = state
 
@@ -843,8 +843,8 @@ def argToList(arg, separator=','):
 
 def argToBoolean(value):
     """
-        Boolean-ish arguments passed through demisto.args() could have type bool or type string.
-        This takes the guesswork out and will return a bool, regardless of value's type.
+        Boolean-ish arguments that are passed through demisto.args() could be type bool or type string.
+        This command removes the guesswork and returns a value of type bool, regardless of the input value's type.
         It will also return True for 'yes' and False for 'no'.
 
         :param value: the value to evaluate
