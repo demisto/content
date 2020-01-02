@@ -79,6 +79,10 @@ def test_convert_pdf_to_html(mocker):
     glob_list = glob.glob('./*' + results[0]['FileID'])
     logging.getLogger().info('glob list for results: {}. list: {}'.format(results[0], glob_list))
     assert glob_list
+    # check no defunct processed
+    zombies, output = find_zombie_processes()
+    assert not zombies
+    assert 'defunct' not in output
 
 
 def test_convert_failure(mocker):
