@@ -119,7 +119,7 @@ script:
         For example: ["SMTP: support@demisto.com", "smtp: support@demisto.com"].'
       type: String
     - contextPath: MSGraphGroup.RenewedDateTime
-      description: 'Timestamp of when the group was last renewed, which
+      description: 'Timestamp of when the group was last renewed, which 
         represents the time and date information using ISO 8601 format. Always in
         UTC time. For example, midnight UTC on Jan 1, 2019 is ''2019-01-01T00:00:00Z''.'
       type: String
