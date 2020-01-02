@@ -3,28 +3,27 @@ version: -1
 contentitemfields:
   propagationLabels: []
 name: Docker Hardening Test
-fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: eb68ba37-a135-4f58-8464-65b93a052d2f
+    taskid: b47d724b-e470-48a8-86ff-4f259e61a5e1
     type: start
     task:
-      id: eb68ba37-a135-4f58-8464-65b93a052d2f
+      id: b47d724b-e470-48a8-86ff-4f259e61a5e1
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -100
         }
       }
     note: false
@@ -33,10 +32,10 @@ tasks:
     skipunavailable: false
   "1":
     id: "1"
-    taskid: eb2d587d-b568-4b38-8477-9a3bba6dcc64
+    taskid: 8cd023b7-32b9-4a04-8c13-ba50dd842b36
     type: regular
     task:
-      id: eb2d587d-b568-4b38-8477-9a3bba6dcc64
+      id: 8cd023b7-32b9-4a04-8c13-ba50dd842b36
       version: -1
       name: Get Demisto Version
       description: Return the Demisto Server Version
@@ -61,10 +60,10 @@ tasks:
     skipunavailable: false
   "2":
     id: "2"
-    taskid: 9f3b2bb9-c9f1-4aeb-8d82-5beb920c38da
+    taskid: e9ed9df4-4b35-472d-8926-28a4b6ab963a
     type: condition
     task:
-      id: 9f3b2bb9-c9f1-4aeb-8d82-5beb920c38da
+      id: e9ed9df4-4b35-472d-8926-28a4b6ab963a
       version: -1
       name: Check Version
       type: condition
@@ -82,7 +81,7 @@ tasks:
       - - operator: startWith
           left:
             value:
-              simple: DemistoVersoin.version
+              simple: DemistoVersion.version
             iscontext: true
           right:
             value:
@@ -100,10 +99,10 @@ tasks:
     skipunavailable: false
   "3":
     id: "3"
-    taskid: 6723417b-f284-4d7d-820f-738fc94907ad
+    taskid: f4995923-041a-4382-8898-6399add7c0f4
     type: regular
     task:
-      id: 6723417b-f284-4d7d-820f-738fc94907ad
+      id: f4995923-041a-4382-8898-6399add7c0f4
       version: -1
       name: Docker Hardening Check - 5.0
       description: 'Check if the Docker container running this script has been hardend
@@ -135,10 +134,10 @@ tasks:
     skipunavailable: false
   "4":
     id: "4"
-    taskid: 1b896377-15cb-4bf2-8f41-79ea53a942de
+    taskid: 7d2d8f9d-2887-40b9-8e08-312cb1201be2
     type: condition
     task:
-      id: 1b896377-15cb-4bf2-8f41-79ea53a942de
+      id: 7d2d8f9d-2887-40b9-8e08-312cb1201be2
       version: -1
       name: Is Error?
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
@@ -170,10 +169,10 @@ tasks:
     skipunavailable: false
   "5":
     id: "5"
-    taskid: 195e0aa2-91ea-4c61-8104-04b1f1f1a65c
+    taskid: c86b5167-4c46-4acf-8f8c-3e16a53d48f9
     type: regular
     task:
-      id: 195e0aa2-91ea-4c61-8104-04b1f1f1a65c
+      id: c86b5167-4c46-4acf-8f8c-3e16a53d48f9
       version: -1
       name: Error Found - All Good (It should fail on server 5.0)
       description: Prints text to war room (Markdown supported)
@@ -198,10 +197,10 @@ tasks:
     skipunavailable: false
   "6":
     id: "6"
-    taskid: 41eb6031-0d62-4e20-8b85-562179de8c69
+    taskid: 29ed843b-d3ab-47fb-876e-6232eff7bd8e
     type: regular
     task:
-      id: 41eb6031-0d62-4e20-8b85-562179de8c69
+      id: 29ed843b-d3ab-47fb-876e-6232eff7bd8e
       version: -1
       name: Error Not found
       description: Prints an error entry with a given message
@@ -226,10 +225,10 @@ tasks:
     skipunavailable: false
   "7":
     id: "7"
-    taskid: 3e024c9a-f528-4f25-8283-bd7735361451
+    taskid: a204a1c3-983a-469c-87af-6d0804588582
     type: regular
     task:
-      id: 3e024c9a-f528-4f25-8283-bd7735361451
+      id: a204a1c3-983a-469c-87af-6d0804588582
       version: -1
       name: Docker Hardening Check 5.5 and above
       description: 'Check if the Docker container running this script has been hardend
@@ -255,15 +254,50 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+  "8":
+    id: "8"
+    taskid: a1a66d90-932e-46c8-8499-01f0c7d783f8
+    type: regular
+    task:
+      id: a1a66d90-932e-46c8-8499-01f0c7d783f8
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1075,
+        "height": 1225,
         "width": 960,
         "x": 200,
-        "y": 50
+        "y": -100
       }
     }
   }

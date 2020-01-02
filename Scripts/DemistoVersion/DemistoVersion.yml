@@ -8,7 +8,7 @@ tags: []
 comment: Return the Demisto Server Version
 enabled: true
 outputs:
-- contextPath: DemistoVersoin.version
+- contextPath: DemistoVersion.version
   description: Version of the Demisto Server
   type: string
 - contextPath: DemistoVersion.buildNumber
