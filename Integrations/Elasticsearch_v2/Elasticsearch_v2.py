@@ -31,7 +31,6 @@ HTTP_ERRORS = {
     503: '503 Service Unavailable'
 }
 
-
 '''VARIABLES FOR FETCH INCIDENTS'''
 TIME_FIELD = demisto.params().get('fetch_time_field', '')
 TIME_FORMAT = demisto.params().get('fetch_time_format', '')
@@ -509,10 +508,35 @@ def results_to_incidents_datetime(response, last_fetch):
     return incidents, last_fetch
 
 
-def fetch_incidents():
+def fetch_indicators_command():
+    time_field = "calculatedTime"
+    last_fetch, now = get_last_fetch_time()
+    es = elasticsearch_builder()
+
+    query = QueryString(query=time_field + ":*")  # TODO: Check with @rsagi this is needed
+    tenant_hash = demisto.getTenantHash()
+    # all shared indexes minues this tenant shared
+    indexes = f'*-shared*,-{tenant_hash}*-shared*'
+    search = Search(using=es, index=indexes).filter({'range': {time_field: {'gt': last_fetch, 'lte': now}}}).query(
+        query)
+    for hit in search.scan():
+        demisto.createIndicators(results_to_indicator(hit))
+
+
+def results_to_indicator(hit):
+    value = hit.get('value')
+    ind_type = hit.get('type')
+    return {
+        'value': value,
+        'type': ind_type,
+        'rawJSON': dict(hit)
+    }
+
+
+def get_last_fetch_time():
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
-
+    now = datetime.now()
     # handle first time fetch
     if last_fetch is None:
         last_fetch, _ = parse_date_range(date_range=FETCH_TIME, date_format=TIME_FORMAT, utc=False, to_timestamp=False)
@@ -521,11 +545,16 @@ def fetch_incidents():
         # if timestamp: get the last fetch to the correct format of timestamp
         if 'Timestamp' in TIME_METHOD:
             last_fetch = get_timestamp_first_fetch(last_fetch)
+            now = get_timestamp_first_fetch(now)
 
     # if method is simple date - convert the date string to datetime
     elif 'Simple-Date' == TIME_METHOD:
         last_fetch = datetime.strptime(last_fetch, TIME_FORMAT)
+    return last_fetch, now
 
+
+def fetch_incidents():
+    last_fetch, _ = get_last_fetch_time()
     es = elasticsearch_builder()
 
     query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
@@ -557,6 +586,8 @@ def main():
             test_func()
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
+        elif demisto.command() == 'fetch-indicators':
+            fetch_indicators_command()
         elif demisto.command() in ['search', 'es-search']:
             search_command()
     except Exception as e:
