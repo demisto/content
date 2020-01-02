@@ -1,5 +1,4 @@
 import json
-from demistomock import get_params
 
 
 XDR_URL = 'https://api.xdrurl.com'
