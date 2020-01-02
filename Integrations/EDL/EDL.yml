@@ -45,12 +45,11 @@ configuration:
   options:
   - text
   - json
+  - json-seq
   - csv
   required: false
   type: 15
-- additionalInfo: Group together IPs in the EDL into range when possible. This might
-    increase the number of indicators in your feed.
-  display: Group IPs Into Range
+- display: Group IPs Into Range
   hidden: false
   name: ip_grouping
   required: false
@@ -69,6 +68,19 @@ script:
       description: FindIndicators query
       isArray: false
       name: query
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: text
+      description: EDL output format.
+      isArray: false
+      name: format
+      predefined:
+      - text
+      - json
+      - json-seq
+      - csv
       required: false
       secret: false
     deprecated: false

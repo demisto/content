@@ -5,6 +5,7 @@ import json
 from flask import Flask, Response
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
+from typing import Callable
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'EDL'
@@ -19,13 +20,13 @@ FORMAT_JSON: str = 'json'
 ''' HELPER FUNCTIONS '''
 
 
-def list_to_str(inp_list: list, delimiter: str = '\n') -> str:
+def list_to_str(inp_list: list, delimiter: str = '\n', map_func: Callable = str) -> str:
     """
     Transforms a list to an str, with a custom delimiter between each list item
     """
     str_res = ""
     if inp_list:
-        str_res = delimiter.join(map(str, inp_list))
+        str_res = delimiter.join(map(map_func, inp_list))
     return str_res
 
 
@@ -78,6 +79,7 @@ def create_csv_out_list(cache_dict):
     values_list = list(cache_dict.values())
     if csv_headers:
         values_list.insert(0, csv_headers)
+
     return values_list
 
 
@@ -135,7 +137,14 @@ def out_csv_format(ioc):
     Return output in csv format
     """
     values = list(ioc.values())
-    return list_to_str(values, ',')
+    return list_to_str(values, ',', map_func=wrap_with_double_quotes)
+
+
+def wrap_with_double_quotes(value):
+    """
+    Wraps the given value with double quotes
+    """
+    return f'"{value}"'
 
 
 def group_ips(iocs):
@@ -147,13 +156,16 @@ def group_ips(iocs):
 
 
 def get_edl_ioc_list():
+    """
+    Get the ioc list to return in the edl
+    """
     params = demisto.params()
     ip_grouping = params.get('ip_grouping')
-    out_format = params.get('out_format')
+    out_format = params.get('format')
     on_demand = params.get('on_demand')
     # on_demand ignores cache
     if on_demand:
-        values = demisto.getIntegrationContext()
+        values = get_out_values_from_cache(out_format)
     else:
         last_run = demisto.getLastRun().get('last_run')
         indicator_query = demisto.params().get('indicators_query', '')
@@ -164,11 +176,18 @@ def get_edl_ioc_list():
             if td <= 0:  # last_run is before cache_time
                 values = refresh_value_cache(indicator_query, out_format, ip_grouping)
             else:
-                cache_dict = demisto.getIntegrationContext()
-
-                values = create_csv_out_list(cache_dict) if out_format == FORMAT_CSV else list(cache_dict.values())
+                values = get_out_values_from_cache(out_format)
         else:
             values = refresh_value_cache(indicator_query, out_format, ip_grouping)
+    return values
+
+
+def get_out_values_from_cache(out_format):
+    """
+    Extracts output values from cache
+    """
+    cache_dict = demisto.getIntegrationContext()
+    values = create_csv_out_list(cache_dict) if out_format == FORMAT_CSV else list(cache_dict.values())
     return values
 
 
@@ -261,7 +280,7 @@ def update_edl_command(args, params):
         raise DemistoException(
             '"Update EDL On Demand" is turned off. If you want to update the EDL manually please turn it on.')
     query = args.get('query')
-    out_format = params.get('format')
+    out_format = args.get('format')
     ip_grouping = params.get('ip_grouping')
     indicators = refresh_value_cache(query, out_format, ip_grouping)
     hr = tableToMarkdown('EDL was updated successfully with the following values', indicators, ['indicators'])
