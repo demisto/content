@@ -3,7 +3,7 @@ commonfields:
   id: Syslog Sender
   version: -1
 configuration:
-- display: IP Address (e.g. 127.0.0.1)
+- display: IP Address (e.g., 127.0.0.1)
   name: address
   required: true
   type: 0
@@ -44,7 +44,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
-description: Send messages to Syslog
+description: Use the Syslog Sender integration to send messages to Syslog.
 display: Syslog Sender
 name: Syslog Sender
 script:
@@ -64,7 +64,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Mirrors the investigation's War Room to syslog.
+    description: Mirrors the investigation's War Room to Syslog.
     execution: false
     name: mirror-investigation
   - arguments:
@@ -93,7 +93,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Log level to send
+      description: The log level to send.
       isArray: false
       name: level
       predefined:
@@ -105,7 +105,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sends a message to syslog.
+    description: Sends a message to Syslog.
     execution: false
     name: send-notification
   dockerimage: demisto/python3:3.7.4.977
@@ -116,6 +116,6 @@ script:
   script: '-'
   type: python
   subtype: python3
-tests:
-- No test
 fromversion: 5.0.0
+tests:
+  - No test
