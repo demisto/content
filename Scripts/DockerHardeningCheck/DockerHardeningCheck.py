@@ -1,9 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from multiprocessing import Process, Pool
+from multiprocessing import Process
 import resource
 import re
+import time
 
 
 def big_string(size):
@@ -48,13 +49,19 @@ def check_memory(target_mem: str) -> str:
 
 def check_pids(pid_num: int) -> str:
     LOG("Starting pid check for: {}".format(pid_num))
+    processes = [Process(target=time.sleep, args=(5, )) for i in range(pid_num)]
     try:
-        p = Pool(pid_num)
-        p.close()
-        return ("Succeeded creating process pool of size: {}. "
+        for p in processes:
+            p.start()
+        return ("Succeeded creating processs of size: {}. "
                 "It seems that you haven't limited the available pids to the docker container.".format(pid_num))
     except Exception as ex:
         LOG("Pool startup failed (as expected): {}".format(ex))
+    finally:
+        for p in processes:
+            if p.is_alive():
+                p.terminate()
+                p.join()
     return ""
 
 
@@ -75,11 +82,47 @@ def check_non_root():
     return ""
 
 
+def intensive_calc(iter: int):
+    i = 0
+    x = 1
+    while i < iter:
+        x = x * 2
+        i += 1
+    return x
+
+
+def check_cpus(num_cpus: int) -> str:
+    iterval = 500 * 1000
+    processes = [Process(target=intensive_calc, args=(iterval, )) for i in range(num_cpus)]
+    start = time.time_ns()
+    for p in processes:
+        p.start()
+    for p in processes:
+        p.join()
+    runtime = time.time_ns() - start
+    LOG("cpus check runtime for {} processes time: {}".format(num_cpus, runtime))
+    processes = [Process(target=intensive_calc, args=(iterval, )) for i in range(num_cpus * 2)]
+    start = time.time_ns()
+    for p in processes:
+        p.start()
+    for p in processes:
+        p.join()
+    runtime2 = time.time_ns() - start
+    p.close()
+    # runtime 2 should be 2 times slower. But we give it a safet
+    LOG("cpus check runtime for {} processes time: {}".format(num_cpus * 2, runtime2))
+    if runtime2 < runtime * 1.8:
+        return ("CPU processing power increased significantly when increasing processes "
+                "from: {} (time: {}) to: {} (time: {}).".format(num_cpus, runtime, num_cpus * 2, runtime2))
+    return ""
+
+
 def main():
     mem = demisto.args().get('memory', "1g")
     pids = int(demisto.args().get('pids', 256))
     fds_soft = int(demisto.args().get('fds_soft', 1024))
     fds_hard = int(demisto.args().get('fds_hard', 8192))
+    cpus = int(demisto.args().get('cpus', 1))
     success = "Success"
     check = "Check"
     status = "Status"
@@ -93,12 +136,16 @@ def main():
             status: check_memory(mem) or success,
         },
         {
-            check: "PIDs",
-            status: check_pids(pids) or success,
-        },
-        {
             check: "File Descriptors",
             status: check_fd_limits(fds_soft, fds_hard) or success,
+        },
+        {
+            check: "CPUs",
+            status: check_cpus(cpus) or success,
+        },
+        {
+            check: "PIDs",
+            status: check_pids(pids) or success,
         },
     ]
     failed = False
