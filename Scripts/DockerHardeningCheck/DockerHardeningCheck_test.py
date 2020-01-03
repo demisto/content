@@ -1,4 +1,6 @@
 from DockerHardeningCheck import check_memory, mem_size_to_bytes, check_pids, check_fd_limits, check_non_root, check_cpus
+from pytest import skip
+import os
 
 
 def test_check_memory():
@@ -23,4 +25,7 @@ def test_non_root():
 
 
 def test_check_cpus():
+    if os.getenv("CI") == "true":
+        skip("skipping as in CI we run with a single CPU")
+        return
     assert check_cpus(1)  # during unit tests we should fail
