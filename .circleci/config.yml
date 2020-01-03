@@ -100,9 +100,15 @@ jobs:
             ./Tests/scripts/pyflake.sh *.py
             find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
-            [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
+            [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD="false" || CHECK_BACKWARD="true"
 
-            demisto-sdk validate -g -c true -b $CHECK_BACKWARD
+            if [ "${CHECK_BACKWARD}" = "true" ] ;
+              then
+                 demisto-sdk validate -g -c -b
+
+              else
+                 demisto-sdk validate -g -c
+            fi
       - run:
           name: Secrets
           when: always
@@ -113,7 +119,7 @@ jobs:
                 exit 0
             fi
 
-            demisto-sdk secrets -c true
+            demisto-sdk secrets -c
       - run:
           name: Configure Test Filter
           when: always
@@ -188,7 +194,7 @@ jobs:
                 echo "Skipping - unit tests are running only in container number 1"
                 exit 0
             fi
-            SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+            demisto-sdk lint -a
       - run:
           name: Verify Base Branch for Contribution
           when: always
