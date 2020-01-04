@@ -997,13 +997,19 @@ def get_audit_management_logs_command(client, args):
     _type = argToList(args.get('type'))
     sub_type = argToList(args.get('sub_type'))
 
-    timestamp_gte = None
-    timestamp_lte = None
-    if args.get('timestamp_gte'):
-        timestamp_gte = dateparser.parse(args.get('timestamp_gte')).timestamp() * 1000
+    timestamp_gte = args.get('timestamp_gte')
+    timestamp_lte = args.get('timestamp_lte')
+    if timestamp_gte:
+        if isinstance(timestamp_gte, str) and timestamp_gte.isdigit():
+            timestamp_gte = int(timestamp_gte)
+        elif isinstance(timestamp_gte, str):
+            timestamp_gte = dateparser.parse(args.get('timestamp_gte'), settings={'TIMEZONE': 'UTC'}).timestamp() * 1000
 
-    if args.get('timestamp_lte'):
-        timestamp_lte = dateparser.parse(args.get('timestamp_lte')).timestamp() * 1000
+    if timestamp_lte:
+        if isinstance(timestamp_lte, str) and timestamp_lte.isdigit():
+            timestamp_lte = int(timestamp_lte)
+        elif isinstance(timestamp_lte, str):
+            timestamp_lte = dateparser.parse(args.get('timestamp_lte'), settings={'TIMEZONE': 'UTC'}).timestamp() * 1000
 
     search_from = int(args.get('search_from', 0))
     search_to = search_from + int(args.get('limit', 20))
@@ -1041,13 +1047,19 @@ def get_audit_agent_reports_command(client, args):
     _type = argToList(args.get('type'))
     sub_type = argToList(args.get('sub_type'))
 
-    timestamp_gte = None
-    timestamp_lte = None
-    if args.get('timestamp_gte'):
-        timestamp_gte = dateparser.parse(args.get('timestamp_gte')).timestamp() * 1000
+    timestamp_gte = args.get('timestamp_gte')
+    timestamp_lte = args.get('timestamp_lte')
+    if timestamp_gte:
+        if isinstance(timestamp_gte, str) and timestamp_gte.isdigit():
+            timestamp_gte = int(timestamp_gte)
+        elif isinstance(timestamp_gte, str):
+            timestamp_gte = dateparser.parse(args.get('timestamp_gte'), settings={'TIMEZONE': 'UTC'}).timestamp() * 1000
 
-    if args.get('timestamp_lte'):
-        timestamp_lte = dateparser.parse(args.get('timestamp_lte')).timestamp() * 1000
+    if timestamp_lte:
+        if isinstance(timestamp_lte, str) and timestamp_lte.isdigit():
+            timestamp_lte = int(timestamp_lte)
+        elif isinstance(timestamp_lte, str):
+            timestamp_lte = dateparser.parse(args.get('timestamp_lte'), settings={'TIMEZONE': 'UTC'}).timestamp() * 1000
 
     search_from = int(args.get('search_from', 0))
     search_to = search_from + int(args.get('limit', 20))
@@ -1071,7 +1083,22 @@ def get_audit_agent_reports_command(client, args):
     )
 
     return (
-        tableToMarkdown('Audit Agent Reports', audit_logs),
+        tableToMarkdown('Audit Agent Reports', audit_logs, [
+            'AUDIT_ID',
+            'AUDIT_RESULT',
+            'AUDIT_DESCRIPTION',
+            'AUDIT_OWNER_NAME',
+            'AUDIT_OWNER_EMAIL',
+            'AUDIT_ASSET_JSON',
+            'AUDIT_ASSET_NAMES',
+            'AUDIT_HOSTNAME',
+            'AUDIT_REASON',
+            'AUDIT_ENTITY',
+            'AUDIT_ENTITY_SUBTYPE',
+            'AUDIT_SESSION_ID',
+            'AUDIT_CASE_ID',
+            'AUDIT_INSERT_TIME'
+        ]),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.AuditAgentReports': audit_logs
         },

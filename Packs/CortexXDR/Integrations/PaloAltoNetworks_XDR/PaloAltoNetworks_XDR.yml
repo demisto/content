@@ -1077,6 +1077,7 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Distribution.status
       description: A string representing the status of installation package.
+        "Completed","In Progress"
       type: String
   - arguments:
     - default: false
