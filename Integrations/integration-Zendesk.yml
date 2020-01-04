@@ -25,7 +25,7 @@ configuration:
   required: true
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: ''
   type: 8
   required: false
 - display: Trust any certificate (not secure)
