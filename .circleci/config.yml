@@ -201,6 +201,7 @@ jobs:
               else
                 demisto-sdk lint --git --parallel
             fi
+            demisto-sdk lint --help
       - run:
           name: Verify Base Branch for Contribution
           when: always
