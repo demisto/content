@@ -553,7 +553,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2265
+          "y": 2090
         }
       }
     note: false
@@ -612,7 +612,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "18"
     scriptarguments:
       connection-name:
         simple: EC2AMAZ-KGMRO60
@@ -631,42 +631,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "21":
-    id: "21"
-    taskid: d5d3b18f-66e6-4286-869c-7bf73a5138b2
-    type: regular
-    task:
-      id: d5d3b18f-66e6-4286-869c-7bf73a5138b2
-      version: -1
-      name: Delete connection
-      description: Delete a connection by connection name.
-      script: '|||tanium-tr-delete-connection'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      connection-name:
-        simple: EC2AMAZ-KGMRO60
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2280,
+        "height": 2105,
         "width": 810,
         "x": 50,
         "y": 50
