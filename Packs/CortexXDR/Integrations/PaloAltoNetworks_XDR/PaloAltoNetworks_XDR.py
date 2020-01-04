@@ -1032,7 +1032,22 @@ def get_audit_management_logs_command(client, args):
     )
 
     return (
-        tableToMarkdown('Audit Management Logs', audit_logs),
+        tableToMarkdown('Audit Management Logs', audit_logs, [
+            'AUDIT_ID',
+            'AUDIT_RESULT',
+            'AUDIT_DESCRIPTION',
+            'AUDIT_OWNER_NAME',
+            'AUDIT_OWNER_EMAIL',
+            'AUDIT_ASSET_JSON',
+            'AUDIT_ASSET_NAMES',
+            'AUDIT_HOSTNAME',
+            'AUDIT_REASON',
+            'AUDIT_ENTITY',
+            'AUDIT_ENTITY_SUBTYPE',
+            'AUDIT_SESSION_ID',
+            'AUDIT_CASE_ID',
+            'AUDIT_INSERT_TIME'
+        ]),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.AuditManagementLogs(val.AUDIT_ID == obj.AUDIT_ID)': audit_logs
         },
@@ -1083,22 +1098,7 @@ def get_audit_agent_reports_command(client, args):
     )
 
     return (
-        tableToMarkdown('Audit Agent Reports', audit_logs, [
-            'AUDIT_ID',
-            'AUDIT_RESULT',
-            'AUDIT_DESCRIPTION',
-            'AUDIT_OWNER_NAME',
-            'AUDIT_OWNER_EMAIL',
-            'AUDIT_ASSET_JSON',
-            'AUDIT_ASSET_NAMES',
-            'AUDIT_HOSTNAME',
-            'AUDIT_REASON',
-            'AUDIT_ENTITY',
-            'AUDIT_ENTITY_SUBTYPE',
-            'AUDIT_SESSION_ID',
-            'AUDIT_CASE_ID',
-            'AUDIT_INSERT_TIME'
-        ]),
+        tableToMarkdown('Audit Agent Reports', audit_logs),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.AuditAgentReports': audit_logs
         },
