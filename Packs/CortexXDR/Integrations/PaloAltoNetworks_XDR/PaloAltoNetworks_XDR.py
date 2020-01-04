@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 import secrets
 import string
 import hashlib
+from typing import Any, Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -73,77 +74,6 @@ class Client(BaseClient):
         self._session = requests.Session()
         if not proxy:
             self._session.trust_env = False
-
-    def _http_request(self, method, url_suffix, full_url=None, headers=None,
-                      auth=None, json_data=None, params=None, data=None, files=None,
-                      timeout=10, resp_type='json', ok_codes=None, **kwargs):
-        try:
-            # Replace params if supplied
-            address = full_url if full_url else self._base_url + url_suffix
-            headers = headers if headers else self._headers
-            auth = auth if auth else self._auth
-            # Execute
-
-            res = self._session.request(
-                method,
-                address,
-                verify=self._verify,
-                params=params,
-                data=data,
-                json=json_data,
-                files=files,
-                headers=headers,
-                auth=auth,
-                timeout=timeout,
-                **kwargs
-            )
-            # Handle error responses gracefully
-            if not self._is_status_code_valid(res, ok_codes):
-                err_msg = 'Error in API call [{}] - {}' \
-                    .format(res.status_code, res.reason)
-                try:
-                    # Try to parse json error response
-                    error_entry = res.json()
-                    err_msg += '\n{}'.format(json.dumps(error_entry))
-                    raise DemistoException(err_msg)
-                except ValueError as exception:
-                    raise DemistoException(err_msg, exception)
-
-            resp_type = resp_type.lower()
-            try:
-                if resp_type == 'json':
-                    return res.json()
-                if resp_type == 'text':
-                    return res.text
-                if resp_type == 'content':
-                    return res.content
-                if resp_type == 'xml':
-                    ET.parse(res.text)
-                return res
-            except ValueError as exception:
-                raise DemistoException('Failed to parse json object from response: {}'
-                                       .format(res.content), exception)
-        except requests.exceptions.ConnectTimeout as exception:
-            err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
-                      ' is incorrect or that the Server is not accessible from your host.'
-            raise DemistoException(err_msg, exception)
-        except requests.exceptions.SSLError as exception:
-            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
-                      ' the integration configuration.'
-            raise DemistoException(err_msg, exception)
-        except requests.exceptions.ProxyError as exception:
-            err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
-                      ' selected, try clearing the checkbox.'
-            raise DemistoException(err_msg, exception)
-        except requests.exceptions.ConnectionError as exception:
-            # Get originating Exception in Exception chain
-            error_class = str(exception.__class__)
-            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-            err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                      'Verify that the server URL parameter' \
-                      ' is correct and that you have access to the server from your host.' \
-                .format(err_type, exception.errno, exception.strerror)
-            raise DemistoException(err_msg, exception)
 
     def test_module(self, first_fetch_time):
         """
@@ -554,7 +484,7 @@ class Client(BaseClient):
     def audit_management_logs(self, email, result, _type, sub_type, search_from, search_to, timestamp_gte,
                               timestamp_lte, sort_by, sort_order):
 
-        request_data = {}
+        request_data: Dict[str, Any] = {}
         filters = []
         if email:
             filters.append({
@@ -618,7 +548,7 @@ class Client(BaseClient):
 
     def get_audit_agent_reports(self, endpoint_ids, endpoint_names, result, _type, sub_type, search_from, search_to,
                                 timestamp_gte, timestamp_lte, sort_by, sort_order):
-        request_data = {}
+        request_data: Dict[str, Any] = {}
         filters = []
         if endpoint_ids:
             filters.append({
@@ -691,12 +621,12 @@ def get_incidents_command(client, args):
     """
     Retrieve a list of incidents from XDR, filtered by some filters.
     """
-    
+
     # sometimes incident id can be passed as integer from the playbook
     incident_id_list = args.get('incident_id_list')
     if isinstance(incident_id_list, (int)):
         incident_id_list = str(incident_id_list)
-        
+
     incident_id_list = argToList(incident_id_list)
     # make sure all the ids passed are strings and not integers
     for index, id in enumerate(incident_id_list):
