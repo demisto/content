@@ -54,6 +54,13 @@ configuration:
   name: ip_grouping
   required: false
   type: 8
+- additionalInfo: Max amount of entries in the EDL
+  defaultvalue: '2500'
+  display: EDL Size
+  hidden: false
+  name: edl_size
+  required: true
+  type: 0
 description: Provides External Dynamic List as a service. An EDL is a text file that
   is hosted on an external web server so that the firewall can import objects—IP addresses,
   URLs, domains—included in the list and enforce policy. The integration allows users
@@ -81,6 +88,23 @@ script:
       - json
       - json-seq
       - csv
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Will try to group together IPs into ranges.
+      isArray: false
+      name: group_ips
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Max amount of entries in the EDL. If no value is provided, will
+        default on EDL Size configured in the instance co configuration.
+      isArray: false
+      name: edl_size
       required: false
       secret: false
     deprecated: false

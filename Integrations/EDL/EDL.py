@@ -16,6 +16,7 @@ FORMAT_CSV: str = 'csv'
 FORMAT_TEXT: str = 'text'
 FORMAT_JSON_SEQ: str = 'json-seq'
 FORMAT_JSON: str = 'json'
+EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for EDL Size'
 
 ''' HELPER FUNCTIONS '''
 
@@ -53,22 +54,58 @@ def refresh_value_cache(indicator_query, out_format, ip_grouping, limit=None):
     """
     Refresh the cache values and format using an indicator_query to call demisto.findIndicators
     """
-    iocs = []
-    page = 0
-    fetched_iocs = demisto.findIndicators(query=indicator_query, page=page, size=PAGE_SIZE).get('iocs')
-    iocs.extend(fetched_iocs)
-    # poll indicators into edl from demisto
-    # TODO: Increase edl size if ip_grouping
-    while len(fetched_iocs) == PAGE_SIZE and limit and len(iocs) < limit:
-        page += 1
-        fetched_iocs = demisto.findIndicators(query=indicator_query, page=page, size=PAGE_SIZE).get('iocs')
-        iocs.extend(fetched_iocs)
-    ctx = create_values_out_dict(iocs[:limit], out_format, ip_grouping)
+    iocs = find_indicators_to_limit(indicator_query, limit, ip_grouping)  # poll indicators into edl from demisto
+    ctx = create_values_out_dict(iocs, out_format, ip_grouping)
     demisto.setLastRun({'last_run': date_to_timestamp(datetime.now())})
     demisto.setIntegrationContext(ctx)
     if out_format == FORMAT_CSV:
         return create_csv_out_list(ctx)
     return list(ctx.values())
+
+
+def find_indicators_to_limit(indicator_query, limit, ip_grouping):
+    """
+    Finds indicators using demisto.findIndicators
+    """
+    iocs, next_page = find_indicators_to_limit_loop(indicator_query, limit)
+    if ip_grouping:
+        iocs = find_and_group_ips_to_limit(indicator_query, iocs, limit, next_page)
+    return iocs[:limit]
+
+
+def find_indicators_to_limit_loop(indicator_query, limit, total_fetched=0, next_page=0, last_found_len=PAGE_SIZE):
+    """
+    Finds indicators using while loop with demisto.findIndicators, and returns result and last page
+    """
+    iocs = []
+    if not last_found_len:
+        last_found_len = total_fetched
+    while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
+        fetched_iocs = demisto.findIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
+        iocs.extend(fetched_iocs)
+        last_found_len = len(fetched_iocs)
+        total_fetched += last_found_len
+        next_page += 1
+    return iocs, next_page
+
+
+def find_and_group_ips_to_limit(indicator_query, iocs, limit, next_page):
+    """
+    Groups IPs and find new ones afterward  in a loop until limit is reached
+    """
+    pre_group_iocs_len = len(iocs)
+    iocs, next_page = find_new_ips_and_group(indicator_query, iocs, next_page, limit)
+    while len(iocs) != pre_group_iocs_len:
+        pre_group_iocs_len = len(iocs)
+        iocs, next_page = find_new_ips_and_group(indicator_query, iocs, next_page, limit)
+    return iocs
+
+
+def find_new_ips_and_group(indicator_query, iocs, next_page, limit):
+    last_iocs_found, next_page = find_indicators_to_limit_loop(indicator_query, limit, total_fetched=len(iocs),
+                                                               next_page=next_page)
+    iocs = group_ips(iocs)
+    return iocs, next_page
 
 
 def create_csv_out_list(cache_dict):
@@ -87,13 +124,11 @@ def create_values_out_dict(iocs, out_format, ip_grouping):
     """
     Create a dictionary for output values using the selected format
     """
-    ctx = {}
     out_format_func = {
         FORMAT_TEXT: out_text_format,
         FORMAT_JSON_SEQ: out_json_seq_format,
         FORMAT_CSV: out_csv_format
     }
-    # TODO: Add FORMAT_JSON treatment
     if ip_grouping:
         iocs = group_ips(iocs)
     return create_formatted_values_out_dict(iocs, out_format, out_format_func.get(out_format))
@@ -163,6 +198,7 @@ def get_edl_ioc_list():
     ip_grouping = params.get('ip_grouping')
     out_format = params.get('format')
     on_demand = params.get('on_demand')
+    limit = parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)
     # on_demand ignores cache
     if on_demand:
         values = get_out_values_from_cache(out_format)
@@ -170,11 +206,11 @@ def get_edl_ioc_list():
         last_run = demisto.getLastRun().get('last_run')
         indicator_query = demisto.params().get('indicators_query', '')
         if last_run:
-            cache_refresh_rate = demisto.params().get('cache_refresh_rate')
+            cache_refresh_rate = demisto.params().get('cache_refresh_rate', limit)
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
             td = last_run - cache_time
             if td <= 0:  # last_run is before cache_time
-                values = refresh_value_cache(indicator_query, out_format, ip_grouping)
+                values = refresh_value_cache(indicator_query, out_format, ip_grouping, limit)
             else:
                 values = get_out_values_from_cache(out_format)
         else:
@@ -191,7 +227,20 @@ def get_out_values_from_cache(out_format):
     return values
 
 
+def parse_integer(int_to_parse, err_msg):
+    """
+    Tries to parse an integer, and if fails will throw DemistoException with given err_msg
+    """
+    try:
+        res = int(int_to_parse)
+    except (TypeError, ValueError) as e:
+        raise DemistoException(err_msg, e)
+    return res
+
+
 ''' ROUTE FUNCTIONS '''
+
+
 @APP.route('/', methods=['GET'])
 def route_edl_values() -> Response:
     """
@@ -221,12 +270,13 @@ def test_module(args, params):
                              '6 months, 1 day, etc.)')
         if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year',
                                   'years']:
-            raise ValueError('Cache Refresh Rate time unit is invalid. Must be minutes, hours, days, months or years')
+            raise ValueError(
+                'Cache Refresh Rate time unit is invalid. Must be minutes, hours, days, months or years')
         parse_date_range(cache_refresh_rate, to_timestamp=True)
     on_demand = params.get('on_demand', None)
     if not on_demand:
-        # validate $indicators_query isn't empty
-        query = params.get('indicators_query')
+        parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)  # validate EDL Size was set
+        query = params.get('indicators_query')  # validate $indicators_query isn't empty
         if not query:
             raise ValueError('"Indicator Query" cannot be empty, please provide a valid query')
     return 'ok', {}, {}
@@ -247,7 +297,8 @@ def run_long_running(params):
         port = get_params_port(params)
         ssl_args = dict()
 
-        if certificate and private_key and not http_server:  # TODO: Setup https server and http server when http_server and certificate+private_key
+        if certificate and private_key and not http_server:
+            # TODO: Setup https server and http server when http_server and certificate+private_key
             certificate_file = NamedTemporaryFile(delete=False)
             certificate_path = certificate_file.name
             certificate_file.write(bytes(certificate, 'utf-8'))
@@ -275,14 +326,18 @@ def run_long_running(params):
 
 
 def update_edl_command(args, params):
+    """
+    Updates the EDL values and format on demand
+    """
     on_demand = demisto.params().get('on_demand')
+    limit = parse_integer(args.get('edl_size', params.get('edl_size')), EDL_LIMIT_ERR_MSG)
     if not on_demand:
         raise DemistoException(
             '"Update EDL On Demand" is turned off. If you want to update the EDL manually please turn it on.')
     query = args.get('query')
     out_format = args.get('format')
     ip_grouping = params.get('ip_grouping')
-    indicators = refresh_value_cache(query, out_format, ip_grouping)
+    indicators = refresh_value_cache(query, out_format, ip_grouping, limit)
     hr = tableToMarkdown('EDL was updated successfully with the following values', indicators, ['indicators'])
     return hr, {}, {}
 

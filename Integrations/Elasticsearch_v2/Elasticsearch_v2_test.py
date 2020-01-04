@@ -393,6 +393,15 @@ def test_timestamp_to_date_converter_milliseconds():
     milliseconds_since_epoch = "1572164838123"
     assert str(timestamp_to_date(milliseconds_since_epoch)) == "2019-10-27 08:27:18.123000"
 
+@patch("Elasticsearch_v2.TIME_METHOD", 'Simple-Date')
+@patch("Elasticsearch_v2.TIME_FORMAT", '%Y-%m-%dT%H:%M:%SZ')
+@patch("Elasticsearch_v2.TIME_FIELD", 'Date')
+def test_timestamp_to_date_converter_milliseconds():
+    from Elasticsearch_v2 import fetch_indicators_command
+    fetch_indicators_command()
+    # milliseconds_since_epoch = "1572164838123"
+    # assert str(timestamp_to_date(milliseconds_since_epoch)) == "2019-10-27 08:27:18.123000"
+
 
 @patch("Elasticsearch_v2.TIME_METHOD", 'Timestamp-Seconds')
 @patch("Elasticsearch_v2.TIME_FIELD", 'Date')
