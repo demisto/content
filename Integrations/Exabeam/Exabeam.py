@@ -26,8 +26,8 @@ class Client(BaseClient):
     Client to use in the Exabeam integration. Overrides BaseClient
     """
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
-                 proxies: Optional[MutableMapping[str, str]], headers):
-        super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxies)
+                 proxy: bool, headers):
+        super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy)
         self.username = username
         self.password = password
         self.session = requests.Session()
@@ -50,7 +50,6 @@ class Client(BaseClient):
                 headers=self._headers,
                 verify=self._verify,
                 data=data,
-                proxies=self._proxies,
                 params=params
             )
             if not res.ok:
@@ -514,7 +513,7 @@ def main():
     base_url = demisto.params().get('url')
     verify_certificate = not demisto.params().get('insecure', False)
     headers = {'Accept': 'application/json'}
-    proxies = handle_proxy()
+    proxy = demisto.params().get('proxy', False)
 
     commands = {
         'test-module': test_module,
@@ -536,7 +535,7 @@ def main():
 
     try:
         client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
-                        password=password, proxies=proxies, headers=headers)
+                        password=password, proxy=proxy, headers=headers)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command in commands:
