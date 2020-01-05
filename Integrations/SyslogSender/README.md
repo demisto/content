@@ -1,7 +1,7 @@
 ## Overview
 ---
 
-Send messages to Syslog.
+Use the Syslog Sender integration to send messages and mirror incident war room entries to Syslog.
 
 
 ## Use Cases
@@ -34,6 +34,7 @@ input(type="imudp" port="<port>")
     * __Protocol (TCP / UDP)__
     * __Minimum severity of incidents to send messages on__
     * __Log level to send__
+    * __Facility__
     * __Long running instance. Required for investigation mirroring.__
     * __Incident type__
 4. Click __Test__ to validate the URLs, token, and connection.
