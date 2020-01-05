@@ -1,0 +1,139 @@
+id: Digital Defense FrontlineVM - PAN-OS block assets Test
+version: -1
+fromversion: 5.0.0
+name: Digital Defense FrontlineVM - PAN-OS block assets Test
+description: Test playbook for "Digital Defense FrontlineVM - PAN-OS block assets"
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: d76aea8f-7a36-410a-865c-615dbe9bd873
+    type: start
+    task:
+      id: d76aea8f-7a36-410a-865c-615dbe9bd873
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: bb5bdb56-be68-4f00-8b3c-97077186a846
+    type: regular
+    task:
+      id: bb5bdb56-be68-4f00-8b3c-97077186a846
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 3ad4d38c-1ccb-4c12-8344-40496d9210ac
+    type: playbook
+    task:
+      id: 3ad4d38c-1ccb-4c12-8344-40496d9210ac
+      version: -1
+      name: Digital Defense FrontlineVM - PAN-OS block assets
+      playbookName: Digital Defense FrontlineVM - PAN-OS block assets
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 0588c7c2-b057-4a0b-89e2-25bf35168234
+    type: regular
+    task:
+      id: 0588c7c2-b057-4a0b-89e2-25bf35168234
+      version: -1
+      name: Close Investigation
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
