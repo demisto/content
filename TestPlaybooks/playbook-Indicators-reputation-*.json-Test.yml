@@ -2128,7 +2128,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: CIDRv6.Address
+              simple: IPv6CIDR.Address
             iscontext: true
           right:
             value:
@@ -2231,7 +2231,7 @@ tasks:
       - - operator: notContainsString
           left:
             value:
-              simple: CIDRv6.Address
+              simple: IPv6CIDR.Address
             iscontext: true
           right:
             value:
