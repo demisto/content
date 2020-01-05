@@ -345,7 +345,7 @@ script:
                     email: args.email
                 }
         };
-        res = sendRequest('POST', 'users.json', JSON.stringify(body));
+        res = sendRequest('POST', 'users/create_or_update.json', JSON.stringify(body));
         md = 'Zendesk user added successfuly - ' + args.name + ' (' + args.email + ')\n';
         return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md} );
     };
