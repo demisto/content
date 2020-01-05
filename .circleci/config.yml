@@ -104,10 +104,10 @@ jobs:
 
             if [ "${CHECK_BACKWARD}" = "true" ] ;
               then
-                 demisto-sdk validate -g --post-commit -b
+                 demisto-sdk validate -g --post-commit
 
               else
-                 demisto-sdk validate -g --post-commit
+                 demisto-sdk validate -g --post-commit --no-backward-comp
             fi
       - run:
           name: Secrets
@@ -176,7 +176,7 @@ jobs:
                 echo "Skipping - running only in container number 0"
                 exit 0
             fi
-            demisto-sdk create -a $CIRCLE_ARTIFACTS
+            demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS
             # create zip with contents of content_new.zip and content_test.zip for use in updating content on instances
             cp "$CIRCLE_ARTIFACTS/content_new.zip" "$CIRCLE_ARTIFACTS/all_content.zip"
             unzip -q "$CIRCLE_ARTIFACTS/content_test.zip" -d "test_content_dir"
