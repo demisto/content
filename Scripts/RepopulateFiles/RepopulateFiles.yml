@@ -10,6 +10,6 @@ comment: After running DeleteContext, this script can repopulate all the file en
 enabled: true
 scripttarget: 0
 type: python
-subtype: python3
+subtype: python2
 runonce: false
 runas: DBotWeakRole

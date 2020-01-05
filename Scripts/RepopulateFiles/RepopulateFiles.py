@@ -1,10 +1,8 @@
-import os
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+import os
 
 
-def parse_attachment_entries(entries: list) -> list:
+def parse_attachment_entries(entries):
     """Parse the attachments entries.
 
     Args:
@@ -16,7 +14,7 @@ def parse_attachment_entries(entries: list) -> list:
     entry_context = []
     for entry in entries:
         if entry.get('File') and entry.get('FileMetadata'):
-            _, ext = os.path.splitext(entry['File'])
+            name, ext = os.path.splitext(entry['File'])
             entry_context.append({
                 'Name': entry['File'],
                 'MD5': entry['FileMetadata'].get('md5'),
