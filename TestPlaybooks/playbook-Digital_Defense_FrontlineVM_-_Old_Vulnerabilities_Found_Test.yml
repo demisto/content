@@ -1,0 +1,140 @@
+id: Digital Defense FrontlineVM - Old Vulnerabilities Found Test
+version: -1
+fromversion: 5.0.0
+name: Digital Defense FrontlineVM - Old Vulnerabilities Found Test
+description: Test playbook for "Digital Defense FrontlineVM - Old Vulnerabilities
+  Found"
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 5abb1ed1-d6e2-463d-82bb-6221bedcf630
+    type: start
+    task:
+      id: 5abb1ed1-d6e2-463d-82bb-6221bedcf630
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 21ddb6f4-336a-460a-8d39-994db2d86fe9
+    type: regular
+    task:
+      id: 21ddb6f4-336a-460a-8d39-994db2d86fe9
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 8c99588b-027d-4dbc-822b-7d309c8a4f88
+    type: playbook
+    task:
+      id: 8c99588b-027d-4dbc-822b-7d309c8a4f88
+      version: -1
+      name: Digital Defense FrontlineVM - Old Vulnerabilities Found
+      playbookName: Digital Defense FrontlineVM - Old Vulnerabilities Found
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 16c872a6-8fdb-48c6-83f3-cc12570eb590
+    type: regular
+    task:
+      id: 16c872a6-8fdb-48c6-83f3-cc12570eb590
+      version: -1
+      name: Close Investigation
+      description: Close the current Incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 635,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
