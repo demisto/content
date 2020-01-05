@@ -783,8 +783,7 @@ script:
       predefined:
         - "True"
         - "False"
-      description: If set to true, verifies whether the added user already exists in Zendesk and returns an error if
-        it does.
+      description: Whether to check if the specified user already exists in Zendesk. Can be "True" or "False". Default is "False".
       defaultValue: "False"
     description: Adds a user (not agent or admin) to Zendesk.
   - name: zendesk-get-article
