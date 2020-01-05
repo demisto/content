@@ -17,7 +17,7 @@ def is_value_empty(value):
     if hasattr(value, '__iter__') and len(value) == 1 and not isinstance(value, dict):
         value = value[0]
 
-    value_is_string_null = isinstance(value, basestring) and value.lower() in ["none", "null", ""]
+    value_is_string_null = isinstance(value, basestring) and value.lower() in ["none", "null", ""]  # type: ignore
     return value is None or (hasattr(value, '__iter__') and len(value) == 0) or value_is_string_null
 
 

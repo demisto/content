@@ -591,6 +591,14 @@ def b64_encode(text):
 
 
 def encode_string_results(s):
+    """
+       Encode string as utf-8, if any unicode character exists.
+
+          :param s: string to encode
+          :type text: str
+          :return: encoded string
+          :rtype: str
+    """
     if not isinstance(s, STRING_OBJ_TYPES):
         return s
     try:
@@ -848,6 +856,31 @@ def argToList(arg, separator=','):
             return json.loads(arg)
         return [s.strip() for s in arg.split(separator)]
     return arg
+
+
+def argToBoolean(value):
+    """
+        Boolean-ish arguments that are passed through demisto.args() could be type bool or type string.
+        This command removes the guesswork and returns a value of type bool, regardless of the input value's type.
+        It will also return True for 'yes' and False for 'no'.
+
+        :param value: the value to evaluate
+        :type value: ``string|bool``
+
+        :return: a boolean representatation of 'value'
+        :rtype: ``bool``
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, STRING_OBJ_TYPES):
+        if value.lower() in ['true', 'yes']:
+            return True
+        elif value.lower() in ['false', 'no']:
+            return False
+        else:
+            raise ValueError('Argument does not contain a valid boolean-like value')
+    else:
+        raise ValueError('Argument is neither a string nor a boolean')
 
 
 def appendContext(key, data, dedup=False):

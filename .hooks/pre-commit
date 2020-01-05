@@ -17,9 +17,10 @@ if [ -e "./venv/bin/activate" -a -z "${VIRTUAL_ENV}" ]; then
 fi
 
 demisto-sdk validate -t true -g
-demisto-sdk secrets
-
 RES=$?
+
+demisto-sdk secrets
+RES=$(($RES + $?))
 
 echo ""
 if [[ -n "$CONTENT_PRECOMMIT_RUN_DEV_TASKS" ]]; then
