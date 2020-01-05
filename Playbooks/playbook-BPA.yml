@@ -39,7 +39,7 @@ tasks:
       id: c1dc0301-faa5-49dc-8aed-1194ddf54c1f
       version: -1
       name: Submit BPA job
-      description: Submits a BPA job.
+      description: Submits a best practice assessment job.
       script: BPA|||pan-os-bpa-submit-job
       type: regular
       iscommand: true
@@ -119,7 +119,7 @@ tasks:
       id: be5c533d-2bc9-45d9-8568-9500e69d6fd2
       version: -1
       name: Get BPA Results
-      description: Returns results of BPA job.
+      description: Returns results of the best practice assessment job.
       script: BPA|||pan-os-bpa-get-job-results
       type: regular
       iscommand: true
