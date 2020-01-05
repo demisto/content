@@ -1,5 +1,5 @@
 ## [Unreleased]
-- TODO
+- Added support for a list of *source*, *destination*, *application* in the ***panorama-create-rule***, ***panorama-custom-block-rule*** and ***panorama-edit-rule*** commands.
 - Added 4 commands.
     - ***panorama-list-static-routes***
     - ***panorama-get-static-route***
