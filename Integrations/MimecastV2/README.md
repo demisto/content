@@ -1,7 +1,5 @@
 <p>
 Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
-
-This integration was integrated and tested with version xx of MimecastV2
 </p>
 <h2>Use Cases</h2>
 <ul>
