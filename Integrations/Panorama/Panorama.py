@@ -285,7 +285,7 @@ def set_xpath_network(template: str = None) -> Tuple[str, Optional[str]]:
 def prepare_security_rule_params(api_action: str = None, rulename: str = None, source: Any = None,
                                  destination: Any = None, negate_source: str = None,
                                  negate_destination: str = None, action: str = None, service: List[str] = None,
-                                 disable: str = None, application: str = None, source_user: List[str] = None,
+                                 disable: str = None, application: str = None, source_user: str = None,
                                  category: List[str] = None, from_: str = None, to: str = None, description: str = None,
                                  target: str = None, log_forwarding: str = None,
                                  disable_server_response_inspection: str = None, tags: List[str] = None) -> Dict:
@@ -2643,10 +2643,10 @@ def panorama_create_rule_command():
     service = demisto.args().get('service')
     disable = demisto.args().get('disable')
     application = argToList(demisto.args().get('application'))
-    source_user = argToList(demisto.args().get('source_user'))
+    source_user = demisto.args().get('source_user')
     disable_server_response_inspection = demisto.args().get('disable_server_response_inspection')
     description = demisto.args().get('description')
-    target = argToList(demisto.args().get('target'))
+    target = demisto.args().get('target')
     log_forwarding = demisto.args().get('log_forwarding', None)
     tags = argToList(demisto.args()['tags']) if 'tags' in demisto.args() else None
 
