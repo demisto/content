@@ -1,9 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Tuple, Dict, List, Any, Optional, MutableMapping
+from typing import Tuple, Dict, List, Any, Optional
 import requests
-import urllib3
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
