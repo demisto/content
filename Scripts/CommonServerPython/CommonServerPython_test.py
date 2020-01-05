@@ -1012,13 +1012,22 @@ def test_argToBoolean():
 
 regexes_test = [
     (ipv4Regex, '192.168.1.1', True),
+    (ipv4Regex, '192.168.a.1', False),
+    (ipv4Regex, '192.168..1.1', False),
     (ipv4Regex, '192.256.1.1', False),
+    (ipv4Regex, '192.256.1.1.1', False),
     (ipv4cidrRegex, '192.168.1.1/32', True),
-    (ipv4cidrRegex, '192.168.1.256/38', False),
+    (ipv4cidrRegex, '192.168.1.1.1/30', False),
+    (ipv4cidrRegex, '192.168.1.b/30', False),
+    (ipv4cidrRegex, '192.168.1.12/381', False),
     (ipv6Regex, '2001:db8:a0b:12f0::1', True),
+    (ipv6Regex, '2001:db8:a0b:12f0::1/11', False),
+    (ipv6Regex, '2001:db8:a0b:12f0::1::1', False),
     (ipv6Regex, '2001:db8:a0b:12f0::98aa5', False),
     (ipv6cidrRegex, '2001:db8:a0b:12f0::1/64', True),
-    (ipv6cidrRegex, '2001:db8:a0b:12f0::1/256', False)
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1/256', False),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1::1/25', False),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1aaasds::1/1', False)
 ]
 
 
