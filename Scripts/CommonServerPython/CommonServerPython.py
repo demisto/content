@@ -2421,7 +2421,7 @@ def batch(iterable, batch_size=1):
     :type iterable: ``list``
     :param iterable: list or other iterable object.
 
-    :type iterable: ``list``
+    :type batch_size: ``int``
     :param batch_size: the size of batches to fetch
 
     :rtype: ``list``
