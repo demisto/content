@@ -1,5 +1,7 @@
 ## [Unreleased]
-Fixed an issue where setting autoreply for, or delegating the mailbox of another user did not work.
+You can now run the following commands against user accounts when you have admin credentials.
+  - ***gmail-delegate-user-mailbox***
+  - ***gmail-set-autoreply***
 
 ## [19.12.1] - 2019-12-25
   - Added a new command:
