@@ -184,7 +184,7 @@ def notable_to_incident(event):
         incident["severity"] = severity_to_level(event['urgency'])
     if demisto.get(event, 'rule_description'):
         incident["details"] = event["rule_description"]
-    if demisto.get(event, "occurred"):
+    if demisto.get(event, "_time"):
         incident["occurred"] = event["_time"]
     else:
         incident["occurred"] = datetime.now()
