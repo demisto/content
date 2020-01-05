@@ -262,7 +262,6 @@ else:
 
 if service is None:
     demisto.error("Could not connect to SplunkPy")
-    sys.exit(0)
 
 
 def build_search_kwargs(args):
@@ -379,21 +378,25 @@ def splunk_search_command():
         "HumanReadable": human_readable
     })
 
-    sys.exit(0)
-
 
 def splunk_job_create_command():
-    searchquery_normal = demisto.args()['query']
-    if not searchquery_normal.startswith('search'):
-        searchquery_normal = 'search ' + searchquery_normal
-    kwargs_normalsearch = {"exec_mode": "normal"}
-    job = service.jobs.create(searchquery_normal, **kwargs_normalsearch)  # type: ignore
+    query = demisto.args()['query']
+    if not query.startswith('search'):
+        query = 'search ' + query
+    search_kwargs = {
+        "exec_mode": "normal"
+    }
+    search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
 
-    ec = {}
-    ec['Splunk.Job'] = job.sid
-    demisto.results({"Type": 1, "ContentsFormat": formats['text'],
-                     "Contents": "Splunk Job created with SID: " + job.sid, "EntryContext": ec})
-    sys.exit(0)
+    entry_context = {
+        'Splunk.Job': search_job.sid
+    }
+    demisto.results({
+        "Type": 1,
+        "ContentsFormat": formats['text'],
+        "Contents": "Splunk Job created with SID: " + search_job.sid,
+        "EntryContext": entry_context
+    })
 
 
 def splunk_results_command():
@@ -414,7 +417,6 @@ def splunk_results_command():
         demisto.results("Found no job for sid: " + demisto.args()['sid'])
     if found:
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
-    sys.exit(0)
 
 
 def fetch_incidents():
@@ -461,7 +463,6 @@ def fetch_incidents():
         demisto.setLastRun({'time': now, 'offset': 0})
     else:
         demisto.setLastRun({'time': lastRun, 'offset': search_offset + FETCH_LIMIT})
-    sys.exit(0)
 
 
 def splunk_get_indexes_command():
@@ -472,7 +473,6 @@ def splunk_get_indexes_command():
         indexesNames.append(index_json)
     demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indexesNames),
                      'HumanReadable': tableToMarkdown("Splunk Indexes names", indexesNames, '')})
-    sys.exit(0)
 
 
 def splunk_submit_event_command():
@@ -481,13 +481,12 @@ def splunk_submit_event_command():
     except KeyError:
         demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
                          'Contents': "Found no Splunk index: " + demisto.args()['index']})
-        sys.exit(0)
+
     else:
         data = demisto.args()['data']
         data_formatted = data.encode('utf8')
         r = index.submit(data_formatted, sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
         demisto.results('Event was created in Splunk index: ' + r.name)
-    sys.exit(0)
 
 
 def splunk_edit_notable_event_command():
@@ -518,9 +517,8 @@ def splunk_edit_notable_event_command():
         demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
                          'Contents': "Could not update notable "
                                      "events: " + demisto.args()['eventIDs'] + ' : ' + str(response_info)})
-        sys.exit(0)
+
     demisto.results('Splunk ES Notable events: ' + response_info['message'])
-    sys.exit(0)
 
 
 def splunk_parse_raw_command():
@@ -529,13 +527,11 @@ def splunk_parse_raw_command():
     ec = {}
     ec['Splunk.Raw.Parsed'] = rawDict
     demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(rawDict), "EntryContext": ec})
-    sys.exit(0)
 
 
 def test_module():
     if len(service.jobs) >= 0:  # type: ignore
         demisto.results('ok')
-    sys.exit(0)
 
 
 # The command demisto.command() holds the command sent from the user.
