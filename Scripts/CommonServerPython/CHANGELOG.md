@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+ Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.
 
 ## [19.12.0] - 2019-12-10
 -
