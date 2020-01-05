@@ -778,62 +778,80 @@ def manage_tests(tests_settings):
     prints_manager = ParallelPrintsManager(number_of_instances)
     tests_data_keeper = TestsDataKeeper()
 
-    if tests_settings.server:
-        # If the user supplied a server - all tests will be done on that server.
-        server_ip = tests_settings.server
-        print_color("Starting tests for {}".format(server_ip), LOG_COLORS.GREEN)
-        print("Starts tests with server url - https://{}".format(server_ip))
-        all_tests = get_all_tests(tests_settings)
-        execute_testing(tests_settings, server_ip, [], all_tests, is_ami=False, thread_index=0,
-                        prints_manager=prints_manager, tests_data_keeper=tests_data_keeper)
+    if tests_settings.isAMI:
+        if tests_settings.server:
+            # TODO: This part should not be here, when we run locally it isn't AMI IMHO
+            # If the user supplied a server - all tests will be done on that server.
+            server_ip = tests_settings.server
+            print_color("Starting tests for {}".format(server_ip), LOG_COLORS.GREEN)
+            print("Starts tests with server url - https://{}".format(server_ip))
+            all_tests = get_all_tests(tests_settings)
+            execute_testing(tests_settings, server_ip, [], all_tests, is_ami=False, thread_index=0,
+                            prints_manager=prints_manager, tests_data_keeper=tests_data_keeper)
 
-    elif is_nightly:
-        """
-        If the build is a nightly build, run tests in parallel.
-        """
-        test_allocation = get_tests_allocation_for_threads(number_of_instances, tests_settings.conf_path)
-        current_thread_index = 0
-        all_unmockable_tests_list = get_unmockable_tests(tests_settings)
-        threads_array = []
-        for ami_instance_name, ami_instance_ip in instances_ips:
-            if ami_instance_name == server_version:  # Only run tests for server master
-                current_instance = ami_instance_ip
-                tests_allocation_for_instance = test_allocation[current_thread_index]
+        elif is_nightly:
+            """
+            If the build is a nightly build, run tests in parallel.
+            """
+            test_allocation = get_tests_allocation_for_threads(number_of_instances, tests_settings.conf_path)
+            current_thread_index = 0
+            all_unmockable_tests_list = get_unmockable_tests(tests_settings)
+            threads_array = []
+            for ami_instance_name, ami_instance_ip in instances_ips:
+                if ami_instance_name == server_version:  # Only run tests for server master
+                    current_instance = ami_instance_ip
+                    tests_allocation_for_instance = test_allocation[current_thread_index]
 
-                unmockable_tests = [test for test in all_unmockable_tests_list if test in tests_allocation_for_instance]
-                mockable_tests = [test for test in tests_allocation_for_instance if test not in unmockable_tests]
-                print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
-                print("Starts tests with server url - https://{}".format(ami_instance_ip))
-                thread_kwargs = {
-                    "tests_settings": tests_settings,
-                    "server_ip": current_instance,
-                    "mockable_tests_names": mockable_tests,
-                    "unmockable_tests_names": unmockable_tests,
-                    "thread_index": current_thread_index,
-                    "prints_manager": prints_manager,
-                    "tests_data_keeper": tests_data_keeper
-                }
-                t = threading.Thread(target=execute_testing, kwargs=thread_kwargs)
-                threads_array.append(t)
-                t.start()
-                current_thread_index += 1
-        for t in threads_array:
-            t.join()
+                    unmockable_tests = [test for test in all_unmockable_tests_list if test in tests_allocation_for_instance]
+                    mockable_tests = [test for test in tests_allocation_for_instance if test not in unmockable_tests]
+                    print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
+                    print("Starts tests with server url - https://{}".format(ami_instance_ip))
+                    thread_kwargs = {
+                        "tests_settings": tests_settings,
+                        "server_ip": current_instance,
+                        "mockable_tests_names": mockable_tests,
+                        "unmockable_tests_names": unmockable_tests,
+                        "thread_index": current_thread_index,
+                        "prints_manager": prints_manager,
+                        "tests_data_keeper": tests_data_keeper
+                    }
+                    t = threading.Thread(target=execute_testing, kwargs=thread_kwargs)
+                    threads_array.append(t)
+                    t.start()
+                    current_thread_index += 1
+            for t in threads_array:
+                t.join()
+
+        else:
+            for ami_instance_name, ami_instance_ip in instances_ips:
+                if ami_instance_name == tests_settings.serverVersion:
+                    print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
+                    print("Starts tests with server url - https://{}".format(ami_instance_ip))
+                    all_tests = get_all_tests(tests_settings)
+                    unmockable_tests = get_unmockable_tests(tests_settings)
+                    mockable_tests = [test for test in all_tests if test not in unmockable_tests]
+                    execute_testing(tests_settings, ami_instance_ip, mockable_tests, unmockable_tests, is_ami=True,
+                                    thread_index=0, prints_manager=prints_manager, tests_data_keeper=tests_data_keeper)
+                    sleep(8)
+
 
     else:
-        for ami_instance_name, ami_instance_ip in instances_ips:
-            if ami_instance_name == tests_settings.serverVersion:
-                print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
-                print("Starts tests with server url - https://{}".format(ami_instance_ip))
-                all_tests = get_all_tests(tests_settings)
-                unmockable_tests = get_unmockable_tests(tests_settings)
-                mockable_tests = [test for test in all_tests if test not in unmockable_tests]
-                execute_testing(tests_settings, ami_instance_ip, mockable_tests, unmockable_tests, is_ami=True,
-                                thread_index=0, prints_manager=prints_manager, tests_data_keeper=tests_data_keeper)
-                sleep(8)
+        # TODO: understand better when this occurs and what will be the settings
+        """
+        This case is rare, and usually occurs on two cases:
+        1. When someone from Server wants to trigger a content build on their branch.
+        2. When someone from content wants to run tests on a specific build.
+        """
+        server_numeric_version = '99.99.98'  # assume latest
+        print("Using server version: {} (assuming latest for non-ami)".format(server_numeric_version))
+        with open('./Tests/instance_ips.txt', 'r') as instance_file:
+            instance_ips = instance_file.readlines()
+            instance_ip = [line.strip('\n').split(":")[1] for line in instance_ips][0]
+        all_tests = get_all_tests(tests_settings)
+        execute_testing(tests_settings, instance_ip, [], all_tests, is_ami=False, thread_index=0,
+                        prints_manager=prints_manager, tests_data_keeper=tests_data_keeper)
 
     print_test_summary(tests_data_keeper, tests_settings.isAMI)
-
     create_result_files(tests_data_keeper)
 
     if len(tests_data_keeper.failed_playbooks):
@@ -855,18 +873,7 @@ def main():
         """
         manage_tests(tests_settings)
     else:
-        """
-        This case is rare, and usually occurs on two cases:
-        1. When someone from Server wants to trigger a content build on their branch.
-        2. When someone from content wants to run tests on a specific build.
-        """
-        server_numeric_version = '99.99.98'  # assume latest
-        print("Using server version: {} (assuming latest for non-ami)".format(server_numeric_version))
-        with open('./Tests/instance_ips.txt', 'r') as instance_file:
-            instance_ips = instance_file.readlines()
-            instance_ip = [line.strip('\n').split(":")[1] for line in instance_ips][0]
-        all_tests = get_all_tests(tests_settings)
-        execute_testing(tests_settings, instance_ip, [], all_tests, is_ami=False)
+
 
 
 if __name__ == '__main__':
