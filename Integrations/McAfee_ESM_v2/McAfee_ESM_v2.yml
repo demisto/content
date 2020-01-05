@@ -38,25 +38,34 @@ configuration:
   required: false
   type: 13
 - defaultvalue: alarms
-  display: 'Fetch Types: cases, alarms, both (relevant only for fetch incident mode)'
-  name: fetchTypes
+  display: 'Fetch Types: cases, alarms (relevant only for fetch incident mode)'
+  name: fetchType
+  options:
+  - alarms
+  - cases
   required: false
-  type: 0
+  type: 15
 - defaultvalue: '0'
   display: 'Start fetch after Case ID: (relevant only for fetch incident mode)'
-  name: startingCaseID
+  name: startingFetchID
   required: false
   type: 0
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
-  name: alarm_fetch_time
+  name: fetchTime
   required: false
   type: 0
 - defaultvalue: '0'
   display: McAfee ESM Timezone in hours (e.g if ESM timezone is +0300 => then insert
     3)
   name: timezone
+  required: false
+  type: 0
+- defaultvalue: '5'
+  display: fetchLimit
+  hidden: false
+  name: fetchLimit
   required: false
   type: 0
 description: Run queries and receive alarms from Intel Security ESM. Support version
@@ -714,6 +723,7 @@ script:
       description: Case summary
       type: string
   dockerimage: demisto/python3:3.7.5.4583
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false

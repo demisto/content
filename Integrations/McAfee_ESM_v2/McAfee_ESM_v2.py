@@ -12,6 +12,9 @@ COMMAND_INTEGRATION_NAME = 'esm'
 
 
 class McAfeeESMClient(BaseClient):
+
+    demisto_format = '%Y-%m-%dT%H:%M:%SZ'
+
     def __init__(self, params: Dict):
         self.args = demisto.args()
         self.__user_name = params.get('credentials', {}).get('identifier')
@@ -171,30 +174,31 @@ class McAfeeESMClient(BaseClient):
 
         return human_readable, context_entry, result
 
-    def get_case_list(self, start_time: str = None, raw: bool = False) -> Tuple[str, Dict, Dict]:
+    def get_case_list(self, start_time: str = None, raw: bool = False) -> Tuple[str, Dict, List]:
         path = 'caseGetCaseList'
         condition = '(val.ID && val.ID == obj.ID)'
         since = self.args.get('since')
         context_entry = []
         human_readable: str = ''
-        if not start_time:
+        if not raw and not start_time:
             _, start_time, _ = set_query_times(since=since, difference=self.difference)
             start_time = convert_time_format(str(start_time), difference=self.difference)
-
-        result: Dict = self.__request(path)
+        result: List = self.__request(path)
         for case in result:
             case = dict_times_set(case, self.difference)
             if not start_time or not start_time > case.get('openTime'):
-                case = {
+                temp_case = {
                     'ID': case.get('id'),
                     'Summary': case.get('summary'),
                     'OpenTime': case.get('openTime'),
                     'Severity': case.get('severity')
                 }
                 if 'statusId' in case:
-                    case['Status'] = self.__status_and_id(status_id=case.get('statusId'))
-                    case['Status'] = case['Status'].get('name')
-                context_entry.append(case)
+                    status_id = case.get('statusId', {})
+                    if isinstance(status_id, dict):
+                        status_id = status_id.get('value')
+                    temp_case['Status'] = self.__status_and_id(status_id=status_id).get('name')
+                context_entry.append(temp_case)
         if not raw:
             human_readable = tableToMarkdown(name=f'cases since {since}', t=context_entry)
         return human_readable, {f'Case{condition}': context_entry}, result
@@ -204,16 +208,14 @@ class McAfeeESMClient(BaseClient):
         condition = '(val.ID && val.ID == obj.ID)'
         ids = argToList(self.args.get('ids'))
         result = self.__request(path, data={'eventIds': {'list': ids}})
-        case_event = {
-            'ID': [None] * len(result),
-            'LastTime': [None] * len(result),
-            'Message': [None] * len(result)
-        }
+        case_event: List = [None] * len(result)
         for i in range(len(result)):
             result[i] = dict_times_set(result[i], self.difference)
-            case_event['ID'][i] = result[i].get('id')
-            case_event['LastTime'][i] = result[i].get('lastTime')
-            case_event['Message'][i] = result[i].get('message')
+            case_event[i] = {
+                'ID': result[i].get('id'),
+                'LastTime': result[i].get('lastTime'),
+                'Message': result[i].get('message')
+            }
 
         context_entry = {f'CaseEvents{condition}': case_event}
         human_readable = tableToMarkdown(name='case event list', t=result)
@@ -344,9 +346,11 @@ class McAfeeESMClient(BaseClient):
         return human_readable, {}, result
 
     def fetch_alarms(self, since: str = None, start_time: str = None, end_time: str = None, raw: bool = False)\
-            -> Tuple[str, Dict, Dict]:
+            -> Tuple[str, Dict, List]:
         path = 'alarmGetTriggeredAlarms'
+        condition = '(val.ID && val.ID == obj.ID)'
         human_readable = ''
+        context_entry: List = []
         since = since if since else self.args.get('timeRange')
         start_time = start_time if start_time else self.args.get('customStart')
         end_time = end_time if end_time else self.args.get('customEnd')
@@ -369,13 +373,29 @@ class McAfeeESMClient(BaseClient):
             }
         }
         result = self.__request(path, data=data, params=params)
+
         for i in range(len(result)):
             result[i] = dict_times_set(result[i], self.difference)
+
         if not raw:
+            context_entry = [None] * len(result)
+            for i in range(len(result)):
+                context_entry[i] = {
+                    'ID': result[i].get('id'),
+                    'summary': result[i].get('summary'),
+                    'assignee': result[i].get('assignee'),
+                    'severity': result[i].get('severity'),
+                    'triggeredDate': result[i].get('triggeredDate'),
+                    'acknowledgedDate': result[i].get('acknowledgedDate'),
+                    'acknowledgedUsername': result[i].get('acknowledgedUsername'),
+                    'alarmName': result[i].get('alarmName'),
+                    'conditionType': result[i].get('conditionType')
+                }
+
             table_headers = ['id', 'acknowledgedDate', 'acknowledgedUsername', 'alarmName', 'assignee', 'conditionType',
                              'severity', 'summary', 'triggeredDate']
             human_readable = tableToMarkdown(name='Alarms', t=result, headers=table_headers)
-        return human_readable, {}, result
+        return human_readable, {f'Alarm{condition}': context_entry}, result
 
     def acknowledge_alarms(self) -> Tuple[str, Dict, Dict]:
         try:
@@ -555,6 +575,52 @@ class McAfeeESMClient(BaseClient):
             context_entry[f'Cases{condition}'] = cases
         return context_entry
 
+    def fetch_incidents(self, params: Dict):
+        last_run = demisto.getLastRun()
+        current_run = {}
+        limit = int(params.get('fetchLimit', 5))
+        if params.get('fetchType') == 'alarms':
+            start_time = last_run.get(
+                'alarms', {}).get(
+                'time', parse_date_range(params.get('fetchTime'), self.demisto_format)[0])
+            start_id = int(last_run.get('alarms', {}).get('id', params.get('startingFetchID')))
+            incidents, current_run['alarms'] = self.__alarms_to_incidents(start_time=start_time,
+                                                                          start_id=start_id, limit=limit)
+        elif params.get('fetchType') == 'cases':
+            start_id = int(last_run.get('cases', {}).get('id', params.get('startingFetchID')))
+            incidents, current_run['cases'] = self.__cases_to_incidents(start_id=start_id, limit=limit)
+        else:
+            raise DemistoException('-----------')
+
+        demisto.setLastRun(current_run)
+        demisto.incidents(incidents)
+
+    def __alarms_to_incidents(self, start_time: str, start_id: int = 0, limit: int = 1) -> Tuple[List, Dict]:
+        current_run = {
+            'time': datetime.utcnow().strftime(self.demisto_format)
+        }
+        _, _, all_alarms = self.fetch_alarms(start_time=start_time, end_time=current_run['time'], raw=True)
+        all_alarms = filtering_incidents(all_alarms, start_id=start_id, limit=limit)
+        current_run['time'] = all_alarms[0].get('triggeredDate')
+        current_run['id'] = all_alarms[0].get('id')
+        all_alarms = crate_incident(all_alarms, alarms=True)
+        return all_alarms, current_run
+
+    def __cases_to_incidents(self, start_id: int = 0, limit: int = 1) -> Tuple[List, Dict]:
+        _, _, all_cases = self.get_case_list(raw=True)
+        all_cases = filtering_incidents(all_cases, start_id=start_id, limit=limit)
+        current_run = {'id': all_cases[0].get('id')}
+        all_cases = crate_incident(all_cases, alarms=False)
+        return all_cases, current_run
+
+
+def filtering_incidents(incidents_list: List, start_id: int, limit: int = 1):
+    incidents_list = [incident for incident in incidents_list if int(incident.get('id', 0)) > start_id]
+    incidents_list.sort(key=lambda case: int(case.get('id', 0)), reverse=True)
+    cases_size = min(limit, len(incidents_list))
+    incidents_list = incidents_list[-cases_size:]
+    return incidents_list
+
 
 def expected_errors(error: DemistoException) -> bool:
     expected_error: List[str] = [
@@ -679,6 +745,19 @@ def search_readable_outputs(table: Dict) -> str:
         return ''
 
 
+def crate_incident(raw_incidents: List[Dict], alarms: bool):
+    for incident in range(len(raw_incidents)):
+        alarm_id = str(raw_incidents[incident].get('id'))
+        summary = str(raw_incidents[incident].get('summary'))
+        incident_type = 'alarm' if alarms else 'case'
+        raw_incidents[incident] = {
+            'name': f'McAfee ESM {incident_type}. id: {alarm_id}. {summary}',
+            'occurred': raw_incidents[incident].get('triggeredDate', raw_incidents[incident].get('openTime', '')),
+            'rawJSON': json.dumps(raw_incidents[incident])
+        }
+    return raw_incidents
+
+
 def block_1(client):
     client.test_module()
     print(client.get_user_list())
@@ -764,7 +843,8 @@ def try_block(client, blocks_done):
 
 
 def main():
-    client = McAfeeESMClient(demisto.params())
+    params = demisto.params()
+    client = McAfeeESMClient(params)
     command = demisto.command()
     commands: Dict[str, Callable] = {
         'test-module': McAfeeESMClient.test_module,
@@ -786,17 +866,19 @@ def main():
         'esm-delete-alarms': McAfeeESMClient.delete_alarm,
         'esm-get-alarm-event-details': McAfeeESMClient.get_alarm_event_details,
         'esm-list-alarm-events': McAfeeESMClient.list_alarm_events,
-        'esm-search': McAfeeESMClient.complete_search,
-        'fetch-incidents': McAfeeESMClient.complete_search
+        'esm-search': McAfeeESMClient.complete_search
     }
     try:
-        if command in commands:
+        if command == 'fetch-incidents':
+            client.fetch_incidents(params)
+        elif command in commands:
             human_readable, context_entry, raw_response = commands[command](client)
             return_outputs(human_readable, context_entry, raw_response)
         else:
             raise DemistoException(f'{command} is not a command.')
 
     except Exception as error:
+        raise error
         return_error(str(error), error)
 
 
