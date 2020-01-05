@@ -1,5 +1,5 @@
 ## [Unreleased]
-- change description
+- 
 
 ## [19.12.1] - 2019-12-25
 - Added the *period* argument to the ***phishlabs-ioc-eir-get-incidents*** command, which defines the time range for which to return incidents.
