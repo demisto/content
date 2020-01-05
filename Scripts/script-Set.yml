@@ -6,7 +6,15 @@ script: |-
   var ec = {};
   var value;
   try {
-      value = JSON.parse(args.value);
+      if (args.stringify === 'true') {
+          if (typeof args.value === 'string') {
+              value = args.value
+          } else {
+              value = JSON.stringify(args.value)
+          }
+      } else {
+          value = JSON.parse(args.value);
+      }
   } catch(err) {
       value = args.value;
   }
@@ -47,4 +55,15 @@ args:
   - "false"
   description: If false then then the context key will be overwritten. If set to true
     then the script will append to existing context key
+- name: stringify
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Whether the argument should be saved as a string.
+  defaultValue: "false"
 scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+tests:
+  - Set - Test
