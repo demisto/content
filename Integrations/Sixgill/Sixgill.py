@@ -65,7 +65,7 @@ def fetch_incidents():
                                                     CHANNEL_CODE)
 
     incidents = []
-    for raw_incident in sixgill_darkfeed_client.get_incidents():
+    for raw_incident in sixgill_darkfeed_client.get_incidents(include_delivered_items):
         sixgill_darkfeed_client.mark_digested_item(raw_incident)
         incident = item_to_incident(raw_incident)
         incidents.append(incident)
