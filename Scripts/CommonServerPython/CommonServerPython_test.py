@@ -1020,4 +1020,4 @@ batch_params = [
 @pytest.mark.parametrize('iterable, sz, expected', batch_params)
 def test_batch(iterable, sz, expected):
     for i, item in enumerate(batch(iterable, sz)):
-        assert item == expected[i]
+        assert expected[i] == item
