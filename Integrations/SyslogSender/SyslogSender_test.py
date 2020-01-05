@@ -64,6 +64,29 @@ def setup():
     })
 
 
+def test_init_manager():
+    from SyslogSender import init_manager
+
+    # Set
+    params = {
+        'address': '127.0.0.1',
+        'port': '514',
+        'protocol': 'tcp',
+        'logging_level': 'INFO',
+        'facility': 'LOG_SYSLOG'
+    }
+
+    # Arrange
+    manager = init_manager(params)
+
+    # Assert
+    assert manager.address == '127.0.0.1'
+    assert manager.port == 514
+    assert manager.protocol == 'tcp'
+    assert manager.logging_level == 20
+    assert manager.facility == 5
+
+
 @pytest.mark.parametrize('investigation_id', ['999', '909'])
 def test_mirror_investigation_new_and_existing(mocker, investigation_id):
     from SyslogSender import mirror_investigation
@@ -93,7 +116,7 @@ def test_mirror_investigation_new_and_existing(mocker, investigation_id):
     our_mirror = our_mirror_filter[0]
 
     # Assert
-    assert success_results[0] == 'Investigation mirrored successfully.'
+    assert success_results[0] == 'Investigation mirrored to Syslog successfully.'
     assert len(our_mirror_filter) == 1
     assert our_mirror == new_mirror
 
@@ -110,16 +133,16 @@ def test_send_with_severity(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
-    mocker.patch.object(Logger, 'critical')
+    mocker.patch.object(Logger, 'info')
 
     # Arrange
     syslog_send(Manager(), 1)
-    send_args = Logger.critical.call_args[0]
+    send_args = Logger.info.call_args[0]
     results = demisto.results.call_args[0][0]
 
     # Assert
     assert send_args[0] == '1, !!! https://www.eizelulz.com:8443/#/WarRoom/727'
-    assert results == 'Message sent to syslog successfully.'
+    assert results == 'Message sent to Syslog successfully.'
 
 
 def test_send_with_severity_zero(mocker):
@@ -162,7 +185,7 @@ def test_send(mocker):
 
     # Assert
     assert send_args[0] == '1, eyy https://www.eizelulz.com:8443/#/WarRoom/727'
-    assert results == 'Message sent to syslog successfully.'
+    assert results == 'Message sent to Syslog successfully.'
 
 
 def test_check_for_mirrors(mocker):
