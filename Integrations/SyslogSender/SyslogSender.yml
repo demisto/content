@@ -13,19 +13,38 @@ configuration:
   required: true
   type: 0
 - defaultvalue: UDP
-  display: Protocol (TCP / UDP)
+  display: Protocol
   name: protocol
-  required: true
-  type: 0
-- defaultvalue: Low
-  display: Minimum severity of incidents to send messages on
-  name: severity
   options:
-  - Unknown
-  - Low
-  - Medium
-  - High
-  - Critical
+  - TCP
+  - UDP
+  - Unix
+  required: true
+  type: 15
+- defaultvalue: LOG_USER
+  display: Facility
+  name: facility
+  options:
+  - LOG_AUTH
+  - LOG_AUTHPRIV
+  - LOG_CRON
+  - LOG_DAEMON
+  - LOG_FTP
+  - LOG_KERN
+  - LOG_LPR
+  - LOG_MAIL
+  - LOG_NEWS
+  - LOG_SYSLOG
+  - LOG_USER
+  - LOG_UUCP
+  - LOG_LOCAL0
+  - LOG_LOCAL1
+  - LOG_LOCAL2
+  - LOG_LOCAL3
+  - LOG_LOCAL4
+  - LOG_LOCAL5
+  - LOG_LOCAL6
+  - LOG_LOCAL7
   required: false
   type: 15
 - defaultvalue: INFO
@@ -39,12 +58,24 @@ configuration:
   - CRITICAL
   required: false
   type: 15
+- defaultvalue: Low
+  display: Minimum severity of incidents to send messages on
+  name: severity
+  options:
+  - Unknown
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: false
+  type: 15
 - defaultvalue: 'true'
   display: Long running instance. Required for investigation mirroring.
   name: longRunning
   required: false
   type: 8
-description: Use the Syslog Sender integration to send messages to Syslog.
+description: Use the Syslog Sender integration to send messages and mirror incident
+  war room entries to Syslog.
 display: Syslog Sender
 name: Syslog Sender
 script:
@@ -116,6 +147,6 @@ script:
   script: '-'
   type: python
   subtype: python3
-fromversion: 5.0.0
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

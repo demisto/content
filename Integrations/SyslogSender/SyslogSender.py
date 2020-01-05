@@ -6,12 +6,9 @@ from CommonServerUserPython import *
 from contextlib import contextmanager
 from logging.handlers import SysLogHandler
 from distutils.util import strtobool
-import requests
-import logging
-import socket
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+from logging import Logger, getLogger, INFO, DEBUG, WARNING, ERROR, CRITICAL
+from socket import SOCK_STREAM
+from typing import Union, Tuple, Dict, Any
 
 ''' CONSTANTS '''
 
@@ -19,11 +16,33 @@ requests.packages.urllib3.disable_warnings()
 PLAYGROUND_INVESTIGATION_TYPE = 9
 INCIDENT_OPENED = 'incidentOpened'
 LOGGING_LEVEL_DICT = {
-    'INFO': logging.INFO,
-    'DEBUG': logging.DEBUG,
-    'WARNING': logging.WARNING,
-    'ERROR': logging.ERROR,
-    'CRITICAL': logging.CRITICAL
+    'INFO': INFO,
+    'DEBUG': DEBUG,
+    'WARNING': WARNING,
+    'ERROR': ERROR,
+    'CRITICAL': CRITICAL
+}
+FACILITY_DICT = {
+    'LOG_AUTH': SysLogHandler.LOG_AUTH,
+    'LOG_AUTHPRIV': SysLogHandler.LOG_AUTHPRIV,
+    'LOG_CRON': SysLogHandler.LOG_CRON,
+    'LOG_DAEMON': SysLogHandler.LOG_DAEMON,
+    'LOG_FTP': SysLogHandler.LOG_FTP,
+    'LOG_KERN': SysLogHandler.LOG_KERN,
+    'LOG_LPR': SysLogHandler.LOG_LPR,
+    'LOG_MAIL': SysLogHandler.LOG_MAIL,
+    'LOG_NEWS': SysLogHandler.LOG_NEWS,
+    'LOG_SYSLOG': SysLogHandler.LOG_SYSLOG,
+    'LOG_USER': SysLogHandler.LOG_USER,
+    'LOG_UUCP': SysLogHandler.LOG_UUCP,
+    'LOG_LOCAL0': SysLogHandler.LOG_LOCAL0,
+    'LOG_LOCAL1': SysLogHandler.LOG_LOCAL1,
+    'LOG_LOCAL2': SysLogHandler.LOG_LOCAL2,
+    'LOG_LOCAL3': SysLogHandler.LOG_LOCAL3,
+    'LOG_LOCAL4': SysLogHandler.LOG_LOCAL4,
+    'LOG_LOCAL5': SysLogHandler.LOG_LOCAL5,
+    'LOG_LOCAL6': SysLogHandler.LOG_LOCAL6,
+    'LOG_LOCAL7': SysLogHandler.LOG_LOCAL7
 }
 SEVERITY_DICT = {
     'Unknown': 0,
@@ -37,7 +56,7 @@ SEVERITY_DICT = {
 
 
 class SyslogManager:
-    def __init__(self, address: str, port: int, protocol: str, logging_level: int):
+    def __init__(self, address: str, port: int, protocol: str, logging_level: int, facility: int):
         """
         Class for managing instances of a syslog logger.
         :param address: The IP address of the syslog server.
@@ -49,9 +68,10 @@ class SyslogManager:
         self.port = port
         self.protocol = protocol
         self.logging_level = logging_level
+        self.facility = facility
 
     @contextmanager  # type: ignore[misc, arg-type]
-    def get_logger(self) -> logging.Logger:
+    def get_logger(self) -> Logger:
         """
         Get a new instance of a syslog logger.
         :return: syslog logger
@@ -69,18 +89,27 @@ class SyslogManager:
         Get a syslog handler for a logger according to provided parameters.
         :return: syslog handler
         """
-        if self.protocol == 'tcp':
-            return SysLogHandler((self.address, self.port), socktype=socket.SOCK_STREAM)
-        else:
-            return SysLogHandler((self.address, self.port))
+        address: Union[str, Tuple[str, int]] = (self.address, self.port)
+        kwargs: Dict[str, Any] = {
+            'facility': self.facility
+        }
 
-    def _init_logger(self, handler: SysLogHandler) -> logging.Logger:
+        if self.protocol == 'tcp':
+            kwargs['socktype'] = SOCK_STREAM
+        elif self.protocol == 'unix':
+            address = self.address
+
+        kwargs['address'] = address
+
+        return SysLogHandler(**kwargs)
+
+    def _init_logger(self, handler: SysLogHandler) -> Logger:
         """
         Initialize a logger with a syslog handler.
         :param handler: A syslog handler
         :return: A syslog logger
         """
-        syslog_logger = logging.getLogger('SysLogLogger')
+        syslog_logger = getLogger('SysLogLogger')
         syslog_logger.setLevel(self.logging_level)
         syslog_logger.addHandler(handler)
 
@@ -99,9 +128,10 @@ def init_manager(params: dict) -> SyslogManager:
     address = params.get('address', '')
     port = int(params.get('port', 514))
     protocol = params.get('protocol', 'udp').lower()
-    logging_level = LOGGING_LEVEL_DICT.get(params.get('logging_level', 'INFO'), logging.INFO)
+    facility = FACILITY_DICT.get(params.get('facility', 'LOG_SYSLOG'), SysLogHandler.LOG_SYSLOG)
+    logging_level = LOGGING_LEVEL_DICT.get(params.get('logging_level', 'INFO'), INFO)
 
-    return SyslogManager(address, port, protocol, logging_level)
+    return SyslogManager(address, port, protocol, logging_level, facility)
 
 
 def send_log(manager: SyslogManager, message: str, log_level: str):
@@ -111,7 +141,7 @@ def send_log(manager: SyslogManager, message: str, log_level: str):
     :param message: The message to send
     :param log_level: The logging level
     """
-    with manager.get_logger() as syslog_logger:   # type: logging.Logger
+    with manager.get_logger() as syslog_logger:   # type: Logger
         if log_level == 'DEBUG':
             syslog_logger.debug(message)
         if log_level == 'INFO':
@@ -129,19 +159,18 @@ def check_for_mirrors():
     Check for newly created mirrors and update the server accordingly
     """
     integration_context = demisto.getIntegrationContext()
-    if integration_context.get('mirrors'):
-        mirrors = json.loads(integration_context['mirrors'])
-        for mirror in mirrors:
-            if not mirror['mirrored']:
-                demisto.info('Mirroring: {}'.format(mirror['investigation_id']))
-                mirror = mirrors.pop(mirrors.index(mirror))
-                investigation_id = mirror['investigation_id']
-                mirror_type = mirror['mirror_type']
-                demisto.mirrorInvestigation(investigation_id, '{}:{}'.format(mirror_type, 'FromDemisto'), False)
-                mirror['mirrored'] = True
-                mirrors.append(mirror)
+    mirrors = json.loads(integration_context.get('mirrors', '[]'))
+    for mirror in mirrors:
+        if not mirror['mirrored']:
+            investigation_id = mirror['investigation_id']
+            demisto.info(f'Mirroring: {investigation_id}')
+            mirror = mirrors.pop(mirrors.index(mirror))
+            mirror_type = mirror['mirror_type']
+            demisto.mirrorInvestigation(investigation_id, f'{mirror_type}:FromDemisto', False)
+            mirror['mirrored'] = True
+            mirrors.append(mirror)
 
-                demisto.setIntegrationContext({'mirrors': json.dumps(mirrors)})
+            demisto.setIntegrationContext({'mirrors': json.dumps(mirrors)})
 
 
 def mirror_investigation():
@@ -153,21 +182,18 @@ def mirror_investigation():
     investigation = demisto.investigation()
 
     if investigation.get('type') == PLAYGROUND_INVESTIGATION_TYPE:
-        return_error('Can not perform this action in playground.')
+        return_error('Can not perform this action in the playground.')
 
     investigation_id = investigation.get('id')
     integration_context = demisto.getIntegrationContext()
-    if 'mirrors' not in integration_context:
-        mirrors: list = []
-    else:
-        mirrors = json.loads(integration_context['mirrors'])
+    mirrors = json.loads(integration_context.get('mirrors', '[]'))
 
     mirror_filter = list(filter(lambda m: m['investigation_id'] == investigation_id, mirrors))
     if mirror_filter:
         # Delete existing mirror
         mirrors.pop(mirrors.index(mirror_filter[0]))
     mirror = {
-        'investigation_id': investigation.get('id'),
+        'investigation_id': investigation_id,
         'mirror_type': mirror_type,
         'mirrored': False
     }
@@ -175,7 +201,7 @@ def mirror_investigation():
     mirrors.append(mirror)
     demisto.setIntegrationContext({'mirrors': json.dumps(mirrors)})
 
-    demisto.results('Investigation mirrored successfully.')
+    demisto.results('Investigation mirrored to Syslog successfully.')
 
 
 ''' Syslog send command '''
@@ -184,6 +210,8 @@ def mirror_investigation():
 def syslog_send(manager: SyslogManager, min_severity: int):
     """
     Send a message to syslog
+    :param manager: Syslog manager
+    :param min_severity: Minimum severity of incidents to send messages about
     """
     message = demisto.args().get('message', '')
     entry = demisto.args().get('entry')
@@ -202,14 +230,15 @@ def syslog_send(manager: SyslogManager, min_severity: int):
         return
 
     if not message:
-        message = ' '
+        message = ''
 
     message = message.replace('\n', ' ').replace('\r', ' ').replace('`', '')
     investigation = demisto.investigation()
     if investigation:
+        investigation_id = investigation.get('id')
         if entry:
-            message = '{}, {}'.format(entry, message)
-        message = '{}, {}'.format(investigation.get('id'), message)
+            message = f'{entry}, {message}'
+        message = f'{investigation_id}, {message}'
 
     if ignore_add_url and isinstance(ignore_add_url, str):
         ignore_add_url = bool(strtobool(ignore_add_url))
@@ -222,21 +251,21 @@ def syslog_send(manager: SyslogManager, min_severity: int):
                 if link:
                     if entry:
                         link += '/' + entry
-                    message += ' {}'.format(link)
+                    message += f' {link}'
             else:
                 link = server_links.get('server', '')
                 if link:
-                    message += ' {}#/home'.format(link)
+                    message += f' {link}#/home'
+
+    if not message:
+        return_error('No message received')
 
     if not log_level:
-        if severity == SEVERITY_DICT['Critical']:
-            log_level = 'CRITICAL'
-        else:
-            log_level = 'INFO'
+        log_level = 'INFO'
 
     send_log(manager, message, log_level)
 
-    demisto.results('Message sent to syslog successfully.')
+    demisto.results('Message sent to Syslog successfully.')
 
 
 def long_running_main():
@@ -244,7 +273,12 @@ def long_running_main():
     Loop for the long running process.
     """
     while True:
-        check_for_mirrors()
+        try:
+            check_for_mirrors()
+        except Exception as e:
+            error_message = f'Error: {str(e)}'
+            demisto.error(error_message)
+            demisto.updateModuleHealth(error_message)
         time.sleep(5)
 
 
@@ -252,14 +286,14 @@ def long_running_main():
 
 
 def main():
-    LOG('Command being called is %s' % (demisto.command()))
+    LOG(f'Command being called is {demisto.command()}')
 
     syslog_manager = init_manager(demisto.params())
     min_severity = SEVERITY_DICT.get(demisto.params().get('severity', 'Low'), 1)
 
     try:
         if demisto.command() == 'test-module':
-            with syslog_manager.get_logger() as syslog_logger:  # type: logging.Logger
+            with syslog_manager.get_logger() as syslog_logger:  # type: Logger
                 syslog_logger.info('This is a test')
             demisto.results('ok')
         elif demisto.command() == 'mirror-investigation':
@@ -269,8 +303,6 @@ def main():
         elif demisto.command() == 'long-running-execution':
             long_running_main()
     except Exception as e:
-        LOG(e)
-        LOG.print_log()
         return_error(str(e))
 
 
