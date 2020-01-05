@@ -14,13 +14,13 @@ schema;canvas_context_conncetion:
   mapping:
     contextKey1:
       type: str
-      required: yes
+      required: True
     contextKey2:
       type: str
-      required: yes
+      required: True
     connectionDescription:
       type: str
-      required: yes
+      required: True
     parentContextKey:
       type: str
-      required: yes
+      required: True

@@ -12,13 +12,6 @@ A few sentences describing the overall goals of the pull request's commits.
 ## Screenshots
 Paste here any images that will help the reviewer
 
-## Related PRs
-List related PRs against other branches:
-
-branch | PR
------- | ------
-
-
 ## Required version of Demisto
 x.x.x
 

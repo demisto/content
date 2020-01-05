@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [19.11.1] - 2019-11-26
+Added batch support for domain and email commands.
+
 ## [19.10.0] - 2019-10-03
   - Added handling for cases where the rate limit is exceeded.
   - Added the *max_retry_time* integration parameter, which defines the maximum time per request.

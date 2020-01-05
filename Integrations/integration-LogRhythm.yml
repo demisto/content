@@ -283,8 +283,8 @@ script:
     '           <IncludeNullValues>false</IncludeNullValues>' +
     '         </LogQueryFilterDataModel>' +
     '       </PrimaryFilter>' +
-    '       <QueryEventManager>false</QueryEventManager>' +
-    '       <QueryLogManagers>true</QueryLogManagers>' +
+    '       <QueryEventManager>true</QueryEventManager>' +
+    '       <QueryLogManagers>false</QueryLogManagers>' +
     '       <CacheID i:nil="true" />' +
     '       <PageNumber>0</PageNumber>' +
     '       <TotalPages>0</TotalPages>' +
@@ -1330,8 +1330,8 @@ script:
     - contextPath: LogRhythm.Alarm.ID
       description: The unique id of the alarm.
       type: number
-    description: Retrieve alarms in a given time period, optionally filtered by the
-      alarm status or entity
+    description: Retrieve alarms in the specified time period. Alerts can be filtered by the
+      alarm status.
   - name: lr-get-hosts-by-entity-id
     arguments:
     - name: entity-id
@@ -1485,8 +1485,8 @@ script:
       required: true
       description: Filter log message by keywords.
     - name: start-date
-      description: 'Start date for the query, for example: "2018-03-27". Only
-        use this argument if the time_frame argument is "Custom".'
+      description: 'Start date for the query, for example: "2018-03-27". Only use
+        this argument if the time_frame argument is "Custom".'
     - name: end-date
       description: 'End date for the query, for example: end-date="2018-04-20". Only
         use this argument if the time_frame argument is "Custom".'
@@ -1499,12 +1499,13 @@ script:
       - LastWeek
       - LastMonth
       - Custom
-      description: If time_frame is "Custom", specify the start time for the time range.
+      description: If time_frame is "Custom", specify the start time for the time
+        range.
       defaultValue: Custom
     outputs:
     - contextPath: LogRhythm.Log.ClassificationName
-      description: 'The name of one of three major activity groups: "Operations", "Audit",
-        or "Security", and a more specific sub-classification.'
+      description: 'The name of one of three major activity groups: "Operations",
+        "Audit", or "Security", and a more specific sub-classification.'
       type: string
     - contextPath: LogRhythm.Log.CommonEventName
       description: A short, plain-language description of the log that determines
@@ -1546,8 +1547,8 @@ script:
         a log message and assigns it a Common Event.
       type: string
     - contextPath: LogRhythm.Log.MessageType
-      description: 'The message type. Values can be: "Message", "Log", "Known Log", "Event",
-        or "Alarm".'
+      description: 'The message type. Values can be: "Message", "Log", "Known Log",
+        "Event", or "Alarm".'
       type: string
     - contextPath: LogRhythm.Log.OriginEntityName
       description: The resolved Entity of the origin host.

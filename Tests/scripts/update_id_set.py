@@ -129,11 +129,17 @@ def get_integration_data(file_path):
     id = data_dictionary.get('commonfields', {}).get('id', '-')
     name = data_dictionary.get('name', '-')
 
+    deprecated = data_dictionary.get('deprecated', False)
     tests = data_dictionary.get('tests')
     toversion = data_dictionary.get('toversion')
     fromversion = data_dictionary.get('fromversion')
     commands = data_dictionary.get('script', {}).get('commands', [])
     cmd_list = [command.get('name') for command in commands]
+
+    deprecated_commands = []
+    for command in commands:
+        if command.get('deprecated', False):
+            deprecated_commands.append(command.get('name'))
 
     integration_data['name'] = name
     integration_data['file_path'] = file_path
@@ -145,6 +151,10 @@ def get_integration_data(file_path):
         integration_data['commands'] = cmd_list
     if tests:
         integration_data['tests'] = tests
+    if deprecated:
+        integration_data['deprecated'] = deprecated
+    if deprecated_commands:
+        integration_data['deprecated_commands'] = deprecated_commands
 
     return {id: integration_data}
 
@@ -155,6 +165,7 @@ def get_playbook_data(file_path):
     id = data_dictionary.get('id', '-')
     name = data_dictionary.get('name', '-')
 
+    deprecated = data_dictionary.get('deprecated', False)
     tests = data_dictionary.get('tests')
     toversion = data_dictionary.get('toversion')
     fromversion = data_dictionary.get('fromversion')
@@ -176,6 +187,8 @@ def get_playbook_data(file_path):
         playbook_data['command_to_integration'] = command_to_integration
     if tests:
         playbook_data['tests'] = tests
+    if deprecated:
+        playbook_data['deprecated'] = deprecated
 
     return {id: playbook_data}
 
@@ -191,7 +204,7 @@ def get_script_data(file_path, script_code=None):
 
     tests = data_dictionary.get('tests')
     toversion = data_dictionary.get('toversion')
-    deprecated = data_dictionary.get('deprecated')
+    deprecated = data_dictionary.get('deprecated', False)
     fromversion = data_dictionary.get('fromversion')
     depends_on, command_to_integration = get_depends_on(data_dictionary)
     script_executions = sorted(list(set(re.findall(r"demisto.executeCommand\(['\"](\w+)['\"].*", script_code))))
@@ -238,7 +251,7 @@ def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
 
     updated = False
     for instance in instances_set:
-        instance_id = instance.keys()[0]
+        instance_id = list(instance.keys())[0]
         integration_to_version = instance[instance_id].get('toversion', '99.99.99')
         integration_from_version = instance[instance_id].get('fromversion', '0.0.0')
 
