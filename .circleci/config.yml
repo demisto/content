@@ -119,7 +119,7 @@ jobs:
                 exit 0
             fi
 
-            demisto-sdk secrets -c
+            demisto-sdk secrets --post-commit
       - run:
           name: Configure Test Filter
           when: always
