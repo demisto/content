@@ -2,6 +2,7 @@
 import demistomock as demisto
 import copy
 import json
+import re
 import os
 import sys
 import requests
@@ -11,7 +12,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex
 
 try:
     from StringIO import StringIO
@@ -1007,3 +1008,21 @@ def test_argToBoolean():
     assert argToBoolean('false') is False
     assert argToBoolean('no') is False
     assert argToBoolean(False) is False
+
+
+regexes_test = [
+    (ipv4Regex, '192.168.1.1', True),
+    (ipv4Regex, '192.256.1.1', False),
+    (ipv4cidrRegex, '192.168.1.1/32', True),
+    (ipv4cidrRegex, '192.168.1.256/38', False),
+    (ipv6Regex, '2001:db8:a0b:12f0::1', True),
+    (ipv6Regex, '2001:db8:a0b:12f0::98aa5', False),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1/64', True),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1/256', False)
+]
+
+
+@pytest.mark.parametrize('pattern, string, expected', regexes_test)
+def test_regexes(pattern, string, expected):
+    # (str, str, bool) -> None
+    assert expected is bool(re.fullmatch(pattern, string))
