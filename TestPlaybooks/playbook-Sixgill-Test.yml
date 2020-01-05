@@ -1,0 +1,147 @@
+id: Sixgill-Test
+version: -1
+name: Sixgill-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9ee55839-0dd0-4540-86d6-9b691685ede9
+    type: start
+    task:
+      id: 9ee55839-0dd0-4540-86d6-9b691685ede9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 2ebdf1e3-836f-4db2-85ad-2af17a54de6d
+    type: regular
+    task:
+      id: 2ebdf1e3-836f-4db2-85ad-2af17a54de6d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 26f0db56-b9c3-4c1b-8165-0b9a745c70a4
+    type: regular
+    task:
+      id: 26f0db56-b9c3-4c1b-8165-0b9a745c70a4
+      version: -1
+      name: fetch-incidents
+      description: Get bulk of Sixgill alerts
+      tags:
+      - Sixgill
+      - Alerts
+      script: Sixgill|||fetch-incidents
+      type: regular
+      iscommand: true
+      brand: Sixgill
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      execution-timeout:
+        simple: "3600"
+      include_delivered_items:
+        simple: ' false'
+      using:
+        simple: Sixgill_instance_1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: e9c2b4fd-582f-4716-874e-e7d6eed50527
+    type: regular
+    task:
+      id: e9c2b4fd-582f-4716-874e-e7d6eed50527
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 585,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

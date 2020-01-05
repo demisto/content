@@ -2057,6 +2057,12 @@
         {
             "integrations": "Infoblox",
             "playbookID": "Infoblox Test"
+        },
+        {
+            "integrations": "Sixgill - Test",
+            "playbookID": "Sixgill - Test",
+            "timeout": 7200,
+            "nightly": true
         }
     ],
     "skipped_tests": {
