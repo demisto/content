@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 280,
-          "y": -370
+          "y": -430
         }
       }
     note: false
@@ -196,7 +196,7 @@ tasks:
       {
         "position": {
           "x": 280,
-          "y": -60
+          "y": -100
         }
       }
     note: false
@@ -283,7 +283,7 @@ tasks:
       {
         "position": {
           "x": 280,
-          "y": -230
+          "y": -280
         }
       }
     note: false
@@ -446,10 +446,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1055,
+        "height": 1115,
         "width": 1910,
         "x": -410,
-        "y": -370
+        "y": -430
       }
     }
   }
