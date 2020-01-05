@@ -40,11 +40,9 @@ script:
     outputs:
     - contextPath: dnstwist.Domain.Domains.Name
       description: Domain name variations.
-      type: Unknown
-      type: unknown
+      type: String
     - contextPath: dnstwist.Domain.Domains.IP
       description: IP addresses that resolved to domain name variations.
-      type: Unknown
       type: string
     - contextPath: dnstwist.Domain.Domains.DNS-MX
       description: Mail exchange records that resolved to domain name variations.

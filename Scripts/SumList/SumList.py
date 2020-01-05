@@ -1,33 +1,35 @@
 from CommonServerPython import *
 
-value = demisto.args()["value"]
 
-if isinstance(value, int):
-    demisto.results(value)
+def sum_value(value):
+    if isinstance(value, float):
+        return value
 
-elif isinstance(value, list):
-    if len(value) == 1:
-        if isinstance(value, int):
-            demisto.results(value[0])
-        else:
-            try:
-                result = int(value[0])
-                demisto.results(result)
-            except TypeError:
-                return_error('The string does not represent a number.')
-    else:
+    if isinstance(value, str):
         try:
-            result = sum(value)
-            demisto.results(result)
-        except TypeError:
-            return_error('This transformer applies only to numbers.')
+            value = [float(item) for item in value.split(',')]
+        except ValueError:
+            return 'error', 'error'
 
-elif isinstance(value, str):
-    try:
-        result = int(value)
-        demisto.results(result)
-    except TypeError:
-        return_error('The string does not represent a number.')
+    elif isinstance(value, list):
+        try:
+            value = [float(item) for item in value]
+        except ValueError:
+            return 'error', 'error'
 
-else:
-    return_error('This transformer applies only to a list of numbers.')
+    result = sum(value)
+    return result, 'ok'
+
+
+def main():
+    value = demisto.args()['value']
+    result, return_type = sum_value(value)
+
+    if return_type == 'error':
+        return_error('This transformer applies only to list of numbers.')
+    demisto.results(result)
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()

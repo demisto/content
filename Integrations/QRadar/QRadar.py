@@ -6,6 +6,7 @@ import json
 import requests
 import traceback
 import urllib
+import re
 from requests.exceptions import HTTPError
 from copy import deepcopy
 
@@ -525,8 +526,10 @@ def create_incident_from_offense(offense):
     labels = []
     for i in range(len(keys)):
         labels.append({'type': keys[i], 'value': convert_to_str(offense[keys[i]])})
+    formatted_description = re.sub(r'\s\n', ' ', offense['description']).replace('\n', ' ') if \
+        offense['description'] else ''
     return {
-        'name': '{0} {1}'.format(offense['id'], offense['description']),
+        'name': '{id} {description}'.format(id=offense['id'], description=formatted_description),
         'labels': labels,
         'rawJSON': json.dumps(offense),
         'occurred': occured
@@ -719,7 +722,7 @@ def get_search_results_command():
     context_key = demisto.args().get('output_path') if demisto.args().get(
         'output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
     context_obj = unicode_to_str_recur(raw_search_results[result_key])
-    human_readable = tableToMarkdown(title, context_obj, None).replace('\t', '\n')
+    human_readable = tableToMarkdown(title, context_obj, None).replace('\t', ' ')
     return get_entry_for_object(title, context_obj, raw_search_results, demisto.args().get('headers'), context_key,
                                 human_readable=human_readable)
 
@@ -767,8 +770,11 @@ def create_assets_result(assets, full_values=False):
     human_readable_trans_assets = {}
     endpoint_dict = create_empty_endpoint_dict(full_values)
     for asset in assets:
-        asset_key = 'QRadar.Asset(val.ID === "{0}")'.format(asset['id'])
-        human_readable_key = 'Asset(ID:{0})'.format(asset['id'])
+        asset_key = 'QRadar.Asset'
+        human_readable_key = 'Asset'
+        if 'id' in asset:
+            asset_key += '(val.ID === "{0}")'.format(asset['id'])
+            human_readable_key += '(ID:{0})'.format(asset['id'])
         populated_asset = create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values)
         trans_assets[asset_key] = populated_asset
         human_readable_trans_assets[human_readable_key] = transform_single_asset_to_hr(populated_asset)
@@ -792,31 +798,33 @@ def transform_single_asset_to_hr(asset):
 
 
 def create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values):
-    asset_dict = {'ID': asset['id']}
-    for interface in asset['interfaces']:
+    asset_dict = {'ID': asset.get('id')}
+    for interface in asset.get('interfaces', []):
         if full_values:
-            endpoint_dict['MACAddress'].append(interface['mac_address'])
-        for ip_address in interface['ip_addresses']:
-            endpoint_dict['IPAddress'].append(ip_address['value'])
+            endpoint_dict.get('MACAddress').append(interface.get('mac_address'))
+        for ip_address in interface.get('ip_addresses'):
+            endpoint_dict.get('IPAddress').append(ip_address.get('value'))
     if full_values:
-        domain_name = get_domain_name(asset['domain_id'])
-        endpoint_dict['Domain'].append(domain_name)
+        if 'domain_id' in asset:
+            domain_name = get_domain_name(asset.get('domain_id'))
+            endpoint_dict.get('Domain').append(domain_name)
     # Adding values found in properties of the asset
     enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values)
     return asset_dict
 
 
 def enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values):
-    for prop in asset['properties']:
-        if prop['name'] in ASSET_PROPERTIES_NAMES_MAP:
-            asset_dict[ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = {'Value': prop['value'],
-                                                                    'LastUser': prop['last_reported_by']}
-        elif prop['name'] in ASSET_PROPERTIES_ENDPOINT_NAMES_MAP:
-            endpoint_dict[ASSET_PROPERTIES_ENDPOINT_NAMES_MAP[prop['name']]] = prop['value']
+    for prop in asset.get('properties', []):
+        if prop.get('name') in ASSET_PROPERTIES_NAMES_MAP:
+            asset_dict[ASSET_PROPERTIES_NAMES_MAP[prop.get('name')]] = {'Value': prop.get('value'),
+                                                                        'LastUser': prop.get('last_reported_by')}
+        elif prop.get('name') in ASSET_PROPERTIES_ENDPOINT_NAMES_MAP:
+            endpoint_dict[ASSET_PROPERTIES_ENDPOINT_NAMES_MAP[prop.get('name')]] = prop.get('value')
         elif full_values:
-            if prop['name'] in FULL_ASSET_PROPERTIES_NAMES_MAP:
-                asset_dict[FULL_ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = {'Value': prop['value'],
-                                                                             'LastUser': prop['last_reported_by']}
+            if prop.get('name') in FULL_ASSET_PROPERTIES_NAMES_MAP:
+                asset_dict[FULL_ASSET_PROPERTIES_NAMES_MAP[prop.get('name')]] = {'Value': prop.get('value'),
+                                                                                 'LastUser': prop.get(
+                                                                                     'last_reported_by')}
     return None
 
 

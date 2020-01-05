@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [19.11.1] - 2019-11-26
+The countries from which the user logged in are now saved in incident fields and are displayed in the layout.
+
 ## [19.11.0] - 2019-11-12
 #### New Playbook
 This playbook investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveler). The playbook gathers user, timestamp and IP information

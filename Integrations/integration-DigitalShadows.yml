@@ -23,7 +23,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -763,6 +763,15 @@ script:
         return incidents;
     };
 
+    var getIncidentsIds = function(incidents) {
+        var ids = [];
+        incidents.forEach(function(inc) {
+            ids.push(JSON.parse(inc.rawJSON).id);
+        });
+
+        return ids;
+    };
+
     var fetchIncidents = function(){
         var lastRun = getLastRun();
         nowDate = new Date();
@@ -771,14 +780,33 @@ script:
             lastRun = {value: (new Date(nowDate.getTime() - 1*60*1000)).toISOString()};
         }
 
+        // first API call - fetch PHISHING_ATTEMPT incidents only (within the date range)
         bodyArgs = {filter_types_type:'BRAND_PROTECTION', filter_types_subTypes:'PHISHING_ATTEMPT', filter_dateRange: lastRun.value + '/' + now};
         var incidents = fetchCommandIncidents('ds-find-incidents-filtered', bodyArgs, 'PHISHING_ATTEMPT');
 
-        bodyArgs = {filter_dateRange: lastRun.value + '/' + now};
-        incidents = incidents.concat(fetchCommandIncidents('ds-find-incidents-filtered', bodyArgs, 'Client Incident'));
+        var ids = getIncidentsIds(incidents);
 
+        // second API call - fetch all incidents (within the date range)
+        bodyArgs = {filter_dateRange: lastRun.value + '/' + now};
+        temp = fetchCommandIncidents('ds-find-incidents-filtered', bodyArgs, 'Client Incident');
+
+        if (incidents) {
+            // concatenate only new incident to list (filter the duplicates)
+            filteredIncidents = temp.filter(function(inc) {
+               incidentId = JSON.parse(inc.rawJSON).id;
+               notDuplicatedIncident = (ids.indexOf(incidentId) == -1);
+               return notDuplicatedIncident;
+            });
+            incidents = incidents.concat(filteredIncidents);
+        }
+        else {
+            incidents = temp;
+        }
+
+        // third API call - fetch intelligence incidents (within the date range)
         incidents = incidents.concat(fetchCommandIncidents('ds-find-intelligence-incidents', bodyArgs, 'Intelligence Incident'));
 
+        // fourth API call - fetch data breaches (within the date range)
         bodyArgs = {filter_published: lastRun.value + '/' + now};
         incidents = incidents.concat(fetchCommandIncidents('ds-find-data-breaches', bodyArgs, 'Data Breach'));
 

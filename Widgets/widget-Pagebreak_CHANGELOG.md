@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.1] - 2019-11-26
 Fixed an issue in page break widget for pdf and doc reports.
 
 ## [19.11.0] - 2019-11-12
