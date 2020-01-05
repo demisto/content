@@ -1,5 +1,7 @@
 ## [Unreleased]
- Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.
+ - Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.
+ - Added the **batch** command, which takes iterable and yields slices of it.
+ 
 
 ## [19.12.0] - 2019-12-10
 -
