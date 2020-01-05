@@ -59,7 +59,7 @@ def fetch_incidents():
     if last_fetch is None:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
-    include_delivered_items = bool(strtobool(demisto.args().get('include_delivered_items', False)))
+    include_delivered_items = bool(strtobool(demisto.args().get('include_delivered_items', 'false')))
 
     sixgill_darkfeed_client = SixgillDarkFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
                                                     CHANNEL_CODE)
