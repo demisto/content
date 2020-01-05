@@ -1,6 +1,6 @@
 commonfields:
   id: RepopulateFiles
-  version: 6
+  version: -1
 name: RepopulateFiles
 script: ''
 tags:
@@ -12,5 +12,4 @@ scripttarget: 0
 type: python
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.7.5.4583
 runas: DBotWeakRole
