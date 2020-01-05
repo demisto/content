@@ -1,11 +1,14 @@
 ## [Unreleased]
-- Added support for a list of *source*, *destination*, *application* in the ***panorama-create-rule***, ***panorama-custom-block-rule*** and ***panorama-edit-rule*** commands.
-- Added 4 commands.
+  - You can now specify multiple values (list) for the *source*, *destination*, and *application* arguments in the following commands. 
+    - ***panorama-create-rule***
+    - ***panorama-custom-block-rule***
+    - ***panorama-edit-rule***
+  - Added 4 commands.
     - ***panorama-list-static-routes***
     - ***panorama-get-static-route***
     - ***panorama-add-static-route***
     - ***panorama-delete-static-route***
-- Fixed an issue in the ***!panorama-list-pcaps*** command when there are no pcaps in the PAN-OS.
+  - Fixed an issue in the ***panorama-list-pcaps*** command when there are no pcaps in PAN-OS.
 
 
 ## [19.12.0] - 2019-12-10
