@@ -5,8 +5,8 @@ from typing import Tuple, Dict, List, Any, Optional, MutableMapping
 import requests
 import urllib3
 
-# Disable insecure warnings
-urllib3.disable_warnings()
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 
 def convert_unix_to_date(timestamp):
