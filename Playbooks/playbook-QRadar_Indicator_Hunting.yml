@@ -3167,6 +3167,7 @@ tasks:
     taskid: 88a769f3-02af-420f-8ebe-7b0bf4cb7304
     type: condition
     task:
+      description: ''
       id: 88a769f3-02af-420f-8ebe-7b0bf4cb7304
       version: -1
       name: Is ip detected by QRadar?
@@ -3207,6 +3208,7 @@ tasks:
     taskid: 527ecb0c-d661-4adc-8e96-2e4b78217022
     type: condition
     task:
+      description: ''
       id: 527ecb0c-d661-4adc-8e96-2e4b78217022
       version: -1
       name: Is domain or url detected by QRadar?
@@ -3247,6 +3249,7 @@ tasks:
     taskid: 3280403b-1163-4d93-87f0-5f4b513bc573
     type: condition
     task:
+      description: ''
       id: 3280403b-1163-4d93-87f0-5f4b513bc573
       version: -1
       name: Is SHA256 file hash detected by QRadar?
@@ -3287,6 +3290,7 @@ tasks:
     taskid: 9723aa93-2d5e-4895-80ea-33ab02556dbf
     type: condition
     task:
+      description: ''
       id: 9723aa93-2d5e-4895-80ea-33ab02556dbf
       version: -1
       name: Is SHA1 file hash detected by QRadar?
@@ -3327,6 +3331,7 @@ tasks:
     taskid: ac143d95-bceb-4594-8222-7d4d59b8a2ae
     type: condition
     task:
+      description: ''
       id: ac143d95-bceb-4594-8222-7d4d59b8a2ae
       version: -1
       name: Is Md5 file hash detected by QRadar?

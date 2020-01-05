@@ -38,7 +38,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Get live feeds of IOC data from PhishLabs.
+description: Get indicators of compromise from PhishLabs.
 display: PhishLabs IOC
 name: PhishLabs IOC
 script:

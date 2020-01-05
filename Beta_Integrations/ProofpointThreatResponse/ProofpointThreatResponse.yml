@@ -16,12 +16,12 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ''
   type: 8
   required: false
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
@@ -49,6 +49,7 @@ configuration:
 script:
   script: ''
   type: python
+  subtype: python3
   commands:
   - name: proofpoint-tr-get-list
     arguments:
@@ -60,6 +61,7 @@ script:
     arguments:
     - name: list-id
       required: true
+      description: ''
     - name: indicator
       required: true
       description: 'Could be ip,url,domain,hash. For example: "192.168.1.1,192.168.1.2"'
