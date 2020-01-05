@@ -216,8 +216,11 @@ def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any: Op
             return '<' + field_name + '>' + member_stringify_list + '</' + field_name + '>'
         else:
             return '<' + field_name + '>' + arg + '</' + field_name + '>'
-    elif any:
-        return '<' + field_name + '>any</' + field_name + '>'
+    if any:
+        if member:
+            return '<' + field_name + '><member>any</member></' + field_name + '>'
+        else:
+            return '<' + field_name + '>any</' + field_name + '>'
     else:
         return ''
 
