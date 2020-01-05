@@ -2703,8 +2703,7 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
     try:
         response = http_request(URL, 'GET', params=params)
     except PAN_OS_Not_Found:
-        raise Exception(f'Current Rule object: {element_to_change} is empty.\n'
-                        f'Set it using the !panorama-edit-rule command.')
+        pass
 
     result = response.get('response').get('result')
     if '@dirtyId' in result:
