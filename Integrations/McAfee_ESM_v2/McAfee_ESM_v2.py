@@ -878,7 +878,6 @@ def main():
             raise DemistoException(f'{command} is not a command.')
 
     except Exception as error:
-        raise error
         return_error(str(error), error)
 
 
