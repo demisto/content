@@ -3256,7 +3256,6 @@ script:
       description: Whether the static route is deleted.
       type: Boolean
   dockerimage: demisto/python3:3.7.3.221
-  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
