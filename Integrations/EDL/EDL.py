@@ -21,13 +21,16 @@ EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for EDL Size'
 ''' HELPER FUNCTIONS '''
 
 
-def list_to_str(inp_list: list, delimiter: str = '\n', map_func: Callable = str) -> str:
+def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) -> str:
     """
     Transforms a list to an str, with a custom delimiter between each list item
     """
     str_res = ""
     if inp_list:
-        str_res = delimiter.join(map(map_func, inp_list))
+        if isinstance(inp_list, list):
+            str_res = delimiter.join(map(map_func, inp_list))
+        else:
+            raise AttributeError('Invalid inp_list provided to list_to_str')
     return str_res
 
 
@@ -50,12 +53,12 @@ def get_params_port(params: dict = demisto.params()) -> int:
     return port
 
 
-def refresh_value_cache(indicator_query, out_format, ip_grouping, limit=None):
+def refresh_value_cache(indicator_query: str, out_format: str, ip_grouping: bool = False, limit: int = None) -> list:
     """
     Refresh the cache values and format using an indicator_query to call demisto.findIndicators
     """
     iocs = find_indicators_to_limit(indicator_query, limit, ip_grouping)  # poll indicators into edl from demisto
-    ctx = create_values_out_dict(iocs, out_format, ip_grouping)
+    ctx = create_values_out_dict(iocs, out_format)
     demisto.setLastRun({'last_run': date_to_timestamp(datetime.now())})
     demisto.setIntegrationContext(ctx)
     if out_format == FORMAT_CSV:
@@ -67,9 +70,9 @@ def find_indicators_to_limit(indicator_query, limit, ip_grouping):
     """
     Finds indicators using demisto.findIndicators
     """
-    iocs, next_page = find_indicators_to_limit_loop(indicator_query, limit)
-    if ip_grouping:
-        iocs = find_and_group_ips_to_limit(indicator_query, iocs, limit, next_page)
+    iocs, _ = find_indicators_to_limit_loop(indicator_query, limit)
+    # if ip_grouping:
+    #     iocs = find_and_consolidate_ips_to_limit(indicator_query, iocs, limit)
     return iocs[:limit]
 
 
@@ -89,23 +92,37 @@ def find_indicators_to_limit_loop(indicator_query, limit, total_fetched=0, next_
     return iocs, next_page
 
 
-def find_and_group_ips_to_limit(indicator_query, iocs, limit, next_page):
-    """
-    Groups IPs and find new ones afterward  in a loop until limit is reached
-    """
-    pre_group_iocs_len = len(iocs)
-    iocs, next_page = find_new_ips_and_group(indicator_query, iocs, next_page, limit)
-    while len(iocs) != pre_group_iocs_len:
-        pre_group_iocs_len = len(iocs)
-        iocs, next_page = find_new_ips_and_group(indicator_query, iocs, next_page, limit)
-    return iocs
-
-
-def find_new_ips_and_group(indicator_query, iocs, next_page, limit):
-    last_iocs_found, next_page = find_indicators_to_limit_loop(indicator_query, limit, total_fetched=len(iocs),
-                                                               next_page=next_page)
-    iocs = group_ips(iocs)
-    return iocs, next_page
+# def find_and_consolidate_ips_to_limit(indicator_query, iocs, limit):
+#     """
+#     Groups IPs and find new ones afterward in a loop until limit is reached
+#     """
+#     pre_consolidate_iocs_len = len(iocs)
+#     iocs, next_page = find_new_ips_and_consolidate(indicator_query, iocs, limit)
+#     while len(iocs) != pre_consolidate_iocs_len:
+#         pre_consolidate_iocs_len = len(iocs)
+#         iocs, next_page = find_new_ips_and_consolidate(indicator_query, iocs, limit, next_page)
+#     return iocs
+#
+#
+# def find_new_ips_and_consolidate(indicator_query, iocs, limit, next_page=0):
+#     """
+#     Finds new IPs and consolidates them
+#     """
+#     last_iocs_found, next_page = find_indicators_to_limit_loop(indicator_query, limit, total_fetched=len(iocs),
+#                                                                next_page=next_page)
+#     iocs = consolidate_ips(iocs)
+#     return iocs, next_page
+#
+#
+# def consolidate_ips(iocs):
+#     """
+#     Groups together ips in a list of strings
+#     """
+#     try:
+#         iocs = sorted(iocs, key=lambda ip: struct.unpack('!L', inet_aton(ip))[0])
+#     except OSError:
+#         demisto.debug('Failed to consolidate IPs because')
+#         return iocs
 
 
 def create_csv_out_list(cache_dict):
@@ -120,7 +137,7 @@ def create_csv_out_list(cache_dict):
     return values_list
 
 
-def create_values_out_dict(iocs, out_format, ip_grouping):
+def create_values_out_dict(iocs, out_format):
     """
     Create a dictionary for output values using the selected format
     """
@@ -129,8 +146,6 @@ def create_values_out_dict(iocs, out_format, ip_grouping):
         FORMAT_JSON_SEQ: out_json_seq_format,
         FORMAT_CSV: out_csv_format
     }
-    if ip_grouping:
-        iocs = group_ips(iocs)
     return create_formatted_values_out_dict(iocs, out_format, out_format_func.get(out_format))
 
 
@@ -149,7 +164,7 @@ def create_formatted_values_out_dict(iocs, out_format, out_format_func):
                 ctx[value] = out_format_func(ioc)
         if out_format == 'csv' and len(iocs) > 0:  # add csv headers
             headers = list(iocs[0].keys())
-            ctx[CSV_FIRST_LINE_KEY] = list_to_str(headers, ',')
+            ctx[CSV_FIRST_LINE_KEY] = list_to_str(headers)
         return ctx
 
 
@@ -172,7 +187,7 @@ def out_csv_format(ioc):
     Return output in csv format
     """
     values = list(ioc.values())
-    return list_to_str(values, ',', map_func=wrap_with_double_quotes)
+    return list_to_str(values, map_func=wrap_with_double_quotes)
 
 
 def wrap_with_double_quotes(value):
@@ -180,14 +195,6 @@ def wrap_with_double_quotes(value):
     Wraps the given value with double quotes
     """
     return f'"{value}"'
-
-
-def group_ips(iocs):
-    """
-    Groups together ips in a list of strings
-    """
-    # TODO Implement ips grouping
-    return iocs
 
 
 def get_edl_ioc_list():
@@ -214,7 +221,7 @@ def get_edl_ioc_list():
             else:
                 values = get_out_values_from_cache(out_format)
         else:
-            values = refresh_value_cache(indicator_query, out_format, ip_grouping)
+            values = refresh_value_cache(indicator_query, out_format, ip_grouping, limit)
     return values
 
 
@@ -249,7 +256,7 @@ def route_edl_values() -> Response:
     params = demisto.params()
     out_format = params.get('format', 'text')
     mimetype = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
-    values = list_to_str(get_edl_ioc_list())
+    values = list_to_str(get_edl_ioc_list(), '\n')
     return Response(values, status=200, mimetype=mimetype)
 
 

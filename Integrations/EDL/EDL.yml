@@ -15,7 +15,9 @@ configuration:
   name: key
   required: false
   type: 14
-- display: HTTP Server
+- additionalInfo: When set to true will have an http endpoint when Certificate and
+    Private Key were provided.
+  display: HTTP Server
   hidden: false
   name: http_flag
   required: false
@@ -33,11 +35,6 @@ configuration:
   name: indicators_query
   required: false
   type: 0
-- defaultvalue: 'true'
-  display: Long Running Instance
-  name: longRunning
-  required: false
-  type: 8
 - defaultvalue: text
   display: EDL Format
   hidden: false
@@ -49,23 +46,21 @@ configuration:
   - csv
   required: false
   type: 15
-- display: Group IPs Into Range
-  hidden: false
-  name: ip_grouping
-  required: false
-  type: 8
-- additionalInfo: Max amount of entries in the EDL
-  defaultvalue: '2500'
+- defaultvalue: '2500'
   display: EDL Size
   hidden: false
   name: edl_size
   required: true
   type: 0
+- defaultvalue: 'true'
+  display: Long Running Instance
+  name: longRunning
+  required: false
+  type: 8
 description: Provides External Dynamic List as a service. An EDL is a text file that
   is hosted on an external web server so that the firewall can import objects—IP addresses,
   URLs, domains—included in the list and enforce policy. The integration allows users
-  to add values to the list, remove values from the list, and to consume it as an
-  EDL service.
+  to expose indicators from within demisto as an EDL service.
 display: Palo Alto Networks PAN-OS EDL Service
 name: EDL
 script:
