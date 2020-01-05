@@ -1762,7 +1762,7 @@ script:
     - default: false
       defaultValue: any
       description: Source user for the rule to create.
-      isArray: true
+      isArray: false
       name: source_user
       required: false
       secret: false
@@ -1900,7 +1900,7 @@ script:
       secret: false
     - default: false
       description: Specifies a target firewall for the rule (Panorama instances).
-      isArray: true
+      isArray: false
       name: target
       required: false
       secret: false

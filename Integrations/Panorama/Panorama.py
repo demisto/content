@@ -103,7 +103,7 @@ PAN_OS_ERROR_DICT = {
 }
 
 
-class PAN_OS_Exception(Exception):
+class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
     def __init__(self, *args, **kwargs):  # real signature unknown
         pass
@@ -192,7 +192,7 @@ def http_request(uri: str, method: str, headers: Dict = {},
                     error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
                                       f' The available Device Groups for this instance:'
                                       f' {", ".join(device_group_names)}.')
-            raise PAN_OS_Exception(error_message)
+            raise PAN_OS_Not_Found(error_message)
         if json_result['response']['@code'] not in ['19', '20']:
             # error code non exist in dict and not of success
             if 'msg' in json_result['response']:
@@ -301,7 +301,7 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                 + add_argument_list(destination, 'destination', True, True)
                 + add_argument_list(application, 'application', True)
                 + add_argument_list(category, 'category', True)
-                + add_argument_list(source_user, 'source-user', True)
+                + add_argument_open(source_user, 'source-user', True)
                 + add_argument_open(from_, 'from', True)  # default from will always be any
                 + add_argument_open(to, 'to', True)  # default to will always be any
                 + add_argument_list(service, 'service', True)
@@ -2699,7 +2699,7 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
     }
     try:
         response = http_request(URL, 'GET', params=params)
-    except PAN_OS_Exception:
+    except PAN_OS_Not_Found:
         raise Exception(f'Current Rule object: {element_to_change} is empty.\n'
                         f'Set it using the !panorama-edit-rule command.')
 
@@ -2799,7 +2799,7 @@ def panorama_edit_rule_command():
             params['element'] = add_argument_list(element_value, element_to_change, True)
         elif element_to_change == 'target':
             params['element'] = add_argument_target(element_value, 'target')
-        else:  # element_to_change in ['negate_source', 'negate_destination', 'disable']
+        else:
             params['element'] = add_argument_yes_no(element_value, element_to_change)
 
         if DEVICE_GROUP:
