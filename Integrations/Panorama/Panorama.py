@@ -2917,19 +2917,20 @@ def panorama_list_pcaps_command():
 
 def validate_search_time(search_time: str) -> str:
     """
-    Validate search_time is of format YYY/MM/DD HH:MM:SS or YYYY/MM/DD and pad with zeroes
+    Validate search_time is of format YYYY/MM/DD HH:MM:SS or YYYY/MM/DD and pad with zeroes
     """
     try:
-        datetime.strptime(search_time, '%Y-%m-%d')
+        datetime.strptime(search_time, '%Y/%m/%d')
         search_time += ' 00:00:00'
         return search_time
     except ValueError:
         pass
     try:
-        datetime.strptime(search_time, '%Y-%m-%d %H-%M-$S')
+        datetime.strptime(search_time, '%Y/%m/%d %H:%M:%S')
         return search_time
-    except ValueError:
-        raise ValueError("Incorrect data format, should be YYYY-MM-DD")
+    except ValueError as err:
+        raise ValueError(f"Incorrect data format. searchTime should be of: YYYY/MM/DD HH:MM:SS or YYYY/MM/DD.\n"
+                         f"Error is: {str(err)}")
 
 
 @logger
