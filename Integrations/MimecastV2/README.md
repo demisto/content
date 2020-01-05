@@ -3,12 +3,9 @@ Mimecast unified email management offers cloud email services for email security
 
 This integration was integrated and tested with version xx of MimecastV2
 </p>
-<h2>MimecastV2 Playbook</h2>
-<p>Populate this section with relevant playbook names.</p>
 <h2>Use Cases</h2>
 <ul>
-<li>Use case 1</li>
-<li>Use case 2</li>
+<li>Mimecast account administration.</li>
 </ul><h2>Detailed Description</h2>
 <ul>
 <li>1. In order to refresh token / discover auth types of the account / create new access & secret keys, you are required to provide: App ID, Account email address & password.
