@@ -65,16 +65,6 @@ def create_auth(api_key):
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
-        self._base_url = base_url
-        self._verify = verify
-        self._ok_codes = ok_codes
-        self._headers = headers
-        self._auth = auth
-        self._session = requests.Session()
-        if not proxy:
-            self._session.trust_env = False
-
     def test_module(self, first_fetch_time):
         """
             Performs basic get request to get item samples
