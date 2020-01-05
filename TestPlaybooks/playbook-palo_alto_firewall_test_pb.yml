@@ -1886,7 +1886,7 @@ tasks:
       element_to_change:
         simple: tag
       element_value:
-        simple: Bark_FW_test_tag01,Bark_FW_test_tag02
+        simple: Bark_FW_test_tag01
       pre_post: {}
       rulename:
         complex:
