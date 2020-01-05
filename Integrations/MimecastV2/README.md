@@ -11,17 +11,14 @@ This integration was integrated and tested with version xx of MimecastV2
 <li>Use case 2</li>
 </ul><h2>Detailed Description</h2>
 <ul>
-<li>1. In order to refresh token / discover auth types of the account / create new access & secret keys, </li>
-<li>you are required to provide: App ID, Account email address & password.</li>
-<li>These parameters support the following integration commands: </li>
-<li>mimecast-login -> fetches new access key & secret key</li>
-<li>mimecast-discover -> lists supported auth types of user</li>
-<li>mimecast-refresh-token -> refreshes the validity duration of access key & secret key (3 days)</li>
-<li></li>
+<li>1. In order to refresh token / discover auth types of the account / create new access & secret keys, you are required to provide: App ID, Account email address & password.
+These parameters support the following integration commands:
+mimecast-login -> fetches new access key & secret key
+mimecast-discover -> lists supported auth types of user
+mimecast-refresh-token -> refreshes the validity duration of access key & secret key (3 days)
 <li>2. In order to use the rest of the commands, you are required to provide: App ID, App Key, Access Key & Secret Key.</li>
-<li></li>
-<li>3. Fetch Incidents - the integration has the ability to fetch 3 types of incidents: url, attachment & impersonation.</li>
-<li>In order to activate them first tick "fetch incidents" box, then tick the relevant boxes for each fetch type you want.</li>
+<li>3. Fetch Incidents - the integration has the ability to fetch 3 types of incidents: url, attachment & impersonation.
+In order to activate them first tick "fetch incidents" box, then tick the relevant boxes for each fetch type you want.
 </ul><h2>Fetch Incidents</h2>
 <p>Populate this section with Fetch incidents data</p>
 <h2>Configure MimecastV2 on Demisto</h2>
@@ -99,8 +96,8 @@ This integration was integrated and tested with version xx of MimecastV2
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Archive/Search/Read.</li>
+    <li>or Mimecast user with delegate permissions to address or user.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -259,7 +256,7 @@ This integration was integrated and tested with version xx of MimecastV2
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-query</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -283,8 +280,7 @@ This integration was integrated and tested with version xx of MimecastV2
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Gateway/Policies/Read.</li>
 </ul>
 <h5>Input</h5>
 There are no input arguments for this command.
@@ -371,7 +367,8 @@ There are no input arguments for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-list-blocked-sender-policies
+</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -395,8 +392,7 @@ There are no input arguments for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+   <li>Mimecast administrator with at least one of the following permissions: Gateway/Policies/Read.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -495,7 +491,7 @@ There are no input arguments for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-get-policy policyID=XXXX </code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -519,8 +515,7 @@ There are no input arguments for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Gateway/Policies/Edit.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -649,7 +644,7 @@ There are no input arguments for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-create-policy fromType=email_domain description="Description for group" option=block_sender toType=address_attribute_value</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -673,8 +668,7 @@ There are no input arguments for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Gateway/Policies/Edit.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -728,7 +722,7 @@ There are no input arguments for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-delete-policy policyID=XXXX</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -752,8 +746,7 @@ There are no input arguments for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Gateway/Managed Senders/Edit.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -832,7 +825,7 @@ There are no input arguments for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-manage-sender action=block recipient=recipient@demisto.com sender=sender@demisto.com</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -856,8 +849,8 @@ There are no input arguments for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Services/
+    Targeted Threat Protection - URL Protect /Edit.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -941,7 +934,7 @@ There are no input arguments for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-list-managed-url</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -965,8 +958,8 @@ There are no input arguments for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Services/
+    Targeted Threat Protection - URL Protect /Edit.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -1075,7 +1068,7 @@ There are no input arguments for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-create-managed-url action=block url="www.not-demisto.com"</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -1099,8 +1092,8 @@ There are no input arguments for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Archive/Search/Read.</li>
+    <li>or Mimecast user with delegate permissions to address or user.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -1199,7 +1192,7 @@ There are no input arguments for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-list-messages</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -1223,8 +1216,7 @@ There are no input arguments for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Monitoring/Attachment Protection/Read.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -1333,7 +1325,7 @@ There are no input arguments for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-get-attachment-logs</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -1357,8 +1349,7 @@ There are no input arguments for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Monitoring/URL Protection/Read.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -1477,7 +1468,7 @@ There are no input arguments for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-get-url-logs</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -1501,8 +1492,7 @@ There are no input arguments for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Monitoring/Impersonation Protection/Read.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -1656,7 +1646,7 @@ There are no input arguments for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-get-impersonation-logs</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -1680,8 +1670,7 @@ There are no input arguments for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Account/Dashboard/Read.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -1740,7 +1729,7 @@ There are no input arguments for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-url-decode url=XXXX</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -1761,12 +1750,6 @@ There are no input arguments for this command.
   <code>mimecast-discover</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 There are no input arguments for this command.
 <p>&nbsp;</p>
@@ -1807,7 +1790,7 @@ There are no input arguments for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-discover</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -1828,12 +1811,6 @@ There are no input arguments for this command.
   <code>mimecast-refresh-token</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 There are no input arguments for this command.
 <p>&nbsp;</p>
@@ -1842,7 +1819,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-refresh-token</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -1863,12 +1840,6 @@ There are no context output for this command.
   <code>mimecast-login</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 There are no input arguments for this command.
 <p>&nbsp;</p>
@@ -1877,7 +1848,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-login</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -1901,8 +1872,8 @@ There are no context output for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Archive/Search Content View.</li>
+    <li>or Mimecast user with delegate permissions to address or user.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -2096,7 +2067,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-get-message context=DELIVERED messageID=XXXX</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -2120,8 +2091,8 @@ There are no context output for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Archive/Search Content View.</li>
+    <li>or Mimecast user with delegate permissions to address or user.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -2215,7 +2186,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-download-attachments attachmentID=XXXX</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -2239,8 +2210,7 @@ There are no context output for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Directories/Groups/Edit.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -2329,7 +2299,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-find-groups</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -2353,8 +2323,7 @@ There are no context output for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Directories/Groups/Read.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -2438,7 +2407,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-get-group-members group_id=XXXX</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -2462,8 +2431,7 @@ There are no context output for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Directories/Groups/Edit.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -2532,7 +2500,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-add-group-member group_id=XXXX domain_address=YYYY</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -2556,8 +2524,7 @@ There are no context output for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Directories/Groups/Edit.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -2626,7 +2593,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-remove-group-member group_id=XXXX domain_address=YYYY</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -2650,8 +2617,7 @@ There are no context output for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Directories/Groups/Edit.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -2735,7 +2701,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-create-group group_name=TTTT parent_id=XXXX</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -2759,8 +2725,7 @@ There are no context output for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Directories/Groups/Edit.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -2834,7 +2799,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-update-group group_id=XXXX group_name=ZZZZ</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -2858,8 +2823,7 @@ There are no context output for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Services/Threat Remediation/Edit.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -3003,7 +2967,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-create-remediation-incident hash_message_id=XXXX reason=YYYY</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -3027,8 +2991,7 @@ There are no context output for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Services/Threat Remediation/Read.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -3152,7 +3115,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-get-remediation-incident incident_id=XXXX</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -3176,8 +3139,7 @@ There are no context output for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Mimecast administrator with at least one of the following permissions: Services/Threat Remediation/Read.</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -3236,7 +3198,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code> </code>
+  <code>!mimecast-search-file-hash hashes_to_search=XXXX</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -3248,4 +3210,3 @@ There are no context output for this command.
  alt="image" width="749" height="412"></a>
  -->
 </p>
-<h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2>
