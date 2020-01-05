@@ -35,16 +35,68 @@ config = Config(
 """HELPER FUNCTIONS"""
 
 
+def safe_load_json(o):
+    kwargs = None
+    try:
+        try:
+            path = demisto.getFilePath(o)
+            with open(path['path'], 'rb') as data:
+                try:
+                    kwargs = json.load(data)
+                except:
+                    kwargs = json.loads(data.read())
+        except:
+            kwargs = json.loads(o)
+    except ValueError as e:
+        return_error('Unable to parse JSON file/string. Please verify the JSON is valid.', e)
+    return kwargs
+
+
 def myconverter(o):
     if isinstance(o, datetime.datetime):
         return o.__str__()
 
 
-def scrub_dict(d):
-    if type(d) is dict:
-        return dict((k, scrub_dict(v)) for k, v in d.iteritems() if v and scrub_dict(v))
-    else:
+def remove_empty_elements(d):
+    """recursively remove empty lists, empty dicts, or None elements from a dictionary"""
+
+    def empty(x):
+        return x is None or x == {} or x == []
+
+    if not isinstance(d, (dict, list)):
         return d
+    elif isinstance(d, list):
+        return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
+    else:
+        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if
+                not empty(v)}
+
+
+def parse_tag_field(tags_str):
+    tags = []
+    regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)', flags=re.I)
+    if demisto.args().get('tag_key') and demisto.args().get('tag_value'):
+        if demisto.args().get('tags'):
+            return_error(
+                "Please select either the arguments 'tag_key' and 'tag_value' or only 'tags'.")
+        tags.append({
+            'Key': demisto.args().get('tag_key'),
+            'Value': demisto.args().get('tag_value')
+        })
+    else:
+        if tags_str is not None:
+            for f in tags_str.split(';'):
+                match = regex.match(f)
+                if match is None:
+                    demisto.log('could not parse field: %s' % (f,))
+                    continue
+
+                tags.append({
+                    'Key': match.group(1),
+                    'Value': match.group(2)
+                })
+
+    return tags
 
 
 def aws_session(service='dynamodb', region=None, roleArn=None, roleSessionName=None,
@@ -148,17 +200,20 @@ def batch_get_item_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "RequestItems": json.loads(demisto.args().get("request_items", "{}")),
-        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None)
+        "RequestItems": json.loads(args.get("request_items", "{}")),
+        "ReturnConsumedCapacity": args.get("return_consumed_capacity", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.batch_get_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.BatchGetItem': response}
+    ec = {'AWS-Dynamodb.BatchGetItem': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb BatchGetItem', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def batch_write_item_command(args):
@@ -169,18 +224,21 @@ def batch_write_item_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "RequestItems": json.loads(demisto.args().get("request_items", "{}")),
-        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-        "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None)
+        "RequestItems": json.loads(args.get("request_items", "{}")),
+        "ReturnConsumedCapacity": args.get("return_consumed_capacity", None),
+        "ReturnItemCollectionMetrics": args.get("return_item_collection_metrics", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.batch_write_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.BatchWriteItem': response}
+    ec = {'AWS-Dynamodb.BatchWriteItem': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb BatchWriteItem', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def create_backup_command(args):
@@ -191,17 +249,22 @@ def create_backup_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None),
-        "BackupName": demisto.args().get("backup_name", None)
+        "TableName": args.get("table_name", None),
+        "BackupName": args.get("backup_name", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.create_backup(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.CreateBackup': response}
+    ec = {
+        'AWS-Dynamodb.CreateBackup.AWS-dynamodbBackupDetails(val.BackupArn === obj.BackupArn)':
+            response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb CreateBackup', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def create_global_table_command(args):
@@ -212,23 +275,29 @@ def create_global_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "GlobalTableName": demisto.args().get("global_table_name", None),
-        "ReplicationGroup": [{
+        "GlobalTableName": args.get("global_table_name", None),
+        "ReplicationGroup": safe_load_json(args.get("ReplicationGroup")) if args.get(
+            "ReplicationGroup") else [{
             "Replica": {
-                "RegionName": demisto.args().get("replica_region_name", None)
+                "RegionName": args.get("replica_region_name", None)
             },
 
         }],
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.create_global_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.CreateGlobalTable': response}
+    ec = {
+        'AWS-Dynamodb.CreateGlobalTable.AWS-dynamodbGlobalTableDescription(val.GlobalTableArn === '
+        'obj.GlobalTableArn)': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb CreateGlobalTable', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def create_table_command(args):
@@ -239,37 +308,39 @@ def create_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "AttributeDefinitions": [{
+        "AttributeDefinitions": safe_load_json(args.get("AttributeDefinitions")) if args.get(
+            "AttributeDefinitions") else [{
             "AttributeDefinition": {
-                "AttributeName": demisto.args().get("attribute_definition_attribute_name", None),
-                "AttributeType": demisto.args().get("attribute_definition_attribute_type", None)
+                "AttributeName": args.get("attribute_definition_attribute_name", None),
+                "AttributeType": args.get("attribute_definition_attribute_type", None)
             },
 
         }],
-        "TableName": demisto.args().get("table_name", None),
-        "KeySchema": [{
+        "TableName": args.get("table_name", None),
+        "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
             "KeySchemaElement": {
-                "AttributeName": demisto.args().get("key_schema_element_attribute_name", None),
-                "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                "AttributeName": args.get("key_schema_element_attribute_name", None),
+                "KeyType": args.get("key_schema_element_key_type", None)
             },
 
         }],
-        "LocalSecondaryIndexes": [{
+        "LocalSecondaryIndexes": safe_load_json(args.get("LocalSecondaryIndexes")) if args.get(
+            "LocalSecondaryIndexes") else [{
             "LocalSecondaryIndex": {
-                "IndexName": demisto.args().get("local_secondary_index_index_name", None),
-                "KeySchema": [{
+                "IndexName": args.get("local_secondary_index_index_name", None),
+                "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
                     "KeySchemaElement": {
-                        "AttributeName": demisto.args().get("key_schema_element_attribute_name",
-                                                            None),
-                        "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                        "AttributeName": args.get("key_schema_element_attribute_name", None),
+                        "KeyType": args.get("key_schema_element_key_type", None)
                     },
 
                 }],
                 "Projection": {
-                    "ProjectionType": demisto.args().get("projection_projection_type", None),
-                    "NonKeyAttributes": [{
-                        "NonKeyAttributeName": demisto.args().get(
-                            "non_key_attributes_non_key_attribute_name", None),
+                    "ProjectionType": args.get("projection_projection_type", None),
+                    "NonKeyAttributes": safe_load_json(args.get("NonKeyAttributes")) if args.get(
+                        "NonKeyAttributes") else [{
+                        "NonKeyAttributeName": args.get("non_key_attributes_non_key_attribute_name",
+                                                        None),
 
                     }],
 
@@ -278,75 +349,72 @@ def create_table_command(args):
             },
 
         }],
-        "GlobalSecondaryIndexes": [{
+        "GlobalSecondaryIndexes": safe_load_json(args.get("GlobalSecondaryIndexes")) if args.get(
+            "GlobalSecondaryIndexes") else [{
             "GlobalSecondaryIndex": {
-                "IndexName": demisto.args().get("global_secondary_index_index_name", None),
-                "KeySchema": [{
+                "IndexName": args.get("global_secondary_index_index_name", None),
+                "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
                     "KeySchemaElement": {
-                        "AttributeName": demisto.args().get("key_schema_element_attribute_name",
-                                                            None),
-                        "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                        "AttributeName": args.get("key_schema_element_attribute_name", None),
+                        "KeyType": args.get("key_schema_element_key_type", None)
                     },
 
                 }],
                 "Projection": {
-                    "ProjectionType": demisto.args().get("projection_projection_type", None),
-                    "NonKeyAttributes": [{
-                        "NonKeyAttributeName": demisto.args().get(
-                            "non_key_attributes_non_key_attribute_name", None),
+                    "ProjectionType": args.get("projection_projection_type", None),
+                    "NonKeyAttributes": safe_load_json(args.get("NonKeyAttributes")) if args.get(
+                        "NonKeyAttributes") else [{
+                        "NonKeyAttributeName": args.get("non_key_attributes_non_key_attribute_name",
+                                                        None),
 
                     }],
 
                 },
                 "ProvisionedThroughput": {
-                    "ReadCapacityUnits": demisto.args().get(
-                        "provisioned_throughput_read_capacity_units", None),
-                    "WriteCapacityUnits": demisto.args().get(
-                        "provisioned_throughput_write_capacity_units", None),
+                    "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
+                                                  None),
+                    "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units",
+                                                   None),
 
                 }
 
             },
 
         }],
-        "BillingMode": demisto.args().get("billing_mode", None),
+        "BillingMode": args.get("billing_mode", None),
         "ProvisionedThroughput": {
-            "ReadCapacityUnits": demisto.args().get("provisioned_throughput_read_capacity_units",
-                                                    None),
-            "WriteCapacityUnits": demisto.args().get("provisioned_throughput_write_capacity_units",
-                                                     None),
+            "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units", None),
+            "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units", None),
 
         },
         "StreamSpecification": {
-            "StreamEnabled": True if demisto.args().get("stream_specification_stream_enabled",
-                                                        "") == "true" else None,
-            "StreamViewType": demisto.args().get("stream_specification_stream_view_type", None),
+            "StreamEnabled": True if args.get("stream_specification_stream_enabled",
+                                              "") == "true" else None,
+            "StreamViewType": args.get("stream_specification_stream_view_type", None),
 
         },
         "SSESpecification": {
-            "Enabled": True if demisto.args().get("sse_specification_enabled",
-                                                  "") == "true" else None,
-            "SSEType": demisto.args().get("sse_specification_sse_type", None),
-            "KMSMasterKeyId": demisto.args().get("sse_specification_kms_master_key_id", None),
+            "Enabled": True if args.get("sse_specification_enabled", "") == "true" else None,
+            "SSEType": args.get("sse_specification_sse_type", None),
+            "KMSMasterKeyId": args.get("sse_specification_kms_master_key_id", None),
 
         },
-        "Tags": [{
-            "Tag": {
-                "Key": demisto.args().get("tag_key", None),
-                "Value": demisto.args().get("tag_value", None)
-            },
-
-        }],
+        "Tags": parse_tag_field(args.get("tags")),
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.create_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.CreateTable': response}
+    ec = {
+        'AWS-Dynamodb.CreateTable.AWS-dynamodbTableDescription(val.TableArn === obj.TableArn)':
+            response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb CreateTable', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def delete_backup_command(args):
@@ -357,16 +425,21 @@ def delete_backup_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "BackupArn": demisto.args().get("backup_arn", None)
+        "BackupArn": args.get("backup_arn", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.delete_backup(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.DeleteBackup': response}
+    ec = {
+        'AWS-Dynamodb.DeleteBackup.AWS-dynamodbBackupDescriptionBackupDetails(val.BackupArn === '
+        'obj.BackupArn)': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb DeleteBackup', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def delete_item_command(args):
@@ -377,27 +450,28 @@ def delete_item_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None),
-        "Key": json.loads(demisto.args().get("key", "{}")),
-        "Expected": json.loads(demisto.args().get("expected", "{}")),
-        "ConditionalOperator": demisto.args().get("conditional_operator", None),
-        "ReturnValues": demisto.args().get("return_values", None),
-        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-        "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None),
-        "ConditionExpression": demisto.args().get("condition_expression", None),
-        "ExpressionAttributeNames": json.loads(
-            demisto.args().get("expression_attribute_names", "{}")),
-        "ExpressionAttributeValues": json.loads(
-            demisto.args().get("expression_attribute_values", "{}"))
+        "TableName": args.get("table_name", None),
+        "Key": json.loads(args.get("key", "{}")),
+        "Expected": json.loads(args.get("expected", "{}")),
+        "ConditionalOperator": args.get("conditional_operator", None),
+        "ReturnValues": args.get("return_values", None),
+        "ReturnConsumedCapacity": args.get("return_consumed_capacity", None),
+        "ReturnItemCollectionMetrics": args.get("return_item_collection_metrics", None),
+        "ConditionExpression": args.get("condition_expression", None),
+        "ExpressionAttributeNames": json.loads(args.get("expression_attribute_names", "{}")),
+        "ExpressionAttributeValues": json.loads(args.get("expression_attribute_values", "{}"))
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.delete_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.DeleteItem': response}
+    ec = {'AWS-Dynamodb.DeleteItem': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb DeleteItem', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def delete_table_command(args):
@@ -408,16 +482,21 @@ def delete_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None)
+        "TableName": args.get("table_name", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.delete_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.DeleteTable': response}
+    ec = {
+        'AWS-Dynamodb.DeleteTable.AWS-dynamodbTableDescription(val.TableArn === obj.TableArn)':
+            response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb DeleteTable', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def describe_backup_command(args):
@@ -428,16 +507,21 @@ def describe_backup_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "BackupArn": demisto.args().get("backup_arn", None)
+        "BackupArn": args.get("backup_arn", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.describe_backup(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.DescribeBackup': response}
+    ec = {
+        'AWS-Dynamodb.DescribeBackup.AWS-dynamodbBackupDescriptionBackupDetails(val.BackupArn === '
+        'obj.BackupArn)': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb DescribeBackup', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def describe_continuous_backups_command(args):
@@ -448,16 +532,19 @@ def describe_continuous_backups_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None)
+        "TableName": args.get("table_name", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.describe_continuous_backups(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.DescribeContinuousBackups': response}
+    ec = {'AWS-Dynamodb.DescribeContinuousBackups': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb DescribeContinuousBackups', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def describe_endpoints_command(args):
@@ -470,14 +557,17 @@ def describe_endpoints_command(args):
     kwargs = {
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.describe_endpoints(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.DescribeEndpoints': response}
+    ec = {'AWS-Dynamodb.DescribeEndpoints': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb DescribeEndpoints', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def describe_global_table_command(args):
@@ -488,16 +578,21 @@ def describe_global_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "GlobalTableName": demisto.args().get("global_table_name", None)
+        "GlobalTableName": args.get("global_table_name", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.describe_global_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.DescribeGlobalTable': response}
+    ec = {
+        'AWS-Dynamodb.DescribeGlobalTable.AWS-dynamodbGlobalTableDescription(val.GlobalTableArn '
+        '=== obj.GlobalTableArn)': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb DescribeGlobalTable', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def describe_global_table_settings_command(args):
@@ -508,16 +603,21 @@ def describe_global_table_settings_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "GlobalTableName": demisto.args().get("global_table_name", None)
+        "GlobalTableName": args.get("global_table_name", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.describe_global_table_settings(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.DescribeGlobalTableSettings': response}
+    ec = {
+        'AWS-Dynamodb.DescribeGlobalTableSettings.AWS'
+        '-dynamodbReplicaSettingsReplicaSettingsDescriptionReplicaProvisionedReadCapacityAutoScalingSettings(val.AutoScalingRoleArn === obj.AutoScalingRoleArn)': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb DescribeGlobalTableSettings', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def describe_limits_command(args):
@@ -530,14 +630,17 @@ def describe_limits_command(args):
     kwargs = {
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.describe_limits(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.DescribeLimits': response}
+    ec = {'AWS-Dynamodb.DescribeLimits': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb DescribeLimits', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def describe_table_command(args):
@@ -548,16 +651,19 @@ def describe_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None)
+        "TableName": args.get("table_name", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.describe_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.DescribeTable': response}
+    ec = {'AWS-Dynamodb.DescribeTable.AWS-dynamodbTable(val.TableArn === obj.TableArn)': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb DescribeTable', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def describe_time_to_live_command(args):
@@ -568,16 +674,19 @@ def describe_time_to_live_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None)
+        "TableName": args.get("table_name", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.describe_time_to_live(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.DescribeTimeToLive': response}
+    ec = {'AWS-Dynamodb.DescribeTimeToLive': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb DescribeTimeToLive', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def get_item_command(args):
@@ -588,26 +697,29 @@ def get_item_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None),
-        "Key": json.loads(demisto.args().get("key", "{}")),
-        "AttributesToGet": [{
-            "AttributeName": demisto.args().get("attributes_to_get_attribute_name", None),
+        "TableName": args.get("table_name", None),
+        "Key": json.loads(args.get("key", "{}")),
+        "AttributesToGet": safe_load_json(args.get("AttributesToGet")) if args.get(
+            "AttributesToGet") else [{
+            "AttributeName": args.get("attributes_to_get_attribute_name", None),
 
         }],
-        "ConsistentRead": True if demisto.args().get("consistent_read", "") == "true" else None,
-        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-        "ProjectionExpression": demisto.args().get("projection_expression", None),
-        "ExpressionAttributeNames": json.loads(
-            demisto.args().get("expression_attribute_names", "{}"))
+        "ConsistentRead": True if args.get("consistent_read", "") == "true" else None,
+        "ReturnConsumedCapacity": args.get("return_consumed_capacity", None),
+        "ProjectionExpression": args.get("projection_expression", None),
+        "ExpressionAttributeNames": json.loads(args.get("expression_attribute_names", "{}"))
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.get_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.GetItem': response}
+    ec = {'AWS-Dynamodb.GetItem': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb GetItem', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def list_backups_command(args):
@@ -618,18 +730,23 @@ def list_backups_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None),
-        "ExclusiveStartBackupArn": demisto.args().get("exclusive_start_backup_arn", None),
-        "BackupType": demisto.args().get("backup_type", None)
+        "TableName": args.get("table_name", None),
+        "ExclusiveStartBackupArn": args.get("exclusive_start_backup_arn", None),
+        "BackupType": args.get("backup_type", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.list_backups(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.ListBackups': response}
+    ec = {
+        'AWS-Dynamodb.ListBackups.AWS-dynamodbBackupSummariesBackupSummary(val.TableArn === '
+        'obj.TableArn)': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb ListBackups', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def list_global_tables_command(args):
@@ -640,18 +757,20 @@ def list_global_tables_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "ExclusiveStartGlobalTableName": demisto.args().get("exclusive_start_global_table_name",
-                                                            None),
-        "RegionName": demisto.args().get("region_name", None)
+        "ExclusiveStartGlobalTableName": args.get("exclusive_start_global_table_name", None),
+        "RegionName": args.get("region_name", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.list_global_tables(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.ListGlobalTables': response}
+    ec = {'AWS-Dynamodb.ListGlobalTables': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb ListGlobalTables', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def list_tables_command(args):
@@ -662,17 +781,20 @@ def list_tables_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "ExclusiveStartTableName": demisto.args().get("exclusive_start_table_name", None),
+        "ExclusiveStartTableName": args.get("exclusive_start_table_name", None),
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.list_tables(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.ListTables': response}
+    ec = {'AWS-Dynamodb.ListTables': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb ListTables', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def list_tags_of_resource_command(args):
@@ -683,17 +805,20 @@ def list_tags_of_resource_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "ResourceArn": demisto.args().get("resource_arn", None),
-        "NextToken": demisto.args().get("next_token", None)
+        "ResourceArn": args.get("resource_arn", None),
+        "NextToken": args.get("next_token", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.list_tags_of_resource(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.ListTagsOfResource': response}
+    ec = {'AWS-Dynamodb.ListTagsOfResource': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb ListTagsOfResource', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def put_item_command(args):
@@ -704,27 +829,28 @@ def put_item_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None),
-        "Item": json.loads(demisto.args().get("item", "{}")),
-        "Expected": json.loads(demisto.args().get("expected", "{}")),
-        "ReturnValues": demisto.args().get("return_values", None),
-        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-        "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None),
-        "ConditionalOperator": demisto.args().get("conditional_operator", None),
-        "ConditionExpression": demisto.args().get("condition_expression", None),
-        "ExpressionAttributeNames": json.loads(
-            demisto.args().get("expression_attribute_names", "{}")),
-        "ExpressionAttributeValues": json.loads(
-            demisto.args().get("expression_attribute_values", "{}"))
+        "TableName": args.get("table_name", None),
+        "Item": json.loads(args.get("item", "{}")),
+        "Expected": json.loads(args.get("expected", "{}")),
+        "ReturnValues": args.get("return_values", None),
+        "ReturnConsumedCapacity": args.get("return_consumed_capacity", None),
+        "ReturnItemCollectionMetrics": args.get("return_item_collection_metrics", None),
+        "ConditionalOperator": args.get("conditional_operator", None),
+        "ConditionExpression": args.get("condition_expression", None),
+        "ExpressionAttributeNames": json.loads(args.get("expression_attribute_names", "{}")),
+        "ExpressionAttributeValues": json.loads(args.get("expression_attribute_values", "{}"))
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.put_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.PutItem': response}
+    ec = {'AWS-Dynamodb.PutItem': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb PutItem', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def query_command(args):
@@ -735,37 +861,38 @@ def query_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None),
-        "IndexName": demisto.args().get("index_name", None),
-        "Select": demisto.args().get("select", None),
-        "AttributesToGet": [{
-            "AttributeName": demisto.args().get("attributes_to_get_attribute_name", None),
+        "TableName": args.get("table_name", None),
+        "IndexName": args.get("index_name", None),
+        "Select": args.get("select", None),
+        "AttributesToGet": safe_load_json(args.get("AttributesToGet")) if args.get(
+            "AttributesToGet") else [{
+            "AttributeName": args.get("attributes_to_get_attribute_name", None),
 
         }],
-        "ConsistentRead": True if demisto.args().get("consistent_read", "") == "true" else None,
-        "KeyConditions": json.loads(demisto.args().get("key_conditions", "{}")),
-        "QueryFilter": json.loads(demisto.args().get("query_filter", "{}")),
-        "ConditionalOperator": demisto.args().get("conditional_operator", None),
-        "ScanIndexForward": True if demisto.args().get("scan_index_forward",
-                                                       "") == "true" else None,
-        "ExclusiveStartKey": json.loads(demisto.args().get("exclusive_start_key", "{}")),
-        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-        "ProjectionExpression": demisto.args().get("projection_expression", None),
-        "FilterExpression": demisto.args().get("filter_expression", None),
-        "KeyConditionExpression": demisto.args().get("key_condition_expression", None),
-        "ExpressionAttributeNames": json.loads(
-            demisto.args().get("expression_attribute_names", "{}")),
-        "ExpressionAttributeValues": json.loads(
-            demisto.args().get("expression_attribute_values", "{}"))
+        "ConsistentRead": True if args.get("consistent_read", "") == "true" else None,
+        "KeyConditions": json.loads(args.get("key_conditions", "{}")),
+        "QueryFilter": json.loads(args.get("query_filter", "{}")),
+        "ConditionalOperator": args.get("conditional_operator", None),
+        "ScanIndexForward": True if args.get("scan_index_forward", "") == "true" else None,
+        "ExclusiveStartKey": json.loads(args.get("exclusive_start_key", "{}")),
+        "ReturnConsumedCapacity": args.get("return_consumed_capacity", None),
+        "ProjectionExpression": args.get("projection_expression", None),
+        "FilterExpression": args.get("filter_expression", None),
+        "KeyConditionExpression": args.get("key_condition_expression", None),
+        "ExpressionAttributeNames": json.loads(args.get("expression_attribute_names", "{}")),
+        "ExpressionAttributeValues": json.loads(args.get("expression_attribute_values", "{}"))
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.query(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.Query': response}
+    ec = {'AWS-Dynamodb.Query': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb Query', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def restore_table_from_backup_command(args):
@@ -776,56 +903,60 @@ def restore_table_from_backup_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TargetTableName": demisto.args().get("target_table_name", None),
-        "BackupArn": demisto.args().get("backup_arn", None),
-        "BillingModeOverride": demisto.args().get("billing_mode_override", None),
-        "GlobalSecondaryIndexOverride": [{
+        "TargetTableName": args.get("target_table_name", None),
+        "BackupArn": args.get("backup_arn", None),
+        "BillingModeOverride": args.get("billing_mode_override", None),
+        "GlobalSecondaryIndexOverride": safe_load_json(
+            args.get("GlobalSecondaryIndexOverride")) if args.get(
+            "GlobalSecondaryIndexOverride") else [{
             "GlobalSecondaryIndex": {
-                "IndexName": demisto.args().get("global_secondary_index_index_name", None),
-                "KeySchema": [{
+                "IndexName": args.get("global_secondary_index_index_name", None),
+                "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
                     "KeySchemaElement": {
-                        "AttributeName": demisto.args().get("key_schema_element_attribute_name",
-                                                            None),
-                        "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                        "AttributeName": args.get("key_schema_element_attribute_name", None),
+                        "KeyType": args.get("key_schema_element_key_type", None)
                     },
 
                 }],
                 "Projection": {
-                    "ProjectionType": demisto.args().get("projection_projection_type", None),
-                    "NonKeyAttributes": [{
-                        "NonKeyAttributeName": demisto.args().get(
-                            "non_key_attributes_non_key_attribute_name", None),
+                    "ProjectionType": args.get("projection_projection_type", None),
+                    "NonKeyAttributes": safe_load_json(args.get("NonKeyAttributes")) if args.get(
+                        "NonKeyAttributes") else [{
+                        "NonKeyAttributeName": args.get("non_key_attributes_non_key_attribute_name",
+                                                        None),
 
                     }],
 
                 },
                 "ProvisionedThroughput": {
-                    "ReadCapacityUnits": demisto.args().get(
-                        "provisioned_throughput_read_capacity_units", None),
-                    "WriteCapacityUnits": demisto.args().get(
-                        "provisioned_throughput_write_capacity_units", None),
+                    "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
+                                                  None),
+                    "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units",
+                                                   None),
 
                 }
 
             },
 
         }],
-        "LocalSecondaryIndexOverride": [{
+        "LocalSecondaryIndexOverride": safe_load_json(
+            args.get("LocalSecondaryIndexOverride")) if args.get(
+            "LocalSecondaryIndexOverride") else [{
             "LocalSecondaryIndex": {
-                "IndexName": demisto.args().get("local_secondary_index_index_name", None),
-                "KeySchema": [{
+                "IndexName": args.get("local_secondary_index_index_name", None),
+                "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
                     "KeySchemaElement": {
-                        "AttributeName": demisto.args().get("key_schema_element_attribute_name",
-                                                            None),
-                        "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                        "AttributeName": args.get("key_schema_element_attribute_name", None),
+                        "KeyType": args.get("key_schema_element_key_type", None)
                     },
 
                 }],
                 "Projection": {
-                    "ProjectionType": demisto.args().get("projection_projection_type", None),
-                    "NonKeyAttributes": [{
-                        "NonKeyAttributeName": demisto.args().get(
-                            "non_key_attributes_non_key_attribute_name", None),
+                    "ProjectionType": args.get("projection_projection_type", None),
+                    "NonKeyAttributes": safe_load_json(args.get("NonKeyAttributes")) if args.get(
+                        "NonKeyAttributes") else [{
+                        "NonKeyAttributeName": args.get("non_key_attributes_non_key_attribute_name",
+                                                        None),
 
                     }],
 
@@ -835,22 +966,27 @@ def restore_table_from_backup_command(args):
 
         }],
         "ProvisionedThroughputOverride": {
-            "ReadCapacityUnits": demisto.args().get(
-                "provisioned_throughput_override_read_capacity_units", None),
-            "WriteCapacityUnits": demisto.args().get(
-                "provisioned_throughput_override_write_capacity_units", None),
+            "ReadCapacityUnits": args.get("provisioned_throughput_override_read_capacity_units",
+                                          None),
+            "WriteCapacityUnits": args.get("provisioned_throughput_override_write_capacity_units",
+                                           None),
 
         }
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.restore_table_from_backup(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.RestoreTableFromBackup': response}
+    ec = {
+        'AWS-Dynamodb.RestoreTableFromBackup.AWS-dynamodbTableDescription(val.TableArn === '
+        'obj.TableArn)': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb RestoreTableFromBackup', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def restore_table_to_point_in_time_command(args):
@@ -861,58 +997,62 @@ def restore_table_to_point_in_time_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "SourceTableName": demisto.args().get("source_table_name", None),
-        "TargetTableName": demisto.args().get("target_table_name", None),
-        "UseLatestRestorableTime": True if demisto.args().get("use_latest_restorable_time",
-                                                              "") == "true" else None,
-        "BillingModeOverride": demisto.args().get("billing_mode_override", None),
-        "GlobalSecondaryIndexOverride": [{
+        "SourceTableName": args.get("source_table_name", None),
+        "TargetTableName": args.get("target_table_name", None),
+        "UseLatestRestorableTime": True if args.get("use_latest_restorable_time",
+                                                    "") == "true" else None,
+        "BillingModeOverride": args.get("billing_mode_override", None),
+        "GlobalSecondaryIndexOverride": safe_load_json(
+            args.get("GlobalSecondaryIndexOverride")) if args.get(
+            "GlobalSecondaryIndexOverride") else [{
             "GlobalSecondaryIndex": {
-                "IndexName": demisto.args().get("global_secondary_index_index_name", None),
-                "KeySchema": [{
+                "IndexName": args.get("global_secondary_index_index_name", None),
+                "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
                     "KeySchemaElement": {
-                        "AttributeName": demisto.args().get("key_schema_element_attribute_name",
-                                                            None),
-                        "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                        "AttributeName": args.get("key_schema_element_attribute_name", None),
+                        "KeyType": args.get("key_schema_element_key_type", None)
                     },
 
                 }],
                 "Projection": {
-                    "ProjectionType": demisto.args().get("projection_projection_type", None),
-                    "NonKeyAttributes": [{
-                        "NonKeyAttributeName": demisto.args().get(
-                            "non_key_attributes_non_key_attribute_name", None),
+                    "ProjectionType": args.get("projection_projection_type", None),
+                    "NonKeyAttributes": safe_load_json(args.get("NonKeyAttributes")) if args.get(
+                        "NonKeyAttributes") else [{
+                        "NonKeyAttributeName": args.get("non_key_attributes_non_key_attribute_name",
+                                                        None),
 
                     }],
 
                 },
                 "ProvisionedThroughput": {
-                    "ReadCapacityUnits": demisto.args().get(
-                        "provisioned_throughput_read_capacity_units", None),
-                    "WriteCapacityUnits": demisto.args().get(
-                        "provisioned_throughput_write_capacity_units", None),
+                    "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
+                                                  None),
+                    "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units",
+                                                   None),
 
                 }
 
             },
 
         }],
-        "LocalSecondaryIndexOverride": [{
+        "LocalSecondaryIndexOverride": safe_load_json(
+            args.get("LocalSecondaryIndexOverride")) if args.get(
+            "LocalSecondaryIndexOverride") else [{
             "LocalSecondaryIndex": {
-                "IndexName": demisto.args().get("local_secondary_index_index_name", None),
-                "KeySchema": [{
+                "IndexName": args.get("local_secondary_index_index_name", None),
+                "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
                     "KeySchemaElement": {
-                        "AttributeName": demisto.args().get("key_schema_element_attribute_name",
-                                                            None),
-                        "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                        "AttributeName": args.get("key_schema_element_attribute_name", None),
+                        "KeyType": args.get("key_schema_element_key_type", None)
                     },
 
                 }],
                 "Projection": {
-                    "ProjectionType": demisto.args().get("projection_projection_type", None),
-                    "NonKeyAttributes": [{
-                        "NonKeyAttributeName": demisto.args().get(
-                            "non_key_attributes_non_key_attribute_name", None),
+                    "ProjectionType": args.get("projection_projection_type", None),
+                    "NonKeyAttributes": safe_load_json(args.get("NonKeyAttributes")) if args.get(
+                        "NonKeyAttributes") else [{
+                        "NonKeyAttributeName": args.get("non_key_attributes_non_key_attribute_name",
+                                                        None),
 
                     }],
 
@@ -922,22 +1062,27 @@ def restore_table_to_point_in_time_command(args):
 
         }],
         "ProvisionedThroughputOverride": {
-            "ReadCapacityUnits": demisto.args().get(
-                "provisioned_throughput_override_read_capacity_units", None),
-            "WriteCapacityUnits": demisto.args().get(
-                "provisioned_throughput_override_write_capacity_units", None),
+            "ReadCapacityUnits": args.get("provisioned_throughput_override_read_capacity_units",
+                                          None),
+            "WriteCapacityUnits": args.get("provisioned_throughput_override_write_capacity_units",
+                                           None),
 
         }
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.restore_table_to_point_in_time(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.RestoreTableToPointInTime': response}
+    ec = {
+        'AWS-Dynamodb.RestoreTableToPointInTime.AWS-dynamodbTableDescription(val.TableArn === '
+        'obj.TableArn)': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb RestoreTableToPointInTime', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def scan_command(args):
@@ -948,33 +1093,35 @@ def scan_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None),
-        "IndexName": demisto.args().get("index_name", None),
-        "AttributesToGet": [{
-            "AttributeName": demisto.args().get("attributes_to_get_attribute_name", None),
+        "TableName": args.get("table_name", None),
+        "IndexName": args.get("index_name", None),
+        "AttributesToGet": safe_load_json(args.get("AttributesToGet")) if args.get(
+            "AttributesToGet") else [{
+            "AttributeName": args.get("attributes_to_get_attribute_name", None),
 
         }],
-        "Select": demisto.args().get("select", None),
-        "ScanFilter": json.loads(demisto.args().get("scan_filter", "{}")),
-        "ConditionalOperator": demisto.args().get("conditional_operator", None),
-        "ExclusiveStartKey": json.loads(demisto.args().get("exclusive_start_key", "{}")),
-        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-        "ProjectionExpression": demisto.args().get("projection_expression", None),
-        "FilterExpression": demisto.args().get("filter_expression", None),
-        "ExpressionAttributeNames": json.loads(
-            demisto.args().get("expression_attribute_names", "{}")),
-        "ExpressionAttributeValues": json.loads(
-            demisto.args().get("expression_attribute_values", "{}")),
-        "ConsistentRead": True if demisto.args().get("consistent_read", "") == "true" else None
+        "Select": args.get("select", None),
+        "ScanFilter": json.loads(args.get("scan_filter", "{}")),
+        "ConditionalOperator": args.get("conditional_operator", None),
+        "ExclusiveStartKey": json.loads(args.get("exclusive_start_key", "{}")),
+        "ReturnConsumedCapacity": args.get("return_consumed_capacity", None),
+        "ProjectionExpression": args.get("projection_expression", None),
+        "FilterExpression": args.get("filter_expression", None),
+        "ExpressionAttributeNames": json.loads(args.get("expression_attribute_names", "{}")),
+        "ExpressionAttributeValues": json.loads(args.get("expression_attribute_values", "{}")),
+        "ConsistentRead": True if args.get("consistent_read", "") == "true" else None
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.scan(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.Scan': response}
+    ec = {'AWS-Dynamodb.Scan': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb Scan', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def tag_resource_command(args):
@@ -985,24 +1132,21 @@ def tag_resource_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "ResourceArn": demisto.args().get("resource_arn", None),
-        "Tags": [{
-            "Tag": {
-                "Key": demisto.args().get("tag_key", None),
-                "Value": demisto.args().get("tag_value", None)
-            },
-
-        }],
+        "ResourceArn": args.get("resource_arn", None),
+        "Tags": parse_tag_field(args.get("tags")),
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.tag_resource(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.TagResource': response}
+    ec = {'AWS-Dynamodb.TagResource': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb TagResource', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def transact_get_items_command(args):
@@ -1013,30 +1157,34 @@ def transact_get_items_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TransactItems": [{
+        "TransactItems": safe_load_json(args.get("TransactItems")) if args.get(
+            "TransactItems") else [{
             "TransactGetItem": {
                 "Get": {
-                    "Key": json.loads(demisto.args().get("get_key", "{}")),
-                    "TableName": demisto.args().get("get_table_name", None),
-                    "ProjectionExpression": demisto.args().get("get_projection_expression", None),
+                    "Key": json.loads(args.get("get_key", "{}")),
+                    "TableName": args.get("get_table_name", None),
+                    "ProjectionExpression": args.get("get_projection_expression", None),
                     "ExpressionAttributeNames": json.loads(
-                        demisto.args().get("get_expression_attribute_names", "{}")),
+                        args.get("get_expression_attribute_names", "{}")),
 
                 }
 
             },
 
         }],
-        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None)
+        "ReturnConsumedCapacity": args.get("return_consumed_capacity", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.transact_get_items(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.TransactGetItems': response}
+    ec = {'AWS-Dynamodb.TransactGetItems': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb TransactGetItems', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def transact_write_items_command(args):
@@ -1047,55 +1195,55 @@ def transact_write_items_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TransactItems": [{
+        "TransactItems": safe_load_json(args.get("TransactItems")) if args.get(
+            "TransactItems") else [{
             "TransactWriteItem": {
                 "ConditionCheck": {
-                    "Key": json.loads(demisto.args().get("condition_check_key", "{}")),
-                    "TableName": demisto.args().get("condition_check_table_name", None),
-                    "ConditionExpression": demisto.args().get(
-                        "condition_check_condition_expression", None),
+                    "Key": json.loads(args.get("condition_check_key", "{}")),
+                    "TableName": args.get("condition_check_table_name", None),
+                    "ConditionExpression": args.get("condition_check_condition_expression", None),
                     "ExpressionAttributeNames": json.loads(
-                        demisto.args().get("condition_check_expression_attribute_names", "{}")),
+                        args.get("condition_check_expression_attribute_names", "{}")),
                     "ExpressionAttributeValues": json.loads(
-                        demisto.args().get("condition_check_expression_attribute_values", "{}")),
-                    "ReturnValuesOnConditionCheckFailure": demisto.args().get(
+                        args.get("condition_check_expression_attribute_values", "{}")),
+                    "ReturnValuesOnConditionCheckFailure": args.get(
                         "condition_check_return_values_on_condition_check_failure", None),
 
                 },
                 "Put": {
-                    "Item": json.loads(demisto.args().get("put_item", "{}")),
-                    "TableName": demisto.args().get("put_table_name", None),
-                    "ConditionExpression": demisto.args().get("put_condition_expression", None),
+                    "Item": json.loads(args.get("put_item", "{}")),
+                    "TableName": args.get("put_table_name", None),
+                    "ConditionExpression": args.get("put_condition_expression", None),
                     "ExpressionAttributeNames": json.loads(
-                        demisto.args().get("put_expression_attribute_names", "{}")),
+                        args.get("put_expression_attribute_names", "{}")),
                     "ExpressionAttributeValues": json.loads(
-                        demisto.args().get("put_expression_attribute_values", "{}")),
-                    "ReturnValuesOnConditionCheckFailure": demisto.args().get(
+                        args.get("put_expression_attribute_values", "{}")),
+                    "ReturnValuesOnConditionCheckFailure": args.get(
                         "put_return_values_on_condition_check_failure", None),
 
                 },
                 "Delete": {
-                    "Key": json.loads(demisto.args().get("delete_key", "{}")),
-                    "TableName": demisto.args().get("delete_table_name", None),
-                    "ConditionExpression": demisto.args().get("delete_condition_expression", None),
+                    "Key": json.loads(args.get("delete_key", "{}")),
+                    "TableName": args.get("delete_table_name", None),
+                    "ConditionExpression": args.get("delete_condition_expression", None),
                     "ExpressionAttributeNames": json.loads(
-                        demisto.args().get("delete_expression_attribute_names", "{}")),
+                        args.get("delete_expression_attribute_names", "{}")),
                     "ExpressionAttributeValues": json.loads(
-                        demisto.args().get("delete_expression_attribute_values", "{}")),
-                    "ReturnValuesOnConditionCheckFailure": demisto.args().get(
+                        args.get("delete_expression_attribute_values", "{}")),
+                    "ReturnValuesOnConditionCheckFailure": args.get(
                         "delete_return_values_on_condition_check_failure", None),
 
                 },
                 "Update": {
-                    "Key": json.loads(demisto.args().get("update_key", "{}")),
-                    "UpdateExpression": demisto.args().get("update_update_expression", None),
-                    "TableName": demisto.args().get("update_table_name", None),
-                    "ConditionExpression": demisto.args().get("update_condition_expression", None),
+                    "Key": json.loads(args.get("update_key", "{}")),
+                    "UpdateExpression": args.get("update_update_expression", None),
+                    "TableName": args.get("update_table_name", None),
+                    "ConditionExpression": args.get("update_condition_expression", None),
                     "ExpressionAttributeNames": json.loads(
-                        demisto.args().get("update_expression_attribute_names", "{}")),
+                        args.get("update_expression_attribute_names", "{}")),
                     "ExpressionAttributeValues": json.loads(
-                        demisto.args().get("update_expression_attribute_values", "{}")),
-                    "ReturnValuesOnConditionCheckFailure": demisto.args().get(
+                        args.get("update_expression_attribute_values", "{}")),
+                    "ReturnValuesOnConditionCheckFailure": args.get(
                         "update_return_values_on_condition_check_failure", None),
 
                 }
@@ -1103,18 +1251,21 @@ def transact_write_items_command(args):
             },
 
         }],
-        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-        "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None),
-        "ClientRequestToken": demisto.args().get("client_request_token", None)
+        "ReturnConsumedCapacity": args.get("return_consumed_capacity", None),
+        "ReturnItemCollectionMetrics": args.get("return_item_collection_metrics", None),
+        "ClientRequestToken": args.get("client_request_token", None)
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.transact_write_items(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.TransactWriteItems': response}
+    ec = {'AWS-Dynamodb.TransactWriteItems': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb TransactWriteItems', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def untag_resource_command(args):
@@ -1125,21 +1276,24 @@ def untag_resource_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "ResourceArn": demisto.args().get("resource_arn", None),
-        "TagKeys": [{
-            "TagKeyString": demisto.args().get("tag_keys_tag_key_string", None),
+        "ResourceArn": args.get("resource_arn", None),
+        "TagKeys": safe_load_json(args.get("TagKeys")) if args.get("TagKeys") else [{
+            "TagKeyString": args.get("tag_keys_tag_key_string", None),
 
         }],
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.untag_resource(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.UntagResource': response}
+    ec = {'AWS-Dynamodb.UntagResource': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb UntagResource', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def update_continuous_backups_command(args):
@@ -1150,23 +1304,26 @@ def update_continuous_backups_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None),
+        "TableName": args.get("table_name", None),
         "PointInTimeRecoverySpecification": {
-            "PointInTimeRecoveryEnabled": True if demisto.args().get(
+            "PointInTimeRecoveryEnabled": True if args.get(
                 "point_in_time_recovery_specification_point_in_time_recovery_enabled",
                 "") == "true" else None,
 
         }
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.update_continuous_backups(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.UpdateContinuousBackups': response}
+    ec = {'AWS-Dynamodb.UpdateContinuousBackups': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb UpdateContinuousBackups', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def update_global_table_command(args):
@@ -1177,15 +1334,16 @@ def update_global_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "GlobalTableName": demisto.args().get("global_table_name", None),
-        "ReplicaUpdates": [{
+        "GlobalTableName": args.get("global_table_name", None),
+        "ReplicaUpdates": safe_load_json(args.get("ReplicaUpdates")) if args.get(
+            "ReplicaUpdates") else [{
             "ReplicaUpdate": {
                 "Create": {
-                    "RegionName": demisto.args().get("create_region_name", None),
+                    "RegionName": args.get("create_region_name", None),
 
                 },
                 "Delete": {
-                    "RegionName": demisto.args().get("delete_region_name", None),
+                    "RegionName": args.get("delete_region_name", None),
 
                 }
 
@@ -1194,14 +1352,19 @@ def update_global_table_command(args):
         }],
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.update_global_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.UpdateGlobalTable': response}
+    ec = {
+        'AWS-Dynamodb.UpdateGlobalTable.AWS-dynamodbGlobalTableDescription(val.GlobalTableArn === '
+        'obj.GlobalTableArn)': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb UpdateGlobalTable', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def update_global_table_settings_command(args):
@@ -1212,27 +1375,27 @@ def update_global_table_settings_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "GlobalTableName": demisto.args().get("global_table_name", None),
-        "GlobalTableBillingMode": demisto.args().get("global_table_billing_mode", None),
-        "GlobalTableProvisionedWriteCapacityUnits": demisto.args().get(
+        "GlobalTableName": args.get("global_table_name", None),
+        "GlobalTableBillingMode": args.get("global_table_billing_mode", None),
+        "GlobalTableProvisionedWriteCapacityUnits": args.get(
             "global_table_provisioned_write_capacity_units", None),
         "GlobalTableProvisionedWriteCapacityAutoScalingSettingsUpdate": {
-            "MinimumUnits": demisto.args().get(
+            "MinimumUnits": args.get(
                 "global_table_provisioned_write_capacity_auto_scaling_settings_update_minimum_units",
                 None),
-            "MaximumUnits": demisto.args().get(
+            "MaximumUnits": args.get(
                 "global_table_provisioned_write_capacity_auto_scaling_settings_update_maximum_units",
                 None),
-            "AutoScalingDisabled": True if demisto.args().get(
+            "AutoScalingDisabled": True if args.get(
                 "global_table_provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_disabled",
                 "") == "true" else None,
-            "AutoScalingRoleArn": demisto.args().get(
+            "AutoScalingRoleArn": args.get(
                 "global_table_provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
                 None),
             "ScalingPolicyUpdate": {
-                "PolicyName": demisto.args().get("scaling_policy_update_policy_name", None),
+                "PolicyName": args.get("scaling_policy_update_policy_name", None),
                 "TargetTrackingScalingPolicyConfiguration": {
-                    "DisableScaleIn": True if demisto.args().get(
+                    "DisableScaleIn": True if args.get(
                         "target_tracking_scaling_policy_configuration_disable_scale_in",
                         "") == "true" else None,
 
@@ -1241,30 +1404,32 @@ def update_global_table_settings_command(args):
             },
 
         },
-        "GlobalTableGlobalSecondaryIndexSettingsUpdate": [{
+        "GlobalTableGlobalSecondaryIndexSettingsUpdate": safe_load_json(
+            args.get("GlobalTableGlobalSecondaryIndexSettingsUpdate")) if args.get(
+            "GlobalTableGlobalSecondaryIndexSettingsUpdate") else [{
             "GlobalTableGlobalSecondaryIndexSettingsUpdate": {
-                "IndexName": demisto.args().get(
+                "IndexName": args.get(
                     "global_table_global_secondary_index_settings_update_index_name", None),
-                "ProvisionedWriteCapacityUnits": demisto.args().get(
+                "ProvisionedWriteCapacityUnits": args.get(
                     "global_table_global_secondary_index_settings_update_provisioned_write_capacity_units",
                     None),
                 "ProvisionedWriteCapacityAutoScalingSettingsUpdate": {
-                    "MinimumUnits": demisto.args().get(
+                    "MinimumUnits": args.get(
                         "provisioned_write_capacity_auto_scaling_settings_update_minimum_units",
                         None),
-                    "MaximumUnits": demisto.args().get(
+                    "MaximumUnits": args.get(
                         "provisioned_write_capacity_auto_scaling_settings_update_maximum_units",
                         None),
-                    "AutoScalingDisabled": True if demisto.args().get(
+                    "AutoScalingDisabled": True if args.get(
                         "provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_disabled",
                         "") == "true" else None,
-                    "AutoScalingRoleArn": demisto.args().get(
+                    "AutoScalingRoleArn": args.get(
                         "provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
                         None),
                     "ScalingPolicyUpdate": {
-                        "PolicyName": demisto.args().get("scaling_policy_update_policy_name", None),
+                        "PolicyName": args.get("scaling_policy_update_policy_name", None),
                         "TargetTrackingScalingPolicyConfiguration": {
-                            "DisableScaleIn": True if demisto.args().get(
+                            "DisableScaleIn": True if args.get(
                                 "target_tracking_scaling_policy_configuration_disable_scale_in",
                                 "") == "true" else None,
 
@@ -1277,28 +1442,29 @@ def update_global_table_settings_command(args):
             },
 
         }],
-        "ReplicaSettingsUpdate": [{
+        "ReplicaSettingsUpdate": safe_load_json(args.get("ReplicaSettingsUpdate")) if args.get(
+            "ReplicaSettingsUpdate") else [{
             "ReplicaSettingsUpdate": {
-                "RegionName": demisto.args().get("replica_settings_update_region_name", None),
-                "ReplicaProvisionedReadCapacityUnits": demisto.args().get(
+                "RegionName": args.get("replica_settings_update_region_name", None),
+                "ReplicaProvisionedReadCapacityUnits": args.get(
                     "replica_settings_update_replica_provisioned_read_capacity_units", None),
                 "ReplicaProvisionedReadCapacityAutoScalingSettingsUpdate": {
-                    "MinimumUnits": demisto.args().get(
+                    "MinimumUnits": args.get(
                         "replica_provisioned_read_capacity_auto_scaling_settings_update_minimum_units",
                         None),
-                    "MaximumUnits": demisto.args().get(
+                    "MaximumUnits": args.get(
                         "replica_provisioned_read_capacity_auto_scaling_settings_update_maximum_units",
                         None),
-                    "AutoScalingDisabled": True if demisto.args().get(
+                    "AutoScalingDisabled": True if args.get(
                         "replica_provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_disabled",
                         "") == "true" else None,
-                    "AutoScalingRoleArn": demisto.args().get(
+                    "AutoScalingRoleArn": args.get(
                         "replica_provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
                         None),
                     "ScalingPolicyUpdate": {
-                        "PolicyName": demisto.args().get("scaling_policy_update_policy_name", None),
+                        "PolicyName": args.get("scaling_policy_update_policy_name", None),
                         "TargetTrackingScalingPolicyConfiguration": {
-                            "DisableScaleIn": True if demisto.args().get(
+                            "DisableScaleIn": True if args.get(
                                 "target_tracking_scaling_policy_configuration_disable_scale_in",
                                 "") == "true" else None,
 
@@ -1307,31 +1473,32 @@ def update_global_table_settings_command(args):
                     },
 
                 },
-                "ReplicaGlobalSecondaryIndexSettingsUpdate": [{
+                "ReplicaGlobalSecondaryIndexSettingsUpdate": safe_load_json(
+                    args.get("ReplicaGlobalSecondaryIndexSettingsUpdate")) if args.get(
+                    "ReplicaGlobalSecondaryIndexSettingsUpdate") else [{
                     "ReplicaGlobalSecondaryIndexSettingsUpdate": {
-                        "IndexName": demisto.args().get(
+                        "IndexName": args.get(
                             "replica_global_secondary_index_settings_update_index_name", None),
-                        "ProvisionedReadCapacityUnits": demisto.args().get(
+                        "ProvisionedReadCapacityUnits": args.get(
                             "replica_global_secondary_index_settings_update_provisioned_read_capacity_units",
                             None),
                         "ProvisionedReadCapacityAutoScalingSettingsUpdate": {
-                            "MinimumUnits": demisto.args().get(
+                            "MinimumUnits": args.get(
                                 "provisioned_read_capacity_auto_scaling_settings_update_minimum_units",
                                 None),
-                            "MaximumUnits": demisto.args().get(
+                            "MaximumUnits": args.get(
                                 "provisioned_read_capacity_auto_scaling_settings_update_maximum_units",
                                 None),
-                            "AutoScalingDisabled": True if demisto.args().get(
+                            "AutoScalingDisabled": True if args.get(
                                 "provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_disabled",
                                 "") == "true" else None,
-                            "AutoScalingRoleArn": demisto.args().get(
+                            "AutoScalingRoleArn": args.get(
                                 "provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
                                 None),
                             "ScalingPolicyUpdate": {
-                                "PolicyName": demisto.args().get(
-                                    "scaling_policy_update_policy_name", None),
+                                "PolicyName": args.get("scaling_policy_update_policy_name", None),
                                 "TargetTrackingScalingPolicyConfiguration": {
-                                    "DisableScaleIn": True if demisto.args().get(
+                                    "DisableScaleIn": True if args.get(
                                         "target_tracking_scaling_policy_configuration_disable_scale_in",
                                         "") == "true" else None,
 
@@ -1350,14 +1517,19 @@ def update_global_table_settings_command(args):
         }],
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.update_global_table_settings(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.UpdateGlobalTableSettings': response}
+    ec = {
+        'AWS-Dynamodb.UpdateGlobalTableSettings.AWS'
+        '-dynamodbReplicaSettingsReplicaSettingsDescriptionReplicaProvisionedReadCapacityAutoScalingSettings(val.AutoScalingRoleArn === obj.AutoScalingRoleArn)': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb UpdateGlobalTableSettings', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def update_item_command(args):
@@ -1368,29 +1540,30 @@ def update_item_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None),
-        "Key": json.loads(demisto.args().get("key", "{}")),
-        "AttributeUpdates": json.loads(demisto.args().get("attribute_updates", "{}")),
-        "Expected": json.loads(demisto.args().get("expected", "{}")),
-        "ConditionalOperator": demisto.args().get("conditional_operator", None),
-        "ReturnValues": demisto.args().get("return_values", None),
-        "ReturnConsumedCapacity": demisto.args().get("return_consumed_capacity", None),
-        "ReturnItemCollectionMetrics": demisto.args().get("return_item_collection_metrics", None),
-        "UpdateExpression": demisto.args().get("update_expression", None),
-        "ConditionExpression": demisto.args().get("condition_expression", None),
-        "ExpressionAttributeNames": json.loads(
-            demisto.args().get("expression_attribute_names", "{}")),
-        "ExpressionAttributeValues": json.loads(
-            demisto.args().get("expression_attribute_values", "{}"))
+        "TableName": args.get("table_name", None),
+        "Key": json.loads(args.get("key", "{}")),
+        "AttributeUpdates": json.loads(args.get("attribute_updates", "{}")),
+        "Expected": json.loads(args.get("expected", "{}")),
+        "ConditionalOperator": args.get("conditional_operator", None),
+        "ReturnValues": args.get("return_values", None),
+        "ReturnConsumedCapacity": args.get("return_consumed_capacity", None),
+        "ReturnItemCollectionMetrics": args.get("return_item_collection_metrics", None),
+        "UpdateExpression": args.get("update_expression", None),
+        "ConditionExpression": args.get("condition_expression", None),
+        "ExpressionAttributeNames": json.loads(args.get("expression_attribute_names", "{}")),
+        "ExpressionAttributeValues": json.loads(args.get("expression_attribute_values", "{}"))
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.update_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.UpdateItem': response}
+    ec = {'AWS-Dynamodb.UpdateItem': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb UpdateItem', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def update_table_command(args):
@@ -1401,65 +1574,67 @@ def update_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "AttributeDefinitions": [{
+        "AttributeDefinitions": safe_load_json(args.get("AttributeDefinitions")) if args.get(
+            "AttributeDefinitions") else [{
             "AttributeDefinition": {
-                "AttributeName": demisto.args().get("attribute_definition_attribute_name", None),
-                "AttributeType": demisto.args().get("attribute_definition_attribute_type", None)
+                "AttributeName": args.get("attribute_definition_attribute_name", None),
+                "AttributeType": args.get("attribute_definition_attribute_type", None)
             },
 
         }],
-        "TableName": demisto.args().get("table_name", None),
-        "BillingMode": demisto.args().get("billing_mode", None),
+        "TableName": args.get("table_name", None),
+        "BillingMode": args.get("billing_mode", None),
         "ProvisionedThroughput": {
-            "ReadCapacityUnits": demisto.args().get("provisioned_throughput_read_capacity_units",
-                                                    None),
-            "WriteCapacityUnits": demisto.args().get("provisioned_throughput_write_capacity_units",
-                                                     None),
+            "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units", None),
+            "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units", None),
 
         },
-        "GlobalSecondaryIndexUpdates": [{
+        "GlobalSecondaryIndexUpdates": safe_load_json(
+            args.get("GlobalSecondaryIndexUpdates")) if args.get(
+            "GlobalSecondaryIndexUpdates") else [{
             "GlobalSecondaryIndexUpdate": {
                 "Update": {
-                    "IndexName": demisto.args().get("update_index_name", None),
+                    "IndexName": args.get("update_index_name", None),
                     "ProvisionedThroughput": {
-                        "ReadCapacityUnits": demisto.args().get(
-                            "provisioned_throughput_read_capacity_units", None),
-                        "WriteCapacityUnits": demisto.args().get(
+                        "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
+                                                      None),
+                        "WriteCapacityUnits": args.get(
                             "provisioned_throughput_write_capacity_units", None),
 
                     },
 
                 },
                 "Create": {
-                    "IndexName": demisto.args().get("create_index_name", None),
-                    "KeySchema": [{
+                    "IndexName": args.get("create_index_name", None),
+                    "KeySchema": safe_load_json(args.get("KeySchema")) if args.get(
+                        "KeySchema") else [{
                         "KeySchemaElement": {
-                            "AttributeName": demisto.args().get("key_schema_element_attribute_name",
-                                                                None),
-                            "KeyType": demisto.args().get("key_schema_element_key_type", None)
+                            "AttributeName": args.get("key_schema_element_attribute_name", None),
+                            "KeyType": args.get("key_schema_element_key_type", None)
                         },
 
                     }],
                     "Projection": {
-                        "ProjectionType": demisto.args().get("projection_projection_type", None),
-                        "NonKeyAttributes": [{
-                            "NonKeyAttributeName": demisto.args().get(
+                        "ProjectionType": args.get("projection_projection_type", None),
+                        "NonKeyAttributes": safe_load_json(
+                            args.get("NonKeyAttributes")) if args.get("NonKeyAttributes") else [{
+                            "NonKeyAttributeName": args.get(
                                 "non_key_attributes_non_key_attribute_name", None),
 
                         }],
 
                     },
                     "ProvisionedThroughput": {
-                        "ReadCapacityUnits": demisto.args().get(
-                            "provisioned_throughput_read_capacity_units", None),
-                        "WriteCapacityUnits": demisto.args().get(
+                        "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
+                                                      None),
+                        "WriteCapacityUnits": args.get(
                             "provisioned_throughput_write_capacity_units", None),
 
                     },
 
                 },
                 "Delete": {
-                    "IndexName": demisto.args().get("delete_index_name", None),
+                    "IndexName": args.get("delete_index_name", None),
 
                 }
 
@@ -1467,28 +1642,32 @@ def update_table_command(args):
 
         }],
         "StreamSpecification": {
-            "StreamEnabled": True if demisto.args().get("stream_specification_stream_enabled",
-                                                        "") == "true" else None,
-            "StreamViewType": demisto.args().get("stream_specification_stream_view_type", None),
+            "StreamEnabled": True if args.get("stream_specification_stream_enabled",
+                                              "") == "true" else None,
+            "StreamViewType": args.get("stream_specification_stream_view_type", None),
 
         },
         "SSESpecification": {
-            "Enabled": True if demisto.args().get("sse_specification_enabled",
-                                                  "") == "true" else None,
-            "SSEType": demisto.args().get("sse_specification_sse_type", None),
-            "KMSMasterKeyId": demisto.args().get("sse_specification_kms_master_key_id", None),
+            "Enabled": True if args.get("sse_specification_enabled", "") == "true" else None,
+            "SSEType": args.get("sse_specification_sse_type", None),
+            "KMSMasterKeyId": args.get("sse_specification_kms_master_key_id", None),
 
         }
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.update_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.UpdateTable': response}
+    ec = {
+        'AWS-Dynamodb.UpdateTable.AWS-dynamodbTableDescription(val.TableArn === obj.TableArn)':
+            response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb UpdateTable', response)
-    return_outputs(human_readable, ec)
+    return human_readable, ec
 
 
 def update_time_to_live_command(args):
@@ -1499,115 +1678,129 @@ def update_time_to_live_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TableName": demisto.args().get("table_name", None),
+        "TableName": args.get("table_name", None),
         "TimeToLiveSpecification": {
-            "Enabled": True if demisto.args().get("time_to_live_specification_enabled",
-                                                  "") == "true" else None,
-            "AttributeName": demisto.args().get("time_to_live_specification_attribute_name", None),
+            "Enabled": True if args.get("time_to_live_specification_enabled",
+                                        "") == "true" else None,
+            "AttributeName": args.get("time_to_live_specification_attribute_name", None),
 
         }
 
     }
-    kwargs = scrub_dict(kwargs)
+    kwargs = remove_empty_elements(kwargs)
+    if args.get('raw_json') is not None:
+        del kwargs
+        kwargs = safe_load_json(args.get('raw_json'))
     response = client.update_time_to_live(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS.Dynamodb.UpdateTimeToLive': response}
+    ec = {'AWS-Dynamodb.UpdateTimeToLive': response}
     del response['ResponseMetadata']
     human_readable = tableToMarkdown('AWS Dynamodb UpdateTimeToLive', response)
-    return_outputs(human_readable, ec)
-
-    '''COMMAND BLOCK'''
+    return human_readable, ec
 
 
-try:
-    LOG('Command being called is {command}'.format(command=demisto.command()))
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        client = aws_session()
-        response = client.REPLACE_WITH_TEST_FUNCTION()
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            demisto.results('ok')
+''' COMMANDS MANAGER / SWITCH PANEL '''
 
-    elif demisto.command() == 'aws-dynamodb-batch_get_item':
-        batch_get_item_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-batch_write_item':
-        batch_write_item_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-create_backup':
-        create_backup_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-create_global_table':
-        create_global_table_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-create_table':
-        create_table_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-delete_backup':
-        delete_backup_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-delete_item':
-        delete_item_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-delete_table':
-        delete_table_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-describe_backup':
-        describe_backup_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-describe_continuous_backups':
-        describe_continuous_backups_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-describe_endpoints':
-        describe_endpoints_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-describe_global_table':
-        describe_global_table_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-describe_global_table_settings':
-        describe_global_table_settings_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-describe_limits':
-        describe_limits_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-describe_table':
-        describe_table_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-describe_time_to_live':
-        describe_time_to_live_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-get_item':
-        get_item_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-list_backups':
-        list_backups_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-list_global_tables':
-        list_global_tables_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-list_tables':
-        list_tables_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-list_tags_of_resource':
-        list_tags_of_resource_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-put_item':
-        put_item_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-query':
-        query_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-restore_table_from_backup':
-        restore_table_from_backup_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-restore_table_to_point_in_time':
-        restore_table_to_point_in_time_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-scan':
-        scan_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-tag_resource':
-        tag_resource_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-transact_get_items':
-        transact_get_items_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-transact_write_items':
-        transact_write_items_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-untag_resource':
-        untag_resource_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-update_continuous_backups':
-        update_continuous_backups_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-update_global_table':
-        update_global_table_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-update_global_table_settings':
-        update_global_table_settings_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-update_item':
-        update_item_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-update_table':
-        update_table_command(demisto.args())
-    elif demisto.command() == 'aws-dynamodb-update_time_to_live':
-        update_time_to_live_command(demisto.args())
-except ResponseParserError as e:
-    return_error(
-        'Could not connect to the AWS endpoint. Please check that the region is valid. {error}'.format(
-            error=type(e)))
-    LOG(e)
 
-except Exception as e:
-    LOG(e)
-    return_error('Error has occurred in the AWS dynamodb Integration: {code} {message}'.format(
-        code=type(e), message=e))    
+def main():  # pragma: no cover
+    args = demisto.args()
+    human_readable = None
+    ec = None
+    try:
+        LOG('Command being called is {command}'.format(command=demisto.command()))
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            client = aws_session()
+            response = client.REPLACE_WITH_TEST_FUNCTION()
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                demisto.results('ok')
+
+        elif demisto.command() == 'aws-dynamodb-batch_get_item':
+            human_readable, ec = batch_get_item_command(args)
+        elif demisto.command() == 'aws-dynamodb-batch_write_item':
+            human_readable, ec = batch_write_item_command(args)
+        elif demisto.command() == 'aws-dynamodb-create_backup':
+            human_readable, ec = create_backup_command(args)
+        elif demisto.command() == 'aws-dynamodb-create_global_table':
+            human_readable, ec = create_global_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-create_table':
+            human_readable, ec = create_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-delete_backup':
+            human_readable, ec = delete_backup_command(args)
+        elif demisto.command() == 'aws-dynamodb-delete_item':
+            human_readable, ec = delete_item_command(args)
+        elif demisto.command() == 'aws-dynamodb-delete_table':
+            human_readable, ec = delete_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe_backup':
+            human_readable, ec = describe_backup_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe_continuous_backups':
+            human_readable, ec = describe_continuous_backups_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe_endpoints':
+            human_readable, ec = describe_endpoints_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe_global_table':
+            human_readable, ec = describe_global_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe_global_table_settings':
+            human_readable, ec = describe_global_table_settings_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe_limits':
+            human_readable, ec = describe_limits_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe_table':
+            human_readable, ec = describe_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe_time_to_live':
+            human_readable, ec = describe_time_to_live_command(args)
+        elif demisto.command() == 'aws-dynamodb-get_item':
+            human_readable, ec = get_item_command(args)
+        elif demisto.command() == 'aws-dynamodb-list_backups':
+            human_readable, ec = list_backups_command(args)
+        elif demisto.command() == 'aws-dynamodb-list_global_tables':
+            human_readable, ec = list_global_tables_command(args)
+        elif demisto.command() == 'aws-dynamodb-list_tables':
+            human_readable, ec = list_tables_command(args)
+        elif demisto.command() == 'aws-dynamodb-list_tags_of_resource':
+            human_readable, ec = list_tags_of_resource_command(args)
+        elif demisto.command() == 'aws-dynamodb-put_item':
+            human_readable, ec = put_item_command(args)
+        elif demisto.command() == 'aws-dynamodb-query':
+            human_readable, ec = query_command(args)
+        elif demisto.command() == 'aws-dynamodb-restore_table_from_backup':
+            human_readable, ec = restore_table_from_backup_command(args)
+        elif demisto.command() == 'aws-dynamodb-restore_table_to_point_in_time':
+            human_readable, ec = restore_table_to_point_in_time_command(args)
+        elif demisto.command() == 'aws-dynamodb-scan':
+            human_readable, ec = scan_command(args)
+        elif demisto.command() == 'aws-dynamodb-tag_resource':
+            human_readable, ec = tag_resource_command(args)
+        elif demisto.command() == 'aws-dynamodb-transact_get_items':
+            human_readable, ec = transact_get_items_command(args)
+        elif demisto.command() == 'aws-dynamodb-transact_write_items':
+            human_readable, ec = transact_write_items_command(args)
+        elif demisto.command() == 'aws-dynamodb-untag_resource':
+            human_readable, ec = untag_resource_command(args)
+        elif demisto.command() == 'aws-dynamodb-update_continuous_backups':
+            human_readable, ec = update_continuous_backups_command(args)
+        elif demisto.command() == 'aws-dynamodb-update_global_table':
+            human_readable, ec = update_global_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-update_global_table_settings':
+            human_readable, ec = update_global_table_settings_command(args)
+        elif demisto.command() == 'aws-dynamodb-update_item':
+            human_readable, ec = update_item_command(args)
+        elif demisto.command() == 'aws-dynamodb-update_table':
+            human_readable, ec = update_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-update_time_to_live':
+            human_readable, ec = update_time_to_live_command(args)
+        return_outputs(human_readable, ec)
+
+    except ResponseParserError as e:
+        return_error(
+            'Could not connect to the AWS endpoint. Please check that the region is valid. {error}'.format(
+                error=type(e)))
+        LOG(e)
+    except Exception as e:
+        LOG(e)
+        return_error('Error has occurred in the AWS dynamodb Integration: {code} {message}'.format(
+            code=type(e), message=e))
+
+
+if __name__ in ["__builtin__", "builtins", '__main__']:  # pragma: no cover
+    main()
+
