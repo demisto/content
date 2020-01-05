@@ -20,6 +20,7 @@ def load_params_from_json(json_path, type=''):
         if type == "incidents":
             for incident in file:
                 incident['rawJSON'] = json.dumps(incident.get('rawJSON', {}))
+
     return file
 
 
