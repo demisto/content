@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added tasks that predict the phishing sub-type when a phishing ML model exists.
 
 ## [19.11.0] - 2019-11-12
 - Fixed an issue where the task that saves the email address of the reporter of the phishing email, was disconnected from the previous task.
