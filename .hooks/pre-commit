@@ -1,5 +1,7 @@
 #!/bin/bash
 
+pip3 install demisto-sdk --upgrade
+
 # validating that each modified file has a valid schema, release notes, proper prefix & suffix
 echo "Validating files..."
 DO_DEACTIVATE=""
