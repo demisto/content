@@ -1061,6 +1061,24 @@ script:
     - contextPath: SalesForce.User.Email
       description: User Email
       type: string
+    - contextPath: SalesForce.Case.IsEscalated
+      description: IsEscalated for Case
+      type: string
+    - contextPath: SalesForce.Case.SuppliedPhone
+      description: Case Supplied Phone
+      type: string
+    - contextPath: SalesForce.Case.SuppliedCompany
+      description: Case Supplied Company
+      type: string
+    - contextPath: SalesForce.Case.ContactEmail
+      description: Case contact Email
+      type: string
+    - contextPath: SalesForce.Case.ContactId
+      description: Case contact Id
+      type: string
+    - contextPath: SalesForce.Case.AccountId
+      description: Case account ID
+      type: string
     description: Search records that contain values with pattern
   - name: salesforce-query
     arguments:
