@@ -61,7 +61,7 @@ def test_extract_error(mocker):
     err = extract_error(error_response)
     assert err == expected_response
 
-    error_response = [(404, {'name': 'Invalid event.', 'message': 'Invalid event.', 'url': '/objects/add/1546'})]
+    error_response = [(404, {'name': 'Invalid event.', 'message': 'Invalid event.', 'url': '/objects/add/154'})]
     expected_response = [{'code': 404, 'message': 'Invalid event.', 'errors': None}]
     err = extract_error(error_response)
     assert err == expected_response

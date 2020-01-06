@@ -197,9 +197,11 @@ jobs:
             if [ $NIGHTLY ] ;
               then
                 demisto-sdk lint --run-all-tests --parallel
+                cp ./Tests/failed_unittests.txt $CIRCLE_ARTIFACTS/failed_unittests.txt
 
               else
                 demisto-sdk lint --git --parallel
+                cp ./Tests/failed_unittests.txt $CIRCLE_ARTIFACTS/failed_unittests.txt
             fi
       - run:
           name: Verify Base Branch for Contribution
