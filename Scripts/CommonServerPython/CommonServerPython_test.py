@@ -12,7 +12,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch
 
 try:
     from StringIO import StringIO
@@ -1008,6 +1008,20 @@ def test_argToBoolean():
     assert argToBoolean('false') is False
     assert argToBoolean('no') is False
     assert argToBoolean(False) is False
+
+
+batch_params = [
+    # full batch
+    ([1, 2, 3], 2, [[1, 2], [3]]),
+    ([], 1, []),
+    ([1, 2, 3], 5, [[1, 2, 3]])
+]
+
+
+@pytest.mark.parametrize('iterable, sz, expected', batch_params)
+def test_batch(iterable, sz, expected):
+    for i, item in enumerate(batch(iterable, sz)):
+        assert expected[i] == item
 
 
 regexes_test = [
