@@ -141,7 +141,7 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
     demisto.log("Find similar incidents based on initial query: %s" % query)
 
     res = demisto.executeCommand("getIncidents",
-                                 {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % time_field})
+                                 {'query': query, 'fromdate': min_date.isoformat(), 'size': max_number_of_results, 'sort': '%s.desc' % time_field})
     if res[0]['Type'] == entryTypes['error']:
         return_error(str(res[0]['Contents']))
 
