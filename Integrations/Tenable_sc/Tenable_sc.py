@@ -20,7 +20,7 @@ if not demisto.params().get('proxy', False):
 
 ''' GLOBAL VARIABLES'''
 USERNAME = demisto.params()['credentials']['identifier']
-PASSWORD = demisto.params()['credentials']['password']
+PASSWORD = str(demisto.params()['credentials']['password']).encode('utf-8')
 VERIFY_SSL = not demisto.params().get('unsecure', False)
 
 MAX_REQUEST_RETRIES = 3

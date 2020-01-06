@@ -724,7 +724,12 @@
             "integrations": "Gmail"
         },
         {
-            "playbookID": "reputations.json Test"
+            "playbookID": "reputations.json Test",
+            "toversion": "5.0.0"
+        },
+        {
+            "playbookID": "Indicators reputation-.json Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "Test IP Indicator Fields",
