@@ -8,6 +8,7 @@ from Tests_Data.RawData import VULNERABILITIES_SEARCH_RESPONSE, GET_CONNECTORS_R
     SEARCH_ASSETS_RESPONSE,GET_ASSETS_VULNERABILITIES_RESPONSE
 
 
+
 def test_create_dict():
     raw = [{
         'id': '12',
