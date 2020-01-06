@@ -1,4 +1,10 @@
 ## [Unreleased]
+Fixed an issue with ***fetch-incidents*** which caused incident name to be cut short if it had newlines in its description.
+
+## [19.12.1] - 2019-12-25
+Fixed an issue in which the ***qradar-get-assets*** command failed when a user would supply a value for the *fields* parameter.
+
+## [19.11.1] - 2019-11-26
 Fixed an issue in ***get-search-results*** command output.
 
 ## [19.10.2] - 2019-10-29

@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.1] - 2019-11-26
 Fixed the **fetch-incidents** function, which did not fetch duplicate values.
   - Added the **proofpoint-get-forensics** command. 
   - Added context outputs for the **proofpoint-get-events** command.

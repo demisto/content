@@ -6,10 +6,11 @@ from Tests.scripts.hook_validations.secrets import get_secrets, get_diff_text_fi
 
 
 class TestSecrets:
-    TEST_YML_FILE = './Tests/scripts/hook_validations/tests/tests_data/fake_integration/fake_integration.yml'
-    TEST_PY_FILE = './Tests/scripts/hook_validations/tests/tests_data/fake_integration/fake_integration.py'
-    TEST_WHITELIST_FILE_PACKS = './Tests/scripts/hook_validations/tests/tests_data/fake_integration/fake.secrets-ignore'
-    TEST_WHITELIST_FILE = './Tests/scripts/hook_validations/tests/tests_data/fake_integration/fake_secrets_white_list.json'
+    TEST_BASE_PATH = 'Tests/scripts/hook_validations/tests/tests_data/fake_integration/'
+    TEST_YML_FILE = TEST_BASE_PATH + 'fake_integration.yml'
+    TEST_PY_FILE = TEST_BASE_PATH + 'fake_integration.py'
+    TEST_WHITELIST_FILE_PACKS = TEST_BASE_PATH + 'fake.secrets-ignore'
+    TEST_WHITELIST_FILE = TEST_BASE_PATH + 'fake_secrets_white_list.json'
     TEST_BASE_64_STRING = 'OCSn7JGqKehoyIyMCm7gPFjKXpawXvh2M32' * 20 + ' sade'
 
     def test_get_secrets(self):
