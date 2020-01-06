@@ -6,8 +6,8 @@ Use the Syslog Sender integration to send messages and mirror incident war room 
 
 ## Use Cases
 ---
-* Send messages to syslog via TCP or UDP
-* Mirror incident war room entries to syslog
+* Send messages to syslog via TCP, UDP or Unix.
+* Mirror incident war room entries to syslog.
 
 ## Configure Syslog Sender on Demisto
 ---
@@ -96,12 +96,36 @@ There is no context output for this command.
 Message sent to syslog successfully.
 
 
+### 3. syslog-send
+---
+Send a message to syslog
+
+##### Base Command
+
+`syslog-send`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message | The message content. | Optional | 
+| level | The log level. | Optional | 
+| address | The syslog server address. | Optional | 
+| protocol | The protocol to use | Optional | 
+| port | The syslog server port (required for TCP or UDP protocols). | Optional | 
+| facility | The syslog facility. | Optional | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!syslog-send address=10.196.73.107 port=514 protocol=TCP message=yo level=ERROR```
+
+##### Human Readable Output
+Message sent to Syslog successfully.
+
 ## Troubleshooting
 ---
 Make sure you can access the syslog server on the provided IP address and the port is open.
 If you're experiencing further issues, contact us at [support@demisto.com](mailto:support@demisto.com)
-
-
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):
-* 'Can not perform this action in playground.'
-* str(e
