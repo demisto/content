@@ -181,7 +181,7 @@
             "complex": {
                 "root": "IP",
                 "filters": [],
-                "accessor": "Reported By",
+                "accessor": "ReportedBy",
                 "transformers": [
                     {
                         "operator": "uniq",
