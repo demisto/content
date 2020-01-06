@@ -31,7 +31,7 @@ args:
   - "true"
   - "false"
   description: If  true, only fields which are explicitly associated to the incident
-    type will be included (i.e. excludes fields associated to all incident types)
+    type will be included (i.e. excludes fields with the "associate to any" box ticked)
   defaultValue: "false"
 - name: pprint
   auto: PREDEFINED
