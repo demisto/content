@@ -32,7 +32,7 @@ def test_build_list_from_dict(mocker):
     mock_misp(mocker)
     from MISP_V2 import build_list_from_dict
     lst = build_list_from_dict({'ip': '8.8.8.8', 'domain': 'google.com'})
-    assert lst == [{'ip': '8.8.8.8'}, {'domain': 'google.com'}]
+    assert lst == [{'ip': '8.8.8.8'}, {'domain': ''}]
 
 
 def test_extract_error(mocker):
@@ -61,7 +61,7 @@ def test_extract_error(mocker):
     err = extract_error(error_response)
     assert err == expected_response
 
-    error_response = [(404, {'name': 'Invalid event.', 'message': 'Invalid event.', 'url': '/objects/add/154'})]
+    error_response = [(404, {'name': 'Invalid event.', 'message': 'Invalid event.', 'url': '/objects/add/1546'})]
     expected_response = [{'code': 404, 'message': 'Invalid event.', 'errors': None}]
     err = extract_error(error_response)
     assert err == expected_response
