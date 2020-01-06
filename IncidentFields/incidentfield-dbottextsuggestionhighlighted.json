@@ -5,7 +5,7 @@
 	"name": "DBotTextSuggestionHighlighted",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "The input text with the positive words that support the model decision.",
+	"description": "Indicates the text that contributed to the decision made by the machine learning model.",
 	"cliName": "dbottextsuggestionhighlighted",
 	"type": "markdown",
 	"closeForm": false,
