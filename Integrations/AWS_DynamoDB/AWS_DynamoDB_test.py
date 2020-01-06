@@ -1,8 +1,9 @@
 import pytest
 import json
 
+
 def test_safe_load_json():
-    from AWS-DynamoDB import safe_load_json
+    from AWS_DynamoDB import safe_load_json
 
     sample_dict = {
         "foo": "bar"

@@ -1,6 +1,6 @@
-id: AWS-DynamoDB-Test
+id: AWS_DynamoDB-Test
 version: -1
-name: AWS-DynamoDB-Test
+name: AWS_DynamoDB-Test
 starttaskid: "0"
 tasks:
   "0":
