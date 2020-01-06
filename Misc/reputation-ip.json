@@ -209,7 +209,7 @@
             "complex": {
                 "root": "IP",
                 "filters": [],
-                "accessor": "Threat Types",
+                "accessor": "ThreatTypes",
                 "transformers": [
                     {
                         "operator": "uniq",
