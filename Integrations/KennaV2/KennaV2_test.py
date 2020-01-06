@@ -11,7 +11,7 @@ from Tests_Data.RawData import VULNERABILITIES_SEARCH_RESPONSE, GET_CONNECTORS_R
 def test_create_dict():
     raw = [{
         'id': '12',
-        'cve-id': 'CVE-AS1255',
+        'cve-id': 'CVE-AS12',
         'list': [{
             'list-id': '123'
         }]
