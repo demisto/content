@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: HelloWorldSimple
+  id: HelloWorld
   version: -1
 configuration:
 - defaultvalue: https://example.net
@@ -8,10 +8,10 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Token
-  name: token
+- display: Username
+  name: credentials
   required: true
-  type: 4
+  type: 9
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -28,27 +28,29 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Hello World Simple integration example
-display: Hello World Simple
-name: HelloWorldSimple
+description: This is the Hello World integration for getting started.
+display: HelloWorld
+name: HelloWorld
 script:
   commands:
   - arguments:
     - default: false
-      description: Who we say hello to.
+      description: The name of whom you want to say hello to.
       isArray: false
       name: name
       required: false
       secret: false
     deprecated: false
-    description: The say hello command.
+    description: Hello command - prints hello to anyone
     execution: false
-    name: helloworldsimple-say-hello
-  isfetch: false
+    name: helloworld-say-hello
+    outputs:
+    - contextPath: hello
+      description: Should be Hello **something** here
+      type: String
+  isfetch: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.7.4.2245
-tests:
-  - No tests

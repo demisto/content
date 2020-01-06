@@ -1,0 +1,56 @@
+args:
+- default: false
+  description: 'Say hello to:'
+  isArray: false
+  name: name
+  required: false
+  secret: false
+comment: Hello World Script
+commonfields:
+  id: 579e06da-9776-4706-85f5-639b7b305195
+  version: -1
+enabled: false
+name: HelloWorldScript
+outputs:
+- contextPath: HelloWorld.hello
+  description: 'The result of hello '
+  type: String
+script: |-
+  def say_hello(name):
+      return "Hello {}".format(name)
+
+
+  def say_hello_command(args):
+      name = args.get("name")
+
+      original_result = say_hello(name)
+
+      markdown = "## {}".format(original_result)
+      outputs = {
+          "HelloWorld": {
+              "hello": original_result
+          }
+      }
+
+      return (
+          markdown,
+          outputs,
+          original_result
+      )
+
+
+  def main():
+      try:
+          return_outputs(*say_hello_command(demisto.args()))
+      except Exception as ex:
+          return_error("Failed to execute HelloWorldScript. Error: {}".format(str(ex)))
+
+
+  if __name__ in ['__main__', '__builtin__', 'builtins']:
+      main()
+system: false
+tags:
+- hello
+- world
+timeout: '0'
+type: python
