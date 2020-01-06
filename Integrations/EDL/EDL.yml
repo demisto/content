@@ -3,35 +3,9 @@ commonfields:
   id: EDL
   version: -1
 configuration:
-- display: Listen Port
-  name: longRunningPort
-  required: true
-  type: 0
-- display: Certificate (Required for HTTPS)
-  name: certificate
-  required: false
-  type: 12
-- display: Private Key (Required for HTTPS)
-  name: key
-  required: false
-  type: 14
-- additionalInfo: When set to true will have an http endpoint when Certificate and
-    Private Key were provided.
-  display: HTTP Server
-  hidden: false
-  name: http_flag
-  required: false
-  type: 8
-- display: Update EDL On Demand
-  name: on_demand
-  required: false
-  type: 8
-- defaultvalue: 5 minutes
-  display: Cache Refresh Rate
-  name: cache_refresh_rate
-  required: false
-  type: 0
-- display: Indicator Query
+- additionalInfo: Will run this query on demisto's indicators (run in your CLI !findIndicators
+    query=<your query> to see expected results)
+  display: Indicator Query
   name: indicators_query
   required: false
   type: 0
@@ -57,6 +31,36 @@ configuration:
   name: longRunning
   required: false
   type: 8
+- additionalInfo: Will run the EDL service on this port from within demisto
+  defaultvalue: '9000'
+  display: Listen Port
+  name: longRunningPort
+  required: true
+  type: 0
+- display: Certificate (Required for HTTPS)
+  name: certificate
+  required: false
+  type: 12
+- display: Private Key (Required for HTTPS)
+  name: key
+  required: false
+  type: 14
+- additionalInfo: Ignores certificate and private key, and will run the EDL service
+    in HTTP
+  display: HTTP Server
+  hidden: false
+  name: http_flag
+  required: false
+  type: 8
+- display: Update EDL On Demand
+  name: on_demand
+  required: false
+  type: 8
+- defaultvalue: 5 minutes
+  display: Cache Refresh Rate
+  name: cache_refresh_rate
+  required: false
+  type: 0
 description: Provides External Dynamic List as a service. An EDL is a text file that
   is hosted on an external web server so that the firewall can import objects—IP addresses,
   URLs, domains—included in the list and enforce policy. The integration allows users

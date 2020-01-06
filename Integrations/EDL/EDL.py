@@ -5,7 +5,7 @@ import json
 from flask import Flask, Response
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
-from typing import Callable
+from typing import Callable, List
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'EDL'
@@ -53,7 +53,7 @@ def get_params_port(params: dict = demisto.params()) -> int:
     return port
 
 
-def refresh_value_cache(indicator_query: str, out_format: str, ip_grouping: bool = False, limit: int = None) -> list:
+def refresh_value_cache(indicator_query: str, out_format: str, ip_grouping: bool = False, limit: int = 0) -> list:
     """
     Refresh the cache values and format using an indicator_query to call demisto.findIndicators
     """
@@ -66,7 +66,7 @@ def refresh_value_cache(indicator_query: str, out_format: str, ip_grouping: bool
     return list(ctx.values())
 
 
-def find_indicators_to_limit(indicator_query, limit, ip_grouping):
+def find_indicators_to_limit(indicator_query: str, limit: int, ip_grouping: bool = False) -> list:
     """
     Finds indicators using demisto.findIndicators
     """
@@ -76,11 +76,12 @@ def find_indicators_to_limit(indicator_query, limit, ip_grouping):
     return iocs[:limit]
 
 
-def find_indicators_to_limit_loop(indicator_query, limit, total_fetched=0, next_page=0, last_found_len=PAGE_SIZE):
+def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
+                                  last_found_len: int = PAGE_SIZE):
     """
     Finds indicators using while loop with demisto.findIndicators, and returns result and last page
     """
-    iocs = []
+    iocs: List[dict] = []
     if not last_found_len:
         last_found_len = total_fetched
     while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
@@ -125,7 +126,7 @@ def find_indicators_to_limit_loop(indicator_query, limit, total_fetched=0, next_
 #         return iocs
 
 
-def create_csv_out_list(cache_dict):
+def create_csv_out_list(cache_dict: dict) -> list:
     """
     Creates a csv output result
     """
@@ -137,7 +138,7 @@ def create_csv_out_list(cache_dict):
     return values_list
 
 
-def create_values_out_dict(iocs, out_format):
+def create_values_out_dict(iocs: list, out_format: str) -> dict:
     """
     Create a dictionary for output values using the selected format
     """
@@ -146,10 +147,10 @@ def create_values_out_dict(iocs, out_format):
         FORMAT_JSON_SEQ: out_json_seq_format,
         FORMAT_CSV: out_csv_format
     }
-    return create_formatted_values_out_dict(iocs, out_format, out_format_func.get(out_format))
+    return create_formatted_values_out_dict(iocs, out_format, out_format_func.get(out_format, str))
 
 
-def create_formatted_values_out_dict(iocs, out_format, out_format_func):
+def create_formatted_values_out_dict(iocs: list, out_format: str, out_format_func: Callable) -> dict:
     """
     Create a dictionary for output values formatted in the selected out_format
     """
@@ -168,33 +169,26 @@ def create_formatted_values_out_dict(iocs, out_format, out_format_func):
         return ctx
 
 
-def out_text_format(ioc):
+def out_text_format(ioc: dict) -> str:
     """
     Return output in text format
     """
-    return ioc.get('value')
+    return ioc.get('value', '')
 
 
-def out_json_seq_format(ioc):
+def out_json_seq_format(ioc: dict) -> str:
     """
     Return output in json seq format
     """
     return json.dumps(ioc)
 
 
-def out_csv_format(ioc):
+def out_csv_format(ioc: dict) -> str:
     """
     Return output in csv format
     """
     values = list(ioc.values())
-    return list_to_str(values, map_func=wrap_with_double_quotes)
-
-
-def wrap_with_double_quotes(value):
-    """
-    Wraps the given value with double quotes
-    """
-    return f'"{value}"'
+    return list_to_str(values, map_func=lambda val: f'"{val}"')
 
 
 def get_edl_ioc_list():
@@ -202,7 +196,7 @@ def get_edl_ioc_list():
     Get the ioc list to return in the edl
     """
     params = demisto.params()
-    ip_grouping = params.get('ip_grouping')
+    # ip_grouping = params.get('ip_grouping') != 'true'
     out_format = params.get('format')
     on_demand = params.get('on_demand')
     limit = parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)
@@ -217,11 +211,11 @@ def get_edl_ioc_list():
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
             td = last_run - cache_time
             if td <= 0:  # last_run is before cache_time
-                values = refresh_value_cache(indicator_query, out_format, ip_grouping, limit)
+                values = refresh_value_cache(indicator_query, out_format, limit=limit)
             else:
                 values = get_out_values_from_cache(out_format)
         else:
-            values = refresh_value_cache(indicator_query, out_format, ip_grouping, limit)
+            values = refresh_value_cache(indicator_query, out_format, limit=limit)
     return values
 
 
