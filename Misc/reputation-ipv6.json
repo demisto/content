@@ -27,7 +27,7 @@
         "asn": {
             "simple": "",
             "complex": {
-                "root": "IP",
+                "root": "IPv6",
                 "filters": [],
                 "accessor": "ASN",
                 "transformers": [
@@ -41,7 +41,7 @@
         "blocked": {
             "simple": "",
             "complex": {
-                "root": "IP",
+                "root": "IPv6",
                 "filters": [],
                 "accessor": "Blocked",
                 "transformers": [
@@ -55,7 +55,7 @@
         "detectionengines": {
             "simple": "",
             "complex": {
-                "root": "IP",
+                "root": "IPv6",
                 "filters": [],
                 "accessor": "DetectionEngines",
                 "transformers": [
@@ -69,7 +69,7 @@
         "geocountry": {
             "simple": "",
             "complex": {
-                "root": "IP",
+                "root": "IPv6",
                 "filters": [],
                 "accessor": "Geo.Country",
                 "transformers": [
@@ -83,7 +83,7 @@
         "geolocation": {
             "simple": "",
             "complex": {
-                "root": "IP",
+                "root": "IPv6",
                 "filters": [],
                 "accessor": "Geo.Location",
                 "transformers": [
@@ -97,7 +97,7 @@
         "hostname": {
             "simple": "",
             "complex": {
-                "root": "IP",
+                "root": "IPv6",
                 "filters": [],
                 "accessor": "Hostname",
                 "transformers": []
@@ -106,7 +106,7 @@
         "internal": {
             "simple": "",
             "complex": {
-                "root": "IP",
+                "root": "IPv6",
                 "filters": [],
                 "accessor": "Internal",
                 "transformers": [
@@ -120,9 +120,107 @@
         "positivedetections": {
             "simple": "",
             "complex": {
-                "root": "IP",
+                "root": "IPv6",
                 "filters": [],
                 "accessor": "PositiveDetections",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "port": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Port",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "region": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Region",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "associations": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Associations",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "reportedby": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Reported By",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "status": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Status",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "threattypes": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Threat Types",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "trafficlightprotocoltlp": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Traffic Light Protocol (TLP)",
                 "transformers": [
                     {
                         "operator": "uniq",
