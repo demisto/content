@@ -100,6 +100,41 @@ def get_bot_access_token(requests_mock):
     )
 
 
+def test_mentioned_users_to_entities():
+    from MicrosoftTeams import mentioned_users_to_entities
+    mentioned_users = ['Bruce Willis', 'Denzel Washington']
+    bruce_entity = {
+        'type': 'mention',
+        'mentioned': {
+            'id': '29:1KZccCJRTxlPdHnwcKfxHAtYvPLIyHgkSLhFSnGXLGVFlnltovdZPmZAduPKQP6NrGqOcde7FXAF7uTZ_8FQOqg',
+            'name': 'Bruce Willis'
+        },
+        'text': '<at>@Bruce Willis</at>'
+    }
+    denzel_entity = {
+        'type': 'mention',
+        'mentioned': {
+            'id': '29:1pBMMC85IyjM3tr_MCZi7KW4pw4EULxLN4C7R_xoi3Wva_lOn3VTf7xJlCLK-r-pMumrmoz9agZxsSrCf7__u9R',
+            'name': 'Denzel Washington'
+        },
+        'text': '<at>@Denzel Washington</at>'
+    }
+    assert mentioned_users_to_entities(mentioned_users, integration_context) == [bruce_entity, denzel_entity]
+
+    mentioned_users = ['Bruce Willis', 'demisto']
+    with pytest.raises(ValueError, match='Team member was not found'):
+        mentioned_users_to_entities(mentioned_users, integration_context)
+
+
+def test_process_mentioned_users_in_message():
+    from MicrosoftTeams import process_mentioned_users_in_message
+    raw_message = '@demisto dev; @demisto; email@"demistodev".com demisto@demistodev.com'
+    parsed_message = '<at>@demisto dev</at> <at>@demisto</at> email@"demistodev".com demisto@demistodev.com'
+    users, message = process_mentioned_users_in_message(raw_message)
+    assert users == ['demisto dev', 'demisto']
+    assert message == parsed_message
+
+
 def test_message_handler(mocker):
     from MicrosoftTeams import message_handler
     mocker.patch.object(demisto, 'addEntry')
