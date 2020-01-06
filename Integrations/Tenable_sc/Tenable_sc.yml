@@ -1,6 +1,6 @@
 category: Vulnerability Management
 commonfields:
-  id: Tenable.sc_encode
+  id: Tenable.sc
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -35,8 +35,8 @@ configuration:
   type: 0
 description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous
   assessment of your security posture so you can find and fix vulnerabilities faster.
-display: Tenable.sc_encode
-name: Tenable.sc_encode
+display: Tenable.sc
+name: Tenable.sc
 script:
   commands:
   - arguments:
