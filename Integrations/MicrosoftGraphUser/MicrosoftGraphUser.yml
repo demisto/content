@@ -45,8 +45,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Terminates a user's session from all Office 365 applications, and
+    description: "Terminates a user's session from all Office 365 applications, and
       prevents sign in.
+
+      Permissions:
+      - User.ReadWrite (Delegated & Application)
+      "
     execution: false
     name: msgraph-user-terminate-session
   - arguments:
@@ -74,7 +78,10 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates the properties of a user object.
+    description: "Updates the properties of a user object.
+
+    Permissions:
+    - User.ReadWrite (Delegated & Application)"
     execution: false
     name: msgraph-user-update
     outputs:
@@ -119,7 +126,11 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes an exsiting user.
+    description: "Deletes an existing user.
+
+    Permissions:
+    - Directory.AccessAsUser.All (Delegated)
+    - User.ReadWrite.All (Application)"
     execution: true
     name: msgraph-user-delete
   - arguments:
@@ -172,7 +183,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a new user.
+    description: "Creates a new user.
+
+    Permissions:
+    - User.ReadWrite.All (Delegated & Application)"
     execution: false
     name: msgraph-user-create
     outputs:
@@ -217,9 +231,14 @@ script:
       name: properties
       required: false
       secret: false
-    deprecated: false
-    description: Gets newly created, updated, or deleted users without performing
-      a full read of the entire user collection.
+    deprecated: true
+    description: "Deprecated. This command only returns a single page.
+    Use the msgraph-user-list command instead, which gets newly created, updated, or
+    deleted users without performing a full read of the entire user collection.
+
+    Permissions:
+    - User.Read (Delegated)
+    - User.Read.All (Application)"
     execution: false
     name: msgraph-user-get-delta
     outputs:
@@ -271,8 +290,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Retrieves the properties and relationships of user object. for more
-      information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)'
+    description: "Retrieves the properties and relationships of a user object. For more
+      information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+
+      Permissions:
+    - User.Read (Delegated)
+    - User.Read.All (Application)"
     execution: false
     name: msgraph-user-get
     outputs:
@@ -317,8 +340,18 @@ script:
       name: properties
       required: false
       secret: false
+    - default: false
+      description: The URL for the next page in the list.
+      isArray: false
+      name: next_page
+      required: false
+      secret: false
     deprecated: false
-    description: Retrieves a list of user objects.
+    description: "Retrieves a list of user objects.
+
+    Permissions:
+    - User.ReadBasic.All (Delegated)
+    - User.Read.All (Application)"
     execution: false
     name: msgraph-user-list
     outputs:
@@ -355,8 +388,13 @@ script:
     - contextPath: MSGraphUser.UserPrincipalName
       description: User's principal name.
       type: Unknown
+    - contextPath: MSGraphUser.NextPage
+      description: A token to pass to the next list command to retrieve additional results.
+      type: String
   dockerimage: demisto/crypto:1.0.0.303
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python

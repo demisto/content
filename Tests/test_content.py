@@ -6,7 +6,6 @@ import requests
 import subprocess
 import urllib3
 from time import sleep
-from datetime import datetime
 
 import demisto_client.demisto_api
 from slackclient import SlackClient
@@ -153,7 +152,7 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, build_name, is_mock_run=False):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
-
+    # c.api_client.pool.close()
     if status == PB_Status.COMPLETED:
         print_color('PASS: {} succeed'.format(test_message), LOG_COLORS.GREEN)
         succeed_playbooks.append(playbook_id)
@@ -229,19 +228,20 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
     print('------ Test {} end ------\n'.format(test_message))
 
 
-def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
+def run_test(demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, circle_ci, build_number, server_url, build_name, is_ami=True):
     start_message = '------ Test %s start ------' % (test_message,)
+    client = demisto_client.configure(base_url=server_url, api_key=demisto_api_key, verify_ssl=False)
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
         print(start_message + ' (Mock: Disabled)')
-        run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
+        run_test_logic(client, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
                        slack, circle_ci, build_number, server_url, build_name)
         print('------ Test %s end ------\n' % (test_message,))
 
         return
 
-    mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
+    mock_run(client, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message)
 
 
@@ -334,6 +334,7 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
             integration['params'] = matched_integration_params.get('params', {})
             integration['byoi'] = matched_integration_params.get('byoi', True)
             integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
+            integration['validate_test'] = matched_integration_params.get('validate_test', True)
         elif 'Demisto REST API' == integration['name']:
             integration['params'] = {
                 'url': 'https://localhost',
@@ -406,7 +407,7 @@ def organize_tests(tests, unmockable_integrations, skipped_integrations_conf, ni
     return mock_tests, mockless_tests
 
 
-def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
+def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
                       filtered_tests, skipped_tests, secret_params, failed_playbooks,
                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
@@ -483,30 +484,9 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
         text = stdout if not stderr else stderr
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
-    run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
+    run_test(demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
              succeed_playbooks, test_message, test_options, slack, circle_ci,
              build_number, server, build_name, is_ami)
-
-
-def restart_demisto_service(ami, c):
-    ami.check_call(['sudo', 'service', 'demisto', 'restart'])
-    exit_code = 1
-    for _ in range(0, SERVICE_RESTART_TIMEOUT, SERVICE_RESTART_POLLING_INTERVAL):
-        sleep(SERVICE_RESTART_POLLING_INTERVAL)
-        if exit_code != 0:
-            exit_code = ami.call(['/usr/sbin/service', 'demisto', 'status', '--lines', '0'])
-        if exit_code == 0:
-            print("{}: Checking login to the server... ".format(datetime.now()))
-            try:
-                res = demisto_client.generic_request_func(self=c, path='/health', method='GET')
-                if int(res[1]) == 200:
-                    return
-                else:
-                    print("Failed verifying login (will retry). status: {}. text: {}".format(res.status_code, res.text))
-            except Exception as ex:
-                print_error("Failed verifying server start via login: {}".format(ex))
-
-    raise Exception('Timeout waiting for demisto service to restart')
 
 
 def execute_testing(server, server_ip, server_version, server_numeric_version, is_ami=True):
@@ -523,12 +503,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     build_name = options.buildName
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
-
-    username = secret_conf.get('username')
-    password = secret_conf.get('userPassword')
     demisto_api_key = secret_conf.get('temp_apikey')
-
-    c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
 
     default_test_timeout = conf.get('testTimeout', 30)
 
@@ -552,14 +527,14 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     if is_ami:
         ami = AMIConnection(server_ip)
         ami.clone_mock_data()
-        proxy = MITMProxy(c, server_ip)
+        proxy = MITMProxy(server_ip)
 
     failed_playbooks = []
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
 
-    disable_all_integrations(c)
+    disable_all_integrations(demisto_api_key, server)
 
     if is_ami:
         # move all mock tests to the top of the list
@@ -575,9 +550,9 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                            'Content CircleCI', 'False')
     # first run the mock tests to avoid mockless side effects in container
     if is_ami and mock_tests:
-        proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
+        proxy.configure_proxy_in_demisto(demisto_api_key, server, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
         for t in mock_tests:
-            run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
+            run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                               skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                               is_filter_configured,
                               filtered_tests, skipped_tests, secret_params, failed_playbooks,
@@ -585,12 +560,17 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                               build_name, server_numeric_version, demisto_api_key)
 
         print("\nRunning mock-disabled tests")
-        proxy.configure_proxy_in_demisto('')
-        print("Restarting demisto service")
-        restart_demisto_service(ami, c)
-        print("Demisto service restarted\n")
+        proxy.configure_proxy_in_demisto(demisto_api_key, server, '')
+        print('Resetting containers')
+        client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
+        body, status_code, headers = demisto_client.generic_request_func(self=client, method='POST',
+                                                                         path='/containers/reset')
+        if status_code != 200:
+            print_error('Request to reset containers failed with status code "{}"\n{}'.format(status_code, body))
+            sys.exit(1)
+        sleep(10)
     for t in mockless_tests:
-        run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
+        run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                           is_filter_configured,
                           filtered_tests, skipped_tests, secret_params, failed_playbooks,

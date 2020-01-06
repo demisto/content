@@ -1,4 +1,12 @@
 ## [Unreleased]
+ - Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.
+ - Added the **batch** command, which takes an iterable and how many items to return and yields batches of that size.
+ 
+
+## [19.12.0] - 2019-12-10
+-
+
+## [19.11.1] - 2019-11-26
 BaseClient now uses the session function to maintain an open session with the server.
 
 ## [19.11.0] - 2019-11-12

@@ -213,6 +213,22 @@ def build_readpdf_entry_object(pdf_file, metadata, text, urls, images):
     return results
 
 
+def get_urls_from_binary_file(file_path):
+    """Reading from the binary pdf in the pdf_text_output_path and returns a list of the urls in the file"""
+    with open(file_path, 'rb') as file:
+        # the urls usually appear in the form: '/URI (url)'
+        urls = re.findall(r'/URI \((.*?)\)', str(file.read()))
+
+    binary_file_urls = set()
+    # make sure the urls match the url regex
+    for url in urls:
+        mached_url = re.findall(urlRegex, url)
+        if len(mached_url) != 0:
+            binary_file_urls.add(mached_url[0])
+
+    return binary_file_urls
+
+
 def main():
     entry_id = demisto.args()["entryID"]
     # File entity
@@ -239,19 +255,28 @@ def main():
                 shutil.copy(path, cpy_file_path)
                 # Get metadata:
                 metadata = get_pdf_metadata(cpy_file_path)
+
+                # Get urls from the binary file
+                binary_file_urls = get_urls_from_binary_file(cpy_file_path)
+
                 # Get text:
                 pdf_text_output_path = f'{output_folder}/PDFText.txt'
                 text = get_pdf_text(cpy_file_path, pdf_text_output_path)
+
                 # Get URLS + emails:
                 pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
                 urls = re.findall(urlRegex, pdf_html_content)
                 urls_set = set(urls)
                 emails = re.findall(EMAIL_REGXEX, pdf_html_content)
+
+                urls_set = urls_set.union(binary_file_urls)
                 urls_set = urls_set.union(set(emails))
+
                 # this url is always generated with the pdf html file, and that's why we remove it
                 urls_set.remove('http://www.w3.org/1999/xhtml')
                 for url in urls_set:
                     urls_ec.append({"Data": url})
+
                 # Get images:
                 images = get_images_paths_in_path(output_folder)
             except Exception as e:
