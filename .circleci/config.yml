@@ -197,11 +197,9 @@ jobs:
             if [ $NIGHTLY ] ;
               then
                 demisto-sdk lint --run-all-tests --parallel
-                cp ./Tests/failed_unittests.txt $CIRCLE_ARTIFACTS/failed_unittests.txt
 
               else
                 demisto-sdk lint --git --parallel
-                cp ./Tests/failed_unittests.txt $CIRCLE_ARTIFACTS/failed_unittests.txt
             fi
       - run:
           name: Verify Base Branch for Contribution
@@ -401,12 +399,19 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ];
+            if [ -n "${INSTANCE_TESTS}" ];
               then
-                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
+                echo "Skipping - not running in INSTANCE_TESTS build"
                 exit 0
             fi
-            ./Tests/scripts/slack_notifier.sh ./env_results.json
+            if [ $CIRCLE_NODE_INDEX = 0 ] ;
+              then
+                ./Tests/scripts/slack_notifier.sh ./env_results.json
+            fi
+            if [ $CIRCLE_NODE_INDEX = 1 ] ;
+              then
+                ./Tests/scripts/slack_notifier.sh ./Tests/failed_unittests.txt
+            fi
           when: always
       - run:
           name: Validate Docker Images
