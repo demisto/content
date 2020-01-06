@@ -7,11 +7,11 @@ import sys
 import requests
 from pytest import raises, mark
 import pytest
-from .CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
+from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    build_dbot_entry, IndicatorType, DBotScore, IPIndicator
+    build_dbot_entry, IndicatorType, DBotScore, IP
 
 try:
     from StringIO import StringIO
@@ -772,6 +772,53 @@ class TestBuildDBotEntry(object):
         }
 
 
+class TestIndicatorsClasses:
+    from CommonServerPython import indicators_to_outputs, IP, Domain, DBotScore
+
+    def test_create_dbot_score(self):
+        dbot_score = DBotScore(
+            indicator='8.8.8.8',
+            vendor='Virus Total',
+            score=DBotScore.GOOD,
+            indicator_type=IndicatorType.IP
+        )
+
+        assert dbot_score is not None
+        assert dbot_score.to_context() == {
+            'DBotScore(val.Indicator && val.Indicator == obj.Indicator)': {
+                'Indicator': '8.8.8.8',
+                'Type': 'ip',
+                'Vendor': 'Virus Total',
+                'Score': DBotScore.GOOD
+            }
+        }
+
+    def test_create_dbot_score_with_invalid_score(self):
+        assert False
+
+
+    def test_create_ip(self):
+        ip = IP(
+            ip='8.8.8.8',
+            asn='some asn',
+            hostname='test.com',
+            geo_country=None,
+            geo_description=None,
+            geo_latitude=None,
+            geo_longitude=None,
+            positive_engines=None,
+            detection_engines=None
+        )
+
+        assert ip.to_context() == {
+            'IP(val.Address && val.Address == obj.Address)': {
+                'Address': '8.8.8.8',
+                'ASN': 'some asn',
+                'Hostname': 'test.com'
+            }
+        }
+
+
 class TestBaseClient:
     from CommonServerPython import BaseClient
     text = {"status": "ok"}
@@ -1000,7 +1047,7 @@ class TestReturnOutputs:
     def test_return_ip_indicator(self, mocker):
         mocker.patch.object(demisto, 'results')
         md = 'md'
-        ip_indicator = IPIndicator(
+        ip_indicator = IP(
             ip='8.8.8.8',
             asn='SOME ASN',
             vendor='Virus Total',
@@ -1008,7 +1055,7 @@ class TestReturnOutputs:
             malicious_description='this is malicious ip'
         )
 
-        return_outputs(md, ip_indicators=ip_indicator)
+        return_outputs(md, indicators=ip_indicator)
         results = demisto.results.call_args[0][0]
         assert len(demisto.results.call_args[0]) == 1
         assert demisto.results.call_count == 1

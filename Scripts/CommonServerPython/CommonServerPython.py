@@ -1511,9 +1511,9 @@ class DBotScore:
     SUSPICIOUS = 2
     BAD = 3
 
-    CONTEXT_PATH = 'DBotScore'
+    CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator)'
 
-    def __init__(self, indicator, indicator_type: IndicatorType, vendor, score):
+    def __init__(self, indicator, indicator_type, vendor, score):
         self.indicator = indicator
         self.indicator_type = indicator_type
         self.vendor = vendor
@@ -1521,18 +1521,21 @@ class DBotScore:
 
     def to_context(self):
         return {
-            'Indicator': self.indicator,
-            'Type': self.indicator_type,
-            'Vendor': self.vendor,
-            'Score': self.score
+            DBotScore.CONTEXT_PATH: {
+                'Indicator': self.indicator,
+                'Type': self.indicator_type,
+                'Vendor': self.vendor,
+                'Score': self.score
+            }
         }
 
 
 class IP:
     CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
-    def __init__(self, vendor, ip, asn, hostname, geo_latitude, geo_longitude, geo_country, geo_description,
-                 detection_engines, positive_engines, dbot_score=None, malicious_description=None):
+    def __init__(self, ip, asn, hostname, geo_latitude, geo_longitude, geo_country, geo_description,
+                 detection_engines, positive_engines):
+
         self.ip = ip
         self.asn = asn
         self.hostname = hostname
@@ -1542,11 +1545,24 @@ class IP:
         self.geo_description = geo_description
         self.detection_engines = detection_engines
         self.positive_engines = positive_engines
+
+        # DBotScore fields
+        self.dbot_score = None
+        self.malicious = None
+        self.malicious_vendor = None
+        self.malicious_description = None
+
+    def set_dbot_score(self, vendor, dbot_score, malicious_description=None):
         self.dbot_score = DBotScore(self.ip, IndicatorType.IP, vendor, dbot_score)
 
         if dbot_score == DBotScore.BAD:
             self.malicious = True
             self.malicious_vendor = vendor
+
+            if not malicious_description:
+                raise DemistoException('malicious_description must be provided for malicious ip indicator: {}'
+                                       .format(self.ip))
+
             self.malicious_description = malicious_description
 
     def to_context(self):
@@ -1564,7 +1580,7 @@ class IP:
             ip_context['Geo'] = {}
 
             if self.geo_latitude and self.geo_longitude:
-                ip_context['Geo']['Location'] = f'{self.geo_latitude}:{self.geo_longitude}'
+                ip_context['Geo']['Location'] = '{}:{}'.format(self.geo_latitude, self.geo_longitude)
 
             if self.geo_country:
                 ip_context['Geo']['Country'] = self.geo_country
@@ -1584,10 +1600,51 @@ class IP:
                 'Description': self.malicious_description
             }
 
-        return ip_context
+        return { IP.CONTEXT_PATH: ip_context }
 
 
-def return_outputs(readable_output, outputs=None, raw_response=None, ip_indicators=None):
+class Domain:
+    CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
+
+    def __init__(self, domain, dns):
+        self.domain = domain
+
+        # DBotScore fields
+        self.dbot_score = None
+        self.malicious = None
+        self.malicious_vendor = None
+        self.malicious_description = None
+
+    def set_dbot_score(self, vendor, dbot_score, malicious_description=None):
+        self.dbot_score = DBotScore(self.domain, IndicatorType.DOMAIN, vendor, dbot_score)
+
+        if dbot_score == DBotScore.BAD:
+            self.malicious = True
+            self.malicious_vendor = vendor
+            self.malicious_description = malicious_description
+
+    def to_context(self):
+        domain_context = {
+            'Name': self.domain
+        }
+
+        if self.dns:
+            domain_context['DNS'] = self.dns
+
+        if self.malicious:
+            domain_context['Malicious'] = {
+                'Vendor': self.malicious_vendor,
+                'Description': self.malicious_description
+            }
+
+        return domain_context
+
+
+def indicators_to_outputs(indicators):
+    return None
+
+
+def return_outputs(readable_output, outputs=None, raw_response=None, indicators=None):
     """
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
@@ -1623,12 +1680,12 @@ def return_outputs(readable_output, outputs=None, raw_response=None, ip_indicato
         # if raw_response was not provided but outputs were provided then set Contents as outputs
         return_entry["Contents"] = outputs
 
-    if ip_indicators:
+    if indicators:
         if "EntryContext" not in return_entry:
             return_entry["EntryContext"] = {}
 
-        return_entry["EntryContext"][IP.CONTEXT_PATH] = ip_indicators
-        dbot_scores = map(lambda ip : ip.dbot_score, ip_indicators)
+        return_entry["EntryContext"][IP.CONTEXT_PATH] = indicators
+        dbot_scores = map(lambda indicator : indicator.dbot_score, indicators)
 
         return_entry['EntryContext'][DBotScore.CONTEXT_PATH].extend(dbot_scores)
 
