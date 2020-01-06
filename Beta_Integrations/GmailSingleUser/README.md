@@ -1,10 +1,6 @@
-## Overview
----
-
 Use Gmail Single User integration to send emails and fetch emails as incidents to demisto.
 
 ## Configure Gmail Single User on Demisto
----
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Gmail Single User.
@@ -16,7 +12,7 @@ Use Gmail Single User integration to send emails and fetch emails as incidents t
     * __Incident type__
     * __Fetch incidents__
     * __First fetch timestamp, in days.__
-    * __Events query (e.g., "from:example@demisto.com")__
+    * __Events query (e.g. "from:example@demisto.com")__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
@@ -36,13 +32,12 @@ Use Gmail Single User integration to send emails and fetch emails as incidents t
 * Email Body Format
 
 ## Commands
----
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. send-mail
-2. gmail-auth-link
-3. gmail-auth-test
-### 1. send-mail
+1. Send email: send-mail
+2. Get an authentication link: gmail-auth-link
+3. Test authorization: gmail-auth-test
+### 1. Send email
 ---
 Sends an email using Gmail.
 
@@ -53,9 +48,9 @@ Sends an email using Gmail.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| to | Email addresses of the receiver. | Required | 
+| to | The email addresses of the receiver. | Required | 
 | body | The contents (body) of the email to be sent in plain text. | Optional | 
-| subject | Subject of the email to be sent. | Required | 
+| subject | The subject of the email to be sent. | Required | 
 | attachIDs | A comma-separated list of IDs of War Room entries that contain files, which need be attached to the email. | Optional | 
 | cc | The additional recipient email address (CC). | Optional | 
 | bcc | The additional recipient email address (BCC). | Optional | 
@@ -88,7 +83,6 @@ Sends an email using Gmail.
 
 ##### Command Example
 ```!send-mail subject="this is the subject" to=test@demistodev.com body="this is the body"```
-
 ##### Context Example
 ```
 {
@@ -111,64 +105,40 @@ Sends an email using Gmail.
     ]
 }
 ```
-
 ##### Human Readable Output
 ### Email sent:
 |Type|ID|To|From|Subject|Body|Labels|ThreadId|
 |---|---|---|---|---|---|---|---|
 | Gmail | 16f662789d3a2972 | test@demistodev.com | example@demisto.com | this is the subject | this is the body | SENT | 16f662789d3a2972 |
-
-
-### 2. gmail-auth-link
+### 2. Get an authentication link
 ---
-Starts the OAuth2 process. Get a link to use to authenticate to Gmail.
-
+Returns a link to use to authenticate to Gmail. It starts the OAuth2 process. 
 ##### Base Command
-
 `gmail-auth-link`
 ##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-
+There is no input for this command.
 ##### Context Output
-
 There is no context output for this command.
-
 ##### Command Example
 ```!gmail-auth-link```
-
 ##### Human Readable Output
-
 ## Gmail Auth Link
 Please follow the following **link**.
-
 After Completing the authentication process, copy the received code
 to the **Auth Code** configuration parameter of the integration instance.
 Save the integration instance and then run *!gmail-auth-test* to test that
 the authentication is properly set.
     
-
-### 3. gmail-auth-test
+### 3. Test authorization
 ---
 Tests that Gmail auth is properly configured. Use this command after completing the OAuth2 authentication process.
-
 ##### Base Command
-
 `gmail-auth-test`
 ##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-
+There is no input for this command.
 ##### Context Output
-
 There is no context output for this command.
-
 ##### Command Example
 ```!gmail-auth-test```
-
 ##### Human Readable Output
 Authentication test completed successfully.
