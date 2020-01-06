@@ -178,7 +178,7 @@
             "complex": {
                 "root": "IPv6",
                 "filters": [],
-                "accessor": "Reported By",
+                "accessor": "ReportedBy",
                 "transformers": [
                     {
                         "operator": "uniq",
