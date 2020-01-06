@@ -1062,8 +1062,8 @@ script:
       description: User Email
       type: string
     - contextPath: SalesForce.Case.IsEscalated
-      description: IsEscalated for Case
-      type: string
+      description: Is Escalated for Case
+      type: boolean
     - contextPath: SalesForce.Case.SuppliedPhone
       description: Case Supplied Phone
       type: string
