@@ -104,7 +104,7 @@ script:
       - CURRENT_MONTH
       - PREVIOUS_WEEK
       - CURRENT_WEEK
-      required: true
+      required: false
       secret: false
     - default: false
       description: Filter on the query results, should be a json string, of the format
@@ -731,3 +731,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- playbook McAfee ESM v2 - Test

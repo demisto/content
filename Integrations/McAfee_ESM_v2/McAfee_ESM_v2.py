@@ -534,11 +534,12 @@ class McAfeeESMClient(BaseClient):
                     raise error
         result = table_times_set(result, self.difference)
         entry: List = [{}] * len(result['rows'])
-        headers = [field.get('name') for field in result['columns']]
+        headers = [str(field.get('name')).replace('.', '') for field in result['columns']]
         for i in range(len(result['rows'])):
             entry[i] = {headers[j]: result['rows'][i]['values'][j] for j in range(len(headers))}
 
-        condition = '(val.Alert.IPSIDAlertID && val.Alert.IPSIDAlertID == obj.Alert.IPSIDAlertID)'
+        # condition = '(val.Alert.IPSIDAlertID && val.Alert.IPSIDAlertID == obj.Alert.IPSIDAlertID)'
+        condition = ''
         context_entry = {f'McAfeeESM{condition}': entry}
         return search_readable_outputs(result), context_entry, result
 
@@ -824,8 +825,7 @@ def block_3(client: McAfeeESMClient):
     client.args = {
         'filters': '[{\"type\":\"EsmFieldFilter\",\"field\":{\"name\":\"SrcIP\"},\"operator\":\"IN\"}]',
         'timeRange': 'CURRENT_DAY',
-        'limit': 5,
-        'offset': 2
+        'limit': 5
     }
     _, context, res = client.complete_search()
     print(res)
