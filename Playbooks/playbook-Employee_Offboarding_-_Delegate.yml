@@ -131,6 +131,7 @@ tasks:
       id: 4925fc21-90a2-4baa-868a-a74e40f9b477
       version: -1
       name: Send email to manager stating the mailbox is delegated
+      description: "Sends an email to the user's manager, saying the mailbox was delegated to them."
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -237,6 +238,7 @@ tasks:
       id: 4c8c3da8-d763-47de-8921-3874b752c74b
       version: -1
       name: Transfer ownership of primary & secondary calendars to manager
+      description: Please transfer ownership of calendars that the user has, to their manager.
       type: regular
       iscommand: false
       brand: ''
@@ -403,6 +405,7 @@ tasks:
       id: 3f910896-24c1-4b14-8487-8ff607c91367
       version: -1
       name: Is a mail sender integration enabled?
+      description: "Checks whether any mail sender integration is enabled."
       type: condition
       iscommand: false
       brand: ''
