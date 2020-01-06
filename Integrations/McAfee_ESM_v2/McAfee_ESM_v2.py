@@ -620,8 +620,9 @@ class McAfeeESMClient(BaseClient):
 def filtering_incidents(incidents_list: List, start_id: int, limit: int = 1):
     incidents_list = [incident for incident in incidents_list if int(incident.get('id', 0)) > start_id]
     incidents_list.sort(key=lambda case: int(case.get('id', 0)), reverse=True)
-    cases_size = min(limit, len(incidents_list))
-    incidents_list = incidents_list[-cases_size:]
+    if limit != 0:
+        cases_size = min(limit, len(incidents_list))
+        incidents_list = incidents_list[-cases_size:]
     return incidents_list
 
 
