@@ -1,8 +1,8 @@
-id: playbook McAfee ESM v2 - Test
+id: McAfee ESM v2 - Test
 version: -1
 contentitemfields:
   propagationLabels: []
-name: playbook McAfee ESM v2 - Test
+name: McAfee ESM v2 - Test
 starttaskid: "0"
 tasks:
   "0":
