@@ -155,7 +155,7 @@
             "complex": {
                 "root": "CIDR",
                 "filters": [],
-                "accessor": "Reported By",
+                "accessor": "ReportedBy",
                 "transformers": [
                     {
                         "operator": "uniq",
