@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Replaced Account field with Account Name field.
 
 ## [19.12.0] - 2019-12-10
 Updated classifier with new transformer.
