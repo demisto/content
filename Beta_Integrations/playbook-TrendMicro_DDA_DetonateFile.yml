@@ -88,7 +88,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Trend Micro Deep Discovery Analyzer
+                        simple: Trend Micro Deep Discovery Analyzer Beta
                 - - operator: isEqualString
                     left:
                       value:
@@ -246,7 +246,7 @@ tasks:
       version: -1
       name: Trend Micro DDA Upload File
       description: Uploads the submission to Trend Micro DDA.
-      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-upload-file
+      script: '|||trendmicro-dda-upload-file'
       type: regular
       iscommand: true
       brand: Trend Micro Deep Discovery Analyzer
@@ -318,7 +318,7 @@ tasks:
       version: -1
       name: trendmicro-dda-check-status
       description: Updates the status of the submissions in the context.
-      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-check-status
+      script: '|||trendmicro-dda-check-status'
       type: regular
       iscommand: true
       brand: Trend Micro Deep Discovery Analyzer
@@ -346,7 +346,7 @@ tasks:
       version: -1
       name: Trend Micro DDA Get Report
       description: Retrieve the reports from Trend Micro DDA.
-      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-get-report
+      script: '|||trendmicro-dda-get-report'
       type: regular
       iscommand: true
       brand: Trend Micro Deep Discovery Analyzer

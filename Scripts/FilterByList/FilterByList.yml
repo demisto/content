@@ -1,37 +1,64 @@
 commonfields:
   id: FilterByList
   version: -1
-name: FilterByList
-script: '-'
-type: python
-subtype: python2
-tags:
-- whitelist
-comment: Checks whether the specified item is in a list. The default list is the Demisto
-  Indicators Whitelist.
 enabled: true
+name: FilterByList
 args:
-- name: values
-  default: true
+- default: true
   description: The item to look for in the list.
   isArray: true
-- name: listname
-  description: Name of the list against which to check the value. The default is the Indicators Whitelist.
+  name: values
+  required: false
+  secret: false
+- default: false
   defaultValue: Indicators Whitelist
-- name: ignorecase
-  auto: PREDEFINED
+  description: Name of the list against which to check the value. The default is the
+    Indicators Whitelist.
+  isArray: false
+  name: listname
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'No'
+  description: Whether to ignore the case of the item for which you are searching.
+    Default is "No".
+  isArray: false
+  name: ignorecase
   predefined:
-  - "yes"
-  - "no"
-  description: Whether to ignore the case of the item for which you are searching. Default is "No".
-  defaultValue: "No"
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'No'
+  description: Whether to match the exact item in the list, or look for any string
+    that contains it. Default is "No".
+  isArray: false
+  name: matchexact
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+comment: Checks whether the specified item is in a list. The default list is the Demisto
+  Indicators Whitelist.
 outputs:
 - contextPath: List.In
   description: The list of items in the list.
+  type: Unknown
 - contextPath: List.NotIn
   description: The list of items not in the list.
-scripttarget: 0
+  type: Unknown
+script: '-'
+subtype: python2
+system: false
+tags:
+- whitelist
+timeout: '0'
+type: python
+runas: DBotWeakRole
 runonce: false
 tests:
-  - FilterByList - Test
-runas: DBotWeakRole
+- FilterByList - Test

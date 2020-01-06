@@ -24,6 +24,8 @@ try:
 except Exception:
     pass
 
+CONTENT_RELEASE_VERSION = '0.0.0'
+CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
@@ -76,6 +78,7 @@ thresholds = {
     'vtPositives': 10,
     'vtPositiveUrlsForIP': 30
 }
+# The dictionary below does not represent DBot Scores correctly, and should not be used
 dbotscores = {
     'Critical': 4,
     'High': 3,
@@ -836,6 +839,31 @@ def argToList(arg, separator=','):
             return json.loads(arg)
         return [s.strip() for s in arg.split(separator)]
     return arg
+
+
+def argToBoolean(value):
+    """
+        Boolean-ish arguments that are passed through demisto.args() could be type bool or type string.
+        This command removes the guesswork and returns a value of type bool, regardless of the input value's type.
+        It will also return True for 'yes' and False for 'no'.
+
+        :param value: the value to evaluate
+        :type value: ``string|bool``
+
+        :return: a boolean representatation of 'value'
+        :rtype: ``bool``
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, STRING_OBJ_TYPES):
+        if value.lower() in ['true', 'yes']:
+            return True
+        elif value.lower() in ['false', 'no']:
+            return False
+        else:
+            raise ValueError('Argument does not contain a valid boolean-like value')
+    else:
+        raise ValueError('Argument is neither a string nor a boolean')
 
 
 def appendContext(key, data, dedup=False):
@@ -2322,7 +2350,7 @@ if 'requests' in sys.modules:
                     try:
                         # Try to parse json error response
                         error_entry = res.json()
-                        err_msg += '\n{}'.format(error_entry)
+                        err_msg += '\n{}'.format(json.dumps(error_entry))
                         raise DemistoException(err_msg)
                     except ValueError as exception:
                         raise DemistoException(err_msg, exception)
@@ -2386,3 +2414,22 @@ if 'requests' in sys.modules:
 
 class DemistoException(Exception):
     pass
+
+def batch(iterable, batch_size=1):
+    """Gets an iterable and yields slices of it.
+
+    :type iterable: ``list``
+    :param iterable: list or other iterable object.
+
+    :type batch_size: ``int``
+    :param batch_size: the size of batches to fetch
+
+    :rtype: ``list``
+    :return:: Iterable slices of given
+    """
+    current_batch = iterable[:batch_size]
+    not_batched = iterable[batch_size:]
+    while current_batch:
+        yield current_batch
+        current_batch = not_batched[:batch_size]
+        not_batched = current_batch[batch_size:]

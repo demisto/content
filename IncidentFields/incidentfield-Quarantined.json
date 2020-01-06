@@ -2,7 +2,8 @@
 	"associatedToAll": false,
 	"associatedTypes": [
 		"File",
-		"Host"
+		"Host",
+		"Malware"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
