@@ -24,7 +24,7 @@ class Client(BaseClient):
 
 def test_module(client: Client, *_):
     """
-    Performs basic get request to get item samples1
+    Performs basic get request to get item samples
     """
     res_vulnerabilities = client._http_request('GET', '/vulnerabilities')
     res_assets = client._http_request('GET', '/assets')
