@@ -197,7 +197,7 @@
             "complex": {
                 "root": "CIDR",
                 "filters": [],
-                "accessor": "Traffic Light Protocol (TLP)",
+                "accessor": "TrafficLightProtocol",
                 "transformers": [
                     {
                         "operator": "uniq",
