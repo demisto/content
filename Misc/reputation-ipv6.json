@@ -206,7 +206,7 @@
             "complex": {
                 "root": "IPv6",
                 "filters": [],
-                "accessor": "Threat Types",
+                "accessor": "ThreatTypes",
                 "transformers": [
                     {
                         "operator": "uniq",
