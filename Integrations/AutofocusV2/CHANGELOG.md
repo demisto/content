@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Handle errors for the reputation commands: ***ip***, ***domain***, ***file***, ***url*** gracefully.
 
 ## [19.12.1] - 2019-12-25
 Added four reputation commands.

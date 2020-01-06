@@ -238,6 +238,13 @@ VERDICTS_TO_DBOTSCORE = {
     'c2': 3
 }
 
+ERROR_DICT = {
+    '404': 'Invalid URL.',
+    '409': 'Invalid message or missing parameters.',
+    '500': 'Internal error.',
+    '503': 'Rate limit exceeded.'
+}
+
 if PARAMS.get('mark_as_malicious'):
     verdicts = argToList(PARAMS.get('mark_as_malicious'))
     for verdict in verdicts:
@@ -801,24 +808,35 @@ def search_indicator(indicator_type, indicator_value):
         'includeTags': 'true',
     }
 
-    res = requests.request(
-        method='GET',
-        url=f'{BASE_URL}/tic',
-        verify=USE_SSL,
-        headers=headers,
-        params=params
-    )
-
     try:
+        result = requests.request(
+            method='GET',
+            url=f'{BASE_URL}/tic',
+            verify=USE_SSL,
+            headers=headers,
+            params=params
+        )
         # Handle error responses gracefully
-        res.raise_for_status()
-        res_json = res.json()
+        result.raise_for_status()
+        result_json = result.json()
     # Unexpected errors (where no json object was received)
     except Exception as err:
-        err_msg = f'{err}'
+        try:
+            text_error = result.json()
+        except ValueError:
+            text_error = {}
+        error_message = text_error.get('message')
+        if error_message:
+            return_error(f'Request Failed with status: {result.status_code}.\n'
+                         f'Reason is: {str(error_message)}.')
+        elif str(result.status_code) in ERROR_DICT:
+            return_error(f'Request Failed with status: {result.status_code}.\n'
+                         f'Reason is: {ERROR_DICT[str(result.status_code)]}.')
+        else:
+            err_msg = f'Request Failed with message: {err}.'
         return return_error(err_msg)
 
-    return res_json
+    return result_json
 
 
 def parse_indicator_response(res, indicator_type):
