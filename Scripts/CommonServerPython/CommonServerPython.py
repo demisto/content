@@ -12,7 +12,6 @@ import os
 import re
 import base64
 import logging
-from enum import Enum
 from collections import OrderedDict
 import xml.etree.cElementTree as ET
 from datetime import datetime, timedelta
@@ -104,7 +103,7 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ssdeep': 'file'
 }
 
-class ReputationTypes(Enum):
+class ReputationTypes(object):
     """Type of Reputations, used in TIP integrations"""
     Account = "Account"
     CVE = "CVE"
