@@ -13,6 +13,8 @@ from io import BytesIO
 import sys
 import base64
 import time
+import subprocess
+import traceback
 
 PROXY = demisto.getParam('proxy')
 
@@ -68,22 +70,43 @@ def init_driver(offline_mode=False):
     return driver
 
 
+def find_zombie_processes():
+    """find zombie proceses
+    Returns:
+        ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
+    """
+    ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,cmd'],
+                                     stderr=subprocess.STDOUT, universal_newlines=True)
+    lines = ps_out.splitlines()
+    pid = str(os.getpid())
+    zombies = []
+    if len(lines) > 1:
+        for l in lines[1:]:
+            pinfo = l.split()
+            if pinfo[2] == 'Z' and pinfo[1] == pid:  # zombie process
+                zombies.append(pinfo[0])
+    return zombies, ps_out
+
+
 def quit_driver_and_reap_children(driver):
     """
-    Quits the driver's session and reaps all of child processes
+    Quits the driver's session and reaps all of zombie child processes
     :param driver: The driver
     :return: None
     """
     demisto.debug(f'Quitting driver session: {driver.session_id}')
     driver.quit()
     try:
-        child_pid = 1
-        while child_pid:
-            # waiting for child process to terminate
-            child_pid = os.waitpid(-1, os.WNOHANG)[0]
-            demisto.debug(f'Child {str(child_pid)} was reaped successfully.')
-    except ChildProcessError:
-        pass
+        zombies, ps_out = find_zombie_processes()
+        if zombies:
+            demisto.info(f'Found zombie processes will waitpid: {ps_out}')
+            for pid in zombies:
+                waitres = os.waitpid(int(pid), os.WNOHANG)[1]
+                demisto.info(f'waitpid result: {waitres}')
+        else:
+            demisto.debug(f'No zombie processes found for ps output: {ps_out}')
+    except Exception as e:
+        demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
 
 
 def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time: int = 0, offline_mode: bool = False):
