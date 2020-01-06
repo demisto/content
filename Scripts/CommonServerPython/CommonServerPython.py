@@ -4,16 +4,17 @@ Please notice that to add custom common code, add it to the CommonServerUserPyth
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
 from __future__ import print_function
-import socket
-import time
+
+import base64
 import json
-import sys
+import logging
 import os
 import re
-import base64
-import logging
-from collections import OrderedDict
+import socket
+import sys
+import time
 import xml.etree.cElementTree as ET
+from collections import OrderedDict
 from datetime import datetime, timedelta
 
 import demistomock as demisto
@@ -592,12 +593,12 @@ def b64_encode(text):
 
 def encode_string_results(s):
     """
-       Encode string as utf-8, if any unicode character exists.
+    Encode string as utf-8, if any unicode character exists.
 
-          :param s: string to encode
-          :type text: str
-          :return: encoded string
-          :rtype: str
+    :param s: string to encode
+    :type text: str
+    :return: encoded string
+    :rtype: str
     """
     if not isinstance(s, STRING_OBJ_TYPES):
         return s
