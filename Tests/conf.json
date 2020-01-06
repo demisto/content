@@ -855,7 +855,7 @@
         },
         {
             "integrations": "McAfee ESM v2",
-            "instance_names": "v10.0.2",
+            "instance_names": "v10.2.0",
             "playbookID": "McAfee ESM v2 - Test",
             "timeout": 500
         },
