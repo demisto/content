@@ -1,5 +1,5 @@
 id: playbook McAfee ESM v2 - Test
-version: 2
+version: -1
 contentitemfields:
   propagationLabels: []
 name: playbook McAfee ESM v2 - Test
@@ -34,17 +34,16 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 94c3d75e-f195-4dcc-8f08-69c5234e785d
+    taskid: b380feff-2130-44f6-8ee8-6b585a3611ad
     type: regular
     task:
-      id: 94c3d75e-f195-4dcc-8f08-69c5234e785d
+      id: b380feff-2130-44f6-8ee8-6b585a3611ad
       version: -1
       name: get_user_list
       description: Get a list of all users.
-      script: esm-get-user-list
+      script: '|||esm-get-user-list'
       type: regular
       iscommand: true
-      brand: McAfee ESM_v2
     nexttasks:
       '#none#':
       - "3"
@@ -61,17 +60,16 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 06f0a3ef-476c-4f4f-8f82-7aacfdc1b49a
+    taskid: b1749fa7-cb21-43a4-8e64-e3cc3e17e2b1
     type: regular
     task:
-      id: 06f0a3ef-476c-4f4f-8f82-7aacfdc1b49a
+      id: b1749fa7-cb21-43a4-8e64-e3cc3e17e2b1
       version: -1
       name: get_organization_list
       description: Get case organization
-      script: esm-get-organization-list
+      script: '|||esm-get-organization-list'
       type: regular
       iscommand: true
-      brand: McAfee ESM_v2
     nexttasks:
       '#none#':
       - "1"
@@ -88,17 +86,16 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 2ac1607f-6d14-48cc-8573-ab2817911598
+    taskid: 708c6ee3-f0b4-47a6-88cc-e0e745e45db4
     type: regular
     task:
-      id: 2ac1607f-6d14-48cc-8573-ab2817911598
+      id: 708c6ee3-f0b4-47a6-88cc-e0e745e45db4
       version: -1
       name: get_case_list
       description: Get a list of cases from the system
-      script: esm-get-case-list
+      script: '|||esm-get-case-list'
       type: regular
       iscommand: true
-      brand: McAfee ESM_v2
     nexttasks:
       '#none#':
       - "4"
@@ -118,17 +115,16 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 0e9481d1-7bb8-4657-8b9d-c0e9fd6ed21d
+    taskid: b16d5bf4-1b89-4048-85c5-f23b5895e0e6
     type: regular
     task:
-      id: 0e9481d1-7bb8-4657-8b9d-c0e9fd6ed21d
+      id: b16d5bf4-1b89-4048-85c5-f23b5895e0e6
       version: -1
       name: get_case_statuses
       description: Get a list of valid case statuses from the system
-      script: esm-get-case-statuses
+      script: '|||esm-get-case-statuses'
       type: regular
       iscommand: true
-      brand: McAfee ESM_v2
     nexttasks:
       '#none#':
       - "13"
@@ -145,17 +141,16 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: cfbc2dc2-b0c3-4135-8fe9-66f0ea2f85e6
+    taskid: cbd12b21-955c-4618-85d1-494b12a7518a
     type: regular
     task:
-      id: cfbc2dc2-b0c3-4135-8fe9-66f0ea2f85e6
+      id: cbd12b21-955c-4618-85d1-494b12a7518a
       version: -1
       name: add_case
       description: Add a case to the system
-      script: esm-add-case
+      script: '|||esm-add-case'
       type: regular
       iscommand: true
-      brand: McAfee ESM_v2
     nexttasks:
       '#none#':
       - "6"
@@ -179,17 +174,16 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: b0bb5e4a-8b77-4d5f-857d-3044b6d447d6
+    taskid: 56546de2-6792-4468-8807-dd04815803f6
     type: regular
     task:
-      id: b0bb5e4a-8b77-4d5f-857d-3044b6d447d6
+      id: 56546de2-6792-4468-8807-dd04815803f6
       version: -1
       name: edit_case
       description: Edit an existing case
-      script: esm-edit-case
+      script: '|||esm-edit-case'
       type: regular
       iscommand: true
-      brand: McAfee ESM_v2
     nexttasks:
       '#none#':
       - "13"
@@ -215,23 +209,22 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 76a92c67-ef0b-4d96-865c-73fae687dc25
+    taskid: 5f56f8ed-75a0-4867-889b-43af7044ca1f
     type: regular
     task:
-      id: 76a92c67-ef0b-4d96-865c-73fae687dc25
+      id: 5f56f8ed-75a0-4867-889b-43af7044ca1f
       version: -1
       name: add_case_status
       description: Add a case status
-      script: McAfee ESM_v2|||esm-add-case-status
+      script: '|||esm-add-case-status'
       type: regular
       iscommand: true
-      brand: McAfee ESM_v2
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
       name:
-        simple: McAfee_ESM_v2_add_case
+        simple: AAA
       show_in_case_pane: {}
     separatecontext: false
     view: |-
@@ -246,25 +239,24 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: c46a1584-0204-4abe-82e3-318924c9cf4f
+    taskid: b71d569f-b912-4d76-8297-d17f9ecfbecf
     type: regular
     task:
-      id: c46a1584-0204-4abe-82e3-318924c9cf4f
+      id: b71d569f-b912-4d76-8297-d17f9ecfbecf
       version: -1
       name: edit_case_status
       description: Edit a case status
-      script: McAfee ESM_v2|||esm-edit-case-status
+      script: '|||esm-edit-case-status'
       type: regular
       iscommand: true
-      brand: McAfee ESM_v2
     nexttasks:
       '#none#':
       - "9"
     scriptarguments:
       new_name:
-        simple: TestMcAfee_ESM_v2_edit
+        simple: BBB
       original_name:
-        simple: McAfee_ESM_v2_add_case
+        simple: AAA
       show_in_case_pane: {}
     separatecontext: false
     view: |-
@@ -279,23 +271,22 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: e1dc4614-af98-4b70-8148-e44c746e91e8
+    taskid: 55f6b308-0bf3-43e1-82ea-1057a81f58b4
     type: regular
     task:
-      id: e1dc4614-af98-4b70-8148-e44c746e91e8
+      id: 55f6b308-0bf3-43e1-82ea-1057a81f58b4
       version: -1
       name: delete_case_status
       description: Delete a case status
-      script: esm-delete-case-status
+      script: '|||esm-delete-case-status'
       type: regular
       iscommand: true
-      brand: McAfee ESM_v2
     nexttasks:
       '#none#':
       - "13"
     scriptarguments:
       name:
-        simple: TestMcAfee_ESM_v2_edit
+        simple: BBB
     separatecontext: false
     view: |-
       {
@@ -309,17 +300,16 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: b0598432-33bb-4e3e-8f45-fce688b38cf9
+    taskid: abdcfcb6-0ebe-40fd-8282-0e1580b0902f
     type: regular
     task:
-      id: b0598432-33bb-4e3e-8f45-fce688b38cf9
+      id: abdcfcb6-0ebe-40fd-8282-0e1580b0902f
       version: -1
       name: search
       description: Perform a query against Mcafee ESM SIEM
-      script: McAfee ESM_v2|||esm-search
+      script: '|||esm-search'
       type: regular
       iscommand: true
-      brand: McAfee ESM_v2
     nexttasks:
       '#none#':
       - "11"
@@ -334,7 +324,7 @@ tasks:
       queryType: {}
       timeOut: {}
       timeRange:
-        simple: PREVIOUS_QUARTER
+        simple: CURRENT_YEAR
     separatecontext: false
     view: |-
       {
@@ -348,23 +338,22 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: db4d73dd-d811-4bbf-87cb-32c718f2b1f1
+    taskid: 318df7b7-fe46-467a-8f12-8437edba88c6
     type: regular
     task:
-      id: db4d73dd-d811-4bbf-87cb-32c718f2b1f1
+      id: 318df7b7-fe46-467a-8f12-8437edba88c6
       version: -1
       name: get_alarm_event_details
       description: Gets the details for the triggered alarm
       script: '|||esm-get-alarm-event-details'
       type: regular
       iscommand: true
-      brand: ""
     nexttasks:
       '#none#':
       - "12"
     scriptarguments:
       eventId:
-        simple: ${McAfeeESM.[0].Alert.IPSIDAlertID}
+        simple: ${McAfeeESM.[0].AlertIPSIDAlertID}
     separatecontext: false
     view: |-
       {
@@ -378,23 +367,22 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: b3a7339a-1fd9-482a-8f36-f910940e9b63
+    taskid: 2a2e9fc6-c3a4-4580-822f-835230fd06e3
     type: regular
     task:
-      id: b3a7339a-1fd9-482a-8f36-f910940e9b63
+      id: 2a2e9fc6-c3a4-4580-822f-835230fd06e3
       version: -1
       name: get_case_event_list
       description: Get case events details
-      script: esm-get-case-event-list
+      script: '|||esm-get-case-event-list'
       type: regular
       iscommand: true
-      brand: McAfee ESM_v2
     nexttasks:
       '#none#':
       - "13"
     scriptarguments:
       ids:
-        simple: ${McAfeeESM.[0].Alert.IPSIDAlertID}
+        simple: ${McAfeeESM.[0].AlertIPSIDAlertID}
     separatecontext: false
     view: |-
       {
@@ -408,15 +396,14 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 45a50235-b396-425d-8979-a763c64b67ce
+    taskid: d0632911-6ed3-4edb-83a8-11b4922efc7a
     type: title
     task:
-      id: 45a50235-b396-425d-8979-a763c64b67ce
+      id: d0632911-6ed3-4edb-83a8-11b4922efc7a
       version: -1
       name: done
       type: title
       iscommand: false
-      brand: ""
     separatecontext: false
     view: |-
       {
