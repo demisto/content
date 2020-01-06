@@ -54,6 +54,7 @@ def create_failed_unittests_file(failed_unittests):
     """
     with open('./Tests/failed_unittests.txt', "w") as failed_unittests_file:
         failed_unittests_file.write('\n'.join(failed_unittests))
+        print('Create the file')
 
 
 def main():
@@ -90,7 +91,9 @@ def main():
         for future in concurrent.futures.as_completed(futures_submit):
             res = future.result()
             handle_run_res(res, fail_pkgs, good_pkgs)
+    print("creating the file")
     create_failed_unittests_file(fail_pkgs)
+    print('Succcess!')
     if fail_pkgs:
         print_color("\n******* FAIL PKGS: *******", LOG_COLORS.RED)
         print_color("\n\t{}\n".format("\n\t".join(fail_pkgs)), LOG_COLORS.RED)
