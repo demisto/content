@@ -89,16 +89,6 @@ script:
       - csv
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Will try to group together IPs into ranges.
-      isArray: false
-      name: group_ips
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: false
       description: Max amount of entries in the EDL. If no value is provided, will
         default on EDL Size configured in the instance co configuration.

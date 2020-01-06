@@ -196,7 +196,6 @@ def get_edl_ioc_list():
     Get the ioc list to return in the edl
     """
     params = demisto.params()
-    # ip_grouping = params.get('ip_grouping') != 'true'
     out_format = params.get('format')
     on_demand = params.get('on_demand')
     limit = parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)
@@ -299,7 +298,6 @@ def run_long_running(params):
         ssl_args = dict()
 
         if certificate and private_key and not http_server:
-            # TODO: Setup https server and http server when http_server and certificate+private_key
             certificate_file = NamedTemporaryFile(delete=False)
             certificate_path = certificate_file.name
             certificate_file.write(bytes(certificate, 'utf-8'))
@@ -337,8 +335,7 @@ def update_edl_command(args, params):
             '"Update EDL On Demand" is turned off. If you want to update the EDL manually please turn it on.')
     query = args.get('query')
     out_format = args.get('format')
-    ip_grouping = params.get('ip_grouping')
-    indicators = refresh_value_cache(query, out_format, ip_grouping, limit)
+    indicators = refresh_value_cache(query, out_format, limit=limit)
     hr = tableToMarkdown('EDL was updated successfully with the following values', indicators, ['indicators'])
     return hr, {}, {}
 
