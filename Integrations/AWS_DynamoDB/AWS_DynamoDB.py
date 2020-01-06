@@ -552,7 +552,7 @@ def describe_endpoints_command(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    kwargs = {  # type: dict
+    kwargs = {  # type: ignore
 
     }
     kwargs = remove_empty_elements(kwargs)
@@ -625,7 +625,7 @@ def describe_limits_command(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    kwargs = {  # type: dict
+    kwargs = {  # type: ignore
 
     }
     kwargs = remove_empty_elements(kwargs)
