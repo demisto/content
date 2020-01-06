@@ -54,8 +54,8 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- display: Listen port, e.g. 7000 (Required for investigation
-    mirroring and direct messages)
+- display: Listen port, e.g. 7000 (Required for investigation mirroring and direct
+    messages)
   name: longRunningPort
   required: false
   type: 0
@@ -177,6 +177,69 @@ script:
     description: Returns real-time and historical data on the integration status.
     execution: false
     name: microsoft-teams-integration-health
+  - arguments:
+    - default: false
+      description: The name of the channel.
+      isArray: false
+      name: channel_name
+      required: true
+      secret: false
+    - default: false
+      description: The description of the channel.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new channel in a Microsoft Team
+    execution: false
+    name: create-channel
+  - arguments:
+    - default: false
+      description: Add member to this channel
+      isArray: false
+      name: channel
+      required: true
+      secret: false
+    - default: false
+      description: The channel's team
+      isArray: false
+      name: team
+      required: true
+      secret: false
+    - default: false
+      description: The member to add to the channel (display name)
+      isArray: false
+      name: member
+      required: true
+      secret: false
+    deprecated: false
+    description: Add user to channel (private channel only as still in beta mode)
+    execution: false
+    name: add-user-to-channel
+  - arguments:
+    - default: false
+      description: The channel from which to remove the user
+      isArray: false
+      name: channel
+      required: true
+      secret: false
+    - default: false
+      description: The channel team.
+      isArray: false
+      name: team
+      required: true
+      secret: false
+    - default: false
+      description: The member to remove from the channel.
+      isArray: false
+      name: member
+      required: false
+      secret: false
+    deprecated: false
+    description: Remove user from a private channel
+    execution: false
+    name: remove-user-from-channel
   dockerimage: demisto/teams:1.0.0.1701
   isfetch: false
   longRunning: true
@@ -184,7 +247,6 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - No test
 fromversion: 5.0.0

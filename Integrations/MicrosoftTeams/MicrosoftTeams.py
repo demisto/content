@@ -712,6 +712,101 @@ def get_users() -> list:
     return users.get('value', [])
 
 
+def add_user_to_channel(team_aad_id: str, channel_id: str, user_id: str):
+    """
+    Request for adding user to channel
+    """
+    url: str = f'{GRAPH_BASE_URL}/beta/teams/{team_aad_id}/channels/{channel_id}/members'
+    requestjson_: dict = {
+        '@odata.type': '#microsoft.graph.aadUserConversationMember',
+        'roles': [],
+        'user@odata.bind': f'https://graph.microsoft.com/beta/users/{user_id}'
+    }
+    http_request('POST', url, json_=requestjson_)
+
+
+def add_user_to_channel_command():
+    """
+    Add user to channel (private channel only as still in beta mode)
+    """
+    channel_name: str = demisto.args().get('channel', '')
+    team_name: str = demisto.args().get('team', '')
+    member = demisto.args().get('member', '')
+    users: list = get_users()
+    user_id: str = str()
+    found_member: bool = False
+    for user in users:
+        if member in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
+            found_member = True
+            user_id = user.get('id', '')
+            break
+    if not found_member:
+        demisto.results({
+            'Type': entryTypes['warning'],
+            'Contents': f'User {member} was not found',
+            'ContentsFormat': formats['text']
+        })
+
+    team_aad_id = get_team_aad_id(team_name)
+    channel_id = get_channel_id(channel_name, team_aad_id, investigation_id = None)
+    add_user_to_channel(team_aad_id, channel_id, user_id)
+
+    demisto.results(f'The User "{member}" has been added to channel "{channel_name}" successfully.')
+
+
+def remove_user_from_channel_request(team_aad_id: str, channel_id: str, team_member_id: str):
+    """
+    Request for removing user from channel
+    """
+    url: str = f'{GRAPH_BASE_URL}/beta/teams/{team_aad_id}/channels/{channel_id}/members/{team_member_id}'
+    print(url)
+    print(http_request('DELETE', url))
+
+
+def remove_user_from_channel():
+    team_member_id: str = str()
+    channel_name: str = demisto.args().get('channel', '')
+    team_name: str = demisto.args().get('team', '')
+    team_aad_id = get_team_aad_id(team_name)
+    member = demisto.args().get('member', '')
+    users: list = get_users()
+    user_id: str = str()
+    integration_context: dict = demisto.getIntegrationContext()
+    # team_member_id: str = get_team_member_id(member, integration_context)
+    service_url: str = integration_context.get('service_url', '')
+    # if not service_url:
+    #     raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
+    found_member: bool = False
+    for user in users:
+        if member in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
+            found_member = True
+            user_id = user.get('id', '')
+            break
+    if not found_member:
+        demisto.results({
+            'Type': entryTypes['warning'],
+            'Contents': f'User {member} was not found',
+            'ContentsFormat': formats['text']
+        })
+    # members: list = get_team_members(service_url, team_aad_id)
+    # found_member: bool = False
+    # for team_member in members:
+    #     if member in {team_member.get('name', ''), team_member.get('mail'), team_member.get('userPrincipalName')}:
+    #         found_member = True
+    #         break
+    # if not found_member:
+    #     demisto.results({
+    #         'Type': entryTypes['warning'],
+    #         'Contents': f'User {member} was not found',
+    #         'ContentsFormat': formats['text']
+    #     })
+
+    channel_id = get_channel_id(channel_name, team_aad_id, investigation_id = None)
+    remove_user_from_channel_request(team_aad_id, channel_id, '3a6efd73-b4bb-4ef6-b0ed-2c76f043dba4')
+
+    demisto.results(f'The User "{member}" has been removed successfully.')
+
+
 # def create_group_request(
 #         display_name: str, mail_enabled: bool, mail_nickname: str, security_enabled: bool,
 #         owners_ids: list, members_ids: list = None
@@ -1487,7 +1582,10 @@ def main():
         'send-notification': send_message,
         'mirror-investigation': mirror_investigation,
         'close-channel': close_channel,
-        'microsoft-teams-integration-health': integration_health
+        'microsoft-teams-integration-health': integration_health,
+        'create-channel': create_channel,
+        'add-user-to-channel': add_user_to_channel_command,
+        'remove-user-from-channel': remove_user_from_channel
         # 'microsoft-teams-create-team': create_team,
         # 'microsoft-teams-send-file': send_file,
     }
