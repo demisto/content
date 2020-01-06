@@ -848,6 +848,18 @@
             "timeout": 500
         },
         {
+            "integrations": "McAfee ESM v2",
+            "instance_names": "v11.3",
+            "playbookID": "McAfee ESM v2 - Test",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee ESM v2",
+            "instance_names": "v10.0.2",
+            "playbookID": "McAfee ESM v2 - Test",
+            "timeout": 500
+        },
+        {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
             "timeout": 240
