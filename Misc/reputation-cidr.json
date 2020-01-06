@@ -183,7 +183,7 @@
             "complex": {
                 "root": "CIDR",
                 "filters": [],
-                "accessor": "Threat Types",
+                "accessor": "ThreatTypes",
                 "transformers": [
                     {
                         "operator": "uniq",
