@@ -5,12 +5,12 @@ commonfields:
 configuration:
 - display: IP Address (e.g., 127.0.0.1)
   name: address
-  required: true
+  required: false
   type: 0
 - defaultvalue: '514'
-  display: Port
+  display: Port (required for TCP or UDP protocols)
   name: port
-  required: true
+  required: false
   type: 0
 - defaultvalue: UDP
   display: Protocol
@@ -19,7 +19,7 @@ configuration:
   - TCP
   - UDP
   - Unix
-  required: true
+  required: false
   type: 15
 - defaultvalue: LOG_USER
   display: Facility
@@ -69,11 +69,6 @@ configuration:
   - Critical
   required: false
   type: 15
-- defaultvalue: 'true'
-  display: Long running instance. Required for investigation mirroring.
-  name: longRunning
-  required: false
-  type: 8
 description: Use the Syslog Sender integration to send messages and mirror incident
   war room entries to Syslog.
 display: Syslog Sender
@@ -139,9 +134,84 @@ script:
     description: Sends a message to Syslog.
     execution: false
     name: send-notification
+  - arguments:
+    - default: false
+      description: The message content.
+      isArray: false
+      name: message
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The log level.
+      isArray: false
+      name: level
+      predefined:
+      - DEBUG
+      - INFO
+      - WARNING
+      - ERROR
+      - CRITICAL
+      required: false
+      secret: false
+    - default: false
+      description: The syslog server address.
+      isArray: false
+      name: address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The protocol to use
+      isArray: false
+      name: protocol
+      predefined:
+      - TCP
+      - UDP
+      - Unix
+      required: false
+      secret: false
+    - default: false
+      description: The syslog server port (required for TCP or UDP protocols).
+      isArray: false
+      name: port
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The syslog facility.
+      isArray: false
+      name: facility
+      predefined:
+      - LOG_AUTH
+      - LOG_AUTHPRIV
+      - LOG_CRON
+      - LOG_DAEMON
+      - LOG_FTP
+      - LOG_KERN
+      - LOG_LPR
+      - LOG_MAIL
+      - LOG_NEWS
+      - LOG_SYSLOG
+      - LOG_USER
+      - LOG_UUCP
+      - LOG_LOCAL0
+      - LOG_LOCAL1
+      - LOG_LOCAL2
+      - LOG_LOCAL3
+      - LOG_LOCAL4
+      - LOG_LOCAL5
+      - LOG_LOCAL6
+      - LOG_LOCAL7
+      required: false
+      secret: false
+    deprecated: false
+    description: Send a message to syslog
+    execution: false
+    name: syslog-send
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
-  longRunning: true
+  longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
@@ -149,4 +219,4 @@ script:
   subtype: python3
 tests:
 - No test
-fromversion: 5.0.0
+fromversion: 5.5.0
