@@ -1,0 +1,449 @@
+category: Vulnerability Management
+commonfields:
+  id: KennaV2
+  version: -1
+configuration:
+- defaultvalue: https://api.kennasecurity.com
+  display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  required: false
+  type: 0
+- display: Kenna API key
+  name: key
+  required: true
+  type: 4
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Kenna is a Risk Intelligence & Vulnerability platform that enables InfoSec
+  teams to prioritize and remediate vulnerabilities faster.
+display: KennaV2
+name: KennaV2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Vulnerability ID to search
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filtering vulnerabilities by those that Kenna recommends should
+        be a top priority to fix
+      isArray: false
+      name: top-priority
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Find all vulnerabilities with scores greater than this value
+      isArray: false
+      name: min-score
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status of the vulnerability
+      isArray: false
+      name: status
+      predefined:
+      - open
+      - closed
+      - risk_accepted
+      - false_positive
+      required: false
+      secret: false
+    deprecated: false
+    description: Filtering vulnerabilities by those that Kenna recommends.
+    execution: false
+    name: kenna-search-vulnerabilities
+    outputs:
+    - contextPath: Kenna.AssetID
+      description: Asset ID related to vulnerability
+      type: Number
+    - contextPath: Kenna.Connectors.DefinitionName
+      description: Connector definition name related to vulnerability
+      type: String
+    - contextPath: Kenna.Connectors.ID
+      description: Connector ID related to vulnerability
+      type: Number
+    - contextPath: Kenna.Connectors.Name
+      description: Connector name related to vulnerability
+      type: Unknown
+    - contextPath: Kenna.Connectors.Vendor
+      description: Connector vendor related to vulnerability
+      type: Unknown
+    - contextPath: Kenna.CveID
+      description: CVE ID related to vulnerability
+      type: Unknown
+    - contextPath: Kenna.FixID
+      description: Fix ID related to vulnerability
+      type: Unknown
+    - contextPath: Kenna.Patch
+      description: There is patch related to vulnerability
+      type: Unknown
+    - contextPath: Kenna.RiskMeterScore
+      description: Risk meter score of vulnerability
+      type: Unknown
+    - contextPath: Kenna.ScannerVulnerabilities.ExternalID
+      description: Vulnerability scanner external ID
+      type: Unknown
+    - contextPath: Kenna.ScannerVulnerabilities.Open
+      description: Vulnerability scanner is open
+      type: Unknown
+    - contextPath: Kenna.ScannerVulnerabilities.Port
+      description: Vulnerability scanner port
+      type: Unknown
+    - contextPath: Kenna.Score
+      description: Vulnerability score
+      type: Unknown
+    - contextPath: Kenna.ServiceTicket.DueDate
+      description: 'Service ticket due date '
+      type: Unknown
+    - contextPath: Kenna.ServiceTicket.ExternalIdentifier
+      description: Service ticket external identifier
+      type: Unknown
+    - contextPath: Kenna.ServiceTicket.Status
+      description: Service ticket status
+      type: Unknown
+    - contextPath: Kenna.ServiceTicket.TicketType
+      description: Service ticket type
+      type: Unknown
+    - contextPath: Kenna.Severity
+      description: Vulnerability severity
+      type: Unknown
+    - contextPath: Kenna.Status
+      description: Vulnerability status
+      type: Unknown
+    - contextPath: Kenna.Threat
+      description: Vulnerability threat
+      type: Unknown
+    - contextPath: Kenna.TopPriority
+      description: Vulnerability is top priority
+      type: Unknown
+    - contextPath: Kenna.ID
+      description: Vulnerability ID
+      type: Number
+  - arguments:
+    - default: false
+      description: Connector ID to run
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Schedules a run of a connector. If file based, it will use most recently
+      uploaded data file
+    execution: true
+    name: kenna-run-connector
+  - arguments:
+    - default: false
+      description: Vulnerability ID to search
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filtering vulnerabilities by those that Kenna recommends should
+        be a top priority to fix
+      isArray: false
+      name: top-priority
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Find all vulnerabilities with scores greater than this value
+      isArray: false
+      name: min-score
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status of the vulnerability
+      isArray: false
+      name: status
+      predefined:
+      - open
+      - closed
+      - risk_accepted
+      - false_positive
+      required: false
+      secret: false
+    - default: false
+      description: vulnerabilities for search
+      isArray: false
+      name: vulnerabilities
+      required: false
+      secret: false
+    deprecated: false
+    description: Filters fixes by a given set of vulnerability and asset parameters
+      and returns the filtered fixes
+    execution: false
+    name: kenna-search-fixes
+    outputs:
+    - contextPath: Kenna.Fixes.ID
+      description: Fix ID
+      type: Number
+    - contextPath: Kenna.Fixes.Title
+      description: Fix title
+      type: String
+    - contextPath: Kenna.Fixes.Assets.ID
+      description: Asset ID related to current fix
+      type: Number
+    - contextPath: Kenna.Fixes.Assets.Locator
+      description: Asset Locator related to current fix
+      type: String
+    - contextPath: Kenna.Fixes.Assets.PrimaryLocator
+      description: Asset Primary Locator related to current fix
+      type: String
+    - contextPath: Kenna.Fixes.Assets.DisplayLocator
+      description: Asset Display Locator related to current fix
+      type: String
+    - contextPath: Kenna.Fixes.Vulnerabilities.ID
+      description: Vulnerability ID related to current fix
+      type: Number
+    - contextPath: Kenna.Fixes.Vulnerabilities.ServiceTicketStatus
+      description: Vulnerability Service Ticket status related to current fix
+      type: String
+    - contextPath: Kenna.Fixes.Vulnerabilities.ScannerIDs
+      description: Vulnerability Scanner IDs related to current fix
+      type: Unknown
+    - contextPath: Kenna.Fixes.CveID
+      description: CVE-ID list related to current fix
+      type: Unknown
+    - contextPath: Kenna.Fixes.LastUpdatedAt
+      description: Last update of current fix
+      type: String
+    - contextPath: Kenna.Fixes.Category
+      description: Category of fix
+      type: String
+    - contextPath: Kenna.Fixes.VulnerabilityCount
+      description: Vulnerability Count of fix
+      type: Number
+    - contextPath: Kenna.Fixes.MaxScore
+      description: Max Score of fix
+      type: Number
+  - arguments:
+    - default: false
+      description: The id of an Asset to be updated
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Notes about an asset
+      isArray: false
+      name: notes
+      required: true
+      secret: false
+    deprecated: false
+    description: Update a single asset's attributes by ID
+    execution: false
+    name: kenna-update-asset
+  - arguments:
+    - default: false
+      description: The id of an vulnerability to be updated
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status of a vulnerability
+      isArray: false
+      name: status
+      predefined:
+      - open
+      - closed
+      - risk_accepted
+      - false_positive
+      required: false
+      secret: false
+    - default: false
+      description: Notes about a vulnerability
+      isArray: false
+      name: notes
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a single vulnerability's attributes by ID
+    execution: false
+    name: kenna-update-vulnerability
+  - deprecated: false
+    description: Returns all of your connectors
+    execution: false
+    name: kenna-get-connectors
+    outputs:
+    - contextPath: Kenna.ConnectorsList.ID
+      description: Connector ID
+      type: Number
+    - contextPath: Kenna.ConnectorsList.Name
+      description: Connector Name
+      type: String
+    - contextPath: Kenna.ConnectorsList.Running
+      description: Running Connector
+      type: Boolean
+    - contextPath: Kenna.ConnectorsList.Host
+      description: Connector Host
+      type: String
+  - arguments:
+    - default: false
+      description: Asset ID to search
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: IP address of asset to search for
+      isArray: false
+      name: ip-address
+      required: false
+      secret: false
+    - default: false
+      description: Hostname of asset to search
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: Find all assets with scores greater than this value
+      isArray: false
+      name: min-score
+      required: false
+      secret: false
+    - default: false
+      description: Search by tags
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: Filtering assets by those that Kenna recommands
+    execution: false
+    name: kenna-search-assets
+    outputs:
+    - contextPath: Kenna.Assets.ID
+      description: assets ID
+      type: Number
+    - contextPath: Kenna.Assets.Hostname
+      description: Hostname of asset
+      type: String
+    - contextPath: Kenna.Assets.IpAddress
+      description: assets IP
+      type: String
+    - contextPath: Kenna.Assets.MinScore
+      description: Asset Min Score
+      type: Number
+    - contextPath: Kenna.Assets.VulnerabilitiesCount
+      description: Assets Vulnerabilities Count
+      type: Number
+    - contextPath: Kenna.Assets.OperatingSystem
+      description: Assets Operating System
+      type: String
+    - contextPath: Kenna.Assets.Tags
+      description: Assets list of tags
+      type: Unknown
+    - contextPath: Kenna.Assets.Fqdn
+      description: Assets Fqdn
+      type: Unknown
+    - contextPath: Kenna.Assets.Status
+      description: Assets Status
+      type: String
+    - contextPath: Kenna.Assets.Owner
+      description: Assets Owner
+      type: String
+    - contextPath: Kenna.Assets.Priority
+      description: Assets Priority
+      type: Number
+    - contextPath: Kenna.Assets.Notes
+      description: Notes of current asset
+      type: String
+  - arguments:
+    - default: false
+      description: Asset id to filter
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Vulenerabilities of specific asset
+    execution: false
+    name: kenna-get-asset-vulnerabilities
+    outputs:
+    - contextPath: Kenna.VulnerabilitiesOfAsset.AssetID
+      description: Vulnerabilities Of Asset AssetID
+      type: Number
+    - contextPath: Kenna.VulnerabilitiesOfAsset.CveID
+      description: 'CVE ID of Vulnerabilities Of Asset '
+      type: String
+    - contextPath: Kenna.VulnerabilitiesOfAsset.ID
+      description: 'ID of Vulnerabilities Of Asset '
+      type: Number
+    - contextPath: Kenna.VulnerabilitiesOfAsset.Patch
+      description: 'Patch of Vulnerabilities Of Asset '
+      type: Boolean
+    - contextPath: Kenna.VulnerabilitiesOfAsset.Status
+      description: 'Status of Vulnerabilities Of Asset '
+      type: String
+    - contextPath: Kenna.VulnerabilitiesOfAsset.TopPriority
+      description: 'Top Priority of Vulnerabilities Of Asset '
+      type: Boolean
+  - arguments:
+    - default: false
+      description: List of tags to add
+      isArray: true
+      name: tag
+      required: true
+      secret: false
+    - default: false
+      description: 'Asset id to add to '
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Add tag to Asset id
+    execution: false
+    name: kenna-add-tag
+  - arguments:
+    - default: false
+      description: Asset id to delete from
+      isArray: false
+      name: id
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      description: Tag which needs to be deleted
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete tags from specific Asset
+    execution: false
+    name: kenna-delete-tag
+  dockerimage: demisto/python3:3.7.5.4002
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- KennaV2 Test
