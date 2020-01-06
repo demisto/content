@@ -732,4 +732,4 @@ script:
   subtype: python3
   type: python
 tests:
-- playbook McAfee ESM v2 - Test
+- McAfee ESM v2 - Test
