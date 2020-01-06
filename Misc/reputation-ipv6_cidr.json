@@ -183,7 +183,7 @@
             "complex": {
                 "root": "IPv6CIDR",
                 "filters": [],
-                "accessor": "Threat Types",
+                "accessor": "ThreatTypes",
                 "transformers": [
                     {
                         "operator": "uniq",
