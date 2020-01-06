@@ -9,7 +9,7 @@ import yaml
 import requests
 
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES, PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_GITHUB_LINK, \
-    PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX
+    PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX, PACKS_DIR_REGEX, PACKS_DIR
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -23,8 +23,8 @@ class LOG_COLORS:
 
 
 # print srt in the given color
-def print_color(str, color):
-    print(color + str + LOG_COLORS.NATIVE)
+def print_color(obj, color):
+    print(u'{}{}{}'.format(color, obj, LOG_COLORS.NATIVE))
 
 
 def print_error(error_str):
@@ -160,7 +160,7 @@ def get_file(method, file_path, type_of_file):
             except Exception as e:
                 print_error(
                     "{} has a structure issue of file type{}. Error was: {}".format(file_path, type_of_file, str(e)))
-                return []
+                return {}
     if type(data_dictionary) is dict:
         return data_dictionary
     return {}
@@ -266,9 +266,8 @@ def get_latest_release_notes_text(rn_path):
 
 def checked_type(file_path, compared_regexes=None):
     compared_regexes = compared_regexes or CHECKED_TYPES_REGEXES
-    for regex in compared_regexes:
-        if re.match(regex, file_path, re.IGNORECASE):
-            return True
+    if any(re.match(regex, file_path, re.IGNORECASE) for regex in compared_regexes):
+        return True
     return False
 
 
@@ -330,3 +329,16 @@ def get_dockerimage45(script_object):
     if 'dockerimage45' in script_object:
         return script_object['dockerimage45']
     return script_object.get('dockerimage', '')
+
+
+def is_file_path_in_pack(file_path):
+    return bool(re.findall(PACKS_DIR_REGEX, file_path))
+
+
+def get_pack_name(file_path):
+    match = re.search(r'^(?:./)?{}/([^/]+)/'.format(PACKS_DIR), file_path)
+    return match.group(1) if match else None
+
+
+def pack_name_to_path(pack_name):
+    return os.path.join(PACKS_DIR, pack_name)

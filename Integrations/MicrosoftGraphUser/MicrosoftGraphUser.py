@@ -113,10 +113,16 @@ def get_access_token():
     integration_context = demisto.getIntegrationContext()
     access_token = integration_context.get('access_token')
     valid_until = integration_context.get('valid_until')
+    calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
+    brand_name = calling_context.get('IntegrationBrand', '')
+    instance_name = calling_context.get('IntegrationInstance', '')
     if access_token and valid_until:
         if epoch_seconds() < valid_until:
             return access_token
     headers = {'Accept': 'application/json'}
+    headers['X-Content-Version'] = CONTENT_RELEASE_VERSION
+    headers['X-Branch-Name'] = CONTENT_BRANCH_NAME
+    headers['X-Content-Name'] = brand_name or instance_name or 'Name not found'
 
     dbot_response = requests.post(
         TOKEN_RETRIEVAL_URL,
@@ -276,12 +282,13 @@ def create_user_command():
         'userPrincipalName': demisto.getArg('user_principal_name')
     }
     other_properties = {}
-    for key_value in demisto.getArg('other_properties').split(','):
-        key, value = key_value.split('=', 2)
-        other_properties[key] = value
+    if demisto.getArg('other_properties'):
+        for key_value in demisto.getArg('other_properties').split(','):
+            key, value = key_value.split('=', 2)
+            other_properties[key] = value
+        required_properties.update(other_properties)
 
     # create the user
-    required_properties.update(other_properties)
     create_user(required_properties)
 
     # display the new user and it's properties
@@ -349,17 +356,34 @@ def get_user(user, properties):
 
 def list_users_command():
     properties = demisto.args().get('properties', 'id,displayName,jobTitle,mobilePhone,mail')
-    users_data = list_users(properties)
-
+    next_page = demisto.args().get('next_page', None)
+    users_data, result_next_page = list_users(properties, next_page)
     users_readable, users_outputs = parse_outputs(users_data)
-    human_readable = tableToMarkdown(name='All Graph Users', t=users_readable, removeNull=True)
+    metadata = None
     outputs = {'MSGraphUser(val.ID == obj.ID)': users_outputs}
+
+    if result_next_page:
+        metadata = "To get further results, enter this to the next_page parameter:\n" + str(result_next_page)
+
+        # .NextPage.indexOf(\'http\')>=0 : will make sure the NextPage token will always be updated because it's a url
+        outputs['MSGraphUser(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': result_next_page}
+
+    human_readable = tableToMarkdown(name='All Graph Users', t=users_readable, removeNull=True, metadata=metadata)
+
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=users_data)
 
 
-def list_users(properties):
-    users = http_request('GET', 'users', params={'$select': properties}).get('value')
-    return users
+def list_users(properties, page_url):
+    if page_url:
+        suffix = page_url.replace(BASE_URL, '')
+        response = http_request('GET', suffix)
+
+    else:
+        response = http_request('GET', 'users', params={'$select': properties})
+
+    next_page_url = response.get('@odata.nextLink')
+    users = response.get('value')
+    return users, next_page_url
 
 
 try:

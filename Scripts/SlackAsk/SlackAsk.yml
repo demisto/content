@@ -95,7 +95,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: NoReponse
+  defaultValue: NoResponse
   description: Default response in case the question expires.
   isArray: false
   name: defaultResponse
@@ -115,7 +115,7 @@ tags:
 - slack
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.7.4.1900
+dockerimage: demisto/python3:3.7.5.4002
 runonce: false
 tests:
 - no test - Untestable

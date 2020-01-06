@@ -1,5 +1,9 @@
 ## [Unreleased]
-Added a validation to the **server** parameter.
+- Fixed an issue in which the ***wildfire-report*** was not returning outputs for non-malicious URLs.
+
+## [19.11.1] - 2019-11-26
+- Added a validation to the **server** parameter.
+- Fixed an issue with DBotScore context data.
 
 ## [19.10.2] - 2019-10-29
 Fixed an issue in which testing the integration instance failed.
