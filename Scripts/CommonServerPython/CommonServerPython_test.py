@@ -1034,4 +1034,5 @@ regexes_test = [
 @pytest.mark.parametrize('pattern, string, expected', regexes_test)
 def test_regexes(pattern, string, expected):
     # (str, str, bool) -> None
-    assert expected is bool(re.fullmatch(pattern, string))
+    # emulates re.fullmatch from py3.4
+    assert expected is bool(re.match("(?:" + pattern + r")\Z", string))
