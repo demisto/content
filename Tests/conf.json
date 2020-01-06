@@ -79,7 +79,7 @@
         },
         {
             "integrations": "Amazon DynamoDB",
-            "playbookID": "AWS-DynamoDB-Test"
+            "playbookID": "AWS_DynamoDB-Test"
         },
         {
             "integrations": "PhishLabs IOC DRP",
