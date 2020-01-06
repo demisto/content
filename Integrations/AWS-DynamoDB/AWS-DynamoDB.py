@@ -1,10 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
+# flake8: noqa
 import boto3
-import io
-import math
 import json
 import datetime
 from botocore.config import Config
