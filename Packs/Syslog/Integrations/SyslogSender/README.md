@@ -120,7 +120,7 @@ Send a message to syslog
 There is no context output for this command.
 
 ##### Command Example
-```!syslog-send address=10.196.73.107 port=514 protocol=TCP message=yo level=ERROR```
+```!syslog-send address=127.0.0.1 port=514 protocol=TCP message=yo level=ERROR```
 
 ##### Human Readable Output
 Message sent to Syslog successfully.
