@@ -84,9 +84,9 @@ def get_fields():
             failed_tests = [line.strip('\n') for line in failed_tests]
 
     failed_unittests = []
-    if os.path.isfile('./Tests/failed_unittests.txt'):
+    if os.path.isfile('artifacts/failed_unittests'):
         print('Extracting failed_unittests')
-        with open('./Tests/failed_unittests.txt', 'r') as failed_unittests_file:
+        with open('artifacts/failed_unittests.txt', 'r') as failed_unittests_file:
             failed_unittests = failed_unittests_file.readlines()
             failed_unittests = [line.strip('\n') for line in failed_unittests]
 
@@ -149,7 +149,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'master':
+    if branch_name == 'unittest-slack-notifier':
         print_color("Starting Slack notifications about nightly build", LOG_COLORS.GREEN)
         print("Extracting build status")
         content_team_attachments, _ = get_attachments(build_url, env_results_file_name)
@@ -158,7 +158,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
         slack_client = SlackClient(slack_token)
         slack_client.api_call(
             "chat.postMessage",
-            channel="dmst-content-team",
+            channel="WHB66N4VA",
             username="Content CircleCI",
             as_user="False",
             attachments=content_team_attachments
@@ -167,10 +167,10 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
 
 def main():
     options = options_handler()
-    if options.nightly:
-        slack_notifier(options.url, options.slack, options.env_results_file_name)
-    else:
-        print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
+    # if options.nightly:
+    slack_notifier(options.url, options.slack, options.env_results_file_name)
+    # else:
+    #     print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
 
 if __name__ == '__main__':
