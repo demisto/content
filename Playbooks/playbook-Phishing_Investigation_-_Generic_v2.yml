@@ -1797,8 +1797,8 @@ tasks:
       id: 3edc5548-9984-4835-8eb2-74625ea04b08
       version: -1
       name: Predict phishing type using pre-trained phishing model
-      description: Predicts text label using a pre-trained machine learning phishing
-        model, and gets the most important words used in the classification decision.
+      description: Predicts the specific type of phishing mail using a pre-trained machine learning 
+        model, and highlights the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -2147,7 +2147,7 @@ tasks:
       id: 0fbe9223-2940-4db4-822e-3b094bc2cf88
       version: -1
       name: Did the model predict the phishing type?
-      description: Checks whether predictions regarding the phishing type were made.
+      description: Checks whether the model predicted the phishing type.
       type: condition
       iscommand: false
       brand: ''
