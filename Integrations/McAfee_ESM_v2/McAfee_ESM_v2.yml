@@ -46,7 +46,7 @@ configuration:
   required: false
   type: 15
 - defaultvalue: '0'
-  display: 'Start fetch after Case ID: (relevant only for fetch incident mode)'
+  display: 'Start fetch after ID: (relevant only for fetch incident mode)'
   name: startingFetchID
   required: false
   type: 0

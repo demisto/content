@@ -78,6 +78,17 @@ data_test_time_format = [
     ('', f'time data \'\' does not match the time format.'),
     ('test', f'time data \'test\' does not match the time format.')
 ]
+data_test_set_query_times = [
+    ((None, None, None, 0), ('CUSTOM', None, None)),
+    (('1 day', None, None, 0), ('1 day', '2019/12/31 00:00:00', None)),
+    (('LAST_WEEK', '', None, 0), ('LAST_WEEK', '', None)),
+    (('LAST_YEAR', 'TEST', None, 0), 'Invalid set times.'),
+    (('LAST_YEAR', None, 'TEST', 0), 'Invalid set times.'),
+    (
+        (None, '2020-01-01T00:00:00Z', '2020-01-01T00:00:00Z', 0),
+        ('CUSTOM', '2020-01-01T00:00:00Z', '2020-01-01T00:00:00Z')
+    )
+]
 
 
 @pytest.mark.parametrize('test_input, output', data_test_convert_time_format)
@@ -117,19 +128,6 @@ def test_time_format(test_input, output):
         test_output = str(error)
     finally:
         assert test_output == output, f'time_format({test_input}) returns error: {test_output} instead: {output}.'
-
-
-data_test_set_query_times = [
-    ((None, None, None, 0), ('CUSTOM', None, None)),
-    (('1 day', None, None, 0), ('1 day', '2019/12/31 00:00:00', None)),
-    (('LAST_WEEK', '', None, 0), ('LAST_WEEK', '', None)),
-    (('LAST_YEAR', 'TEST', None, 0), 'Invalid set times.'),
-    (('LAST_YEAR', None, 'TEST', 0), 'Invalid set times.'),
-    (
-        (None, '2020-01-01T00:00:00Z', '2020-01-01T00:00:00Z', 0),
-        ('CUSTOM', '2020-01-01T00:00:00Z', '2020-01-01T00:00:00Z')
-    )
-]
 
 
 @freeze_time('2020-01-01 00:00:00')

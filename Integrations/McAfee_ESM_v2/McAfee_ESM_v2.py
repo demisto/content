@@ -592,6 +592,9 @@ class McAfeeESMClient(BaseClient):
         else:
             raise DemistoException('-----------')
 
+        if current_run[params['fetchType']] is None:
+            current_run = last_run
+
         demisto.setLastRun(current_run)
         demisto.incidents(incidents)
 
@@ -655,19 +658,18 @@ def convert_time_format(current_time: str,
                         difference: int = 0,
                         to_demisto: bool = True,
                         mcafee_format: str = '%Y/%m/%d %H:%M:%S') -> str:
-    demisto_format = '%Y-%m-%dT%H:%M:%SZ'
     if not current_time.endswith('(GMT)'):
         if not to_demisto and not current_time.endswith('Z'):
             current_time += 'Z'
         datetime_obj = datetime.strptime(
             current_time,
-            mcafee_format if to_demisto else demisto_format
+            mcafee_format if to_demisto else McAfeeESMClient.demisto_format
         )
         datetime_obj -= timedelta(hours=difference if to_demisto else -1 * difference)
     else:
         datetime_obj = datetime.strptime(current_time, '%m/%d/%Y %H:%M:%S(GMT)')
 
-    return datetime_obj.strftime(demisto_format)
+    return datetime_obj.strftime(McAfeeESMClient.demisto_format)
 
 
 def set_query_times(since: str = None, start_time: str = None, end_time: str = None, difference: int = 0) -> \
