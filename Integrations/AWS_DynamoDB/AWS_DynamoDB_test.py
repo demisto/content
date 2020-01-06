@@ -31,12 +31,12 @@ def test_parse_tag_field():
     tags = parse_tag_field(sample_tag_string)
     expected_result = [
         {
-            "key": "foo",
-            "value": "bar"
+            "Key": "foo",
+            "Value": "bar"
         },
         {
-            "key": "baz",
-            "value": "qux"
+            "Key": "baz",
+            "Value": "qux"
         }
     ]
     assert tags == expected_result
