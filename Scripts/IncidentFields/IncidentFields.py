@@ -2,22 +2,23 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
-def get_field_by_long_name(fields, name):
-    for field in fields:
-        if field['name'] == name:
-            return field
-    return None
+def build_field_context_data(field):
+    field_context_data = {
+        'name': field['name'],
+        'shortName': field['cliName'],
+        'type': field['type'],
+        'associatedToAll': field['associatedToAll']
+    }
 
+    if not field_context_data['associatedToAll']:
+        if len(field['associatedTypes']) != 0:
+            field_context_data['associatedTypes'] = field['associatedTypes']
+        else:
+            field_context_data['associatedTypes'] = None
+    else:
+        field_context_data['associatedTypes'] = 'all'
 
-def get_field_by_short_name(fields, name):
-    for field in fields:
-        if field['cliName'] == name:
-            return field
-    return None
-
-
-def get_short_name(value):
-    return re.sub(r'[^A-Za-z0-9]', '', value).lower()
+    return field_context_data
 
 
 def main():
@@ -28,49 +29,36 @@ def main():
 
     fields = res[0]['Contents']['response']
 
-    # 'fields' contains non-incident fields, as well, so let's make a version containing only incident fields
+    # 'fields' contains non-incident fields (evidence and indicator), as well, so let's make a version
+    #  containing only incident fields
     incident_fields = [field for field in fields if field['id'].startswith('incident_')]
 
     # get arguments
     args = demisto.args()
 
-    custom_only = False
-    if 'custom' in args and argToBoolean(args['custom']) is True:
-        custom_only = True
+    exclude_system_fields = False
+    if 'exclude_system_fields' in args and argToBoolean(args['exclude_system_fields']):
+        exclude_system_fields = True
 
-    short_names = False
-    if 'short_names' in args and argToBoolean(args['short_names']) is True:
-        short_names = True
+    use_short_name = False
+    if 'short_names' in args and argToBoolean(args['short_names']):
+        use_short_name = True
 
-    # build a dict of all field types and their associated case types
-    types = {}
+    # build a dict of all field and their associated case types
+    output_fields = {}
     for field in incident_fields:
 
-        if custom_only is True and field['system'] is True:
+        if exclude_system_fields and field['system']:
             continue
 
         field_name = field['name']
-        if short_names is True:
+        if use_short_name:
             field_name = field['cliName']
 
-        output_field = {
-            'name': field['name'],
-            'shortName': field['cliName'],
-            'type': field['type'],
-            'associatedToAll': field['associatedToAll']
-        }
-
-        if output_field['associatedToAll'] is False:
-            if len(field['associatedTypes']) != 0:
-                output_field['associatedTypes'] = field['associatedTypes']
-            else:
-                output_field['associatedTypes'] = None
-        else:
-            output_field['associatedTypes'] = 'all'
-        types[field_name] = output_field
+        output_fields[field_name] = build_field_context_data(field)
 
     # output results
-    demisto.results(types)
+    demisto.results(output_fields)
 
 
 if __name__ in ["__builtin__", "builtins"]:

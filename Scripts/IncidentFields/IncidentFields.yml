@@ -8,7 +8,7 @@ tags: []
 comment: Returns all incident fields.
 enabled: true
 args:
-- name: custom
+- name: exclude_system_fields
   default: true
   auto: PREDEFINED
   predefined:
