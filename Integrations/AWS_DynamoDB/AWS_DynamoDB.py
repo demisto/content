@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 # flake8: noqa
 import boto3
 import json
-import datetime
+import datetime  # type: ignore
 from botocore.config import Config
 from botocore.parsers import ResponseParserError
 import urllib3.util
@@ -51,7 +51,7 @@ def safe_load_json(o):
 
 
 def myconverter(o):
-    if isinstance(o, datetime.datetime):
+    if isinstance(o, datetime.datetime):  # type: ignore
         return o.__str__()
 
 
@@ -552,7 +552,7 @@ def describe_endpoints_command(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    kwargs = {
+    kwargs = {  # type: dict
 
     }
     kwargs = remove_empty_elements(kwargs)
@@ -625,7 +625,7 @@ def describe_limits_command(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    kwargs = {
+    kwargs = {  # type: dict
 
     }
     kwargs = remove_empty_elements(kwargs)
