@@ -2414,3 +2414,22 @@ if 'requests' in sys.modules:
 
 class DemistoException(Exception):
     pass
+
+def batch(iterable, batch_size=1):
+    """Gets an iterable and yields slices of it.
+
+    :type iterable: ``list``
+    :param iterable: list or other iterable object.
+
+    :type batch_size: ``int``
+    :param batch_size: the size of batches to fetch
+
+    :rtype: ``list``
+    :return:: Iterable slices of given
+    """
+    current_batch = iterable[:batch_size]
+    not_batched = iterable[batch_size:]
+    while current_batch:
+        yield current_batch
+        current_batch = not_batched[:batch_size]
+        not_batched = current_batch[batch_size:]
