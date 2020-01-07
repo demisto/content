@@ -499,14 +499,6 @@ This integration was integrated and tested with version V2 of Infoblox
         {
             "Comment": "",
             "Disable": false,
-            "Name": "5.20.5.203",
-            "Type": "record:rpz:cname:ipaddressdn",
-            "View": "default",
-            "Zone": "infoblow.com"
-        },
-        {
-            "Comment": "",
-            "Disable": false,
             "Name": "moshe",
             "Type": "record:rpz:cname",
             "View": "default",
