@@ -20,3 +20,4 @@ Beta_Integrations/*/*_unified.yml
 conftest.py
 !Tests/scripts/dev_envs/pytest/conftest.py
 venv
+failed_unittests.txt
