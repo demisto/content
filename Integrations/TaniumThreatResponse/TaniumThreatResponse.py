@@ -568,7 +568,7 @@ def get_events_by_connection(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def get_file_info(client, data_args):
+def get_file_download_info(client, data_args):
     limit = int(data_args.get('limit'))
     path = data_args.get('path')
     host = data_args.get('host')
@@ -776,7 +776,7 @@ def main():
         f'tanium-tr-get-label-by-id': get_label,
         f'tanium-tr-list-file-downloads': get_file_downloads,
         f'tanium-tr-list-events-by-connection': get_events_by_connection,
-        f'tanium-tr-get-file-info': get_file_info,
+        f'tanium-tr-get-file-download-info': get_file_download_info,
         f'tanium-tr-get-process-info': get_process_info,
         f'tanium-tr-get-events-by-process': get_events_by_process,
         f'tanium-tr-get-process-children': get_process_children,

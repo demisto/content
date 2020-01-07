@@ -638,11 +638,13 @@ script:
       description: User that created this file.
       type: String
     - contextPath: Tanium.FileDownloads.CreatedByProc
+      description: The process path that created this file.
       type: String
     - contextPath: Tanium.FileDownloads.LastModifiedBy
       description: The last user that modified this file.
       type: String
     - contextPath: Tanium.FileDownloads.LastModifiedByProc
+      description: The process path that modified this file.
       type: String
     - contextPath: Tanium.FileDownloads.Comments
       description: The downloaded file comments.
@@ -792,112 +794,135 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The hostname of the dowloaded file.
       isArray: false
       name: host
       required: true
       secret: false
     - default: false
+      description: The path of the file.
       isArray: false
       name: path
       required: true
       secret: false
     - default: false
       defaultValue: '5'
+      description: The maximin number of downloaded files to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
+    description: Get file download metadata.
     execution: false
-    name: tanium-tr-get-file-info
+    name: tanium-tr-get-file-download-info
   - arguments:
     - default: false
+      description: The connection name.
       isArray: false
       name: connection-name
       required: true
       secret: false
     - default: false
+      description: The process instance ID.
       isArray: false
       name: ptid
       required: true
       secret: false
     deprecated: false
+    description: Get information for a process.
     execution: false
     name: tanium-tr-get-process-info
   - arguments:
     - default: false
+      description: The connection name.
       isArray: false
       name: connection-name
       required: true
       secret: false
     - default: false
+      description: The process instance ID.
       isArray: false
       name: ptid
       required: true
       secret: false
     - default: false
       defaultValue: '5'
+      description: The maximin number of events to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
+    description: Get events for a process.
     execution: false
     name: tanium-tr-get-events-by-process
   - arguments:
     - default: false
+      description: The connection name.
       isArray: false
       name: connection-name
       required: true
       secret: false
     - default: false
+      description: The process instance ID.
       isArray: false
       name: ptid
       required: true
       secret: false
     deprecated: false
+    description: Get children of this process instance.
     execution: false
     name: tanium-tr-get-process-children
   - arguments:
     - default: false
+      description: The connection name.
       isArray: false
       name: connection-name
       required: true
       secret: false
     - default: false
+      description: The process instance ID.
       isArray: false
       name: ptid
       required: true
       secret: false
     deprecated: false
+    description: Get parent process information.
     execution: false
     name: tanium-tr-get-parent-process
   - arguments:
     - default: false
+      description: The connection name.
       isArray: false
       name: connection-name
       required: true
       secret: false
     - default: false
+      description: The process instance ID.
       isArray: false
       name: ptid
       required: true
       secret: false
     deprecated: false
+    description: Get parent process tree for process instance.
     execution: false
     name: tanium-tr-get-parent-process-tree
   - arguments:
     - default: false
+      description: The connection name.
       isArray: false
       name: connection-name
       required: true
       secret: false
     - default: false
+      description: The process instance ID.
       isArray: false
       name: ptid
       required: true
       secret: false
     deprecated: false
+    description: Get process tree for process instance.
     execution: false
     name: tanium-tr-get-process-tree
   dockerimage: demisto/python3:3.7.4.977
