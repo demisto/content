@@ -213,7 +213,7 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
     """
     human_readable_markdown = ''
     url_suffix = '/fixes/search'
-    context = {}
+    context: Dict[str, Any] = {}
     params = {
         'id' + '[]': args.get('id'),
         'top_priority' + '[]': args.get('top-priority'),
