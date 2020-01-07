@@ -12,14 +12,16 @@ DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp
                     'uploads/2018/07/Demisto-Icon-Dark.png'
 
 
-def http_request(url, params_dict=None):
+def http_request(url, params_dict=None, verify=True, text=False):
     res = requests.request("GET",
                            url,
-                           verify=True,
+                           verify=verify,
                            params=params_dict,
                            )
     res.raise_for_status()
 
+    if text:
+        return res.text
     return res.json()
 
 
@@ -44,11 +46,11 @@ def get_attachments(build_url, env_results_file_name):
     # TODO: update this code after switching to parallel tests using multiple server for nightly build
     instance_dns = env_results[0]['InstanceDNS']
     role = env_results[0]['Role']
-    build_num = '/'.split(build_url)[-1]
-    print(build_num)
+    build_number = '/'.split(build_url)[-1]
+    print(build_number)
     success_file_path = "./Tests/is_build_passed_{}.txt".format(role.replace(' ', ''))
 
-    content_team_fields, content_fields, _, _ = get_fields()
+    content_team_fields, content_fields, _, _ = get_fields(build_number)
     color = 'good' if os.path.isfile(success_file_path) else 'danger'
     title = 'Content Build - Success' if os.path.isfile(success_file_path) else 'Content Build - Failure'
 
@@ -77,7 +79,16 @@ def get_attachments(build_url, env_results_file_name):
     return content_team_attachment, content_attachment
 
 
-def get_fields():
+def get_failing_unit_tests(build_number):
+    failing_unit_tests_url = 'https://{0}-60525392-gh.circle-artifacts.com/1/artifacts/failed_unittests.txt'.format(
+        build_number)
+    print(failing_unit_tests_url)
+    res = http_request(failing_unit_tests_url, verify=False, text=True)
+    failing_ut_list = '\n'.split(res)
+    return failing_ut_list
+
+
+def get_fields(build_number):
     failed_tests = []
     if os.path.isfile('./Tests/failed_tests.txt'):
         print('Extracting failed_tests')
@@ -85,7 +96,7 @@ def get_fields():
             failed_tests = failed_tests_file.readlines()
             failed_tests = [line.strip('\n') for line in failed_tests]
 
-    failed_unittests = []
+    failed_unittests = get_failing_unit_tests(build_number)
 
     # if os.path.isfile('./Tests/failed_unittests'):
     #     print('Extracting failed_unittests')
