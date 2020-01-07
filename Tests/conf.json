@@ -724,7 +724,12 @@
             "integrations": "Gmail"
         },
         {
-            "playbookID": "reputations.json Test"
+            "playbookID": "reputations.json Test",
+            "toversion": "5.0.0"
+        },
+        {
+            "playbookID": "Indicators reputation-.json Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "Test IP Indicator Fields",
@@ -1508,6 +1513,12 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "Docker Hardening Test",
+            "_comment": "Not testing on 5.5 yet. Waiting for #20951",
+            "fromversion": "5.0.0",
+            "toversion": "5.4.9"
+        },
+        {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory Query V2 configuration with port"
@@ -1994,6 +2005,7 @@
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
             "fromversion": "4.5.0",
+            "timeout": 600,
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
         },
@@ -2120,7 +2132,6 @@
         "ThreatMiner": "Issue 20469",
         "DomainTools Iris": "Issue 20433",
         "Check Point": "Issue 18643",
-        "RSA Archer": "Issue 20335",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "Joe Security": "Issue 17996",
