@@ -5,7 +5,27 @@ def test_safe_load_json():
     from AWS_DynamoDB import safe_load_json
 
     sample_dict = {
-        "foo": "bar"
+        "glossary": {
+            "title": "example glossary",
+            "GlossDiv": {
+                "title": "S",
+                "GlossList": {
+                    "GlossEntry": {
+                        "ID": "SGML",
+                        "SortAs": "SGML",
+                        "GlossTerm": "Standard Generalized Markup Language",
+                        "Acronym": "SGML",
+                        "Abbrev": "ISO 8879:1986",
+                        "GlossDef": {
+                            "para": "A meta-markup language, used to create markup languages such "
+                                    "as DocBook.",
+                            "GlossSeeAlso": ["GML", "XML"]
+                        },
+                        "GlossSee": "markup"
+                    }
+                }
+            }
+        }
     }
     sample_json = json.dumps(sample_dict)
     test_result = safe_load_json(sample_json)
