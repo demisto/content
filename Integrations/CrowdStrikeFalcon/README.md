@@ -1,4 +1,427 @@
-### cs-falcon-run-command
+The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
+
+## Configure CrowdStrike Falcon on Demisto
+1.  Navigate to **Settings** \> **Integrations** \> **Servers &
+    Services**.
+2.  Search for CrowdstrikeFalcon.
+3.  Click **Add instance** to create and configure a new integration
+    instance.
+    -   **Name**: a textual name for the integration instance.
+    -   **Server URL (e.g., https://api.crowdstrike.com)**
+    -   **Client ID**
+    -   **Secret**
+    -   **First fetch timestamp ( , e.g., 12 hours, 7 days)**
+    -   **Max incidents per fetch**
+    -   **Fetch query**
+    -   **Fetch incidents**
+    -   **Incident type**
+    -   **Trust any certificate (not secure)**
+    -   **Use system proxy**
+
+4.  Click **Test** to validate the URLs, token, and connection.
+
+## Commands
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+1.  cs-falcon-search-device
+2.  cs-falcon-get-behavior
+3.  cs-falcon-search-detection
+4.  cs-falcon-resolve-detection
+5.  cs-falcon-contain-host
+6.  cs-falcon-lift-host-containment
+7.  cs-falcon-run-command
+8.  cs-falcon-upload-script
+9.  cs-falcon-upload-file
+10. cs-falcon-delete-file
+11. cs-falcon-get-file
+12. cs-falcon-list-files
+13. cs-falcon-get-script
+14. cs-falcon-delete-script
+15. cs-falcon-list-scripts
+16. cs-falcon-run-script
+
+### 1. Search for a device
+
+---
+
+Searches for devices that match the query.
+
+##### Base Command
+
+`cs-falcon-search-device`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Returns devices that match the query. | Optional
+| ids | A CSV list of device IDs to limit by which to limit the results. | Optional
+| status | Returns devices that match the specified status. | Optional
+| hostname | Returns devices that match the specified hostname. | Optional
+| platform_name | Returns devices that match the specified platform name. | Optional
+| site_name | Returns devices that match the specified site name. | Optional
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+  CrowdStrike.Device.ID | String | The ID of the device.
+  CrowdStrike.Device.LocalIP | String | The local IP address of the device.
+  CrowdStrike.Device.ExternalIP | String | The external IP address of the device.
+  CrowdStrike.Device.Hostname | String | The hostname of the device.
+  CrowdStrike.Device.OS | String | The operating system of the device.
+  CrowdStrike.Device.MacAddress | String | The Mac address of the device.
+  CrowdStrike.Device.FirstSeen | String | The first seen time of the device.
+  CrowdStrike.Device.LastSeen | String | The last seen time of the device.
+  CrowdStrike.Device.PolicyType | String | The policy types of the device.
+
+ 
+
+##### Command Example
+
+`!cs-falcon-search-device ids=336474ea6a524e7c68575f6508d84781,459146dbe524472e73751a43c63324f3`
+
+##### Context Example
+```
+    {
+        "CrowdStrike.Device": [
+            {
+                "ExternalIP": "94.188.164.68", 
+                "MacAddress": "8c-85-90-3d-ed-3e", 
+                "Hostname": "164.188.94-binat-smaug.in-addr.arpa", 
+                "LocalIP": "192.168.1.76", 
+                "LastSeen": "2019-03-28T02:36:41Z", 
+                "OS": "Mojave (10.14)", 
+                "ID": "336474ea6a524e7c68575f6508d84781", 
+                "FirstSeen": "2017-12-28T22:38:11Z"
+            }, 
+            {
+                "ExternalIP": "94.188.164.68", 
+                "MacAddress": "f0-18-98-74-8c-31", 
+                "Hostname": "164.188.94-binat-smaug.in-addr.arpa", 
+                "LocalIP": "172.22.14.237", 
+                "LastSeen": "2019-03-17T10:03:17Z", 
+                "OS": "Mojave (10.14)", 
+                "ID": "459146dbe524472e73751a43c63324f3", 
+                "FirstSeen": "2017-12-10T11:01:20Z"
+            }
+        ]
+    }
+```
+##### Human Readable Output
+
+### Devices
+
+| ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 336474ea6a524e7c68575f6508d84781 | 164.188.94-binat-smaug.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z |
+| 459146dbe524472e73751a43c63324f3 | 164.188.94-binat-smaug.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z |
+
+ 
+
+### 2. Get a behavior
+
+---
+Searches for and fetches the behavior that matches the query.
+
+##### Base Command
+
+`cs-falcon-get-behavior`
+
+##### Input
+
+  | **Argument Name** | **Description** | **Required** |
+  |---|---|---|
+  behavior_id | The ID of the the behavior. | Required
+
+ 
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Behavior.FileName | String | The file name in the behavior. |
+  CrowdStrike.Behavior.Scenario | String | The scenario name in the behavior.
+  CrowdStrike.Behavior.MD5 | String | The MD5 hash of the IoC in the behavior.
+  CrowdStrike.Behavior.SHA256 | String | The SHA256 hash of the IoC in the behavior.
+  CrowdStrike.Behavior.IOCType | String | Type of the indicator of compromise.
+  CrowdStrike.Behavior.IOCValue | String | The value of the IoC.
+  CrowdStrike.Behavior.CommandLine | String | The command line executed in the behavior.
+  CrowdStrike.Behavior.UserName | String | The user name related to the behavior.
+  CrowdStrike.Behavior.SensorID | String | The sensor ID related to the behavior.
+  CrowdStrike.Behavior.ParentProcessID | String | The ID of the parent process.
+  CrowdStrike.Behavior.ProcessID | String | The process ID of the behavior.
+  CrowdStrike.Behavior.ID | String | The ID of the behavior.
+
+ 
+
+##### Command Example
+
+`!cs-falcon-get-behavior behavior_id=3206`
+
+##### Context Example
+```
+    {
+        "CrowdStrike.Behavior": [
+            {
+                "IOCType": "sha256", 
+                "ProcessID": "197949010450449117", 
+                "Scenario": "known_malware", 
+                "CommandLine": "/Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn", 
+                "UserName": "shaiyaakovi@shais-MacBook-Pro-2.local", 
+                "FileName": "spokeshave.jn", 
+                "SHA256": "df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266", 
+                "ID": "3206", 
+                "IOCValue": "df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266", 
+                "MD5": "b41d753a4b61c9fe4486190c3b78e124"
+            }, 
+            {
+                "IOCType": "sha256", 
+                "ProcessID": "197949016741905142", 
+                "Scenario": "known_malware", 
+                "ParentProcessID": "197949014644753130", 
+                "CommandLine": "./xSf", 
+                "UserName": "root@shais-MacBook-Pro-2.local", 
+                "FileName": "xSf", 
+                "SensorID": "68b5432856c1496d7547947fc7d1aae4", 
+                "SHA256": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
+                "ID": "3206", 
+                "IOCValue": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
+                "MD5": "06dc9ff1857dcd4cdcd125b277955134"
+            }
+        ]
+    }
+```
+##### Human Readable Output
+
+### Behavior ID: 3206
+
+| ID | File Name | Command Line | Scenario | IOC Type | IOC Value | User Name | SHA256 | MD5 | Process ID | 
+| ------ | --------------- | ----------------------------------------------------------------------- | ---------------- | ---------- | ------------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------ | ---------------------------------- | -------------------- |
+| 3206 |   spokeshave.jn |  /Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn |   known\_malware   | sha256 |    df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | shaiyaakovi@shais-MacBook-Pro-2.local |   df8896dbe70a16419103be954ef2cdbbb1cecd2a865df5a0a2847d9a9fe7a266   | b41d753a4b61c9fe4486190c3b78e124|   197949010450449117|
+|  3206   |xSf             |./xSf                                                                   |known\_malware   |sha256     |791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b|   root@shais-MacBook-Pro-2.local|          791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b   |06dc9ff1857dcd4cdcd125b277955134   |197949016741905142|
+
+ 
+
+### 3. Search for detections
+
+---
+Search for details of specific detections, either using a filter query,
+or by providing the IDs of the detections.
+
+##### Base Command
+
+`cs-falcon-search-detection`
+
+##### Input
+
+  | **Argument Name** | **Description** | **Required** |
+  |---|---|---|
+  |ids|                 IDs of the detections to search. If provided, will override other arguments.|                                                                                                        Optional
+  |filter              | Filter detections using a query in Falcon Query Language (FQL). e.g. filter="device.hostname:‘CS-SE-TG-W7-01’" For a full list of valid filter options, see the [CrowdStrike Falcon documentation](https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch). | Optional
+
+ 
+
+##### Context Output
+
+ | **Path** | **Type** | **Description** |
+| --- | --- | --- |
+  |CrowdStrike.Detection.Behavior.FileName          |String|     The file name in the behavior.
+  |CrowdStrike.Detection.Behavior.Scenario          |String|     The scenario name in the behavior.
+|  CrowdStrike.Detection.Behavior.MD5               |String|     The MD5 hash of the IoC in the behavior.
+ | CrowdStrike.Detection.Behavior.SHA256            |String|     The SHA256 hash of the IoC in the behavior.
+  |CrowdStrike.Detection.Behavior.IOCType           |String|     The type of the IoC.
+  |CrowdStrike.Detection.Behavior.IOCValue          |String|     The value of the IoC.
+  |CrowdStrike.Detection.Behavior.CommandLine       |String|     The command line executed in the behavior.
+  |CrowdStrike.Detection.Behavior.UserName          |String|     The user name related to the behavior.
+  |CrowdStrike.Detection.Behavior.SensorID          |String|     The sensor ID related to the behavior.
+  |CrowdStrike.Detection.Behavior.ParentProcessID   |String|     The ID of the parent process.
+  |CrowdStrike.Detection.Behavior.ProcessID         |String|     The process ID of the behavior.
+  |CrowdStrike.Detection.Behavior.ID                |String|     The ID of the behavior.
+  |CrowdStrike.Detection.System                     |String|     The system name of the detection.
+  |CrowdStrike.Detection.CustomerID                 |String|     The ID of the customer (CID).
+  |CrowdStrike.Detection.MachineDomain              |String|     The name of the domain of the detection machine.
+  |CrowdStrike.Detection.ID                         |String|     The detection ID.
+  |CrowdStrike.Detection.ProcessStartTime           |Date|       The start time of the process that generated the detection.
+
+ 
+
+##### Command Example
+
+`!cs-falcon-search-detection ids=ldt:07893fedd2604bc66c3f7de8d1f537e3:1898376850347,ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902`
+
+##### Context Example
+```
+    {
+        "CrowdStrike.Detection": [
+            {
+                "Status": "false_positive", 
+                "ProcessStartTime": "2019-03-21T20:32:55.654489974Z", 
+                "Behavior": [
+                    {
+                        "IOCType": "domain", 
+                        "ProcessID": "2279170016592", 
+                        "Scenario": "intel_detection", 
+                        "ParentProcessID": "2257232915544", 
+                        "CommandLine": "C:\\Python27\\pythonw.exe -c __import__('idlelib.run').run.main(True) 1250", 
+                        "UserName": "josh", 
+                        "FileName": "pythonw.exe", 
+                        "SensorID": "07893fedd2604bc66c3f7de8d1f537e3", 
+                        "SHA256": "d1e9361680c4b2112e2ed647d5b87b96e4e9e557e75353657b9ce1b1babc0805", 
+                        "ID": "4900", 
+                        "IOCValue": "systemlowcheck.com", 
+                        "MD5": "8b162b81d4efc177a2719bb8d7dbe46a"
+                    }, 
+                    {
+                        "IOCType": "domain", 
+                        "ProcessID": "2283087267593", 
+                        "Scenario": "intel_detection", 
+                        "ParentProcessID": "2279170016592", 
+                        "CommandLine": "ping.exe systemlowcheck.com", 
+                        "UserName": "josh", 
+                        "FileName": "PING.EXE", 
+                        "SensorID": "07893fedd2604bc66c3f7de8d1f537e3", 
+                        "SHA256": "7bf496d5b9f227cce033f204e21743008c3f4b081d44b02500eda4efbccf3281", 
+                        "ID": "4900", 
+                        "IOCValue": "systemlowcheck.com", 
+                        "MD5": "70c24a306f768936563abdadb9ca9108"
+                    }
+                ], 
+                "MaxSeverity": 70, 
+                "System": "DESKTOP-S49VMIL", 
+                "ID": "ldt:07893fedd2604bc66c3f7de8d1f537e3:1898376850347", 
+                "MachineDomain": "", 
+                "ShowInUi": true, 
+                "CustomerID": "ed33ec93d2444d38abd3925803938a75"
+            }, 
+            {
+                "Status": "new", 
+                "ProcessStartTime": "2019-02-04T07:05:57.083205971Z", 
+                "Behavior": [
+                    {
+                        "IOCType": "sha256", 
+                        "ProcessID": "201917905370426448", 
+                        "Scenario": "known_malware", 
+                        "ParentProcessID": "201917902773103685", 
+                        "CommandLine": "./xSf", 
+                        "UserName": "shaiyaakovi@shais-MacBook-Pro-2.local", 
+                        "FileName": "xSf", 
+                        "SensorID": "68b5432856c1496d7547947fc7d1aae4", 
+                        "SHA256": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
+                        "ID": "3206", 
+                        "IOCValue": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
+                        "MD5": "06dc9ff1857dcd4cdcd125b277955134"
+                    }, 
+                    {
+                        "IOCType": "sha256", 
+                        "ProcessID": "201917905370426448", 
+                        "Scenario": "known_malware", 
+                        "ParentProcessID": "201917902773103685", 
+                        "CommandLine": "./xSf", 
+                        "UserName": "shaiyaakovi@shais-MacBook-Pro-2.local", 
+                        "FileName": "xSf", 
+                        "SensorID": "68b5432856c1496d7547947fc7d1aae4", 
+                        "SHA256": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
+                        "ID": "3206", 
+                        "IOCValue": "791d88ca295847bb6dd174e0ebad62f01f0cae56c157b7a11fd70bb457c97d9b", 
+                        "MD5": "06dc9ff1857dcd4cdcd125b277955134"
+                    }
+                ], 
+                "MaxSeverity": 30, 
+                "System": "shais-MacBook-Pro-2.local", 
+                "ID": "ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902", 
+                "MachineDomain": "", 
+                "ShowInUi": true, 
+                "CustomerID": "ed33ec93d2444d38abd3925803938a75"
+            }
+        ]
+    }
+```
+##### Human Readable Output
+
+### Detections Found:
+
+  |ID                                                         |Status|            System                 |     Process Start Time     |          Customer ID                       | Max Severity|
+  |----------------------------------------------------------| ----------------- |--------------------------- |-------------------------------- |---------------------------------- |--------------|
+  |ldt:07893fedd2604bc66c3f7de8d1f537e3:1898376850347       |  false\_positive |  DESKTOP-S49VMIL            | 2019-03-21T20:32:55.654489974Z  | ed33ec93d2444d38abd3925803938a75  | 70|
+  |ldt:68b5432856c1496d7547947fc7d1aae4:1092318056279064902|   new             |  shais-MacBook-Pro-2.local  | 2019-02-04T07:05:57.083205971Z  | ed33ec93d2444d38abd3925803938a75  | 30|
+
+ 
+
+### 4. Resolve a detection
+
+* * * * *
+
+Resolves and updates a detection.
+
+##### Base Command
+
+`cs-falcon-resolve-detection`
+
+##### Input
+
+  | **Argument Name** | **Description** | **Required** |
+  |---|---|---|
+  |ids                  |A CSV list of one or more IDs to resolve.                 |Required
+  |status               |The status to which you want to transition a detection.   |Optional
+  |assigned\_to\_uuid   |A user ID, for example: 1234567891234567891.              |Optional
+  |show\_in\_ui         |If set to true, will display the dectection in the UI.    |Optional
+
+ 
+
+##### Context Output
+
+There is no context output for this command.
+
+### 5. Contain a host
+
+* * * * *
+
+Contains or lifts containment for a specified host. When contained, a
+host can only communicate with the CrowdStrike cloud and any IPs
+specified in your containment policy.
+
+##### Base Command
+
+`cs-falcon-contain-host`
+
+##### Input
+
+   | **Argument Name** | **Description** | **Required** |
+  |---|---|---|
+  ids    |             The host agent ID (AID) of the host to contain. Get an agent ID from a detection. |  Required
+
+ 
+
+##### Context Output
+
+There is no context output for this command.
+
+### 6. Lift the containment for a host
+
+* * * * *
+
+Lifts containment from a host, which returns its network communications
+to normal.
+
+##### Base Command
+
+`cs-falcon-lift-host-containment`
+
+##### Input
+
+  | **Argument Name** | **Description** | **Required** |
+  |---|---|---|
+  |ids            |     The host agent ID (AID) of the host you want to contain. Get an agent ID from a detection  | Required
+
+ 
+
+##### Context Output
+
+There is no context output for this command.
+
+
+### 7. cs-falcon-run-command
 ---
 Sends commands to hosts.
 ##### Base Command
@@ -56,7 +479,7 @@ Sends commands to hosts.
 |---|---|---|---|---|
 | ls | ls C:\ | 284771ee197e422d5176d6634a62b934 |  | Directory listing for C:\ -<br><br>Name                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br>----                                     ----         ------------    ---------       ---------------------     ---------------          <br>$Recycle.Bin                             <Directory>  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br>ITAYDI                                   <Directory>  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
 
-### cs-falcon-upload-script
+### 8. cs-falcon-upload-script
 ---
 Uploads a script to Falcon.
 
@@ -78,7 +501,7 @@ Uploads a script to Falcon.
 ##### Human Readable Output
 The script was uploaded successfully.
 
-### cs-falcon-upload-file
+### 9. cs-falcon-upload-file
 ---
 Uploads a file to the CrowdStrike cloud (can be used for the RTR `put` command).
 
@@ -97,7 +520,7 @@ Uploads a file to the CrowdStrike cloud (can be used for the RTR `put` command).
 ##### Human Readable Output
 The file was uploaded successfully.
 
-### cs-falcon-delete-file
+### 10. cs-falcon-delete-file
 ---
 Deletes a file based on the ID given. Can delete only one file at a time.
 
@@ -117,7 +540,7 @@ Deletes a file based on the ID given. Can delete only one file at a time.
 ##### Human Readable Output
 File le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a was deleted successfully.
 
-### cs-falcon-get-file
+### 11. cs-falcon-get-file
 ---
 Returns files based on the IDs given. These are used for the RTR `put` command.
 
@@ -181,7 +604,7 @@ Returns files based on the IDs given. These are used for the RTR `put` command.
 |---|---|---|---|---|---|---|---|---|---|
 | spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
 
-### cs-falcon-list-files
+### 12. cs-falcon-list-files
 ---
 Returns Returns a list of put-file ID's that are available for the user in the `put` command.
 
@@ -237,7 +660,7 @@ Returns Returns a list of put-file ID's that are available for the user in the `
 |---|---|---|---|---|---|---|---|---|---|
 | spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
 
-### cs-falcon-get-script
+### 13. cs-falcon-get-script
 ---
 Return custom scripts based on the ID. Used for the RTR `runscript` command.
 
@@ -303,7 +726,7 @@ Return custom scripts based on the ID. Used for the RTR `runscript` command.
 | spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
 
 
-### cs-falcon-delete-script
+### 14. cs-falcon-delete-script
 ---
 Deletes a script based on the ID given. Can delete only one script at a time.
 
@@ -323,7 +746,7 @@ Deletes a script based on the ID given. Can delete only one script at a time.
 ##### Human Readable Output
 Script le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a was deleted successfully.
 
-### cs-falcon-list-scripts
+### 15. cs-falcon-list-scripts
 ---
 Returns a list of custom script IDs that are available for the user in the `runscript` command.
 
@@ -381,7 +804,7 @@ Returns a list of custom script IDs that are available for the user in the `runs
 | spongobob@demisto.com |  2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
 
 
-### cs-falcon-run-script
+### 16. cs-falcon-run-script
 ---
 Runs a script on the agent host.
 ##### Base Command
