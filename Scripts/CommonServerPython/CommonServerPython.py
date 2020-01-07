@@ -104,7 +104,7 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
 }
 
 
-class IndicatorTypes(Enum):
+class IndicatorTypes(object):
     """Type of Indicator (Reputations), used in TIP integrations"""
     Account = "Account"
     CVE = "CVE"
