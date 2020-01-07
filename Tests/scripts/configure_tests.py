@@ -653,6 +653,7 @@ def get_test_list(files_string, branch_name):
     if is_reputations_json:
         tests.add('FormattingPerformance - Test')
         tests.add('reputations.json Test')
+        tests.add('Indicators reputation-.json Test')
 
     if is_indicator_json:
         tests.add('Test IP Indicator Fields')
