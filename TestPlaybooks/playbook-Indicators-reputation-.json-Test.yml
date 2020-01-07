@@ -2,7 +2,7 @@ id: Indicators reputation-.json Test
 version: -1
 contentitemfields:
   propagationLabels: []
-name: Indicators - reputation-* Test
+name: Indicators-reputation-Test
 description: Test our repution*.json regexes in misc folder
 starttaskid: "0"
 tasks:
@@ -38,7 +38,7 @@ tasks:
     task:
       id: c67b9c41-64df-4992-82d7-a791a1d3f386
       version: -1
-      name: Done
+      name: Done!
       type: title
       iscommand: false
       brand: ""
