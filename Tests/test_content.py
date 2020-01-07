@@ -351,7 +351,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
     has_skipped_integration = False
     for integration in integrations_conf:
         if integration in skipped_integrations_conf.keys():
-            # skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
+            skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
             has_skipped_integration = True
 
         if integration in nightly_integrations:
@@ -522,6 +522,12 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     if not tests or len(tests) == 0:
         print('no integrations are configured for test')
         return
+    elif filtered_tests and tests:
+        relevant_tests = []
+        for test in tests:
+            if test['playbookID'] in filtered_tests:
+                relevant_tests.append(test)
+        tests = relevant_tests
 
     proxy = None
     if is_ami:
