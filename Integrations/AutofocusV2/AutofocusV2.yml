@@ -969,6 +969,24 @@ script:
     - contextPath: AutoFocus.Domain.WhoisRegistrant
       description: The name of the registrant.
       type: String
+  - arguments:
+    - default: false
+      description: The label of the exported list.
+      isArray: false
+      name: label
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets export list indicators from AutoFocus.
+    execution: false
+    name: autofocus-get-export-list-indicators
+    outputs:
+    - contextPath: AutoFocus.ExportListIndocator.Type
+      description: 'The type of the indicator in the export list. '
+      type: String
+    - contextPath: AutoFocus.ExportListIndocator.Value
+      description: The value of the indicator in the export list.
+      type: String
   dockerimage: demisto/python3:3.7.2.214
   isfetch: false
   longRunning: false
