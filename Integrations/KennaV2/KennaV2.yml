@@ -68,70 +68,70 @@ script:
     execution: false
     name: kenna-search-vulnerabilities
     outputs:
-    - contextPath: Kenna.AssetID
+    - contextPath: Kenna.Vulnerabilities.AssetID
       description: Asset ID related to vulnerability
       type: Number
-    - contextPath: Kenna.Connectors.DefinitionName
+    - contextPath: Kenna.Vulnerabilities.Connectors.DefinitionName
       description: Connector definition name related to vulnerability
       type: String
-    - contextPath: Kenna.Connectors.ID
+    - contextPath: Kenna.Vulnerabilities.Connectors.ID
       description: Connector ID related to vulnerability
       type: Number
-    - contextPath: Kenna.Connectors.Name
+    - contextPath: Kenna.Vulnerabilities.Connectors.Name
       description: Connector name related to vulnerability
       type: Unknown
-    - contextPath: Kenna.Connectors.Vendor
+    - contextPath: Kenna.Vulnerabilities.Connectors.Vendor
       description: Connector vendor related to vulnerability
       type: Unknown
-    - contextPath: Kenna.CveID
+    - contextPath: Kenna.Vulnerabilities.CveID
       description: CVE ID related to vulnerability
       type: Unknown
-    - contextPath: Kenna.FixID
+    - contextPath: Kenna.Vulnerabilities.FixID
       description: Fix ID related to vulnerability
       type: Unknown
-    - contextPath: Kenna.Patch
+    - contextPath: Kenna.Vulnerabilities.Patch
       description: There is patch related to vulnerability
       type: Unknown
-    - contextPath: Kenna.RiskMeterScore
+    - contextPath: Kenna.Vulnerabilities.RiskMeterScore
       description: Risk meter score of vulnerability
       type: Unknown
-    - contextPath: Kenna.ScannerVulnerabilities.ExternalID
+    - contextPath: Kenna.Vulnerabilities.ScannerVulnerabilities.ExternalID
       description: Vulnerability scanner external ID
       type: Unknown
-    - contextPath: Kenna.ScannerVulnerabilities.Open
+    - contextPath: Kenna.Vulnerabilities.ScannerVulnerabilities.Open
       description: Vulnerability scanner is open
       type: Unknown
-    - contextPath: Kenna.ScannerVulnerabilities.Port
+    - contextPath: Kenna.Vulnerabilities.ScannerVulnerabilities.Port
       description: Vulnerability scanner port
       type: Unknown
-    - contextPath: Kenna.Score
+    - contextPath: Kenna.Vulnerabilities.Score
       description: Vulnerability score
       type: Unknown
-    - contextPath: Kenna.ServiceTicket.DueDate
+    - contextPath: Kenna.Vulnerabilities.ServiceTicket.DueDate
       description: 'Service ticket due date '
       type: Unknown
-    - contextPath: Kenna.ServiceTicket.ExternalIdentifier
+    - contextPath: Kenna.Vulnerabilities.ServiceTicket.ExternalIdentifier
       description: Service ticket external identifier
       type: Unknown
-    - contextPath: Kenna.ServiceTicket.Status
+    - contextPath: Kenna.Vulnerabilities.ServiceTicket.Status
       description: Service ticket status
       type: Unknown
-    - contextPath: Kenna.ServiceTicket.TicketType
+    - contextPath: Kenna.Vulnerabilities.ServiceTicket.TicketType
       description: Service ticket type
       type: Unknown
-    - contextPath: Kenna.Severity
+    - contextPath: Kenna.Vulnerabilities.Severity
       description: Vulnerability severity
       type: Unknown
-    - contextPath: Kenna.Status
+    - contextPath: Kenna.Vulnerabilities.Status
       description: Vulnerability status
       type: Unknown
-    - contextPath: Kenna.Threat
+    - contextPath: Kenna.Vulnerabilities.Threat
       description: Vulnerability threat
       type: Unknown
-    - contextPath: Kenna.TopPriority
+    - contextPath: Kenna.Vulnerabilities.TopPriority
       description: Vulnerability is top priority
       type: Unknown
-    - contextPath: Kenna.ID
+    - contextPath: Kenna.Vulnerabilities.ID
       description: Vulnerability ID
       type: Number
   - arguments:

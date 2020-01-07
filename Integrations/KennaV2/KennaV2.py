@@ -1,13 +1,9 @@
 from json import JSONDecodeError
+from typing import List, Tuple, Dict, Any, Optional, Callable
 
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
-
-from typing import Optional
 import urllib3
-import json
-from distutils.util import strtobool
+import demistomock as demisto
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -21,6 +17,11 @@ class Client(BaseClient):
             'Accept': 'application/json'
         }
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=header)
+
+    def http_request(self, message: str, suffix: str, params: Optional[dict] = None,
+                     data: Optional[dict] = None):
+        return super()._http_request(message, suffix, params=params, json_data=data)
+
 
 def test_module(client: Client, *_):
     """
@@ -38,68 +39,54 @@ def test_module(client: Client, *_):
 # ----------------------------------------------- Auxiliary functions -------------------------------------------------
 
 
-def connect_api(client: Client, message: str, suffix: str, params: dict = None, data: dict = None) -> dict:
-    """A wrapper for requests lib to send our requests and handle requests and responses better.
-
-    :type client: ``Client``
-    :param client: The HTTP method, for example: GET, POST, and so on.
-
-     :type suffix: ``str``
-     :param suffix: The API endpoint.
-
-     :return: Depends on the resp_type parameter
-     :rtype: ``dict``
-     """
-
-    raw_response = client._http_request(message, suffix, params=params, json_data=data)
+def connect_api(client: Client, message: str, suffix: str, params: Optional[dict] = None,
+                data: Optional[dict] = None) -> Dict[str, Any]:
+    """Connects to api and Returns response.
+    Args:
+        client:  BaseClient which connects to api
+        message: The HTTP message, for example: GET, POST, and so on
+        suffix :The API endpoint.
+        params: URL parameters to specify the query.
+        data:The data to send in a specific request.
+    Returns:
+        response from the api.
+    """
+    raw_response = client.http_request(message, suffix, params=params, data=data)
     # Check if response contains errors
     if raw_response.get('errors'):
-        return DemistoException(raw_response.get('errors'))
+        raise DemistoException(raw_response.get('errors'))
     elif raw_response.get('error'):
-        return DemistoException(raw_response.get('error'))
+        raise DemistoException(raw_response.get('error'))
     response_list = raw_response
     return response_list
 
 
-# list of dict of keys where the key is the wanted name and the value is the actual name
-def create_dict(raw_data: dict, wanted_keys: list, actual_keys: list, unique_wanted_keys: list = None,
-                unique_actual_keys: list = None):
+def create_dict(raw_data: List[Dict[str, Any]], wanted_keys: List[Any], actual_keys: List[Any]) -> List[Dict[str, Any]]:
+    """Lists all raw data and return outputs in Demisto's format.
+    Args:
+        raw_data: raw response from the api.
+        wanted_keys: The keys as we would like them to be.
+        actual_keys :The keys as they are in raw response.
+    Returns:
+        Specific Keys from the raw data.
+    """
+
     context_list = []
     for raw in raw_data:
         context = {}
-        for i in range(len(wanted_keys)):
-            wanted_key = wanted_keys[i]
-            actual_key = actual_keys[i]
+        for wanted_key, actual_key in zip(wanted_keys, actual_keys):
             if isinstance(wanted_key, list):
-                list_wanted_key = wanted_keys[i][0]
-                list_actual_key = actual_keys[i][0]
-                inner_raw = raw.get(list_actual_key)
+                inner_raw = raw.get(actual_key[0])
                 if inner_raw:
-                    inner_wanted_keys = wanted_keys[i][1:]
-                    inner_actual_keys = actual_keys[i][1:]
                     inner_dict = {}
                     lst_inner = []
                     for in_raw in inner_raw:
-                        for j in range(len(inner_wanted_keys)):
-                            inner_dict.update({inner_wanted_keys[j]: in_raw.get(inner_actual_keys[j])})
+                        for inner_wanted_key, inner_actual_key in zip(wanted_key[1:], actual_key[1:]):
+                            inner_dict.update({inner_wanted_key: in_raw.get(inner_actual_key)})
                         lst_inner.append(inner_dict)
-                    context.update({list_wanted_key: lst_inner})
+                    context.update({wanted_key[0]: lst_inner})
             else:
                 context.update({wanted_key: raw.get(actual_key)})
-        if unique_wanted_keys:
-            for i in range(len(unique_wanted_keys)):
-                unique_actual_key = unique_actual_keys[i]
-                unique_wanted_key = unique_wanted_keys[i]
-                inner_unique_actual_keys = unique_actual_keys[i][1:]
-                inner_unique_wanted_keys = unique_wanted_keys[i][1:]
-                inner_dict = {}
-                lst_inner = []
-                key = unique_actual_key[0]
-                raw_unique = raw.get(key)
-                if (raw_unique):
-                    for j in range(len(inner_unique_wanted_keys)):
-                        inner_dict.update({inner_unique_wanted_keys[j]: raw_unique.get(inner_unique_actual_keys[j])})
-                    context.update({unique_wanted_key: inner_dict})
         context_list.append(context)
     return context_list
 
@@ -107,114 +94,168 @@ def create_dict(raw_data: dict, wanted_keys: list, actual_keys: list, unique_wan
 # ----------------------------------------- Commands Functions ---------------------------------------------------------
 
 
-def search_vulnerabilities(client: Client, args: dict) -> (str, dict, dict):
+def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Search vulnerability command.
+    Args:
+        client:  BaseClient which connects to api
+        args: arguments for the request
+    Returns:
+        Human Readable
+        Entry Context
+        Raw Data
+    """
     url_suffix = '/vulnerabilities/search'
-    hreadable = []
+    human_readable = []
+    context = {}
     params = {
         'id' + '[]': args.get('id'),
         'top_priority' + '[]': args.get('top-priority'),
         'min_risk_meter_score': args.get('min-score'),
         'status' + '[]': args.get('status')
     }
-    vulnerability_list = connect_api(client=client, message='GET', suffix=url_suffix, params=params).get(
-        'vulnerabilities')
+    vulnerability_list = connect_api(client=client, message='GET', suffix=url_suffix,
+                                     params=params).get('vulnerabilities')
+    if vulnerability_list:
+        wanted_keys = ['AssetID', ['Connectors', 'DefinitionName', 'ID', 'Name', 'Vendor'], 'CveID', 'FixID',
+                       'ID', 'Patch',
+                       'RiskMeterScore', ['ScannerVulnerabilities', 'ExternalID', 'Open', 'Port'], 'Score',
+                       'Severity',
+                       'Status', 'Threat', 'TopPriority',
+                       ['ServiceTicket', 'DueDate', 'ExternalIdentifier', 'Status', 'TicketType']]
+        actual_keys = ['asset_id', ['connectors', 'connector_definition_name', 'id', 'name', 'vendor'], 'cve_id',
+                       'fix_id',
+                       'id', 'patch', 'lisk_meter_score',
+                       ['scanner_vulnerabilities', 'external_unique_id', 'open', 'port'],
+                       'score', 'severity', 'status', 'threat', 'top_priority',
+                       ['service_ticket', 'due_date', 'external_identifier', 'status', 'ticket_type']]
 
-    wanted_keys = ['AssetID', ['Connectors', 'DefinitionName', 'ID', 'Name', 'Vendor'], 'CveID', 'FixID', 'ID', 'Patch',
-                   'RiskMeterScore', ['ScannerVulnerabilities', 'ExternalID', 'Open', 'Port'], 'Score', 'Severity',
-                   'Status', 'Threat', 'TopPriority']
-    actual_keys = ['asset_id', ['connectors', 'connector_definition_name', 'id', 'name', 'vendor'], 'cve_id', 'fix_id',
-                   'id', 'patch', 'lisk_meter_score', ['scanner_vulnerabilities', 'external_unique_id', 'open', 'port'],
-                   'score', 'severity', 'status', 'threat', 'top_priority']
-    unique_wanted_keys = [['ServiceTicket', 'DueDate', 'ExternalIdentifier', 'Status', 'TicketType']]
-    unique_actual_keys = [['service_ticket', 'due_date', 'external_identifier', 'status', 'ticket_type']]
-    context_list = create_dict(vulnerability_list, wanted_keys, actual_keys, unique_wanted_keys, unique_actual_keys)
-
-    for lst in vulnerability_list:
-        hreadable.append({
-            'id': lst.get('id'),
-            'Name': lst.get('cve_id'),
-            'Score': lst.get('risk_meter_score')
-        })
-    context = {
-        'Kenna': context_list
-    }
-    h_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', hreadable)
-    return h_readable_markdown, context, vulnerability_list
-
-
-def get_connectors(client: Client, args: dict) -> (str, dict, dict):
-    url_suffix = '/connectors'
-    hreadable = []
-    connectors = connect_api(client=client, message='GET', suffix=url_suffix).get('connectors')
-
-    wanted_keys = ['Host', 'Name', 'Running', 'ID']
-    actual_keys = ['host', 'name', 'running', 'id']
-    context_list = create_dict(connectors, wanted_keys, actual_keys)
-
-    for connector in connectors:
-        curr_dict = {
-            'Host': connector.get('host'),
-            'Name': connector.get('name'),
-            'Running': connector.get('running'),
-            'ID': connector.get('id')
+        context_list = create_dict(vulnerability_list, wanted_keys, actual_keys)
+        for lst in vulnerability_list:
+            human_readable.append({
+                'id': lst.get('id'),
+                'Name': lst.get('cve_id'),
+                'Score': lst.get('risk_meter_score')
+            })
+        context = {
+            'Kenna.Vulnerabilities(val.ID === obj.ID)': context_list
         }
-        hreadable.append(curr_dict)
-    context = {
-        'Kenna.ConnectorsList(val.ID === obj.ID)': context_list
-    }
-    h_readable_markdown = tableToMarkdown('Kenna Connectors', hreadable)
-    return h_readable_markdown, context, connectors
+        human_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', human_readable)
+    else:
+        human_readable_markdown = "no vulnerabilities found"
+    return human_readable_markdown, context, vulnerability_list
 
 
-def run_connector(client: Client, args: dict) -> (str, dict, dict):
-    args_id = args.get('id')
+def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Get Connectors command.
+    Args:
+        client:  BaseClient which connects to api
+    Returns:
+        Human Readable
+        Entry Context
+        Raw Data
+    """
+    url_suffix = '/connectors'
+    human_readable = []
+    context = {}
+    connectors = connect_api(client=client, message='GET', suffix=url_suffix).get('connectors')
+    if connectors:
+        wanted_keys = ['Host', 'Name', 'Running', 'ID']
+        actual_keys = ['host', 'name', 'running', 'id']
+        context_list = create_dict(connectors, wanted_keys, actual_keys)
+
+        for connector in connectors:
+            curr_dict = {
+                'Host': connector.get('host'),
+                'Name': connector.get('name'),
+                'Running': connector.get('running'),
+                'ID': connector.get('id')
+            }
+            human_readable.append(curr_dict)
+        context = {
+            'Kenna.ConnectorsList(val.ID === obj.ID)': context_list
+        }
+        human_readable_markdown = tableToMarkdown('Kenna Connectors', human_readable)
+    else:
+        human_readable_markdown = "no connectors in get response"
+
+    return human_readable_markdown, context, connectors
+
+
+def run_connector(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Run Connector command.
+    Args:
+        client:  BaseClient which connects to api
+        args: arguments for the request
+    Returns:
+        Success/ Failure , according to the response
+    """
+    args_id: str = str(args.get('id'))
     url_suffix = '/connectors/' + args_id + '/run'
     run_response = connect_api(client=client, message='GET', suffix=url_suffix)
-    if run_response.success == 'true':
-        return 'Connector ran successfully!', None, None
+    if run_response:
+        if run_response.get('success') == 'true':
+            return 'Connector ran successfully!', {}, []
+        else:
+            return 'Connector did not run successfully!', {}, []
     else:
-        return 'Connector did not run successfully!', None, None
+        return "error from response", {}, []
 
 
-def search_fixes(client: Client, args: dict) -> (str, dict, dict):
-
-    hreadable = ''
-    fixes_list = []
+def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Search Fixes command.
+    Args:
+        client:  BaseClient which connects to api
+        args: arguments for the request
+    Returns:
+        Human Readable
+        Entry Context
+        Raw Data
+    """
+    human_readable_markdown = ''
     url_suffix = '/fixes/search'
+    context = {}
     params = {
         'id' + '[]': args.get('id'),
         'top_priority' + '[]': args.get('top-priority'),
         'min_risk_meter_score': args.get('min-score'),
         'status' + '[]': args.get('status'),
     }
-    response = connect_api(client=client, message='GET', suffix=url_suffix, params=params)
-    if response.get('fix'):
-        fixes_list = [response.get('fix')]
-    elif response.get('fixes'):
-        fixes_list = response.get('fixes')
+    fixes_list = connect_api(client=client, message='GET', suffix=url_suffix, params=params).get('fixes')
+    if fixes_list:
+        wanted_keys = ['ID', 'Title', ['Assets', 'ID', 'Locator', 'PrimaryLocator', 'DisplayLocator'],
+                       ['Vulnerabilities', 'ID', 'ServiceTicketStatus', 'ScannerIDs'], 'CveID', 'LastUpdatedAt',
+                       'Category', 'VulnerabilityCount', 'MaxScore']
+        actual_keys = ['id', 'title', ['assets', 'id', 'locator', 'primary_locator', 'display_locator'],
+                       ['vulnerabilities', 'id', 'service_ticket_status', 'scanner_ids'], 'cves', 'updated_at',
+                       'category',
+                       'vuln_count', 'max_vuln_score']
+        context_list = create_dict(fixes_list, wanted_keys, actual_keys)
 
-    wanted_keys = ['ID', 'Title', ['Assets', 'ID', 'Locator', 'PrimaryLocator', 'DisplayLocator'],
-                   ['Vulnerabilities', 'ID', 'ServiceTicketStatus', 'ScannerIDs'], 'CveID', 'LastUpdatedAt',
-                   'Category', 'VulnerabilityCount', 'MaxScore']
-    actual_keys = ['id', 'title', ['assets', 'id', 'locator', 'primary_locator', 'display_locator'],
-                   ['vulnerabilities', 'id', 'service_ticket_status', 'scanner_ids'], 'cves', 'updated_at', 'category',
-                   'vuln_count', 'max_vuln_score']
-    context_list = create_dict(fixes_list, wanted_keys, actual_keys)
+        remove_html = re.compile(r'<[^>]+>')
+        for fix in fixes_list:
+            if fix:
+                human_readable_markdown += str(fix.get('title')) + '\n'
+                human_readable_markdown += '#### ID: ' + str(fix.get('id')) + '\n'
+                human_readable_markdown += str(fix.get('vuln_count')) + ' vulnerabilities affected\n'
+                human_readable_markdown += '#### Diagnosis:\n'
+                human_readable_markdown += remove_html.sub(' ', str(fix.get('diagnosis'))) + '\n' + '&nbsp;' + '\n'
+        context = {
+            'Kenna.Fixes(val.ID === obj.ID)': context_list
+        }
+    else:
+        human_readable_markdown = "no fixes in response"
+    return human_readable_markdown, context, fixes_list
 
 
-    remove_html = re.compile(r'<[^>]+>')
-    for fix in fixes_list:
-        hreadable += fix.get('title') + '\n'
-        hreadable += '#### ID: ' + str(fix.get('id')) + '\n'
-        hreadable += str(fix.get('vuln_count')) + ' vulnerabilities affected\n'
-        hreadable += '#### Diagnosis:\n'
-        hreadable += remove_html.sub(' ', fix.get('diagnosis')) + '\n' + '&nbsp;' + '\n'
-    context = {
-        'Kenna.Fixes(val.ID === obj.ID)': context_list
-    }
-    return hreadable, context, response
+def update_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Update Asset command.
+    Args:
+        client:  BaseClient which connects to api
+        args: arguments for the request
+    Returns:
+        Success/ Failure , according to the response
+    """
 
-def update_asset(client: Client, args: dict) -> (str, dict, dict):
     args_id = str(args.get('id'))
     url_suffix = '/assets/' + args_id
     asset = {
@@ -225,36 +266,53 @@ def update_asset(client: Client, args: dict) -> (str, dict, dict):
     try:
         connect_api(client=client, message='PUT', suffix=url_suffix, data=asset)
     except DemistoException as exp:
-        if type(exp.__context__) == (JSONDecodeError):
-            return 'Asset ' + str(args_id) + ' was updated', None, None
+        if type(exp.__context__) == JSONDecodeError:
+            return 'Asset ' + str(args_id) + ' was updated', {}, []
         else:
-            return 'Could not update asset.', None, None
+            return 'Could not update asset.', {}, []
+    return 'error', {}, []
 
 
-def update_vulnerability(client: Client, args: dict) -> (str, dict, dict):
-    update = {
-        'vulnerability': {}
-    }
+def update_vulnerability(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Update Vulnerabilities command.
+    Args:
+        client:  BaseClient which connects to api
+        args: arguments for the request
+    Returns:
+        Success/ Failure , according to the response
+    """
+    params_to_update: dict = {}
     args_id = str(args.get('id'))
-    status = args.get('status')
-    notes = args.get('notes')
+    status = str(args.get('status'))
+    notes = str(args.get('notes'))
     if notes:
-        update.get('vulnerability').update({'notes': notes})
+        params_to_update['vulnerability'].update({'notes': notes})
     if status:
-        update.get('vulnerability').update({'status': status})
+        params_to_update['vulnerability'].update({'status': status})
     url_suffix = '/vulnerabilities/' + args_id
     try:
-        connect_api(client=client, message='PUT', suffix=url_suffix, data=update)
+        connect_api(client=client, message='PUT', suffix=url_suffix, data=params_to_update)
     except DemistoException as exp:
-        if type(exp.__context__) == (JSONDecodeError):
-            return 'Asset ' + str(args_id) + ' was updated', None, None
+        if type(exp.__context__) == JSONDecodeError:
+            return 'Asset ' + str(args_id) + ' was updated', {}, []
         else:
-            return 'Could not update asset.', None, None
+            return 'Could not update asset.', {}, []
+    return 'error', {}, []
 
 
-def search_assets(client: Client, args: dict) -> (str, dict, dict):
+def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Search Asset command.
+    Args:
+        client:  BaseClient which connects to api
+        args: arguments for the request
+    Returns:
+        Human Readable
+        Entry Context
+        Raw Data
+    """
     url_suffix = '/assets/search'
-    hreadable = []
+    human_readable = []
+    context = {}
     params = {
         'id' + '[]': args.get('id'),
         'hostname' + '[]': args.get('hostname'),
@@ -262,53 +320,79 @@ def search_assets(client: Client, args: dict) -> (str, dict, dict):
         'ip_address' + '[]': args.get('ip-address'),
         'tags' + '[]': args.get('tags')
     }
-    assets_list = connect_api(client=client, message='GET', suffix=url_suffix, params=params).get('assets')
+    assets_list = connect_api(client=client, message='GET', suffix=url_suffix, params=params).get(
+        'assets')
+    if assets_list:
+        wanted_keys = ['ID', 'Hostname', 'MinScore', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
+                       'Fqdn', 'Status', 'Owner', 'Priority', 'Notes']
+        actual_keys = ['id', 'hostname', 'min_risk_meter_score', 'ip_address', 'vulnerabilities_count',
+                       'operating_system',
+                       'tags', 'fqdn', 'status', 'owner', 'priority', 'notes']
+        context_list: List[Dict[str, Any]] = create_dict(assets_list, wanted_keys, actual_keys)
 
-    wanted_keys = ['ID', 'Hostname', 'MinScore', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
-                   'Fqdn', 'Status', 'Owner', 'Priority','Notes']
-    actual_keys = ['id', 'hostname', 'min_risk_meter_score', 'ip_address', 'vulnerabilities_count', 'operating_system',
-                   'tags', 'fqdn', 'status', 'owner', 'priority','notes']
-    context_list = create_dict(assets_list, wanted_keys, actual_keys)
+        for lst in assets_list:
+            human_readable.append({
+                'id': lst.get('id'),
+                'Hostname': lst.get('hostname'),
+                'IP-address': lst.get('ip_address'),
+                'Vulnerabilities Count': args.get('vulnerabilities_count')
+            })
+        context = {
+            'Kenna.Assets(val.ID === obj.ID)': context_list
+        }
+        human_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', human_readable)
+    else:
+        human_readable_markdown = "no assets in response"
+    return human_readable_markdown, context, assets_list
 
-    for lst in assets_list:
-        hreadable.append({
-            'id': lst.get('id'),
-            'Hostname': lst.get('hostname'),
-            'IP-address': lst.get('ip_address'),
-            'Vulnerabilities Count': args.get('vulnerabilities_count')
-        })
-    context = {
-        'Kenna.Assets(val.ID === obj.ID)': context_list
-    }
-    h_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', hreadable)
-    return h_readable_markdown, context, assets_list
 
-def get_asset_vulenrabilities(client: Client, args: dict) -> (str, dict, dict):
-    id = args.get('id')
-    url_suffix = '/assets/' + id + '/vulnerabilities'
-    hreadable = []
-
-    vulnerabilities_list = connect_api(client=client, message='GET', suffix=url_suffix).get('vulnerabilities')
-
-    wanted_keys = ['AssetID',  'CveID', 'ID', 'Patch',  'Status',  'TopPriority']
-    actual_keys = ['asset_id',  'cve_id','id', 'patch', 'status',  'top_priority']
-    context_list = create_dict(vulnerabilities_list, wanted_keys, actual_keys)
-
-    for lst in vulnerabilities_list:
-        hreadable.append({
-            'id': lst.get('id'),
-            'Name': lst.get('cve_id'),
-            'Score': lst.get('risk_meter_score')
-        })
-    context = {
-        'Kenna.VulnerabilitiesOfAsset(val.ID === obj.ID)': context_list
-    }
-    h_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', hreadable)
-    return h_readable_markdown, context, vulnerabilities_list
-
-def add_tags(client: Client, args: dict) -> (str, dict, dict):
+def get_asset_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Get Asset by Vulnerability command.
+    Args:
+        client:  BaseClient which connects to api
+        args: arguments for the request
+    Returns:
+        Human Readable
+        Entry Context
+        Raw Data
+    """
     args_id = str(args.get('id'))
-    tags = args.get('tag')
+    url_suffix = '/assets/' + args_id + '/vulnerabilities'
+    human_readable = []
+    context = {}
+
+    vulnerabilities_list = connect_api(client=client, message='GET', suffix=url_suffix).get(
+        'vulnerabilities')
+    if vulnerabilities_list:
+        wanted_keys: List[Any] = ['AssetID', 'CveID', 'ID', 'Patch', 'Status', 'TopPriority']
+        actual_keys: List[Any] = ['asset_id', 'cve_id', 'id', 'patch', 'status', 'top_priority']
+        context_list: List[Dict[str, Any]] = create_dict(vulnerabilities_list, wanted_keys, actual_keys)
+
+        for lst in vulnerabilities_list:
+            human_readable.append({
+                'id': lst.get('id'),
+                'Name': lst.get('cve_id'),
+                'Score': lst.get('risk_meter_score')
+            })
+        context = {
+            'Kenna.VulnerabilitiesOfAsset(val.ID === obj.ID)': context_list
+        }
+        human_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', human_readable)
+    else:
+        human_readable_markdown = "no vulnerabilities in response"
+    return human_readable_markdown, context, vulnerabilities_list
+
+
+def add_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Add tags command.
+    Args:
+        client:  BaseClient which connects to api
+        args: arguments for the request
+    Returns:
+        Success/ Failure , according to the response
+    """
+    args_id = str(args.get('id'))
+    tags = str(args.get('tag'))
     url_suffix = '/assets/' + args_id + '/tags'
     asset = {
         'asset': {
@@ -318,15 +402,23 @@ def add_tags(client: Client, args: dict) -> (str, dict, dict):
     try:
         connect_api(client=client, message='PUT', suffix=url_suffix, data=asset)
     except DemistoException as exp:
-        if type(exp.__context__) == (JSONDecodeError):
-            return 'Tag ' + str(tags) + ' was added to asset '+args_id, None, None
+        if type(exp.__context__) == JSONDecodeError:
+            return 'Tag ' + tags + ' was added to asset ' + args_id, {}, []
         else:
-            return 'Tag ' + str(tags) + ' was not added to asset '+args_id, None, None
+            return 'Tag ' + tags + ' was not added to asset ' + args_id, {}, []
+    return 'error', {}, []
 
 
-def delete_tags(client: Client, args: dict) -> (str, dict, dict):
+def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Delete tags command.
+    Args:
+        client:  BaseClient which connects to api
+        args: arguments for the request
+    Returns:
+        Success/ Failure , according to the response
+    """
     args_id = str(args.get('id'))
-    tags = args.get('tag')
+    tags = str(args.get('tag'))
     url_suffix = '/assets/' + args_id + '/tags'
     asset = {
         'asset': {
@@ -336,10 +428,11 @@ def delete_tags(client: Client, args: dict) -> (str, dict, dict):
     try:
         connect_api(client=client, message='DELETE', suffix=url_suffix, data=asset)
     except DemistoException as exp:
-        if type(exp.__context__) == (JSONDecodeError):
-            return 'Tag ' + str(tags) + ' was deleted to asset '+args_id, None, None
+        if type(exp.__context__) == JSONDecodeError:
+            return 'Tag ' + str(tags) + ' was deleted to asset ' + args_id, {}, []
         else:
-            return 'Tag ' + str(tags) + ' was not deleted to asset '+args_id, None, None
+            return 'Tag ' + str(tags) + ' was not deleted to asset ' + args_id, {}, []
+    return 'error', {}, []
 
 
 # -------------------------------------------- Main Function -----------------------------------------------------------
@@ -354,13 +447,12 @@ def main():
     use_ssl = not params.get('insecure', False)
     # Should we use system proxy settings
     use_proxy = params.get('proxy') == 'true'
-
     # Initialize Client object
     client = Client(base_url=base_url, api_key=api, verify=use_ssl, proxy=use_proxy)
-    command = demisto.command()  # demisto run command with this url
+    command = demisto.command()
     LOG(f'Command being called is {command}')
     # Commands dict
-    commands = {
+    commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], List[Any]]]] = {
         'test-module': test_module,
         'kenna-search-vulnerabilities': search_vulnerabilities,
         'kenna-get-connectors': get_connectors,
@@ -369,7 +461,7 @@ def main():
         'kenna-update-asset': update_asset,
         'kenna-update-vulnerability': update_vulnerability,
         'kenna-search-assets': search_assets,
-        'kenna-get-asset-vulnerabilities': get_asset_vulenrabilities,
+        'kenna-get-asset-vulnerabilities': get_asset_vulnerabilities,
         'kenna-add-tag': add_tags,
         'kenna-delete-tag': delete_tags,
     }

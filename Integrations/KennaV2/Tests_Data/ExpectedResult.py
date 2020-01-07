@@ -1,5 +1,5 @@
-VULNERABILITIES_SEARCH_EXPECTED ={
-    'Kenna':[{
+VULNERABILITIES_SEARCH_EXPECTED = {
+    'Kenna.Vulnerabilities(val.ID === obj.ID)': [{
         "AssetID": 1,
         "Connectors": [
             {
@@ -41,35 +41,35 @@ VULNERABILITIES_SEARCH_EXPECTED ={
     ]
 }
 
-GET_CONNECTORS_EXPECTED ={
-        "Kenna.ConnectorsList(val.ID === obj.ID)": [
-            {
-                "Host": None,
-                "ID": 152075,
-                "Name": "Nessus XML",
-                "Running": True
-            },
-            {
-                "Host": None,
-                "ID": 152076,
-                "Name": "Generic",
-                "Running": True
-            },
-            {
-                "Host": None,
-                "ID": 152077,
-                "Name": "Checkmarx XML",
-                "Running": True
-            },
-            {
-                "Host": "ven01347.service-now.com:443",
-                "ID": 152078,
-                "Name": "ServiceNow",
-                "Running": True
-            }
-        ]
+GET_CONNECTORS_EXPECTED = {
+    "Kenna.ConnectorsList(val.ID === obj.ID)": [
+        {
+            "Host": None,
+            "ID": 152075,
+            "Name": "Nessus XML",
+            "Running": True
+        },
+        {
+            "Host": None,
+            "ID": 152076,
+            "Name": "Generic",
+            "Running": True
+        },
+        {
+            "Host": None,
+            "ID": 152077,
+            "Name": "Checkmarx XML",
+            "Running": True
+        },
+        {
+            "Host": "ven01347.service-now.com:443",
+            "ID": 152078,
+            "Name": "ServiceNow",
+            "Running": True
+        }
+    ]
 }
-SEARCH_FIXES_EXPECTED ={
+SEARCH_FIXES_EXPECTED = {
     "Kenna.Fixes(val.ID === obj.ID)": [
         {
             "Assets": [
@@ -92,35 +92,35 @@ SEARCH_FIXES_EXPECTED ={
         }
     ]
 }
-SEARCH_ASSETS_EXPECTED ={
-        "Kenna.Assets(val.ID === obj.ID)": [
-            {
-                "Fqdn": None,
-                "Hostname": None,
-                "ID": 3,
-                "IpAddress": "Kenna",
-                "MinScore": None,
-                "OperatingSystem": "Kenna",
-                "Owner": None,
-                "Priority": 3,
-                "Status": "active",
-                "Tags": [
-                    "Kenna"
-                ],
-                "VulnerabilitiesCount": 3,
-                "Notes": None
-            }
+SEARCH_ASSETS_EXPECTED = {
+    "Kenna.Assets(val.ID === obj.ID)": [
+        {
+            "Fqdn": None,
+            "Hostname": None,
+            "ID": 3,
+            "IpAddress": "Kenna",
+            "MinScore": None,
+            "OperatingSystem": "Kenna",
+            "Owner": None,
+            "Priority": 3,
+            "Status": "active",
+            "Tags": [
+                "Kenna"
+            ],
+            "VulnerabilitiesCount": 3,
+            "Notes": None
+        }
     ]
 }
-GET_ASSETS_VULNERABILITIES_EXPECTED ={
-        "Kenna.VulnerabilitiesOfAsset(val.ID === obj.ID)": [
-            {
-                "AssetID": 4,
-                "CveID": "Kenna",
-                "ID": 4,
-                "Patch": True,
-                "Status": "open",
-                "TopPriority": True
-            }
-        ]
+GET_ASSETS_VULNERABILITIES_EXPECTED = {
+    "Kenna.VulnerabilitiesOfAsset(val.ID === obj.ID)": [
+        {
+            "AssetID": 4,
+            "CveID": "Kenna",
+            "ID": 4,
+            "Patch": True,
+            "Status": "open",
+            "TopPriority": True
+        }
+    ]
 }
