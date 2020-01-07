@@ -114,6 +114,7 @@ class IndicatorTypes(object):
     FQDN = "Domain"
     MD5 = "File MD5"
     SHA1 = "File SHA-1"
+    SHA256 = "File SHA-256"
     Host = "Host"
     IP = "IP"
     CIDR = "CIDR"

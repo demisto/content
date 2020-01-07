@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from typing import Optional
-
 import demistomock as demisto
 import copy
 import json
@@ -1057,27 +1055,35 @@ def test_regexes(pattern, string, expected):
 
 
 class IndicatorTypesDB(object):
-    file_to_check =[]
-    indicators = []
+    reputations_path = '../../Misc/reputations.json'
+    all_json_path = '../../Misc/*.json'
 
-    def __init__(self):
-        dir_list = glob.glob('../../Misc/*.json')
-        dir_list.pop('reputations.json')
-        self.file_to_check = dir_list
-        with open('../../Misc/reputations.json') as f:
+    @classmethod
+    def file_to_check(cls):
+        dir_list = glob.glob(cls.all_json_path)
+        dir_list.pop(dir_list.index(cls.reputations_path))
+        return dir_list
+
+    @classmethod
+    def indicators(cls):
+        with open(cls.reputations_path) as f:
             indicators = json.load(f)
-        self.indicators = indicators.get('reputations')
-    
+        return indicators.get('reputations')
+
 
 class TestIndicatorTypes(object):
-    @classmethod
-    def class_setup(cls):
-        cls.check_from_version = "5.5.0"
-        types = IndicatorTypes()
-        cls.values = [attr for attr in dir(types) if not callable(getattr(types, attr)) and not attr.startswith("__")]
+    values = [IndicatorTypes.__dict__[var] for var in IndicatorTypes.__dict__.keys() if not var.startswith('__')]
+    check_from_version = "5.5.0"
+    ignore_list = [
+        "File enhancement scripts",
+        "Registry Path Reputation",
+        "CVE CVSS Score",
+        "hostname",
+        "username"
+    ]
 
     def should_check(self, version):
-        # type: (Optional[str]) -> bool
+        # type: (str) -> bool
         """Checks only if there's version greater or equal to self.check_from_version
         or if there's no version at all
         """
@@ -1090,22 +1096,21 @@ class TestIndicatorTypes(object):
         # Checks if toVersion is greater than 5.5 needed.
         if self.should_check(indicator_json.get('toVersion')):
             details = indicator_json.get('details')
+            if details in self.ignore_list:
+                return
             assert details in self.values, \
                 '{}: Field `details` value is {} but not found in IndicatorTypes.'.format(path, details)
 
-    @pytest.mark.parametrize('path', IndicatorTypesDB.file_to_check)
+    @pytest.mark.parametrize('path', IndicatorTypesDB.file_to_check())
     def test_indicatortypes_backwards(self, path):
         # type: (str) -> None
         with open(path) as f:
             indicator_json = json.load(f)
         self.check_details(indicator_json, path)
 
-    @pytest.mark.parametrize('indicator', IndicatorTypesDB.indicators)
+    @pytest.mark.parametrize('indicator', IndicatorTypesDB.indicators())
     def test_reputations(self, indicator):
         # type: (dict) -> None
         """"""
-        self.check_details(indicator, 'reputations: {}'.format(indicator.get('id')))
 
-
-
-
+        self.check_details(indicator, 'reputations.json: id `{}`'.format(indicator.get('id')))
