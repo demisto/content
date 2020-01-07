@@ -16,6 +16,7 @@ RECONNECT_DELAY_MAX = 10
 
 
 class EventSender:
+
     TRUST_LEVEL = {
         'NOT_SET': '0',
         'KNOWN_MALICIOUS': '1',

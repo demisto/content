@@ -351,7 +351,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
     has_skipped_integration = False
     for integration in integrations_conf:
         if integration in skipped_integrations_conf.keys():
-            skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
+            # skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
             has_skipped_integration = True
 
         if integration in nightly_integrations:
