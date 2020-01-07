@@ -46,8 +46,9 @@ def get_attachments(build_url, env_results_file_name):
     # TODO: update this code after switching to parallel tests using multiple server for nightly build
     instance_dns = env_results[0]['InstanceDNS']
     role = env_results[0]['Role']
+    print('build url: ' + build_url)
     build_number = '/'.split(build_url)[-1]
-    print(build_number)
+    print('build number: ' + build_number)
     success_file_path = "./Tests/is_build_passed_{}.txt".format(role.replace(' ', ''))
 
     content_team_fields, content_fields, _, _ = get_fields(build_number)
