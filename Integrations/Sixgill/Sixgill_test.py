@@ -28,31 +28,31 @@ iocs_list = [{"alert_id": "None",
               "alert_name": "AllIpsUndergroundFeedRule",
               "consumer": "random",
               "consumer_specific_info": {
-                "fields": {
-                  "itype": "suspicious_ip",
-                  "tags": [
-                    "DarkWeb"
-                  ],
-                  "threat_type": None,
-                  "value": "1.1.1.1"
-                },
-                "type": "indicator"
+                  "fields": {
+                      "itype": "suspicious_ip",
+                      "tags": [
+                          "DarkWeb"
+                      ],
+                      "threat_type": None,
+                      "value": "1.1.1.1"
+                  },
+                  "type": "indicator"
               },
               "doc_id": "123456789",
               "feed_owner_id": "123456",
               "importance": 1,
               "source_id": "c-1231",
               "source_item": {
-                "access": "Dark Web",
-                "creator": "theworker",
-                "date": "2019-03-29T19:59:00",
-                "ip": "1.1.1.1",
-                "site": "dread",
-                "tags": [
-                  "IP",
-                  "IP_v4",
-                  "IP_global"
-                ]
+                  "access": "Dark Web",
+                  "creator": "theworker",
+                  "date": "2019-03-29T19:59:00",
+                  "ip": "1.1.1.1",
+                  "site": "dread",
+                  "tags": [
+                      "IP",
+                      "IP_v4",
+                      "IP_global"
+                  ]
               },
               "source_type": "ES",
               "update_time": "2019-05-12 13:33:05"}]
