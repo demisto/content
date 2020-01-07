@@ -2,7 +2,7 @@ id: Indicators reputation-.json Test
 version: -1
 contentitemfields:
   propagationLabels: []
-name: Indicators - reputation-* Test
+name: Indicators-reputation-Test
 description: Test our repution*.json regexes in misc folder
 starttaskid: "0"
 tasks:
