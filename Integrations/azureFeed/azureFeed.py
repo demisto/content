@@ -29,7 +29,7 @@ class Client(BaseClient):
         self._polling_timeout = polling_timeout
 
     @staticmethod
-    def build_ip_item(azure_address_prefix, **keywords) -> Dict:
+    def build_ip_indicator(azure_address_prefix, **keywords) -> Dict:
         """Creates an IP data dict.
 
         Args:
@@ -63,6 +63,24 @@ class Client(BaseClient):
 
         return ip_object
 
+    def get_azure_download_link(self):
+        """Extracts the download link for the file from the Azure url.
+
+        Returns:
+            str. The download link.
+        """
+        azure_url_response = requests.get(
+            url=self._base_url,
+            stream=False,
+            verify=self._verify,
+            timeout=self._polling_timeout
+        )
+
+        azure_url_response.raise_for_status()
+        response_html_tree = bs4.BeautifulSoup(azure_url_response.content, "lxml")
+
+        return response_html_tree.find('a', class_='failoverLink')
+
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
         Returns:
@@ -71,16 +89,7 @@ class Client(BaseClient):
         results = []
 
         try:
-            azure_url_response = requests.get(
-                url=self._base_url,
-                stream=False,
-                verify=self._verify,
-                timeout=self._polling_timeout
-            )
-
-            azure_url_response.raise_for_status()
-            response_html_tree = bs4.BeautifulSoup(azure_url_response.content, "lxml")
-            download_link = response_html_tree.find('a', class_='failoverLink')
+            download_link = self.get_azure_download_link()
 
             if download_link is None:
                 raise RuntimeError(F'{INTEGRATION_NAME} - failoverLink not found')
@@ -118,11 +127,11 @@ class Client(BaseClient):
                 address_prefixes = indicator_properties.get('addressPrefixes', [])
                 for address in address_prefixes:
                     results.append(
-                        self.build_ip_item(address, azure_name=indicator_name,
-                                           azure_id=indicator_id_,
-                                           azure_region=region,
-                                           azure_platform=platform,
-                                           azure_system_service=system_service)
+                        self.build_ip_indicator(address, azure_name=indicator_name,
+                                                azure_id=indicator_id_,
+                                                azure_region=region,
+                                                azure_platform=platform,
+                                                azure_system_service=system_service)
                     )
 
         except requests.exceptions.SSLError as err:
@@ -243,10 +252,10 @@ def main():
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
 
-        elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
-            for batch1 in batch(indicators, batch_size=2000):
-                demisto.createIndicators(batch)
+        # elif command == 'fetch-indicators':
+        #     indicators = fetch_indicators_command(client)
+        #     for batch1 in batch(indicators, batch_size=2000):
+        #         demisto.createIndicators(batch)
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
