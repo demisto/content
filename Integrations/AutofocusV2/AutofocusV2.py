@@ -4,8 +4,10 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
+import re
 import json
 import requests
+import ipaddress
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -21,6 +23,8 @@ USE_SSL = not PARAMS.get('insecure', False)
 BASE_URL = SERVER + '/api/v1.0'
 
 VENDOR_NAME = 'AutoFocus V2'
+
+DOMAIN_RE = re.compile(r'^[a-zA-Z\d-]{,63}(\.[a-zA-Z\d-]{,63})*$')
 
 # Headers to be sent in requests
 HEADERS = {
@@ -973,6 +977,66 @@ def get_indicator_outputs(indicator_type, indicators, indicator_context_output):
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=raw_res)
 
 
+def check_for_ip(indicator):
+    if '-' in indicator:
+        # check for address range
+        a1, a2 = indicator.split('-', 1)
+
+        try:
+            a1 = ipaddress.ip_address(a1)
+            a2 = ipaddress.ip_address(a2)
+
+            if a1.version == a2.version:
+                if a1.version == 6:
+                    return 'IPv6'
+                if a1.version == 4:
+                    return 'IPv4'
+
+        except Exception:
+            return None
+
+        return None
+
+    if '/' in indicator:
+        # check for network
+        try:
+            ip = ipaddress.ip_network(indicator)
+
+        except Exception:
+            return None
+
+        if ip.version == 4:
+            return 'CIDR'
+        if ip.version == 6:
+            return 'IPv6CIDR'
+
+        return None
+
+    try:
+        ip = ipaddress.ip_address(indicator)
+
+    except Exception:
+        return None
+
+    if ip.version == 4:
+        return 'IPv4'
+    if ip.version == 6:
+        return 'IPv6'
+
+    return None
+
+
+def type_of_indicator(indicator):
+    ipversion = check_for_ip(indicator)
+    if ipversion is not None:
+        return ipversion
+
+    if DOMAIN_RE.match(indicator):
+        return 'domain'
+
+    return 'URL'
+
+
 ''' COMMANDS'''
 
 
@@ -1234,6 +1298,29 @@ def search_file_command(file):
     get_indicator_outputs(indicator_type, indicator_details, 'SHA256')
 
 
+def get_export_list_command(args):
+    data = {
+        'label': args.get('label'),
+        'panosFormatted': True,
+        'apiKey': ''
+    }
+    results = http_request(url_suffix='/export', method='POST', data=data,
+                           err_operation=f"Failed to fetch export list: {args.get('label')}")
+
+    indicators = []
+    for indicator_value in results.get('export_list'):
+        indicator_type = type_of_indicator(indicator_value)
+        indicators.append({
+            'Type': indicator_type,
+            'Value': indicator_value,
+        })
+
+    hr = tableToMarkdown(f"Export list {args.get('label')}", indicators, headers=['Type', 'Value'])
+
+    return_outputs(hr, {'AutoFocus.ExportListIndicator(val.Value == obj.Value && val.Type == obj.Type)': indicators},
+                   results)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -1266,6 +1353,8 @@ try:
         top_tags_search_command()
     elif active_command == 'autofocus-top-tags-results':
         top_tags_results_command()
+    elif active_command == 'autofocus-get-export-list-indicators':
+        get_export_list_command(args)
     elif active_command == 'ip':
         search_ip_command(**args)
     elif active_command == 'domain':
