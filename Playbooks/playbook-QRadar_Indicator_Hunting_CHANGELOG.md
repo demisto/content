@@ -1,7 +1,8 @@
 ## [Unreleased]
-Added ouputs for source and destination ip's.
+Added outputs for Intenal and external ip's.
 Changed set tasks to stop on error no.
 Replaced DT to new transformer productjoin.
+Added task to sort internal and external ip's
 
 ## [19.12.1] - 2019-12-25
 #### New Playbook
