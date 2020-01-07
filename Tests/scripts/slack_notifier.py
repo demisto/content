@@ -84,11 +84,11 @@ def get_fields():
             failed_tests = [line.strip('\n') for line in failed_tests]
 
     failed_unittests = []
-    if os.path.isfile('./Tests/failed_unittests'):
-        print('Extracting failed_unittests')
-        with open('./Tests/failed_unittests.txt', 'r') as failed_unittests_file:
-            failed_unittests = failed_unittests_file.readlines()
-            failed_unittests = [line.strip('\n') for line in failed_unittests]
+    # if os.path.isfile('./Tests/failed_unittests'):
+    #     print('Extracting failed_unittests')
+    #     with open('./Tests/failed_unittests.txt', 'r') as failed_unittests_file:
+    #         failed_unittests = failed_unittests_file.readlines()
+    #         failed_unittests = [line.strip('\n') for line in failed_unittests]
 
     skipped_tests = []
     if os.path.isfile('./Tests/skipped_tests.txt'):
