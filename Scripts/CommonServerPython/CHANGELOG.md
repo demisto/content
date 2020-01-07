@@ -1,6 +1,4 @@
 ## [Unreleased]
-- Added a function to convert snake-case words to camel-case words.
-- Added a function to convert camel-case words to readable format.
 - Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.
 - Fixed proxy setting in BaseClient
 - Added the **batch** command, which takes an iterable and how many items to return and yields batches of that size.
