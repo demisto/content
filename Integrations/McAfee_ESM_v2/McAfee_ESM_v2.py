@@ -579,41 +579,42 @@ class McAfeeESMClient(BaseClient):
     def fetch_incidents(self, params: Dict):
         last_run = demisto.getLastRun()
         current_run = {}
+        incidents = []
         limit = int(params.get('fetchLimit', 5))
-        if params.get('fetchType') == 'alarms':
+        if params.get('fetchType', 'alarms') in ('alarms', 'both'):
             start_time = last_run.get(
                 'alarms', {}).get(
                 'time', parse_date_range(params.get('fetchTime'), self.demisto_format)[0])
             start_id = int(last_run.get('alarms', {}).get('id', params.get('startingFetchID')))
-            incidents, current_run['alarms'] = self.__alarms_to_incidents(start_time=start_time,
-                                                                          start_id=start_id, limit=limit)
-        elif params.get('fetchType') == 'cases':
+            temp_incidents, current_run['alarms'] = self.__alarms_to_incidents(start_time=start_time,
+                                                                               start_id=start_id, limit=limit)
+            incidents.extend(temp_incidents)
+        if params.get('fetchType') in ('cases', 'both'):
             start_id = int(last_run.get('cases', {}).get('id', params.get('startingFetchID')))
-            incidents, current_run['cases'] = self.__cases_to_incidents(start_id=start_id, limit=limit)
-        else:
-            raise DemistoException('-----------')
-
-        if current_run[params['fetchType']] is None:
-            current_run = last_run
+            temp_incidents, current_run['cases'] = self.__cases_to_incidents(start_id=start_id, limit=limit)
+            incidents.extend(temp_incidents)
 
         demisto.setLastRun(current_run)
         demisto.incidents(incidents)
 
     def __alarms_to_incidents(self, start_time: str, start_id: int = 0, limit: int = 1) -> Tuple[List, Dict]:
-        current_run = {
-            'time': datetime.utcnow().strftime(self.demisto_format)
-        }
-        _, _, all_alarms = self.fetch_alarms(start_time=start_time, end_time=current_run['time'], raw=True)
+        current_time = datetime.utcnow().strftime(self.demisto_format)
+        current_run = {}
+        _, _, all_alarms = self.fetch_alarms(start_time=start_time, end_time=current_time, raw=True)
         all_alarms = filtering_incidents(all_alarms, start_id=start_id, limit=limit)
-        current_run['time'] = all_alarms[0].get('triggeredDate')
-        current_run['id'] = all_alarms[0].get('id')
+        if all_alarms:
+            current_run['time'] = all_alarms[0].get('triggeredDate', current_time)
+            current_run['id'] = all_alarms[0]['id']
+        else:
+            current_run['time'] = current_time
+            current_run['id'] = start_id
         all_alarms = crate_incident(all_alarms, alarms=True)
         return all_alarms, current_run
 
     def __cases_to_incidents(self, start_id: int = 0, limit: int = 1) -> Tuple[List, Dict]:
         _, _, all_cases = self.get_case_list(raw=True)
         all_cases = filtering_incidents(all_cases, start_id=start_id, limit=limit)
-        current_run = {'id': all_cases[0].get('id')}
+        current_run = {'id': all_cases[0].get('id', start_id) if all_cases else start_id}
         all_cases = crate_incident(all_cases, alarms=False)
         return all_cases, current_run
 
@@ -749,17 +750,29 @@ def search_readable_outputs(table: Dict) -> str:
         return ''
 
 
-def crate_incident(raw_incidents: List[Dict], alarms: bool):
+def crate_incident(raw_incidents: List[Dict], alarms: bool) -> List[Dict[str, Dict]]:
     for incident in range(len(raw_incidents)):
         alarm_id = str(raw_incidents[incident].get('id'))
         summary = str(raw_incidents[incident].get('summary'))
         incident_type = 'alarm' if alarms else 'case'
         raw_incidents[incident] = {
             'name': f'McAfee ESM {incident_type}. id: {alarm_id}. {summary}',
+            'severity': mcafee_severity_to_demisto(raw_incidents[incident].get('severity', 0)),
             'occurred': raw_incidents[incident].get('triggeredDate', raw_incidents[incident].get('openTime', '')),
             'rawJSON': json.dumps(raw_incidents[incident])
         }
     return raw_incidents
+
+
+def mcafee_severity_to_demisto(severity: int) -> int:
+    if severity > 65:
+        return 3
+    elif severity > 32:
+        return 2
+    elif severity > 0:
+        return 1
+    else:
+        return 0
 
 
 def block_1(client):

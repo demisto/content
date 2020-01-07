@@ -139,6 +139,7 @@ data_test_time_fields = [
         []
     ]
 ]
+data_test_mcafee_severity_to_demisto = [(100, 3), (65, 2), (32, 1), (0, 0)]
 
 
 @pytest.mark.parametrize('test_input, output', data_test_filtering_incidents)
@@ -199,3 +200,9 @@ def test_time_fields(test_input, output):
         test_input[i] = {'name': test_input[i]}
     temp = time_fields(test_input)
     assert temp == output, f'time_fields({test_input}) returns: {temp} instead: {output}.'
+
+
+@pytest.mark.parametrize('test_input, output', data_test_mcafee_severity_to_demisto)
+def test_mcafee_severity_to_demisto(test_input, output):
+    temp = mcafee_severity_to_demisto(test_input)
+    assert temp == output, f'mcafee_severity_to_demisto({test_input}) returns: {temp} instead: {output}.'

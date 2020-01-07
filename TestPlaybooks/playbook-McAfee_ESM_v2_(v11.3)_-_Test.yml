@@ -1,0 +1,333 @@
+id: McAfee ESM v2 (v11.3) - Test
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: McAfee ESM v2 (v11.3) - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a42529a0-d221-4613-8f28-389e4903fce8
+    type: start
+    task:
+      id: a42529a0-d221-4613-8f28-389e4903fce8
+      version: -1
+      name: ""
+      iscommand: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 49083e86-de28-496a-88be-29a53cb3136e
+    type: regular
+    task:
+      id: 49083e86-de28-496a-88be-29a53cb3136e
+      version: -1
+      name: get_user_list
+      description: Get a list of all users.
+      script: '|||esm-get-user-list'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 9084566d-525c-4254-8ccc-8e3ff80e1277
+    type: regular
+    task:
+      id: 9084566d-525c-4254-8ccc-8e3ff80e1277
+      version: -1
+      name: get_organization_list
+      description: Get case organization
+      script: '|||esm-get-organization-list'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 61e3be01-c532-44b3-822c-4f9532cc4761
+    type: regular
+    task:
+      id: 61e3be01-c532-44b3-822c-4f9532cc4761
+      version: -1
+      name: get_case_list
+      description: Get a list of cases from the system
+      script: '|||esm-get-case-list'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      since:
+        simple: 3 months
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 555a07f0-1130-4ca5-8377-17a2cda3cc0d
+    type: regular
+    task:
+      id: 555a07f0-1130-4ca5-8377-17a2cda3cc0d
+      version: -1
+      name: get_case_statuses
+      description: Get a list of valid case statuses from the system
+      script: '|||esm-get-case-statuses'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: e4927545-91df-4f7c-856f-bf7f8639735e
+    type: regular
+    task:
+      id: e4927545-91df-4f7c-856f-bf7f8639735e
+      version: -1
+      name: add_case
+      description: Add a case to the system
+      script: '|||esm-add-case'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      assignee: {}
+      organization: {}
+      severity: {}
+      status: {}
+      summary:
+        simple: McAfee ESM v2 add case test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 60840e6e-31b7-4eaf-897e-c5b7e5aa4076
+    type: regular
+    task:
+      id: 60840e6e-31b7-4eaf-897e-c5b7e5aa4076
+      version: -1
+      name: edit_case
+      description: Edit an existing case
+      script: '|||esm-edit-case'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      assignee: {}
+      id:
+        simple: ${Case.ID}
+      organization: {}
+      severity: {}
+      status: {}
+      summary:
+        simple: McAfee v2 edit case test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 618170bf-4bcd-413e-8292-8389b6f33857
+    type: regular
+    task:
+      id: 618170bf-4bcd-413e-8292-8389b6f33857
+      version: -1
+      name: add_case_status
+      description: Add a case status
+      script: '|||esm-add-case-status'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      name:
+        simple: AAA
+      show_in_case_pane: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: cfa04cef-a1f8-410f-806e-df0d5069f38a
+    type: regular
+    task:
+      id: cfa04cef-a1f8-410f-806e-df0d5069f38a
+      version: -1
+      name: edit_case_status
+      description: Edit a case status
+      script: '|||esm-edit-case-status'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      new_name:
+        simple: BBB
+      original_name:
+        simple: AAA
+      show_in_case_pane: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 46ec09ce-ce1d-486b-8e0a-69ae38a59abb
+    type: regular
+    task:
+      id: 46ec09ce-ce1d-486b-8e0a-69ae38a59abb
+      version: -1
+      name: delete_case_status
+      description: Delete a case status
+      script: '|||esm-delete-case-status'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      name:
+        simple: BBB
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 678e11b0-68f2-4723-865f-37df2b69f946
+    type: title
+    task:
+      id: 678e11b0-68f2-4723-865f-37df2b69f946
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 775,
+        "width": 1180,
+        "x": 50,
+        "y": 30
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -38,11 +38,12 @@ configuration:
   required: false
   type: 13
 - defaultvalue: alarms
-  display: 'Fetch Types: cases, alarms (relevant only for fetch incident mode)'
+  display: 'Fetch Types: cases, alarms, both (relevant only for fetch incident mode)'
   name: fetchType
   options:
   - alarms
   - cases
+  - both
   required: false
   type: 15
 - defaultvalue: '0'
