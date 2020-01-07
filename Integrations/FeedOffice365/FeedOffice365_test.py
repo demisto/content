@@ -37,6 +37,10 @@ def test_commands(command, args, response, length, mocker):
         indicator_type = indicator_json.get('Type')
         indicator_rawjson = indicator_json.get('rawJSON')
         assert indicator_val
-        assert indicator_type == args.get('indicator_type')[:-1]
+        if indicator_type == 'URL':
+            assert indicator_type == args.get('indicator_type')[:-1]
+            assert indicator_rawjson['Type'] == indicator_type
+        else:
+            assert indicator_type.startswith(args.get('indicator_type')[:-1])
+            assert indicator_type.startswith(indicator_rawjson['Type'])
         assert indicator_rawjson['Value'] == indicator_val
-        assert indicator_rawjson['Type'] == indicator_type

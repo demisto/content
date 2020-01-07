@@ -1,4 +1,5 @@
-from typing import Dict, List, Tuple, Any, Generator, Callable
+import ipaddress
+from typing import Dict, List, Tuple, Any, Callable
 
 import uuid
 import urllib3
@@ -27,7 +28,7 @@ def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[
             if service == 'Any':
                 url = f'https://endpoints.office.com/endpoints/{region}?ClientRequestId={unique_id}'
             else:
-                url = f'https://endpoints.office.com/endpoints/{region}?ServiceAreas={service}'\
+                url = f'https://endpoints.office.com/endpoints/{region}?ServiceAreas={service}' \
                       f'&ClientRequestId={unique_id}'
             urls_list.append({
                 'Region': region,
@@ -37,6 +38,38 @@ def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[
     return urls_list
 
 
+def check_indicator_type(indicator):
+    """Checks the indicator type
+
+    Args:
+        indicator: IP
+
+    Returns:
+        The IP type per the indicators defined in Demisto
+    """
+    if '/' in indicator:  # check for network
+        try:
+            ip = ipaddress.ip_network(indicator)
+        except Exception as err:
+            return 'URL'
+        if ip.version == 4:
+            return 'CIDR'
+        if ip.version == 6:
+            return 'IPv6CIDR'
+        demisto.debug(f'Office365 feed indicator type unknown: {str(indicator)}')
+        return None
+    try:
+        ip = ipaddress.ip_address(indicator)
+    except Exception as err:
+        return 'URL'
+    if ip.version == 4:
+        return 'IPv4'
+    if ip.version == 6:
+        return 'IPv6'
+    demisto.debug(f'Office365 feed indicator type unknown: {str(indicator)}')
+    return None
+
+
 class Client(BaseClient):
     """
     Client to use in the Office365 Feed integration. Overrides BaseClient.
@@ -44,6 +77,7 @@ class Client(BaseClient):
     https://docs.microsoft.com/en-us/office365/enterprise/managing-office-365-endpoints?redirectSourcePath=%252fen-us%252farticle%252fmanaging-office-365-endpoints-99cab9d4-ef59-4207-9f2b-3728eb46bf9a#webservice
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
     """
+
     def __init__(self, urls_list: list, indicator: str, insecure: bool = False, proxy: bool = False):
         """
         Implements class for Office365 feeds.
@@ -98,21 +132,6 @@ class Client(BaseClient):
         return result
 
 
-def batch_indicators(sequence, batch_size=1) -> Generator:
-    """Batch the indicators to balance load on the server.
-
-    Args:
-        sequence: all items
-        batch_size: how many items to batch
-
-    Returns:
-        A List of batch_size of items.
-    """
-    sequence_length = len(sequence)
-    for i in range(0, sequence_length, batch_size):
-        yield sequence[i:min(i + batch_size, sequence_length)]
-
-
 def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
     Args:
@@ -147,16 +166,22 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     iterator = iterator[:limit]
 
     for item in iterator:
-        values = item.get(indicator_type_lower)
-        raw_data = {'type': indicator_type[:-1]}
+        if indicator_type_lower == 'both':
+            values = item.get('ips') if 'ips' in iterator else item.get('urls')
+        else:
+            values = item.get(indicator_type_lower)
         if values:
             for value in values:
-                raw_data['value'] = value
+                type_ = check_indicator_type(value)
                 indicators.append({
                     "Value": value,
-                    "Type": indicator_type[:-1],
-                    'rawJSON': {"Value": value, "Type": indicator_type[:-1]}
+                    "Type": type_,
+                    'rawJSON': {"Value": value, "Type": type_}
                 })
+                raw_data = {
+                    'value': value,
+                    'type': type_
+                }
                 raw_response.append(raw_data)
     human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
                                      headers=['Value', 'Type'], removeNull=True)
@@ -178,14 +203,20 @@ def fetch_indicators_command(client: Client, *_) -> List[Dict]:
     iterator = client.build_iterator()
     indicators = []
     for item in iterator:
-        values = item.get(indicator_type_lower)
-        raw_data = {'type': indicator_type[:-1]}
+        if indicator_type_lower == 'both':
+            values = item.get('ips') if 'ips' in iterator else item.get('urls')
+        else:
+            values = item.get(indicator_type_lower)
         if values:
             for value in values:
-                raw_data['value'] = value
+                type_ = check_indicator_type(value)
+                raw_data = {
+                    'value': value,
+                    'type': type_
+                }
                 indicators.append({
                     "value": value,
-                    "type": indicator_type[:-1],
+                    "type": type_,
                     "rawJSON": raw_data,
                 })
     return indicators
@@ -217,8 +248,8 @@ def main():
 
         elif command == 'fetch-indicators':
             indicators = fetch_indicators_command(client)
-            for batch in batch_indicators(indicators, batch_size=2000):
-                demisto.createIndicators(batch)
+            for iter in batch(indicators, batch_size=2000):
+                demisto.createIndicators(iter)
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
