@@ -49,22 +49,22 @@ def check_indicator_type(indicator):
     """
     if '/' in indicator:  # check for network
         try:
-            ip = ipaddress.ip_network(indicator)
-        except Exception as err:
+            ip_ = ipaddress.ip_network(indicator)
+        except Exception:
             return 'URL'
-        if ip.version == 4:
+        if ip_.version == 4:
             return 'CIDR'
-        if ip.version == 6:
+        if ip_.version == 6:
             return 'IPv6CIDR'
         demisto.debug(f'Office365 feed indicator type unknown: {str(indicator)}')
         return None
     try:
-        ip = ipaddress.ip_address(indicator)
-    except Exception as err:
+        ip_ = ipaddress.ip_address(indicator)
+    except Exception:
         return 'URL'
-    if ip.version == 4:
+    if ip_.version == 4:
         return 'IPv4'
-    if ip.version == 6:
+    if ip_.version == 6:
         return 'IPv6'
     demisto.debug(f'Office365 feed indicator type unknown: {str(indicator)}')
     return None
@@ -248,8 +248,8 @@ def main():
 
         elif command == 'fetch-indicators':
             indicators = fetch_indicators_command(client)
-            for iter in batch(indicators, batch_size=2000):
-                demisto.createIndicators(iter)
+            for iter_ in batch(indicators, batch_size=2000):
+                demisto.createIndicators(iter_)
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
