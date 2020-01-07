@@ -1,10 +1,12 @@
 ## [Unreleased]
+- Fixed an issue when trying to download a threat-pcap without the necessary arguments.
+- Improved the error message when trying to download PCAPs from a Panorama instance.
 - Added 4 commands.
     - ***panorama-list-static-routes***
     - ***panorama-get-static-route***
     - ***panorama-add-static-route***
     - ***panorama-delete-static-route***
-- Fixed an issue in the ***!panorama-list-pcaps*** command when there are no pcaps in the PAN-OS.
+- Fixed an issue in the ***panorama-list-pcaps*** command when there are no PCAPs in PAN-OS.
 
 
 ## [19.12.0] - 2019-12-10

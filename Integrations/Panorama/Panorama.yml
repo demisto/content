@@ -2232,8 +2232,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Search time for the request. For further information, see the
-        Panorama XML API Documentation.
+      description: 'The Search time for the request. For example: "2019/12/26 00:00:00", "2020/01/10".
+        For more information, see the Panorama XML API documentation.'
       isArray: false
       name: searchTime
       required: false
@@ -3008,8 +3008,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The template for which to run the command. Overrides the template parameter
-        (Panorama instances).
+      description: The template for which to run the command. Overrides the template
+        parameter (Panorama instances).
       isArray: false
       name: template
       required: false
@@ -3043,8 +3043,8 @@ script:
       description: The metric(port) of the static route.
       type: Number
     - contextPath: ' Panorama.StaticRoutes.NextHop'
-      description: The next hop of the static route. Could be an IP address, FQDN, or a virtual
-        router.
+      description: The next hop of the static route. Could be an IP address, FQDN,
+        or a virtual router.
       type: String
     - contextPath: ' Panorama.StaticRoutes.RouteTable'
       description: The route table of a static route.
@@ -3053,8 +3053,8 @@ script:
       description: The virtual router for which the static router belongs.
       type: String
     - contextPath: ' Panorama.StaticRoutes.Template'
-      description: The template in which the static route is defined (relevant for Panorama
-        instances only).
+      description: The template in which the static route is defined (relevant for
+        Panorama instances only).
       type: String
     - contextPath: Panorama.StaticRoutes.Uncommitted
       description: Whether the static route is committed.
@@ -3073,8 +3073,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The template for which to run the command. Overrides the template parameter
-        (Panorama instances).
+      description: The template for which to run the command. Overrides the template
+        parameter (Panorama instances).
       isArray: false
       name: template
       required: false
@@ -3097,8 +3097,8 @@ script:
       description: The metric (port) of the static route.
       type: Number
     - contextPath: ' Panorama.StaticRoutes.NextHop'
-      description: The next hop of the static route. Could be an IP address, FQDN, or a virtual
-        router.
+      description: The next hop of the static route. Could be an IP address, FQDN,
+        or a virtual router.
       type: String
     - contextPath: ' Panorama.StaticRoutes.RouteTable'
       description: The route table of the static route.
@@ -3107,8 +3107,8 @@ script:
       description: The virtual router for which the static router belongs.
       type: String
     - contextPath: ' Panorama.StaticRoutes.Template'
-      description: The template in which the static route is defined (relevant to Panorama
-        instances only).
+      description: The template in which the static route is defined (relevant to
+        Panorama instances only).
       type: String
   - arguments:
     - default: false
@@ -3118,17 +3118,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the static route (up to 31 characters).
-        Case-sensitive and use only letters, numbers,
-        spaces, hyphens, and underscores.
+      description: The name of the static route (up to 31 characters). Case-sensitive
+        and use only letters, numbers, spaces, hyphens, and underscores.
       isArray: false
       name: static_route
       required: true
       secret: false
     - default: false
-      description: 'The IP address and network mask in a Classless Inter-domain
-        Routing (CIDR) notation: ip_address/mask. For example, 192.168.0.1/24 for
-        IPv4 or 2001:db8::/32 for IPv6).'
+      description: 'The IP address and network mask in a Classless Inter-domain Routing
+        (CIDR) notation: ip_address/mask. For example, 192.168.0.1/24 for IPv4 or
+        2001:db8::/32 for IPv6).'
       isArray: false
       name: destination
       required: true
@@ -3165,8 +3164,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The template for which to run the command. Overrides the template parameter
-        (Panorama instances).
+      description: The template for which to run the command. Overrides the template
+        parameter (Panorama instances).
       isArray: false
       name: template
       required: false
@@ -3189,8 +3188,8 @@ script:
       description: The metric (port) of the static route.
       type: Number
     - contextPath: ' Panorama.StaticRoutes.NextHop'
-      description: The next hop of the static route.. Could be an IP address, FQDN, or a virtual
-        router.
+      description: The next hop of the static route.. Could be an IP address, FQDN,
+        or a virtual router.
       type: String
     - contextPath: ' Panorama.StaticRoutes.RouteTable'
       description: The route table of the static route.
@@ -3199,8 +3198,8 @@ script:
       description: The virtual router for which the static router belongs.
       type: String
     - contextPath: ' Panorama.StaticRoutes.Template'
-      description: The template in which the static route is defined (relevant for Panorama
-        instances only).
+      description: The template in which the static route is defined (relevant for
+        Panorama instances only).
       type: String
   - arguments:
     - default: false
@@ -3216,8 +3215,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The template for which to run the command. Overrides the template parameter
-        (Panorama instances).
+      description: The template for which to run the command. Overrides the template
+        parameter (Panorama instances).
       isArray: false
       name: template
       required: false
@@ -3240,8 +3239,8 @@ script:
       description: The metric (port) of the static route.
       type: Number
     - contextPath: ' Panorama.StaticRoutes.NextHop'
-      description: The next hop of the static route. Could be an IP address, FQDN, or a virtual
-        router.
+      description: The next hop of the static route. Could be an IP address, FQDN,
+        or a virtual router.
       type: String
     - contextPath: ' Panorama.StaticRoutes.RouteTable'
       description: The route table of the static route.
@@ -3250,8 +3249,8 @@ script:
       description: The virtual router for which the static router belongs.
       type: String
     - contextPath: ' Panorama.StaticRoutes.Template'
-      description: The template in which the static route is defined (relevant for Panorama
-        instances only).
+      description: The template in which the static route is defined (relevant for
+        Panorama instances only).
       type: String
     - contextPath: Panorama.StaticRoutes.Deleted
       description: Whether the static route is deleted.
