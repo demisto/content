@@ -399,19 +399,13 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            if [ -n "${INSTANCE_TESTS}" ];
+            if [ -n "${INSTANCE_TESTS}" ] || [ $CIRCLE_NODE_INDEX -ne 0 ] ;
               then
-                echo "Skipping - not running in INSTANCE_TESTS build"
+                echo "Skipping - not running in INSTANCE_TESTS build or unit-tests container"
                 exit 0
             fi
-            if [ $CIRCLE_NODE_INDEX = 0 ] ;
-              then
-                ./Tests/scripts/slack_notifier.sh ./env_results.json
-            fi
-            if [ $CIRCLE_NODE_INDEX = 1 ] ;
-              then
-                ./Tests/scripts/slack_notifier.sh ./Tests/failed_unittests.txt
-            fi
+            ./Tests/scripts/slack_notifier.sh ./env_results.json
+
           when: always
       - run:
           name: Validate Docker Images
