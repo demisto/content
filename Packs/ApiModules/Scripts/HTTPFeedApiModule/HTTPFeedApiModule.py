@@ -130,36 +130,44 @@ class Client(BaseClient):
         if self.username is not None and self.password is not None:
             rkwargs['auth'] = (self.username, self.password)
         try:
-            r = requests.get(
-                self._base_url,
-                **rkwargs
-            )
+            urls = self._base_url
+            rs = []
+            if not isinstance(urls, list):
+                urls = [urls]
+            for url in urls:
+                r = requests.get(
+                    url,
+                    **rkwargs
+                )
+                try:
+                    r.raise_for_status()
+                except Exception:
+                    LOG(f'{self.source_name} - exception in request: {r.status_code} {r.content}')
+                    raise
+                rs.append(r)
         except requests.ConnectionError:
             raise requests.ConnectionError('Failed to establish a new connection. Please make sure your URL is valid.')
 
-        try:
-            r.raise_for_status()
-        except Exception:
-            LOG(f'{self.source_name} - exception in request: {r.status_code} {r.content}')
-            raise
-
-        result = r.iter_lines()
-        if self.encoding is not None:
-            result = map(
-                lambda x: x.decode(self.encoding).encode('utf_8'),
-                result
-            )
-        else:
-            result = map(
-                lambda x: x.decode('utf_8'),
-                result
-            )
-        if self.ignore_regex is not None:
-            result = filter(
-                lambda x: self.ignore_regex.match(x) is None,
-                result
-            )
-        return result
+        results = []
+        for r in rs:
+            result = r.iter_lines()
+            if self.encoding is not None:
+                result = map(
+                    lambda x: x.decode(self.encoding).encode('utf_8'),
+                    result
+                )
+            else:
+                result = map(
+                    lambda x: x.decode('utf_8'),
+                    result
+                )
+            if self.ignore_regex is not None:
+                result = filter(
+                    lambda x: self.ignore_regex.match(x) is None,
+                    result
+                )
+            results.append(result)
+        return results
 
 
 # simple function to iterate list in batches
@@ -208,17 +216,18 @@ def get_indicator_fields(itype, line, client):
 
 
 def fetch_indicators_command(client, itype):
-    iterator = client.build_iterator()
-    indicators = []
-    for line in iterator:
-        attributes, value = get_indicator_fields(itype, line, client)
-        if value:
-            indicators.append({
-                "value": value,
-                "type": itype,
-                "rawJSON": attributes,
-            })
-    return indicators
+    iterators = client.build_iterator()
+    for iterator in iterators:
+        indicators = []
+        for line in iterator:
+            attributes, value = get_indicator_fields(itype, line, client)
+            if value:
+                indicators.append({
+                    "value": value,
+                    "type": itype,
+                    "rawJSON": attributes,
+                })
+        return indicators
 
 
 def get_indicators_command(client, default_indicator_type, args):
