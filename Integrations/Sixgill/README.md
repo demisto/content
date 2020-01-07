@@ -1,7 +1,7 @@
 <p>
 Fetching Sixgill's DarkFeed Threat Intelligence indicators or Sixgill's alerts as incidents
 
-This integration was integrated and tested with version xx of Sixgill
+This integration was integrated and tested with version 0.0.3 of Sixgill
 </p>
 <h2>Sixgill Playbook</h2>
 <p>playbook-Sixgill-Test</p>
