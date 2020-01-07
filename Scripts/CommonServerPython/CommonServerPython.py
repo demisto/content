@@ -103,8 +103,9 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ssdeep': 'file'
 }
 
-class ReputationTypes(object):
-    """Type of Reputations, used in TIP integrations"""
+
+class IndicatorTypes(Enum):
+    """Type of Indicator (Reputations), used in TIP integrations"""
     Account = "Account"
     CVE = "CVE"
     Domain = "Domain"
