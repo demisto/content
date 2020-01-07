@@ -2314,10 +2314,8 @@ if 'requests' in sys.modules:
             self._headers = headers
             self._auth = auth
             self._session = requests.Session()
-            if proxy:
-                self._proxies = handle_proxy()
-            else:
-                self._proxies = None
+            if not proxy:
+                self._session.trust_env = False
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, json_data=None, params=None, data=None, files=None,
@@ -2392,7 +2390,6 @@ if 'requests' in sys.modules:
                     headers=headers,
                     auth=auth,
                     timeout=timeout,
-                    proxies=self._proxies,
                     **kwargs
                 )
                 # Handle error responses gracefully
