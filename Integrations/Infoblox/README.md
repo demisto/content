@@ -576,14 +576,6 @@ This integration was integrated and tested with version V2 of Infoblox
     <tr>
       <td>  </td>
       <td> false </td>
-      <td> 5.20.5.203 </td>
-      <td> record:rpz:cname:ipaddressdn </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-    <tr>
-      <td>  </td>
-      <td> false </td>
       <td> moshe </td>
       <td> record:rpz:cname </td>
       <td> default </td>
