@@ -5,12 +5,9 @@ This integration was integrated and tested with version 0.0.3 of Sixgill
 </p>
 <h2>Sixgill Playbook</h2>
 <p>Populate this section with relevant playbook names.</p>
-<h2>Use Cases</h2>
 <ul>
-<li>Consume sixgill alerts through demisto\s platform</li>
 </ul><h2>Detailed Description</h2>
-<p>Populate this section with the .md file contents for detailed description.</p>
-<h2>Fetch Incidents</h2>
+<p>To configure an instance of Sixgill's integration in Demisto, you need to supply your API key and client Secret. Please contact support at cybersixgill.com to receive these.</p><h2>Fetch Incidents</h2>
 <p>Retrive all incidents related to an organization</p>
 <h2>Configure Sixgill on Demisto</h2>
 <ol>

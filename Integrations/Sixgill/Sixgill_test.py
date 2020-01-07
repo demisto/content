@@ -107,6 +107,44 @@ def init_params():
     }
 
 
+def test_is_ioc():
+    from Sixgill import is_ioc
+
+    output = is_ioc(incidents_list[0])
+    assert output is False
+
+    output = is_ioc(iocs_list[0])
+    assert output is True
+
+
+def test_handle_indicator():
+    from Sixgill import handle_indicator
+
+    indicator = {}
+
+    output = handle_indicator(indicator, incidents_list[0])
+    assert output is False
+    assert indicator == {}
+
+    output = handle_indicator(indicator, iocs_list[0])
+    assert output is True
+    assert indicator == expected_indicators_output
+
+
+def test_handle_incident():
+    from Sixgill import handle_incident
+
+    incidents = []
+
+    output = handle_incident(incidents, iocs_list[0])
+    assert output is False
+    assert incidents == []
+
+    output = handle_incident(incidents, incidents_list[0])
+    assert output is True
+    assert incidents == [expected_alert_output[0]]
+
+
 def test_test_module_raise_exception(mocker):
     mocker.patch.object(demisto, 'params', return_value=init_params())
 

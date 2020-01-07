@@ -46,6 +46,24 @@ def item_to_incident(item):
     return incident
 
 
+def handle_indicator(iocs: Dict[str, List], raw_incident):
+    if is_ioc(raw_incident):
+        indicator = raw_incident.get("consumer_specific_info", {})
+        indicator_type = indicator.get('fields', {}).get("itype", None)
+        if indicator_type:
+            iocs.update({indicator_type: iocs.get(indicator_type, []) + [indicator]})
+            return True
+    return False
+
+
+def handle_incident(incidents: List[Dict[str, str]], raw_incident):
+    if not is_ioc(raw_incident):
+        incident = item_to_incident(raw_incident)
+        incidents.append(incident)
+        return True
+    return False
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -65,27 +83,31 @@ def fetch_incidents():
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
     include_delivered_items = bool(strtobool(demisto.args().get('include_delivered_items', 'false')))
+    should_fetch_indicator = bool(strtobool(demisto.args().get('should_fetch_indicator', 'true')))
+    should_fetch_incidents = bool(strtobool(demisto.args().get('should_fetch_incidents', 'true')))
 
     sixgill_darkfeed_client = SixgillDarkFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
                                                     CHANNEL_CODE)
 
-    incidents = []
+    incidents: List[Dict[str, str]] = []
     iocs: Dict[str, List] = {}
     extracted_iocs = 0
 
     for raw_incident in sixgill_darkfeed_client.get_incidents(include_delivered_items):
-        sixgill_darkfeed_client.mark_digested_item(raw_incident)
 
-        if is_ioc(raw_incident):
-            indicator = raw_incident.get("consumer_specific_info", {})
-            indicator_type = indicator.get('fields', {}).get("itype", None)
-            if indicator_type:
-                iocs.update({indicator_type: iocs.get(indicator_type, []) + [indicator]})
+        fetched_indicator = False
+        fetched_incidents = False
+
+        if should_fetch_indicator:
+            fetched_indicator = handle_indicator(iocs, raw_incident)
+            if fetched_indicator:
                 extracted_iocs += 1
 
-        else:
-            incident = item_to_incident(raw_incident)
-            incidents.append(incident)
+        if should_fetch_incidents:
+            fetched_incidents = handle_incident(incidents, raw_incident)
+
+        if fetched_indicator or fetched_incidents:
+            sixgill_darkfeed_client.mark_digested_item(raw_incident)
 
     demisto.setLastRun({'time': last_fetch})
     demisto.incidents(incidents)
