@@ -102,7 +102,7 @@ def fetch_incidents(client):
         for a in alerts:
             alert_type = a.get('kind')
             name = ALERT_TITLE
-            severity = '0'
+            severity = 0
 
             tables = {}
             for key, value in a.items():
