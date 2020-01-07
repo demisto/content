@@ -1,6 +1,7 @@
 ## [Unreleased]
 Added encode string results - safe handle unicode strings to demisto results.
 Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.
+Changed the defaultValue parameter to non mandatory.
 
 ## [19.12.0] - 2019-12-10
 -
