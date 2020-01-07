@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added ***fetch-indicators*** support, intended to be used to share IoCs between tenants in an Elasticsearch MT environment.
 
 ## [19.12.0] - 2019-12-10
 -

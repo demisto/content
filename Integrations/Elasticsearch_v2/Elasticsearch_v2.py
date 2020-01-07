@@ -513,23 +513,27 @@ def fetch_indicators_command():
     last_fetch, now = get_last_fetch_time()
     es = elasticsearch_builder()
 
-    query = QueryString(query=time_field + ":*")  # TODO: Check with @rsagi this is needed
-    tenant_hash = demisto.getTenantHash()
-    # all shared indexes minues this tenant shared
+    query = QueryString(query=time_field + ":*")  # TODO: Check with @rsagi if this is needed
+    tenant_hash = demisto.getIndexHash()
+    # all shared indexes minus this tenant shared
     indexes = f'*-shared*,-{tenant_hash}*-shared*'
     search = Search(using=es, index=indexes).filter({'range': {time_field: {'gt': last_fetch, 'lte': now}}}).query(
         query)
     for hit in search.scan():
         demisto.createIndicators(results_to_indicator(hit))
+    demisto.setLastRun(now)
 
 
 def results_to_indicator(hit):
-    value = hit.get('value')
-    ind_type = hit.get('type')
+    value = hit['value']
+    ind_type = hit['type']
+    raw_json = {}
+    for key in hit:
+        raw_json[key] = hit[key]
     return {
         'value': value,
         'type': ind_type,
-        'rawJSON': dict(hit)
+        'rawJSON': raw_json
     }
 
 
