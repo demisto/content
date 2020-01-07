@@ -1,9 +1,9 @@
 from json import JSONDecodeError
 from typing import List, Tuple, Dict, Any, Optional, Callable
 
-from CommonServerPython import *
 import urllib3
 import demistomock as demisto
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -106,7 +106,7 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
     """
     url_suffix = '/vulnerabilities/search'
     human_readable = []
-    context = {}
+    context: Dict[str, Any] = {}
     params = {
         'id' + '[]': args.get('id'),
         'top_priority' + '[]': args.get('top-priority'),
@@ -156,7 +156,7 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
     """
     url_suffix = '/connectors'
     human_readable = []
-    context = {}
+    context: Dict[str, Any] = {}
     connectors = connect_api(client=client, message='GET', suffix=url_suffix).get('connectors')
     if connectors:
         wanted_keys = ['Host', 'Name', 'Running', 'ID']
@@ -312,7 +312,7 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
     """
     url_suffix = '/assets/search'
     human_readable = []
-    context = {}
+    context: Dict[str, Any] = {}
     params = {
         'id' + '[]': args.get('id'),
         'hostname' + '[]': args.get('hostname'),
@@ -359,7 +359,7 @@ def get_asset_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str
     args_id = str(args.get('id'))
     url_suffix = '/assets/' + args_id + '/vulnerabilities'
     human_readable = []
-    context = {}
+    context: Dict[str, Any] = {}
 
     vulnerabilities_list = connect_api(client=client, message='GET', suffix=url_suffix).get(
         'vulnerabilities')
