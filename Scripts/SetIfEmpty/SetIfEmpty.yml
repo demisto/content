@@ -9,7 +9,7 @@ args:
   description: The new value to return if the original value was empty.
   isArray: false
   name: defaultValue
-  required: false
+  required: true
   secret: false
 - auto: PREDEFINED
   default: true
