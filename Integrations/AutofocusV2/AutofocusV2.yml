@@ -981,10 +981,10 @@ script:
     execution: false
     name: autofocus-get-export-list-indicators
     outputs:
-    - contextPath: AutoFocus.ExportListIndocator.Type
+    - contextPath: AutoFocus.ExportListIndicator.Type
       description: 'The type of the indicator in the export list. '
       type: String
-    - contextPath: AutoFocus.ExportListIndocator.Value
+    - contextPath: AutoFocus.ExportListIndicator.Value
       description: The value of the indicator in the export list.
       type: String
   dockerimage: demisto/python3:3.7.2.214
