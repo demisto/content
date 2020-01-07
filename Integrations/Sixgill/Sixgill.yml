@@ -12,7 +12,7 @@ configuration:
   required: true
   type: 4
 description: Fetching Sixgill's DarkFeed Threat Intelligence indicators or Sixgill's
-  Alerts
+  alerts as incidents
 display: Sixgill
 name: Sixgill
 script:
@@ -34,7 +34,7 @@ script:
       defaultValue: 'true'
       description: Should indicators be fetched
       isArray: false
-      name: should_fetch_indicator
+      name: fetch_indicator
       predefined:
       - 'true'
       - 'false'
@@ -45,14 +45,14 @@ script:
       defaultValue: 'true'
       description: Should incidents be fetched
       isArray: false
-      name: should_fetch_incidents
+      name: fetch_incidents
       predefined:
       - 'true'
       - 'false'
       required: false
       secret: false
     deprecated: false
-    description: Get Sixgill's DarkFeed indicators and add Sixgill's incidents
+    description: Get Sixgill's DarkFeed indicators or Sixgill's alerts as incidents
     execution: false
     name: fetch-incidents
     outputs:
