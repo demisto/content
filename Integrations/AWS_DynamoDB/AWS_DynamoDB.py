@@ -655,7 +655,7 @@ def describe_endpoints_command(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    kwargs = {
+    kwargs = {  # type: ignore
 
     }
     kwargs = remove_empty_elements(kwargs)
@@ -759,7 +759,7 @@ def describe_limits_command(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    kwargs = {
+    kwargs = {  # type: ignore
 
     }
     kwargs = remove_empty_elements(kwargs)
@@ -2071,7 +2071,7 @@ def main():  # pragma: no cover
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             client = aws_session()
-            response = client.REPLACE_WITH_TEST_FUNCTION()
+            response = client.list_tables_command()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 demisto.results('ok')
 
