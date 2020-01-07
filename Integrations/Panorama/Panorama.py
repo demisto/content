@@ -2877,6 +2877,8 @@ def panorama_list_pcaps_command():
     """
     Get list of pcap files
     """
+    if DEVICE_GROUP:
+        raise Exception('PCAP listing is only supported on Firewall (not Panorama).')
     pcap_type = demisto.args()['pcapType']
     params = {
         'type': 'export',
@@ -2913,26 +2915,47 @@ def panorama_list_pcaps_command():
         })
 
 
+def validate_search_time(search_time: str) -> str:
+    """
+    Validate search_time is of format YYYY/MM/DD HH:MM:SS or YYYY/MM/DD and pad with zeroes
+    """
+    try:
+        datetime.strptime(search_time, '%Y/%m/%d')
+        search_time += ' 00:00:00'
+        return search_time
+    except ValueError:
+        pass
+    try:
+        datetime.strptime(search_time, '%Y/%m/%d %H:%M:%S')
+        return search_time
+    except ValueError as err:
+        raise ValueError(f"Incorrect data format. searchTime should be of: YYYY/MM/DD HH:MM:SS or YYYY/MM/DD.\n"
+                         f"Error is: {str(err)}")
+
+
 @logger
 def panorama_get_pcap_command():
     """
     Get pcap file
     """
+    if DEVICE_GROUP:
+        raise Exception('Getting a PCAP file is only supported on Firewall (not Panorama).')
+    pcap_type = demisto.args()['pcapType']
     params = {
         'type': 'export',
         'key': API_KEY,
-        'category': demisto.args()['pcapType']
+        'category': pcap_type
     }
 
-    if 'password' in demisto.args():
-        params['dlp-password'] = demisto.args()['password']
-    elif demisto.args()['pcapType'] == 'dlp-pcap':
-        return_error('Can not provide dlp-pcap without password.')
-
-    if 'pcapID' in demisto.args():
-        params['pcap-id'] = demisto.args()['pcapID']
-    elif demisto.args()['pcapType'] == 'threat-pcap':
-        return_error('Can not provide threat-pcap without pcap-id.')
+    password = demisto.args().get('password')
+    pcap_id = demisto.args()['pcapID']
+    search_time = demisto.args().get('searchTime')
+    if pcap_type == 'dlp-pcap' and not password:
+        raise Exception('Can not provide dlp-pcap without password.')
+    else:
+        params['dlp-password'] = password
+    if pcap_type == 'threat-pcap' and not pcap_id or not search_time:
+        raise Exception('Can not provide threat-pcap without pcap-id and the searchTime arguments.')
 
     pcap_name = demisto.args().get('from')
     local_name = demisto.args().get('localName')
@@ -2940,6 +2963,8 @@ def panorama_get_pcap_command():
     search_time = demisto.args().get('searchTime')
 
     file_name = None
+    if pcap_id:
+        params['pcap-id'] = pcap_id
     if pcap_name:
         params['from'] = pcap_name
         file_name = pcap_name
@@ -2949,8 +2974,8 @@ def panorama_get_pcap_command():
     if serial_no:
         params['serialno'] = serial_no
     if search_time:
+        search_time = validate_search_time(search_time)
         params['search-time'] = search_time
-
     # set file name to the current time if from/to were not specified
     if not file_name:
         file_name = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
