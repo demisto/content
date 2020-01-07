@@ -148,4 +148,3 @@ runonce: false
 tests:
 - dedup_-_generic_-_test
 fromversion: 4.5.0
-releaseNotes: "Limit query time range for better index usage"
