@@ -530,7 +530,7 @@ def get_file_downloads(client, data_args):
         files.append(file)
 
     context = createContext(files, removeNull=True)
-    outputs = {'Tanium.FileDownloads(val.ID && val.ID === obj.ID)': context}
+    outputs = {'Tanium.FileDownload(val.ID && val.ID === obj.ID)': context}
     human_readable = tableToMarkdown('File downloads', files)
     return human_readable, outputs, raw_response
 
@@ -540,7 +540,7 @@ def get_downloaded_file(client, data_args):
     file_content, content_desc = client.do_request('GET', f'/plugin/products/trace/filedownloads/{file_id}', resp_type='text')
 
     content_disposition = content_desc.split(';')[1]
-    filename = re.findall("[A-Za-z0-9_-]*\.*[A-Za-z0-9]{3,4}", content_disposition)[-1]
+    filename = re.findall(r"[A-Za-z0-9_-]*\.*[A-Za-z0-9]{3,4}", content_disposition)[-1]
 
     demisto.results(
         fileResult(filename, file_content))
@@ -582,7 +582,7 @@ def get_file_download_info(client, data_args):
         files.append(file)
 
     context = createContext(files, removeNull=True)
-    outputs = {'Tanium.FileDownloads(val.ID && val.ID === obj.ID)': context}
+    outputs = {'Tanium.FileDownload(val.ID && val.ID === obj.ID)': context}
     human_readable = tableToMarkdown(f'File information for {path}', files)
     return human_readable, outputs, raw_response
 
@@ -625,9 +625,9 @@ def get_process_children(client, data_args):
     children = []
     children_human_readable = []
     for item in raw_response:
-        child, raedable_output = client.get_process_tree_item(item, 1)
+        child, readable_output = client.get_process_tree_item(item, 1)
         children.append(child)
-        children_human_readable.append(raedable_output)
+        children_human_readable.append(readable_output)
 
     context = createContext(children, removeNull=True)
     outputs = {'Tanium.ProcessChildren(val.ID && val.ID === obj.ID)': context}
@@ -655,17 +655,17 @@ def get_parent_process_tree(client, data_args):
     if not raw_response:
         raise ValueError('Failed to parse tanium-tr-get-parent-process-tree response.')
 
-    tree, raedable_output = client.get_process_tree_item(raw_response[0], 0)
+    tree, readable_output = client.get_process_tree_item(raw_response[0], 0)
 
-    children_item = raedable_output.get('Children')
+    children_item = readable_output.get('Children')
 
     if children_item:
-        process_tree = raedable_output.copy()
+        process_tree = readable_output.copy()
         del process_tree['Children']
         human_readable = tableToMarkdown(f'{PARENT_PROCESS_TEXT} {ptid}', process_tree)
-        human_readable += tableToMarkdown(f'{PROCESS_CHILDREN_TEXT} {ptid}', children_item)
+        human_readable += tableToMarkdown(f'Processes with the same parent', children_item)
     else:
-        human_readable = tableToMarkdown(f'{PARENT_PROCESS_TEXT} {ptid}', raedable_output)
+        human_readable = tableToMarkdown(f'{PARENT_PROCESS_TEXT} {ptid}', readable_output)
 
     context = createContext(tree, removeNull=True)
     outputs = {'Tanium.ParentProcessTree(val.ID && val.ID === obj.ID)': context}
@@ -681,17 +681,17 @@ def get_process_tree(client, data_args):
     if not raw_response:
         raise ValueError('Failed to parse tanium-tr-get-process-tree response.')
 
-    tree, raedable_output = client.get_process_tree_item(raw_response[0], 0)
+    tree, readable_output = client.get_process_tree_item(raw_response[0], 0)
 
-    children_item = raedable_output.get('Children')
+    children_item = readable_output.get('Children')
 
     if children_item:
-        process_tree = raedable_output.copy()
+        process_tree = readable_output.copy()
         del process_tree['Children']
         human_readable = tableToMarkdown(f'Process information for process with PTID {ptid}', process_tree)
         human_readable += tableToMarkdown(f'{PROCESS_CHILDREN_TEXT} {ptid}', children_item)
     else:
-        human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', raedable_output)
+        human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', readable_output)
 
     context = createContext(tree, removeNull=True)
     outputs = {'Tanium.ProcessTree(val.ID && val.ID === obj.ID)': context}

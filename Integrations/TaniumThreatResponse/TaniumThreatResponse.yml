@@ -608,48 +608,48 @@ script:
     execution: false
     name: tanium-tr-list-file-downloads
     outputs:
-    - contextPath: Tanium.FileDownloads.Size
+    - contextPath: Tanium.FileDownload.Size
       description: The size of the file, in bytes.
       type: Number
-    - contextPath: Tanium.FileDownloads.Path
+    - contextPath: Tanium.FileDownload.Path
       description: The path of the file.
       type: String
-    - contextPath: Tanium.FileDownloads.Downloaded
+    - contextPath: Tanium.FileDownload.Downloaded
       description: The date this file was downloaded.
       type: Date
-    - contextPath: Tanium.FileDownloads.Host
+    - contextPath: Tanium.FileDownload.Host
       description: The hostname of the dowloaded file.
       type: String
-    - contextPath: Tanium.FileDownloads.Created
+    - contextPath: Tanium.FileDownload.Created
       description: The file creation timestamp.
       type: Date
-    - contextPath: Tanium.FileDownloads.Hash
+    - contextPath: Tanium.FileDownload.Hash
       description: The file hash.
       type: String
-    - contextPath: Tanium.FileDownloads.SPath
+    - contextPath: Tanium.FileDownload.SPath
       type: String
-    - contextPath: Tanium.FileDownloads.ID
+    - contextPath: Tanium.FileDownload.ID
       description: The downloaded file ID.
       type: Number
-    - contextPath: Tanium.FileDownloads.LastModified
+    - contextPath: Tanium.FileDownload.LastModified
       description: The date that the file was last modified.
       type: Date
-    - contextPath: Tanium.FileDownloads.CreatedBy
+    - contextPath: Tanium.FileDownload.CreatedBy
       description: User that created this file.
       type: String
-    - contextPath: Tanium.FileDownloads.CreatedByProc
+    - contextPath: Tanium.FileDownload.CreatedByProc
       description: The process path that created this file.
       type: String
-    - contextPath: Tanium.FileDownloads.LastModifiedBy
+    - contextPath: Tanium.FileDownload.LastModifiedBy
       description: The last user that modified this file.
       type: String
-    - contextPath: Tanium.FileDownloads.LastModifiedByProc
+    - contextPath: Tanium.FileDownload.LastModifiedByProc
       description: The process path that modified this file.
       type: String
-    - contextPath: Tanium.FileDownloads.Comments
+    - contextPath: Tanium.FileDownload.Comments
       description: The downloaded file comments.
       type: String
-    - contextPath: Tanium.FileDownloads.Tags
+    - contextPath: Tanium.FileDownload.Tags
       description: The downloaded file tags.
       type: String
   - arguments:
@@ -816,6 +816,51 @@ script:
     description: Get file download metadata.
     execution: false
     name: tanium-tr-get-file-download-info
+    outputs:
+    - contextPath: Tanium.FileDownload.Size
+      description: The size of the file, in bytes.
+      type: Number
+    - contextPath: Tanium.FileDownload.Path
+      description: The path of the file.
+      type: String
+    - contextPath: Tanium.FileDownload.Downloaded
+      description: The date this file was downloaded.
+      type: Date
+    - contextPath: Tanium.FileDownload.Host
+      description: The hostname of the dowloaded file.
+      type: String
+    - contextPath: Tanium.FileDownload.Created
+      description: The file creation timestamp.
+      type: Date
+    - contextPath: Tanium.FileDownload.Hash
+      description: The file hash.
+      type: String
+    - contextPath: Tanium.FileDownload.SPath
+      type: String
+    - contextPath: Tanium.FileDownload.ID
+      description: The downloaded file ID.
+      type: Number
+    - contextPath: Tanium.FileDownload.LastModified
+      description: The date that the file was last modified.
+      type: Date
+    - contextPath: Tanium.FileDownload.CreatedBy
+      description: User that created this file.
+      type: String
+    - contextPath: Tanium.FileDownload.CreatedByProc
+      description: The process path that created this file.
+      type: String
+    - contextPath: Tanium.FileDownload.LastModifiedBy
+      description: The last user that modified this file.
+      type: String
+    - contextPath: Tanium.FileDownload.LastModifiedByProc
+      description: The process path that modified this file.
+      type: String
+    - contextPath: Tanium.FileDownload.Comments
+      description: The downloaded file comments.
+      type: String
+    - contextPath: Tanium.FileDownload.Tags
+      description: The downloaded file tags.
+      type: String
   - arguments:
     - default: false
       description: The connection name.
@@ -833,6 +878,34 @@ script:
     description: Get information for a process.
     execution: false
     name: tanium-tr-get-process-info
+    outputs:
+    - contextPath: Tanium.Process.CreateTime
+      description: Time when the process was created.
+      type: Date
+    - contextPath: Tanium.Process.Domain
+      description: The domain of the process.
+      type: String
+    - contextPath: Tanium.Process.ExitCode
+      description: The process exit code.
+      type: Number
+    - contextPath: Tanium.Process.ProcessCommandLine
+      description: The process command line.
+      type: String
+    - contextPath: Tanium.Process.ProcessID
+      description: The ID of the process.
+      type: Number
+    - contextPath: Tanium.Process.ProcessName
+      description: File of the process.
+      type: String
+    - contextPath: Tanium.Process.ProcessTableId
+      description: The ID of the process table.
+      type: Number
+    - contextPath: Tanium.Process.SID
+      description: The security ID of the process.
+      type: String
+    - contextPath: Tanium.Process.Username
+      description: The username who created the process.
+      type: String
   - arguments:
     - default: false
       description: The connection name.
@@ -857,6 +930,21 @@ script:
     description: Get events for a process.
     execution: false
     name: tanium-tr-get-events-by-process
+    outputs:
+    - contextPath: Tanium.ProcessEvent.ID
+      description: The ID of the event.
+      type: Number
+    - contextPath: Tanium.ProcessEvent.Detail
+      type: Unknown
+    - contextPath: Tanium.ProcessEvent.Operation
+      description: The event operation.
+      type: String
+    - contextPath: Tanium.ProcessEvent.Timestamp
+      description: Time when the event was created.
+      type: Date
+    - contextPath: Tanium.ProcessEvent.Type
+      description: The event type.
+      type: String
   - arguments:
     - default: false
       description: The connection name.
@@ -874,6 +962,20 @@ script:
     description: Get children of this process instance.
     execution: false
     name: tanium-tr-get-process-children
+    outputs:
+    - contextPath: Tanium.ProcessChildren.ID
+      type: Number
+    - contextPath: Tanium.ProcessChildren.Name
+      description: File of the process.
+      type: String
+    - contextPath: Tanium.ProcessChildren.PID
+      type: Number
+    - contextPath: Tanium.ProcessChildren.PTID
+      description: The process instance ID.
+      type: Number
+    - contextPath: Tanium.ProcessChildren.Parent
+      description: The parent process name.
+      type: String
   - arguments:
     - default: false
       description: The connection name.
@@ -891,6 +993,34 @@ script:
     description: Get parent process information.
     execution: false
     name: tanium-tr-get-parent-process
+    outputs:
+    - contextPath: Tanium.Process.CreateTime
+      description: Time when the process was created.
+      type: Date
+    - contextPath: Tanium.Process.Domain
+      description: The domain of the process.
+      type: String
+    - contextPath: Tanium.Process.ExitCode
+      description: The process exit code.
+      type: Number
+    - contextPath: Tanium.Process.ProcessCommandLine
+      description: The process command line.
+      type: String
+    - contextPath: Tanium.Process.ProcessID
+      description: The ID of the process.
+      type: Number
+    - contextPath: Tanium.Process.ProcessName
+      description: File of the process.
+      type: String
+    - contextPath: Tanium.Process.ProcessTableId
+      description: The ID of the process table.
+      type: Number
+    - contextPath: Tanium.Process.SID
+      description: The security ID of the process.
+      type: String
+    - contextPath: Tanium.Process.Username
+      description: The username who created the process.
+      type: String
   - arguments:
     - default: false
       description: The connection name.
@@ -908,6 +1038,23 @@ script:
     description: Get parent process tree for process instance.
     execution: false
     name: tanium-tr-get-parent-process-tree
+    outputs:
+    - contextPath: Tanium.ParentProcessTree.ID
+      type: Number
+    - contextPath: Tanium.ParentProcessTree.Name
+      description: File of the parent process.
+      type: String
+    - contextPath: Tanium.ParentProcessTree.PID
+      type: Number
+    - contextPath: Tanium.ParentProcessTree.PTID
+      description: The parent process instance ID.
+      type: Number
+    - contextPath: Tanium.ParentProcessTree.Parent
+      description: The parent process name.
+      type: String
+    - contextPath: Tanium.ParentProcessTree.Children
+      description: The parent process children.
+      type: Unknown
   - arguments:
     - default: false
       description: The connection name.
@@ -925,6 +1072,23 @@ script:
     description: Get process tree for process instance.
     execution: false
     name: tanium-tr-get-process-tree
+    outputs:
+    - contextPath: Tanium.ProcessTree.ID
+      type: Number
+    - contextPath: Tanium.ProcessTree.Name
+      description: File of the process.
+      type: String
+    - contextPath: Tanium.ProcessTree.PID
+      type: Number
+    - contextPath: Tanium.ProcessTree.PTID
+      description: The process instance ID.
+      type: Number
+    - contextPath: Tanium.ProcessTree.Parent
+      description: The parent process name.
+      type: String
+    - contextPath: Tanium.ProcessTree.Children
+      description: The process children.
+      type: Unknown
   dockerimage: demisto/python3:3.7.4.977
   feed: false
   isfetch: true
