@@ -72,10 +72,10 @@ script:
   commands:
   - arguments:
     - default: false
-      description: FindIndicators query
+      description: Query used to retrieve indicators from the system.
       isArray: false
       name: query
-      required: false
+      required: true
       secret: false
     - auto: PREDEFINED
       default: false
@@ -98,9 +98,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update values stored in the EDL.
+    description: Update values stored in the EDL (avaialbe On Demand only).
     execution: false
-    name: update-edl
+    name: edl-update
   dockerimage: demisto/teams:1.0.0.1701
   feed: false
   isfetch: false

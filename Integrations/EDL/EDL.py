@@ -235,8 +235,8 @@ def parse_integer(int_to_parse: Any, err_msg: str) -> int:
     """
     try:
         res = int(int_to_parse)
-    except (TypeError, ValueError) as e:
-        raise DemistoException(err_msg, e)
+    except (TypeError, ValueError):
+        raise DemistoException(err_msg)
     return res
 
 
@@ -269,12 +269,13 @@ def test_module(args, params):
         # validate cache_refresh_rate value
         range_split = cache_refresh_rate.split(' ')
         if len(range_split) != 2:
-            raise ValueError('Cache Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes,'
+            raise ValueError('Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes,'
                              '6 months, 1 day, etc.)')
+        parse_integer(range_split[0], 'Refresh Rate number is invalid. Must be a valid integer.')
         if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year',
                                   'years']:
             raise ValueError(
-                'Cache Refresh Rate time unit is invalid. Must be minutes, hours, days, months or years')
+                'Refresh Rate time unit is invalid. Must be minutes, hours, days, months or years')
         parse_date_range(cache_refresh_rate, to_timestamp=True)
     on_demand = params.get('on_demand', None)
     if not on_demand:
@@ -335,12 +336,12 @@ def update_edl_command(args, params):
     limit = parse_integer(args.get('edl_size', params.get('edl_size')), EDL_LIMIT_ERR_MSG)
     if not on_demand:
         raise DemistoException(
-            '"Update EDL On Demand" is turned off. If you want to update the EDL manually please turn it on.')
+            '"Update EDL On Demand" is off. If you want to update the EDL manually please toggle it on.')
     query = args.get('query')
     out_format = args.get('format')
     indicators = refresh_edl_context(query, out_format, limit=limit)
-    hr = tableToMarkdown('EDL was updated successfully with the following values', indicators, ['indicators'])
-    return hr, {}, {}
+    hr = tableToMarkdown('EDL was updated successfully with the following values', indicators, ['Indicators'])
+    return hr, {}, indicators
 
 
 def main():
@@ -352,7 +353,7 @@ def main():
     demisto.info('Command being called is {}'.format(command))
     commands = {
         'test-module': test_module,
-        'update-edl': update_edl_command
+        'edl-update': update_edl_command
     }
 
     try:
