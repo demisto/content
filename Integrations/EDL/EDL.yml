@@ -92,7 +92,7 @@ script:
       secret: false
     - default: false
       description: Max amount of entries in the EDL. If no value is provided, will
-        default on EDL Size configured in the instance co configuration.
+        default on EDL Size configured in the instance configuration.
       isArray: false
       name: edl_size
       required: false
