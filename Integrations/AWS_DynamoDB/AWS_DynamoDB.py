@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 # flake8: noqa
 import boto3
 import json
@@ -35,7 +36,13 @@ config = Config(
 
 def safe_load_json(o):
     kwargs = None
-    try:
+    if len(o) > 40:
+        try:
+            kwargs = json.loads(o)
+        except json.decoder.JSONDecodeError as e:
+            return_error(
+                'Unable to parse JSON string. Please verify the JSON is valid. - ' + str(e))
+    else:
         try:
             path = demisto.getFilePath(o)
             with open(path['path'], 'rb') as data:
@@ -43,10 +50,9 @@ def safe_load_json(o):
                     kwargs = json.load(data)
                 except:
                     kwargs = json.loads(data.read())
-        except:
-            kwargs = json.loads(o)
-    except ValueError as e:
-        return_error('Unable to parse JSON file/string. Please verify the JSON is valid.', e)
+        except Exception as e:
+            return_error('Unable to parse JSON file. Please verify the JSON is valid or the Entry'
+                         'ID is correct. - ' + str(e))
     return kwargs
 
 
@@ -208,10 +214,20 @@ def batch_get_item_command(args):
     response = client.batch_get_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.BatchGetItem': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb BatchGetItem', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB BatchGetItem',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB BatchGetItem', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB BatchGetItem', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB BatchGetItem', response)
+    return human_readable, outputs
 
 
 def batch_write_item_command(args):
@@ -233,10 +249,20 @@ def batch_write_item_command(args):
     response = client.batch_write_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.BatchWriteItem': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb BatchWriteItem', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB BatchWriteItem',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB BatchWriteItem', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB BatchWriteItem', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB BatchWriteItem', response)
+    return human_readable, outputs
 
 
 def create_backup_command(args):
@@ -257,12 +283,21 @@ def create_backup_command(args):
     response = client.create_backup(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.CreateBackup.AWS-dynamodbBackupDetails(val.BackupArn === obj.BackupArn)':
-            response}
+    outputs = {
+        'AWS-DynamoDB.BackupDetails(val.BackupArn && val.BackupArn == obj.BackupArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb CreateBackup', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB CreateBackup',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB CreateBackup', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB CreateBackup', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB CreateBackup', response)
+    return human_readable, outputs
 
 
 def create_global_table_command(args):
@@ -290,12 +325,22 @@ def create_global_table_command(args):
     response = client.create_global_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.CreateGlobalTable.AWS-dynamodbGlobalTableDescription(val.GlobalTableArn === '
+    outputs = {
+        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn == '
         'obj.GlobalTableArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb CreateGlobalTable', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB CreateGlobalTable',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB CreateGlobalTable', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB CreateGlobalTable', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB CreateGlobalTable', response)
+    return human_readable, outputs
 
 
 def create_table_command(args):
@@ -407,12 +452,21 @@ def create_table_command(args):
     response = client.create_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.CreateTable.AWS-dynamodbTableDescription(val.TableArn === obj.TableArn)':
-            response}
+    outputs = {
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn == obj.TableArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb CreateTable', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB CreateTable',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB CreateTable', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB CreateTable', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB CreateTable', response)
+    return human_readable, outputs
 
 
 def delete_backup_command(args):
@@ -432,12 +486,22 @@ def delete_backup_command(args):
     response = client.delete_backup(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.DeleteBackup.AWS-dynamodbBackupDescriptionBackupDetails(val.BackupArn === '
+    outputs = {
+        'AWS-DynamoDB.BackupDescriptionBackupDetails(val.BackupArn && val.BackupArn == '
         'obj.BackupArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb DeleteBackup', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB DeleteBackup',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB DeleteBackup', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB DeleteBackup', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB DeleteBackup', response)
+    return human_readable, outputs
 
 
 def delete_item_command(args):
@@ -466,10 +530,20 @@ def delete_item_command(args):
     response = client.delete_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.DeleteItem': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb DeleteItem', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB DeleteItem',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB DeleteItem', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB DeleteItem', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB DeleteItem', response)
+    return human_readable, outputs
 
 
 def delete_table_command(args):
@@ -489,12 +563,21 @@ def delete_table_command(args):
     response = client.delete_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.DeleteTable.AWS-dynamodbTableDescription(val.TableArn === obj.TableArn)':
-            response}
+    outputs = {
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn == obj.TableArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb DeleteTable', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB DeleteTable',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB DeleteTable', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB DeleteTable', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB DeleteTable', response)
+    return human_readable, outputs
 
 
 def describe_backup_command(args):
@@ -514,12 +597,22 @@ def describe_backup_command(args):
     response = client.describe_backup(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.DescribeBackup.AWS-dynamodbBackupDescriptionBackupDetails(val.BackupArn === '
+    outputs = {
+        'AWS-DynamoDB.BackupDescriptionBackupDetails(val.BackupArn && val.BackupArn == '
         'obj.BackupArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb DescribeBackup', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeBackup',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeBackup', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB DescribeBackup', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB DescribeBackup', response)
+    return human_readable, outputs
 
 
 def describe_continuous_backups_command(args):
@@ -539,10 +632,20 @@ def describe_continuous_backups_command(args):
     response = client.describe_continuous_backups(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.DescribeContinuousBackups': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb DescribeContinuousBackups', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeContinuousBackups',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeContinuousBackups', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB DescribeContinuousBackups', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB DescribeContinuousBackups', response)
+    return human_readable, outputs
 
 
 def describe_endpoints_command(args):
@@ -552,7 +655,7 @@ def describe_endpoints_command(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    kwargs = {  # type: ignore
+    kwargs = {
 
     }
     kwargs = remove_empty_elements(kwargs)
@@ -562,10 +665,20 @@ def describe_endpoints_command(args):
     response = client.describe_endpoints(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.DescribeEndpoints': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb DescribeEndpoints', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeEndpoints',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeEndpoints', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB DescribeEndpoints', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB DescribeEndpoints', response)
+    return human_readable, outputs
 
 
 def describe_global_table_command(args):
@@ -585,12 +698,22 @@ def describe_global_table_command(args):
     response = client.describe_global_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.DescribeGlobalTable.AWS-dynamodbGlobalTableDescription(val.GlobalTableArn '
-        '=== obj.GlobalTableArn)': response}
+    outputs = {
+        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn == '
+        'obj.GlobalTableArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb DescribeGlobalTable', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTable',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTable', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTable', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTable', response)
+    return human_readable, outputs
 
 
 def describe_global_table_settings_command(args):
@@ -610,12 +733,23 @@ def describe_global_table_settings_command(args):
     response = client.describe_global_table_settings(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.DescribeGlobalTableSettings.AWS'
-        '-dynamodbReplicaSettingsReplicaSettingsDescriptionReplicaProvisionedReadCapacityAutoScalingSettings(val.AutoScalingRoleArn === obj.AutoScalingRoleArn)': response}
+    outputs = {
+        'AWS-DynamoDB'
+        '.ReplicaSettingsReplicaSettingsDescriptionReplicaProvisionedReadCapacityAutoScalingSettings(val.AutoScalingRoleArn && val.AutoScalingRoleArn == obj.AutoScalingRoleArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb DescribeGlobalTableSettings', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTableSettings',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTableSettings',
+                                                 response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTableSettings', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTableSettings', response)
+    return human_readable, outputs
 
 
 def describe_limits_command(args):
@@ -625,7 +759,7 @@ def describe_limits_command(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    kwargs = {  # type: ignore
+    kwargs = {
 
     }
     kwargs = remove_empty_elements(kwargs)
@@ -635,10 +769,20 @@ def describe_limits_command(args):
     response = client.describe_limits(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.DescribeLimits': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb DescribeLimits', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeLimits',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeLimits', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB DescribeLimits', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB DescribeLimits', response)
+    return human_readable, outputs
 
 
 def describe_table_command(args):
@@ -658,10 +802,20 @@ def describe_table_command(args):
     response = client.describe_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.DescribeTable.AWS-dynamodbTable(val.TableArn === obj.TableArn)': response}
+    outputs = {'AWS-DynamoDB.Table(val.TableArn && val.TableArn == obj.TableArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb DescribeTable', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeTable',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeTable', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB DescribeTable', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB DescribeTable', response)
+    return human_readable, outputs
 
 
 def describe_time_to_live_command(args):
@@ -681,10 +835,20 @@ def describe_time_to_live_command(args):
     response = client.describe_time_to_live(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.DescribeTimeToLive': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb DescribeTimeToLive', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeTimeToLive',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB DescribeTimeToLive', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB DescribeTimeToLive', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB DescribeTimeToLive', response)
+    return human_readable, outputs
 
 
 def get_item_command(args):
@@ -714,10 +878,20 @@ def get_item_command(args):
     response = client.get_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.GetItem': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb GetItem', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB GetItem',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB GetItem', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB GetItem', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB GetItem', response)
+    return human_readable, outputs
 
 
 def list_backups_command(args):
@@ -739,12 +913,22 @@ def list_backups_command(args):
     response = client.list_backups(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.ListBackups.AWS-dynamodbBackupSummariesBackupSummary(val.TableArn === '
+    outputs = {
+        'AWS-DynamoDB.BackupSummariesBackupSummary(val.TableArn && val.TableArn == '
         'obj.TableArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb ListBackups', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB ListBackups',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB ListBackups', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB ListBackups', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB ListBackups', response)
+    return human_readable, outputs
 
 
 def list_global_tables_command(args):
@@ -765,10 +949,20 @@ def list_global_tables_command(args):
     response = client.list_global_tables(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.ListGlobalTables': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb ListGlobalTables', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB ListGlobalTables',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB ListGlobalTables', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB ListGlobalTables', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB ListGlobalTables', response)
+    return human_readable, outputs
 
 
 def list_tables_command(args):
@@ -789,10 +983,20 @@ def list_tables_command(args):
     response = client.list_tables(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.ListTables': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb ListTables', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB ListTables',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB ListTables', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB ListTables', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB ListTables', response)
+    return human_readable, outputs
 
 
 def list_tags_of_resource_command(args):
@@ -813,10 +1017,20 @@ def list_tags_of_resource_command(args):
     response = client.list_tags_of_resource(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.ListTagsOfResource': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb ListTagsOfResource', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB ListTagsOfResource',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB ListTagsOfResource', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB ListTagsOfResource', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB ListTagsOfResource', response)
+    return human_readable, outputs
 
 
 def put_item_command(args):
@@ -845,10 +1059,20 @@ def put_item_command(args):
     response = client.put_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.PutItem': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb PutItem', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB PutItem',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB PutItem', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB PutItem', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB PutItem', response)
+    return human_readable, outputs
 
 
 def query_command(args):
@@ -887,10 +1111,20 @@ def query_command(args):
     response = client.query(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.Query': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb Query', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB Query',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB Query', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB Query', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB Query', response)
+    return human_readable, outputs
 
 
 def restore_table_from_backup_command(args):
@@ -979,12 +1213,21 @@ def restore_table_from_backup_command(args):
     response = client.restore_table_from_backup(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.RestoreTableFromBackup.AWS-dynamodbTableDescription(val.TableArn === '
-        'obj.TableArn)': response}
+    outputs = {
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn == obj.TableArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb RestoreTableFromBackup', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB RestoreTableFromBackup',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB RestoreTableFromBackup', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB RestoreTableFromBackup', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB RestoreTableFromBackup', response)
+    return human_readable, outputs
 
 
 def restore_table_to_point_in_time_command(args):
@@ -1075,12 +1318,21 @@ def restore_table_to_point_in_time_command(args):
     response = client.restore_table_to_point_in_time(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.RestoreTableToPointInTime.AWS-dynamodbTableDescription(val.TableArn === '
-        'obj.TableArn)': response}
+    outputs = {
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn == obj.TableArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb RestoreTableToPointInTime', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB RestoreTableToPointInTime',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB RestoreTableToPointInTime', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB RestoreTableToPointInTime', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB RestoreTableToPointInTime', response)
+    return human_readable, outputs
 
 
 def scan_command(args):
@@ -1116,10 +1368,20 @@ def scan_command(args):
     response = client.scan(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.Scan': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb Scan', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB Scan',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB Scan', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB Scan', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB Scan', response)
+    return human_readable, outputs
 
 
 def tag_resource_command(args):
@@ -1141,10 +1403,20 @@ def tag_resource_command(args):
     response = client.tag_resource(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.TagResource': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb TagResource', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB TagResource',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB TagResource', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB TagResource', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB TagResource', response)
+    return human_readable, outputs
 
 
 def transact_get_items_command(args):
@@ -1179,10 +1451,20 @@ def transact_get_items_command(args):
     response = client.transact_get_items(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.TransactGetItems': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb TransactGetItems', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB TransactGetItems',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB TransactGetItems', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB TransactGetItems', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB TransactGetItems', response)
+    return human_readable, outputs
 
 
 def transact_write_items_command(args):
@@ -1260,10 +1542,20 @@ def transact_write_items_command(args):
     response = client.transact_write_items(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.TransactWriteItems': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb TransactWriteItems', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB TransactWriteItems',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB TransactWriteItems', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB TransactWriteItems', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB TransactWriteItems', response)
+    return human_readable, outputs
 
 
 def untag_resource_command(args):
@@ -1288,10 +1580,20 @@ def untag_resource_command(args):
     response = client.untag_resource(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.UntagResource': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb UntagResource', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB UntagResource',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB UntagResource', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB UntagResource', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB UntagResource', response)
+    return human_readable, outputs
 
 
 def update_continuous_backups_command(args):
@@ -1318,10 +1620,20 @@ def update_continuous_backups_command(args):
     response = client.update_continuous_backups(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.UpdateContinuousBackups': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb UpdateContinuousBackups', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB UpdateContinuousBackups',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB UpdateContinuousBackups', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB UpdateContinuousBackups', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB UpdateContinuousBackups', response)
+    return human_readable, outputs
 
 
 def update_global_table_command(args):
@@ -1357,12 +1669,22 @@ def update_global_table_command(args):
     response = client.update_global_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.UpdateGlobalTable.AWS-dynamodbGlobalTableDescription(val.GlobalTableArn === '
+    outputs = {
+        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn == '
         'obj.GlobalTableArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb UpdateGlobalTable', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTable',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTable', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTable', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTable', response)
+    return human_readable, outputs
 
 
 def update_global_table_settings_command(args):
@@ -1522,12 +1844,22 @@ def update_global_table_settings_command(args):
     response = client.update_global_table_settings(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.UpdateGlobalTableSettings.AWS'
-        '-dynamodbReplicaSettingsReplicaSettingsDescriptionReplicaProvisionedReadCapacityAutoScalingSettings(val.AutoScalingRoleArn === obj.AutoScalingRoleArn)': response}
+    outputs = {
+        'AWS-DynamoDB'
+        '.ReplicaSettingsReplicaSettingsDescriptionReplicaProvisionedReadCapacityAutoScalingSettings(val.AutoScalingRoleArn && val.AutoScalingRoleArn == obj.AutoScalingRoleArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb UpdateGlobalTableSettings', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTableSettings',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTableSettings', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTableSettings', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTableSettings', response)
+    return human_readable, outputs
 
 
 def update_item_command(args):
@@ -1558,10 +1890,20 @@ def update_item_command(args):
     response = client.update_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.UpdateItem': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb UpdateItem', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB UpdateItem',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB UpdateItem', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB UpdateItem', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB UpdateItem', response)
+    return human_readable, outputs
 
 
 def update_table_command(args):
@@ -1660,12 +2002,21 @@ def update_table_command(args):
     response = client.update_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {
-        'AWS-Dynamodb.UpdateTable.AWS-dynamodbTableDescription(val.TableArn === obj.TableArn)':
-            response}
+    outputs = {
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn == obj.TableArn)': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb UpdateTable', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB UpdateTable',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB UpdateTable', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB UpdateTable', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB UpdateTable', response)
+    return human_readable, outputs
 
 
 def update_time_to_live_command(args):
@@ -1692,10 +2043,20 @@ def update_time_to_live_command(args):
     response = client.update_time_to_live(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    ec = {'AWS-Dynamodb.UpdateTimeToLive': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    human_readable = tableToMarkdown('AWS Dynamodb UpdateTimeToLive', response)
-    return human_readable, ec
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(list(response.keys())[0], dict):
+                human_readable = tableToMarkdown('AWS DynamoDB UpdateTimeToLive',
+                                                 response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown('AWS DynamoDB UpdateTimeToLive', response)
+        else:
+            human_readable = tableToMarkdown('AWS DynamoDB UpdateTimeToLive', response)
+    else:
+        human_readable = tableToMarkdown('AWS DynamoDB UpdateTimeToLive', response)
+    return human_readable, outputs
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -1704,89 +2065,89 @@ def update_time_to_live_command(args):
 def main():  # pragma: no cover
     args = demisto.args()
     human_readable = None
-    ec = None
+    outputs = None
     try:
         LOG('Command being called is {command}'.format(command=demisto.command()))
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             client = aws_session()
-            response = client.describe_endpoints()
+            response = client.REPLACE_WITH_TEST_FUNCTION()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 demisto.results('ok')
 
-        elif demisto.command() == 'aws-dynamodb-batch_get_item':
-            human_readable, ec = batch_get_item_command(args)
-        elif demisto.command() == 'aws-dynamodb-batch_write_item':
-            human_readable, ec = batch_write_item_command(args)
-        elif demisto.command() == 'aws-dynamodb-create_backup':
-            human_readable, ec = create_backup_command(args)
-        elif demisto.command() == 'aws-dynamodb-create_global_table':
-            human_readable, ec = create_global_table_command(args)
-        elif demisto.command() == 'aws-dynamodb-create_table':
-            human_readable, ec = create_table_command(args)
-        elif demisto.command() == 'aws-dynamodb-delete_backup':
-            human_readable, ec = delete_backup_command(args)
-        elif demisto.command() == 'aws-dynamodb-delete_item':
-            human_readable, ec = delete_item_command(args)
-        elif demisto.command() == 'aws-dynamodb-delete_table':
-            human_readable, ec = delete_table_command(args)
-        elif demisto.command() == 'aws-dynamodb-describe_backup':
-            human_readable, ec = describe_backup_command(args)
-        elif demisto.command() == 'aws-dynamodb-describe_continuous_backups':
-            human_readable, ec = describe_continuous_backups_command(args)
-        elif demisto.command() == 'aws-dynamodb-describe_endpoints':
-            human_readable, ec = describe_endpoints_command(args)
-        elif demisto.command() == 'aws-dynamodb-describe_global_table':
-            human_readable, ec = describe_global_table_command(args)
-        elif demisto.command() == 'aws-dynamodb-describe_global_table_settings':
-            human_readable, ec = describe_global_table_settings_command(args)
-        elif demisto.command() == 'aws-dynamodb-describe_limits':
-            human_readable, ec = describe_limits_command(args)
-        elif demisto.command() == 'aws-dynamodb-describe_table':
-            human_readable, ec = describe_table_command(args)
-        elif demisto.command() == 'aws-dynamodb-describe_time_to_live':
-            human_readable, ec = describe_time_to_live_command(args)
-        elif demisto.command() == 'aws-dynamodb-get_item':
-            human_readable, ec = get_item_command(args)
-        elif demisto.command() == 'aws-dynamodb-list_backups':
-            human_readable, ec = list_backups_command(args)
-        elif demisto.command() == 'aws-dynamodb-list_global_tables':
-            human_readable, ec = list_global_tables_command(args)
-        elif demisto.command() == 'aws-dynamodb-list_tables':
-            human_readable, ec = list_tables_command(args)
-        elif demisto.command() == 'aws-dynamodb-list_tags_of_resource':
-            human_readable, ec = list_tags_of_resource_command(args)
-        elif demisto.command() == 'aws-dynamodb-put_item':
-            human_readable, ec = put_item_command(args)
+        elif demisto.command() == 'aws-dynamodb-batch-get-item':
+            human_readable, outputs = batch_get_item_command(args)
+        elif demisto.command() == 'aws-dynamodb-batch-write-item':
+            human_readable, outputs = batch_write_item_command(args)
+        elif demisto.command() == 'aws-dynamodb-create-backup':
+            human_readable, outputs = create_backup_command(args)
+        elif demisto.command() == 'aws-dynamodb-create-global-table':
+            human_readable, outputs = create_global_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-create-table':
+            human_readable, outputs = create_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-delete-backup':
+            human_readable, outputs = delete_backup_command(args)
+        elif demisto.command() == 'aws-dynamodb-delete-item':
+            human_readable, outputs = delete_item_command(args)
+        elif demisto.command() == 'aws-dynamodb-delete-table':
+            human_readable, outputs = delete_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe-backup':
+            human_readable, outputs = describe_backup_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe-continuous-backups':
+            human_readable, outputs = describe_continuous_backups_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe-endpoints':
+            human_readable, outputs = describe_endpoints_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe-global-table':
+            human_readable, outputs = describe_global_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe-global-table-settings':
+            human_readable, outputs = describe_global_table_settings_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe-limits':
+            human_readable, outputs = describe_limits_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe-table':
+            human_readable, outputs = describe_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-describe-time-to-live':
+            human_readable, outputs = describe_time_to_live_command(args)
+        elif demisto.command() == 'aws-dynamodb-get-item':
+            human_readable, outputs = get_item_command(args)
+        elif demisto.command() == 'aws-dynamodb-list-backups':
+            human_readable, outputs = list_backups_command(args)
+        elif demisto.command() == 'aws-dynamodb-list-global-tables':
+            human_readable, outputs = list_global_tables_command(args)
+        elif demisto.command() == 'aws-dynamodb-list-tables':
+            human_readable, outputs = list_tables_command(args)
+        elif demisto.command() == 'aws-dynamodb-list-tags-of-resource':
+            human_readable, outputs = list_tags_of_resource_command(args)
+        elif demisto.command() == 'aws-dynamodb-put-item':
+            human_readable, outputs = put_item_command(args)
         elif demisto.command() == 'aws-dynamodb-query':
-            human_readable, ec = query_command(args)
-        elif demisto.command() == 'aws-dynamodb-restore_table_from_backup':
-            human_readable, ec = restore_table_from_backup_command(args)
-        elif demisto.command() == 'aws-dynamodb-restore_table_to_point_in_time':
-            human_readable, ec = restore_table_to_point_in_time_command(args)
+            human_readable, outputs = query_command(args)
+        elif demisto.command() == 'aws-dynamodb-restore-table-from-backup':
+            human_readable, outputs = restore_table_from_backup_command(args)
+        elif demisto.command() == 'aws-dynamodb-restore-table-to-point-in-time':
+            human_readable, outputs = restore_table_to_point_in_time_command(args)
         elif demisto.command() == 'aws-dynamodb-scan':
-            human_readable, ec = scan_command(args)
-        elif demisto.command() == 'aws-dynamodb-tag_resource':
-            human_readable, ec = tag_resource_command(args)
-        elif demisto.command() == 'aws-dynamodb-transact_get_items':
-            human_readable, ec = transact_get_items_command(args)
-        elif demisto.command() == 'aws-dynamodb-transact_write_items':
-            human_readable, ec = transact_write_items_command(args)
-        elif demisto.command() == 'aws-dynamodb-untag_resource':
-            human_readable, ec = untag_resource_command(args)
-        elif demisto.command() == 'aws-dynamodb-update_continuous_backups':
-            human_readable, ec = update_continuous_backups_command(args)
-        elif demisto.command() == 'aws-dynamodb-update_global_table':
-            human_readable, ec = update_global_table_command(args)
-        elif demisto.command() == 'aws-dynamodb-update_global_table_settings':
-            human_readable, ec = update_global_table_settings_command(args)
-        elif demisto.command() == 'aws-dynamodb-update_item':
-            human_readable, ec = update_item_command(args)
-        elif demisto.command() == 'aws-dynamodb-update_table':
-            human_readable, ec = update_table_command(args)
-        elif demisto.command() == 'aws-dynamodb-update_time_to_live':
-            human_readable, ec = update_time_to_live_command(args)
-        return_outputs(human_readable, ec)
+            human_readable, outputs = scan_command(args)
+        elif demisto.command() == 'aws-dynamodb-tag-resource':
+            human_readable, outputs = tag_resource_command(args)
+        elif demisto.command() == 'aws-dynamodb-transact-get-items':
+            human_readable, outputs = transact_get_items_command(args)
+        elif demisto.command() == 'aws-dynamodb-transact-write-items':
+            human_readable, outputs = transact_write_items_command(args)
+        elif demisto.command() == 'aws-dynamodb-untag-resource':
+            human_readable, outputs = untag_resource_command(args)
+        elif demisto.command() == 'aws-dynamodb-update-continuous-backups':
+            human_readable, outputs = update_continuous_backups_command(args)
+        elif demisto.command() == 'aws-dynamodb-update-global-table':
+            human_readable, outputs = update_global_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-update-global-table-settings':
+            human_readable, outputs = update_global_table_settings_command(args)
+        elif demisto.command() == 'aws-dynamodb-update-item':
+            human_readable, outputs = update_item_command(args)
+        elif demisto.command() == 'aws-dynamodb-update-table':
+            human_readable, outputs = update_table_command(args)
+        elif demisto.command() == 'aws-dynamodb-update-time-to-live':
+            human_readable, outputs = update_time_to_live_command(args)
+        return_outputs(human_readable, outputs)
 
     except ResponseParserError as e:
         return_error(
@@ -1801,4 +2162,3 @@ def main():  # pragma: no cover
 
 if __name__ in ["__builtin__", "builtins", '__main__']:  # pragma: no cover
     main()
-
