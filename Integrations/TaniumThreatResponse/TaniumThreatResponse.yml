@@ -790,6 +790,116 @@ script:
     - contextPath: Tanium.Event.Response
       description: The response of the DNS.
       type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: host
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: path
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-get-file-info
+  - arguments:
+    - default: false
+      isArray: false
+      name: connection-name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: ptid
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-get-process-info
+  - arguments:
+    - default: false
+      isArray: false
+      name: connection-name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: ptid
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-get-events-by-process
+  - arguments:
+    - default: false
+      isArray: false
+      name: connection-name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: ptid
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-get-process-children
+  - arguments:
+    - default: false
+      isArray: false
+      name: connection-name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: ptid
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-get-parent-process
+  - arguments:
+    - default: false
+      isArray: false
+      name: connection-name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: ptid
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-get-parent-process-tree
+  - arguments:
+    - default: false
+      isArray: false
+      name: connection-name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: ptid
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-get-process-tree
   dockerimage: demisto/python3:3.7.4.977
   feed: false
   isfetch: true

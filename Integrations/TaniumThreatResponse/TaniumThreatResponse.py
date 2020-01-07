@@ -21,6 +21,10 @@ EVENT_TYPE_FROM_REQUEST = {'combined': 'Combined', 'dns': 'DNS', 'driver': 'Driv
 EVENT_TYPE_TO_REQUEST = {'Combined': 'combined', 'DNS': 'dns', 'Driver': 'driver', 'File': 'file', 'Image': 'image',
                          'Network': 'network', 'Process': 'process', 'Registry': 'registry', 'SID': 'sid'}
 
+PROCESS_TEXT = 'Process information for process with PTID'
+PARENT_PROCESS_TEXT = 'Parent process for process with PTID'
+PROCESS_CHILDREN_TEXT = 'Children for process with PTID'
+
 
 class Client(BaseClient):
     def __init__(self, base_url, username, password, **kwargs):
@@ -232,6 +236,59 @@ class Client(BaseClient):
         # remove empty values from the event item
         return {k: v for k, v in event.items() if v is not None}
 
+    def get_process_item(self, raw_process):
+        return {
+            'CreateTime': raw_process.get('create_time'),
+            'Domain': raw_process.get('domain'),
+            'ExitCode': raw_process.get('exit_code'),
+            'ProcessCommandLine': raw_process.get('process_command_line'),
+            'ProcessID': raw_process.get('process_id'),
+            'ProcessName': raw_process.get('process_name'),
+            'ProcessTableId': raw_process.get('process_table_id'),
+            'SID': raw_process.get('sid'),
+            'Username': raw_process.get('username')
+        }
+
+    def get_process_event_item(self, raw_event):
+        return {
+            'ID': raw_event.get('id'),
+            'Detail': raw_event.get('detail'),
+            'Operation': raw_event.get('operation'),
+            'Timestamp': raw_event.get('timestamp'),
+            'Type': raw_event.get('type')
+        }
+
+    def get_process_tree_item(self, raw_item, level):
+        tree_item = {
+            'ID': raw_item.get('id'),
+            'PTID': raw_item.get('ptid'),
+            'PID': raw_item.get('pid'),
+            'Name': raw_item.get('name'),
+            'Parent': raw_item.get('parent'),
+            'Children': raw_item.get('children')
+        }
+
+        human_readable = tree_item.copy()
+        del human_readable['Children']
+
+        children = tree_item.get('Children')
+        if children and level == 1:
+            human_readable['ChildrenCount'] = len(children)
+        if not children and level == 1:
+            human_readable['ChildrenCount'] = 0
+        elif children and level == 0:
+            human_readable_arr = []
+            output_arr = []
+            for item in children:
+                tree_output, human_readable_res = self.get_process_tree_item(item, level + 1)
+                human_readable_arr.append(human_readable_res)
+                output_arr.append(tree_output)
+
+            human_readable['Children'] = human_readable_arr
+            tree_item['Children'] = output_arr
+
+        return tree_item, human_readable
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -408,7 +465,7 @@ def get_connection(client, data_args):
 
     context = createContext(connection, removeNull=True)
     outputs = {'Tanium.Connection(val.Name && val.Name === obj.Name)': context}
-    human_readable = tableToMarkdown('Connection details', connection)
+    human_readable = tableToMarkdown('Connection information', connection)
     return human_readable, outputs, connection_raw_response
 
 
@@ -459,7 +516,7 @@ def get_label(client, data_args):
 
     context = createContext(label, removeNull=True)
     outputs = {'Tanium.Label(val.ID && val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Label details', label)
+    human_readable = tableToMarkdown('Label information', label)
     return human_readable, outputs, raw_response
 
 
@@ -507,7 +564,138 @@ def get_events_by_connection(client, data_args):
 
     context = createContext(events, removeNull=True)
     outputs = {'Tanium.Event(val.ID && val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Events for a connection', events)
+    human_readable = tableToMarkdown(f'Events for {connection}', events)
+    return human_readable, outputs, raw_response
+
+
+def get_file_info(client, data_args):
+    limit = int(data_args.get('limit'))
+    path = data_args.get('path')
+    host = data_args.get('host')
+
+    raw_response = client.do_request('GET', f'/plugin/products/trace/filedownloads/',
+                                     params={'limit': limit, 'path': path, 'host': host})
+
+    files = []
+    for item in raw_response:
+        file = client.get_file_item(item)
+        files.append(file)
+
+    context = createContext(files, removeNull=True)
+    outputs = {'Tanium.FileDownloads(val.ID && val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown(f'File information for {path}', files)
+    return human_readable, outputs, raw_response
+
+
+def get_process_info(client, data_args):
+    conn_name = data_args.get('connection-name')
+    ptid = data_args.get('ptid')
+    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processes/{ptid}')
+    process = client.get_process_item(raw_response)
+
+    context = createContext(process, removeNull=True)
+    outputs = {'Tanium.Process(val.ProcessID && val.ProcessID === obj.ProcessID)': context}
+    human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', process)
+    return human_readable, outputs, raw_response
+
+
+def get_events_by_process(client, data_args):
+    limit = int(data_args.get('limit'))
+    conn_name = data_args.get('connection-name')
+    ptid = data_args.get('ptid')
+    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processevents/{ptid}',
+                                     params={'limit': limit})
+
+    events = []
+    for item in raw_response:
+        event = client.get_process_event_item(item)
+        events.append(event)
+
+    context = createContext(events, removeNull=True)
+    outputs = {'Tanium.ProcessEvent(val.ID && val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown(f'Events for process {ptid}', events)
+    return human_readable, outputs, raw_response
+
+
+def get_process_children(client, data_args):
+    conn_name = data_args.get('connection-name')
+    ptid = data_args.get('ptid')
+    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processtrees/{ptid}/children')
+
+    children = []
+    children_human_readable = []
+    for item in raw_response:
+        child, raedable_output = client.get_process_tree_item(item, 1)
+        children.append(child)
+        children_human_readable.append(raedable_output)
+
+    context = createContext(children, removeNull=True)
+    outputs = {'Tanium.ProcessChildren(val.ID && val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown(f'{PROCESS_CHILDREN_TEXT} {ptid}', children_human_readable)
+    return human_readable, outputs, raw_response
+
+
+def get_parent_process(client, data_args):
+    conn_name = data_args.get('connection-name')
+    ptid = data_args.get('ptid')
+    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/parentprocesses/{ptid}')
+    process = client.get_process_item(raw_response)
+
+    context = createContext(process, removeNull=True)
+    outputs = {'Tanium.ParentProcess(val.ProcessID && val.ProcessID === obj.ProcessID)': context}
+    human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', process)
+    return human_readable, outputs, raw_response
+
+
+def get_parent_process_tree(client, data_args):
+    conn_name = data_args.get('connection-name')
+    ptid = data_args.get('ptid')
+    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/parentprocesstrees/{ptid}')
+
+    if not raw_response:
+        raise ValueError('Failed to parse tanium-tr-get-parent-process-tree response.')
+
+    tree, raedable_output = client.get_process_tree_item(raw_response[0], 0)
+
+    children_item = raedable_output.get('Children')
+
+    if children_item:
+        process_tree = raedable_output.copy()
+        del process_tree['Children']
+        human_readable = tableToMarkdown(f'{PARENT_PROCESS_TEXT} {ptid}', process_tree)
+        human_readable += tableToMarkdown(f'{PROCESS_CHILDREN_TEXT} {ptid}', children_item)
+    else:
+        human_readable = tableToMarkdown(f'{PARENT_PROCESS_TEXT} {ptid}', raedable_output)
+
+    context = createContext(tree, removeNull=True)
+    outputs = {'Tanium.ParentProcessTree(val.ID && val.ID === obj.ID)': context}
+
+    return human_readable, outputs, raw_response
+
+
+def get_process_tree(client, data_args):
+    conn_name = data_args.get('connection-name')
+    ptid = data_args.get('ptid')
+    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/processtrees/{ptid}')
+
+    if not raw_response:
+        raise ValueError('Failed to parse tanium-tr-get-process-tree response.')
+
+    tree, raedable_output = client.get_process_tree_item(raw_response[0], 0)
+
+    children_item = raedable_output.get('Children')
+
+    if children_item:
+        process_tree = raedable_output.copy()
+        del process_tree['Children']
+        human_readable = tableToMarkdown(f'Process information for process with PTID {ptid}', process_tree)
+        human_readable += tableToMarkdown(f'{PROCESS_CHILDREN_TEXT} {ptid}', children_item)
+    else:
+        human_readable = tableToMarkdown(f'{PROCESS_TEXT} {ptid}', raedable_output)
+
+    context = createContext(tree, removeNull=True)
+    outputs = {'Tanium.ProcessTree(val.ID && val.ID === obj.ID)': context}
+
     return human_readable, outputs, raw_response
 
 
@@ -587,7 +775,14 @@ def main():
         f'tanium-tr-list-labels': get_labels,
         f'tanium-tr-get-label-by-id': get_label,
         f'tanium-tr-list-file-downloads': get_file_downloads,
-        f'tanium-tr-list-events-by-connection': get_events_by_connection
+        f'tanium-tr-list-events-by-connection': get_events_by_connection,
+        f'tanium-tr-get-file-info': get_file_info,
+        f'tanium-tr-get-process-info': get_process_info,
+        f'tanium-tr-get-events-by-process': get_events_by_process,
+        f'tanium-tr-get-process-children': get_process_children,
+        f'tanium-tr-get-parent-process': get_parent_process,
+        f'tanium-tr-get-parent-process-tree': get_parent_process_tree,
+        f'tanium-tr-get-process-tree': get_process_tree
     }
 
     try:
