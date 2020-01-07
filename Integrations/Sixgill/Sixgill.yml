@@ -34,7 +34,7 @@ script:
       defaultValue: 'true'
       description: Should indicators be fetched
       isArray: false
-      name: fetch_indicator
+      name: fetch_indicators
       predefined:
       - 'true'
       - 'false'

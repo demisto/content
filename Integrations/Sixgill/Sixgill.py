@@ -83,7 +83,7 @@ def fetch_incidents():
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
     include_delivered_items = bool(strtobool(demisto.args().get('include_delivered_items', 'false')))
-    should_fetch_indicator = bool(strtobool(demisto.args().get('fetch_indicator', 'true')))
+    should_fetch_indicators = bool(strtobool(demisto.args().get('fetch_indicators', 'true')))
     should_fetch_incidents = bool(strtobool(demisto.args().get('fetch_incidents', 'true')))
 
     sixgill_darkfeed_client = SixgillDarkFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
@@ -98,7 +98,7 @@ def fetch_incidents():
         fetched_indicator = False
         fetched_incidents = False
 
-        if should_fetch_indicator:
+        if should_fetch_indicators:
             fetched_indicator = handle_indicator(iocs, raw_incident)
             if fetched_indicator:
                 extracted_iocs += 1

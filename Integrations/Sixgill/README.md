@@ -1,14 +1,25 @@
 <p>
-Fetching Sixgill alerts as incidents
+Fetching Sixgill's DarkFeed Threat Intelligence indicators or Sixgill's alerts as incidents
 
-This integration was integrated and tested with version 0.0.3 of Sixgill
+This integration was integrated and tested with version xx of Sixgill
 </p>
 <h2>Sixgill Playbook</h2>
-<p>Populate this section with relevant playbook names.</p>
-<ul>
-</ul><h2>Detailed Description</h2>
-<p>To configure an instance of Sixgill's integration in Demisto, you need to supply your API key and client Secret. Please contact support at cybersixgill.com to receive these.</p><h2>Fetch Incidents</h2>
-<p>Retrive all incidents related to an organization</p>
+<p>playbook-Sixgill-Test</p>
+<h2>Detailed Description</h2>
+<p>Configure an API account:</p>
+<p>To configure an instance of Sixgill's integration in Demisto, you need to supply your API key and client Secret. Please contact support at cybersixgill.com to receive these.</p>
+<h2>Fetch Incidents</h2>
+<p>In case fetch_incidents is set to True, incidents are pushed in via Demisto REST API. </p>
+<p>In case fetch_indicators is set to True, indicators are extracted </p>
+<pre>
+{
+'suspicious_ip': [{'fields': {'itype': 'suspicious_ip', 'tags': ['DarkWeb'], 'threat_type': None, 'value': '1.1.1.1'}, 'type': 'indicator'}, {'fields': {'itype': 'suspicious_ip', 'tags': ['DarkWeb'], 'threat_type': None, 'value': '8.8.8.8'}, 'type': 'indicator'}],
+'proxy_ip': [{'fields': {'itype': 'proxy_ip', 'tags': ['IP', 'Hacking', 'Security'], 'threat_type': 'anonymization', 'value': '2.2.2.2'}, 'type': 'indicator'}],
+'crypto_wallet': [{'fields': {'itype': 'crypto_wallet', 'tags': ['bitcoin'], 'threat_type': None, 'value': '<some hash>'}, 'type': 'indicator'}],
+'mal_md5': [{'fields': {'itype': 'mal_md5', 'tags': ['md5'], 'threat_type': None, 'value': '<some hash>'}, 'type': 'indicator'}],
+'mal_domain': [{'fields': {'itype': 'mal_domain', 'tags': ['url'], 'threat_type': None, 'value': '<some URL>'}, 'type': 'indicator'}]
+}
+</pre>
 <h2>Configure Sixgill on Demisto</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
@@ -36,7 +47,7 @@ This integration was integrated and tested with version 0.0.3 of Sixgill
 </ol>
 <h3>1. fetch-incidents</h3>
 <hr>
-<p>Get bulk of Sixgill alerts</p>
+<p>Get Sixgill's DarkFeed indicators or Sixgill's alerts as incidents</p>
 <h5>Base Command</h5>
 <p>
   <code>fetch-incidents</code>
@@ -45,9 +56,8 @@ This integration was integrated and tested with version 0.0.3 of Sixgill
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>Organization should be registered to Sixgill Actionable alerts</li>
-    <li>Organization should be registered to consume Actionable alerts through demisto platform</li>
-    <li>A valid client-id & client-secret to sixgill's API</li>
+    <li>Sixgill's API client id and client secret.</li>
+    <li>Organization is registered to consume data using Demisto platform</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -70,12 +80,44 @@ This integration was integrated and tested with version 0.0.3 of Sixgill
       <td>Should delivered items be included</td>
       <td>Optional</td>
     </tr>
+    <tr>
+      <td>fetch_indicators</td>
+      <td>Should indicators be fetched</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>fetch_incidents</td>
+      <td>Should incidents be fetched</td>
+      <td>Optional</td>
+    </tr>
   </tbody>
 </table>
 
 <p>&nbsp;</p>
 <h5>Context Output</h5>
-There are no context output for this command.
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Sixgill.indicators</td>
+      <td>String</td>
+      <td>Sixgill DarkFeed Threat Intelligence indicators</td>
+    </tr>
+  </tbody>
+</table>
+
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
@@ -83,6 +125,7 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
+<pre>Successfully extracted 1000 IOCs of the following types: ["suspicious_ip", "proxy_ip", "crypto_wallet", "mal_md5", "mal_domain"]}</pre>
 <p>
 
 <!-- remove the following comments to manually add an image: -->
@@ -91,4 +134,4 @@ There are no context output for this command.
  alt="image" width="749" height="412"></a>
  -->
 </p>
-<h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2>
+<h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2><p>Contact us: support at cybersixgill.com</p>
