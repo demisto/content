@@ -5,13 +5,13 @@ import json
 from flask import Flask, Response
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
-from typing import Callable, List
+from typing import Callable, List, Any
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'EDL'
 PAGE_SIZE: int = 200
 APP: Flask = Flask('demisto-edl')
-CSV_FIRST_LINE_KEY: str = 'csv_first_line'
+CSV_FIRST_LINE_KEY: str = 'dmst_csv_first_line'
 FORMAT_CSV: str = 'csv'
 FORMAT_TEXT: str = 'text'
 FORMAT_JSON_SEQ: str = 'json-seq'
@@ -39,31 +39,32 @@ def get_params_port(params: dict = demisto.params()) -> int:
     Gets port from the integration parameters
     """
     port_mapping: str = params.get('longRunningPort', '')
+    err_msg: str
     port: int
-    try:
-        if port_mapping:
-            if ':' in port_mapping:
-                port = int(port_mapping.split(':')[1])
-            else:
-                port = int(port_mapping)
+    if port_mapping:
+        err_msg = f'Listen Port must be an integer. {port_mapping} is not valid.'
+        if ':' in port_mapping:
+            port = parse_integer(port_mapping.split(':')[1], err_msg)
         else:
-            raise ValueError('Please provide a Listen Port.')
-    except (ValueError, TypeError):
-        raise ValueError(f'Listen Port must be an integer. {port_mapping} is not valid.')
+            port = parse_integer(port_mapping, err_msg)
+    else:
+        raise ValueError('Please provide a Listen Port.')
     return port
 
 
-def refresh_value_cache(indicator_query: str, out_format: str, ip_grouping: bool = False, limit: int = 0) -> list:
+def refresh_edl_context(indicator_query: str, out_format: str, ip_grouping: bool = False, limit: int = 0) -> list:
     """
     Refresh the cache values and format using an indicator_query to call demisto.findIndicators
+    Returns: List(IoCs in output format)
     """
     iocs = find_indicators_to_limit(indicator_query, limit, ip_grouping)  # poll indicators into edl from demisto
-    ctx = create_values_out_dict(iocs, out_format)
+    # out_dict format {indicator_value: indicator_format_output}
+    out_dict = create_values_out_dict(iocs, out_format)
     demisto.setLastRun({'last_run': date_to_timestamp(datetime.now())})
-    demisto.setIntegrationContext(ctx)
+    demisto.setIntegrationContext(out_dict)
     if out_format == FORMAT_CSV:
-        return create_csv_out_list(ctx)
-    return list(ctx.values())
+        return create_csv_out_list(out_dict)
+    return list(out_dict.values())
 
 
 def find_indicators_to_limit(indicator_query: str, limit: int, ip_grouping: bool = False) -> list:
@@ -122,7 +123,7 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
 #     try:
 #         iocs = sorted(iocs, key=lambda ip: struct.unpack('!L', inet_aton(ip))[0])
 #     except OSError:
-#         demisto.debug('Failed to consolidate IPs because')
+#         demisto.debug('Failed to consolidate IPs')
 #         return iocs
 
 
@@ -143,9 +144,9 @@ def create_values_out_dict(iocs: list, out_format: str) -> dict:
     Create a dictionary for output values using the selected format
     """
     out_format_func = {
-        FORMAT_TEXT: out_text_format,
-        FORMAT_JSON_SEQ: out_json_seq_format,
-        FORMAT_CSV: out_csv_format
+        FORMAT_TEXT: format_ioc_text_out,
+        FORMAT_JSON_SEQ: format_ioc_json_seq_out,
+        FORMAT_CSV: format_ioc_csv_out
     }
     return create_formatted_values_out_dict(iocs, out_format, out_format_func.get(out_format, str))
 
@@ -154,7 +155,7 @@ def create_formatted_values_out_dict(iocs: list, out_format: str, out_format_fun
     """
     Create a dictionary for output values formatted in the selected out_format
     """
-    ctx = {}
+    out_dict = {}
     if out_format == FORMAT_JSON:
         iocs_list = [ioc for ioc in iocs]
         return {'iocs_list': json.dumps(iocs_list, indent=4)}
@@ -162,36 +163,38 @@ def create_formatted_values_out_dict(iocs: list, out_format: str, out_format_fun
         for ioc in iocs:
             value = ioc.get('value')
             if value:
-                ctx[value] = out_format_func(ioc)
-        if out_format == 'csv' and len(iocs) > 0:  # add csv headers
+                out_dict[value] = out_format_func(ioc)
+        if out_format == 'csv' and len(iocs) > 0:
+            # add csv headers to out_dict under saved key
             headers = list(iocs[0].keys())
-            ctx[CSV_FIRST_LINE_KEY] = list_to_str(headers)
-        return ctx
+            out_dict[CSV_FIRST_LINE_KEY] = list_to_str(headers)
+        return out_dict
 
 
-def out_text_format(ioc: dict) -> str:
+def format_ioc_text_out(ioc: dict) -> str:
     """
     Return output in text format
     """
     return ioc.get('value', '')
 
 
-def out_json_seq_format(ioc: dict) -> str:
+def format_ioc_json_seq_out(ioc: dict) -> str:
     """
     Return output in json seq format
     """
     return json.dumps(ioc)
 
 
-def out_csv_format(ioc: dict) -> str:
+def format_ioc_csv_out(ioc: dict) -> str:
     """
     Return output in csv format
     """
     values = list(ioc.values())
+    # wrap csv values with " to separate them
     return list_to_str(values, map_func=lambda val: f'"{val}"')
 
 
-def get_edl_ioc_list():
+def get_edl_ioc_values_list() -> list:
     """
     Get the ioc list to return in the edl
     """
@@ -201,24 +204,23 @@ def get_edl_ioc_list():
     limit = parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)
     # on_demand ignores cache
     if on_demand:
-        values = get_out_values_from_cache(out_format)
+        values = get_ioc_values_list_from_context(out_format)
     else:
         last_run = demisto.getLastRun().get('last_run')
-        indicator_query = demisto.params().get('indicators_query', '')
+        indicator_query = demisto.params().get('indicators_query')
         if last_run:
-            cache_refresh_rate = demisto.params().get('cache_refresh_rate', limit)
+            cache_refresh_rate = demisto.params().get('cache_refresh_rate')
             cache_time, _ = parse_date_range(cache_refresh_rate, to_timestamp=True)
-            td = last_run - cache_time
-            if td <= 0:  # last_run is before cache_time
-                values = refresh_value_cache(indicator_query, out_format, limit=limit)
+            if last_run <= cache_time:
+                values = refresh_edl_context(indicator_query, out_format, limit=limit)
             else:
-                values = get_out_values_from_cache(out_format)
+                values = get_ioc_values_list_from_context(out_format)
         else:
-            values = refresh_value_cache(indicator_query, out_format, limit=limit)
+            values = refresh_edl_context(indicator_query, out_format, limit=limit)
     return values
 
 
-def get_out_values_from_cache(out_format):
+def get_ioc_values_list_from_context(out_format: str) -> list:
     """
     Extracts output values from cache
     """
@@ -227,7 +229,7 @@ def get_out_values_from_cache(out_format):
     return values
 
 
-def parse_integer(int_to_parse, err_msg):
+def parse_integer(int_to_parse: Any, err_msg: str) -> int:
     """
     Tries to parse an integer, and if fails will throw DemistoException with given err_msg
     """
@@ -249,7 +251,7 @@ def route_edl_values() -> Response:
     params = demisto.params()
     out_format = params.get('format', 'text')
     mimetype = 'application/json' if out_format == FORMAT_JSON else 'text/plain'
-    values = list_to_str(get_edl_ioc_list(), '\n')
+    values = list_to_str(get_edl_ioc_values_list(), '\n')
     return Response(values, status=200, mimetype=mimetype)
 
 
@@ -258,12 +260,13 @@ def route_edl_values() -> Response:
 
 def test_module(args, params):
     """
-    Validates that the port is integer
+    Validates:
+        1.
     """
     get_params_port(params)
     cache_refresh_rate = params.get('cache_refresh_rate', '')
     if cache_refresh_rate:
-        # validate $cache_refresh_rate value
+        # validate cache_refresh_rate value
         range_split = cache_refresh_rate.split(' ')
         if len(range_split) != 2:
             raise ValueError('Cache Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes,'
@@ -276,9 +279,9 @@ def test_module(args, params):
     on_demand = params.get('on_demand', None)
     if not on_demand:
         parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)  # validate EDL Size was set
-        query = params.get('indicators_query')  # validate $indicators_query isn't empty
+        query = params.get('indicators_query')  # validate indicators_query isn't empty
         if not query:
-            raise ValueError('"Indicator Query" cannot be empty, please provide a valid query')
+            raise ValueError('"Indicator Query" should not be empty, please provide a valid query')
     return 'ok', {}, {}
 
 
@@ -335,7 +338,7 @@ def update_edl_command(args, params):
             '"Update EDL On Demand" is turned off. If you want to update the EDL manually please turn it on.')
     query = args.get('query')
     out_format = args.get('format')
-    indicators = refresh_value_cache(query, out_format, limit=limit)
+    indicators = refresh_edl_context(query, out_format, limit=limit)
     hr = tableToMarkdown('EDL was updated successfully with the following values', indicators, ['indicators'])
     return hr, {}, {}
 

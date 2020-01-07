@@ -3,8 +3,8 @@ commonfields:
   id: EDL
   version: -1
 configuration:
-- additionalInfo: Will run this query on demisto's indicators (run in your CLI !findIndicators
-    query=<your query> to see expected results)
+- additionalInfo: Integration will run this query to update its EDL (run in your CLI
+    !findIndicators query=<your query> to see expected results)
   display: Indicator Query
   name: indicators_query
   required: false
@@ -20,7 +20,8 @@ configuration:
   - csv
   required: false
   type: 15
-- defaultvalue: '2500'
+- additionalInfo: Max amount of items in the EDL
+  defaultvalue: '2500'
   display: EDL Size
   hidden: false
   name: edl_size
@@ -32,7 +33,7 @@ configuration:
   required: false
   type: 8
 - additionalInfo: Will run the EDL service on this port from within demisto
-  defaultvalue: '9000'
+  defaultvalue: '7000'
   display: Listen Port
   name: longRunningPort
   required: true
@@ -52,19 +53,19 @@ configuration:
   name: http_flag
   required: false
   type: 8
-- display: Update EDL On Demand
+- additionalInfo: Enabling this will prevent automatic EDL refresh
+  display: Update EDL On Demand Only
   name: on_demand
   required: false
   type: 8
-- defaultvalue: 5 minutes
-  display: Cache Refresh Rate
+- additionalInfo: Set how often to refresh the EDL
+  defaultvalue: 5 minutes
+  display: Refresh Rate
   name: cache_refresh_rate
   required: false
   type: 0
-description: Provides External Dynamic List as a service. An EDL is a text file that
-  is hosted on an external web server so that the firewall can import objects—IP addresses,
-  URLs, domains—included in the list and enforce policy. The integration allows users
-  to expose indicators from within demisto as an EDL service.
+description: This integration provides External Dynamic List (EDL) as a service for
+  the system indicators.
 display: Palo Alto Networks PAN-OS EDL Service
 name: EDL
 script:

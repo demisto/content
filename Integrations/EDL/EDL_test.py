@@ -11,6 +11,53 @@ IOC_RES_LEN = 38
 
 @pytest.mark.helper_commands
 class TestHelperFunctions:
+    @pytest.mark.get_edl_ioc_values_list
+    def test_get_edl_ioc_values_list_1(self, mocker):
+        """Test on_demand"""
+        from EDL import get_edl_ioc_values_list
+        with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
+            iocs_text_dict = json.loads(iocs_text_values_f.read())
+            params = {'format': 'text', 'on_demand': True, 'edl_size': 50}
+            mocker.patch.object(demisto, 'params', return_value=params)
+            mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
+            ioc_list = get_edl_ioc_values_list()
+            for ioc_row in ioc_list:
+                assert ioc_row in iocs_text_dict
+
+    @pytest.mark.get_edl_ioc_values_list
+    def test_get_edl_ioc_values_list_2(self, mocker):
+        """Test update by not on_demand with no refresh"""
+        import CommonServerPython as CSP
+        mocker.patch.object(CSP, 'parse_date_range', return_value=(1578383899, 1578383899))
+        import EDL as edl
+        with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
+            iocs_text_dict = json.loads(iocs_text_values_f.read())
+            params = {'format': 'text', 'on_demand': False, 'edl_size': 50, 'cache_refresh_rate': '1 minute'}
+            mocker.patch.object(demisto, 'params', return_value=params)
+            mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
+            mocker.patch.object(edl, 'refresh_edl_context', return_value=iocs_text_dict)
+            mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
+            ioc_list = edl.get_edl_ioc_values_list()
+            for ioc_row in ioc_list:
+                assert ioc_row in iocs_text_dict
+
+    @pytest.mark.get_edl_ioc_values_list
+    def test_get_edl_ioc_values_list_3(self, mocker):
+        """Test update by not on_demand with refresh"""
+        import CommonServerPython as CSP
+        mocker.patch.object(CSP, 'parse_date_range', return_value=(1578383898, 1578383898))
+        import EDL as edl
+        with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
+            iocs_text_dict = json.loads(iocs_text_values_f.read())
+            params = {'format': 'text', 'on_demand': False, 'edl_size': 50, 'cache_refresh_rate': '1 minute'}
+            mocker.patch.object(demisto, 'params', return_value=params)
+            mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
+            mocker.patch.object(edl, 'refresh_edl_context', return_value=iocs_text_dict)
+            mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
+            ioc_list = edl.get_edl_ioc_values_list()
+            for ioc_row in ioc_list:
+                assert ioc_row in iocs_text_dict
+
     @pytest.mark.list_to_str
     def test_list_to_str_1(self):
         """Test invalid"""
@@ -43,9 +90,10 @@ class TestHelperFunctions:
     @pytest.mark.get_params_port
     def test_get_params_port_1(self):
         """Test invalid"""
+        from CommonServerPython import DemistoException
         from EDL import get_params_port
         params = {'longRunningPort': 'invalid'}
-        with pytest.raises(ValueError):
+        with pytest.raises(DemistoException):
             get_params_port(params)
 
     @pytest.mark.get_params_port
@@ -63,50 +111,50 @@ class TestHelperFunctions:
         params = {'longRunningPort': '80'}
         assert get_params_port(params) == 80
 
-    @pytest.mark.refresh_value_cache
-    def test_refresh_value_cache_1(self, mocker):
+    @pytest.mark.refresh_edl_context
+    def test_refresh_edl_context_1(self, mocker):
         """Test out_format=text"""
         import EDL as edl
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             mocker.patch.object(edl, 'find_indicators_to_limit', return_value=json.loads(iocs_json_f.read()))
-            edl_vals = edl.refresh_value_cache(indicator_query='', out_format='text')
+            edl_vals = edl.refresh_edl_context(indicator_query='', out_format='text')
             assert len(edl_vals) == IOC_RES_LEN
             for ip in edl_vals:
                 assert inet_aton(ip)  # assert all lines are ips
 
-    @pytest.mark.refresh_value_cache
-    def test_refresh_value_cache_2(self, mocker):
+    @pytest.mark.refresh_edl_context
+    def test_refresh_edl_context_2(self, mocker):
         """Test out_format=json"""
         import EDL as edl
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(edl, 'find_indicators_to_limit', return_value=iocs_json)
-            edl_vals = edl.refresh_value_cache(indicator_query='', out_format='json')
+            edl_vals = edl.refresh_edl_context(indicator_query='', out_format='json')
             assert isinstance(edl_vals[0], str)
             edl_vals = json.loads(edl_vals[0])
             assert iocs_json == edl_vals
 
-    @pytest.mark.refresh_value_cache
-    def test_refresh_value_cache_3(self, mocker):
+    @pytest.mark.refresh_edl_context
+    def test_refresh_edl_context_3(self, mocker):
         """Test out_format=csv"""
         import EDL as edl
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(edl, 'find_indicators_to_limit', return_value=iocs_json)
-            edl_vals = edl.refresh_value_cache(indicator_query='', out_format='csv')
+            edl_vals = edl.refresh_edl_context(indicator_query='', out_format='csv')
             with open('EDL_test/TestHelperFunctions/iocs_out_csv.json', 'r') as iocs_out_f:
                 iocs_out = json.load(iocs_out_f)
                 assert iocs_out == edl_vals
                 assert len(edl_vals[0].split(',')) == 29  # assert first line is columns line
 
-    @pytest.mark.refresh_value_cache
-    def test_refresh_value_cache_4(self, mocker):
+    @pytest.mark.refresh_edl_context
+    def test_refresh_edl_context_4(self, mocker):
         """Test out_format=json-seq"""
         import EDL as edl
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(edl, 'find_indicators_to_limit', return_value=iocs_json)
-            edl_vals = edl.refresh_value_cache(indicator_query='', out_format='json-seq')
+            edl_vals = edl.refresh_edl_context(indicator_query='', out_format='json-seq')
             with open('EDL_test/TestHelperFunctions/iocs_out_json_seq.json', 'r') as iocs_out_f:
                 iocs_out = json.load(iocs_out_f)
                 assert iocs_out == edl_vals
@@ -188,16 +236,3 @@ class TestHelperFunctions:
             text_out = create_values_out_dict(iocs_json, FORMAT_TEXT)
             for key, text_line in text_out.items():
                 assert key == text_line
-
-    @pytest.mark.get_edl_ioc_list
-    def test_get_edl_ioc_list_1(self, mocker):
-        """Test on_demand"""
-        from EDL import get_edl_ioc_list
-        with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
-            iocs_text_dict = json.loads(iocs_text_values_f.read())
-            params = {'format': 'text', 'on_demand': True, 'edl_size': 50}
-            mocker.patch.object(demisto, 'params', return_value=params)
-            mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
-            ioc_list = get_edl_ioc_list()
-            for ioc_row in ioc_list:
-                assert ioc_row in iocs_text_dict
