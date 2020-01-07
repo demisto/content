@@ -170,18 +170,6 @@ class Client(BaseClient):
         return results
 
 
-# simple function to iterate list in batches
-def batch(iterable, batch_size=1):
-    current_batch = []
-    for item in iterable:
-        current_batch.append(item)
-        if len(current_batch) == batch_size:
-            yield current_batch
-            current_batch = []
-    if current_batch:
-        yield current_batch
-
-
 def get_indicator_fields(itype, line, client):
     attributes = None
     value = None
