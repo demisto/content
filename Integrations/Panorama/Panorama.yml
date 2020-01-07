@@ -134,7 +134,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: xpath location. For example, xpath=/config/predefined/application/entry[@name='hotmail']
+      description: xpath location. For example, xpath=/config/predefined/application/entry[@name='hotmail'].
       isArray: false
       name: xpath
       required: false
