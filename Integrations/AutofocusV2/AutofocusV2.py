@@ -1299,6 +1299,8 @@ def search_file_command(file):
 
 
 def get_export_list_command(args):
+    # the label is the name of the export list we want to fetch.
+    # panosFormatted is a flag stating that only indicators should be returned in the list.
     data = {
         'label': args.get('label'),
         'panosFormatted': True,
