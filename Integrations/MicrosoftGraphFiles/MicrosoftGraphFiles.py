@@ -514,7 +514,6 @@ def replace_an_existing_file_command(client, args):
 
     return (
         human_readable,
-        human_readable,
         context,
         result
     )
