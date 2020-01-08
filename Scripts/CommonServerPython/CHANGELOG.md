@@ -1,7 +1,10 @@
 ## [Unreleased]
-- Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.
-- Fixed proxy setting in BaseClient
-- Added the **batch** command, which takes an iterable and how many items to return and yields batches of that size.
+
+
+## [20.1.0] - 2020-01-07
+ - Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.
+ - Added the **batch** command, which takes an iterable and how many items to return and yields batches of that size.
+ 
 
 ## [19.12.0] - 2019-12-10
 -
