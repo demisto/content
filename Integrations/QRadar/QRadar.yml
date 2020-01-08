@@ -40,7 +40,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Full Enrichment
+- display: Full Incident Enrichment
   defaultvalue: 'true'
   hidden: false
   name: full_enrich
