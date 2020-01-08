@@ -6,6 +6,7 @@ import json
 import requests
 import traceback
 import urllib
+import re
 from requests.exceptions import HTTPError
 from copy import deepcopy
 
@@ -525,8 +526,10 @@ def create_incident_from_offense(offense):
     labels = []
     for i in range(len(keys)):
         labels.append({'type': keys[i], 'value': convert_to_str(offense[keys[i]])})
+    formatted_description = re.sub(r'\s\n', ' ', offense['description']).replace('\n', ' ') if \
+        offense['description'] else ''
     return {
-        'name': '{0} {1}'.format(offense['id'], offense['description']),
+        'name': '{id} {description}'.format(id=offense['id'], description=formatted_description),
         'labels': labels,
         'rawJSON': json.dumps(offense),
         'occurred': occured
