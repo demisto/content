@@ -591,21 +591,21 @@ def b64_encode(text):
     return res
 
 
-def encode_string_results(s):
+def encode_string_results(text):
     """
     Encode string as utf-8, if any unicode character exists.
 
-    :param s: string to encode
+    :param text: string to encode
     :type text: str
     :return: encoded string
     :rtype: str
     """
-    if not isinstance(s, STRING_OBJ_TYPES):
-        return s
+    if not isinstance(text, STRING_OBJ_TYPES):
+        return text
     try:
-        return str(s)
+        return str(text)
     except UnicodeEncodeError as exception:
-        return s.encode("utf8", "replace")
+        return text.encode("utf8", "replace")
 
 
 class IntegrationLogger(object):
@@ -2432,6 +2432,7 @@ if 'requests' in sys.modules:
 
 class DemistoException(Exception):
     pass
+
 
 def batch(iterable, batch_size=1):
     """Gets an iterable and yields slices of it.
