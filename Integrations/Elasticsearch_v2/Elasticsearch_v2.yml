@@ -56,11 +56,9 @@ configuration:
   name: fetch_size
   required: false
   type: 0
-- display: Reliability
+- defaultvalue: F - Reliability cannot be judged
+  display: Reliability
   name: feedInstanceReliability
-  defaultvalue: F - Reliability cannot be judged
-  type: 15
-  required: true
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -68,28 +66,24 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-- display: ""
-  name: expiration
-  defaultvalue: ""
+  required: true
+  type: 15
+- name: expiration
+  required: false
   type: 17
-  required: false
-- display: ""
+- defaultvalue: indicatorType
+  hidden: true
   name: expirationPolicy
-  defaultvalue: indicatorType
+  required: false
   type: 0
-  required: false
-  hidden: true
-- display: ""
+- hidden: true
   name: expirationInterval
-  defaultvalue: ""
-  type: 1
   required: false
-  hidden: true
+  type: 1
 - display: Fetch indicators
   name: feed
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 description: "Search and analyze Data in Real Time. \n Supports version 6 and up."
 display: Elasticsearch v2
 name: Elasticsearch v2
@@ -325,6 +319,22 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximum number of scores that a search can return.
       type: Number
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Max size of indicators to be fetched.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    deprecated: false
+    description: Get indicators shared with this tenant (MT only).
+    execution: false
+    name: get-shared-indicators
+    outputs:
+    - contextPath: Elasticsearch.SharedIndicators
+      description: Indicators shared from other tenants.
+      type: Unknown
   dockerimage: demisto/elasticsearch:1.0.0.1795
   feed: true
   isfetch: true

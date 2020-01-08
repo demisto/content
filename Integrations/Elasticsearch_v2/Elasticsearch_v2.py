@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 '''IMPORTS'''
 from typing import List
 from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
-from elasticsearch_dsl import Search
+from elasticsearch_dsl import Search, AttrList, AttrDict
 from elasticsearch_dsl.query import QueryString
 from datetime import datetime
 import json
@@ -17,8 +17,13 @@ requests.packages.urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
 
 SERVER = demisto.params().get('url', '').rstrip('/')
-USERNAME = demisto.params().get('credentials', {}).get('identifier')
-PASSWORD = demisto.params().get('credentials', {}).get('password')
+CREDS = demisto.params().get('credentials')
+if CREDS:
+    USERNAME = CREDS.get('identifier')
+    PASSWORD = CREDS.get('password')
+else:
+    USERNAME = None
+    PASSWORD = None
 PROXY = demisto.params().get('proxy')
 HTTP_ERRORS = {
     400: '400 Bad Request - Incorrect or invalid parameters',
@@ -508,40 +513,64 @@ def results_to_incidents_datetime(response, last_fetch):
     return incidents, last_fetch
 
 
-def fetch_indicators_command():
-    now = datetime.now()
-    if 'Timestamp' in TIME_METHOD:
-        now = get_timestamp_first_fetch(now)
-    search = get_indicators_search_scan()
+def get_indicators_command():
+    search, _ = get_indicators_search_scan()
+    limit = int(demisto.args().get('limit', FETCH_SIZE))
+    indicators_list = []
+    i = 0
     for hit in search.scan():
-        demisto.createIndicators(results_to_indicator(hit))
+        indicators_list.append(results_to_indicator(hit))
+        i += 1
+        if i >= limit:
+            break
+    hr = tableToMarkdown('Indicators', indicators_list, ['value'])
+    return_outputs(hr, {'Elasticsearch.SharedIndicators': indicators_list}, indicators_list)
+
+
+def fetch_indicators_command():
+    search, now = get_indicators_search_scan()
+    for hit in search.scan():
+        ioc = results_to_indicator(hit)
+        if ioc:
+            demisto.createIndicators([ioc])
     demisto.setLastRun(now)
 
 
 def get_indicators_search_scan():
+    now = datetime.now()
+    if 'Timestamp' in TIME_METHOD:
+        now = get_timestamp_first_fetch(now)
     time_field = "calculatedTime"
     last_fetch = get_last_fetch_time()
     es = elasticsearch_builder()
-    query = QueryString(query=time_field + ":*")  # TODO: Check with @rsagi if this is needed
+    query = QueryString(query=time_field + ":*")
     tenant_hash = demisto.getIndexHash()
     # all shared indexes minus this tenant shared
-    indexes = f'*,-{tenant_hash}*-shared*'
+    indexes = f'*-shared*,-{tenant_hash}*-shared*'
     search = Search(using=es, index=indexes).filter({'range': {time_field: {'gt': last_fetch, 'lte': now}}}).query(
         query)
-    return search
+    return search, now
 
 
 def results_to_indicator(hit):
-    value = hit['value']
-    ind_type = hit['type']
-    raw_json = {}
+    ioc_dict = create_dict_from_hit(hit)
+    value = ioc_dict.get('value')
+    if value:
+        ioc_dict['rawJSON'] = dict(ioc_dict)
+        return ioc_dict
+    return {}
+
+
+def create_dict_from_hit(hit):
+    hit_dict = {}
     for key in hit:
-        raw_json[key] = hit[key]
-    return {
-        'value': value,
-        'type': ind_type,
-        'rawJSON': raw_json
-    }
+        hit_val = hit[key]
+        if isinstance(hit_val, AttrList):
+            hit_val = list(hit_val)
+        elif isinstance(hit_val, AttrDict):
+            hit_val = create_dict_from_hit(hit_val)
+        hit_dict[key] = hit_val
+    return hit_dict
 
 
 def get_last_fetch_time():
@@ -597,6 +626,8 @@ def main():
             fetch_incidents()
         elif demisto.command() == 'fetch-indicators':
             fetch_indicators_command()
+        elif demisto.command() == 'get-shared-indicators':
+            get_indicators_command()
         elif demisto.command() in ['search', 'es-search']:
             search_command()
     except Exception as e:
