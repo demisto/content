@@ -8,7 +8,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '514'
-  display: Port (required for TCP or UDP protocols)
+  display: Port
   name: port
   required: false
   type: 0
@@ -18,7 +18,6 @@ configuration:
   options:
   - TCP
   - UDP
-  - Unix
   required: false
   type: 15
 - defaultvalue: LOG_USER
@@ -47,15 +46,15 @@ configuration:
   - LOG_LOCAL7
   required: false
   type: 15
-- defaultvalue: INFO
-  display: Log level to send
-  name: logging_level
+- defaultvalue: LOG_INFO
+  display: Log priority to send
+  name: priority
   options:
-  - DEBUG
-  - INFO
-  - WARNING
-  - ERROR
-  - CRITICAL
+  - LOG_DEBUG
+  - LOG_INFO
+  - LOG_WARNING
+  - LOG_ERR
+  - LOG_CRIT
   required: false
   type: 15
 - defaultvalue: Low
@@ -131,7 +130,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sends a message to Syslog.
+    description: Sends a message to syslog. Used by the mirroring functionality.
     execution: false
     name: send-notification
   - arguments:
@@ -206,7 +205,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Send a message to syslog
+    description: Send a message to Syslog.
     execution: false
     name: syslog-send
   dockerimage: demisto/python3:3.7.4.977
@@ -215,8 +214,8 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - No test
 fromversion: 5.5.0

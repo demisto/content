@@ -16,11 +16,11 @@ from typing import Union, Tuple, Dict, Any
 PLAYGROUND_INVESTIGATION_TYPE = 9
 INCIDENT_OPENED = 'incidentOpened'
 LOGGING_LEVEL_DICT = {
-    'INFO': INFO,
-    'DEBUG': DEBUG,
-    'WARNING': WARNING,
-    'ERROR': ERROR,
-    'CRITICAL': CRITICAL
+    'LOG_INFO': INFO,
+    'LOG_DEBUG': DEBUG,
+    'LOG_WARNING': WARNING,
+    'LOG_ERR': ERROR,
+    'LOG_CRIT': CRITICAL
 }
 FACILITY_DICT = {
     'LOG_AUTH': SysLogHandler.LOG_AUTH,
@@ -129,7 +129,7 @@ def init_manager(params: dict) -> SyslogManager:
     port = int(params.get('port', 514))
     protocol = params.get('protocol', 'udp').lower()
     facility = FACILITY_DICT.get(params.get('facility', 'LOG_SYSLOG'), SysLogHandler.LOG_SYSLOG)
-    logging_level = LOGGING_LEVEL_DICT.get(params.get('logging_level', 'INFO'), INFO)
+    logging_level = LOGGING_LEVEL_DICT.get(params.get('logging_level', 'LOG_INFO'), INFO)
 
     if not address:
         raise ValueError('A Syslog server address must be provided.')
