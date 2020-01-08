@@ -12,7 +12,7 @@ configuration:
   name: address
   required: true
   type: 0
-- defaultvalue: 'true'
+- defaultvalue: ''
   display: Trust any certificate (not secure)
   name: insecure
   required: false
