@@ -3,8 +3,8 @@ commonfields:
   id: EDL
   version: -1
 configuration:
-- additionalinfo: Integration will run this query to update its EDL (run in your CLI
-    !findIndicators query=<your query> to see expected results)
+- additionalinfo: The query to run to update its EDL. To view expected results, you can run the following command from the Demisto CLI
+    `!findIndicators query=<your query>`
   display: Indicator Query
   name: indicators_query
   required: false
@@ -20,7 +20,7 @@ configuration:
   - csv
   required: false
   type: 15
-- additionalinfo: Max amount of items in the EDL
+- additionalinfo: Maximum number of items in the EDL
   defaultvalue: '2500'
   display: EDL Size
   hidden: false
@@ -32,7 +32,7 @@ configuration:
   name: on_demand
   required: false
   type: 8
-- additionalinfo: Set how often to refresh the EDL
+- additionalinfo: How often to refresh the EDL (in minutes)
   defaultvalue: 5 minutes
   display: Refresh Rate
   name: cache_refresh_rate
@@ -43,7 +43,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- additionalinfo: Will run the EDL service on this port from within demisto
+- additionalinfo: Will run the EDL service on this port from within Demisto
   defaultvalue: '7000'
   display: Listen Port
   name: longRunningPort
@@ -72,7 +72,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Query used to retrieve indicators from the system.
+      description: The query used to retrieve indicators from the system.
       isArray: false
       name: query
       required: true
@@ -80,7 +80,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: text
-      description: EDL output format.
+      description: The EDL output format.
       isArray: false
       name: format
       predefined:
@@ -91,14 +91,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Max amount of entries in the EDL. If no value is provided, will
-        default on EDL Size configured in the instance configuration.
+      description: The maximum number of entries in the EDL. If no value is provided, will
+        use the value specified in the EDL Size parameter configured in the instance configuration.
       isArray: false
       name: edl_size
       required: false
       secret: false
     deprecated: false
-    description: Update values stored in the EDL (avaialbe On Demand only).
+    description: Updates values stored in the EDL (only avaialable On-Demand).
     execution: false
     name: edl-update
   dockerimage: demisto/teams:1.0.0.1701
