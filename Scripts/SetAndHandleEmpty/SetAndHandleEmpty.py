@@ -1,7 +1,9 @@
+import demistomock as demisto
+from CommonServerPython import *
+
 def main():
     args = demisto.args()
     value = args.get('value')
-    #res = {}
     if value:
         human_readable = 'Key ' + args.get('key') + ' set'
         context_entry = {args.get('key'): value}
