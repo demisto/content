@@ -2,6 +2,7 @@
   "id": "fqdnRep",
   "version": -1,
   "fromVersion": "5.0.0",
+  "toVersion": "5.4.9",
   "sortValues": null,
   "commitMessage": "",
   "shouldPublish": false,

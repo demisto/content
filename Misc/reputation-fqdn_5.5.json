@@ -1,9 +1,7 @@
 {
-  "id": "domainRep",
+  "id": "fqdnRep",
   "version": -1,
-  "fromVersion": "5.0.0",
-  "toVersion": "5.4.9",
-  "modified": "2019-07-18T07:37:50.270500504Z",
+  "fromVersion": "5.5.0",
   "sortValues": null,
   "commitMessage": "",
   "shouldPublish": false,
@@ -22,10 +20,11 @@
   "file": false,
   "updateAfter": 0,
   "mergeContext": false,
-  "formatScript": "ExtractDomainFromUrlAndEmail",
+  "formatScript": "ExtractFQDNFromUrlAndEmail",
   "contextPath": "Domain(val.Name \u0026\u0026 val.Name === obj.Name)",
   "contextValue": "Name",
   "excludedBrands": [],
+  "expiration": 20160,
   "defaultMapping": {
     "admincountry": {
       "simple": "",
