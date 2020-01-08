@@ -111,7 +111,6 @@ def get_fields(build_number):
 
     content_team_fields = []
     content_fields = []
-    print('Failed tests: ' + failed_tests)
     if failed_tests:
         field_failed_tests = {
             "title": "Failed tests - ({})".format(len(failed_tests)),
@@ -133,6 +132,7 @@ def get_fields(build_number):
         content_fields.append(field_failed_unittests)
         print('content_fields[-1]["value"]' + content_fields[-1]['value'])
 
+    print('skipped_tests: ' + json.dumps(skipped_tests))
     if skipped_tests:
         field_skipped_tests = {
             "title": "Skipped tests - ({})".format(len(skipped_tests)),
