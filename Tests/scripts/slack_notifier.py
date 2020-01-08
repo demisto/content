@@ -82,7 +82,6 @@ def get_attachments(build_url, env_results_file_name):
 def get_failing_unit_tests(build_number):
     failing_unit_tests_url = 'https://{0}-60525392-gh.circle-artifacts.com/1/artifacts/failed_unittests.txt'.format(
         build_number)
-    print(failing_unit_tests_url)
     res = http_request(failing_unit_tests_url, verify=False, text=True)
     failing_ut_list = '\n'.split(res)
     return failing_ut_list
@@ -95,7 +94,6 @@ def get_fields(build_number):
         with open('./Tests/failed_tests.txt', 'r') as failed_tests_file:
             failed_tests = failed_tests_file.readlines()
             failed_tests = [line.strip('\n') for line in failed_tests]
-
 
     skipped_tests = []
     if os.path.isfile('./Tests/skipped_tests.txt'):
@@ -113,7 +111,7 @@ def get_fields(build_number):
 
     content_team_fields = []
     content_fields = []
-
+    print('Failed tests: ' + failed_tests)
     if failed_tests:
         field_failed_tests = {
             "title": "Failed tests - ({})".format(len(failed_tests)),
@@ -130,8 +128,10 @@ def get_fields(build_number):
             "value": '\n'.join(failed_unittests),
             "short": False
         }
+        print("\\'n'.join(failed_unittests)" + '\n'.join(failed_unittests))
         content_team_fields.append(field_failed_unittests)
         content_fields.append(field_failed_unittests)
+        print('content_fields[-1]["value"]' + content_fields[-1]['value'])
 
     if skipped_tests:
         field_skipped_tests = {
