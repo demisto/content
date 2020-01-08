@@ -34,7 +34,7 @@ script:
       defaultValue: 'true'
       description: Should indicators be fetched
       isArray: false
-      name: fetch_indicators
+      name: fetch_darkfeed_indicators
       predefined:
       - 'true'
       - 'false'
