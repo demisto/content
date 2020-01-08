@@ -112,7 +112,8 @@ class Client(BaseClient):
                     i.update({
                         "Region": region,
                         "Service": service,
-                        "FeedURL": feed_url
+                        "FeedURL": feed_url,
+                        'Source': INTEGRATION_NAME
                     })
                 result.extend(indicators)
             except requests.exceptions.SSLError as err:
@@ -182,6 +183,9 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
                     'value': value,
                     'type': type_
                 }
+                for k, v in item.items():
+                    if k not in ['ips', 'urls']:
+                        raw_data.update({k: v})
                 raw_response.append(raw_data)
     human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
                                      headers=['Value', 'Type'], removeNull=True)
@@ -212,8 +216,11 @@ def fetch_indicators_command(client: Client, *_) -> List[Dict]:
                 type_ = check_indicator_type(value)
                 raw_data = {
                     'value': value,
-                    'type': type_
+                    'type': type_,
                 }
+                for k, v in item.items():
+                    if k not in ['ips', 'urls']:
+                        raw_data.update({k: v})
                 indicators.append({
                     "value": value,
                     "type": type_,

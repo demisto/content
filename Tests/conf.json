@@ -2235,6 +2235,7 @@
         "Palo Alto Networks Cortex": "SDK",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
+        "FeedOffice365": "Test Module failing, suspect it requires SSL",
         "RedLock": "SSL Issues",
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
