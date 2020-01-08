@@ -1,5 +1,5 @@
 ## [Unreleased]
-Updated versioning.
+-
 
 ## [20.1.0] - 2020-01-07
 -

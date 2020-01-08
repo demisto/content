@@ -1,5 +1,5 @@
 ## [Unreleased]
-Updated versioning.
+- 
 
 ## [19.11.1] - 2019-11-26
 Added support to identify URLs and domains prefixed with 'http:' or 'http:\\'.
