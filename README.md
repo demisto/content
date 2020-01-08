@@ -10,6 +10,9 @@ We security folks love to tinker, keep enhancing and sharpening our toolset and 
 
 We invite you to use the playbooks and scripts, modify them to suit your needs and see what works for you, get involved in the community discussion and of course remember to give back and contribute so that others can enjoy and learn from your hard work and build upon it to enhance it even further.
 
+## Documentation
+If you wish to develop and contribute content, make sure to check our Content Developer Portal at: https://demisto.pan.dev/
+
 ## Contributing
 Contributions are welcome and appreciated. For instructions about adding/modifying content please see our [Content Contribution Guide](CONTRIBUTING.md).
 
@@ -31,37 +34,11 @@ The services and products you use can be online Cloud-based or on-premises setup
 ## Integrations
 Integrations written in Javascript or Python enable the Demisto Platform to orchestrate security and IT products. Each integration provides capabilities in the form of commands and each command usually reflects a product capability (API) and returns both a human readable and computer readable response.
 
-### Creating an Integration
-Let's look at Demisto and get started on your first integration.
-
-[Follow the steps here to learn about the Demisto IDE](docs/getting_started)
-
-### Code Conventions
-The Demisto Code Conventions will help you understand how we format our Integrations and some of the tips and tricks we have developed over the years.
-
-[Learn about the Demisto Code Conventions](docs/code_conventions)
- 
-### Context and Outputs
-The Demisto platform relies heavily on collecting data from various endpoints (integrations) and creating a "Context" for them. This allows customers to be able to use the data to perform various tasks they may need to accomplish.
-
-[Click here to learn about Context and Outputs](docs/context_and_ouputs)
-
-### Context Standards
-When we are working with data that is generic across all platforms, we format them according to our context standards. This helps integrations work interchangeably inside other playbooks.
-
-[Learn about our Context Standards here](docs/context_standards)
-
-### Docker
-We use docker to run python scripts and integrations in a controlled environment. You can configure an existing docker image from the [Demisto Docker Hub Organization](https://hub.docker.com/u/demisto/) or create a new docker image to suite your needs. More information about how to use Docker is available here:
-
-[Docker Images](docs/docker)
+## Docker
+We use docker to run python scripts and integrations in a controlled environment. You can configure an existing docker image from the [Demisto Docker Hub Organization](https://hub.docker.com/u/demisto/) or create a new docker image to suite your needs. More information about how to use Docker is available [here](https://demisto.pan.dev/docs/docker). 
 
 ## Reports
 Demisto Platform support flexible reports written in JSON. All of our standard reports calculating various incident statistics and metrics are stored in this repo.
 
-## Release Notes
-For information about content release notes conventions, refer to our [release notes documentation](docs/release_notes).
-
 ---
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com).
-
