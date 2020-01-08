@@ -49,8 +49,9 @@ def get_attachments(build_url, env_results_file_name):
     build_number = build_url.split('/')[-1]
     success_file_path = "./Tests/is_build_passed_{}.txt".format(role.replace(' ', ''))
 
-    content_team_fields, content_fields, _, _ = get_fields(build_number)
-    color = 'good' if os.path.isfile(success_file_path) else 'danger'
+    content_team_fields, content_fields, _, failed_unit_tests = get_fields(build_number)
+    is_build_success = os.path.isfile(success_file_path) and not failed_unit_tests
+    color = 'good' if is_build_success else 'danger'
     title = 'Content Build - Success' if os.path.isfile(success_file_path) else 'Content Build - Failure'
 
     content_team_attachment = [{
@@ -95,13 +96,6 @@ def get_fields(build_number):
             failed_tests = failed_tests_file.readlines()
             failed_tests = [line.strip('\n') for line in failed_tests]
 
-    failed_unittests = get_failing_unit_tests(build_number)
-
-    # if os.path.isfile('./Tests/failed_unittests'):
-    #     print('Extracting failed_unittests')
-    #     with open('./Tests/failed_unittests.txt', 'r') as failed_unittests_file:
-    #         failed_unittests = failed_unittests_file.readlines()
-    #         failed_unittests = [line.strip('\n') for line in failed_unittests]
 
     skipped_tests = []
     if os.path.isfile('./Tests/skipped_tests.txt'):
@@ -129,6 +123,7 @@ def get_fields(build_number):
         content_team_fields.append(field_failed_tests)
         content_fields.append(field_failed_tests)
 
+    failed_unittests = get_failing_unit_tests(build_number)
     if failed_unittests:
         field_failed_unittests = {
             "title": "Failed unittests - ({})".format(len(failed_unittests)),
@@ -171,7 +166,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
         slack_client = SlackClient(slack_token)
         slack_client.api_call(
             "chat.postMessage",
-            channel="WHB66N4VA",
+            channel="WHCL130LE",
             username="Content CircleCI",
             as_user="False",
             attachments=content_team_attachments
