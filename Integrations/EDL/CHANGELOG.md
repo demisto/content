@@ -1,2 +1,2 @@
 ## [Unreleased]
-New EDL integration. Provides External Dynamic List as a service.
+This integration provides External Dynamic List (EDL) as a service for the system indicators.
