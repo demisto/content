@@ -127,10 +127,11 @@ def get_fields(build_number):
             "value": '\n'.join(failed_unittests),
             "short": False
         }
-        print("\\'n'.join(failed_unittests)" + '\n'.join(failed_unittests))
+        print("failed_unittests: " +failed_unittests)
+        print("\\'n'.join(failed_unittests): " + ('\n'.join(failed_unittests)))
         content_team_fields.append(field_failed_unittests)
         content_fields.append(field_failed_unittests)
-        print('content_fields[-1]["value"]' + content_fields[-1]['value'])
+        print('content_fields[-1]["value"]: ' + content_fields[-1]['value'])
 
     print('skipped_tests: ' + json.dumps(skipped_tests))
     if skipped_tests:
