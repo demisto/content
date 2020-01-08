@@ -1,5 +1,6 @@
 ## [Unreleased]
-Added ***fetch-indicators*** support, intended to be used to share IoCs between tenants in an Elasticsearch MT environment.
+- Added ***fetch-indicators*** support, intended to be used to share IoCs between tenants in an Elasticsearch MT environment.
+- Added ***get-shared-indicators*** command used to test ***fetch-indicators***.
 
 ## [19.12.0] - 2019-12-10
 -
