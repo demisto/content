@@ -1,4 +1,11 @@
-You can access the EDL service via **https://*demisto_address*/instance/execute/*instance_name*** or via **http(s)://*demisto_address*:*listen_port***
-To access by instance name make sure ***Instance execute external*** is enabled. 
-To enable ***Instance execute external*** go to Settings->About->Troubleshooting. Make sure that under **Server Configuration**
-you have ***instance.execute.external*** set to true, if not then click on *+ Add Server Configuration* and add in Key *instance.execute.external* and in Value *true* 
+# How to Access the EDL Service
+
+There are two ways that you can access the EDL service:
+- **https://*demisto_address*/instance/execute/*instance_name*** 
+- **http(s)://*demisto_address*:*listen_port***
+
+# Access the EDL Service by Instance Name
+To access the EDL service by instance name, make sure ***Instance execute external*** is enabled. 
+
+1. In Demisto, go to **Settings > About > Troubleshooting**.
+2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
