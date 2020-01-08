@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, url: str, source_name: str, insecure: bool = False, credentials: dict = None, ignore_regex: str = None,
+    def __init__(self, url: str, insecure: bool = False, credentials: dict = None, ignore_regex: str = None,
                  encoding: str = None, indicator: str = None, fields: str = '{}', polling_timeout: int = 20,
                  user_agent: str = None, proxy: bool = False, **kwargs):
         """Implements class for miners of plain text feeds over http/https.
@@ -79,7 +79,6 @@ class Client(BaseClient):
             self.polling_timeout = int(polling_timeout)
         except (ValueError, TypeError):
             raise ValueError('Please provide an integer value for "Request Timeout"')
-        self.source_name = source_name
         self.user_agent = user_agent
         self.encoding = encoding
 
@@ -98,10 +97,10 @@ class Client(BaseClient):
             if 'regex' in self.indicator:
                 self.indicator['regex'] = re.compile(self.indicator['regex'])
             else:
-                raise ValueError(f'{self.source_name} - indicator stanza should have a regex')
+                raise ValueError(f'{FEED_NAME} - indicator stanza should have a regex')
             if 'transform' not in self.indicator:
                 if self.indicator['regex'].groups > 0:
-                    LOG(f'{self.source_name} - no transform string for indicator but pattern contains groups')
+                    LOG(f'{FEED_NAME} - no transform string for indicator but pattern contains groups')
                 self.indicator['transform'] = r'\g<0>'
 
         self.fields = json.loads(fields)
@@ -109,10 +108,10 @@ class Client(BaseClient):
             if 'regex' in fattrs:
                 fattrs['regex'] = re.compile(fattrs['regex'])
             else:
-                raise ValueError(f'{self.source_name} - {f} field does not have a regex')
+                raise ValueError(f'{FEED_NAME} - {f} field does not have a regex')
             if 'transform' not in fattrs:
                 if fattrs['regex'].groups > 0:
-                    LOG(f'{self.source_name} - no transform string for field {f} but pattern contains groups')
+                    LOG(f'{FEED_NAME} - no transform string for field {f} but pattern contains groups')
                 fattrs['transform'] = r'\g<0>'
 
     def build_iterator(self):
@@ -142,7 +141,7 @@ class Client(BaseClient):
                 try:
                     r.raise_for_status()
                 except Exception:
-                    LOG(f'{self.source_name} - exception in request: {r.status_code} {r.content}')
+                    LOG(f'{FEED_NAME} - exception in request: {r.status_code} {r.content}')
                     raise
                 rs.append(r)
         except requests.ConnectionError:
@@ -232,7 +231,7 @@ def test_module(client, args):
     return 'ok', {}, {}
 
 
-def main():
+def feed_main():
     # Write configure here
     params = {k: v for k, v in demisto.params().items() if v is not None}
     client = Client(**params)
@@ -255,7 +254,3 @@ def main():
     except Exception as e:
         err_msg = f'Error in {FEED_NAME} feed [{e}]'  # FEED_NAME should be in the integration code
         return_error(err_msg)
-
-
-if __name__ == '__builtin__' or __name__ == 'builtins':
-    main()
