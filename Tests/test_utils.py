@@ -35,21 +35,25 @@ def print_warning(warning_str):
     print_color(warning_str, LOG_COLORS.YELLOW)
 
 
-def run_command(command, is_silenced=True, exit_on_error=True):
+def run_command(command, is_silenced=True, exit_on_error=True, use_shell=False):
     """Run a bash command in the shell.
 
     Args:
         command (string): The string of the command you want to execute.
         is_silenced (bool): Whether to print command output.
         exit_on_error (bool): Whether to exit on command error.
+        use_shell (bool): Whether use shell to executed command through the shell.
 
     Returns:
         string. The output of the command you are trying to execute.
     """
+    if not use_shell:
+        command = command.split()
+
     if is_silenced:
-        p = Popen(command.split(), stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        p = Popen(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=use_shell)
     else:
-        p = Popen(command.split())
+        p = Popen(command)
 
     output, err = p.communicate()
     if err:
