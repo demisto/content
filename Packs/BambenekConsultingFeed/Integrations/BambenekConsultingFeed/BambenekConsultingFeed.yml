@@ -34,7 +34,7 @@ configuration:
   required: false
   type: 1
 - display: Sub Feeds
-  name: sub_feeds
+  name: url
   options:
   - http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt
   - http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt
@@ -60,7 +60,8 @@ configuration:
   name: polling_timeout
   required: true
   type: 0
-- display: Ignore Regex
+- defaultvalue: ^#
+  display: Ignore Regex
   name: ignore_regex
   required: false
   type: 0
