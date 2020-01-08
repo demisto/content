@@ -754,40 +754,39 @@ def add_user_to_channel_command():
     demisto.results(f'The User "{member}" has been added to channel "{channel_name}" successfully.')
 
 
-def remove_user_from_channel_request(team_aad_id: str, channel_id: str, team_member_id: str):
-    """
-    Request for removing user from channel
-    """
-    url: str = f'{GRAPH_BASE_URL}/beta/teams/{team_aad_id}/channels/{channel_id}/members/{team_member_id}'
-    print(url)
-    print(http_request('DELETE', url))
+# def remove_user_from_channel_request(team_aad_id: str, channel_id: str, team_member_id: str):
+#     """
+#     Request for removing user from channel
+#     """
+#     url: str = f'{GRAPH_BASE_URL}/beta/teams/{team_aad_id}/channels/{channel_id}/members/{team_member_id}'
+#     http_request('DELETE', url)
 
 
-def remove_user_from_channel():
-    team_member_id: str = str()
-    channel_name: str = demisto.args().get('channel', '')
-    team_name: str = demisto.args().get('team', '')
-    team_aad_id = get_team_aad_id(team_name)
-    member = demisto.args().get('member', '')
-    users: list = get_users()
-    user_id: str = str()
-    integration_context: dict = demisto.getIntegrationContext()
-    # team_member_id: str = get_team_member_id(member, integration_context)
-    service_url: str = integration_context.get('service_url', '')
-    # if not service_url:
-    #     raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
-    found_member: bool = False
-    for user in users:
-        if member in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
-            found_member = True
-            user_id = user.get('id', '')
-            break
-    if not found_member:
-        demisto.results({
-            'Type': entryTypes['warning'],
-            'Contents': f'User {member} was not found',
-            'ContentsFormat': formats['text']
-        })
+# def remove_user_from_channel():
+#     team_member_id: str = str()
+#     channel_name: str = demisto.args().get('channel', '')
+#     team_name: str = demisto.args().get('team', '')
+#     team_aad_id = get_team_aad_id(team_name)
+#     member = demisto.args().get('member', '')
+#     users: list = get_users()
+#     user_id: str = str()
+#     integration_context: dict = demisto.getIntegrationContext()
+#     # team_member_id: str = get_team_member_id(member, integration_context)
+#     service_url: str = integration_context.get('service_url', '')
+#     # if not service_url:
+#     #     raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
+#     found_member: bool = False
+#     for user in users:
+#         if member in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
+#             found_member = True
+#             user_id = user.get('id', '')
+#             break
+#     if not found_member:
+#         demisto.results({
+#             'Type': entryTypes['warning'],
+#             'Contents': f'User {member} was not found',
+#             'ContentsFormat': formats['text']
+#         })
     # members: list = get_team_members(service_url, team_aad_id)
     # found_member: bool = False
     # for team_member in members:
@@ -801,10 +800,10 @@ def remove_user_from_channel():
     #         'ContentsFormat': formats['text']
     #     })
 
-    channel_id = get_channel_id(channel_name, team_aad_id, investigation_id = None)
-    remove_user_from_channel_request(team_aad_id, channel_id, '3a6efd73-b4bb-4ef6-b0ed-2c76f043dba4')
-
-    demisto.results(f'The User "{member}" has been removed successfully.')
+    # channel_id = get_channel_id(channel_name, team_aad_id, investigation_id = None)
+    # remove_user_from_channel_request(team_aad_id, channel_id, '3a6efd73-b4bb-4ef6-b0ed-2c76f043dba4')
+    #
+    # demisto.results(f'The User "{member}" has been removed successfully.')
 
 
 # def create_group_request(
@@ -917,7 +916,7 @@ def create_channel_command():
 
     channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
     if channel_id:
-        demisto.results(f'The channel {channel_name} was created successfully')
+        demisto.results(f'The channel "{channel_name}" was created successfully')
 
 
 def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = None) -> str:
@@ -1596,7 +1595,7 @@ def main():
         'microsoft-teams-integration-health': integration_health,
         'create-channel': create_channel_command,
         'add-user-to-channel': add_user_to_channel_command,
-        'remove-user-from-channel': remove_user_from_channel
+        # 'remove-user-from-channel': remove_user_from_channel
         # 'microsoft-teams-create-team': create_team,
         # 'microsoft-teams-send-file': send_file,
     }

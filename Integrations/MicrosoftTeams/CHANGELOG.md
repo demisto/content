@@ -1,7 +1,6 @@
 ## [Unreleased]
-  - Added 3 new commands:
+  - Added 2 new commands:
     * ***add-user-to-channel***
-    * ***remove-user-from-channel***
     * ***create-channel***
 
 ## [19.10.0] - 2019-10-03
