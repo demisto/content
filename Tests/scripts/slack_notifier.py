@@ -52,7 +52,7 @@ def get_attachments(build_url, env_results_file_name):
     content_team_fields, content_fields, _, failed_unit_tests = get_fields(build_number)
     is_build_success = os.path.isfile(success_file_path) and not failed_unit_tests
     color = 'good' if is_build_success else 'danger'
-    title = 'Content Build - Success' if os.path.isfile(success_file_path) else 'Content Build - Failure'
+    title = 'Content Build - Success' if is_build_success else 'Content Build - Failure'
 
     content_team_attachment = [{
         'fallback': title,
@@ -80,11 +80,14 @@ def get_attachments(build_url, env_results_file_name):
 
 
 def get_failing_unit_tests(build_number):
-    failing_unit_tests_url = 'https://{0}-60525392-gh.circle-artifacts.com/1/artifacts/failed_unittests.txt'.format(
-        build_number)
-    res = http_request(failing_unit_tests_url, verify=False, text=True)
-    print(res)
-    failing_ut_list = res.split('\n')
+    try:
+        failing_unit_tests_url = 'https://{0}-60525392-gh.circle-artifacts.com/1/artifacts/failed_unittests.txt'.format(
+            build_number)
+        res = http_request(failing_unit_tests_url, verify=False, text=True)
+        print(res)
+        failing_ut_list = res.split('\n')
+    except Exception:
+        failing_ut_list = None
     return failing_ut_list
 
 
@@ -128,13 +131,9 @@ def get_fields(build_number):
             "value": '\n'.join(failed_unittests),
             "short": False
         }
-        print("failed_unittests: " + json.dumps(failed_unittests))
-        print("\\'n'.join(failed_unittests): " + ('\n'.join(failed_unittests)))
         content_team_fields.append(field_failed_unittests)
         content_fields.append(field_failed_unittests)
-        print('content_fields[-1]["value"]: ' + content_fields[-1]['value'])
 
-    print('skipped_tests: ' + json.dumps(skipped_tests))
     if skipped_tests:
         field_skipped_tests = {
             "title": "Skipped tests - ({})".format(len(skipped_tests)),
