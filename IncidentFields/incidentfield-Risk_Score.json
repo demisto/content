@@ -2,7 +2,8 @@
 	"associatedToAll": false,
 	"associatedTypes": [
 		"Prisma Cloud",
-		"ExtraHop Detection"
+		"ExtraHop Detection",
+		"AWS IAM Policy Misconfiguration"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
