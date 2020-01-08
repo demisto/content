@@ -12,7 +12,6 @@ import os
 import re
 import base64
 import logging
-from enum import Enum
 from collections import OrderedDict
 import xml.etree.cElementTree as ET
 from datetime import datetime, timedelta
