@@ -10,7 +10,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-ALERT_TITLE = 'Prisma Compute Alert - '
+ALERT_TITLE = 'Prisma Cloud Compute Alert - '
 ALERT_TYPE_VULNERABILITY = 'vulnerability'
 ALERT_TYPE_COMPLIANCE = 'compliance'
 ALERT_TYPE_AUDIT = 'audit'
@@ -44,7 +44,7 @@ class Client(BaseClient):
 
 def translate_severity(sev):
     """
-    Translates Prisma Compute alert severity into Demisto's severity score
+    Translates Prisma Cloud Compute alert severity into Demisto's severity score
     """
 
     sev = sev.capitalize()
@@ -76,7 +76,7 @@ def test_module(client):
     """
     Test connection, authentication and user authorization
     Args:
-        client: Prisma Compute client
+        client: Requests client
     Returns:
         'ok' if test passed, error from client otherwise
     """
@@ -87,7 +87,7 @@ def test_module(client):
 
 def fetch_incidents(client):
     """
-    Fetches new alerts from Prisma Compute and returns them as a list of Demisto incidents
+    Fetches new alerts from Prisma Cloud Compute and returns them as a list of Demisto incidents
     - A markdown table will be added for alerts with a list object,
       If the alert has a list under field "tableField", another field will be added to the
       incident "tableFieldMarkdownTable" representing the markdown table
@@ -113,20 +113,20 @@ def fetch_incidents(client):
             a.update(tables)
 
             if alert_type == ALERT_TYPE_VULNERABILITY:
-                # E.g. "Prisma Compute Alert - Vulnerability in imageName"
+                # E.g. "Prisma Cloud Compute Alert - Vulnerability in imageName"
                 name += camel_case_transformer(alert_type) + ' in ' + a.get('imageName')
                 # Set the severity to the highest vulnerability, take the first from the list
                 severity = translate_severity(a.get('vulnerabilities')[0].get('severity'))
 
             elif alert_type == ALERT_TYPE_COMPLIANCE or alert_type == ALERT_TYPE_AUDIT:
-                # E.g. "Prisma Compute Alert - Incident"
+                # E.g. "Prisma Cloud Compute Alert - Incident"
                 name += camel_case_transformer(a.get('type'))
-                # E.g. "Prisma Compute Alert - Image Compliance" \ "Prisma Compute Alert - Host Runtime Audit"
+                # E.g. "Prisma Cloud Compute Alert - Image Compliance" \ "Prisma Compute Alert - Host Runtime Audit"
                 if a.get('type') != "incident":
                     name += ' ' + camel_case_transformer(alert_type)
 
             else:
-                # E.g. "Prisma Compute Alert - Cloud Discovery"
+                # E.g. "Prisma Cloud Compute Alert - Cloud Discovery"
                 name += camel_case_transformer(alert_type)
 
             incidents.append({
@@ -176,7 +176,7 @@ def main():
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            # Fetch incidents from Prisma Compute, this method is called periodically when 'fetch incidents' is checked
+            # Fetch incidents from Prisma Cloud Compute, this method is called periodically when 'fetch incidents' is checked
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
 
