@@ -26,8 +26,8 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix='/demisto-alerts',
-            params={'to': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(0))})
+            url_suffix='',
+            params={'to': time.strftime('%Y-%m-%d', time.gmtime(0))})
 
 
     def list_incidents(self):
@@ -38,7 +38,8 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix='/demisto-alerts')
+            url_suffix='',
+        )
 
 
 def translate_severity(sev):
@@ -145,7 +146,7 @@ def main():
     params = demisto.params()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
-    base_url = urljoin(params.get('address'), '/api/v1')
+    base_url = params.get('address')
     verify_certificate = not params.get('insecure', False)
     cert = params.get('certificate')
     proxy = params.get('proxy', False)

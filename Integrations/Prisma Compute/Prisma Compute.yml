@@ -7,8 +7,8 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: https://example.net:1234
-  display: Server address and port (e.g. https://example.net:1234)
+- defaultvalue: https://example.net:1234/demisto-alerts
+  display: Server address and port (e.g. https://example.net:1234/demisto-alerts)
   name: address
   required: true
   type: 0
