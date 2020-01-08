@@ -218,7 +218,7 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
     api_call_headers = None
     if url_suffix != '/token':
         access_token = get_access_token()
-        api_call_headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + access_token}
+        api_call_headers = {'Authorization': 'Bearer ' + access_token}
 
         if not files:
             params = json.dumps(params)
