@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+
 def main():
     args = demisto.args()
     value = args.get('value')
@@ -11,4 +12,6 @@ def main():
         context_entry = {}
         human_readable = 'value is None'
     return_outputs(human_readable, context_entry)
+
+
 main()
