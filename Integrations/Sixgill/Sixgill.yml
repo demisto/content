@@ -43,9 +43,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Should incidents be fetched
+      description: Should alerts be fetched. Alerts are fetched as incidents
       isArray: false
-      name: fetch_incidents
+      name: fetch_alerts
       predefined:
       - 'true'
       - 'false'

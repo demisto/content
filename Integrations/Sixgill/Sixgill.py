@@ -56,7 +56,7 @@ def handle_indicator(iocs: Dict[str, List], raw_incident):
     return False
 
 
-def handle_incident(incidents: List[Dict[str, str]], raw_incident):
+def handle_alerts(incidents: List[Dict[str, str]], raw_incident):
     if not is_ioc(raw_incident):
         incident = item_to_incident(raw_incident)
         incidents.append(incident)
@@ -84,7 +84,7 @@ def fetch_incidents():
 
     include_delivered_items = bool(strtobool(demisto.args().get('include_delivered_items', 'false')))
     should_fetch_indicators = bool(strtobool(demisto.args().get('fetch_indicators', 'true')))
-    should_fetch_incidents = bool(strtobool(demisto.args().get('fetch_incidents', 'true')))
+    should_fetch_alerts = bool(strtobool(demisto.args().get('fetch_alerts', 'true')))
 
     sixgill_darkfeed_client = SixgillDarkFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
                                                     CHANNEL_CODE)
@@ -103,8 +103,8 @@ def fetch_incidents():
             if fetched_indicator:
                 extracted_iocs += 1
 
-        if should_fetch_incidents:
-            fetched_incidents = handle_incident(incidents, raw_incident)
+        if should_fetch_alerts:
+            fetched_incidents = handle_alerts(incidents, raw_incident)
 
         if fetched_indicator or fetched_incidents:
             sixgill_darkfeed_client.mark_digested_item(raw_incident)

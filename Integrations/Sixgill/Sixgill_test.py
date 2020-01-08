@@ -131,16 +131,16 @@ def test_handle_indicator():
     assert indicator == expected_indicators_output
 
 
-def test_handle_incident():
-    from Sixgill import handle_incident
+def test_handle_alerts():
+    from Sixgill import handle_alerts
 
     incidents = []
 
-    output = handle_incident(incidents, iocs_list[0])
+    output = handle_alerts(incidents, iocs_list[0])
     assert output is False
     assert incidents == []
 
-    output = handle_incident(incidents, incidents_list[0])
+    output = handle_alerts(incidents, incidents_list[0])
     assert output is True
     assert incidents == [expected_alert_output[0]]
 

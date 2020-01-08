@@ -22,7 +22,7 @@ This integration was integrated and tested with version 0.0.3 of Sixgill
 <p>To configure an instance of Sixgill's integration in Demisto, you need to supply your API key and client Secret. Please contact support at cybersixgill.com to receive these.</p>
 <h2>Fetch Incidents</h2>
 <p>In case <code>fetch_indicators</code> is set to <code>True</code>, indicators are extracted </p>
-<p>In case <code>fetch_incidents</code> is set to <code>True</code>, incidents are pushed in via Demisto REST API. </p>
+<p>In case <code>fetch_alerts</code> is set to <code>True</code>, incidents are pushed in via Demisto REST API. </p>
 <pre>
 {
 'suspicious_ip': [{'fields': {'itype': 'suspicious_ip', 'tags': ['DarkWeb'], 'threat_type': None, 'value': '1.1.1.1'}, 'type': 'indicator'}, {'fields': {'itype': 'suspicious_ip', 'tags': ['DarkWeb'], 'threat_type': None, 'value': '8.8.8.8'}, 'type': 'indicator'}],
@@ -98,8 +98,8 @@ This integration was integrated and tested with version 0.0.3 of Sixgill
       <td>Optional</td>
     </tr>
     <tr>
-      <td>fetch_incidents</td>
-      <td>Should incidents be fetched</td>
+      <td>fetch_alerts</td>
+      <td>Should alerts be fetched. Alerts are fetched as incidents</td>
       <td>Optional</td>
     </tr>
   </tbody>
