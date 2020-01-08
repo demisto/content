@@ -88,17 +88,6 @@ tasks:
                 root: Office365
                 accessor: Indicator.Value
             iscontext: true
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: CSV
-                accessor: Indicator.Type
-            iscontext: true
-          right:
-            value:
-              simple: IP
-          ignorecase: true
     view: |-
       {
         "position": {
