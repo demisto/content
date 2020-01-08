@@ -220,32 +220,10 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Add user to channel (private channel only as still in beta mode)
+    description: Add user to a private channel (private channel only as still in beta
+      mode)
     execution: false
     name: add-user-to-channel
-  - arguments:
-    - default: false
-      description: The channel from which to remove the user
-      isArray: false
-      name: channel
-      required: true
-      secret: false
-    - default: false
-      description: The channel team.
-      isArray: false
-      name: team
-      required: true
-      secret: false
-    - default: false
-      description: The member to remove from the channel.
-      isArray: false
-      name: member
-      required: false
-      secret: false
-    deprecated: false
-    description: Remove user from a private channel
-    execution: false
-    name: remove-user-from-channel
   dockerimage: demisto/teams:1.0.0.1701
   isfetch: false
   longRunning: true
