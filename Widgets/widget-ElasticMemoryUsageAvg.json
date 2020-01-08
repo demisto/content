@@ -2,7 +2,7 @@
   "id": "es-memory-current-usage",
   "version": -1,
   "fromVersion": "5.5.0",
-  "name": "Elastic Memory Current Usage",
+  "name": "Elastic Memory current usage",
   "dataType": "system",
   "widgetType": "number",
   "query": "es-memory.usedPercent",
@@ -27,5 +27,5 @@
     }
   },
   "size": 0,
-  "description": "Elastic Memory Current Usage"
+  "description": "Elastic Memory current usage"
 }
