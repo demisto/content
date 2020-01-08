@@ -1,7 +1,15 @@
 ## [Unreleased]
+
+
+## [20.1.0] - 2020-01-07
 - Fixed an issue when trying to download a threat-pcap without the necessary arguments.
 - Improved the error message when trying to download PCAPs from a Panorama instance.
 - Added 4 commands.
+  - You can now specify multiple values (list) for the *source*, *destination*, and *application* arguments in the following commands. 
+    - ***panorama-create-rule***
+    - ***panorama-custom-block-rule***
+    - ***panorama-edit-rule***
+  - Added 4 commands.
     - ***panorama-list-static-routes***
     - ***panorama-get-static-route***
     - ***panorama-add-static-route***
