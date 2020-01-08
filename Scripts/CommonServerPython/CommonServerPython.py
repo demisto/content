@@ -16,6 +16,7 @@ from enum import Enum
 from collections import OrderedDict
 import xml.etree.cElementTree as ET
 from datetime import datetime, timedelta
+from typing import List
 
 import demistomock as demisto
 
@@ -55,7 +56,7 @@ entryTypes = {
 }
 
 
-class EntryType(Enum):
+class EntryType:
     NOTE = 1
     DOWNLOAD_AGENT = 2
     FILE = 3
@@ -80,7 +81,7 @@ formats = {
     'markdown': 'markdown'
 }
 
-class EntryFormat(Enum):
+class EntryFormat:
     HTML = 'html'
     TABLE = 'table'
     JSON = 'json'
@@ -114,6 +115,10 @@ class IndicatorType:
     HASH = 'hash'
     DOMAIN = 'domain'
     URL = 'url'
+
+    @staticmethod
+    def is_valid_type(_type):
+        return _type in (IndicatorType.IP, IndicatorType.HASH, IndicatorType.DOMAIN, IndicatorType.URL)
 
 
 class OutputPath:
@@ -1532,32 +1537,92 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
-class DBotScore:
+class Indicator:
+    """
+    interface class
+    """
+    def __init__(self):
+        pass
+
+class CommandResults:
+    def __init__(self, output_prefix, uniq_field, outputs, indicators=None):
+        # type: (str, str, Any, List[Indicator]) -> None
+        self.indicators = indicators
+
+        self.output_prefix = output_prefix
+        self.uniq_field = uniq_field
+        self.outputs = outputs
+
+    def to_context(self):
+        outputs = {}
+        human_readable = None
+        raw_response = None
+
+        if self.indicators:
+            for indicator in self.indicators:
+                outputs.update(indicator.to_context())
+
+        if self.outputs:
+            human_readable = tableToMarkdown('Results', self.outputs)
+            raw_response = self.outputs
+
+            outputs_key = '{}(val.{} == obj.{})'.format(self.output_prefix, self.uniq_field, self.uniq_field)
+            outputs.update({
+                outputs_key : self.outputs
+            })
+
+        return_entry = {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': raw_response,
+            'HumanReadable': human_readable,
+            'EntryContext': outputs
+        }
+
+        return return_entry
+
+class DBotScore(Indicator):
     NONE = 0
     GOOD = 1
     SUSPICIOUS = 2
     BAD = 3
 
-    CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator)'
+    CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 
-    def __init__(self, indicator, indicator_type, vendor, score):
+    def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None):
+        if not IndicatorType.is_valid_type(indicator_type):
+            raise TypeError('indicator_type must be of type IndicatorType enum')
+
+        if not DBotScore.is_valid_score(score):
+            raise TypeError('indicator_type must be of type DBotScore enum')
+
         self.indicator = indicator
         self.indicator_type = indicator_type
-        self.vendor = vendor
+        self.integration_name = integration_name
         self.score = score
+
+        if score == DBotScore.BAD and malicious_description is None:
+            raise ValueError('malicious_description must be provided for BAD(malicious) indicator: {}'
+                             .format(self.indicator))
+
+        self.malicious_description = malicious_description
+
+    @staticmethod
+    def is_valid_score(score):
+        return score in (DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD)
 
     def to_context(self):
         return {
             DBotScore.CONTEXT_PATH: {
                 'Indicator': self.indicator,
                 'Type': self.indicator_type,
-                'Vendor': self.vendor,
+                'Vendor': self.integration_name,
                 'Score': self.score
             }
         }
 
 
-class IP:
+class IP(Indicator):
     CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
     def __init__(self, ip, asn, hostname, geo_latitude, geo_longitude, geo_country, geo_description,
@@ -1573,24 +1638,12 @@ class IP:
         self.detection_engines = detection_engines
         self.positive_engines = positive_engines
 
-        # DBotScore fields
         self.dbot_score = None
-        self.malicious = None
-        self.malicious_vendor = None
-        self.malicious_description = None
 
-    def set_dbot_score(self, vendor, dbot_score, malicious_description=None):
-        self.dbot_score = DBotScore(self.ip, IndicatorType.IP, vendor, dbot_score)
+    def set_dbot_score(self, dbot_score):
+        # type: (DBotScore) -> None
 
-        if dbot_score == DBotScore.BAD:
-            self.malicious = True
-            self.malicious_vendor = vendor
-
-            if not malicious_description:
-                raise DemistoException('malicious_description must be provided for malicious ip indicator: {}'
-                                       .format(self.ip))
-
-            self.malicious_description = malicious_description
+        self.dbot_score = dbot_score
 
     def to_context(self):
         ip_context = {
@@ -1621,34 +1674,36 @@ class IP:
         if self.positive_engines:
             ip_context['PositiveDetections'] = self.positive_engines
 
-        if self.malicious:
+        if self.dbot_score and self.dbot_score.score == DBotScore.BAD:
             ip_context['Malicious'] = {
-                'Vendor': self.malicious_vendor,
-                'Description': self.malicious_description
+                'Vendor': self.dbot_score.integration_name,
+                'Description': self.dbot_score.malicious_description
             }
 
-        return { IP.CONTEXT_PATH: ip_context }
+        ret_value = {
+            IP.CONTEXT_PATH: ip_context
+        }
+
+        if self.dbot_score:
+            ret_value.update(self.dbot_score.to_context())
+
+        return ret_value
 
 
-class Domain:
-    CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
+class Domain(Indicator):
+    CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
     def __init__(self, domain, dns):
         self.domain = domain
+        self.dns = dns
 
         # DBotScore fields
         self.dbot_score = None
-        self.malicious = None
-        self.malicious_vendor = None
-        self.malicious_description = None
 
-    def set_dbot_score(self, vendor, dbot_score, malicious_description=None):
-        self.dbot_score = DBotScore(self.domain, IndicatorType.DOMAIN, vendor, dbot_score)
+    def set_dbot_score(self, dbot_score):
+        # type: (DBotScore) -> None
 
-        if dbot_score == DBotScore.BAD:
-            self.malicious = True
-            self.malicious_vendor = vendor
-            self.malicious_description = malicious_description
+        self.dbot_score = dbot_score
 
     def to_context(self):
         domain_context = {
@@ -1658,13 +1713,20 @@ class Domain:
         if self.dns:
             domain_context['DNS'] = self.dns
 
-        if self.malicious:
+        if self.dbot_score and self.dbot_score.score == DBotScore.BAD:
             domain_context['Malicious'] = {
-                'Vendor': self.malicious_vendor,
-                'Description': self.malicious_description
+                'Vendor': self.dbot_score.integration_name,
+                'Description': self.dbot_score.malicious_description
             }
 
-        return domain_context
+        ret_value = {
+            Domain.CONTEXT_PATH: domain_context
+        }
+
+        if self.dbot_score:
+            ret_value.update(self.dbot_score.to_context())
+
+        return ret_value
 
 
 def indicators_to_outputs(indicators):

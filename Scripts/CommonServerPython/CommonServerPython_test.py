@@ -773,30 +773,128 @@ class TestBuildDBotEntry(object):
         }
 
 
-class TestIndicatorsClasses:
-    from CommonServerPython import indicators_to_outputs, IP, Domain, DBotScore
-
-    def test_create_dbot_score(self):
-        dbot_score = DBotScore(
-            indicator='8.8.8.8',
-            vendor='Virus Total',
-            score=DBotScore.GOOD,
-            indicator_type=IndicatorType.IP
+class TestCommandResults:
+    def test_return_command_results(self):
+        from CommonServerPython import IP, DBotScore, CommandResults, EntryFormat, EntryType
+        ip = IP(
+            ip='8.8.8.8',
+            asn='some asn',
+            hostname='test.com',
+            geo_country=None,
+            geo_description=None,
+            geo_latitude=None,
+            geo_longitude=None,
+            positive_engines=None,
+            detection_engines=None
         )
 
-        assert dbot_score is not None
-        assert dbot_score.to_context() == {
-            'DBotScore(val.Indicator && val.Indicator == obj.Indicator)': {
-                'Indicator': '8.8.8.8',
-                'Type': 'ip',
-                'Vendor': 'Virus Total',
-                'Score': DBotScore.GOOD
+        dbot_score = DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            indicator_type=IndicatorType.IP,
+            score=DBotScore.GOOD
+        )
+        ip.set_dbot_score(dbot_score)
+
+        results = CommandResults(
+            uniq_field=None,
+            output_prefix=None,
+            outputs=None,
+            indicators=[ip]
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'IP(val.Address && val.Address == obj.Address)': {
+                    'Address': '8.8.8.8',
+                    'ASN': 'some asn',
+                    'Hostname': 'test.com'
+                },
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                    'Indicator': '8.8.8.8',
+                    'Vendor': 'Virus Total',
+                    'Score': 1,
+                    'Type': 'ip'
+                }
+            }
+        }
+
+    def test_create_dbot_score(self):
+        from CommonServerPython import DBotScore, CommandResults, EntryFormat, EntryType
+
+        dbot_score = DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            indicator_type=IndicatorType.IP,
+            score=DBotScore.GOOD
+        )
+
+        results = CommandResults(
+            uniq_field=None,
+            output_prefix=None,
+            outputs=None,
+            indicators=[dbot_score]
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)': {
+                    'Indicator': '8.8.8.8',
+                    'Vendor': 'Virus Total',
+                    'Score': 1,
+                    'Type': 'ip'
+                }
+            }
+        }
+
+    def test_return_list_of_items(self):
+        from CommonServerPython import CommandResults, EntryFormat, EntryType
+        tickets = [
+            {
+                'ticket_id': 1,
+                'title': 'foo'
+            },
+            {
+                'ticket_id': 2,
+                'title': 'goo'
+            }
+        ]
+        results = CommandResults(
+            output_prefix='Jira.Ticket',
+            uniq_field='ticket_id',
+            outputs=tickets
+        )
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': tickets,
+            'HumanReadable': tableToMarkdown('Results', tickets),
+            'EntryContext': {
+                'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             }
         }
 
     def test_create_dbot_score_with_invalid_score(self):
-        assert False
+        try:
+            DBotScore(
+                indicator='8.8.8.8',
+                integration_name='Virus Total',
+                score=100,
+                indicator_type=IndicatorType.IP
+            )
 
+            assert False
+        except TypeError:
+            assert True
 
     def test_create_ip(self):
         ip = IP(
@@ -811,13 +909,7 @@ class TestIndicatorsClasses:
             detection_engines=None
         )
 
-        assert ip.to_context() == {
-            'IP(val.Address && val.Address == obj.Address)': {
-                'Address': '8.8.8.8',
-                'ASN': 'some asn',
-                'Hostname': 'test.com'
-            }
-        }
+        assert ip is not None
 
 
 class TestBaseClient:
