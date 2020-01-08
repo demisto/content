@@ -92,7 +92,7 @@ class Client(BaseClient):
         self.headers = {'Authorization': f'Bearer {self.access_token}'}
 
     def http_call(self, *args, **kwargs):
-        demisto.log(f'Sending: {kwargs}')
+        demisto.log(f'Sending: ')
         res = self._http_request(*args, **kwargs)
         if 'status_code' in res and res.status_code == 401:
             self.access_token = self.get_access_token()
@@ -217,8 +217,9 @@ class Client(BaseClient):
             raise  # TODO see how to return an error to demisto " could not parse parameters""url not valid, see @odata.nextLink"
 
     def list_tenant_sites(self):
-        url = 'https://graph.microsoft.com/v1.0/sites/root'
-        return self.http_call(method='GET', full_url=url, headers=self.headers, url_suffix='')
+        url = 'https://graph.microsoft.com/v1.0/sites'
+        query_string = {"search": "*"}
+        return self.http_call(method='GET', full_url=url, headers=self.headers, url_suffix='', params=query_string)
 
     def list_drives_in_site(self, site_id=None, limit=None, next_page_url=None):
         # check if got site_id or next_page args
@@ -384,9 +385,10 @@ def parse_outputs(raw_data, exclude=None):
             if 'LastModifiedBy' in list(data.keys()):
                 data['LastModifiedBy'] = remove_identity_key(data['lastModifiedBy'])
 
-            group_readable = {camel_case_to_readable(i): j for i, j in data.items() if i not in fields_to_drop}
-            files_readable.append(group_readable)
-            files_outputs.append({k.replace(' ', ''): v for k, v in group_readable.copy().items()})
+            human_readable = {camel_case_to_readable(i): j for i, j in data.items() if i not in fields_to_drop}
+            files_readable.append(human_readable)
+
+            files_outputs.append({k.replace(' ', ''): v for k, v in human_readable.copy().items()})
 
         return files_readable, files_outputs
 
@@ -396,10 +398,10 @@ def parse_outputs(raw_data, exclude=None):
     if 'LastModifiedBy' in list(raw_data.keys()):
         raw_data['LastModifiedBy'] = remove_identity_key(raw_data['lastModifiedBy'])
 
-    group_readable = {camel_case_to_readable(i): j for i, j in raw_data.items() if i not in fields_to_drop}
-    group_outputs = {k.replace(' ', ''): v for k, v in group_readable.copy().items()}
+    human_readable = {camel_case_to_readable(i): j for i, j in raw_data.items() if i not in fields_to_drop}
+    files_outputs = {k.replace(' ', ''): v for k, v in human_readable.copy().items()}
 
-    return group_readable, group_outputs
+    return human_readable, files_outputs
 
 
 def download_file_command(client, args):
@@ -447,16 +449,20 @@ def list_drive_children_command(client, args):
 def list_tenant_sites_command(client, args):
     result = client.list_tenant_sites()
 
-    context_entry = parse_outputs(result)
+    human_readable, context_values = parse_outputs(result['value'])
 
-    title = f'{INTEGRATION_NAME} - Sites information:'
-    # Creating human readable for War room
-    human_readable = tableToMarkdown(title, context_entry)
-
-    # context == output
-    context = {
-        f'{INTEGRATION_NAME}.￿ListSites(val.ID === obj.ID)': context_entry
+    context_entry = {
+        'OdataContext': result.get('@odata.context', None),
+        'Values': context_values
     }
+    context = {
+        f'{INTEGRATION_NAME}.￿ListSites(val.ID === obj.ID)': {'OdataContext': result.get('@odata.context', None),
+                                                              'Values': context_values
+                                                              }
+    }
+
+    title = 'List Sites:'
+    human_readable = tableToMarkdown(title, human_readable)
 
     return (
         human_readable,
@@ -469,8 +475,6 @@ def list_drives_in_site_command(client, args):
     site_id = args.get('site_id')
     limit = args.get('limit')
     next_page_url = args.get('next_page_url')
-    with open('/Users/gberger/dev/demisto/content/Integrations/MicrosoftGraphFiles/tests.json', 'r') as f:
-        result = json.load(f)
 
     result = client.list_drives_in_site(site_id=site_id, limit=limit, next_page_url=next_page_url)
     files_readable, files_outputs = parse_outputs(result['list_drive']['value'], ['quota'])
