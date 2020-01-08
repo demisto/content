@@ -5,6 +5,11 @@ This integration was integrated and tested with version 0.0.3 of Sixgill
 </p>
 <h2>Sixgill Playbook</h2>
 <p>playbook-Sixgill-Test</p>
+<h2>Use Cases</h2>
+<ul>
+<li>Fetching Sixgill's DarkFeed Threat Intelligence indicators.</li>
+<li>Fetching Sixgill's Alerts as incidents.</li>
+</ul>
 <h2>Detailed Description</h2>
 <p>Configure an API account:</p>
 <p>To configure an instance of Sixgill's integration in Demisto, you need to supply your API key and client Secret. Please contact support at cybersixgill.com to receive these.</p>
