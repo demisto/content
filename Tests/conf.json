@@ -2071,7 +2071,8 @@
           "fromversion": "4.5.0"
         },
         {
-            "playbookID": "SetAndHandleEmpty test"
+            "playbookID": "SetAndHandleEmpty test",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Tanium v2",
