@@ -25,7 +25,7 @@ NETLOC = 'graph.microsoft.com'
 BASE_URL = f'https://{NETLOC}/{VERSION}'
 GRANT_TYPE = 'client_credentials'
 SCOPE = 'https://graph.microsoft.com/.default'
-INTEGRATION_NAME = 'MsGraph'
+INTEGRATION_NAME = 'MsGraphFiles'
 
 APP_NAME = 'ms-graph-files'
 
@@ -267,7 +267,10 @@ class Client(BaseClient):
 
     def replace_existing_file(self, object_type, object_type_id, item_id, entry_id):
 
-        file_path = demisto.getFilePath(entry_id).get('path')
+        file_path = demisto.getFilePath(entry_id).get('path', None)
+        if not file_path:
+            raise DemistoException(f'Could not find file path to the next entry id: {entry_id}. \n'
+                                   f'Please provide another one.')
         if object_type == 'drives':
             url = f'{object_type}/{object_type_id}/items/{item_id}/content'
 
@@ -304,7 +307,9 @@ class Client(BaseClient):
         :param entry_id:
         :return:
         """
+        # file_path = '/Users/gberger/Desktop/Untitled.txt'
         file_path = demisto.getFilePath(entry_id).get('path')
+
 
         if 'drives' == object_type:
             url = f'{object_type}/{object_type_id}/items/{parent_id}:/{file_name}:/content'
@@ -336,7 +341,7 @@ class Client(BaseClient):
             url = f'{object_type}/{object_type_id}/items/{parent_id}/children'
 
         elif object_type in ['groups', 'sites', 'users']:
-            url = f'{object_type}/{object_type_id}/drive/items/{parent_id}/ children'
+            url = f'{object_type}/{object_type_id}/drive/items/{parent_id}/children'
 
         # send request
         url = BASE_URL + f'/{url}'
@@ -374,8 +379,10 @@ def parse_outputs(raw_data, exclude=None):
         files_readable, files_outputs = [], []
         for data in raw_data:
             # TODO: need to make sure that i convert it to camel case as well
-            data['CreatedBy'] = remove_identity_key(data['createdBy'])
-            data['LastModifiedBy'] = remove_identity_key(data['lastModifiedBy'])
+            if 'CreatedBy' in list(data.keys()):
+                data['CreatedBy'] = remove_identity_key(data['createdBy'])
+            if 'LastModifiedBy' in list(data.keys()):
+                data['LastModifiedBy'] = remove_identity_key(data['lastModifiedBy'])
 
             group_readable = {camel_case_to_readable(i): j for i, j in data.items() if i not in fields_to_drop}
             files_readable.append(group_readable)
@@ -383,8 +390,11 @@ def parse_outputs(raw_data, exclude=None):
 
         return files_readable, files_outputs
 
-    raw_data['CreatedBy'] = remove_identity_key(raw_data['createdBy'])
-    raw_data['LastModifiedBy'] = remove_identity_key(raw_data['lastModifiedBy'])
+    if 'CreatedBy' in list(raw_data.keys()):
+        raw_data['CreatedBy'] = remove_identity_key(raw_data['createdBy'])
+
+    if 'LastModifiedBy' in list(raw_data.keys()):
+        raw_data['LastModifiedBy'] = remove_identity_key(raw_data['lastModifiedBy'])
 
     group_readable = {camel_case_to_readable(i): j for i, j in raw_data.items() if i not in fields_to_drop}
     group_outputs = {k.replace(' ', ''): v for k, v in group_readable.copy().items()}
@@ -504,6 +514,7 @@ def replace_an_existing_file_command(client, args):
 
     return (
         human_readable,
+        human_readable,
         context,
         result
     )
@@ -525,6 +536,7 @@ def remove_identity_key(source):
 
 
 def create_file_and_folder_context(source):
+    human_readble, raw_output = parse_outputs(source.get('parentReference'))
     file_metadata = {
         'OdataContext': source.get('@odata.context'),
         'DownloadUrl': source.get('@microsoft.graph.downloadUrl'),
@@ -538,7 +550,7 @@ def create_file_and_folder_context(source):
         'Size': source.get('size'),
         'CreatedBy': remove_identity_key(source.get('createdBy')),
         'LastModifiedBy': remove_identity_key(source.get('lastModifiedBy')),
-        'ParentReference': source.get('parentReference'),
+        'ParentReference': raw_output,
         'File': source.get('file'),
         'FileSystemInfo': source.get('fileSystemInfo')
     }
