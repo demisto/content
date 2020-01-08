@@ -11,15 +11,6 @@
 		"Prisma Cloud": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Account": {
-					"complex": {
-						"accessor": "account",
-						"filters": [],
-						"root": "resource",
-						"transformers": []
-					},
-					"simple": ""
-				},
 				"Account ID": {
 					"complex": {
 						"accessor": "accountId",
@@ -28,6 +19,10 @@
 						"transformers": []
 					},
 					"simple": ""
+				},
+				"Account Name": {
+					"complex": null,
+					"simple": "resource.account"
 				},
 				"Alert ID": {
 					"complex": null,
