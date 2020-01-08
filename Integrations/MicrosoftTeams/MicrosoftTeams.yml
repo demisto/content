@@ -190,6 +190,12 @@ script:
       name: description
       required: false
       secret: false
+    - default: false
+      description: The team to create the channel in.
+      isArray: false
+      name: team
+      required: true
+      secret: false
     deprecated: false
     description: Create a new channel in a Microsoft Team
     execution: false
@@ -247,6 +253,7 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - No test
 fromversion: 5.0.0

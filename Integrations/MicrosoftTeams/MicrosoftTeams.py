@@ -720,7 +720,7 @@ def add_user_to_channel(team_aad_id: str, channel_id: str, user_id: str):
     requestjson_: dict = {
         '@odata.type': '#microsoft.graph.aadUserConversationMember',
         'roles': [],
-        'user@odata.bind': f'https://graph.microsoft.com/beta/users/{user_id}'
+        'user@odata.bind': f'https://graph.microsoft.com/beta/users/{user_id}'  # disable-secrets-detection
     }
     http_request('POST', url, json_=requestjson_)
 
@@ -907,6 +907,17 @@ def create_channel(team_aad_id: str, channel_name: str, channel_description: str
     channel_data: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
     channel_id: str = channel_data.get('id', '')
     return channel_id
+
+
+def create_channel_command():
+    channel_name: str = demisto.args().get('channel_name', '')
+    channel_description: str = demisto.args().get('description', '')
+    team_name: str = demisto.args().get('team', '')
+    team_aad_id = get_team_aad_id(team_name)
+
+    channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
+    if channel_id:
+        demisto.results(f'The channel {channel_name} was created successfully')
 
 
 def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = None) -> str:
@@ -1583,7 +1594,7 @@ def main():
         'mirror-investigation': mirror_investigation,
         'close-channel': close_channel,
         'microsoft-teams-integration-health': integration_health,
-        'create-channel': create_channel,
+        'create-channel': create_channel_command,
         'add-user-to-channel': add_user_to_channel_command,
         'remove-user-from-channel': remove_user_from_channel
         # 'microsoft-teams-create-team': create_team,
