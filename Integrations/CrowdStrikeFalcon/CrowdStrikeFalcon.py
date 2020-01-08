@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 import json
 import requests
 import base64
+from typing import List
 from dateutil.parser import parse
 from typing import Dict, Tuple, Any
 
@@ -855,13 +856,23 @@ def timestamp_length_equalization(timestamp1, timestamp2):
         timestamp1: First timestamp to compare.
         timestamp2: Second timestamp to compare.
     Returns:
-        the two timestamps in the same length (the shorter one)
+        the two timestamps in the same length (the longer one)
     """
-    if len(str(timestamp1)) > len(str(timestamp2)):
-        timestamp1 = str(timestamp1)[:len(str(timestamp2))]
+    diff_len = len(str(timestamp1)) - len(str(timestamp2))
 
+    # no difference in length
+    if diff_len == 0:
+        return int(timestamp1), int(timestamp2)
+
+    # length of timestamp1 > timestamp2
+    if diff_len > 0:
+        ten_times = pow(10, diff_len)
+        timestamp2 = int(timestamp2) * ten_times
+
+    # length of timestamp2 > timestamp1
     else:
-        timestamp2 = str(timestamp2)[:len(str(timestamp1))]
+        ten_times = pow(10, diff_len * -1)
+        timestamp1 = int(timestamp1) * ten_times
 
     return int(timestamp1), int(timestamp2)
 
@@ -882,14 +893,9 @@ def fetch_incidents():
     if last_fetch is None:
         last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
 
-    # timestamp creation excepts only '%Y-%m-%dT%H:%M:%SZ' date format
-    if '.' in last_fetch:
-        last_fetch_for_timestamp = last_fetch.split('.')[0] + 'Z'
+    last_fetch_timestamp = int(parse(last_fetch).timestamp() * 1000)
 
-    else:
-        last_fetch_for_timestamp = last_fetch
-
-    last_fetch_timestamp = date_to_timestamp(last_fetch_for_timestamp, date_format='%Y-%m-%dT%H:%M:%SZ')
+    last_detection_id = str(last_run.get('last_detection_id'))
 
     fetch_query = demisto.params().get('fetch_query')
 
@@ -899,18 +905,33 @@ def fetch_incidents():
 
     else:
         detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=last_fetch), 'resources')
-    incidents = []
+    incidents = []  # type:List
 
     if detections_ids:
+
+        # make sure we do not fetch the same detection again.
+        if last_detection_id == detections_ids[0]:
+            first_index_to_fetch = 1
+
+            # if this is the only detection - dont fetch.
+            if len(detections_ids) == 1:
+                return incidents
+
+        # if the first detection in this pull is different than the last detection fetched we bring it as well
+        else:
+            first_index_to_fetch = 0
+
         # Limit the results to INCIDENTS_PER_FETCH`z
-        detections_ids = detections_ids[0:INCIDENTS_PER_FETCH]
+        last_index_to_fetch = INCIDENTS_PER_FETCH + first_index_to_fetch
+        detections_ids = detections_ids[first_index_to_fetch:last_index_to_fetch]
         raw_res = get_detections_entities(detections_ids)
 
         if "resources" in raw_res:
             for detection in demisto.get(raw_res, "resources"):
                 incident = detection_to_incident(detection)
                 incident_date = incident['occurred']
-                incident_date_timestamp = int(parse(incident_date).timestamp())
+
+                incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
 
                 # make sure that the two timestamps are in the same length
                 if len(str(incident_date_timestamp)) != len(str(last_fetch_timestamp)):
@@ -921,10 +942,11 @@ def fetch_incidents():
                 if incident_date_timestamp > last_fetch_timestamp:
                     last_fetch = incident_date
                     last_fetch_timestamp = incident_date_timestamp
+                    last_detection_id = json.loads(incident['rawJSON']).get('detection_id')
 
                 incidents.append(incident)
 
-        demisto.setLastRun({'first_behavior_time': last_fetch})
+        demisto.setLastRun({'first_behavior_time': last_fetch, 'last_detection_id': last_detection_id})
 
     return incidents
 
