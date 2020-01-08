@@ -1,4 +1,4 @@
-category: Threat Intelligence Feeds
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: SpamhausFeed
   version: -1
@@ -33,10 +33,6 @@ configuration:
 - name: expirationInterval
   required: false
   type: 1
-- display: URL
-  name: url
-  required: true
-  type: 0
 - display: Username
   name: credentials
   required: false
@@ -61,7 +57,7 @@ configuration:
   type: 0
 - defaultvalue: HTTP
   display: Sub Feeds
-  name: sub_feeds
+  name: url
   options:
   - https://www.spamhaus.org/drop/asndrop.txt
   - https://www.spamhaus.org/drop/edrop.txt
