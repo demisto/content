@@ -11,8 +11,7 @@ configuration:
   name: client_secret
   required: true
   type: 4
-description: Fetching Sixgill's DarkFeed Threat Intelligence indicators or Sixgill's
-  alerts as incidents
+description: Fetching Sixgill's alerts as incidents
 display: Sixgill
 name: Sixgill
 script:
@@ -21,31 +20,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Should delivered items be included
+      description: Should previously-delivered items be included in the response
       isArray: false
       name: include_delivered_items
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Should indicators be fetched
-      isArray: false
-      name: fetch_darkfeed_indicators
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Should alerts be fetched. Alerts are fetched as incidents
-      isArray: false
-      name: fetch_alerts
       predefined:
       - 'true'
       - 'false'
@@ -55,10 +32,22 @@ script:
     description: Get Sixgill's DarkFeed indicators or Sixgill's alerts as incidents
     execution: false
     name: fetch-incidents
-    outputs:
-    - contextPath: Sixgill.indicators
-      description: Sixgill DarkFeed Threat Intelligence indicators
-      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Should previously-delivered items be included in the response
+      isArray: false
+      name: include_delivered_items
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetching Sixgill's DarkFeed Threat Intelligence indicators or
+    execution: false
+    name: get-indicators
   dockerimage: demisto/sixgill:1.0.0.5395
   isfetch: false
   longRunning: false

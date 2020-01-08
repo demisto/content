@@ -178,13 +178,25 @@ def test_fetch_incidents(mocker):
     mocker.patch.object(SixgillDarkFeedClient, 'mark_digested_item', return_value=None)
 
     from Sixgill import fetch_incidents
-    readable, raw_output = fetch_incidents()
+    fetch_incidents()
 
     assert demisto.incidents.call_count == 1
     incidents = demisto.incidents.call_args[0][0]
 
     assert(len(incidents) == 6)
     assert (incidents == expected_alert_output)
+
+
+def test_get_indicators(mocker):
+    mocker.patch.object(demisto, 'params', return_value=init_params())
+
+    from sixgill.sixgill_darkfeed_client import SixgillDarkFeedClient
+
+    mocker.patch.object(SixgillDarkFeedClient, 'get_incidents', return_value=incidents_list + iocs_list)
+    mocker.patch.object(SixgillDarkFeedClient, 'mark_digested_item', return_value=None)
+
+    from Sixgill import get_indicators
+    readable, raw_output = get_indicators()
 
     assert readable == 'Successfully extracted 1 IOCs of the following types: dict_keys([\'suspicious_ip\']) '
     assert raw_output == expected_indicators_output
