@@ -1,5 +1,7 @@
 id: RandomStringGenerateTest
 version: -1
+contentitemfields:
+  propagationLabels: []
 name: RandomStringGenerateTest
 starttaskid: "0"
 tasks:
@@ -15,7 +17,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "6"
     separatecontext: false
     view: |-
       {
@@ -25,6 +27,9 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
   "1":
     id: "1"
     taskid: 6666dfd1-07dd-403c-81ee-1cdf9ae9d0b1
@@ -39,7 +44,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "4"
     scriptarguments:
       Digits:
         simple: "True"
@@ -56,39 +61,13 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: eaffc333-3b3a-424d-8b24-d007d6322183
-    type: regular
-    task:
-      id: eaffc333-3b3a-424d-8b24-d007d6322183
-      version: -1
-      name: Verify
-      scriptName: VerifyContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: RandomString
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
           "y": 370
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
   "3":
     id: "3"
     taskid: 096efc65-ed82-4373-83b5-fbd7ac295494
@@ -105,17 +84,123 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 530
+          "y": 895
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: "4"
+    taskid: 50b94bc2-aa8b-4a29-836a-6de8693c2f0f
+    type: condition
+    task:
+      id: 50b94bc2-aa8b-4a29-836a-6de8693c2f0f
+      version: -1
+      name: Verify generated string
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RandomString
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "5":
+    id: "5"
+    taskid: c6d59023-44ae-4ef8-8baf-7c5c284980a1
+    type: regular
+    task:
+      id: c6d59023-44ae-4ef8-8baf-7c5c284980a1
+      version: -1
+      name: Print error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      message:
+        simple: Could not find entry 'RandomString'.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "6":
+    id: "6"
+    taskid: 6a47cb1f-6874-4033-8a07-77baae267b05
+    type: regular
+    task:
+      id: 6a47cb1f-6874-4033-8a07-77baae267b05
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 545,
-        "width": 380,
+        "height": 910,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
