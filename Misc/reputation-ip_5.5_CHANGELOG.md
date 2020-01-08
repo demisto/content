@@ -1,2 +1,9 @@
 ## [Unreleased]
-Added the **expiration** field, which defines when indicators of this type expire (in minutes). The default value is 10,080 (7 days). This field is available from Demisto v5.5.
+-
+
+## [20.1.0] - 2020-01-07
+-
+
+
+## [19.9.0] - 2019-09-04
+-
