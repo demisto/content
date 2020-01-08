@@ -1,6 +1,10 @@
 ## [Unreleased]
 
 
+## [20.1.0] - 2020-01-07
+Fix for failed Convert file hash to corresponding hashes.
+Simplified playbook structure by removing set tasks.
+
 ## [19.11.1] - 2019-11-26
 #### New Playbook
 The playbook enables you to get all of the corresponding file hashes for a file even if there is only one hash type available.

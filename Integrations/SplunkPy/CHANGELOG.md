@@ -1,4 +1,10 @@
 ## [Unreleased]
+
+
+## [20.1.0] - 2020-01-07
+Fixed an issue with the access to a non-existing key when fetching non-ES events.
+
+## [19.12.1] - 2019-12-25
 Enhanced the execution speed of the ***splunk-search*** command.
 
 ## [19.11.0] - 2019-11-12
