@@ -563,3 +563,6 @@ def createIndicators(indicators_batch):
 
 def findIndicators(fromdate = '', query = '', size = 100, page = 0, todate = '', value = ''):
     return {}
+
+def getIndexHash():
+    return ''
