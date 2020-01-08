@@ -2,7 +2,7 @@
     "id": "es-cpu-current-usage",
     "version": -1,
     "fromVersion": "5.5.0",
-    "name": "Elasticsearch CPU Current Usage",
+    "name": "Elasticsearch CPU Current Usage %",
     "dataType": "system",
     "widgetType": "number",
     "query": "es-cpu.usedPercent",
@@ -27,5 +27,5 @@
         }
     },
     "size": 0,
-    "description": "Elasticsearch CPU Current Usage"
+    "description": "Elasticsearch CPU Current Usage %"
 }
