@@ -748,7 +748,7 @@ def add_user_to_channel_command():
         })
 
     team_aad_id = get_team_aad_id(team_name)
-    channel_id = get_channel_id(channel_name, team_aad_id, investigation_id = None)
+    channel_id = get_channel_id(channel_name, team_aad_id, investigation_id=None)
     add_user_to_channel(team_aad_id, channel_id, user_id)
 
     demisto.results(f'The User "{member}" has been added to channel "{channel_name}" successfully.')
@@ -771,7 +771,7 @@ def add_user_to_channel_command():
 #     users: list = get_users()
 #     user_id: str = str()
 #     integration_context: dict = demisto.getIntegrationContext()
-#     # team_member_id: str = get_team_member_id(member, integration_context)
+#     team_member_id: str = get_team_member_id(member, integration_context)
 #     service_url: str = integration_context.get('service_url', '')
 #     # if not service_url:
 #     #     raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
