@@ -4,7 +4,7 @@ import demisto_ml
 from CommonServerPython import *
 
 
-def get_model_data(model_name, store_type):
+def get_model_data(model_name, store_type, is_return_error):
     res_model_list = demisto.executeCommand("getList", {"listName": model_name})[0]
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
 
@@ -18,7 +18,7 @@ def get_model_data(model_name, store_type):
         elif store_type == "mlModel":
             return res_model['Contents']['modelData']
     else:
-        return_error("error reading model %s from Demisto" % model_name)
+        handle_error("error reading model %s from Demisto" % model_name, is_return_error)
 
 
 def handle_error(message, is_return_error):
@@ -31,13 +31,13 @@ def handle_error(message, is_return_error):
 
 def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
                            word_threshold, top_word_limit, is_return_error):
-    model_data = get_model_data(model_name, model_store_type)
+    model_data = get_model_data(model_name, model_store_type, is_return_error)
     model = demisto_ml.decode_model(model_data)
     text = "%s %s" % (email_subject, email_body)
     res = demisto.executeCommand('WordTokenizerNLP', {'value': text,
                                                       'hashWordWithSeed': demisto.args().get('hashSeed')})
     if is_error(res[0]):
-        return_error(res[0]['Contents'])
+        handle_error(res[0]['Contents'], is_return_error)
     tokenized_text_result = res[0]['Contents']
     input_text = tokenized_text_result['hashedTokenizedText'] if tokenized_text_result.get('hashedTokenizedText') else \
         tokenized_text_result['tokenizedText']
