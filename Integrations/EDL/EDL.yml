@@ -105,8 +105,8 @@ script:
       defaultValue: false
       secret: false
       predefined:
-        - true
-        - false
+        - 'true'
+        - 'false'
     deprecated: false
     description: Updates values stored in the EDL (only avaialable On-Demand).
     execution: false
