@@ -4,7 +4,7 @@ from urllib3 import disable_warnings
 from typing import Dict
 
 
-def github_errors(response) -> Dict:
+def github_errors(response):
     res_dict = response.json()
     if response.ok:
         return res_dict
