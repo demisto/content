@@ -47,6 +47,11 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev_no_oproxy"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
             "instance_names": "ms_graph_mail_prod"
         },
         {
@@ -724,7 +729,12 @@
             "integrations": "Gmail"
         },
         {
-            "playbookID": "reputations.json Test"
+            "playbookID": "reputations.json Test",
+            "toversion": "5.0.0"
+        },
+        {
+            "playbookID": "Indicators reputation-.json Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "Test IP Indicator Fields",
@@ -2000,6 +2010,7 @@
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
             "fromversion": "4.5.0",
+            "timeout": 600,
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
         },
