@@ -1,7 +1,5 @@
 id: Intezer - scan host
 version: -1
-rolename:
-  - Administrator
 fromversion: 4.0.0
 name: Intezer - scan host
 description: |-

@@ -47,7 +47,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Retrieves live feeds of Digital Risk Protection from PhishLabs.
+description: Retrieves Digital Risk cases Protection from PhishLabs.
 display: PhishLabs IOC DRP
 name: PhishLabs IOC DRP
 script:
