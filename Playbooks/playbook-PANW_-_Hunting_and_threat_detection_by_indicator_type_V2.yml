@@ -3178,6 +3178,7 @@ tasks:
     task:
       id: 6c2a64aa-076a-4007-8cb8-65cffd4a588a
       version: -1
+      description: ''
       name: Are there detected IP addresses?
       type: condition
       iscommand: false
