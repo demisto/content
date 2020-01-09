@@ -20,8 +20,7 @@ This integration was integrated and tested with Azure Compute API Version: 2017-
     <li>Select the Azure Secruity Center application.</li>
   </ul>
 </li>
-</ul><h2>Fetch Incidents</h2>
-<p>Populate this section with Fetch incidents data</p>
+</ul>
 <h2>Configure Azure Compute v2 on Demisto</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
