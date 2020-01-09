@@ -298,7 +298,7 @@ jobs:
 
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION --non-ami
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION
             fi
       - run:
           name: Run Tests - Latest GA
@@ -392,7 +392,7 @@ jobs:
           destination: artifacts
           when: always
       - run:
-          name: Slack Notifier
+          name: Notifier
           shell: /bin/bash
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
@@ -405,6 +405,7 @@ jobs:
                 exit 0
             fi
             ./Tests/scripts/slack_notifier.sh ./env_results.json
+            python ./Tests/git_build_comment.py $CONTENT_GITHUB_TOKEN $CIRCLE_BRANCH $CIRCLE_SHA1
           when: always
       - run:
           name: Validate Docker Images

@@ -596,6 +596,8 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
 
 
 def main():
+    with open('./TEST.txt', 'w') as f:
+        f.write('hello world')
     options = options_handler()
     server = options.server
     is_ami = options.isAMI
