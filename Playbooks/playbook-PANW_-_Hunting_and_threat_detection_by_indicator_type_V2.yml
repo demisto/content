@@ -2046,7 +2046,7 @@ tasks:
       version: -1
       name: Set detected IPs
       description: Sets a value into the context with the given context key.
-      scriptName: Set
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
