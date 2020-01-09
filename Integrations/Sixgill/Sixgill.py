@@ -166,7 +166,7 @@ try:
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
 
-    elif demisto.command() == 'get-incidents':
+    elif demisto.command() == 'get-indicators':
         return_outputs(*get_indicators())
 
 except Exception as e:
