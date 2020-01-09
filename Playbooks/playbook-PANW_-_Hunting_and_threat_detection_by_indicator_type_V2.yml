@@ -41,10 +41,10 @@ tasks:
     ignoreworker: false
   '2':
     id: '2'
-    taskid: e7cb950d-ab2c-4ecb-8e40-286bda3bc188
+    taskid: 4fd04e78-7273-4c82-89a7-fbee29694195
     type: playbook
     task:
-      id: e7cb950d-ab2c-4ecb-8e40-286bda3bc188
+      id: 4fd04e78-7273-4c82-89a7-fbee29694195
       version: -1
       name: Convert file hash to corresponding hashes
       description: ''
@@ -84,10 +84,10 @@ tasks:
     ignoreworker: false
   '3':
     id: '3'
-    taskid: 8ef868fc-c15c-4eef-809a-3406267cb966
+    taskid: e9e3c480-3070-4f6b-870c-840f29c66708
     type: condition
     task:
-      id: 8ef868fc-c15c-4eef-809a-3406267cb966
+      id: e9e3c480-3070-4f6b-870c-840f29c66708
       version: -1
       name: Is there a hash?
       description: Header
@@ -104,13 +104,6 @@ tasks:
     - label: 'yes'
       condition:
       - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: File
-                accessor: SHA256
-            iscontext: true
-        - operator: isNotEmpty
           left:
             value:
               simple: inputs.SHA256
@@ -147,6 +140,9 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+    nexttasks:
+      '#none#':
+      - '153'
     separatecontext: false
     view: |-
       {
@@ -160,10 +156,10 @@ tasks:
     ignoreworker: false
   '5':
     id: '5'
-    taskid: 6afdd613-3c03-4f59-8b4a-75377c439ce3
+    taskid: 4b82d0f8-dd5f-43cc-8168-60d0f45add20
     type: condition
     task:
-      id: 6afdd613-3c03-4f59-8b4a-75377c439ce3
+      id: 4b82d0f8-dd5f-43cc-8168-60d0f45add20
       version: -1
       name: Is there an ip?
       description: Hedaer
@@ -184,13 +180,13 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.IP addresses
+              simple: inputs.IPAddresses
             iscontext: true
     view: |-
       {
         "position": {
           "x": -940,
-          "y": 380
+          "y": 370
         }
       }
     note: false
@@ -198,10 +194,10 @@ tasks:
     ignoreworker: false
   '10':
     id: '10'
-    taskid: 04619f6e-84db-4562-8c31-a1fd1518323c
+    taskid: 62cfbf13-0d5f-4aaa-8db7-43920fbb0127
     type: condition
     task:
-      id: 04619f6e-84db-4562-8c31-a1fd1518323c
+      id: 62cfbf13-0d5f-4aaa-8db7-43920fbb0127
       version: -1
       name: Is there a domain/url?
       description: Is there an domain/url?
@@ -222,13 +218,13 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.Domain
+              simple: inputs.URLDomain
             iscontext: true
     view: |-
       {
         "position": {
           "x": 3030,
-          "y": 350
+          "y": 370
         }
       }
     note: false
@@ -279,7 +275,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1730,
+          "x": -1230,
           "y": 1060
         }
       }
@@ -288,10 +284,10 @@ tasks:
     ignoreworker: false
   '21':
     id: '21'
-    taskid: c3b1dd7a-8d1d-4254-8ee3-041b13664c95
+    taskid: 0dcc38bf-5be7-4253-86c4-0ae975892c33
     type: condition
     task:
-      id: c3b1dd7a-8d1d-4254-8ee3-041b13664c95
+      id: 0dcc38bf-5be7-4253-86c4-0ae975892c33
       version: -1
       name: Are there related sessions in Autofocus?
       description: Are there related sessions in Autofocus?
@@ -320,8 +316,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1730,
-          "y": 1900
+          "x": -1230,
+          "y": 1760
         }
       }
     note: false
@@ -339,6 +335,9 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+    nexttasks:
+      '#none#':
+      - '153'
     separatecontext: false
     view: |-
       {
@@ -352,10 +351,10 @@ tasks:
     ignoreworker: false
   '25':
     id: '25'
-    taskid: 33683a38-281e-4df3-8d0c-cdc0da120dc9
+    taskid: ce6cf300-07de-403b-8b6e-abd0994f6ce7
     type: regular
     task:
-      id: 33683a38-281e-4df3-8d0c-cdc0da120dc9
+      id: ce6cf300-07de-403b-8b6e-abd0994f6ce7
       version: -1
       name: Search in Cortex threat logs
       description: Search in Cortex threat logs
@@ -374,7 +373,7 @@ tasks:
       hash: {}
       ip:
         complex:
-          root: inputs.IP addresses
+          root: inputs.IPAddresses
           transformers:
           - operator: uniq
           - operator: join
@@ -440,81 +439,45 @@ tasks:
     ignoreworker: false
   '27':
     id: '27'
-    taskid: ff7f0497-f1a5-4e9e-825a-c88ceaad8f46
+    taskid: 24ccf7f4-0819-4c9a-8547-e633df176265
     type: regular
     task:
-      id: ff7f0497-f1a5-4e9e-825a-c88ceaad8f46
+      id: 24ccf7f4-0819-4c9a-8547-e633df176265
       version: -1
-      name: Set detected source IPs
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      name: Set detected IPs
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - '144'
+      - '29'
     scriptarguments:
       append:
         simple: 'true'
       key:
-        simple: detectedsourceips
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: Cortex
           accessor: Logging.Threat.Src
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Cortex.Logging.Threat.Dst
+                iscontext: true
           - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -3620,
-          "y": 1955
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '28':
-    id: '28'
-    taskid: c627e2db-0423-4095-809e-5c5c181021d7
-    type: condition
-    task:
-      id: c627e2db-0423-4095-809e-5c5c181021d7
-      version: -1
-      name: Does event contain users?
-      description: Does event contain users?
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '23'
-      'yes':
-      - '29'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Cortex.Logging.Threat.Users
-            iscontext: true
-      - - operator: match
-          left:
-            value:
-              simple: Cortex.Logging.Threat.Users
-            iscontext: true
-          right:
-            value:
-              simple: ^((?!\d+\.\d+\.\d+\.\d+).)*$
-    view: |-
-      {
-        "position": {
-          "x": -3620,
-          "y": 2250
+          "x": -3370,
+          "y": 2025
         }
       }
     note: false
@@ -522,14 +485,15 @@ tasks:
     ignoreworker: false
   '29':
     id: '29'
-    taskid: ef697cd5-2d3d-4e45-80c8-f1ccd6076332
+    taskid: 7cd13a5d-cad6-4401-84f9-57f519319cd3
     type: regular
     task:
-      id: ef697cd5-2d3d-4e45-80c8-f1ccd6076332
+      id: 7cd13a5d-cad6-4401-84f9-57f519319cd3
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -539,7 +503,8 @@ tasks:
     scriptarguments:
       append: {}
       key:
-        simple: detectedusers
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
       value:
         complex:
           root: Cortex
@@ -550,8 +515,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3200,
-          "y": 2440
+          "x": -3370,
+          "y": 2420
         }
       }
     note: false
@@ -559,10 +524,10 @@ tasks:
     ignoreworker: false
   '30':
     id: '30'
-    taskid: a48eeba0-8c0e-4e05-841f-ca99383878b3
+    taskid: 62d44f32-1a97-4e5a-873c-78c5476d5b32
     type: regular
     task:
-      id: a48eeba0-8c0e-4e05-841f-ca99383878b3
+      id: 62d44f32-1a97-4e5a-873c-78c5476d5b32
       version: -1
       name: Search in Cortex Traffic logs
       description: Search in Cortex Traffic logs.
@@ -580,7 +545,7 @@ tasks:
       from_zone: {}
       ip:
         complex:
-          root: inputs.IP addresses
+          root: inputs.IPAddresses
           transformers:
           - operator: uniq
           - operator: join
@@ -637,7 +602,7 @@ tasks:
       {
         "position": {
           "x": -2660,
-          "y": 1770
+          "y": 1760
         }
       }
     note: false
@@ -645,37 +610,45 @@ tasks:
     ignoreworker: false
   '32':
     id: '32'
-    taskid: b7937d74-471b-4be7-89e7-51c9bffca676
+    taskid: 7a6ce110-dad5-4eca-8c56-60e9a2126a2d
     type: regular
     task:
-      id: b7937d74-471b-4be7-89e7-51c9bffca676
+      id: 7a6ce110-dad5-4eca-8c56-60e9a2126a2d
       version: -1
-      name: Set detected source IPs
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      name: Set detected IPs
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - '145'
+      - '23'
     scriptarguments:
       append:
         simple: 'true'
       key:
-        simple: detectedsourceips
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: Cortex
           accessor: Logging.Traffic.Src
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Cortex.Logging.Traffic.Dst
+                iscontext: true
           - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -2790,
-          "y": 2050
+          "x": -2660,
+          "y": 2140
         }
       }
     note: false
@@ -683,10 +656,10 @@ tasks:
     ignoreworker: false
   '35':
     id: '35'
-    taskid: de6bfa6c-d6a1-40e5-8bbf-134270c9d44e
+    taskid: 480f1243-d2ba-4576-8848-403a6ff9d5de
     type: condition
     task:
-      id: de6bfa6c-d6a1-40e5-8bbf-134270c9d44e
+      id: 480f1243-d2ba-4576-8848-403a6ff9d5de
       version: -1
       name: Is PAN-OS enabled?
       description: Is PAN-OS enabled?
@@ -726,8 +699,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 1380
+          "x": -270,
+          "y": 1300
         }
       }
     note: false
@@ -869,8 +842,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 1650
+          "x": 630,
+          "y": 1620
         }
       }
     note: false
@@ -1041,14 +1014,15 @@ tasks:
     ignoreworker: false
   '50':
     id: '50'
-    taskid: cd354ae7-81de-495d-85f5-18732f151b03
+    taskid: a19e4f0b-f076-446a-8852-4fde1f5883f7
     type: regular
     task:
-      id: cd354ae7-81de-495d-85f5-18732f151b03
+      id: a19e4f0b-f076-446a-8852-4fde1f5883f7
       version: -1
       name: Set detected Hosts
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -1059,7 +1033,8 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: detectedhosts
+        simple: PANWHunting.DetectedInternalHosts
+      stringify: {}
       value:
         complex:
           root: Cortex
@@ -1079,14 +1054,15 @@ tasks:
     ignoreworker: false
   '51':
     id: '51'
-    taskid: 6e01dd5b-1bbe-4680-822d-bb5f9c90a87c
+    taskid: fb5fdd01-6d91-49e4-8d11-762db8c4061c
     type: regular
     task:
-      id: 6e01dd5b-1bbe-4680-822d-bb5f9c90a87c
+      id: fb5fdd01-6d91-49e4-8d11-762db8c4061c
       version: -1
       name: Set detected IPs
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -1097,7 +1073,8 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: detectedsourceips
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: Cortex
@@ -1127,6 +1104,9 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+    nexttasks:
+      '#none#':
+      - '153'
     separatecontext: false
     view: |-
       {
@@ -1140,10 +1120,10 @@ tasks:
     ignoreworker: false
   '61':
     id: '61'
-    taskid: b963aae5-4f9b-4859-8415-1abe79b6df6f
+    taskid: c3e0e582-1964-4a17-853b-14446a5de8b4
     type: regular
     task:
-      id: b963aae5-4f9b-4859-8415-1abe79b6df6f
+      id: c3e0e582-1964-4a17-853b-14446a5de8b4
       version: -1
       name: Search domain in Cortex Threat logs
       description: Search for the domain in Cortex Threat logs.
@@ -1171,7 +1151,7 @@ tasks:
       to_zone: {}
       url:
         complex:
-          root: inputs.Domain
+          root: inputs.URLDomain
           transformers:
           - operator: uniq
           - operator: join
@@ -1183,52 +1163,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4700,
+          "x": 4660,
           "y": 1665
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '63':
-    id: '63'
-    taskid: ebb2d00a-589c-4865-8791-5608c1308d6c
-    type: condition
-    task:
-      id: ebb2d00a-589c-4865-8791-5608c1308d6c
-      version: -1
-      name: Does event contain users?
-      description: Does event contain users?
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '55'
-      'yes':
-      - '65'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Cortex.Logging.Threat.Users
-            iscontext: true
-      - - operator: match
-          left:
-            value:
-              simple: Cortex.Logging.Threat.Users
-            iscontext: true
-          right:
-            value:
-              simple: ^((?!\d+\.\d+\.\d+\.\d+).)*$
-    view: |-
-      {
-        "position": {
-          "x": 4730,
-          "y": 2280
         }
       }
     note: false
@@ -1236,37 +1172,45 @@ tasks:
     ignoreworker: false
   '64':
     id: '64'
-    taskid: fbba0335-245a-41ee-8a54-5903be331423
+    taskid: d7978bae-0031-4d1e-8948-c4d9b599c046
     type: regular
     task:
-      id: fbba0335-245a-41ee-8a54-5903be331423
+      id: d7978bae-0031-4d1e-8948-c4d9b599c046
       version: -1
-      name: Set detected source IPs
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      name: Set detected IPs
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - '151'
+      - '65'
     scriptarguments:
       append:
         simple: 'true'
       key:
-        simple: detectedsourceips
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: Cortex
           accessor: Logging.Threat.Src
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Cortex.Logging.Threat.Dst
+                iscontext: true
           - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 4730,
-          "y": 2005
+          "x": 4690,
+          "y": 2290
         }
       }
     note: false
@@ -1274,14 +1218,15 @@ tasks:
     ignoreworker: false
   '65':
     id: '65'
-    taskid: ce169488-a826-4099-84b4-d3929b5fd4e1
+    taskid: 19411290-f655-4c7b-8c4d-c0a897d41855
     type: regular
     task:
-      id: ce169488-a826-4099-84b4-d3929b5fd4e1
+      id: 19411290-f655-4c7b-8c4d-c0a897d41855
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -1292,7 +1237,8 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: detectedusers
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
       value:
         complex:
           root: Cortex
@@ -1303,8 +1249,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4350,
-          "y": 2450
+          "x": 4690,
+          "y": 2440
         }
       }
     note: false
@@ -1377,8 +1323,6 @@ tasks:
     nexttasks:
       '#default#':
       - '55'
-      'yes':
-      - '142'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -1509,7 +1453,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5220,
+          "x": 5480,
           "y": 1270
         }
       }
@@ -1518,10 +1462,10 @@ tasks:
     ignoreworker: false
   '70':
     id: '70'
-    taskid: 7c07c4aa-f0d0-4b3f-8066-06638dc7dd4d
+    taskid: a9d03711-5380-4ced-8b22-7e77d12e7930
     type: condition
     task:
-      id: 7c07c4aa-f0d0-4b3f-8066-06638dc7dd4d
+      id: a9d03711-5380-4ced-8b22-7e77d12e7930
       version: -1
       name: Is Cortex Data Lake enabled?
       description: Is Cortex Data Lake enabled?
@@ -1551,14 +1495,6 @@ tasks:
           right:
             value:
               simple: Palo Alto Networks Cortex
-        - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: Palo Alto Networks Cortex V2
       - - operator: isEqualString
           left:
             value:
@@ -1579,10 +1515,10 @@ tasks:
     ignoreworker: false
   '71':
     id: '71'
-    taskid: 9e4934f2-8975-4438-8c67-b0a6defae2b3
+    taskid: 2af222a7-a49b-41fc-8636-e7247335bcb2
     type: condition
     task:
-      id: 9e4934f2-8975-4438-8c67-b0a6defae2b3
+      id: 2af222a7-a49b-41fc-8636-e7247335bcb2
       version: -1
       name: Is Cortex Data Lake enabled?
       description: Is Cortex Data Lake enabled?
@@ -1611,14 +1547,6 @@ tasks:
           right:
             value:
               simple: Palo Alto Networks Cortex
-        - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: Palo Alto Networks Cortex V2
       - - operator: isEqualString
           left:
             value:
@@ -1639,37 +1567,45 @@ tasks:
     ignoreworker: false
   '72':
     id: '72'
-    taskid: 68c13ce9-c155-4110-8502-be2dbaff9cb6
+    taskid: 38938eae-d197-4b34-8ad1-835b8ac3c77f
     type: regular
     task:
-      id: 68c13ce9-c155-4110-8502-be2dbaff9cb6
+      id: 38938eae-d197-4b34-8ad1-835b8ac3c77f
       version: -1
-      name: Set unique detected source IP's
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      name: Set detected IPs
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - '148'
+      - '4'
     scriptarguments:
       append:
         simple: 'true'
       key:
-        simple: detectedsourceips
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: ${AutoFocus
           accessor: SessionsResults.src_ip}
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ${AutoFocus.SessionsResults.dst_ip}
+                iscontext: true
           - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 1900
+          "x": 540,
+          "y": 1930
         }
       }
     note: false
@@ -1677,14 +1613,15 @@ tasks:
     ignoreworker: false
   '73':
     id: '73'
-    taskid: a6263d1e-695e-48d7-86b4-b7c67238b9da
+    taskid: ec618697-a948-46c6-8c64-fb364bf367f3
     type: regular
     task:
-      id: a6263d1e-695e-48d7-86b4-b7c67238b9da
+      id: ec618697-a948-46c6-8c64-fb364bf367f3
       version: -1
       name: Set detected Hosts
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -1695,7 +1632,8 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: detectedhosts
+        simple: PANWHunting.DetectedInternalHosts
+      stringify: {}
       value:
         complex:
           root: Cortex
@@ -1715,14 +1653,15 @@ tasks:
     ignoreworker: false
   '74':
     id: '74'
-    taskid: ba0fb05e-bcb8-4331-8dbb-86e7b7c37c1b
+    taskid: 1bd42968-1121-4f5f-8772-add30af06995
     type: regular
     task:
-      id: ba0fb05e-bcb8-4331-8dbb-86e7b7c37c1b
+      id: 1bd42968-1121-4f5f-8772-add30af06995
       version: -1
       name: Set detected IPs
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -1733,7 +1672,8 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: detectedsourceips
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: Cortex
@@ -1753,14 +1693,15 @@ tasks:
     ignoreworker: false
   '77':
     id: '77'
-    taskid: d1a1f34a-171f-4bdd-8786-e58f46083fb6
+    taskid: 8cdf581e-0918-416e-8873-d28e803bcb2a
     type: regular
     task:
-      id: d1a1f34a-171f-4bdd-8786-e58f46083fb6
+      id: 8cdf581e-0918-416e-8873-d28e803bcb2a
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -1771,7 +1712,8 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: detectedusers
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
       value:
         complex:
           root: Cortex
@@ -1791,14 +1733,15 @@ tasks:
     ignoreworker: false
   '79':
     id: '79'
-    taskid: 4f8119a5-987a-4146-8f21-af6cb20eb64c
+    taskid: 0a65387a-f7a0-4b60-85ad-ed69486a92fb
     type: regular
     task:
-      id: 4f8119a5-987a-4146-8f21-af6cb20eb64c
+      id: 0a65387a-f7a0-4b60-85ad-ed69486a92fb
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -1809,7 +1752,8 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: detectedusers
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
       value:
         complex:
           root: Cortex
@@ -1829,14 +1773,15 @@ tasks:
     ignoreworker: false
   '80':
     id: '80'
-    taskid: c3c61dec-436e-49a3-89a0-1667c1b2b55b
+    taskid: 65bccb27-dc26-434d-80a5-54b4a5d2771a
     type: regular
     task:
-      id: c3c61dec-436e-49a3-89a0-1667c1b2b55b
+      id: 65bccb27-dc26-434d-80a5-54b4a5d2771a
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -1847,7 +1792,8 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: detectedusers
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
       value:
         complex:
           root: Cortex
@@ -1858,8 +1804,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2770,
-          "y": 2470
+          "x": 2750,
+          "y": 2440
         }
       }
     note: false
@@ -1867,37 +1813,45 @@ tasks:
     ignoreworker: false
   '81':
     id: '81'
-    taskid: 2becc426-e3c2-472e-82d8-9f8a56d4d0fb
+    taskid: e0fcd5f9-5c06-43c7-86ca-438ff8f7e345
     type: regular
     task:
-      id: 2becc426-e3c2-472e-82d8-9f8a56d4d0fb
+      id: e0fcd5f9-5c06-43c7-86ca-438ff8f7e345
       version: -1
-      name: Set unique detected source IP's
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      name: Set detected IPs
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - '147'
+      - '97'
     scriptarguments:
       append:
         simple: 'true'
       key:
-        simple: detectedsourceips
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: Panorama
           accessor: Monitor.Logs.SourceAddress
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Panorama.Monitor.Logs.DestinationAddress
+                iscontext: true
           - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -610,
-          "y": 2220
+          "y": 2155
         }
       }
     note: false
@@ -1920,7 +1874,6 @@ tasks:
       - '4'
       'yes':
       - '81'
-      - '95'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -1954,8 +1907,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 2005
+          "x": -270,
+          "y": 1910
         }
       }
     note: false
@@ -1963,14 +1916,15 @@ tasks:
     ignoreworker: false
   '83':
     id: '83'
-    taskid: be13ef36-7b10-4cb7-89ff-8354ff94be00
+    taskid: a62eae0e-45a3-4648-88e3-df30ad6b584f
     type: regular
     task:
-      id: be13ef36-7b10-4cb7-89ff-8354ff94be00
+      id: a62eae0e-45a3-4648-88e3-df30ad6b584f
       version: -1
-      name: Set detected destination IP's
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      name: Set detected IPs
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -1982,17 +1936,24 @@ tasks:
         simple: 'true'
       key:
         simple: detecteddestinationsips
+      stringify: {}
       value:
         complex:
           root: ${AutoFocus
           accessor: SessionsResults.dst_ip}
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ${AutoFocus.SessionsResults.dst_ip}
+                iscontext: true
           - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 5320,
+          "x": 5480,
           "y": 2440
         }
       }
@@ -2001,10 +1962,10 @@ tasks:
     ignoreworker: false
   '84':
     id: '84'
-    taskid: 3c25c2f6-a438-4a4c-8f98-d582cd7a1f21
+    taskid: 9c33eecb-7e04-476f-8042-df44b73456f5
     type: condition
     task:
-      id: 3c25c2f6-a438-4a4c-8f98-d582cd7a1f21
+      id: 9c33eecb-7e04-476f-8042-df44b73456f5
       version: -1
       name: Are there related sessions in Autofocus?
       description: Are there related sessions in Autofocus?
@@ -2015,7 +1976,7 @@ tasks:
       '#default#':
       - '55'
       'yes':
-      - '152'
+      - '83'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -2033,8 +1994,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5220,
-          "y": 1995
+          "x": 5480,
+          "y": 1945
         }
       }
     note: false
@@ -2042,10 +2003,10 @@ tasks:
     ignoreworker: false
   '85':
     id: '85'
-    taskid: 3e151189-482a-4af0-8e9c-86393e545b72
+    taskid: 5fbf9801-689c-4946-814c-39a2e4aa9004
     type: condition
     task:
-      id: 3e151189-482a-4af0-8e9c-86393e545b72
+      id: 5fbf9801-689c-4946-814c-39a2e4aa9004
       version: -1
       name: Is domain detected by Cortex Threat logs?
       description: Is the domain detected by Cortex Threat logs?
@@ -2069,8 +2030,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4530,
-          "y": 1835
+          "x": 4660,
+          "y": 1930
         }
       }
     note: false
@@ -2078,12 +2039,12 @@ tasks:
     ignoreworker: false
   '86':
     id: '86'
-    taskid: 66661331-be27-43a9-811c-8b45572ba209
+    taskid: f3a9c2a6-45f0-421c-8cb4-71042f5f134a
     type: regular
     task:
-      id: 66661331-be27-43a9-811c-8b45572ba209
+      id: f3a9c2a6-45f0-421c-8cb4-71042f5f134a
       version: -1
-      name: Set detected source IPs
+      name: Set detected IPs
       description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
@@ -2091,12 +2052,13 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '146'
+      - '23'
     scriptarguments:
       append:
         simple: 'true'
       key:
-        simple: detectedsourceips
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: ${AutoFocus
@@ -2107,8 +2069,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1200,
-          "y": 2090
+          "x": -1230,
+          "y": 2155
         }
       }
     note: false
@@ -2170,10 +2132,10 @@ tasks:
     ignoreworker: false
   '92':
     id: '92'
-    taskid: 280680d9-fdbe-438a-8a76-59ddcbc7f22c
+    taskid: d4693ae8-f34f-4a8c-8045-f42dbcfe7982
     type: condition
     task:
-      id: 280680d9-fdbe-438a-8a76-59ddcbc7f22c
+      id: d4693ae8-f34f-4a8c-8045-f42dbcfe7982
       version: -1
       name: Is Cortex Data Lake enabled?
       description: Is Cortex Data Lake enabled?
@@ -2202,14 +2164,6 @@ tasks:
           right:
             value:
               simple: Palo Alto Networks Cortex
-        - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: Palo Alto Networks Cortex V2
       - - operator: isEqualString
           left:
             value:
@@ -2222,7 +2176,7 @@ tasks:
       {
         "position": {
           "x": 4660,
-          "y": 1355
+          "y": 1270
         }
       }
     note: false
@@ -2256,78 +2210,45 @@ tasks:
     ignoreworker: false
   '94':
     id: '94'
-    taskid: 0a9942f4-6485-4e20-85cf-bbd18e8eed9f
+    taskid: 1be60f44-b1d5-4485-81aa-80c50d64d9a3
     type: regular
     task:
-      id: 0a9942f4-6485-4e20-85cf-bbd18e8eed9f
+      id: 1be60f44-b1d5-4485-81aa-80c50d64d9a3
       version: -1
-      name: Set detected source IPs
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      name: Set detected IPs
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - '149'
+      - '80'
     scriptarguments:
       append:
         simple: 'true'
       key:
-        simple: detectedsourceips
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: Cortex
           accessor: Logging.Threat.Src
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Cortex.Logging.Threat.Dst
+                iscontext: true
           - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 2750,
-          "y": 1955
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '95':
-    id: '95'
-    taskid: 1fa957ae-5f41-4e95-8092-a7f00619f101
-    type: condition
-    task:
-      id: 1fa957ae-5f41-4e95-8092-a7f00619f101
-      version: -1
-      name: Does event contain users?
-      description: Does event contain users?
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '4'
-      'yes':
-      - '97'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Panorama.Monitor.Logs.SourceUser
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: Panorama.Monitor.Logs.DestinationUser
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 110,
-          "y": 2230
+          "y": 2120
         }
       }
     note: false
@@ -2352,7 +2273,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -190,
+          "x": -270,
           "y": 965
         }
       }
@@ -2361,10 +2282,10 @@ tasks:
     ignoreworker: false
   '97':
     id: '97'
-    taskid: 0590dd67-b16f-4a9a-897b-446160b4ecae
+    taskid: b1d13f97-0c40-482b-8062-e556b5ce2ab5
     type: regular
     task:
-      id: 0590dd67-b16f-4a9a-897b-446160b4ecae
+      id: b1d13f97-0c40-482b-8062-e556b5ce2ab5
       version: -1
       name: Set detected users
       description: Sets a value into the context with the given context key.
@@ -2379,7 +2300,7 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: detectedusers
+        simple: PANWHunting.DetectedUsers
       value:
         complex:
           root: Panorama
@@ -2396,52 +2317,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -100,
-          "y": 2430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '98':
-    id: '98'
-    taskid: 2e0d13ee-5734-4f79-8ca1-08f546dd5a40
-    type: condition
-    task:
-      id: 2e0d13ee-5734-4f79-8ca1-08f546dd5a40
-      version: -1
-      name: Does event contain users?
-      description: Does event contain users?
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '4'
-      'yes':
-      - '80'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Cortex.Logging.Threat.Users
-            iscontext: true
-      - - operator: match
-          left:
-            value:
-              simple: Cortex.Logging.Threat.Users
-            iscontext: true
-          right:
-            value:
-              simple: ^((?!\d+\.\d+\.\d+\.\d+).)*$
-    view: |-
-      {
-        "position": {
-          "x": 2520,
-          "y": 2290
+          "x": -610,
+          "y": 2410
         }
       }
     note: false
@@ -2503,7 +2380,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
+          "x": 630,
           "y": 1440
         }
       }
@@ -2564,8 +2441,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1730,
-          "y": 1485
+          "x": -1230,
+          "y": 1545
         }
       }
     note: false
@@ -2573,10 +2450,10 @@ tasks:
     ignoreworker: false
   '101':
     id: '101'
-    taskid: 29703915-0ba4-4ae1-8dc3-f4a73d16b68f
+    taskid: 2eb947e7-5df0-4696-8af5-c69e58297b02
     type: playbook
     task:
-      id: 29703915-0ba4-4ae1-8dc3-f4a73d16b68f
+      id: 2eb947e7-5df0-4696-8af5-c69e58297b02
       version: -1
       name: Autofocus Query Samples, Sessions and Tags
       description: ''
@@ -2607,7 +2484,7 @@ tasks:
       Tags scope: {}
       URL:
         complex:
-          root: inputs.Domain
+          root: inputs.URLDomain
           transformers:
           - operator: uniq
           - operator: join
@@ -2625,7 +2502,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5220,
+          "x": 5480,
           "y": 1665
         }
       }
@@ -2634,12 +2511,12 @@ tasks:
     ignoreworker: false
   '104':
     id: '104'
-    taskid: 19ae133c-58b4-48bf-8c61-04c79365b6d6
+    taskid: 0875678b-51fb-4d3c-8882-37861c5120dd
     type: condition
     task:
-      id: 19ae133c-58b4-48bf-8c61-04c79365b6d6
+      id: 0875678b-51fb-4d3c-8882-37861c5120dd
       version: -1
-      name: Are there relevant IP's
+      name: Are there Pan-OS search results?
       description: Are there relevant IP's
       type: condition
       iscommand: false
@@ -2658,20 +2535,13 @@ tasks:
             value:
               complex:
                 root: Panorama
-                accessor: Monitor.Logs.DestinationAddress
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Panorama
-                accessor: Monitor.Logs.SourceAddress
+                accessor: Monitor.Logs
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 3460,
-          "y": 1570
+          "x": 3380,
+          "y": 1650
         }
       }
     note: false
@@ -2679,78 +2549,45 @@ tasks:
     ignoreworker: false
   '105':
     id: '105'
-    taskid: ae74f065-c879-4f0d-8ed7-d9cf3482ded8
+    taskid: 9a050a15-7a79-41d7-8621-b4cb0af62c54
     type: regular
     task:
-      id: ae74f065-c879-4f0d-8ed7-d9cf3482ded8
+      id: 9a050a15-7a79-41d7-8621-b4cb0af62c54
       version: -1
-      name: Set unique detected source IP's
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      name: Set detected IPs
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - '150'
+      - '107'
     scriptarguments:
       append:
         simple: 'true'
       key:
-        simple: detectedsourceips
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: Panorama
           accessor: Monitor.Logs.SourceAddress
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Panorama.Monitor.Logs.DestinationAddress
+                iscontext: true
           - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3460,
-          "y": 1920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '106':
-    id: '106'
-    taskid: 6c96f688-05c4-4f6e-8499-e90f38734294
-    type: condition
-    task:
-      id: 6c96f688-05c4-4f6e-8499-e90f38734294
-      version: -1
-      name: Does event contain users?
-      description: Does event contain users?
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '55'
-      'yes':
-      - '107'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Panorama.Monitor.Logs.SourceUser
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: Panorama.Monitor.Logs.DestinationUser
-            iscontext: true
-    view: |-
-      {
-        "position": {
           "x": 3380,
-          "y": 2240
+          "y": 2120
         }
       }
     note: false
@@ -2758,14 +2595,15 @@ tasks:
     ignoreworker: false
   '107':
     id: '107'
-    taskid: 07785f59-947f-4c31-8086-5b199507a953
+    taskid: 6180df23-4369-4272-83af-9dc3e8ee493c
     type: regular
     task:
-      id: 07785f59-947f-4c31-8086-5b199507a953
+      id: 6180df23-4369-4272-83af-9dc3e8ee493c
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -2776,7 +2614,8 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: detectedusers
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
       value:
         complex:
           root: Panorama
@@ -2794,7 +2633,7 @@ tasks:
       {
         "position": {
           "x": 3380,
-          "y": 2440
+          "y": 2345
         }
       }
     note: false
@@ -2871,7 +2710,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5220,
+          "x": 5480,
           "y": 965
         }
       }
@@ -2923,8 +2762,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1730,
-          "y": 910
+          "x": -1230,
+          "y": 920
         }
       }
     note: false
@@ -2958,12 +2797,12 @@ tasks:
     ignoreworker: false
   '129':
     id: '129'
-    taskid: d3c3d52d-8ab8-4f02-8104-44b7eef26cd9
+    taskid: 0e1d4ac9-fbf3-4d7c-86ea-c3a38d79b42f
     type: condition
     task:
-      id: d3c3d52d-8ab8-4f02-8104-44b7eef26cd9
+      id: 0e1d4ac9-fbf3-4d7c-86ea-c3a38d79b42f
       version: -1
-      name: Are there relevant IP's
+      name: Are there relevant IPs?
       description: Are there relevant IP's
       type: condition
       iscommand: false
@@ -3001,57 +2840,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '131':
-    id: '131'
-    taskid: 4b31ae24-edd5-49e5-8339-c6db918212e3
-    type: condition
-    task:
-      id: 4b31ae24-edd5-49e5-8339-c6db918212e3
-      version: -1
-      name: Does event contain users?
-      description: Does event contain users?
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '23'
-      'yes':
-      - '132'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Panorama.Monitor.Logs.SourceUser
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: Panorama.Monitor.Logs.DestinationUser
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": -5210,
-          "y": 2210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   '132':
     id: '132'
-    taskid: 6773a849-1162-4ab5-8fae-9cf08a717bf2
+    taskid: a8bbe087-509c-4f2c-894a-bacbf6fbc65e
     type: regular
     task:
-      id: 6773a849-1162-4ab5-8fae-9cf08a717bf2
+      id: a8bbe087-509c-4f2c-894a-bacbf6fbc65e
       version: -1
       name: Set detected users
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -3062,7 +2861,8 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: detectedusers
+        simple: PANWHunting.DetectedUsers
+      stringify: {}
       value:
         complex:
           root: Panorama
@@ -3079,8 +2879,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5500,
-          "y": 2420
+          "x": -5110,
+          "y": 2430
         }
       }
     note: false
@@ -3088,37 +2888,45 @@ tasks:
     ignoreworker: false
   '136':
     id: '136'
-    taskid: ad2928e3-17e9-489a-8290-50732654e9af
+    taskid: 13f7fc7e-1933-456d-8153-eedac64f8e2a
     type: regular
     task:
-      id: ad2928e3-17e9-489a-8290-50732654e9af
+      id: 13f7fc7e-1933-456d-8153-eedac64f8e2a
       version: -1
-      name: Set unique detected source IP's
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      name: Set detected IPs
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - '143'
+      - '132'
     scriptarguments:
       append:
         simple: 'true'
       key:
-        simple: detectedsourceips
+        simple: PANWHunting.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: Panorama
           accessor: Monitor.Logs.SourceAddress
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Panorama.Monitor.Logs.DestinationAddress
+                iscontext: true
           - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -5210,
-          "y": 1900
+          "x": -5110,
+          "y": 2015
         }
       }
     note: false
@@ -3126,14 +2934,15 @@ tasks:
     ignoreworker: false
   '138':
     id: '138'
-    taskid: 768fad10-66da-4887-8c1c-8c3bb2a3e3ce
+    taskid: ca1a2593-c11e-4ea2-8d57-7f07d91fb4f8
     type: regular
     task:
-      id: 768fad10-66da-4887-8c1c-8c3bb2a3e3ce
+      id: ca1a2593-c11e-4ea2-8d57-7f07d91fb4f8
       version: -1
       name: Set Traps id
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -3144,7 +2953,8 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: trapsid
+        simple: PANWHunting.TrapsId
+      stringify: {}
       value:
         complex:
           root: Cortex
@@ -3164,14 +2974,15 @@ tasks:
     ignoreworker: false
   '139':
     id: '139'
-    taskid: 571ea8fc-2f3d-402e-8050-fc59f76013a1
+    taskid: 3a345feb-84f5-462a-8d23-a234a93bc914
     type: regular
     task:
-      id: 571ea8fc-2f3d-402e-8050-fc59f76013a1
+      id: 3a345feb-84f5-462a-8d23-a234a93bc914
       version: -1
       name: Set Traps id
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: Builtin
@@ -3182,7 +2993,8 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: trapsid
+        simple: PANWHunting.TrapsId
+      stringify: {}
       value:
         complex:
           root: Cortex
@@ -3202,10 +3014,10 @@ tasks:
     ignoreworker: false
   '140':
     id: '140'
-    taskid: 2f402f5e-2e01-4a7f-8013-ec3a416c4ef6
+    taskid: 273e49e6-6789-4a94-8cb3-ae4fc8cd77ba
     type: playbook
     task:
-      id: 2f402f5e-2e01-4a7f-8013-ec3a416c4ef6
+      id: 273e49e6-6789-4a94-8cb3-ae4fc8cd77ba
       version: -1
       name: PAN-OS Query Logs For Indicators
       description: ''
@@ -3220,7 +3032,7 @@ tasks:
       filedigest: {}
       ip:
         complex:
-          root: inputs.IP addresses
+          root: inputs.IPAddresses
           transformers:
           - operator: uniq
           - operator: join
@@ -3246,10 +3058,10 @@ tasks:
     ignoreworker: false
   '141':
     id: '141'
-    taskid: 0032ebec-4df5-4623-8832-02cc511a16b6
+    taskid: 338e1c6d-6211-4b2b-8451-a3866009d5f9
     type: playbook
     task:
-      id: 0032ebec-4df5-4623-8832-02cc511a16b6
+      id: 338e1c6d-6211-4b2b-8451-a3866009d5f9
       version: -1
       name: PAN-OS Query Logs For Indicators
       description: ''
@@ -3282,7 +3094,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
+          "x": -270,
           "y": 1745
         }
       }
@@ -3291,10 +3103,10 @@ tasks:
     ignoreworker: false
   '142':
     id: '142'
-    taskid: 78f70966-8fe8-4eb4-834b-0f910bc21458
+    taskid: 474cedfa-d0a3-4d70-860e-665c94e1e48b
     type: playbook
     task:
-      id: 78f70966-8fe8-4eb4-834b-0f910bc21458
+      id: 474cedfa-d0a3-4d70-860e-665c94e1e48b
       version: -1
       name: PAN-OS Query Logs For Indicators
       description: ''
@@ -3310,7 +3122,7 @@ tasks:
       ip: {}
       url:
         complex:
-          root: inputs.Domain
+          root: inputs.URLDomain
           transformers:
           - operator: uniq
           - operator: join
@@ -3326,388 +3138,223 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3460,
-          "y": 1380
+          "x": 3380,
+          "y": 1440
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '143':
-    id: '143'
-    taskid: 53eb40d9-8f7e-4bb6-8a8b-604168c28503
-    type: regular
+  '153':
+    id: '153'
+    taskid: dfd0fd6e-9eac-45c6-8e1f-2166bf3fa8da
+    type: title
     task:
-      id: 53eb40d9-8f7e-4bb6-8a8b-604168c28503
+      id: dfd0fd6e-9eac-45c6-8e1f-2166bf3fa8da
       version: -1
-      name: Set unique detected destination IP's
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
+      name: Sort internal and external IP addresses
+      type: title
       iscommand: false
-      brand: Builtin
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - '131'
+      - '154'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '154':
+    id: '154'
+    taskid: 6c2a64aa-076a-4007-8cb8-65cffd4a588a
+    type: condition
+    task:
+      id: 6c2a64aa-076a-4007-8cb8-65cffd4a588a
+      version: -1
+      name: Are there detected IP addresses?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '155'
+      'yes':
+      - '156'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PANWHunting.DetectedIPs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '155':
+    id: '155'
+    taskid: be26c6c7-7a52-4aa5-8b33-bfdcaa92ac5c
+    type: title
+    task:
+      id: be26c6c7-7a52-4aa5-8b33-bfdcaa92ac5c
+      version: -1
+      name: Done sorting IP addresses
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 3620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '156':
+    id: '156'
+    taskid: be19db5f-10f8-40f3-8eea-c7ddb40f3b0a
+    type: regular
+    task:
+      id: be19db5f-10f8-40f3-8eea-c7ddb40f3b0a
+      version: -1
+      name: Determine whether the IP address is internal or external
+      description: Returns yes if the IP is in one of the ranges provided, returns
+        no otherwise.
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '157'
+    scriptarguments:
+      ip:
+        simple: ${PANWHunting.DetectedIPs}
+      ipRanges:
+        simple: ${inputs.InternalRange}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '157':
+    id: '157'
+    taskid: 81e6910a-e975-4c4e-8a56-e1e696fe617d
+    type: regular
+    task:
+      id: 81e6910a-e975-4c4e-8a56-e1e696fe617d
+      version: -1
+      name: Set detected IP addresses as internal
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '158'
     scriptarguments:
       append:
         simple: 'true'
       key:
-        simple: detecteddestinationsips
+        simple: PANWHunting.DetectedInternalIPs
+      stringify: {}
       value:
         complex:
-          root: Panorama
-          accessor: Monitor.Logs.DestinationAddress
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: 'yes'
+          accessor: Address
           transformers:
           - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -5210,
-          "y": 2050
+          "x": 1220,
+          "y": 3300
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '144':
-    id: '144'
-    taskid: 54051a19-1d65-4e9d-814c-e91d4ea2642c
+  '158':
+    id: '158'
+    taskid: 5c171b1f-1edc-4404-831d-f029dcd9e57f
     type: regular
     task:
-      id: 54051a19-1d65-4e9d-814c-e91d4ea2642c
+      id: 5c171b1f-1edc-4404-831d-f029dcd9e57f
       version: -1
-      name: Set detected destination IPs
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
+      name: Set detected IP addresses as external
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: Builtin
+      brand: ''
     nexttasks:
       '#none#':
-      - '28'
+      - '155'
     scriptarguments:
       append:
         simple: 'true'
       key:
-        simple: detecteddestinationsips
+        simple: PANWHunting.DetectedExternalIPs
+      stringify: {}
       value:
         complex:
-          root: Cortex
-          accessor: Logging.Threat.Dst
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: 'no'
+          accessor: Address
           transformers:
           - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -3620,
-          "y": 2100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '145':
-    id: '145'
-    taskid: a4f3ee1b-5aeb-4c33-8e56-d9f67415cd8a
-    type: regular
-    task:
-      id: a4f3ee1b-5aeb-4c33-8e56-d9f67415cd8a
-      version: -1
-      name: Set detected destination IPs
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '23'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: detecteddestinationsips
-      value:
-        complex:
-          root: Cortex
-          accessor: Logging.Traffic.Dst
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2580,
-          "y": 2220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '146':
-    id: '146'
-    taskid: 048fbb87-b463-480a-8c77-83e667236328
-    type: regular
-    task:
-      id: 048fbb87-b463-480a-8c77-83e667236328
-      version: -1
-      name: Set detected destination IPs
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '23'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: detecteddestinationsips
-      value:
-        complex:
-          root: ${AutoFocus
-          accessor: SessionsResults.dst_ip}
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1200,
-          "y": 2230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '147':
-    id: '147'
-    taskid: 3801248c-0f01-4d24-8466-26d064347fcf
-    type: regular
-    task:
-      id: 3801248c-0f01-4d24-8466-26d064347fcf
-      version: -1
-      name: Set unique detected destination IP's
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '4'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: detecteddestinationsips
-      value:
-        complex:
-          root: Panorama
-          accessor: Monitor.Logs.DestinationAddress
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -610,
-          "y": 2430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '148':
-    id: '148'
-    taskid: 7ad22549-9f52-4558-8275-d5e8cf6e032c
-    type: regular
-    task:
-      id: 7ad22549-9f52-4558-8275-d5e8cf6e032c
-      version: -1
-      name: Set unique detected destination IP's
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '4'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: detecteddestinationsips
-      value:
-        complex:
-          root: ${AutoFocus
-          accessor: SessionsResults.dst_ip}
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 680,
-          "y": 2080
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '149':
-    id: '149'
-    taskid: 2daf2f20-3368-40bb-8983-8f17292c793a
-    type: regular
-    task:
-      id: 2daf2f20-3368-40bb-8983-8f17292c793a
-      version: -1
-      name: Set detected destination IPs
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '98'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: detecteddestinationsips
-      value:
-        complex:
-          root: Cortex
-          accessor: Logging.Threat.Dst
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2750,
-          "y": 2115
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '150':
-    id: '150'
-    taskid: 3f6fed80-fb49-428d-8a6c-7e802818786e
-    type: regular
-    task:
-      id: 3f6fed80-fb49-428d-8a6c-7e802818786e
-      version: -1
-      name: Set unique detected destination IP's
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '106'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: detecteddestinationsips
-      value:
-        complex:
-          root: Panorama
-          accessor: Monitor.Logs.DestinationAddress
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3460,
-          "y": 2070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '151':
-    id: '151'
-    taskid: 896c47ae-fd6e-4040-8918-acf9919dff06
-    type: regular
-    task:
-      id: 896c47ae-fd6e-4040-8918-acf9919dff06
-      version: -1
-      name: Set detected destionation IPs
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '63'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: detecteddestinationsips
-      value:
-        complex:
-          root: Cortex
-          accessor: Logging.Threat.Dst
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 4730,
-          "y": 2145
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '152':
-    id: '152'
-    taskid: af4b8193-f2f2-48d7-8677-26c7f1867005
-    type: regular
-    task:
-      id: af4b8193-f2f2-48d7-8677-26c7f1867005
-      version: -1
-      name: Set detected source IP's
-      description: Sets a value into the context with the given context key.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '83'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: detectedsourceips
-      value:
-        complex:
-          root: ${AutoFocus
-          accessor: SessionsResults.src_ip}
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 5320,
-          "y": 2290
+          "x": 1220,
+          "y": 3450
         }
       }
     note: false
@@ -3716,78 +3363,73 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "106_55_#default#": 0.86,
       "10_55_#default#": 0.82,
       "26_23_#default#": 0.81,
-      "28_23_#default#": 0.82,
       "3_4_#default#": 0.82,
       "43_4_#default#": 0.61,
       "45_4_#default#": 0.6,
       "46_4_#default#": 0.52,
       "48_4_#default#": 0.8,
       "5_23_#default#": 0.79,
-      "82_4_#default#": 0.87,
       "84_55_#default#": 0.81,
       "92_55_#default#": 0.79
     },
     "paper": {
       "dimensions": {
-        "height": 2725,
-        "width": 11200,
-        "x": -5500,
+        "height": 3685,
+        "width": 10970,
+        "x": -5110,
         "y": 0
       }
     }
   }
 inputs:
 - key: SHA256
-  value:
-    complex:
-      root: File
-      accessor: SHA256
+  value: {}
   required: false
   description: SHA256 hash for indicator to hunt.
 - key: MD5
-  value:
-    complex:
-      root: File
-      accessor: MD5
+  value: {}
   required: false
   description: MD5 hash for indicator to hunt.
 - key: SHA1
-  value:
-    complex:
-      root: File
-      accessor: SHA1
+  value: {}
   required: false
   description: SHA1 hash for indicator to hunt.
-- key: IP addresses
-  value:
-    simple: ${IP.Address}
+- key: IPAddresses
+  value: {}
   required: false
   description: List of IP addresses.
-- key: Domain
-  value:
-    simple: ${Domain.Name}
+- key: URLDomain
+  value: {}
   required: false
   description: List of domains or urls.
+- key: InternalRange
+  value: {}
+  required: false
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR notation, separated by commas. An example of a list
+    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
+    If a list is not provided, will use default list provided in the IsIPInRanges
+    script (the known IPv4 private address ranges).'
 outputs:
-- contextPath: detectedhosts
-  description: Host or array of hosts that were detected during hunting.
-  type: string
-- contextPath: detectedusers
+- contextPath: PANWHunting.DetectedUsers
   description: User or array of users that were detected during hunting.
   type: string
-- contextPath: trapsid
-  description: ID or array of IDs for traps hosts detected in the searches.
+- contextPath: PANWHunting.TrapsId
+  description: Id or array of id's for traps hosts detected in the searches.
   type: string
-- contextPath: detectedsourceips
-  description: IP address or array of source IP addresses that were detected during
-    hunting.
+- contextPath: PANWHunting.DetectedInternalIPs
+  description: Internal IP addresses detected based on fields and inputs in your search.
   type: string
-- contextPath: detecteddestinationsips
-  description: IP address or array of destination IP addresses that were detected
-    during hunting.
+- contextPath: PANWHunting.DetectedExternalIPs
+  description: External IP addresses detected based on fields and inputs in your search.
+  type: string
+- contextPath: PANWHunting.DetectedInternalHosts
+  description: Internal host names detected based on fields and inputs in your search.
+  type: string
+- contextPath: PANWHunting.DetectedExternalHosts
+  description: External host names detected based on fields and inputs in your search.
   type: string
 tests:
 - PANW - Hunting and threat detection by indicator type Test
