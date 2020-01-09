@@ -32,7 +32,7 @@ configuration:
   name: on_demand
   required: false
   type: 8
-- additionalinfo: How often to refresh the EDL (in minutes)
+- additionalinfo: How often to refresh the EDL
   defaultvalue: 5 minutes
   display: Refresh Rate
   name: cache_refresh_rate
@@ -97,6 +97,16 @@ script:
       name: edl_size
       required: false
       secret: false
+    - default: false
+      description: Boolean
+      isArray: false
+      name: print_indicators
+      required: true
+      defaultValue: false
+      secret: false
+      predefined:
+        - true
+        - false
     deprecated: false
     description: Updates values stored in the EDL (only avaialable On-Demand).
     execution: false
@@ -111,5 +121,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No test
+- Test_EDL
 fromversion: 5.5.0
