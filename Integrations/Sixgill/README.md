@@ -7,7 +7,7 @@ Integration:
 Retrieving Sixgill's DarkFeed Threat Intelligence indicators (IOC)
 Retrieving Sixgill's Actionable Alerts as incidents
 
-This integration was integrated and tested with version 0.0.3 of Sixgill
+This integration was integrated and tested with version 0.0.4 of Sixgill
 
 </p>
 <h2>Sixgill Playbook</h2>
@@ -21,17 +21,7 @@ This integration was integrated and tested with version 0.0.3 of Sixgill
 <p>Configure an API account:</p>
 <p>To configure an instance of Sixgill's integration in Demisto, you need to supply your API key and client Secret. Please contact support at cybersixgill.com to receive these.</p>
 <h2>Fetch Incidents</h2>
-<p>In case <code>fetch_darkfeed_indicators</code> is set to <code>True</code>, indicators are extracted </p>
-<p>In case <code>fetch_alerts</code> is set to <code>True</code>, incidents are pushed in via Demisto REST API. </p>
-<pre>
-{
-'suspicious_ip': [{'fields': {'itype': 'suspicious_ip', 'tags': ['DarkWeb'], 'threat_type': None, 'value': '1.1.1.1'}, 'type': 'indicator'}, {'fields': {'itype': 'suspicious_ip', 'tags': ['DarkWeb'], 'threat_type': None, 'value': '8.8.8.8'}, 'type': 'indicator'}],
-'proxy_ip': [{'fields': {'itype': 'proxy_ip', 'tags': ['IP', 'Hacking', 'Security'], 'threat_type': 'anonymization', 'value': '2.2.2.2'}, 'type': 'indicator'}],
-'crypto_wallet': [{'fields': {'itype': 'crypto_wallet', 'tags': ['bitcoin'], 'threat_type': None, 'value': '<some hash>'}, 'type': 'indicator'}],
-'mal_md5': [{'fields': {'itype': 'mal_md5', 'tags': ['md5'], 'threat_type': None, 'value': '<some hash>'}, 'type': 'indicator'}],
-'mal_domain': [{'fields': {'itype': 'mal_domain', 'tags': ['url'], 'threat_type': None, 'value': '<some URL>'}, 'type': 'indicator'}]
-}
-</pre>
+<p>Sixgill's alerts are pushed as incidents to Demisto platform. </p>
 <h2>Configure Sixgill on Demisto</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
@@ -56,10 +46,11 @@ This integration was integrated and tested with version 0.0.3 of Sixgill
 </p>
 <ol>
   <li>fetch-incidents: fetch-incidents</li>
+  <li>get-indicators: get-indicators</li>
 </ol>
 <h3>1. fetch-incidents</h3>
 <hr>
-<p>Get Sixgill's DarkFeed indicators or Sixgill's alerts as incidents</p>
+<p>Get Sixgill's alerts as incidents</p>
 <h5>Base Command</h5>
 <p>
   <code>fetch-incidents</code>
@@ -89,17 +80,64 @@ This integration was integrated and tested with version 0.0.3 of Sixgill
   <tbody>
     <tr>
       <td>include_delivered_items</td>
-      <td>Should delivered items be included</td>
+      <td>Should previously-delivered items be included in the response</td>
       <td>Optional</td>
     </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code>!fetch-incidents</code>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+
+<!-- remove the following comments to manually add an image: -->
+<!--
+<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
+ alt="image" width="749" height="412"></a>
+ -->
+</p>
+
+<h3>2. get-indicators</h3>
+<hr>
+<p>Fetching Sixgill's DarkFeed Threat Intelligence indicators</p>
+<h5>Base Command</h5>
+<p>
+  <code>get-indicators</code>
+</p>
+
+<h5>Required Permissions</h5>
+<p>The following permissions are required for this command.</p>
+<ul>
+    <li>permission 1</li>
+    <li>permission 2</li>
+</ul>
+<h5>Input</h5>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
     <tr>
-      <td>fetch_darkfeed_indicators</td>
-      <td>Should indicators be fetched</td>
-      <td>Optional</td>
+      <th>
+        <strong>Argument Name</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+      <th>
+        <strong>Required</strong>
+      </th>
     </tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>fetch_alerts</td>
-      <td>Should alerts be fetched. Alerts are fetched as incidents</td>
+      <td>include_delivered_items</td>
+      <td>Should previously-delivered items be included in the response</td>
       <td>Optional</td>
     </tr>
   </tbody>
@@ -123,9 +161,24 @@ This integration was integrated and tested with version 0.0.3 of Sixgill
   </thead>
   <tbody>
     <tr>
-      <td>Sixgill.indicators</td>
-      <td>String</td>
-      <td>Sixgill DarkFeed Threat Intelligence indicators</td>
+      <td>IP.Address</td>
+      <td>Unknown</td>
+      <td>IP address indicator.</td>
+    </tr>
+    <tr>
+      <td>Domain.Name</td>
+      <td>Unknown</td>
+      <td>Domain name indicator</td>
+    </tr>
+    <tr>
+      <td>File.MD5</td>
+      <td>Unknown</td>
+      <td>File hash indicator</td>
+    </tr>
+    <tr>
+      <td>Sixgill.Indicator.Cryptocurrency.Address</td>
+      <td>Unknown</td>
+      <td>Cryptocurrency address indicator </td>
     </tr>
   </tbody>
 </table>
