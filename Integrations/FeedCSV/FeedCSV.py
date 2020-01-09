@@ -174,7 +174,7 @@ def main():
     except Exception as e:
         err_msg = f'Error in {SOURCE_NAME} Integration - Encountered an issue with createIndicators' if \
             'failed to create' in str(e) else f'Error in {SOURCE_NAME} Integration [{e}]'
-        if command == 'get-indicators':
+        if command == 'fetch-indicators':
             raise Exception(err_msg)
         else:
             return_error(err_msg)
