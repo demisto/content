@@ -19,6 +19,45 @@ ALERT_TYPE_AUDIT = 'audit'
 
 
 class Client(BaseClient):
+    """Client to use in integrations with powerful _http_request
+            :type base_url: ``str``
+            :param base_url: Base server address with suffix, for example: https://example.com/api/v2/.
+
+            :type verify: ``str``
+            :param verify: Either a boolean, in which case it controls whether we verify
+            the server's TLS certificate, or a string, in which case it must be a path
+            to a CA bundle to use..
+
+            :type proxy: ``bool``
+            :param proxy: Whether to run the integration using the system proxy.
+
+            :type ok_codes: ``tuple``
+            :param ok_codes:
+                The request codes to accept as OK, for example: (200, 201, 204).
+                If you specify "None", will use requests.Response.ok
+
+            :type headers: ``dict``
+            :param headers:
+                The request headers, for example: {'Accept`: `application/json`}.
+                Can be None.
+
+            :type auth: ``dict`` or ``tuple``
+            :param auth:
+                The request authorization, for example: (username, password).
+                Can be None.
+
+            :return: No data returned
+            :rtype: ``None``
+            """
+
+    def __init__(self, base_url, verify, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+        if verify in ['True', 'False']:
+            super().__init__(base_url, eval(verify), proxy, ok_codes, headers, auth)
+        else:
+            # verify points a path to certificate
+            super().__init__(base_url, True, proxy, ok_codes, headers, auth)
+            self._verify = verify
+
     def test(self):
         """
         Sends a test request to check connectivity, authentication and authorization
@@ -151,14 +190,16 @@ def main():
     cert = params.get('certificate')
     proxy = params.get('proxy', False)
 
-    # If checked to verify and given a certificate, save the certificate as a temp file and set the path to the requests client
+    # If checked to verify and given a certificate, save the certificate as a temp file
+    # and set the path to the requests client
     if verify_certificate and cert:
         tmp = tempfile.NamedTemporaryFile(delete=False, mode='w')
         tmp.write(cert)
         tmp.close()
         verify = tmp.name
     else:
-        verify = verify_certificate
+        # Save boolean as a string
+        verify = str(verify_certificate)
 
     try:
         LOG(f'Command being called is {demisto.command()}')
@@ -176,7 +217,8 @@ def main():
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            # Fetch incidents from Prisma Cloud Compute, this method is called periodically when 'fetch incidents' is checked
+            # Fetch incidents from Prisma Cloud Compute
+            # this method is called periodically when 'fetch incidents' is checked
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
 
