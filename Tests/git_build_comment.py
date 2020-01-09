@@ -17,7 +17,7 @@ def main():
         with open('./skipped_tests.txt', 'r') as tests:
             skipped_tests = tests.read()
     except FileNotFoundError:
-        pass
+        print('------------------')
     else:
         if skipped_tests:
             token = argv[1]
