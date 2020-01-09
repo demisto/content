@@ -55,7 +55,67 @@ iocs_list = [{"alert_id": "None",
                   ]
               },
               "source_type": "ES",
-              "update_time": "2019-05-12 13:33:05"}]
+              "update_time": "2019-05-12 13:33:05"}, {"alert_id": "None",
+              "alert_name": "AllIpsUndergroundFeedRule",
+              "consumer": "random",
+              "consumer_specific_info": {
+                  "fields": {
+                      "itype": "suspicious_ip",
+                      "tags": [
+                          "DarkWeb"
+                      ],
+                      "threat_type": None,
+                      "value": "2.2.2.2"
+                  },
+                  "type": "indicator"
+              },
+              "doc_id": "123456789",
+              "feed_owner_id": "123456",
+              "importance": 1,
+              "source_id": "c-1231",
+              "source_item": {
+                  "access": "Dark Web",
+                  "creator": "theworker",
+                  "date": "2019-03-29T19:59:00",
+                  "ip": "2.2.2.2",
+                  "site": "dread",
+                  "tags": [
+                      "IP",
+                      "IP_v4",
+                      "IP_global"
+                  ]
+              },
+              "source_type": "ES",
+              "update_time": "2019-05-12 13:33:05"},
+             {"alert_id": "None",
+              "alert_name": "HashesFeedRule",
+              "consumer": "random",
+              "consumer_specific_info": {
+                  "fields": {
+                      "itype": "mal_md5",
+                      "tags": [
+                          "DarkWeb",
+                          "MD5"
+                      ],
+                      "threat_type": None,
+                      "value": "abafbadfbafbafb"
+                  },
+                  "type": "indicator"
+              },
+              "doc_id": "123456789",
+              "feed_owner_id": "123456",
+              "importance": 1,
+              "source_id": "c-1231",
+              "source_item": {
+                  "access": "Dark Web",
+                  "creator": "theworker",
+                  "date": "2019-03-29T19:59:00",
+                  "ip": "abafbadfbafbafb",
+                  "site": "dread",
+                  "tags": [
+                      "MD5"
+                  ]
+              }}]
 
 
 expected_alert_output = [{'name': 'someSecretAlert2', 'occurred': '2019-08-06T23:20:35.000000Z', 'details': '', 'severity': 2,
@@ -89,10 +149,9 @@ expected_alert_output = [{'name': 'someSecretAlert2', 'occurred': '2019-08-06T23
                                      '"read": false, "threat_level": "imminent", "threats": ["Data Leak", "Phishing"], '
                                      '"title": "someSecretAlert1"}'}]
 
-expected_indicators_output = {'suspicious_ip': [{'fields': {'itype': 'suspicious_ip', 'tags': ['DarkWeb'],
-                                                            'threat_type': None, 'value': '1.1.1.1'},
-                                                 'type': 'indicator'}]}
+expected_raw_output = [{'alert_name': 'someSecretAlert2', 'content': '', 'date': '2019-08-06 23:20:35', 'id': '1', 'lang': 'English', 'langcode': 'en', 'read': False, 'severity': 10, 'threat_level': 'emerging', 'threats': ['Phishing'], 'title': 'someSecretAlert2', 'user_id': '123'}, {'alert_name': 'someSecretAlert4', 'content': '', 'date': '2019-08-18 09:58:10', 'id': '2', 'read': False, 'severity': 10, 'threat_level': 'imminent', 'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert4', 'user_id': '132'}, {'alert_name': 'someSecretAlert1', 'content': '', 'date': '2019-08-18 22:58:23', 'id': '3', 'read': False, 'severity': 10, 'threat_level': 'imminent', 'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert1', 'user_id': '123'}, {'alert_name': 'someSecretAlert2', 'content': '', 'date': '2019-08-19 19:27:24', 'id': '4', 'lang': 'English', 'langcode': 'en', 'read': False, 'severity': 10, 'threat_level': 'emerging', 'threats': ['Phishing'], 'title': 'someSecretAlert2', 'user_id': '123'}, {'alert_name': 'someSecretAlert3', 'content': '', 'date': '2019-08-22 08:27:19', 'id': '5', 'read': False, 'severity': 10, 'threat_level': 'imminent', 'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert3', 'user_id': '123'}, {'alert_name': 'someSecretAlert1', 'content': '', 'date': '2019-08-22 08:43:15', 'id': '6', 'read': False, 'severity': 10, 'threat_level': 'imminent', 'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert1', 'user_id': '123'}, {'alert_id': 'None', 'alert_name': 'AllIpsUndergroundFeedRule', 'consumer': 'random', 'consumer_specific_info': {'fields': {'itype': 'suspicious_ip', 'tags': ['DarkWeb'], 'threat_type': None, 'value': '1.1.1.1'}, 'type': 'indicator'}, 'doc_id': '123456789', 'feed_owner_id': '123456', 'importance': 1, 'source_id': 'c-1231', 'source_item': {'access': 'Dark Web', 'creator': 'theworker', 'date': '2019-03-29T19:59:00', 'ip': '1.1.1.1', 'site': 'dread', 'tags': ['IP', 'IP_v4', 'IP_global']}, 'source_type': 'ES', 'update_time': '2019-05-12 13:33:05', 'id': '123456789'}, {'alert_id': 'None', 'alert_name': 'AllIpsUndergroundFeedRule', 'consumer': 'random', 'consumer_specific_info': {'fields': {'itype': 'suspicious_ip', 'tags': ['DarkWeb'], 'threat_type': None, 'value': '2.2.2.2'}, 'type': 'indicator'}, 'doc_id': '123456789', 'feed_owner_id': '123456', 'importance': 1, 'source_id': 'c-1231', 'source_item': {'access': 'Dark Web', 'creator': 'theworker', 'date': '2019-03-29T19:59:00', 'ip': '2.2.2.2', 'site': 'dread', 'tags': ['IP', 'IP_v4', 'IP_global']}, 'source_type': 'ES', 'update_time': '2019-05-12 13:33:05', 'id': '123456789'}, {'alert_id': 'None', 'alert_name': 'HashesFeedRule', 'consumer': 'random', 'consumer_specific_info': {'fields': {'itype': 'mal_md5', 'tags': ['DarkWeb', 'MD5'], 'threat_type': None, 'value': 'abafbadfbafbafb'}, 'type': 'indicator'}, 'doc_id': '123456789', 'feed_owner_id': '123456', 'importance': 1, 'source_id': 'c-1231', 'source_item': {'access': 'Dark Web', 'creator': 'theworker', 'date': '2019-03-29T19:59:00', 'ip': 'abafbadfbafbafb', 'site': 'dread', 'tags': ['MD5']}, 'id': '123456789'}]
 
+expected_iocs = {'IP(val.Address == obj.Address)': [{'Address': '1.1.1.1'}, {'Address': '2.2.2.2'}], 'File(val.MD5 == obj.MD5)': [{'MD5': 'abafbadfbafbafb', 'Tags': 'DarkWeb, MD5'}]}
 
 class MockedResponse(object):
     def __init__(self, status_code):
@@ -196,10 +255,11 @@ def test_get_indicators(mocker):
     mocker.patch.object(SixgillDarkFeedClient, 'mark_digested_item', return_value=None)
 
     from Sixgill import get_indicators
-    readable, raw_output = get_indicators()
+    readable_output, outputs, raw_response = get_indicators()
 
-    assert readable == 'Successfully extracted 1 IOCs of the following types: dict_keys([\'suspicious_ip\']) '
-    assert raw_output == expected_indicators_output
+    assert readable_output == '### Sixgill\'s DarkFeed indicators: \n|File(val.MD5 == obj.MD5)|IP(val.Address == obj.Address)|\n|---|---|\n| {\'MD5\': \'abafbadfbafbafb\', \'Tags\': \'DarkWeb, MD5\'} | {\'Address\': \'1.1.1.1\'},<br>{\'Address\': \'2.2.2.2\'} |\n'
+    assert outputs == expected_iocs
+    assert raw_response == expected_raw_output
 
 
 def test_item_to_incident():

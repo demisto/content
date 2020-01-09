@@ -25,6 +25,16 @@ THREAT_LEVEL_TO_SEVERITY = {
     'imminent': 3,
     'emerging': 2
 }
+
+
+indicator_mapping = {
+    "suspicious_ip": ("IP(val.Address == obj.Address)", '{{"Address": "{}"}}'),
+    "proxy_ip": ("IP(val.Address == obj.Address)", '{{"Address": "{}"}}'),
+    "mal_domain": ("Domain(val.Name == obj.Name)", '{{"Name": "{}"}}'),
+    "mal_md5": ("File(val.MD5 == obj.MD5)", '{{"MD5": "{}", "Tags": "{}"}}'),
+    "crypto_wallet": ("Sixgill.Cryptocurrency(val.Address == obj.Address)", '{{"Address": "{}", "Tags": "{}"}})')
+}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -47,17 +57,42 @@ def item_to_incident(item):
     return incident
 
 
-def handle_indicator(iocs: Dict[str, List], raw_incident):
-    if is_ioc(raw_incident):
+def indicator_to_demisto_format(raw_incident):
+    try:
         indicator = raw_incident.get("consumer_specific_info", {})
         indicator_type = indicator.get('fields', {}).get("itype", None)
         if indicator_type:
-            iocs.update({indicator_type: iocs.get(indicator_type, []) + [indicator]})
+            indicator_name, formatted_indicator_str = indicator_mapping.get(indicator_type, (None, None))
+
+            if indicator_name:
+                if indicator_type == 'mal_md5' or indicator_type == 'crypto_wallet':
+                    formatted_indicator = formatted_indicator_str.format(indicator.get('fields', {}).get('value'),
+                                                                         ", ".join(indicator.get('fields',
+                                                                                                 {}).get('tags', [])))
+                else:
+                    formatted_indicator = formatted_indicator_str.format(indicator.get('fields', {}).get('value'))
+
+                indicator_dict = json.loads(formatted_indicator)
+
+                return indicator_name, indicator_dict
+
+        return None, None
+
+    except Exception:
+        return None, None
+
+
+def handle_indicator(iocs: Dict[str, List[Dict[str, Any]]], raw_incident):
+    if is_ioc(raw_incident):
+        indicator_name, indicator_dict = indicator_to_demisto_format(raw_incident)
+        raw_incident["id"] = raw_incident.get("doc_id")
+        if indicator_name:
+            iocs.update({indicator_name: iocs.get(indicator_name, []) + [indicator_dict]})
             return True
     return False
 
 
-def handle_alerts(incidents: List[Dict[str, str]], raw_incident):
+def handle_alerts(incidents: List[Dict[str, Any]], raw_incident):
     if not is_ioc(raw_incident):
         incident = item_to_incident(raw_incident)
         incidents.append(incident)
@@ -106,16 +141,18 @@ def get_indicators():
     sixgill_darkfeed_client = SixgillDarkFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
                                                     CHANNEL_CODE)
 
-    iocs: Dict[str, List] = {}
+    raw_iocs: List[Dict[str, Any]] = []
+    iocs: Dict[str, List[Dict[str, Any]]] = {}
     extracted_iocs = 0
 
     for raw_incident in sixgill_darkfeed_client.get_incidents(include_delivered_items):
+        raw_iocs.append(raw_incident)
 
         if handle_indicator(iocs, raw_incident):
             sixgill_darkfeed_client.mark_digested_item(raw_incident)
             extracted_iocs += 1
 
-    return f"Successfully extracted {extracted_iocs} IOCs of the following types: {iocs.keys()} ", iocs
+    return tableToMarkdown("Sixgill's DarkFeed indicators: ", iocs), iocs, raw_iocs
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
