@@ -48,22 +48,17 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      Domain:
-        simple: ${Domain.Name}
-      IP addresses:
+      IPAddresses:
         simple: ${IP.Address}
+      InternalRange: {}
       MD5:
-        complex:
-          root: File
-          accessor: MD5
+        simple: ${File.MD5}
       SHA1:
-        complex:
-          root: File
-          accessor: SHA1
+        simple: ${File.SHA1}
       SHA256:
-        complex:
-          root: File
-          accessor: SHA256
+        simple: ${File.SHA256}
+      URLDomain:
+        simple: ${Domain.Name}
     separatecontext: true
     loop:
       iscommand: false
