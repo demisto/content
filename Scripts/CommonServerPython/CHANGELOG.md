@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added the timeline argument to the ***return_outputs*** convenience function.
 
 ## [20.1.0] - 2020-01-07
  - Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.

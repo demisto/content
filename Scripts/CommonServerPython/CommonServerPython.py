@@ -1492,7 +1492,7 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
-def return_outputs(readable_output, outputs=None, raw_response=None):
+def return_outputs(readable_output, outputs=None, raw_response=None, timeline=None):
     """
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
@@ -1507,6 +1507,9 @@ def return_outputs(readable_output, outputs=None, raw_response=None):
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
     raw response from the 3rd party service (originally Contents)
 
+    :type timeline: ``list``
+    :param timeline: must be list, used by server to populate an indicator's timeline
+
     :return: None
     :rtype: ``None``
     """
@@ -1515,7 +1518,8 @@ def return_outputs(readable_output, outputs=None, raw_response=None):
         "HumanReadable": readable_output,
         "ContentsFormat": formats["json"],
         "Contents": raw_response,
-        "EntryContext": outputs
+        "EntryContext": outputs,
+        "IndicatorTimeline": timeline
     }
     # Return 'readable_output' only if needed
     if readable_output and not outputs and not raw_response:
