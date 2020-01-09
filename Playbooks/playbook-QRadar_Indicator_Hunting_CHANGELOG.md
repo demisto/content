@@ -1,8 +1,9 @@
 ## [Unreleased]
 Added outputs for Intenal and external ip's.
-Changed set tasks to stop on error no.
-Replaced DT to new transformer productjoin.
 Added task to sort internal and external ip's
+Changed set tasks to use new script SetAndHandleEmpty instead of regular set.
+Replaced DT to new transformer productjoin.
+
 
 ## [19.12.1] - 2019-12-25
 #### New Playbook

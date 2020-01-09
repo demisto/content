@@ -1562,14 +1562,14 @@ tasks:
     ignoreworker: false
   '67':
     id: '67'
-    taskid: aa3ed547-e328-44c6-80ea-912176a3c0ee
+    taskid: 2fcc2113-f0cb-4d04-8f28-07070d546524
     type: regular
     task:
-      id: aa3ed547-e328-44c6-80ea-912176a3c0ee
+      id: 2fcc2113-f0cb-4d04-8f28-07070d546524
       version: -1
       name: Set detected usernames
-      description: Sets the usernames found in the DetectedUsers context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -1581,13 +1581,13 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedUsers
+      stringify: {}
       value:
         complex:
           root: ${QRadar
           accessor: Search.Result.events.username}
           transformers:
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -1601,10 +1601,10 @@ tasks:
     ignoreworker: false
   '68':
     id: '68'
-    taskid: 7dd16e44-ae20-4ab0-82ae-ab936ef8d0b8
+    taskid: 05b81c3f-0608-4f5d-8ebc-86471c2b1a4b
     type: regular
     task:
-      id: 7dd16e44-ae20-4ab0-82ae-ab936ef8d0b8
+      id: 05b81c3f-0608-4f5d-8ebc-86471c2b1a4b
       version: -1
       name: Get hostnames from assets
       description: List all assets found in the model
@@ -1637,7 +1637,6 @@ tasks:
                   simple: ' OR '
       headers: {}
       range: {}
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -1651,14 +1650,14 @@ tasks:
     ignoreworker: false
   '70':
     id: '70'
-    taskid: 8fdf3462-42fe-4d16-8393-5f6cfaa7bc96
+    taskid: 197960cd-831a-4cea-8cfb-0bc3b179a66b
     type: regular
     task:
-      id: 8fdf3462-42fe-4d16-8393-5f6cfaa7bc96
+      id: 197960cd-831a-4cea-8cfb-0bc3b179a66b
       version: -1
       name: Set detected hostnames from assets
-      description: Sets the hostnames found in the DetectedHosts context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -1669,7 +1668,8 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: QRadar.DetectedHosts
+        simple: QRadar.DetectedInternalHosts
+      stringify: {}
       value:
         complex:
           root: ${QRadar
@@ -1690,14 +1690,14 @@ tasks:
     ignoreworker: false
   '80':
     id: '80'
-    taskid: f29ddf8c-4ca6-42b1-817f-38bffef7d5fd
+    taskid: 205fc6ec-6a3d-489f-8541-6825638aa7b1
     type: regular
     task:
-      id: f29ddf8c-4ca6-42b1-817f-38bffef7d5fd
+      id: 205fc6ec-6a3d-489f-8541-6825638aa7b1
       version: -1
       name: Set detected usernames
-      description: Sets the usernames found in the DetectedUsers context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -1709,13 +1709,13 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedUsers
+      stringify: {}
       value:
         complex:
           root: ${QRadar
           accessor: Search.Result.events.username}
           transformers:
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -1729,10 +1729,10 @@ tasks:
     ignoreworker: false
   '81':
     id: '81'
-    taskid: d83dc20d-2e8e-4a1e-80bb-cf88c01c4518
+    taskid: e1d9be06-a02c-4c7d-84fd-48376c54d3ea
     type: regular
     task:
-      id: d83dc20d-2e8e-4a1e-80bb-cf88c01c4518
+      id: e1d9be06-a02c-4c7d-84fd-48376c54d3ea
       version: -1
       name: Get hostnames from assets
       description: List all assets found in the model
@@ -1765,7 +1765,6 @@ tasks:
                   simple: ' OR '
       headers: {}
       range: {}
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -1779,14 +1778,14 @@ tasks:
     ignoreworker: false
   '82':
     id: '82'
-    taskid: ce3f637c-c2b1-464d-839d-60a2e56d797d
+    taskid: 93143fbb-8eae-441c-8d69-d47ae729eb5c
     type: regular
     task:
-      id: ce3f637c-c2b1-464d-839d-60a2e56d797d
+      id: 93143fbb-8eae-441c-8d69-d47ae729eb5c
       version: -1
       name: Set detected hostnames from assets
-      description: Sets the hostnames found in the DetectedHosts context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -1797,14 +1796,14 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: QRadar.DetectedHosts
+        simple: QRadar.DetectedInternalHosts
+      stringify: {}
       value:
         complex:
           root: ${QRadar
           accessor: Asset.Name.Value}
           transformers:
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -1818,14 +1817,14 @@ tasks:
     ignoreworker: false
   '84':
     id: '84'
-    taskid: 7c4e243f-8b33-4568-8738-86f0666248bd
+    taskid: eafe526e-f22c-47ac-8be4-04de300f3b83
     type: regular
     task:
-      id: 7c4e243f-8b33-4568-8738-86f0666248bd
+      id: eafe526e-f22c-47ac-8be4-04de300f3b83
       version: -1
       name: Set detected usernames
-      description: Sets the usernames found in the DetectedUsers context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -1837,13 +1836,13 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedUsers
+      stringify: {}
       value:
         complex:
           root: ${QRadar
           accessor: Search.Result.events.username}
           transformers:
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -1857,10 +1856,10 @@ tasks:
     ignoreworker: false
   '85':
     id: '85'
-    taskid: 822cb1de-4e49-4d8b-81f8-9876da34a1d0
+    taskid: 79c516b0-4e11-4626-80b2-2a672e6a5f63
     type: regular
     task:
-      id: 822cb1de-4e49-4d8b-81f8-9876da34a1d0
+      id: 79c516b0-4e11-4626-80b2-2a672e6a5f63
       version: -1
       name: Get hostnames from assets
       description: List all assets found in the model
@@ -1893,7 +1892,6 @@ tasks:
                   simple: ' OR '
       headers: {}
       range: {}
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -1907,14 +1905,14 @@ tasks:
     ignoreworker: false
   '86':
     id: '86'
-    taskid: e47b3a54-a53a-47fa-8f53-0970948101b7
+    taskid: 183c8c3d-adee-425e-82d0-1f140468d961
     type: regular
     task:
-      id: e47b3a54-a53a-47fa-8f53-0970948101b7
+      id: 183c8c3d-adee-425e-82d0-1f140468d961
       version: -1
       name: Set detected hostnames from assets
-      description: Sets the hostnames found in the DetectedHosts context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -1925,14 +1923,14 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: QRadar.DetectedHosts
+        simple: QRadar.DetectedInternalHosts
+      stringify: {}
       value:
         complex:
           root: ${QRadar
           accessor: Asset.Name.Value}
           transformers:
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -2792,14 +2790,14 @@ tasks:
     ignoreworker: false
   '119':
     id: '119'
-    taskid: d937a4d4-3d2e-4c57-85c9-c3615bbfd1fc
+    taskid: 2b96a888-b6d8-44e4-8a2e-5a85d6468a43
     type: regular
     task:
-      id: d937a4d4-3d2e-4c57-85c9-c3615bbfd1fc
+      id: 2b96a888-b6d8-44e4-8a2e-5a85d6468a43
       version: -1
       name: Set detected source and destination IP addresses
-      description: Sets the IP addresses found in the DetectedIPs context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -2811,6 +2809,7 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: ${QRadar
@@ -2823,7 +2822,6 @@ tasks:
                   simple: ${QRadar.Search.Result.events.destinationip}
                 iscontext: true
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -2886,14 +2884,15 @@ tasks:
     ignoreworker: false
   '123':
     id: '123'
-    taskid: c4f25201-b713-4679-822a-c32f76c47864
+    taskid: b8f2ec71-559f-46ca-8a13-9eff306b9c52
     type: regular
     task:
-      id: c4f25201-b713-4679-822a-c32f76c47864
+      id: b8f2ec71-559f-46ca-8a13-9eff306b9c52
       version: -1
       name: Set detected IP addresses as external
-      description: Sets the IP addresses found in the DetectedIPs context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -2905,6 +2904,7 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedExternalIPs
+      stringify: {}
       value:
         complex:
           root: IP
@@ -2920,7 +2920,6 @@ tasks:
           accessor: Address
           transformers:
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -2939,7 +2938,6 @@ tasks:
     task:
       id: 00e1d579-b406-4db4-8af2-27369eee70f3
       version: -1
-      description: ''
       name: Are there detected IP addresses?
       type: condition
       iscommand: false
@@ -2970,25 +2968,26 @@ tasks:
     ignoreworker: false
   '125':
     id: '125'
-    taskid: fc19971e-34b2-40f5-86d2-ab0252066d63
+    taskid: 1350a20b-70a0-4076-8c05-de91dab6c6e1
     type: regular
     task:
-      id: fc19971e-34b2-40f5-86d2-ab0252066d63
+      id: 1350a20b-70a0-4076-8c05-de91dab6c6e1
       version: -1
       name: Set detected source and destination IP addresses
-      description: Sets the IP addresses found in the DetectedIPs context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
     nexttasks:
       '#none#':
-      - '144'
+      - '148'
     scriptarguments:
       append:
         simple: 'true'
       key:
         simple: QRadar.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: ${QRadar
@@ -3001,7 +3000,6 @@ tasks:
                   simple: ${QRadar.Search.Result.events.destinationip}
                 iscontext: true
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -3015,10 +3013,10 @@ tasks:
     ignoreworker: false
   '126':
     id: '126'
-    taskid: 685cad0d-bdb5-4cf4-899b-13283fc48042
+    taskid: 98515ce6-8595-4eb7-8e46-4a3c09ffdd2d
     type: regular
     task:
-      id: 685cad0d-bdb5-4cf4-899b-13283fc48042
+      id: 98515ce6-8595-4eb7-8e46-4a3c09ffdd2d
       version: -1
       name: Get hostnames from assets
       description: List all assets found in the model
@@ -3065,14 +3063,14 @@ tasks:
     ignoreworker: false
   '127':
     id: '127'
-    taskid: 6d3abd7e-93fe-4031-81b8-c5b34ba121c1
+    taskid: 9d6c49c2-e23b-476c-8b2d-215ef7e44acd
     type: regular
     task:
-      id: 6d3abd7e-93fe-4031-81b8-c5b34ba121c1
+      id: 9d6c49c2-e23b-476c-8b2d-215ef7e44acd
       version: -1
       name: Set detected hostnames from assets
-      description: Sets the hostnames found in the DetectedHosts context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -3083,14 +3081,14 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: QRadar.DetectedHosts
+        simple: QRadar.DetectedInternalHosts
+      stringify: {}
       value:
         complex:
           root: ${QRadar
           accessor: Asset.Name.Value}
           transformers:
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -3104,14 +3102,14 @@ tasks:
     ignoreworker: false
   '128':
     id: '128'
-    taskid: d1b4956e-c5ff-4ee7-8f3c-7b04d461469d
+    taskid: 10d105eb-8070-42e0-8288-10fef120f106
     type: regular
     task:
-      id: d1b4956e-c5ff-4ee7-8f3c-7b04d461469d
+      id: 10d105eb-8070-42e0-8288-10fef120f106
       version: -1
       name: Set detected source and destination IP addresses
-      description: Sets the IP addresses found in the DetectedIPs context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -3123,6 +3121,7 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: ${QRadar
@@ -3135,7 +3134,6 @@ tasks:
                   simple: ${QRadar.Search.Result.events.destinationip}
                 iscontext: true
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -3149,10 +3147,10 @@ tasks:
     ignoreworker: false
   '129':
     id: '129'
-    taskid: f72d4fb5-2b5d-4b1f-8480-560e436a96a5
+    taskid: 1e69809b-a780-4110-8230-654ca2b6b676
     type: regular
     task:
-      id: f72d4fb5-2b5d-4b1f-8480-560e436a96a5
+      id: 1e69809b-a780-4110-8230-654ca2b6b676
       version: -1
       name: Get hostnames from assets
       description: List all assets found in the model
@@ -3185,7 +3183,6 @@ tasks:
                   simple: ' OR '
       headers: {}
       range: {}
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -3199,14 +3196,14 @@ tasks:
     ignoreworker: false
   '130':
     id: '130'
-    taskid: 045262e4-bc76-4e75-8735-4656af000214
+    taskid: a56b5e47-9e16-4b36-892c-be9b1c10424f
     type: regular
     task:
-      id: 045262e4-bc76-4e75-8735-4656af000214
+      id: a56b5e47-9e16-4b36-892c-be9b1c10424f
       version: -1
       name: Set detected hostnames from assets
-      description: Sets the hostnames found in the DetectedHosts context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -3217,14 +3214,14 @@ tasks:
       append:
         simple: 'true'
       key:
-        simple: QRadar.DetectedHosts
+        simple: QRadar.DetectedInternalHosts
+      stringify: {}
       value:
         complex:
           root: ${QRadar
           accessor: Asset.Name.Value}
           transformers:
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -3238,14 +3235,14 @@ tasks:
     ignoreworker: false
   '131':
     id: '131'
-    taskid: 7e495e5b-00db-4bf4-84cd-b2fc9ee974a5
+    taskid: 094abe29-a1b3-48a5-869f-9543b2b3fed0
     type: regular
     task:
-      id: 7e495e5b-00db-4bf4-84cd-b2fc9ee974a5
+      id: 094abe29-a1b3-48a5-869f-9543b2b3fed0
       version: -1
       name: Set detected usernames
-      description: Sets the usernames found in the DetectedUsers context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -3257,6 +3254,7 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedUsers
+      stringify: {}
       value:
         complex:
           root: ${QRadar
@@ -3277,14 +3275,14 @@ tasks:
     ignoreworker: false
   '132':
     id: '132'
-    taskid: fd1397e8-cf0d-4ac7-8ce3-041b224fb800
+    taskid: 7b02d571-ba51-4147-8a60-e4fa62347a93
     type: regular
     task:
-      id: fd1397e8-cf0d-4ac7-8ce3-041b224fb800
+      id: 7b02d571-ba51-4147-8a60-e4fa62347a93
       version: -1
       name: Set detected source and destination IP addresses
-      description: Sets the IP addresses found in the DetectedIPs context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -3296,6 +3294,7 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: ${QRadar
@@ -3308,7 +3307,6 @@ tasks:
                   simple: ${QRadar.Search.Result.events.destinationip}
                 iscontext: true
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -3322,14 +3320,14 @@ tasks:
     ignoreworker: false
   '133':
     id: '133'
-    taskid: f2c51bd6-f613-40da-8ba6-bbc5deb05944
+    taskid: a672ccdb-9cd7-4a1f-8987-9dde6449b762
     type: regular
     task:
-      id: f2c51bd6-f613-40da-8ba6-bbc5deb05944
+      id: a672ccdb-9cd7-4a1f-8987-9dde6449b762
       version: -1
       name: Set detected source and destination IP addresses
-      description: Sets the IP addresses found in the DetectedIPs context key.
-      scriptName: Set
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -3341,6 +3339,7 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedIPs
+      stringify: {}
       value:
         complex:
           root: ${QRadar
@@ -3353,7 +3352,6 @@ tasks:
                   simple: ${QRadar.Search.Result.events.destinationip}
                 iscontext: true
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -3367,10 +3365,10 @@ tasks:
     ignoreworker: false
   '142':
     id: '142'
-    taskid: 85e65d2c-1630-4607-8028-5c0eee29485b
+    taskid: c11c8eda-919b-409e-805d-bac3d7625b98
     type: regular
     task:
-      id: 85e65d2c-1630-4607-8028-5c0eee29485b
+      id: c11c8eda-919b-409e-805d-bac3d7625b98
       version: -1
       name: Determine whether the IP address is internal or external
       description: Returns yes if the IP is in one of the ranges provided, returns
@@ -3400,14 +3398,15 @@ tasks:
     ignoreworker: false
   '143':
     id: '143'
-    taskid: f4c89671-9c93-4227-8cb5-0b371a3415a8
+    taskid: c6f7a18d-5499-46a0-8060-acb9a13d9e23
     type: regular
     task:
-      id: f4c89671-9c93-4227-8cb5-0b371a3415a8
+      id: c6f7a18d-5499-46a0-8060-acb9a13d9e23
       version: -1
       name: Set detected IP addresses as internal
-      description: Sets the IP addresses found in the DetectedIPs context key.
-      scriptName: Set
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -3419,6 +3418,7 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedInternalIPs
+      stringify: {}
       value:
         complex:
           root: IP
@@ -3434,7 +3434,6 @@ tasks:
           accessor: Address
           transformers:
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -3446,16 +3445,138 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '144':
-    id: '144'
-    taskid: 40a772e7-2547-4cea-83c3-6ce3c87b1f50
+  '145':
+    id: '145'
+    taskid: 5a71baf7-26c2-4460-8c1c-ec04cca152b2
     type: regular
     task:
-      id: 40a772e7-2547-4cea-83c3-6ce3c87b1f50
+      id: 5a71baf7-26c2-4460-8c1c-ec04cca152b2
+      version: -1
+      name: Set detected source and destination IP addresses
+      description: Sets the IP addresses found in the DetectedIPs context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: QRadar.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: ${QRadar
+          accessor: Search.Result.events.sourceip}
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ${QRadar.Search.Result.events.destinationip}
+                iscontext: true
+          - operator: uniq
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3380,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '146':
+    id: '146'
+    taskid: 561f8b63-8017-4d3d-8dcf-e164b62746df
+    type: regular
+    task:
+      id: 561f8b63-8017-4d3d-8dcf-e164b62746df
       version: -1
       name: Set detected usernames
       description: Sets the usernames found in the DetectedUsers context key.
       scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: QRadar.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: ${QRadar
+          accessor: Search.Result.events.username}
+          transformers:
+          - operator: SetIfEmpty1
+            args:
+              applyIfEmpty:
+                value:
+                  simple: 'true'
+              defaultValue: {}
+          - operator: uniq
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3380,
+          "y": 2135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '147':
+    id: '147'
+    taskid: a20d113f-9947-48ce-8c68-56c9dd045872
+    type: regular
+    task:
+      id: a20d113f-9947-48ce-8c68-56c9dd045872
+      version: -1
+      name: Set detected hostnames from assets
+      description: Sets the hostnames found in the DetectedHosts context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: QRadar.DetectedHosts
+      value:
+        complex:
+          root: ${QRadar
+          accessor: Asset.Name.Value}
+          transformers:
+          - operator: uniq
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3390,
+          "y": 2565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '148':
+    id: '148'
+    taskid: 28ad7998-dae0-4152-8ce0-24c7ab530d67
+    type: regular
+    task:
+      id: 28ad7998-dae0-4152-8ce0-24c7ab530d67
+      version: -1
+      name: Set detected usernames
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -3467,13 +3588,13 @@ tasks:
         simple: 'true'
       key:
         simple: QRadar.DetectedUsers
+      stringify: {}
       value:
         complex:
           root: ${QRadar
           accessor: Search.Result.events.username}
           transformers:
           - operator: uniq
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -3491,7 +3612,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 4265,
-        "width": 6660,
+        "width": 6940,
         "x": -3170,
         "y": -240
       }
