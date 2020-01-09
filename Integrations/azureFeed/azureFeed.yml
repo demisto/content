@@ -152,6 +152,7 @@ script:
     - contextPath: Azure.Indicator.Type
       description: Indicator type.
       type: string
+  dockerimage: demisto/python3:3.7.5.4583
   feed: true
   isfetch: false
   longRunning: false

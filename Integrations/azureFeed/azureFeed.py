@@ -1,11 +1,10 @@
-import bs4
-import netaddr
+import re
 import urllib3
+import ipaddress
 import requests
-from typing import Dict, List, Tuple, Any, Callable
+from typing import Dict, List, Tuple
 
 from CommonServerPython import *
-from Scripts.CommonServerPython.CommonServerPython import batch
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -16,11 +15,11 @@ AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/confirmation.aspx?id=5
 INTEGRATION_NAME = 'Azure'
 
 ERROR_TYPE_TO_MESSAGE = {
-    'requests.exceptions.SSLError': F'Connection error in the API call to {INTEGRATION_NAME}.\n'
+    requests.exceptions.SSLError: F'Connection error in the API call to {INTEGRATION_NAME}.\n'
                                     F'Check your not secure parameter.\n\n',
-    'requests.ConnectionError': F'Connection error in the API call to {INTEGRATION_NAME}.\n'
+    requests.ConnectionError: F'Connection error in the API call to {INTEGRATION_NAME}.\n'
                                 F'Check your Server URL parameter.\n\n',
-    'requests.exceptions.HTTPError': F'Error issuing the request call to {INTEGRATION_NAME}.\n\n',
+    requests.exceptions.HTTPError: F'Error issuing the request call to {INTEGRATION_NAME}.\n\n',
 }
 
 
@@ -51,9 +50,9 @@ class Client(BaseClient):
             Dict. IP data object.
         """
         try:
-            address_type = netaddr.IPNetwork(azure_address_prefix)
+            address_type = ipaddress.ip_network(azure_address_prefix)
         except Exception:
-            LOG.exception(F'{INTEGRATION_NAME} - Invalid ip range: {azure_address_prefix}')
+            LOG(F'{INTEGRATION_NAME} - Invalid ip range: {azure_address_prefix}')
             return {}
 
         if address_type.version == 4:
@@ -86,11 +85,11 @@ class Client(BaseClient):
         )
 
         azure_url_response.raise_for_status()
-        response_html_tree = bs4.BeautifulSoup(azure_url_response.content, "lxml")
+        download_link = re.search(r'(https://.+\.json)\",', azure_url_response.text).group(1)
 
-        return response_html_tree.find('a', class_='failoverLink')
+        return download_link
 
-    def get_download_file_content_values(self, download_link: Dict) -> Dict:
+    def get_download_file_content_values(self, download_link: str) -> Dict:
         """Create a request to receive file content from link.
 
         Args:
@@ -101,10 +100,10 @@ class Client(BaseClient):
         """
         if download_link is None:
             raise RuntimeError(F'{INTEGRATION_NAME} - failoverLink not found')
-        LOG.debug(F'download link: {download_link["href"]}')
+        LOG(F'download link: {download_link}')
 
         file_download_response = requests.get(
-            url=download_link["href"],
+            url=download_link,
             stream=True,
             verify=self._verify,
             timeout=self._polling_timeout
@@ -158,14 +157,18 @@ class Client(BaseClient):
             return []
 
         for indicators_group in values_from_file:
-            LOG.debug(F'{INTEGRATION_NAME} - Extracting value: {indicators_group.get("id", None)}')
+            LOG(F'{INTEGRATION_NAME} - Extracting value: {indicators_group.get("id", None)}')
 
             indicator_metadata = self.extract_metadata_of_indicators_group(indicators_group)
             if not indicator_metadata:
                 continue
 
-            if indicator_metadata['region'] not in self.regions_list or \
-                    indicator_metadata['system_service'] not in self.services_list:
+            is_region_not_in_filter = 'All' not in self.regions_list and \
+                                      indicator_metadata['region'] not in self.regions_list
+            is_service_not_in_filter = 'All' not in self.services_list and \
+                                       indicator_metadata['system_service'] not in self.services_list
+
+            if is_region_not_in_filter or is_service_not_in_filter:
                 continue
 
             for address in indicator_metadata['address_prefixes']:
@@ -189,13 +192,12 @@ class Client(BaseClient):
             download_link = self.get_azure_download_link()
             values_from_file = self.get_download_file_content_values(download_link)
             results = self.extract_indicators_from_values_dict(values_from_file)
+
             return results
 
-        except requests.exceptions as err:
+        except (requests.exceptions.SSLError, requests.ConnectionError, requests.exceptions.HTTPError) as err:
             demisto.debug(str(err))
-            return_error('hi')
-
-            raise Exception(ERROR_TYPE_TO_MESSAGE[err.__class__] + err)
+            raise Exception(ERROR_TYPE_TO_MESSAGE[err.__class__] + str(err))
 
         except ValueError as err:
             demisto.debug(str(err))
@@ -206,7 +208,7 @@ class Client(BaseClient):
             raise Exception(err)
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> Tuple[str, Dict, Dict]:
     """Test the ability to fetch Azure file.
     Args:
         client: Client object.
@@ -217,10 +219,11 @@ def test_module(client: Client) -> str:
         download_link = client.get_azure_download_link()
         client.get_download_file_content_values(download_link)
 
-    except requests.exceptions as err:
-        return ERROR_TYPE_TO_MESSAGE[err.__class__]
+    except (requests.exceptions.SSLError, requests.ConnectionError, requests.exceptions.HTTPError) as err:
+        demisto.debug(str(err))
+        raise Exception(ERROR_TYPE_TO_MESSAGE[err.__class__] + str(err))
 
-    return 'ok'
+    return 'ok', {}, {}
 
 
 def get_indicators_command(client: Client) -> Tuple[str, Dict, Dict]:
@@ -290,8 +293,8 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    regions_list = ['All'] + argToList(demisto.params().get('regions', ''))
-    services_list = ['All'] + argToList(demisto.params().get('services', ''))
+    regions_list = argToList(demisto.params().get('regions', ''))
+    services_list = argToList(demisto.params().get('services', ''))
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
     insecure = demisto.params().get('insecure', False)
@@ -309,7 +312,7 @@ def main():
         }
 
         if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            return_outputs(*commands[command](client))
 
         # elif command == 'fetch-indicators':
         #     indicators, _ = fetch_indicators(client)
