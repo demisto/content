@@ -15,7 +15,6 @@ import logging
 from collections import OrderedDict
 import xml.etree.cElementTree as ET
 from datetime import datetime, timedelta
-from typing import List, Any, Optional, Dict
 
 import demistomock as demisto
 
@@ -55,7 +54,7 @@ entryTypes = {
 }
 
 
-class EntryType:
+class EntryType(object):
     """
     Enum: contains all the entry types (e.g. NOTE, ERROR, WARNING, FILE, etc.)
     """
@@ -72,6 +71,16 @@ class EntryType:
     MAP_ENTRY_TYPE = 15
     WIDGET = 17
 
+    @classmethod
+    def is_valid_type(cls, _type):
+        # type: (int) -> bool
+        types = [
+            var
+            for var in cls.__dict__.keys()
+            if not var.startswith("__")
+        ]
+        return _type in types
+
 
 # DEPRECATED - use EntryFormat enum instead
 formats = {
@@ -84,7 +93,7 @@ formats = {
 }
 
 
-class EntryFormat:
+class EntryFormat(object):
     """
     Enum: contains all the entry formats (e.g. HTML, TABLE, JSON, etc.)
     """
@@ -94,6 +103,17 @@ class EntryFormat:
     TEXT = 'text'
     DBOT_RESPONSE = 'dbotCommandResponse'
     MARKDOWN = 'markdown'
+
+    @classmethod
+    def is_valid_type(cls, _type):
+        # type: (str) -> bool
+        types = [
+            var
+            for var in cls.__dict__.keys()
+            if not var.startswith("__")
+        ]
+        return _type in types
+
 
 brands = {
     'xfe': 'xfe',
@@ -116,7 +136,7 @@ thresholds = {
 }
 
 
-class IndicatorType:
+class IndicatorType(object):
     """
     Enum: contains all the indicator types, used DBotScore.Type)
     """
@@ -125,9 +145,15 @@ class IndicatorType:
     DOMAIN = 'domain'
     URL = 'url'
 
-    @staticmethod
-    def is_valid_type(_type):
-        return _type in (IndicatorType.IP, IndicatorType.HASH, IndicatorType.DOMAIN, IndicatorType.URL)
+    @classmethod
+    def is_valid_type(cls, _type):
+        # type: (str) -> bool
+        types = [
+            var
+            for var in cls.__dict__.keys()
+            if not var.startswith("__")
+        ]
+        return _type in types
 
 
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
@@ -1544,9 +1570,13 @@ class Indicator:
     def to_context(self):
         pass
 
+
 class CommandResults:
+    """
+    This class should contain results of an integration command or a script
+    """
     def __init__(self, output_prefix, uniq_field, outputs, indicators=None):
-        # type: (str, str, Any, List[Indicator]) -> None
+        # type: (str, str, object, list) -> None
         self.indicators = indicators
 
         self.output_prefix = output_prefix
@@ -1554,7 +1584,7 @@ class CommandResults:
         self.outputs = outputs
 
     def to_context(self):
-        outputs = {}  # type: Dict[str, Any]
+        outputs = {}  # type: dict
         human_readable = None
         raw_response = None
 
@@ -1568,7 +1598,7 @@ class CommandResults:
 
             outputs_key = '{}(val.{} == obj.{})'.format(self.output_prefix, self.uniq_field, self.uniq_field)
             outputs.update({
-                outputs_key : self.outputs
+                outputs_key: self.outputs
             })
 
         return_entry = {
@@ -1580,6 +1610,7 @@ class CommandResults:
         }
 
         return return_entry
+
 
 class DBotScore(Indicator):
     NONE = 0
@@ -1638,7 +1669,7 @@ class IP(Indicator):
         self.detection_engines = detection_engines
         self.positive_engines = positive_engines
 
-        self.dbot_score = None  # type: Optional[DBotScore]
+        self.dbot_score = None  # type: ignore
 
     def set_dbot_score(self, dbot_score):
         # type: (DBotScore) -> None
@@ -1698,7 +1729,7 @@ class Domain(Indicator):
         self.dns = dns
 
         # DBotScore fields
-        self.dbot_score = None  # type: Optional[DBotScore]
+        self.dbot_score = None  # type: ignore
 
     def set_dbot_score(self, dbot_score):
         # type: (DBotScore) -> None
@@ -1918,9 +1949,9 @@ regexFlags = re.M  # Multi line matching
 # else, use re.match({regex_format},str)
 
 ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
-ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'
-ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'
-ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'
+ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'  # noqa
+ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'  # noqa
+ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'  # noqa
 emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
@@ -2657,9 +2688,6 @@ if 'requests' in sys.modules:
             return response.ok
 
 
-class DemistoException(Exception):
-    pass
-
 def batch(iterable, batch_size=1):
     """Gets an iterable and yields slices of it.
 
@@ -2678,3 +2706,7 @@ def batch(iterable, batch_size=1):
         yield current_batch
         current_batch = not_batched[:batch_size]
         not_batched = current_batch[batch_size:]
+
+
+class DemistoException(Exception):
+    pass
