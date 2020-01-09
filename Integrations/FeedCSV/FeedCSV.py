@@ -9,7 +9,7 @@ import csv
 # disable insecure warnings
 urllib3.disable_warnings()
 
-SOURCE_NAME = demisto.params().get('source_name')
+SOURCE_NAME = 'CSV Feed Integration'
 
 
 class Client(BaseClient):
@@ -115,21 +115,9 @@ class Client(BaseClient):
         return csvreader
 
 
-# simple function to iterate list in batches
-def batch(iterable, batch_size=1):
-    current_batch = []
-    for item in iterable:
-        current_batch.append(item)
-        if len(current_batch) == batch_size:
-            yield current_batch
-            current_batch = []
-    if current_batch:
-        yield current_batch
-
-
 def module_test_command(client, args):
     fieldnames = demisto.params().get('fieldnames')
-    if fieldnames == 'indicator' or any(field in fieldnames for field in ('indicator,', ',indicator')):
+    if len(fieldnames) == 1 or any(field in fieldnames for field in ('indicator,', ',indicator')):
         client.build_iterator()
         return 'ok', {}, {}
     return_error('Please provide a column named "indicator" in fieldnames')
@@ -140,13 +128,17 @@ def fetch_indicators_command(client, itype):
     indicators = []
     for item in iterator:
         raw_json = dict(item)
-        raw_json['value'] = value = item.get('indicator')
-        raw_json['type'] = itype
-        indicators.append({
-            "value": value,
-            "type": itype,
-            "rawJSON": raw_json,
-        })
+        value = item.get('indicator')
+        if not value and len(item) == 1:
+            value = next(iter(item.values()))
+        if value:
+            raw_json['value'] = value
+            raw_json['type'] = itype
+            indicators.append({
+                "value": value,
+                "type": itype,
+                "rawJSON": raw_json,
+            })
     return indicators
 
 
