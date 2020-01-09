@@ -116,7 +116,7 @@ class Client(BaseClient):
 
 
 def module_test_command(client, args):
-    fieldnames = demisto.params().get('fieldnames')
+    fieldnames = argToList(demisto.params().get('fieldnames'))
     if len(fieldnames) == 1 or any(field in fieldnames for field in ('indicator,', ',indicator')):
         client.build_iterator()
         return 'ok', {}, {}
@@ -167,13 +167,17 @@ def main():
             indicators = fetch_indicators_command(client, params.get('indicator_type'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)  # type: ignore
+                demisto.createIndicators(b)
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = f'Error in {SOURCE_NAME} Integration [{e}]'
-        return_error(err_msg)
+        err_msg = f'Error in {SOURCE_NAME} Integration - Encountered an issue with createIndicators' if \
+            'failed to create' in str(e) else f'Error in {SOURCE_NAME} Integration [{e}]'
+        if command == 'get-indicators':
+            raise Exception(err_msg)
+        else:
+            return_error(err_msg)
 
 
 if __name__ == '__builtin__' or __name__ == 'builtins':
