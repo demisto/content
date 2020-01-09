@@ -15,8 +15,8 @@ ALERT_TYPE_VULNERABILITY = 'vulnerability'
 ALERT_TYPE_COMPLIANCE = 'compliance'
 ALERT_TYPE_AUDIT = 'audit'
 
-
 ''' COMMANDS + REQUESTS FUNCTIONS '''
+
 
 class Client(BaseClient):
     def test(self):
@@ -28,7 +28,6 @@ class Client(BaseClient):
             method='GET',
             url_suffix='',
             params={'to': time.strftime('%Y-%m-%d', time.gmtime(0))})
-
 
     def list_incidents(self):
         """
@@ -62,14 +61,14 @@ def translate_severity(sev):
     return 0
 
 
-def camel_case_transformer(header):
+def camel_case_transformer(s):
     """
     Converts a camel case string into space separated words starting with a capital letters
     E.g. input: 'camelCase' output: 'Camel Case'
 
     """
 
-    return re.sub("([a-z])([A-Z])", "\g<1> \g<2>", header).title()
+    return re.sub('([a-z])([A-Z])', r'\g<1> \g<2>', s).title()
 
 
 def test_module(client):
@@ -108,7 +107,8 @@ def fetch_incidents(client):
             tables = {}
             for key, value in a.items():
                 if isinstance(value, list):
-                    tables[key + 'MarkdownTable'] = tableToMarkdown(camel_case_transformer(key + ' table'), value, headerTransform=camel_case_transformer)
+                    tables[key + 'MarkdownTable'] = tableToMarkdown(camel_case_transformer(key + ' table'), value,
+                                                                    headerTransform=camel_case_transformer)
 
             a.update(tables)
 
