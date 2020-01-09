@@ -14,4 +14,5 @@ def main():
     return_outputs(human_readable, context_entry)
 
 
-main()
+if __name__ in ('__builtin__', 'builtins'):
+    main()
