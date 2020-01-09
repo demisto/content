@@ -71,16 +71,6 @@ class EntryType(object):
     MAP_ENTRY_TYPE = 15
     WIDGET = 17
 
-    @classmethod
-    def is_valid_type(cls, _type):
-        # type: (int) -> bool
-        types = [
-            var
-            for var in cls.__dict__.keys()
-            if not var.startswith("__")
-        ]
-        return _type in types
-
 
 # DEPRECATED - use EntryFormat enum instead
 formats = {
@@ -107,12 +97,14 @@ class EntryFormat(object):
     @classmethod
     def is_valid_type(cls, _type):
         # type: (str) -> bool
-        types = [
-            var
-            for var in cls.__dict__.keys()
-            if not var.startswith("__")
-        ]
-        return _type in types
+        return _type in (
+            EntryFormat.HTML,
+            EntryFormat.TABLE,
+            EntryFormat.JSON,
+            EntryFormat.TEXT,
+            EntryFormat.MARKDOWN,
+            EntryFormat.DBOT_RESPONSE
+        )
 
 
 brands = {
@@ -148,12 +140,13 @@ class IndicatorType(object):
     @classmethod
     def is_valid_type(cls, _type):
         # type: (str) -> bool
-        types = [
-            var
-            for var in cls.__dict__.keys()
-            if not var.startswith("__")
-        ]
-        return _type in types
+
+        return _type in (
+            IndicatorType.IP,
+            IndicatorType.HASH,
+            IndicatorType.DOMAIN,
+            IndicatorType.URL
+        )
 
 
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
@@ -1561,9 +1554,6 @@ def is_ip_valid(s, accept_v6_ips=False):
 
 
 class Indicator:
-    """
-    interface class
-    """
     def __init__(self):
         pass
 
@@ -1640,7 +1630,12 @@ class DBotScore(Indicator):
 
     @staticmethod
     def is_valid_score(score):
-        return score in (DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD)
+        return score in (
+            DBotScore.NONE,
+            DBotScore.GOOD,
+            DBotScore.SUSPICIOUS,
+            DBotScore.BAD
+        )
 
     def to_context(self):
         return {
@@ -1758,10 +1753,6 @@ class Domain(Indicator):
             ret_value.update(self.dbot_score.to_context())
 
         return ret_value
-
-
-def indicators_to_outputs(indicators):
-    return None
 
 
 def return_outputs(readable_output, outputs=None, raw_response=None):

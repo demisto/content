@@ -21,8 +21,8 @@ JS_PRIVATE_FUNCS = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRec
 PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
                     "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
                     "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException", "BaseClient",
-                    "BaseHTTPClient", "DemistoHandler", "DebugLogger", "IndicatorType", "EntryFormat", "EntryType",
-                    "DBotScore"]
+                    "BaseHTTPClient", "DemistoHandler", "DebugLogger", "Indicator", "IndicatorType", "IP", "Domain",
+                    "DBotScore", "EntryType", "EntryFormat"]
 
 PY_IRREGULAR_FUNCS = {"LOG": {"argList": ["message"]}}
 
@@ -98,7 +98,7 @@ def create_js_documentation(path, origin, language):
         y = dict()
         y["name"] = a.get("name", "")
         if y["name"] == "":
-            print("Error extracting function name for JS fucntion with the following data:\n", a)
+            print("Error extracting function name for JS function with the following data:\n", a)
             is_error = True
         y["description"] = a.get("description", "")
         if y["description"] == "":
