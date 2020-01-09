@@ -1732,7 +1732,7 @@ def indicators_to_outputs(indicators):
     return None
 
 
-def return_outputs(readable_output, outputs=None, raw_response=None, indicators=None):
+def return_outputs(readable_output, outputs=None, raw_response=None):
     """
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
@@ -1767,15 +1767,6 @@ def return_outputs(readable_output, outputs=None, raw_response=None, indicators=
     elif outputs and raw_response is None:
         # if raw_response was not provided but outputs were provided then set Contents as outputs
         return_entry["Contents"] = outputs
-
-    if indicators:
-        if "EntryContext" not in return_entry:
-            return_entry["EntryContext"] = {}
-
-        return_entry["EntryContext"][IP.CONTEXT_PATH] = indicators
-        dbot_scores = map(lambda indicator : indicator.dbot_score, indicators)
-
-        return_entry['EntryContext'][DBotScore.CONTEXT_PATH].extend(dbot_scores)
 
     demisto.results(return_entry)
 

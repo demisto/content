@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+ - **DEPRECATED**: *entryTypes*, *formats*, *dbotscores*
+ - Added new enums: **IndicatorType**, **EntryFormat**, **EntryType**, **DBotScore** (replaced the deprecated ones) 
 
 ## [20.1.0] - 2020-01-07
  - Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.

@@ -1137,41 +1137,6 @@ class TestReturnOutputs:
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
 
-    def test_return_ip_indicator(self, mocker):
-        mocker.patch.object(demisto, 'results')
-        md = 'md'
-        ip_indicator = IP(
-            ip='8.8.8.8',
-            asn='SOME ASN',
-            vendor='Virus Total',
-            dbot_score=DBotScore.BAD,
-            malicious_description='this is malicious ip'
-        )
-
-        return_outputs(md, indicators=ip_indicator)
-        results = demisto.results.call_args[0][0]
-        assert len(demisto.results.call_args[0]) == 1
-        assert demisto.results.call_count == 1
-
-        assert 'EntryContext' in results
-        assert 'DBotScore' in results['EntryContext']
-        assert results['DBotScore'] == {
-            'Vendor': 'Virus Total',
-            'Type': IndicatorType.IP,
-            'Indicator': '8.8.8.8',
-            'Score': DBotScore.BAD
-        }
-
-        assert 'IP' in results['EntryContext']
-        assert results['IP'] == {
-            'Address': '8.8.8.8',
-            'ASN': 'SOME ASN',
-            'Malicious': {
-                'Vendor': 'Virus Total',
-                'Description': 'this is malicious ip'
-            }
-        }
-
 
 def test_argToBoolean():
     assert argToBoolean('true') is True
