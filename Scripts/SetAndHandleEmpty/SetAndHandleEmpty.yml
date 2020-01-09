@@ -6,8 +6,8 @@ fromversion: 4.5.0
 type: python
 tags:
 - Utility
-comment: Checks if value exists in context. If the value exists it will be set in context,
-  if not nothing will be set.
+comment: Checks if value exists in context. If the value exists it will be set in
+  context, if not nothing will be set.
 enabled: true
 args:
 - name: key
