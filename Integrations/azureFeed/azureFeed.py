@@ -2,8 +2,6 @@ import bs4
 import netaddr
 import urllib3
 import requests
-import itertools
-import functools
 from typing import Dict, List, Tuple, Any, Callable
 
 from CommonServerPython import *
@@ -81,58 +79,102 @@ class Client(BaseClient):
 
         return response_html_tree.find('a', class_='failoverLink')
 
+    def get_download_file_content_values(self, download_link):
+        """Create a request to receive file content from link.
+
+        Args:
+            download_link (str): Link to the desired Azure file.
+
+        Returns:
+            Dict. Content of values section in the Azure downloaded file.
+        """
+        if download_link is None:
+            raise RuntimeError(F'{INTEGRATION_NAME} - failoverLink not found')
+        LOG.debug(F'download link: {download_link["href"]}')
+
+        file_download_response = requests.get(
+            url=download_link["href"],
+            stream=True,
+            verify=self._verify,
+            timeout=self._polling_timeout
+        )
+
+        file_download_response.raise_for_status()
+        file_download_response_json = file_download_response.json()  # type: Dict
+
+        return file_download_response_json.get('values', None)
+
+    @staticmethod
+    def extract_metadata_of_indicators_group(indicators_group_data):
+        """Extracts metadata of an indicators group.
+
+        Args:
+            indicators_group_data (Dict): Indicator's group object from the Azure downloaded file.
+
+        Returns:
+            Dict. Indicators group metadata.
+        """
+        indicator_metadata = dict()
+
+        indicator_metadata['id'] = indicators_group_data.get('id', None)
+        indicator_metadata['name'] = indicators_group_data.get('name', None)
+
+        indicator_properties = indicators_group_data.get('properties', None)
+        if indicator_properties is None:
+            LOG.error(F'{INTEGRATION_NAME} - no properties for indicators group {indicator_metadata["name"]}')
+            return None
+
+        indicator_metadata['region'] = indicator_properties.get('region', None)
+        indicator_metadata['platform'] = indicator_properties.get('platform', None)
+        indicator_metadata['system_service'] = indicator_properties.get('systemService', None)
+        indicator_metadata['address_prefixes'] = indicator_properties.get('addressPrefixes', [])
+
+        return indicator_metadata
+
+    def extract_indicators_from_values_dict(self, values_from_file):
+        """Builds a list of all IP indicators in the input dict.
+
+        Args:
+            values_from_file (Dict): The values object from the Azure downloaded file.
+
+        Returns:
+
+        """
+        results = []
+
+        if values_from_file is None:
+            LOG.error(F'{INTEGRATION_NAME} - No values in JSON response')
+            return []
+
+        for indicators_group in values_from_file:
+            LOG.debug(F'{INTEGRATION_NAME} - Extracting value: {indicators_group.get("id", None)}')
+
+            indicator_metadata = self.extract_metadata_of_indicators_group(indicators_group)
+            if not indicator_metadata:
+                continue
+
+            for address in indicator_metadata['address_prefixes']:
+                results.append(
+                    self.build_ip_indicator(address,
+                                            azure_name=indicator_metadata['name'],
+                                            azure_id=indicator_metadata['id'],
+                                            azure_region=indicator_metadata['region'],
+                                            azure_platform=indicator_metadata['platform'],
+                                            azure_system_service=indicator_metadata['system_service'])
+                )
+
+        return results
+
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
         """
-        results = []
-
         try:
             download_link = self.get_azure_download_link()
-
-            if download_link is None:
-                raise RuntimeError(F'{INTEGRATION_NAME} - failoverLink not found')
-            LOG.debug(F'download link: {download_link["href"]}')
-
-            file_download_response = requests.get(
-                url=download_link["href"],
-                stream=True,
-                verify=self._verify,
-                timeout=self._polling_timeout
-            )
-
-            file_download_response.raise_for_status()
-            file_download_response_json = file_download_response.json()  # type: Dict
-
-            values_from_file = file_download_response_json.get('values', None)
-            if values_from_file is None:
-                LOG.error(F'{INTEGRATION_NAME} - No values in JSON response')
-                return []
-
-            for indicator in values_from_file:
-                LOG.debug(F'{INTEGRATION_NAME} - Extracting value: {indicator.get("id", None)}')
-
-                indicator_id_ = indicator.get('id', None)
-                indicator_name = indicator.get('name', None)
-
-                indicator_properties = indicator.get('properties', None)
-                if indicator_properties is None:
-                    LOG.error(F'{INTEGRATION_NAME} - no properties in value')
-                    continue
-
-                region = indicator_properties.get('region', None)
-                platform = indicator_properties.get('platform', None)
-                system_service = indicator_properties.get('systemService', None)
-                address_prefixes = indicator_properties.get('addressPrefixes', [])
-                for address in address_prefixes:
-                    results.append(
-                        self.build_ip_indicator(address, azure_name=indicator_name,
-                                                azure_id=indicator_id_,
-                                                azure_region=region,
-                                                azure_platform=platform,
-                                                azure_system_service=system_service)
-                    )
+            values_from_file = self.get_download_file_content_values(download_link)
+            results = self.extract_indicators_from_values_dict(values_from_file)
+            return results
 
         except requests.exceptions.SSLError as err:
             demisto.debug(str(err))
@@ -156,8 +198,6 @@ class Client(BaseClient):
             demisto.debug(str(err))
             raise Exception(err)
 
-        return results
-
 
 def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
     """Builds the iterator to check that the feed is accessible.
@@ -166,7 +206,8 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     Returns:
         Outputs.
     """
-    client.build_iterator()
+    download_link = client.get_azure_download_link()
+    values_from_file = client.get_download_file_content_values(download_link)
     return 'ok', {}, {}
 
 
