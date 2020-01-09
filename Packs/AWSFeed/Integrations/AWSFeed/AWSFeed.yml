@@ -1,0 +1,118 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: AWS Feed
+  version: -1
+configuration:
+- defaultvalue: https://ip-ranges.amazonaws.com/ip-ranges.json
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: false
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Indicator Type
+  name: indicator_type
+  required: true
+  type: 0
+- defaultvalue: F - Reliability cannot be judged
+  display: Reliability
+  name: feedInstanceReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- name: expiration
+  required: false
+  type: 17
+- defaultvalue: indicatorType
+  name: expirationPolicy
+  required: false
+  type: 0
+- name: expirationInterval
+  required: false
+  type: 1
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- display: Sub Feeds
+  name: extractors
+  options:
+  - AMAZON
+  - EC2
+  - ROUTE53
+  - ROUTE53_HEALTHCHECKS
+  - CLOUDFRONT
+  - S3
+  required: true
+  type: 16
+- defaultvalue: indicator
+  display: JSON attribute to use as an indicator
+  name: indicator
+  required: false
+  type: 0
+- display: additional JSON attributes to include in the indicator value.
+  name: fields
+  required: false
+  type: 0
+- defaultvalue: json
+  display: Source Name
+  name: source_name
+  required: false
+  type: 0
+- display: cert_file
+  name: cert_file
+  required: false
+  type: 0
+- display: key_file
+  name: key_file
+  required: false
+  type: 0
+- display: headers
+  name: headers
+  required: false
+  type: 0
+description: AWS Feed Integration
+display: AWS Feed
+name: AWS Feed
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: limits the number of context indicators to output
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetches indicators into the context data.
+    execution: false
+    name: get-indicators
+    outputs:
+    - contextPath: JSON.Indicator
+      description: The indicators from client.
+      type: Unknown
+  dockerimage: demisto/jmespath:1.0.0.5129
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
