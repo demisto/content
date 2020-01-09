@@ -1,0 +1,167 @@
+id: AWS Feed Test
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: AWS Feed Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c31ed5ca-5f32-4160-8f82-45771831350b
+    type: start
+    task:
+      id: c31ed5ca-5f32-4160-8f82-45771831350b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "1":
+    id: "1"
+    taskid: 11e97b13-56cb-4026-8601-02b698bc6528
+    type: regular
+    task:
+      id: 11e97b13-56cb-4026-8601-02b698bc6528
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "2":
+    id: "2"
+    taskid: 196d15c5-6767-4672-8fc7-93db22649b3e
+    type: regular
+    task:
+      id: 196d15c5-6767-4672-8fc7-93db22649b3e
+      version: -1
+      name: get-indicators
+      script: '|||get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: 615afcc2-99bf-4433-869b-217fa10bdb5d
+    type: condition
+    task:
+      id: 615afcc2-99bf-4433-869b-217fa10bdb5d
+      version: -1
+      name: Test
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: JSON
+                accessor: Indicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: "4"
+    taskid: c6171f16-df5d-443c-87c5-d15fd68f2742
+    type: title
+    task:
+      id: c6171f16-df5d-443c-87c5-d15fd68f2742
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
