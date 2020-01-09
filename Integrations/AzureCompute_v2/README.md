@@ -1,6 +1,6 @@
 <p>
 Create and Manage Azure Virtual Machines
-
+<br/>
 This integration was integrated and tested with Azure Compute API Version: 2017-12-01.
 </p>
 <h2>Detailed Description</h2>
