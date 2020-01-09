@@ -13,6 +13,14 @@ AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/confirmation.aspx?id=5
 urllib3.disable_warnings()
 INTEGRATION_NAME = 'Azure'
 
+ERROR_TYPE_TO_MESSAGE = {
+    'requests.exceptions.SSLError': f'Connection error in the API call to {INTEGRATION_NAME}.\n'
+                                    f'Check your not secure parameter.\n\n',
+    'requests.ConnectionError': f'Connection error in the API call to {INTEGRATION_NAME}.\n'
+                                f'Check your Server URL parameter.\n\n',
+    'requests.exceptions.HTTPError': f'Error issuing the request call to {INTEGRATION_NAME}.\n\n',
+}
+
 
 class Client(BaseClient):
     """Client to use in the Azure Feed integration. Overrides BaseClient.
@@ -22,8 +30,11 @@ class Client(BaseClient):
         proxy (bool):False if feed HTTPS server certificate will not use proxies, True otherwise.
     """
 
-    def __init__(self, polling_timeout: int = 20, insecure: bool = False, proxy: bool = False):
+    def __init__(self, regions_list: list, services_list: list, polling_timeout: int, insecure: bool,
+                 proxy: bool):
         super().__init__(base_url=AZUREJSON_URL, verify=insecure, proxy=proxy)
+        self.regions_list = regions_list
+        self.services_list = services_list
         self._polling_timeout = polling_timeout
 
     @staticmethod
@@ -118,8 +129,8 @@ class Client(BaseClient):
 
         indicator_metadata['id'] = indicators_group_data.get('id', None)
         indicator_metadata['name'] = indicators_group_data.get('name', None)
-
         indicator_properties = indicators_group_data.get('properties', None)
+
         if indicator_properties is None:
             LOG.error(F'{INTEGRATION_NAME} - no properties for indicators group {indicator_metadata["name"]}')
             return None
@@ -153,6 +164,10 @@ class Client(BaseClient):
             if not indicator_metadata:
                 continue
 
+            if indicator_metadata['region'] not in self.regions_list or \
+                    indicator_metadata['system_service'] not in self.services_list:
+                continue
+
             for address in indicator_metadata['address_prefixes']:
                 results.append(
                     self.build_ip_indicator(address,
@@ -176,19 +191,9 @@ class Client(BaseClient):
             results = self.extract_indicators_from_values_dict(values_from_file)
             return results
 
-        except requests.exceptions.SSLError as err:
+        except requests.exceptions as err:
             demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                            f'Check your not secure parameter.\n\n{err}')
-
-        except requests.ConnectionError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                            f'Check your Server URL parameter.\n\n{err}')
-
-        except requests.exceptions.HTTPError as err:
-            demisto.debug(str(err))
-            raise Exception(f'Error issuing the request call to {INTEGRATION_NAME}.\n\n{err}')
+            raise Exception(ERROR_TYPE_TO_MESSAGE[err.__class__] + err)
 
         except ValueError as err:
             demisto.debug(str(err))
@@ -199,16 +204,21 @@ class Client(BaseClient):
             raise Exception(err)
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
-    """Builds the iterator to check that the feed is accessible.
+def test_module(client: Client, *_) -> str:
+    """Test the ability to fetch Azure file.
     Args:
         client: Client object.
     Returns:
-        Outputs.
+        str. ok for success, relevant error string otherwise.
     """
-    download_link = client.get_azure_download_link()
-    values_from_file = client.get_download_file_content_values(download_link)
-    return 'ok', {}, {}
+    try:
+        download_link = client.get_azure_download_link()
+        client.get_download_file_content_values(download_link)
+
+    except requests.exceptions as err:
+        return ERROR_TYPE_TO_MESSAGE[err.__class__]
+
+    return 'ok'
 
 
 def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
@@ -277,7 +287,10 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    indicator = demisto.params().get('indicator')
+    regions_list = argToList(demisto.params().get('regions', ''))
+    services_list = argToList(demisto.params().get('services', ''))
+    polling_arg = demisto.params().get('polling_timeout', '')
+    polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
     insecure = demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy') == 'true'
 
@@ -285,7 +298,7 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(indicator, insecure, proxy)
+        client = Client(regions_list, services_list, polling_timeout, insecure, proxy)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'get-indicators': get_indicators_command

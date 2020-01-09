@@ -6,10 +6,84 @@ configuration:
 - defaultvalue: https://example.net
   display: Regions
   name: regions
+  options:
+  - australiacentral
+  - australiacentral2
+  - australiaeast
+  - australiasoutheast
+  - brazilse
+  - brazilsouth
+  - canadacentral
+  - canadaeast
+  - centralfrance
+  - centralindia
+  - centralus
+  - centraluseuap
+  - eastasia
+  - eastus
+  - eastus2
+  - eastus2euap
+  - germanyn
+  - germanywc
+  - japaneast
+  - japanwest
+  - koreacentral
+  - koreasouth
+  - northcentralus
+  - northeurope
+  - norwaye
+  - norwayw
+  - southafricanorth
+  - southafricawest
+  - southcentralus
+  - southeastasia
+  - southfrance
+  - southindia
+  - switzerlandn
+  - switzerlandw
+  - uaecentral
+  - uaenorth
+  - uknorth
+  - uksouth
+  - uksouth2
+  - ukwest
+  - westcentralus
+  - westeurope
+  - westindia
+  - westus
+  - westus2
   required: true
   type: 16
 - display: Services
   name: services
+  options:
+  - AD
+  - ApiManagement
+  - AppService
+  - AppServiceManagement
+  - Backup
+  - BatchNodeManagement
+  - CognitiveServicesManagement
+  - Connectors
+  - ContainerRegistry
+  - CosmosDB
+  - DataLake
+  - Dynamics365ForMarketingEmail
+  - EventHub
+  - FrontDoor
+  - HDInsight
+  - Identity
+  - IoTHub
+  - KeyVault
+  - MachineLearning
+  - MicrosoftContainerRegistry
+  - Monitor
+  - SQL
+  - ServiceBus
+  - ServiceFabric
+  - SqlManagement
+  - Storage
+  - TrafficManager
   required: true
   type: 16
 - defaultvalue: 'true'
@@ -33,23 +107,24 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-- display: ""
-  name: expiration
-  defaultvalue: ""
+- name: expiration
+  required: false
   type: 17
-  required: false
-- display: ""
+- defaultvalue: indicatorType
+  hidden: true
   name: expirationPolicy
-  defaultvalue: indicatorType
+  required: false
   type: 0
-  required: false
-  hidden: true
-- display: ""
+- hidden: true
   name: expirationInterval
-  defaultvalue: ""
-  type: 1
   required: false
-  hidden: true
+  type: 1
+- defaultvalue: '20'
+  display: Request Timeout
+  hidden: false
+  name: polling_timeout
+  required: false
+  type: 0
 description: Integration Template
 display: azureFeed
 name: azureFeed
