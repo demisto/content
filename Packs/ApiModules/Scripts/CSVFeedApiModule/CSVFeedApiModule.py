@@ -143,3 +143,36 @@ def get_indicators_command(client, args):
     entry_result = camelize(indicators_list[:limit])
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
     return hr, {'CSV.Indicator': entry_result}, indicators_list
+
+
+def module_test_command(client, args):
+    fieldnames = demisto.params().get('fieldnames')
+    if fieldnames == 'indicator' or any(field in fieldnames for field in ('indicator,', ',indicator')):
+        client.build_iterator()
+        return 'ok', {}, {}
+    return_error('Please provide a column named "indicator" in fieldnames')
+
+
+def feed_main():
+    params = {k: v for k, v in demisto.params().items() if v is not None}
+    handle_proxy()
+    client = Client(**params)
+    command = demisto.command()
+    demisto.info('Command being called is {}'.format(command))
+    # Switch case
+    commands = {
+        'test-module': module_test_command,
+        'get-indicators': get_indicators_command
+    }
+    try:
+        if demisto.command() == 'fetch-indicators':
+            indicators = fetch_indicators_command(client, params.get('indicator_type'))
+            # we submit the indicators in batches
+            for b in batch(indicators, batch_size=2000):
+                demisto.createIndicators(b)  # type: ignore
+        else:
+            readable_output, outputs, raw_response = commands[command](client, demisto.args())
+            return_outputs(readable_output, outputs, raw_response)
+    except Exception as e:
+        err_msg = f'Error in {FEED_NAME} Integration [{e}]'
+        return_error(err_msg)
