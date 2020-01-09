@@ -1,6 +1,6 @@
- The integration uses both the BPA and Panorama XML API.
- 
- To obtain an API Access Token for BPA, request via email to bpa@paloaltonetworks.com.  
+The integration uses both the BPA and Panorama XML API.
+
+To obtain an API Access Token for BPA, request via email to bpa@paloaltonetworks.com.  
 In the email specify the following details:
 * First Name
 * Last Name
