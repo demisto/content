@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [20.1.0] - 2020-01-07
+Removed ***firstSeen*** as qualifier for STIX 2 object.
+
 ## [19.11.1] - 2019-11-26
 You can now parse single-object STIX 2 files.
 
