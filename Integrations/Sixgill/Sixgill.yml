@@ -11,6 +11,10 @@ configuration:
   name: client_secret
   required: true
   type: 4
+- display: Max number of incidents that can be fetched
+  name: fetch_incidents_limit
+  required: false
+  type: 0
 description: Fetching Sixgill's alerts as incidents
 display: Sixgill
 name: Sixgill
@@ -26,6 +30,13 @@ script:
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1000'
+      description: Max number of indicators that can be fetched
+      isArray: false
+      name: fetch_indicators_limit
       required: false
       secret: false
     deprecated: false

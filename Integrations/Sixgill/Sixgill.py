@@ -18,6 +18,8 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 CHANNEL_CODE = '7698e8287dfde53dcd13082be750a85a'
+FETCH_INCIDENTS_LIMIT = 20
+FETCH_INDICATORS_LIMIT = 1000
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 DEMISTO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 FETCH_TIME = demisto.params().get('fetch_time', '30 days')
@@ -33,7 +35,7 @@ indicator_mapping = {
     "mal_domain": ("Domain(val.Name == obj.Name)", '{{"Name": "{}"}}'),
     "mal_md5": ("File(val.MD5 == obj.MD5)", '{{"MD5": "{}", "Tags": "{}"}}'),
     "crypto_wallet": ("Sixgill.Indicator.Cryptocurrency(val.Address == obj.Address)",
-                      '{{"Address": "{}", "Tags": "{}"}})')
+                      '{{"Address": "{}", "Tags": "{}"}}')
 }
 
 ''' HELPER FUNCTIONS '''
@@ -41,6 +43,13 @@ indicator_mapping = {
 
 def is_ioc(item):
     return True if "feed" in item.get("alert_name", "").lower() else False
+
+
+def get_limit(str_limit, default_limit):
+    try:
+        return int(str_limit, default_limit)
+    except:
+        return default_limit
 
 
 def item_to_incident(item):
@@ -119,17 +128,22 @@ def fetch_incidents():
     if last_fetch is None:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
-    include_delivered_items = bool(strtobool(demisto.args().get('include_delivered_items', 'false')))
-
     sixgill_darkfeed_client = SixgillDarkFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
                                                     CHANNEL_CODE)
 
+    fetch_incidents_limit = get_limit(demisto.params().get('fetch_incidents_limit', FETCH_INCIDENTS_LIMIT),
+                                      FETCH_INCIDENTS_LIMIT)
+
     incidents: List[Dict[str, Any]] = []
 
-    for raw_incident in sixgill_darkfeed_client.get_incidents(include_delivered_items):
+    for raw_incident in sixgill_darkfeed_client.get_incidents():
 
         if handle_alerts(incidents, copy.deepcopy(raw_incident)):
             sixgill_darkfeed_client.mark_digested_item(raw_incident)
+
+        if len(incidents) >= fetch_incidents_limit:
+            sixgill_darkfeed_client.submit_digested_items(force=True)
+            break
 
     demisto.setLastRun({'time': last_fetch})
     demisto.incidents(incidents)
@@ -146,12 +160,19 @@ def get_indicators():
     iocs: Dict[str, List[Dict[str, Any]]] = {}
     extracted_iocs = 0
 
+    fetch_indicators_limit = get_limit(demisto.args().get('fetch_indicators_limit', FETCH_INDICATORS_LIMIT),
+                                       FETCH_INDICATORS_LIMIT)
+
     for raw_incident in sixgill_darkfeed_client.get_incidents(include_delivered_items):
         raw_iocs.append(raw_incident)
 
         if handle_indicator(iocs, raw_incident):
             sixgill_darkfeed_client.mark_digested_item(raw_incident)
             extracted_iocs += 1
+
+        if extracted_iocs >= fetch_indicators_limit:
+            sixgill_darkfeed_client.submit_digested_items(force=True)
+            break
 
     return tableToMarkdown("Sixgill's DarkFeed indicators: ", iocs), iocs, raw_iocs
 
