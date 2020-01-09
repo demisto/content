@@ -5,16 +5,14 @@ import json
 import re
 import os
 import sys
-import glob
 import requests
-from distutils.version import LooseVersion
 from pytest import raises, mark
 import pytest
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, IndicatorTypes
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch
 
 try:
     from StringIO import StringIO
@@ -1052,65 +1050,3 @@ def test_regexes(pattern, string, expected):
     # (str, str, bool) -> None
     # emulates re.fullmatch from py3.4
     assert expected is bool(re.match("(?:" + pattern + r")\Z", string))
-
-
-class IndicatorTypesDB(object):
-    reputations_path = '../../Misc/reputations.json'
-    all_json_path = '../../Misc/*.json'
-
-    @classmethod
-    def file_to_check(cls):
-        dir_list = glob.glob(cls.all_json_path)
-        dir_list.pop(dir_list.index(cls.reputations_path))
-        return dir_list
-
-    @classmethod
-    def indicators(cls):
-        with open(cls.reputations_path) as f:
-            indicators = json.load(f)
-        return indicators.get('reputations')
-
-
-class TestIndicatorTypes(object):
-    values = [IndicatorTypes.__dict__[var] for var in IndicatorTypes.__dict__.keys() if not var.startswith('__')]
-    check_from_version = "5.5.0"
-    ignore_list = [
-        "File enhancement scripts",
-        "Registry Path Reputation",
-        "CVE CVSS Score",
-        "hostname",
-        "username"
-    ]
-
-    def should_check(self, version):
-        # type: (str) -> bool
-        """Checks only if there's version greater or equal to self.check_from_version
-        or if there's no version at all
-        """
-        if version:
-            return LooseVersion(version) >= LooseVersion(self.check_from_version)
-        return True
-
-    def check_details(self, indicator_json, path):
-        # (dict, str) -> None
-        # Checks if toVersion is greater than 5.5 needed.
-        if self.should_check(indicator_json.get('toVersion')):
-            details = indicator_json.get('details')
-            if details in self.ignore_list:
-                return
-            assert details in self.values, \
-                '{}: Field `details` value is {} but not found in IndicatorTypes.'.format(path, details)
-
-    @pytest.mark.parametrize('path', IndicatorTypesDB.file_to_check())
-    def test_indicatortypes_backwards(self, path):
-        # type: (str) -> None
-        with open(path) as f:
-            indicator_json = json.load(f)
-        self.check_details(indicator_json, path)
-
-    @pytest.mark.parametrize('indicator', IndicatorTypesDB.indicators())
-    def test_reputations(self, indicator):
-        # type: (dict) -> None
-        """"""
-
-        self.check_details(indicator, 'reputations.json: id `{}`'.format(indicator.get('id')))
