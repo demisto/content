@@ -405,7 +405,7 @@ jobs:
                 exit 0
             fi
             ./Tests/scripts/slack_notifier.sh ./env_results.json
-            python ./Tests/git_build_comment.py $CONTENT_GITHUB_TOKEN $CIRCLE_BRANCH $CIRCLE_SHA1
+            python3 ./Tests/git_build_comment.py $CONTENT_GITHUB_TOKEN $CIRCLE_BRANCH $CIRCLE_SHA1
           when: always
       - run:
           name: Validate Docker Images
