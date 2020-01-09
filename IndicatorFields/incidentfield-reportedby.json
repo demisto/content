@@ -11,7 +11,7 @@
     "prevName": "Reported By",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "Source which reported this indicator. Can include Feeds, Incidents, Users",
+    "description": "The source that reported this indicator. Can be a feed, an incident, or users.",
     "cliName": "reportedby",
     "type": "tagsSelect",
     "closeForm": false,
