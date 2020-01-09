@@ -116,7 +116,7 @@ def analysis_to_entry(info, threshold=THRESHOLD, verbose=VERBOSE):
     if not isinstance(info, list):
         info = [info]
 
-    context_ip_generic, context_ip, human_readable, dbot_scores, timeline = [], [], [], [], []
+    context_ip_generic, context_ip, human_readable, dbot_scores = [], [], [], []
     for analysis in info:
         ip_ec = {
             "Address": analysis.get("ipAddress"),
@@ -155,15 +155,7 @@ def analysis_to_entry(info, threshold=THRESHOLD, verbose=VERBOSE):
         context_ip.append(abuse_ec)
         context_ip_generic.append(ip_ec)
 
-        ip_address = analysis.get('ipAddress')
-        ip_rep = scoreToReputation(dbot_score)
-        timeline.append({
-            'Value': ip_address,
-            'Message': 'AbuseIPDB marked the indicator "{}" as *{}*'.format(ip_address, ip_rep),
-            'Category': 'Indicator Enrichment'
-        })
-
-    return createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, timeline, title=ANALYSIS_TITLE)
+    return createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, title=ANALYSIS_TITLE)
 
 
 def blacklist_to_entry(data, saveToContext):
@@ -196,7 +188,7 @@ def getDBotScore(analysis, threshold=THRESHOLD):
     return dbot_score
 
 
-def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, timeline, title):
+def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, title):
     entry = {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
@@ -207,8 +199,7 @@ def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, tim
             'IP(val.Address && val.Address == obj.Address)': createContext(context_ip_generic, removeNull=True),
             'AbuseIPDB(val.IP.Address && val.IP.Address == obj.IP.Address)': createContext(context_ip, removeNull=True),
             'DBotScore': createContext(dbot_scores, removeNull=True)
-        },
-        'IndicatorTimeline': timeline
+        }
     }
     return entry
 
