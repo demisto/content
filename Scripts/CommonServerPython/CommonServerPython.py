@@ -1698,7 +1698,7 @@ class Domain(Indicator):
         self.dns = dns
 
         # DBotScore fields
-        self.dbot_score = None
+        self.dbot_score = None  # type: Optional[DBotScore]
 
     def set_dbot_score(self, dbot_score):
         # type: (DBotScore) -> None
