@@ -29,7 +29,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get Sixgill's DarkFeed indicators or Sixgill's alerts as incidents
+    description: Get Sixgill's alerts as incidents
     execution: false
     name: fetch-incidents
   - arguments:
@@ -45,7 +45,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Fetching Sixgill's DarkFeed Threat Intelligence indicators or
+    description: Fetching Sixgill's DarkFeed Threat Intelligence indicators
     execution: false
     name: get-indicators
     outputs:
