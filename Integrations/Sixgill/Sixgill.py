@@ -32,7 +32,8 @@ indicator_mapping = {
     "proxy_ip": ("IP(val.Address == obj.Address)", '{{"Address": "{}"}}'),
     "mal_domain": ("Domain(val.Name == obj.Name)", '{{"Name": "{}"}}'),
     "mal_md5": ("File(val.MD5 == obj.MD5)", '{{"MD5": "{}", "Tags": "{}"}}'),
-    "crypto_wallet": ("Sixgill.Cryptocurrency(val.Address == obj.Address)", '{{"Address": "{}", "Tags": "{}"}})')
+    "crypto_wallet": ("Sixgill.Indicator.Cryptocurrency(val.Address == obj.Address)",
+                      '{{"Address": "{}", "Tags": "{}"}})')
 }
 
 ''' HELPER FUNCTIONS '''
@@ -64,7 +65,7 @@ def indicator_to_demisto_format(raw_incident):
         if indicator_type:
             indicator_name, formatted_indicator_str = indicator_mapping.get(indicator_type, (None, None))
 
-            if indicator_name:
+            if indicator_name and formatted_indicator_str:
                 if indicator_type == 'mal_md5' or indicator_type == 'crypto_wallet':
                     formatted_indicator = formatted_indicator_str.format(indicator.get('fields', {}).get('value'),
                                                                          ", ".join(indicator.get('fields',
