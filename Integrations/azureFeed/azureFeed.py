@@ -52,7 +52,7 @@ class Client(BaseClient):
         try:
             address_type = ipaddress.ip_network(azure_address_prefix)
         except Exception:
-            LOG(F'{INTEGRATION_NAME} - Invalid ip range: {azure_address_prefix}')
+            demisto.debug(F'{INTEGRATION_NAME} - Invalid ip range: {azure_address_prefix}')
             return {}
 
         if address_type.version == 4:
@@ -100,7 +100,7 @@ class Client(BaseClient):
         """
         if download_link is None:
             raise RuntimeError(F'{INTEGRATION_NAME} - failoverLink not found')
-        LOG(F'download link: {download_link}')
+        demisto.debug(F'download link: {download_link}')
 
         file_download_response = requests.get(
             url=download_link,
@@ -157,7 +157,7 @@ class Client(BaseClient):
             return []
 
         for indicators_group in values_from_file:
-            LOG(F'{INTEGRATION_NAME} - Extracting value: {indicators_group.get("id", None)}')
+            demisto.debug(F'{INTEGRATION_NAME} - Extracting value: {indicators_group.get("id", None)}')
 
             indicator_metadata = self.extract_metadata_of_indicators_group(indicators_group)
             if not indicator_metadata:
@@ -314,11 +314,11 @@ def main():
         if command in commands:
             return_outputs(*commands[command](client))
 
-        # elif command == 'fetch-indicators':
-        #     indicators, _ = fetch_indicators(client)
-        #
-        #     for single_batch in batch(indicators, batch_size=1500):
-        #         demisto.createIndicators(single_batch)
+        elif command == 'fetch-indicators':
+            indicators, _ = fetch_indicators(client)
+
+            for single_batch in batch(indicators, batch_size=1500):
+                demisto.createIndicators(single_batch)
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
