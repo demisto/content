@@ -1,6 +1,6 @@
 flake8==3.7.8
-demisto-sdk==0.2.6
-demisto-py==2.0.6
+demisto-sdk>=0.3.3
+demisto-py>=2.0.7
 pytest==5.2.1
 pytest-mock==1.11.1
 ruamel.yaml==0.16.5
