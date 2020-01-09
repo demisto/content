@@ -52,7 +52,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url, verify, proxy=False, ok_codes=tuple(), headers=None, auth=None):
         if verify in ['True', 'False']:
-            super().__init__(base_url, eval(verify), proxy, ok_codes, headers, auth)
+            super().__init__(base_url, str_to_bool(verify), proxy, ok_codes, headers, auth)
         else:
             # verify points a path to certificate
             super().__init__(base_url, True, proxy, ok_codes, headers, auth)
@@ -78,6 +78,18 @@ class Client(BaseClient):
             method='GET',
             url_suffix='',
         )
+
+
+def str_to_bool(s):
+    """
+    Translates string representing boolean value into boolean value
+    """
+    if s == 'True':
+        return True
+    elif s == 'False':
+        return False
+    else:
+        raise ValueError
 
 
 def translate_severity(sev):
