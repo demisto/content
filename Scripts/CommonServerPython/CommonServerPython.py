@@ -15,7 +15,7 @@ import logging
 from collections import OrderedDict
 import xml.etree.cElementTree as ET
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Any, Optional, Dict
 
 import demistomock as demisto
 
@@ -56,6 +56,9 @@ entryTypes = {
 
 
 class EntryType:
+    """
+    Enum: contains all the entry types (e.g. NOTE, ERROR, WARNING, FILE, etc.)
+    """
     NOTE = 1
     DOWNLOAD_AGENT = 2
     FILE = 3
@@ -80,7 +83,11 @@ formats = {
     'markdown': 'markdown'
 }
 
+
 class EntryFormat:
+    """
+    Enum: contains all the entry formats (e.g. HTML, TABLE, JSON, etc.)
+    """
     HTML = 'html'
     TABLE = 'table'
     JSON = 'json'
@@ -110,6 +117,9 @@ thresholds = {
 
 
 class IndicatorType:
+    """
+    Enum: contains all the indicator types, used DBotScore.Type)
+    """
     IP = 'ip'
     HASH = 'hash'
     DOMAIN = 'domain'
@@ -119,18 +129,6 @@ class IndicatorType:
     def is_valid_type(_type):
         return _type in (IndicatorType.IP, IndicatorType.HASH, IndicatorType.DOMAIN, IndicatorType.URL)
 
-
-class OutputPath:
-    IP = 'IP(val.Address && val.Address == obj.Address)'
-    URL = 'URL(val.Data && val.Data == obj.Data)'
-    DOMAIN = 'Domain(val.Name && val.Name == obj.Name)'
-    CVE = 'CVE(val.ID && val.ID == obj.ID)'
-    EMAIL = 'Account.Email(val.Address && val.Address == obj.Address)'
-    DBOT_SCORE = 'DBotScore'
-    FILE = 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
-          'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || ' \
-          'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || ' \
-          'val.SSDeep && val.SSDeep == obj.SSDeep)'
 
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ip': 'Address',
@@ -1543,6 +1541,9 @@ class Indicator:
     def __init__(self):
         pass
 
+    def to_context(self):
+        pass
+
 class CommandResults:
     def __init__(self, output_prefix, uniq_field, outputs, indicators=None):
         # type: (str, str, Any, List[Indicator]) -> None
@@ -1553,7 +1554,7 @@ class CommandResults:
         self.outputs = outputs
 
     def to_context(self):
-        outputs = {}
+        outputs = {}  # type: Dict[str, Any]
         human_readable = None
         raw_response = None
 
@@ -1637,7 +1638,7 @@ class IP(Indicator):
         self.detection_engines = detection_engines
         self.positive_engines = positive_engines
 
-        self.dbot_score = None
+        self.dbot_score = None  # type: Optional[DBotScore]
 
     def set_dbot_score(self, dbot_score):
         # type: (DBotScore) -> None
