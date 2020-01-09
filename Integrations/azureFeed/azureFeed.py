@@ -5,20 +5,22 @@ import requests
 from typing import Dict, List, Tuple, Any, Callable
 
 from CommonServerPython import *
+from Scripts.CommonServerPython.CommonServerPython import batch
+
+# disable insecure warnings
+urllib3.disable_warnings()
 
 REGIONS_XPATH = '/AzurePublicIpAddresses/Region'
 AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519'
 
-# disable insecure warnings
-urllib3.disable_warnings()
 INTEGRATION_NAME = 'Azure'
 
 ERROR_TYPE_TO_MESSAGE = {
-    'requests.exceptions.SSLError': f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                                    f'Check your not secure parameter.\n\n',
-    'requests.ConnectionError': f'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                                f'Check your Server URL parameter.\n\n',
-    'requests.exceptions.HTTPError': f'Error issuing the request call to {INTEGRATION_NAME}.\n\n',
+    'requests.exceptions.SSLError': F'Connection error in the API call to {INTEGRATION_NAME}.\n'
+                                    F'Check your not secure parameter.\n\n',
+    'requests.ConnectionError': F'Connection error in the API call to {INTEGRATION_NAME}.\n'
+                                F'Check your Server URL parameter.\n\n',
+    'requests.exceptions.HTTPError': F'Error issuing the request call to {INTEGRATION_NAME}.\n\n',
 }
 
 
@@ -63,10 +65,8 @@ class Client(BaseClient):
             return {}
 
         ip_object = {
-            'indicator': azure_address_prefix,
+            'value': azure_address_prefix,
             'type': type_,
-            'confidence': 100,
-            'sources': [INTEGRATION_NAME]
         }
         ip_object.update(keywords)
 
@@ -90,7 +90,7 @@ class Client(BaseClient):
 
         return response_html_tree.find('a', class_='failoverLink')
 
-    def get_download_file_content_values(self, download_link):
+    def get_download_file_content_values(self, download_link: Dict) -> Dict:
         """Create a request to receive file content from link.
 
         Args:
@@ -116,7 +116,7 @@ class Client(BaseClient):
         return file_download_response_json.get('values', None)
 
     @staticmethod
-    def extract_metadata_of_indicators_group(indicators_group_data):
+    def extract_metadata_of_indicators_group(indicators_group_data: Dict) -> Dict:
         """Extracts metadata of an indicators group.
 
         Args:
@@ -133,7 +133,7 @@ class Client(BaseClient):
 
         if indicator_properties is None:
             LOG.error(F'{INTEGRATION_NAME} - no properties for indicators group {indicator_metadata["name"]}')
-            return None
+            return {}
 
         indicator_metadata['region'] = indicator_properties.get('region', None)
         indicator_metadata['platform'] = indicator_properties.get('platform', None)
@@ -142,14 +142,14 @@ class Client(BaseClient):
 
         return indicator_metadata
 
-    def extract_indicators_from_values_dict(self, values_from_file):
+    def extract_indicators_from_values_dict(self, values_from_file: Dict) -> List:
         """Builds a list of all IP indicators in the input dict.
 
         Args:
             values_from_file (Dict): The values object from the Azure downloaded file.
 
         Returns:
-
+            list. All indicators that match the filtering options.
         """
         results = []
 
@@ -193,6 +193,8 @@ class Client(BaseClient):
 
         except requests.exceptions as err:
             demisto.debug(str(err))
+            return_error('hi')
+
             raise Exception(ERROR_TYPE_TO_MESSAGE[err.__class__] + err)
 
         except ValueError as err:
@@ -204,7 +206,7 @@ class Client(BaseClient):
             raise Exception(err)
 
 
-def test_module(client: Client, *_) -> str:
+def test_module(client: Client) -> str:
     """Test the ability to fetch Azure file.
     Args:
         client: Client object.
@@ -221,74 +223,75 @@ def test_module(client: Client, *_) -> str:
     return 'ok'
 
 
-def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def get_indicators_command(client: Client) -> Tuple[str, Dict, Dict]:
     """Retrieves indicators from the feed to the war-room.
+
     Args:
-        client: Client object with request
-        args: demisto.args()
+        client (Client): Client object configured according to instance arguments.
+
     Returns:
-        Outputs.
+        Tuple of:
+            str. Information to be printed to war room.
+            Dict. Data to be entered to context.
+            Dict. The raw data of the indicators.
     """
-    indicator_type = str(args.get('indicator_type'))
+    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
+
+    indicators, raw_response = fetch_indicators(client, limit)
+
+    human_readable = tableToMarkdown('Indicators from Azure Feed:', indicators,
+                                     headers=['Value', 'Type'], removeNull=True)
+
+    return human_readable, {f'{INTEGRATION_NAME}.Indicator(val.value && val.value === obj.value': indicators}, {
+        'raw_response': raw_response}
+
+
+def fetch_indicators(client: Client, limit: int = -1) -> Tuple[List[Dict], List]:
+    """Fetches indicators from the feed to the indicators tab.
+    Args:
+        client (Client): Client object configured according to instance arguments.
+        limit (int): Maximum number of indicators to return.
+    Returns:
+        Tuple of:
+            str. Information to be printed to war room.
+            Dict. Data to be entered to context.
+            Dict. The raw data of the indicators.
+    """
     iterator = client.build_iterator()
-    indicator_type_lower = indicator_type.lower()
     indicators = []
     raw_response = []
 
-    # filter indicator_type specific entries
-    iterator = [i for i in iterator if indicator_type_lower in i or indicator_type_lower == 'both']
-    limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    iterator = iterator[:limit]
+    if limit != -1:
+        iterator = iterator[:limit]
 
-    for item in iterator:
-        values = item.get(indicator_type_lower)
-        raw_data = {'type': indicator_type[:-1]}
-        if values:
-            for value in values:
-                raw_data['value'] = value
-                indicators.append({
-                    "Value": value,
-                    "Type": indicator_type[:-1],
-                    'rawJSON': {"Value": value, "Type": indicator_type[:-1]}
-                })
-                raw_response.append(raw_data)
-    human_readable = tableToMarkdown('Indicators from Office 365 Feed:', indicators,
-                                     headers=['Value', 'Type'], removeNull=True)
+    for indicator in iterator:
+        raw_data = {
+            'Value': indicator['value'],
+            'Type': 'ip',
+            'Azure_group_name': indicator['azure_name'],
+            'Azure_group_id': indicator['azure_id'],
+            'Azure_region': indicator['azure_region'],
+            'Azure_platform': indicator['azure_platform'],
+            'Azure_system_service': indicator['azure_system_service']
+        }
 
-    return human_readable, {f'{INTEGRATION_NAME}.Indicator': indicators}, {'raw_response': raw_response}
+        indicators.append({
+            "Value": indicator['value'],
+            "Type": 'ip',
+            'rawJSON': {"Value": indicator['value'], "Type": 'ip'}
+        })
 
+        raw_response.append(raw_data)
 
-def fetch_indicators_command(client: Client, *_) -> List[Dict]:
-    """Fetches indicators from the feed to the indicators tab.
-    Args:
-        client: Client object with request
-    Returns:
-        Indicators.
-    """
-    indicator_type = client.indicator
-    indicator_type_lower = indicator_type.lower()
-    iterator = client.build_iterator()
-    indicators = []
-    for item in iterator:
-        values = item.get(indicator_type_lower)
-        raw_data = {'type': indicator_type[:-1]}
-        if values:
-            for value in values:
-                raw_data['value'] = value
-                indicators.append({
-                    "value": value,
-                    "type": indicator_type[:-1],
-                    "rawJSON": raw_data,
-                })
-    return indicators
+    return indicators, raw_response
 
 
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    regions_list = argToList(demisto.params().get('regions', ''))
-    services_list = argToList(demisto.params().get('services', ''))
+    regions_list = ['All'] + argToList(demisto.params().get('regions', ''))
+    services_list = ['All'] + argToList(demisto.params().get('services', ''))
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
     insecure = demisto.params().get('insecure', False)
@@ -299,17 +302,20 @@ def main():
 
     try:
         client = Client(regions_list, services_list, polling_timeout, insecure, proxy)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+
+        commands = {
             'test-module': test_module,
             'get-indicators': get_indicators_command
         }
+
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
 
         # elif command == 'fetch-indicators':
-        #     indicators = fetch_indicators_command(client)
-        #     for batch1 in batch(indicators, batch_size=2000):
-        #         demisto.createIndicators(batch)
+        #     indicators, _ = fetch_indicators(client)
+        #
+        #     for single_batch in batch(indicators, batch_size=1500):
+        #         demisto.createIndicators(single_batch)
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
