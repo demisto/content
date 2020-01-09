@@ -1,6 +1,5 @@
 ## [Unreleased]
-
-
+Deprecated. Use the "PANW - Hunting and threat detection by indicator type V2" command instead.
 ## [20.1.0] - 2020-01-07
 -
 
