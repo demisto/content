@@ -2115,6 +2115,7 @@
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
+        "VirusTotal": "delete after",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "IronDefense": "Test depends on making requests to a non-public API",
         "Attivo Botsink": "no instance, not going to get it",
