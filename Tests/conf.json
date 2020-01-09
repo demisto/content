@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "AWS Feed",
+            "playbookID": "AWS Feed Test"
+        },
+        {
             "integrations": "Digital Shadows",
             "playbookID": "Digital Shadows - Test"
         },
