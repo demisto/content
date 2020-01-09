@@ -116,8 +116,8 @@ There are no context output for this command.
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
+    <li>Sixgill's API client id and client secret.</li>
+    <li>Organization is registered to consume data using Demisto platform</li>
 </ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -163,7 +163,7 @@ There are no context output for this command.
     <tr>
       <td>IP.Address</td>
       <td>Unknown</td>
-      <td>IP address indicator.</td>
+      <td>IP address indicator</td>
     </tr>
     <tr>
       <td>Domain.Name</td>

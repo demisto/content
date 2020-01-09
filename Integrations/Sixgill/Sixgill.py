@@ -166,7 +166,7 @@ try:
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
 
-    elif demisto.command() == 'get-indicators':
+    elif demisto.command() == 'sixgill-get-indicators':
         return_outputs(*get_indicators())
 
 except Exception as e:
