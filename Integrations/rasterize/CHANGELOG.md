@@ -1,4 +1,10 @@
 ## [Unreleased]
+
+
+## [20.1.0] - 2020-01-07
+-
+
+## [19.12.1] - 2019-12-25
 Fixed an issue with the ***rasterize*** command in which child processes were defunct.
 
 ## [19.11.0] - 2019-11-12

@@ -227,6 +227,7 @@ def docker_run(project_dir, docker_image, no_test, no_lint, keep_container, use_
     if no_lint:
         run_params.extend(['-e', 'PYLINT_SKIP=1'])
     run_params.extend(['-e', 'CPU_NUM={}'.format(cpu_num)])
+    run_params.extend(['-e', 'CI={}'.format(os.getenv("CI", "false"))])
     run_params.extend([docker_image, 'sh', './{}'.format(RUN_SH_FILE_NAME)])
     container_id = subprocess.check_output(run_params, universal_newlines=True).strip()
     try:
