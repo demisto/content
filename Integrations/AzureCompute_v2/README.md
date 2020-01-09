@@ -5,7 +5,7 @@ This integration was integrated and tested with Azure Compute API Version: 2017-
 </p>
 <h2>Detailed Description</h2>
 <ul>
-<li>To allow us access to Azure Compute, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-azure-compute).</li>
+<li>To allow us access to Azure Compute, an admin has to approve our app using an admin consent flow, by clicking on the following <a href="https://oproxy.demisto.ninja/ms-azure-compute)">link</a>.</li>
 <li>After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription. </li>
 <li>In order to assign a role to the application after consent was given: 
   <ul>
