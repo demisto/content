@@ -1,15 +1,9 @@
 <p>
 Create and Manage Azure Virtual Machines
 
-This integration was integrated and tested with version xx of Azure Compute v2
+This integration was integrated and tested with Azure Compute API Version: 2017-12-01.
 </p>
-<h2>Azure Compute v2 Playbook</h2>
-<p>Populate this section with relevant playbook names.</p>
-<h2>Use Cases</h2>
-<ul>
-<li>Use case 1</li>
-<li>Use case 2</li>
-</ul><h2>Detailed Description</h2>
+<h2>Detailed Description</h2>
 <ul>
 <li>To allow us access to Azure Compute, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-azure-compute).</li>
 <li>After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription. </li>
