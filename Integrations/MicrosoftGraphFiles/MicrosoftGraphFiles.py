@@ -31,9 +31,13 @@ APP_NAME = 'ms-graph-files'
 
 RESPONSE_KEYS_DICTIONARY = {
     "@odata.context": "OdataContext",
-    "@microsoft.graph.downloadUrl": "DownloadUrl"
+    "@microsoft.graph.downloadUrl": "DownloadUrl",
+    "id": "ID"
 }
 
+EXCLUDE_LIST = ['eTag', 'cTag', 'quota']
+
+REMOVED_IDEN_KEYS = ['createdBy', 'LastModifiedBy']
 
 def epoch_seconds() -> int:
     """
@@ -449,27 +453,20 @@ def list_drive_children_command(client, args):
     result = client.list_drive_children(object_type=object_type, object_type_id=object_type_id, item_id=item_id,
 
                                         limit=limit, next_page_url=next_page_url)
-    # with open('/Users/gberger/dev/demisto/content/Integrations/MicrosoftGraphFiles/tests.json', 'r') as f:
-    # result = json.load(f)
-    # result = result['list_drive_children']
-
-    # files_readable, files_outputs = parse_outputs(result['value'], ['eTag', 'cTag'])
 
     title = f'{INTEGRATION_NAME} - drivesItems information:'
-    # # Creating human readable for War room
 
-    files_outputs = [parse_key_to_context(item) for item in result['value']]
-    human_readable = tableToMarkdown(title, files_outputs, headerTransform=pascalToSpace)
+    parsed_drive_items = [parse_key_to_context(item) for item in result['value']]
+    human_readable = tableToMarkdown(title, parsed_drive_items, headerTransform=pascalToSpace)
 
+    drive_items_outputs = {'OdataContext': result['@odata.context'],
+                           'Value': parsed_drive_items
+                           }
     context = {
-        f'{INTEGRATION_NAME}ListChildren(val.ItemID == obj.ItemID)': {"ParentID": item_id,
-                                                                      "Children": files_outputs}
+        f'{INTEGRATION_NAME}.ListChildren(val.ItemID == obj.ItemID)': {"ParentID": item_id,
+                                                                      "Children": drive_items_outputs}
     }
 
-    # for output in result['value']:
-    #     context.append(create_file_and_folder_context(output))
-    #
-    # obj = {'ListChildren(val.ID==obj.ID)': context}
     return (
         human_readable,
         context,
@@ -480,18 +477,18 @@ def list_drive_children_command(client, args):
 def list_tenant_sites_command(client, args):
     result = client.list_tenant_sites()
 
-    human_readable, context_values = parse_outputs(result['value'])
+    parsed_sites_items = [parse_key_to_context(item) for item in result['value']]
 
     context_entry = {
-        'OdataContext': result.get('@odata.context', None),
-        'Values': context_values
+        'OdataContext': result.get('@odata.context'),
+        'Values': parsed_sites_items
     }
     context = {
         f'{INTEGRATION_NAME}.￿ListSites(val.ID === obj.ID)': context_entry
     }
 
     title = 'List Sites:'
-    human_readable = tableToMarkdown(title, human_readable)
+    human_readable = tableToMarkdown(title, parsed_sites_items, headerTransform=pascalToSpace)
 
     return (
         human_readable,
@@ -506,16 +503,16 @@ def list_drives_in_site_command(client, args):
     next_page_url = args.get('next_page_url')
 
     result = client.list_drives_in_site(site_id=site_id, limit=limit, next_page_url=next_page_url)
-    files_readable, files_outputs = parse_outputs(result['value'], ['quota'])
+    parsed_drive_items = [parse_key_to_context(item) for item in result['value']]
 
     context_entry = {
         'OdataContext': result.get('@odata.context', None),
-        'Values': files_outputs
+        'Value': parsed_drive_items
     }
 
     title = f'{INTEGRATION_NAME} - Drives information:'
     # Creating human readable for War room
-    human_readable = tableToMarkdown(title, files_readable)
+    human_readable = tableToMarkdown(title, parsed_drive_items, headerTransform=pascalToSpace)
 
     # context == output
     context = {
@@ -536,11 +533,11 @@ def replace_an_existing_file_command(client, args):
     object_type_id = args.get('object_type_id')
 
     result = client.replace_existing_file(object_type, object_type_id, item_id, entry_id)
-    context_entry = create_file_and_folder_context(result)
+    context_entry = parse_key_to_context(result)
 
     title = f'{INTEGRATION_NAME} - File information:'
     # Creating human readable for War room
-    human_readable = tableToMarkdown(title, context_entry)
+    human_readable = tableToMarkdown(title, context_entry, headerTransform=pascalToSpace)
 
     # context == output
     context = {
@@ -562,8 +559,8 @@ def remove_identity_key(source):
 
     identity_key = dict_keys[0]
     new_source = {}
-    new_source['ID'] = source[identity_key].get('id')
-    new_source['DisplayName'] = source[identity_key].get('displayName')
+    new_source['ID'] = source[identity_key].get('ID')
+    new_source['DisplayName'] = source[identity_key].get('DisplayName')
     new_source['Type'] = identity_key
 
     return new_source
@@ -599,12 +596,22 @@ def create_file_and_folder_context(source):
 def parse_key_to_context(obj):
     parsed_obj = {}
     for key, value in obj.items():
+        if key in EXCLUDE_LIST:
+            continue
         new_key = RESPONSE_KEYS_DICTIONARY.get(key, key)
         parsed_obj[new_key] = value
         if type(value) == dict:
             parsed_obj[new_key] = parse_key_to_context(value)
+
     under_score_obj = createContext(parsed_obj, keyTransform=camel_case_to_underscore)
     context_entry = createContext(under_score_obj, keyTransform=string_to_context_key)
+    if "Id" in list(context_entry.keys()):
+        context_entry['ID'] = context_entry['Id']
+        del context_entry['Id']
+    if 'CreatedBy' in list(context_entry.keys()):
+        context_entry['CreatedBy'] = remove_identity_key(context_entry['CreatedBy'])
+    if 'LastModifiedBy' in list(context_entry.keys()):
+        context_entry['LastModifiedBy'] = remove_identity_key(context_entry['LastModifiedBy'])
     return context_entry
 
 
@@ -641,11 +648,11 @@ def create_new_folder_command(client, args):
 
     result = client.create_new_folder(object_type, object_type_id, parent_id, folder_name)
 
-    context_entry = create_file_and_folder_context(result)
+    context_entry = parse_key_to_context(result)
 
     title = f'{INTEGRATION_NAME} - Folder information:'
     # Creating human readable for War room
-    human_readable = tableToMarkdown(title, context_entry)
+    human_readable = tableToMarkdown(title, context_entry, headerTransform=pascalToSpace)
 
     # context == output
     context = {
