@@ -31,11 +31,6 @@ configuration:
   defaultvalue: https://us.devo.com/welcome
   type: 0
   required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: ""
-  type: 8
-  required: false
 - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
@@ -49,12 +44,22 @@ configuration:
 - display: Fetch incidents alert filter (Same filters for get-alerts)
   name: fetch_incidents_filters
   defaultvalue: ""
-  type: 0
+  type: 12
   required: false
-- display: Deduplication parameters JSON if required. SEE README
+- display: Deduplication parameters JSON if required.
   name: fetch_incidents_deduplication
   defaultvalue: ""
-  type: 0
+  type: 12
+  required: false
+- display: Allow insecure Devo endpoint connection
+  name: allow_insecure
+  defaultvalue: "false"
+  type: 8
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
   required: false
 script:
   script: ''
@@ -67,11 +72,10 @@ script:
       description: A LINQ Query to run
     - name: from
       required: true
-      description: Start datetime for specified query. Unix timestamp in seconds expected
-        (Decimal milliseconds okay)
+      description: Start datetime for specified query. Allows for date range i.e. 2 day, 3 week. Unix timestamps, python
+        datetime objects, str datetime.
     - name: to
-      description: End datetime for specified query. Unix timestamp in seconds expected
-        (Decimal milliseconds okay)
+      description: End datetime for specified query. If provided must be in same format as from (ignored in date range)
     - name: writeToContext
       description: Whether to write results to context or not
       defaultValue: "true"
@@ -113,9 +117,9 @@ script:
       description: String that you wish to search for in given tables in any column
     - name: from
       required: true
-      description: Start time in seconds unix timestamp
+      description: Start time
     - name: to
-      description: End time in seconds unix timestamp
+      description: End time
     - name: writeToContext
       description: write results to context or not
       defaultValue: "true"
@@ -134,7 +138,7 @@ script:
       isArray: true
     outputs:
     - contextPath: Devo.RecordsWritten
-      description: Count of records written to Devo
+      description: Records written to specified Devo table
       type: unknown
     - contextPath: Devo.LinqQuery
       description: Linq query that is to be used to see your data in Devo
@@ -157,7 +161,7 @@ script:
       isArray: true
     outputs:
     - contextPath: Devo.RecordsWritten
-      description: Count of records written to Devo
+      description: Lookup records written to lookup table
       type: unknown
     description: Write lookup table entry records to a specified Devo table
     execution: true

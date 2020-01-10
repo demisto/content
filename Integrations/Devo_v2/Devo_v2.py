@@ -8,11 +8,14 @@ import devodsconnector as ds
 import concurrent.futures
 import tempfile
 import urllib.parse
+import re
+import os
 from datetime import datetime
 from devo.sender import Lookup, SenderConfigSSL, Sender
 from typing import List, Dict, Set
 
 ''' GLOBAL VARS '''
+ALLOW_INSECURE = demisto.params().get('allow_insecure', False)
 READER_ENDPOINT = demisto.params().get('reader_endpoint', None)
 READER_OAUTH_TOKEN = demisto.params().get('reader_oauth_token', None)
 WRITER_RELAY = demisto.params().get('writer_relay', None)
@@ -22,6 +25,9 @@ FETCH_INCIDENTS_FILTER = demisto.params().get('fetch_incidents_filters', None)
 FETCH_INCIDENTS_DEDUPE = demisto.params().get('fetch_incidents_deduplication', None)
 HEALTHCHECK_WRITER_RECORD = [{'hello': 'world', 'from': 'demisto-integration'}]
 HEALTHCHECK_WRITER_TABLE = 'test.keep.free'
+RANGE_PATTERN = re.compile('^[0-9]+ [a-zA-Z]+')
+TIMESTAMP_PATTERN = re.compile('^[0-9]+')
+TIMESTAMP_PATTERN_MILLI = re.compile('^[0-9]+.[0-9]+')
 ALERTS_QUERY = '''
 from
     siem.logtrust.alert.info
@@ -121,7 +127,9 @@ def build_link(query, start_ts_milli, end_ts_milli, mode='queryApp'):
     return url
 
 
-def check_credentials():
+def check_configuration():
+    # Check all settings related if set
+    # Basic functionality of integration
     list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT)
          .query(HEALTHCHECK_QUERY, start=int(time.time() - 1), stop=int(time.time()), output='dict'))
 
@@ -129,6 +137,24 @@ def check_credentials():
         creds = get_writer_creds()
         ds.Writer(key=creds['key'].name, crt=creds['crt'].name, chain=creds['chain'].name, relay=WRITER_RELAY)\
             .load(HEALTHCHECK_WRITER_RECORD, HEALTHCHECK_WRITER_TABLE, historical=False)
+
+    if FETCH_INCIDENTS_FILTER:
+        alert_filters = check_type(FETCH_INCIDENTS_FILTER, dict)
+
+        assert alert_filters['type'] in ['AND', 'OR'], 'Missing key:"type" or unsupported value in fetch_incidents_filters'
+
+        filters = check_type(alert_filters['filters'], list)
+
+        for filt in filters:
+            assert filt['key'], 'Missing key: "key" in fetch_incidents_filters.filters configuration'
+            assert filt['operator'] in ['=', '/=', '>', '<', '>=', '<=', 'and', 'or', '->'], 'Missing key: "operator"'\
+                ' or unsupported operator in fetch_incidents_filters.filters configuration'
+            assert filt['value'], 'Missing key:"value" in fetch_incidents_filters.filters configuration'
+
+    if FETCH_INCIDENTS_DEDUPE:
+        dedupe_conf = check_type(FETCH_INCIDENTS_DEDUPE, dict)
+
+        assert isinstance(dedupe_conf['cooldown'], (int, float)), 'Invalid fetch_incidents_deduplication configuration'
 
     return True
 
@@ -152,6 +178,41 @@ def demisto_ISO(s_epoch):
     return s_epoch
 
 
+# We will assume timestamp_from and timestamp_to will be the same format or to will be None
+def get_time_range(timestamp_from, timestamp_to):
+    if isinstance(timestamp_from, (int, float)):
+        t_from = timestamp_from
+        if timestamp_to is None:
+            t_to = time.time()
+        else:
+            t_to = timestamp_to
+    elif isinstance(timestamp_from, str):
+        if re.fullmatch(RANGE_PATTERN, timestamp_from):
+            t_range = parse_date_range(timestamp_from)
+            t_from = t_range[0].timestamp()
+            t_to = t_range[1].timestamp()
+        elif re.fullmatch(TIMESTAMP_PATTERN, timestamp_from) or re.fullmatch(TIMESTAMP_PATTERN_MILLI, timestamp_from):
+            t_from = float(timestamp_from)
+            if timestamp_to is None:
+                t_to = time.time()
+            else:
+                t_to = float(timestamp_to)
+        else:
+            t_from = date_to_timestamp(timestamp_from) / 1000
+            if timestamp_to is None:
+                t_to = time.time()
+            else:
+                t_to = date_to_timestamp(timestamp_to) / 1000
+    elif isinstance(timestamp_from, datetime):
+        t_from = timestamp_from.timestamp()
+        if timestamp_to is None:
+            t_to = time.time()
+        else:
+            t_to = timestamp_to.timestamp()
+
+    return (t_from, t_to)
+
+
 def get_writer_creds():
     if WRITER_RELAY is None:
         raise ValueError('writer_relay is not set in your Devo Integration')
@@ -160,6 +221,9 @@ def get_writer_creds():
         raise ValueError('writer_credentials are not set in your Devo Integration')
 
     write_credentials = check_type(WRITER_CREDENTIALS, dict)
+    assert write_credentials['key'], 'Required key: "key" is not present in writer credentials'
+    assert write_credentials['crt'], 'Required key: "crt" is not present in writer credentials'
+    assert write_credentials['chain'], 'Required key: "chain" is not present in writer credentials'
 
     # Limitation in Devo DS Connector SDK. Currently require filepaths for credentials.
     # Will accept file-handler type objects in the future.
@@ -266,14 +330,16 @@ def fetch_incidents():
 def run_query_command():
     to_query = demisto.args()['query']
     timestamp_from = demisto.args()['from']
-    timestamp_to = demisto.args().get('to', time.time())
+    timestamp_to = demisto.args().get('to', None)
     write_context = demisto.args()['writeToContext'].lower()
 
+    time_range = get_time_range(timestamp_from, timestamp_to)
+
     results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT)
-                   .query(to_query, start=float(timestamp_from), stop=float(timestamp_to),
+                   .query(to_query, start=float(time_range[0]), stop=float(time_range[1]),
                    output='dict', ts_format='iso'))
 
-    querylink = {'DevoTableLink': build_link(to_query, int(1000 * float(timestamp_from)), int(1000 * float(timestamp_to)))}
+    querylink = {'DevoTableLink': build_link(to_query, int(1000 * float(time_range[0])), int(1000 * float(time_range[1])))}
 
     entry = {
         'Type': entryTypes['note'],
@@ -313,10 +379,12 @@ def run_query_command():
 
 def get_alerts_command():
     timestamp_from = demisto.args()['from']
-    timestamp_to = demisto.args().get('to', time.time())
+    timestamp_to = demisto.args().get('to', None)
     alert_filters = demisto.args().get('filters', None)
     write_context = demisto.args()['writeToContext'].lower()
     alert_query = ALERTS_QUERY
+
+    time_range = get_time_range(timestamp_from, timestamp_to)
 
     if alert_filters:
         alert_filters = check_type(alert_filters, dict)
@@ -331,10 +399,10 @@ def get_alerts_command():
         alert_query = f'{alert_query} where {filter_string}'
 
     results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT)
-                   .query(alert_query, start=float(timestamp_from), stop=float(timestamp_to),
+                   .query(alert_query, start=float(time_range[0]), stop=float(time_range[1]),
                    output='dict', ts_format='iso'))
 
-    querylink = {'DevoTableLink': build_link(alert_query, int(1000 * float(timestamp_from)), int(1000 * float(timestamp_to)))}
+    querylink = {'DevoTableLink': build_link(alert_query, int(1000 * float(time_range[0])), int(1000 * float(time_range[1])))}
 
     for res in results:
         res['extraData'] = json.loads(res['extraData'])
@@ -383,8 +451,10 @@ def multi_table_query_command():
     tables_to_query = check_type(demisto.args()['tables'], list)
     search_token = demisto.args()['searchToken']
     timestamp_from = demisto.args()['from']
-    timestamp_to = demisto.args().get('to', time.time())
+    timestamp_to = demisto.args().get('to', None)
     write_context = demisto.args()['writeToContext'].lower()
+
+    time_range = get_time_range(timestamp_from, timestamp_to)
 
     futures = []
     all_results: List[Dict] = []
@@ -398,7 +468,7 @@ def multi_table_query_command():
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         for q in sub_queries:
-            futures.append(executor.submit(parallel_query_helper, q, all_results, timestamp_from, timestamp_to))
+            futures.append(executor.submit(parallel_query_helper, q, all_results, time_range[0], time_range[1]))
 
     done, pending = concurrent.futures.wait(futures)
 
@@ -439,11 +509,11 @@ def write_to_table_command():
 
     entry = {
         'Type': entryTypes['note'],
-        'Contents': {'recordsWritten': len(records)},
+        'Contents': {'recordsWritten': records},
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'EntryContext': {
-            'Devo.RecordsWritten': len(records),
+            'Devo.RecordsWritten': records,
             'Devo.LinqQuery': linq
         }
     }
@@ -477,31 +547,32 @@ def write_to_lookup_table_command():
                                     cert=creds['crt'].name,
                                     chain=creds['chain'].name)
 
-    con = Sender(config=engine_config, timeout=60)
+    try:
+        con = Sender(config=engine_config, timeout=60)
 
-    lookup = Lookup(name=lookup_table_name,
-                    historic_tag=None,
-                    con=con)
-    # Order sensitive list
-    pHeaders = json.dumps(headers)
+        lookup = Lookup(name=lookup_table_name,
+                        historic_tag=None,
+                        con=con)
+        # Order sensitive list
+        pHeaders = json.dumps(headers)
 
-    lookup.send_control('START', pHeaders, 'INC')
+        lookup.send_control('START', pHeaders, 'INC')
 
-    for r in records:
-        lookup.send_data_line(key=r['key'], fields=r['values'])
+        for r in records:
+            lookup.send_data_line(key=r['key'], fields=r['values'])
 
-    lookup.send_control('END', pHeaders, 'INC')
-
-    con.flush_buffer()
-    con.socket.shutdown(0)
+        lookup.send_control('END', pHeaders, 'INC')
+    finally:
+        con.flush_buffer()
+        con.socket.shutdown(0)
 
     entry = {
         'Type': entryTypes['note'],
-        'Contents': {'recordsWritten': len(records)},
+        'Contents': {'recordsWritten': records},
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'EntryContext': {
-            'Devo.RecordsWritten': len(records)
+            'Devo.RecordsWritten': records
         }
     }
 
@@ -513,9 +584,12 @@ def write_to_lookup_table_command():
 
 ''' EXECUTION CODE '''
 try:
+    if ALLOW_INSECURE:
+        os.environ['CURL_CA_BUNDLE'] = ''
+        os.environ['PYTHONWARNINGS'] = 'ignore:Unverified HTTPS request'
     handle_proxy()
     if demisto.command() == 'test-module':
-        check_credentials()
+        check_configuration()
         demisto.results('ok')
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
