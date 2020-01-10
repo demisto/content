@@ -93,7 +93,7 @@ class Client(BaseClient):
 
     def http_call(self, *args, **kwargs):
         demisto.log(f'Sending: ')
-        res = self._http_request(*args, **kwargs)
+        res = self._http_request(timeout=5, *args, **kwargs)
         if 'status_code' in res and res.status_code == 401:
             self.access_token = self.get_access_token()
             res = self._http_request(*args, **kwargs)
@@ -109,6 +109,7 @@ class Client(BaseClient):
 
     def return_token_and_save_it_in_context(self, access_token_response):
         access_token = access_token_response.get('access_token')
+
         if not access_token:
             return demisto.error('Access Token returned empty')
         expires_in = access_token_response.get('expires_in', 3595)
@@ -296,7 +297,7 @@ class Client(BaseClient):
         self.headers['Content-Type'] = 'text/plain'  # request returned empty and can not decoded to json
         if '' == self.http_call('DELETE', full_url=url, headers=self.headers, url_suffix='', resp_type='text'):
             # resp_type='text' returned empty and can not decoded to json
-            return f'\"{item_id}\" was deleted successfully'
+            return f'Item was deleted successfully'
 
     def upload_new_file(self, object_type, object_type_id, parent_id, file_name, entry_id):
         """
@@ -370,20 +371,35 @@ def camel_case_to_readable(text: str) -> str:
         return 'ID'
     return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
 
+def parse_parent_reference(parent_reference):
+    # if not len(parent_reference):
+    #     demisto.log('ParentReference is empty. exit function')
+    #     return parent_reference
+    #
+    #
+    # new_source = {}
+    # new_source['ID'] = parent_reference.get('id')
+    # new_source['DisplayName'] = parent_reference[identity_key].get('displayName')
+    # new_source['Type'] = identity_key
 
+    # return new_source
+    pass
 def parse_outputs(raw_data, exclude=None):
     # Unnecessary fields, dropping as to not load the incident context.
     if exclude is None:
         exclude = []
     fields_to_drop = exclude
     if isinstance(raw_data, list):
+
         files_readable, files_outputs = [], []
         for data in raw_data:
             # TODO: need to make sure that i convert it to camel case as well
-            if 'CreatedBy' in list(data.keys()):
+            if 'createdBy' in list(data.keys()):
                 data['CreatedBy'] = remove_identity_key(data['createdBy'])
-            if 'LastModifiedBy' in list(data.keys()):
+            if 'lastModifiedBy' in list(data.keys()):
                 data['LastModifiedBy'] = remove_identity_key(data['lastModifiedBy'])
+            if 'parentReference' in list(data.keys()):
+                data['ParentReference'] = parse_parent_reference(data['parentReference'])
 
             human_readable = {camel_case_to_readable(i): j for i, j in data.items() if i not in fields_to_drop}
             files_readable.append(human_readable)
@@ -397,7 +413,6 @@ def parse_outputs(raw_data, exclude=None):
 
     if 'LastModifiedBy' in list(raw_data.keys()):
         raw_data['LastModifiedBy'] = remove_identity_key(raw_data['lastModifiedBy'])
-
     human_readable = {camel_case_to_readable(i): j for i, j in raw_data.items() if i not in fields_to_drop}
     files_outputs = {k.replace(' ', ''): v for k, v in human_readable.copy().items()}
 
@@ -421,6 +436,9 @@ def list_drive_children_command(client, args):
     limit = args.get('limit')
     next_page_url = args.get('next_page_url')
 
+    if not item_id:
+        item_id = 'root'
+
     result = client.list_drive_children(object_type=object_type, object_type_id=object_type_id, item_id=item_id,
 
                                         limit=limit, next_page_url=next_page_url)
@@ -431,14 +449,19 @@ def list_drive_children_command(client, args):
     files_readable, files_outputs = parse_outputs(result['value'], ['eTag', 'cTag'])
 
     title = f'{INTEGRATION_NAME} - drivesItems information:'
-    # Creating human readable for War room
+    # # Creating human readable for War room
     human_readable = tableToMarkdown(title, files_readable)
 
-    # context == output
     context = {
-        f'{INTEGRATION_NAME}.ListChildren(val.ItemID == obj.ItemID)': {"ItemID": item_id, "Children": files_outputs}
+        f'{INTEGRATION_NAME}ListChildren(val.ItemID == obj.ItemID)': {"ParentID": item_id,
+                                                                      "Children": files_outputs}
     }
 
+
+    # for output in result['value']:
+    #     context.append(create_file_and_folder_context(output))
+    #
+    # obj = {'ListChildren(val.ID==obj.ID)': context}
     return (
         human_readable,
         context,
@@ -456,9 +479,7 @@ def list_tenant_sites_command(client, args):
         'Values': context_values
     }
     context = {
-        f'{INTEGRATION_NAME}.￿ListSites(val.ID === obj.ID)': {'OdataContext': result.get('@odata.context', None),
-                                                              'Values': context_values
-                                                              }
+        f'{INTEGRATION_NAME}.￿ListSites(val.ID === obj.ID)': context_entry
     }
 
     title = 'List Sites:'
@@ -477,9 +498,12 @@ def list_drives_in_site_command(client, args):
     next_page_url = args.get('next_page_url')
 
     result = client.list_drives_in_site(site_id=site_id, limit=limit, next_page_url=next_page_url)
-    files_readable, files_outputs = parse_outputs(result['list_drive']['value'], ['quota'])
+    files_readable, files_outputs = parse_outputs(result['value'], ['quota'])
 
-    context_entry = files_outputs
+    context_entry = {
+        'OdataContext': result.get('@odata.context', None),
+        'Values': files_outputs
+    }
 
     title = f'{INTEGRATION_NAME} - Drives information:'
     # Creating human readable for War room
@@ -487,7 +511,6 @@ def list_drives_in_site_command(client, args):
 
     # context == output
     context = {
-        # TODO: add in here @odata.nextLink and @data.context
         f'{INTEGRATION_NAME}.ListDrives(val.ID === obj.ID)': context_entry
     }
 
@@ -513,7 +536,7 @@ def replace_an_existing_file_command(client, args):
 
     # context == output
     context = {
-        f'{INTEGRATION_NAME}.replacedFiles(val.ID === obj.ID)': context_entry
+        f'{INTEGRATION_NAME}.ReplacedFiles(val.ID === obj.ID)': context_entry
     }
 
     return (
@@ -531,8 +554,8 @@ def remove_identity_key(source):
 
     identity_key = dict_keys[0]
     new_source = {}
-    new_source['ID'] = source[identity_key]['id']
-    new_source['DisplayName'] = source[identity_key]['displayName']
+    new_source['ID'] = source[identity_key].get('id')
+    new_source['DisplayName'] = source[identity_key].get('displayName')
     new_source['Type'] = identity_key
 
     return new_source
@@ -540,6 +563,7 @@ def remove_identity_key(source):
 
 def create_file_and_folder_context(source):
     human_readble, raw_output = parse_outputs(source.get('parentReference'))
+    human_readble, raw_output_file = parse_outputs(source.get('fileSystemInfo'))
     file_metadata = {
         'OdataContext': source.get('@odata.context'),
         'DownloadUrl': source.get('@microsoft.graph.downloadUrl'),
@@ -554,9 +578,13 @@ def create_file_and_folder_context(source):
         'CreatedBy': remove_identity_key(source.get('createdBy')),
         'LastModifiedBy': remove_identity_key(source.get('lastModifiedBy')),
         'ParentReference': raw_output,
-        'File': source.get('file'),
-        'FileSystemInfo': source.get('fileSystemInfo')
+        'FileSystemInfo': raw_output_file
     }
+    if 'file' in list(source.keys()):
+        file_metadata['File']['Hashes'] = parse_outputs(source.get('hashes'))[1]
+        file_metadata['File']['MimeType'] = source['file'].get('mimetype')
+    if 'folder' in list(source.keys()):
+        file_metadata['Folder']['ChildCount'] = source['folder'].get('childCount')
     return file_metadata
 
 
@@ -617,13 +645,14 @@ def delete_file_command(client, args):
     item_id = args.get('item_id')
     object_type_id = args.get('object_type_id')
 
-    deleted_file_id, text = client.delete_file(object_type, object_type_id, item_id)
+    text = client.delete_file(object_type, object_type_id, item_id)
 
-    context_entry = text  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+    context_entry = text
+
 
     title = f'{INTEGRATION_NAME} - File information:'
     # Creating human readable for War room
-    human_readable = tableToMarkdown(title, context_entry, headers=deleted_file_id)
+    human_readable = tableToMarkdown(title, context_entry, headers=item_id)
 
     return (
         human_readable,
@@ -632,11 +661,6 @@ def delete_file_command(client, args):
 
 
 def main():
-    # CLIENT_ID = demisto.params().get('client_id')
-    # CLIENT_SECRET = demisto.params().get('client_secret')
-    # Remove trailing slash to prevent wrong URL path to service
-    # SERVER = f"https://login.microsoftonline.com/{demisto.params().get('tenant_id')}"
-
     # Should we use SSL
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
@@ -646,12 +670,14 @@ def main():
         # client = Client(BASE_URL, proxy=proxy, verify=verify_certificate)
         client = Client(base_url=BASE_URL, verify=verify_certificate, proxy=proxy, ok_codes=(200, 204, 201))
         if demisto.command() == 'test-module':
+            # demisto.results(demisto.params())
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
 
         elif demisto.command() == 'msgraph-delete-file':
-            return_outputs(*delete_file_command(client, demisto.args()))
+            readable_output, raw_response = delete_file_command(client, demisto.args())
+            return_outputs(readable_output=readable_output)
         elif demisto.command() == 'msgraph-download-file':
             demisto.results(download_file_command(client, demisto.args()))  # it has to be demisto.results instead
             # of return_outputs. because fileResult contains 'content': '' and if that key is empty return_outputs
@@ -681,9 +707,8 @@ def test_module(client):
     """
     Performs basic get request to get item samples
     """
-
     result = client.get_access_token()
-    if result.get('access_token', False):
+    if result:
         return 'ok'
     else:
         return 'Test failed because could not get access token'
