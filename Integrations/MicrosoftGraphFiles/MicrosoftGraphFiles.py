@@ -29,6 +29,11 @@ INTEGRATION_NAME = 'MsGraphFiles'
 
 APP_NAME = 'ms-graph-files'
 
+RESPONSE_KEYS_DICTIONARY = {
+    "@odata.context": "OdataContext",
+    "@microsoft.graph.downloadUrl": "DownloadUrl"
+}
+
 
 def epoch_seconds() -> int:
     """
@@ -312,7 +317,6 @@ class Client(BaseClient):
         # file_path = '/Users/gberger/Desktop/Untitled.txt'
         file_path = demisto.getFilePath(entry_id).get('path')
 
-
         if 'drives' == object_type:
             url = f'{object_type}/{object_type_id}/items/{parent_id}:/{file_name}:/content'
 
@@ -371,6 +375,7 @@ def camel_case_to_readable(text: str) -> str:
         return 'ID'
     return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
 
+
 def parse_parent_reference(parent_reference):
     # if not len(parent_reference):
     #     demisto.log('ParentReference is empty. exit function')
@@ -384,6 +389,8 @@ def parse_parent_reference(parent_reference):
 
     # return new_source
     pass
+
+
 def parse_outputs(raw_data, exclude=None):
     # Unnecessary fields, dropping as to not load the incident context.
     if exclude is None:
@@ -443,20 +450,21 @@ def list_drive_children_command(client, args):
 
                                         limit=limit, next_page_url=next_page_url)
     # with open('/Users/gberger/dev/demisto/content/Integrations/MicrosoftGraphFiles/tests.json', 'r') as f:
-        # result = json.load(f)
-        # result = result['list_drive_children']
+    # result = json.load(f)
+    # result = result['list_drive_children']
 
-    files_readable, files_outputs = parse_outputs(result['value'], ['eTag', 'cTag'])
+    # files_readable, files_outputs = parse_outputs(result['value'], ['eTag', 'cTag'])
 
     title = f'{INTEGRATION_NAME} - drivesItems information:'
     # # Creating human readable for War room
-    human_readable = tableToMarkdown(title, files_readable)
+
+    files_outputs = [parse_key_to_context(item) for item in result['value']]
+    human_readable = tableToMarkdown(title, files_outputs, headerTransform=pascalToSpace)
 
     context = {
         f'{INTEGRATION_NAME}ListChildren(val.ItemID == obj.ItemID)': {"ParentID": item_id,
                                                                       "Children": files_outputs}
     }
-
 
     # for output in result['value']:
     #     context.append(create_file_and_folder_context(output))
@@ -577,8 +585,8 @@ def create_file_and_folder_context(source):
         'Size': source.get('size'),
         'CreatedBy': remove_identity_key(source.get('createdBy')),
         'LastModifiedBy': remove_identity_key(source.get('lastModifiedBy')),
-        'ParentReference': raw_output,
-        'FileSystemInfo': raw_output_file
+        'ParentReference': source.get('parentReference'),
+        'FileSystemInfo': source.get('fileSystemInfo')  # raw_output_file
     }
     if 'file' in list(source.keys()):
         file_metadata['File']['Hashes'] = parse_outputs(source.get('hashes'))[1]
@@ -586,6 +594,18 @@ def create_file_and_folder_context(source):
     if 'folder' in list(source.keys()):
         file_metadata['Folder']['ChildCount'] = source['folder'].get('childCount')
     return file_metadata
+
+
+def parse_key_to_context(obj):
+    parsed_obj = {}
+    for key, value in obj.items():
+        new_key = RESPONSE_KEYS_DICTIONARY.get(key, key)
+        parsed_obj[new_key] = value
+        if type(value) == dict:
+            parsed_obj[new_key] = parse_key_to_context(value)
+    under_score_obj = createContext(parsed_obj, keyTransform=camel_case_to_underscore)
+    context_entry = createContext(under_score_obj, keyTransform=string_to_context_key)
+    return context_entry
 
 
 def upload_new_file_command(client, args):
@@ -596,8 +616,7 @@ def upload_new_file_command(client, args):
     entry_id = args.get('entry_id')
 
     result = client.upload_new_file(object_type, object_type_id, parent_id, file_name, entry_id)
-    context_entry = create_file_and_folder_context(result)
-
+    context_entry = parse_key_to_context(result)
     title = f'{INTEGRATION_NAME} - File information:'
     # Creating human readable for War room
     human_readable = tableToMarkdown(title, context_entry)
@@ -649,7 +668,6 @@ def delete_file_command(client, args):
 
     context_entry = text
 
-
     title = f'{INTEGRATION_NAME} - File information:'
     # Creating human readable for War room
     human_readable = tableToMarkdown(title, context_entry, headers=item_id)
@@ -670,7 +688,6 @@ def main():
         # client = Client(BASE_URL, proxy=proxy, verify=verify_certificate)
         client = Client(base_url=BASE_URL, verify=verify_certificate, proxy=proxy, ok_codes=(200, 204, 201))
         if demisto.command() == 'test-module':
-            # demisto.results(demisto.params())
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             demisto.results(result)
