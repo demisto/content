@@ -1,3 +1,5 @@
+from typing import Dict
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -43,7 +45,7 @@ class AddressObject(object):
                 if ip.version == 4:
                     type_ = 'IP'
                 elif ip.version == 6:
-                    type_ = 'IPv6'  # todo: depends on https://github.com/demisto/etc/issues/20662
+                    type_ = 'IPv6'
                 else:
                     LOG('Unknown ip version: {!r}'.format(ip.version))
                     return []
@@ -54,7 +56,7 @@ class AddressObject(object):
         elif acategory == 'ipv4-addr':
             type_ = 'IP'
         elif acategory == 'ipv6-addr':
-            type_ = 'IPv6'  # todo: depends on https://github.com/demisto/etc/issues/20662
+            type_ = 'IPv6'
         elif acategory == 'e-mail':
             type_ = 'Email'
         else:
@@ -218,7 +220,7 @@ class HTTPSessionObject(object):
                         if raw_header is not None:
                             return [{
                                 'indicator': raw_header.split('\n')[0],
-                                'type': 'http-session',
+                                'type': 'http-session',  # we don't support this type natively in demisto
                                 'header': raw_header
                             }]
             else:
@@ -273,7 +275,6 @@ class StixDecode(object):
         package = BeautifulSoup(content, 'xml')
 
         if package.contents[0].name != 'STIX_Package':
-            LOG('No STIX package in content')
             return None, []
 
         package = package.contents[0]
@@ -347,7 +348,8 @@ class Taxii11(object):
         if message_id is None:
             message_id = Taxii11.new_message_id()
 
-        return '''<taxii_11:Collection_Information_Request xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" message_id="{}"/>'''.format(
+        return '''<taxii_11:Collection_Information_Request xmlns:taxii_11=
+        "http://taxii.mitre.org/messages/taxii_xml_binding-1.1" message_id="{}"/>'''.format(
             message_id)
 
     @staticmethod
@@ -378,7 +380,8 @@ class Taxii11(object):
 
         if subscription_id is None:
             result.append(
-                '<taxii_11:Poll_Parameters allow_asynch="false"><taxii_11:Response_Type>FULL</taxii_11:Response_Type></taxii_11:Poll_Parameters>')
+                '<taxii_11:Poll_Parameters allow_asynch="false"><taxii_11:Response_Type>'
+                'FULL</taxii_11:Response_Type></taxii_11:Poll_Parameters>')
 
         result.append('</taxii_11:Poll_Request>')
 
@@ -494,8 +497,6 @@ class Client(object):
         if self.username is not None and self.password is not None:
             rkwargs['auth'] = (self.username, self.password)
 
-        demisto.debug('{} - request to {!r}: {!r}'.format(INTEGRATION_NAME, url, rkwargs))
-
         r = requests.post(
             url,
             **rkwargs
@@ -525,7 +526,6 @@ class Client(object):
     def _discover_poll_service(self):
         # let's start from discovering the available services
         req = Taxii11.discovery_request()
-        demisto.debug('protocol {!r}'.format(self.discovery_service.split(':', 1)[0]))
         reqhdrs = Taxii11.headers(
             protocol=self.discovery_service.split(':', 1)[0]
         )
@@ -534,8 +534,6 @@ class Client(object):
             headers=reqhdrs,
             data=req
         )
-
-        demisto.debug('{} - Discovery response: {!r}'.format(INTEGRATION_NAME, result.text))
 
         result = BeautifulSoup(result.text, 'xml')
         self._raise_for_taxii_error(result)
@@ -587,8 +585,6 @@ class Client(object):
             data=req
         )
 
-        demisto.debug('{} - Collection information response: {!r}'.format(INTEGRATION_NAME, result.text))
-
         result = BeautifulSoup(result.text, 'xml')
         self._raise_for_taxii_error(result)
 
@@ -633,7 +629,6 @@ class Client(object):
             exclusive_begin_timestamp=begin,
             inclusive_end_timestamp=end
         )
-        demisto.debug('{} - poll request: {}'.format(INTEGRATION_NAME, req))
         reqhdrs = Taxii11.headers(
             protocol=poll_service.split(':', 1)[0]
         )
@@ -648,7 +643,7 @@ class Client(object):
             result_part_number = None
             result_id = None
             more = None
-            tag_stack = collections.deque()
+            tag_stack = collections.deque()  # type: ignore
             try:
                 for action, element in etree.iterparse(result.raw, events=('start', 'end'), recover=True):
                     if action == 'start':
@@ -677,7 +672,6 @@ class Client(object):
                         for c in element:
                             if c.tag.endswith('Content'):
                                 if len(c) == 0:
-                                    LOG('{} - Content with no children'.format(INTEGRATION_NAME))
                                     continue
 
                                 content = etree.tostring(c[0], encoding='unicode')
@@ -687,16 +681,12 @@ class Client(object):
                                     yield indicator
 
                                 if self.last_stix_package_ts is None or timestamp > self.last_stix_package_ts:
-                                    demisto.debug('{} - last package ts: {!r}'.format(INTEGRATION_NAME, timestamp))
                                     self.last_stix_package_ts = timestamp
 
                             elif c.tag.endswith('Timestamp_Label'):
-                                demisto.debug('{} - timestamp label: {!r}'.format(INTEGRATION_NAME, c.text))
                                 timestamp = Taxii11.parse_timestamp_label(c.text)
-                                demisto.debug('{} - timestamp label: {!r}'.format(INTEGRATION_NAME, timestamp))
 
                                 if self.last_taxii_content_ts is None or timestamp > self.last_taxii_content_ts:
-                                    demisto.debug('{} - last content ts: {!r}'.format(INTEGRATION_NAME, timestamp))
                                     self.last_taxii_content_ts = timestamp
 
                         element.clear()
@@ -704,13 +694,10 @@ class Client(object):
             finally:
                 result.close()
 
-            demisto.debug('{} - result_id: {} more: {}'.format(INTEGRATION_NAME, result_id, more))
-
             if not more or more == '0' or more.lower() == 'false':
                 break
 
             if result_id is None or result_part_number is None:
-                LOG('{} - More set to true but no result_id or result_part_number'.format(INTEGRATION_NAME))
                 break
 
             req = Taxii11.poll_fulfillment_request(
@@ -735,7 +722,6 @@ class Client(object):
         while cbegin < end:
             cend = min(end, cbegin + dt)
 
-            LOG('{} - polling {!r} to {!r}'.format(INTEGRATION_NAME, cbegin, cend))
             result = self._poll_collection(
                 poll_service=poll_service,
                 begin=cbegin,
@@ -755,8 +741,6 @@ class Client(object):
             discovered_poll_service = self.poll_service
         else:
             discovered_poll_service = self._discover_poll_service()
-
-        demisto.debug('{} - poll service: {!r}'.format(INTEGRATION_NAME, discovered_poll_service))
 
         last_run = self.last_taxii_run
 
@@ -781,7 +765,7 @@ class Client(object):
 
 
 def package_extract_properties(package):
-    result = {}
+    result: Dict[str, str] = {}
 
     header = package.find_all('STIX_Header')
     if len(header) == 0:
@@ -871,18 +855,6 @@ def interval_in_sec(val):
             return number * m_value
 
     return None
-
-
-# simple function to iterate list in batches
-def batch(iterable, batch_size=1):
-    current_batch = []
-    for item in iterable:
-        current_batch.append(item)
-        if len(current_batch) == batch_size:
-            yield current_batch
-            current_batch = []
-    if current_batch:
-        yield current_batch
 
 
 def test_module(client, args):
