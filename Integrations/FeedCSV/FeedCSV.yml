@@ -77,20 +77,20 @@ configuration:
   name: ignore_regex
   required: false
   type: 0
-- additionalinfo: Name of the field names in the CSV. If several are given, will use
-    "indicator" as the indicator value field.
+- additionalinfo: Name of the field names in the CSV feed. If several are given, will use
+    "indicator" as the default indicator value field.
   defaultvalue: indicator
   display: Field Names
   name: fieldnames
   required: false
   type: 0
-- additionalinfo: A one-character string used to separate fields.
+- additionalinfo: A one-character string used to separate fields. For example, a comma ",".
   defaultvalue: ','
   display: Delimiter
   name: delimiter
   required: false
   type: 0
-- additionalinfo: Controls how instances of quotechar appearing inside a field should
+- additionalinfo: Controls how instances of quotechar in a field should
     themselves be quoted. When True, the character is doubled.
   display: Doublequote
   name: doublequote
@@ -120,30 +120,30 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Limit results returned to the output.
+      description: The maximum number of results to return to the output.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Indicator type.
+      description: The indicator type.
       isArray: false
       name: indicator_type
       required: false
       secret: false
     deprecated: false
-    description: Get the feed indicators.
+    description: Gets indicators from the feed.
     execution: false
     name: get-indicators
     outputs:
     - contextPath: CSV.Indicator.Value
-      description: Indicator value.
+      description: The indicator value.
       type: String
     - contextPath: CSV.Indicator.Type
-      description: Indicator type.
+      description: The indicator type.
       type: String
     - contextPath: CSV.Indicator.Rawjson
-      description: Indicator rawJSON value.
+      description: The indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/python3:3.7.5.4583
   feed: true
