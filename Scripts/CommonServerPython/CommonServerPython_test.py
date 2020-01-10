@@ -2,6 +2,7 @@
 import demistomock as demisto
 import copy
 import json
+import re
 import os
 import sys
 import requests
@@ -10,7 +11,8 @@ import pytest
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs
+    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch
 
 try:
     from StringIO import StringIO
@@ -995,3 +997,56 @@ class TestReturnOutputs:
         assert outputs == results['Contents']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
+
+
+def test_argToBoolean():
+    assert argToBoolean('true') is True
+    assert argToBoolean('yes') is True
+    assert argToBoolean('TrUe') is True
+    assert argToBoolean(True) is True
+
+    assert argToBoolean('false') is False
+    assert argToBoolean('no') is False
+    assert argToBoolean(False) is False
+
+
+batch_params = [
+    # full batch
+    ([1, 2, 3], 2, [[1, 2], [3]]),
+    ([], 1, []),
+    ([1, 2, 3], 5, [[1, 2, 3]])
+]
+
+
+@pytest.mark.parametrize('iterable, sz, expected', batch_params)
+def test_batch(iterable, sz, expected):
+    for i, item in enumerate(batch(iterable, sz)):
+        assert expected[i] == item
+
+
+regexes_test = [
+    (ipv4Regex, '192.168.1.1', True),
+    (ipv4Regex, '192.168.a.1', False),
+    (ipv4Regex, '192.168..1.1', False),
+    (ipv4Regex, '192.256.1.1', False),
+    (ipv4Regex, '192.256.1.1.1', False),
+    (ipv4cidrRegex, '192.168.1.1/32', True),
+    (ipv4cidrRegex, '192.168.1.1.1/30', False),
+    (ipv4cidrRegex, '192.168.1.b/30', False),
+    (ipv4cidrRegex, '192.168.1.12/381', False),
+    (ipv6Regex, '2001:db8:a0b:12f0::1', True),
+    (ipv6Regex, '2001:db8:a0b:12f0::1/11', False),
+    (ipv6Regex, '2001:db8:a0b:12f0::1::1', False),
+    (ipv6Regex, '2001:db8:a0b:12f0::98aa5', False),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1/64', True),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1/256', False),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1::1/25', False),
+    (ipv6cidrRegex, '2001:db8:a0b:12f0::1aaasds::1/1', False)
+]
+
+
+@pytest.mark.parametrize('pattern, string, expected', regexes_test)
+def test_regexes(pattern, string, expected):
+    # (str, str, bool) -> None
+    # emulates re.fullmatch from py3.4
+    assert expected is bool(re.match("(?:" + pattern + r")\Z", string))
