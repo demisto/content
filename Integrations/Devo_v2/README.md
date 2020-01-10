@@ -123,7 +123,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 5. devo-write-to-lookup-table
 ### 1. devo-run-query
 ---
-Queries Devo based on linq query
+Queries Devo based on linq query.
+
+Please refer to to the Devo documentation for building a query with LINQ
+[HERE](https://docs.devo.com/confluence/ndt/searching-data/building-a-query/build-a-query-using-linq)
 ##### Required Permissions
 **A Demisto instance configured with the correct OAuth token that has permission to query the target tables**
 ##### Base Command
@@ -138,6 +141,14 @@ Queries Devo based on linq query
 | to | End datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay) | Optional |
 | writeToContext | Whether to write results to context or not | Optional |
 
+#####__from__ and __to__ time note:
+This integration allows for the following formats. Note that when __from__ and __to__ times
+are both given that they must be the same given format.
+- When __from__ is a date range such as "1 day", "30 minute", etc... __to__ is not needed and will be ignored even if given.
+- Unix timestamps in millis and seconds are accepted.
+- Datetime strings in the format '%Y-%m-%dT%H:%M:%S' are accepted.
+- Python datetime objects are accepted as well.
+- Unsupported formats will error out.
 
 ##### Context Output
 
@@ -169,7 +180,11 @@ Devo run query results
 
 ### 2. devo-get-alerts
 ---
-Queries alerts in the specified timeframe
+Queries alerts in the specified timeframe.
+
+Alerts are based off the table `siem.logtrust.alert.info` found in your Devo account. Please refer to this table
+for a list of columns you can filter off of. Also please refer back to the LINQ documentation for operations
+that are allowed.
 ##### Required Permissions
 **Requires a Devo OAuth token that has read permission on siem.logtrust.alert.info table**
 ##### Base Command
@@ -184,6 +199,14 @@ Queries alerts in the specified timeframe
 | filters | key value filter to apply to retrieve specified alerts. refer to docs | Optional |
 | writeToContext | write results to context or not | Optional |
 
+#####__from__ and __to__ time note:
+This integration allows for the following formats. Note that when __from__ and __to__ times
+are both given that they must be the same given format.
+- When __from__ is a date range such as "1 day", "30 minute", etc... __to__ is not needed and will be ignored even if given.
+- Unix timestamps in millis and seconds are accepted.
+- Datetime strings in the format '%Y-%m-%dT%H:%M:%S' are accepted.
+- Python datetime objects are accepted as well.
+- Unsupported formats will error out.
 
 ##### Context Output
 
@@ -211,7 +234,10 @@ Devo get alerts results
 
 ### 3. devo-multi-table-query
 ---
-Queries multiple tables for a given token and returns relevant results
+Queries multiple tables for a given token and returns relevant results.
+
+This method is used for when you do not know which columns a specified search token will show up in (Needle in a haystack search)
+Thus querying all columns for the search token and returning a union of the given tables.
 ##### Required Permissions
 **A Demisto instance configured with the correct OAuth token that has permission to query the target tables**
 ##### Base Command
@@ -227,6 +253,14 @@ Queries multiple tables for a given token and returns relevant results
 | to | End time in seconds unix timestamp | Optional |
 | writeToContext | write results to context or not | Optional |
 
+#####__from__ and __to__ time note:
+This integration allows for the following formats. Note that when __from__ and __to__ times
+are both given that they must be the same given format.
+- When __from__ is a date range such as "1 day", "30 minute", etc... __to__ is not needed and will be ignored even if given.
+- Unix timestamps in millis and seconds are accepted.
+- Datetime strings in the format '%Y-%m-%dT%H:%M:%S' are accepted.
+- Python datetime objects are accepted as well.
+- Unsupported formats will error out.
 
 ##### Context Output
 
@@ -258,6 +292,11 @@ Devo multi-query results
 ### 4. devo-write-to-table
 ---
 Write records to a specified Devo table
+
+The records written to the table should all be of the same JSON format and to the same table. We currently do not support
+writing to multiple tables in a single operation.
+
+For more information on the way we write to a table please refer to this documentation found [HERE](https://github.com/DevoInc/python-ds-connector#loading-data-into-devo)
 ##### Required Permissions
 **A Demisto instance configured with the correct write JSON credentials**
 ##### Base Command
@@ -303,6 +342,10 @@ Link to Devo Query
 ### 5. devo-write-to-lookup-table
 ---
 Writes a record to a given lookup table
+
+For more information on lookup tables please refer to documentation found [HERE](https://docs.devo.com/confluence/ndt/searching-data/working-in-the-search-window/data-enrichment).
+We can add extra records with incremental lookup additions. Please refer to our Python SDK for more information on how we are
+adding in extra lookup information found [HERE](https://github.com/DevoInc/python-sdk/blob/master/docs/sender.md#Lookups)
 ##### Required Permissions
 **A Demisto instance configured with the correct write JSON credentials**
 ##### Base Command
