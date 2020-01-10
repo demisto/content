@@ -51,7 +51,7 @@ class Client(BaseClient):
         try:
             self.polling_timeout = int(polling_timeout)
         except (ValueError, TypeError):
-            return_error('Please provide an integer value for "Request Timeout"')
+            return_error('"Request Timeout" value must be an integer value. ')
 
         self.ignore_regex = ignore_regex
         if self.ignore_regex is not None:
@@ -92,7 +92,7 @@ class Client(BaseClient):
         try:
             r = _session.send(prepreq, **rkwargs)
         except requests.ConnectionError:
-            raise requests.ConnectionError('Failed to establish a new connection. Please make sure your URL is valid.')
+            raise requests.ConnectionError('Failed to establish a new connection. Verify that the URL is valid.')
         try:
             r.raise_for_status()
         except Exception:
