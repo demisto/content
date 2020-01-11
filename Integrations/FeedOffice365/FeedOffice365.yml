@@ -22,7 +22,7 @@ configuration:
   - Exchange
   - Sharepoint
   - Skype
-  - Any
+  - All
   required: true
   type: 16
 - display: Fetch indicators
@@ -76,7 +76,7 @@ configuration:
   type: 1
   required: false
   hidden: true
-description: Office365 Feed Integration.
+description: Use the Office365 feed integration to get indicators from the feed.
 display: Office365 Feed
 name: FeedOffice365
 script:
@@ -84,7 +84,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: Limit the number of results. Default is 10.
+      description: The maximum number of results to return. The default value is 10.
       isArray: false
       name: limit
       required: false
@@ -92,7 +92,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'IPS'
-      description: Indicator type.
+      description: The indicator type. Can be "IPS", "URLS", or "Both". The default value is "IPS".
       isArray: false
       name: indicator_type
       predefined:
@@ -102,15 +102,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get indicators from the feed.
+    description: Gets indicators from the feed.
     execution: false
     name: get-indicators
     outputs:
     - contextPath: O365.Indicator.Value
-      description: Indicator value.
+      description: The indicator value.
       type: String
     - contextPath: O365.Indicator.Type
-      description: Indicator type.
+      description: The indicator type.
       type: Unknown
   dockerimage: demisto/python3:3.7.5.4328
   isfetch: false
