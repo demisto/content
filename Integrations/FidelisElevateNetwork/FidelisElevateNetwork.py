@@ -418,6 +418,7 @@ def upload_URL(data):
     result = http_request('POST', url, data=data)
 # end of URL upload
 
+
 def get_alert_sessiondata_command():
     args = demisto.args()
     alert_id = args['alert_id']
@@ -523,6 +524,7 @@ def get_alert_forensictext(alert_id):
 
     return res.text
 # End of fornesic text code block
+
 
 def get_alert_command():
     args = demisto.args()
@@ -1211,7 +1213,6 @@ def main():
     
         elif command == 'fidelis-update-alertstatus':
             update_alertstatus_command()
-    
     
         elif command == 'fidelis-alert-ef-submission':
             alert_ef_submission_command()

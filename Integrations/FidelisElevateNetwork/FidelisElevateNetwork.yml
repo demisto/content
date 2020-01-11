@@ -17,14 +17,14 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: "True"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "True"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Fetch incidents
@@ -37,8 +37,7 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3     months,
-    1 year)
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   defaultvalue: 3 days
   type: 0
@@ -527,11 +526,13 @@ script:
       description: Alert ID
     description: Pulls the text of the forensic data
   - name: fidelis-get-alert-dpath
+    description: Get alert dpath
     arguments:
     - name: alert_id
       required: true
       description: Alert ID
   - name: fidelis-update-alertstatus
+    description: Update alert status
     arguments:
     - name: alert_id
       required: true
