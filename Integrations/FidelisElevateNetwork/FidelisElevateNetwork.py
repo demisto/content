@@ -178,8 +178,6 @@ def generate_time_settings(time_frame=None, start_time=None, end_time=None):
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
-# Code added by Dave for additional functionality - Second set of items
-
 # This section will change the explicit score of an alert - works
 
 
@@ -203,10 +201,9 @@ def update_alertstatus_command():
 
 @logger
 def update_alertstatus(alert_id, data):
-    #url = '/j/rest/v1/alert/feedback/{}/'.format(alert_id)
+    # url = '/j/rest/v1/alert/feedback/{}/'.format(alert_id)
     url = '/j/rest/v1/alert/feedback/'
-    demisto.log(url)
-    demisto.log(str(data))
+    
     result = http_request('PUT', url, data=data)
 # end of explicit score section
 
@@ -298,8 +295,6 @@ def add_alert_comment_command():
 @logger
 def add_alert_comment(alert_id, data):
     url = '/j/rest/v1/alert/mgmt/'
-    demisto.log(url)
-    demisto.log(str(data))
     result = http_request('PUT', url, data=data)
 # end of adding a comment section
 
@@ -331,8 +326,6 @@ def manage_alert_label_command():
 @logger
 def manage_alert_label(alert_id, data):
     url = '/j/rest/v1/alert/mgmt/'
-    demisto.log(url)
-    demisto.log(str(data))
     result = http_request('PUT', url, data=data)
 # end of adding a label section
 
@@ -365,8 +358,6 @@ def manage_alert_assignuser_command():
 @logger
 def manage_alert_assignuser(alert_id, data):
     url = '/j/rest/v2/alert/mgmt/'
-    demisto.log(url)
-    demisto.log(str(data))
     result = http_request('POST', url, data=data)
 # end of assigning user section
 
@@ -405,8 +396,6 @@ def manage_alert_closealert_command():
 @logger
 def manage_alert_closealert(alert_id, data):
     url = '/j/rest/v2/alert/mgmt/'
-    demisto.log(url)
-    demisto.log(str(data))
     result = http_request('POST', url, data=data)
 # end of adding a comment, changing stats and assigning user section
 
@@ -426,15 +415,8 @@ def upload_URL_command():
 @logger
 def upload_URL(data):
     url = '/j/rest/malware/submitUrl/'
-    demisto.log(url)
-    demisto.log(str(data))
     result = http_request('POST', url, data=data)
 # end of URL upload
-
-# end of Dave added code part 2
-
-# Code added by Dave for additional functionality
-
 
 def get_alert_sessiondata_command():
     args = demisto.args()
@@ -541,9 +523,6 @@ def get_alert_forensictext(alert_id):
 
     return res.text
 # End of fornesic text code block
-
-# End of Daves code block
-
 
 def get_alert_command():
     args = demisto.args()
@@ -1202,44 +1181,55 @@ def main():
 
         elif command == 'fidelis-list-pcap-components':
             list_pcap_components_command()
+    
         elif command == 'fidelis-get-alert-by-uuid':
             get_alert_by_uuid()
+    
         elif command == 'fidelis-list-metadata':
             list_metadata()
+    
         elif command == 'fidelis-list-alerts-by-ip':
             list_alerts_by_ip()
+    
         elif command == 'fidelis-download-malware-file':
             download_malware_file()
+    
         elif command == 'fidelis-download-pcap-file':
             download_pcap_file()
 
-# Code added by Dave to add additional functionality
         elif command == 'fidelis-get-alert-sessiondata':
             get_alert_sessiondata_command()
+    
         elif command == 'fidelis-get-alert-ef':
             get_alert_ef_command()
+    
         elif command == 'fidelis-get-alert-forensictext':
             get_alert_forensictext_command()
-# End of added code block
 
-# Code added by Dave to add additional functionality - part 2
         elif command == 'fidelis-get-alert-dpath':
             get_alert_dpath_command()
+    
         elif command == 'fidelis-update-alertstatus':
             update_alertstatus_command()
+    
+    
         elif command == 'fidelis-alert-ef-submission':
             alert_ef_submission_command()
+    
         elif command == 'fidelis-add-alert-comment':
             add_alert_comment_command()
+    
         elif command == 'fidelis-manage-alert-assignuser':
             manage_alert_assignuser_command()
+    
         elif command == 'fidelis-manage-alert-closealert':
             manage_alert_closealert_command()
+    
         elif command == 'fidelis-manage-alert-label':
             manage_alert_label_command()
+    
         elif command == 'fidelis-upload-URL':
             upload_URL_command()
-# End of added code block - part 2
 
     except Exception as e:
         return_error('error has occurred: {}'.format(str(e)))
