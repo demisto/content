@@ -149,8 +149,9 @@ expected_alert_output = [{'name': 'someSecretAlert2', 'occurred': '2019-08-06T23
                                      '"title": "someSecretAlert1"}'}]
 
 expected_raw_output = [
-    {'alert_name': 'someSecretAlert2', 'content': '', 'date': '2019-08-06 23:20:35', 'lang': 'English',
-     'langcode': 'en', 'read': False, 'threat_level': 'emerging', 'threats': ['Phishing'], 'title': 'someSecretAlert2'},
+    {'alert_name': 'someSecretAlert2', 'content': '', 'date': '2019-08-06 23:20:35', 'id': '1', 'lang': 'English',
+     'langcode': 'en', 'read': False, 'severity': 10, 'threat_level': 'emerging', 'threats': ['Phishing'],
+     'title': 'someSecretAlert2', 'user_id': '123'},
     {'alert_name': 'someSecretAlert4', 'content': '', 'date': '2019-08-18 09:58:10', 'id': '2', 'read': False,
      'severity': 10, 'threat_level': 'imminent', 'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert4',
      'user_id': '132'},
@@ -293,10 +294,10 @@ def test_get_indicators(mocker):
     from Sixgill import get_indicators
     readable_output, outputs, raw_response = get_indicators()
 
-    assert readable_output == '### Sixgill\'s DarkFeed indicators: \n|File(val.MD5 == obj.MD5)|' \
-                              'IP(val.Address == obj.Address)|\n|---|---|\n| {\'MD5\': \'abafbadfbafbafb\', ' \
-                              '\'Tags\': \'DarkWeb, MD5\'} | {\'Address\': \'1.1.1.1\'},<br>' \
-                              '{\'Address\': \'2.2.2.2\'} |\n'
+    assert readable_output == "### Sixgill's DarkFeed indicators:\n|ID|Type|Indicator Value|Tags|\n|---|---|---|---|" \
+                              "\n| 123456789 | IP(val.Address == obj.Address) | 1.1.1.1 | DarkWeb |\n| 123456789 | " \
+                              "IP(val.Address == obj.Address) | 2.2.2.2 | DarkWeb |\n| 123456789 | " \
+                              "File(val.MD5 == obj.MD5) | abafbadfbafbafb | DarkWeb, MD5 |\n"
     assert outputs == expected_iocs
     assert raw_response == expected_raw_output
 
