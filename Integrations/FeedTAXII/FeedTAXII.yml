@@ -7,6 +7,11 @@ configuration:
   name: feed
   required: false
   type: 8
+- display: Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: 240
+  type: 19
+  required: true
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
   name: feedInstanceReliability
