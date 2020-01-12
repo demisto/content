@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [20.1.0] - 2020-01-07
 Fixed an issue with ***fetch-incidents*** which caused incident name to be cut short if it had newlines in its description.
 
 ## [19.12.1] - 2019-12-25
