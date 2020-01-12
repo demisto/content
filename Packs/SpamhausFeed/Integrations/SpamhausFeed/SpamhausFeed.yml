@@ -7,6 +7,11 @@ configuration:
   name: feed
   required: false
   type: 8
+- display: Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: 240
+  type: 19
+  required: true
 - display: Indicator Type
   name: indicator_type
   required: true

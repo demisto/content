@@ -5,14 +5,16 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import urllib3
 import requests
+from typing import Optional, Pattern
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, url: str, insecure: bool = False, credentials: dict = None, ignore_regex: str = None,
-                 encoding: str = None, indicator: str = None, fields: str = '{}', polling_timeout: int = 20,
+    def __init__(self, url: str, feed_name: str = 'http', insecure: bool = False, credentials: dict = None,
+                 ignore_regex: str = None, encoding: str = None,
+                 indicator: str = None, fields: str = '{}', polling_timeout: int = 20,
                  user_agent: str = None, proxy: bool = False, **kwargs):
         """Implements class for miners of plain text feeds over http/https.
         **Config parameters**
@@ -81,37 +83,38 @@ class Client(BaseClient):
             raise ValueError('Please provide an integer value for "Request Timeout"')
         self.user_agent = user_agent
         self.encoding = encoding
-
+        self.feed_name = feed_name
         if not credentials:
             credentials = {}
         self.username = credentials.get('identifier', None)
         self.password = credentials.get('password', None)
 
-        self.ignore_regex = ignore_regex
-        if self.ignore_regex is not None:
-            self.ignore_regex = re.compile(self.ignore_regex)
+        self.ignore_regex: Optional[Pattern] = None
+        if ignore_regex is not None:
+            self.ignore_regex = re.compile(ignore_regex)
 
-        self.indicator = indicator
-        if self.indicator is not None:
-            self.indicator = json.loads(self.indicator)
+        if indicator is not None:
+            self.indicator = json.loads(indicator)
             if 'regex' in self.indicator:
                 self.indicator['regex'] = re.compile(self.indicator['regex'])
             else:
-                raise ValueError(f'{FEED_NAME} - indicator stanza should have a regex')
+                raise ValueError(f'{self.feed_name} - indicator stanza should have a regex')
             if 'transform' not in self.indicator:
                 if self.indicator['regex'].groups > 0:
-                    LOG(f'{FEED_NAME} - no transform string for indicator but pattern contains groups')
+                    LOG(f'{self.feed_name} - no transform string for indicator but pattern contains groups')
                 self.indicator['transform'] = r'\g<0>'
+        else:
+            self.indicator = None
 
         self.fields = json.loads(fields)
         for f, fattrs in self.fields.items():
             if 'regex' in fattrs:
                 fattrs['regex'] = re.compile(fattrs['regex'])
             else:
-                raise ValueError(f'{FEED_NAME} - {f} field does not have a regex')
+                raise ValueError(f'{self.feed_name} - {f} field does not have a regex')
             if 'transform' not in fattrs:
                 if fattrs['regex'].groups > 0:
-                    LOG(f'{FEED_NAME} - no transform string for field {f} but pattern contains groups')
+                    LOG(f'{self.feed_name} - no transform string for field {f} but pattern contains groups')
                 fattrs['transform'] = r'\g<0>'
 
     def build_iterator(self):
@@ -141,7 +144,8 @@ class Client(BaseClient):
                 try:
                     r.raise_for_status()
                 except Exception:
-                    LOG(f'{FEED_NAME} - exception in request: {r.status_code} {r.content}')
+                    LOG(f'{self.feed_name} - exception in request:'  # type: ignore[str-bytes-safe]
+                        f' {r.status_code} {r.content}')
                     raise
                 rs.append(r)
         except requests.ConnectionError:
@@ -162,7 +166,7 @@ class Client(BaseClient):
                 )
             if self.ignore_regex is not None:
                 result = filter(
-                    lambda x: self.ignore_regex.match(x) is None,
+                    lambda x: self.ignore_regex.match(x) is None,  # type: ignore[union-attr]
                     result
                 )
             results.append(result)
@@ -202,8 +206,8 @@ def get_indicator_fields(itype, line, client):
     return attributes, value
 
 
-def fetch_indicators_command(client, itype):
-    iterators = client.build_iterator()
+def fetch_indicators_command(client, itype, **kwargs):
+    iterators = client.build_iterator(**kwargs)
     for iterator in iterators:
         indicators = []
         for line in iterator:
@@ -231,19 +235,21 @@ def test_module(client, args):
     return 'ok', {}, {}
 
 
-def feed_main():
+def feed_main(feed_name):
     # Write configure here
     params = {k: v for k, v in demisto.params().items() if v is not None}
+    params['feed_name'] = feed_name
     client = Client(**params)
     command = demisto.command()
-    demisto.info('Command being called is {}'.format(command))
+    if command != 'fetch-indicators':
+        demisto.info('Command being called is {}'.format(command))
     # Switch case
-    commands = {
+    commands: dict = {
         'test-module': test_module,
         'get-indicators': get_indicators_command
     }
     try:
-        if demisto.command() == 'fetch-indicators':
+        if command == 'fetch-indicators':
             indicators = fetch_indicators_command(client, params.get('indicator_type'))
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
@@ -252,5 +258,5 @@ def feed_main():
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = f'Error in {FEED_NAME} feed [{e}]'  # FEED_NAME should be in the integration code
+        err_msg = f'Error in {feed_name} feed [{e}]'  # FEED_NAME should be in the integration code
         return_error(err_msg)
