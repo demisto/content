@@ -23,11 +23,10 @@ class Client:
         verify(bool): Enable certificate verification. Default: True
         proxy(bool): Enable proxy. Default: False
     """
-    def __init__(self, service_account=None, project=None, verify=True, proxy=False):
+    def __init__(self, service_account=None, project=None, verify=True):
         self.service_account = service_account
         self.project = project
         self.verify = verify
-        self.proxy = proxy
 
         self.client = self._get_client()
         self.project_id = self._get_project_id()
@@ -83,6 +82,7 @@ class Client:
         return self.project if self.project is not None else self.service_account['project_id']
 
     def _get_client(self):
+        # turning off the proxy as the SDK doesn't support it.
         handle_proxy()
 
         cur_directory_path = os.getcwd()
@@ -213,7 +213,6 @@ def main():
     project = demisto.params().get('project', None)
 
     verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
 
     LOG(f'Command being called is {demisto.command()}')
     try:
@@ -221,7 +220,6 @@ def main():
             service_account=service_account,
             project=project,
             verify=verify_certificate,
-            proxy=proxy
         )
 
         if demisto.command() == 'test-module':
