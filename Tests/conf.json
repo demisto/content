@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
          {
-            "integrations": "￿SpamhausFeed",
+            "integrations": "SpamhausFeed",
             "playbookID": "Spamhaus_Feed_Test"
         },
         {
