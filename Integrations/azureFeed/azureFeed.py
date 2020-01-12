@@ -16,9 +16,9 @@ INTEGRATION_NAME = 'Azure'
 
 ERROR_TYPE_TO_MESSAGE = {
     requests.exceptions.SSLError: F'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                                    F'Check your not secure parameter.\n\n',
+                                  F'Check your not secure parameter.\n\n',
     requests.ConnectionError: F'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                                F'Check your Server URL parameter.\n\n',
+                              F'Check your Server URL parameter.\n\n',
     requests.exceptions.HTTPError: F'Error issuing the request call to {INTEGRATION_NAME}.\n\n',
 }
 
@@ -27,12 +27,14 @@ class Client(BaseClient):
     """Client to use in the Azure Feed integration. Overrides BaseClient.
 
     Args:
+        regions_list (list): List of regions to filter.
+        services_list (list): List of services to filter.
         insecure (bool): False if feed HTTPS server certificate is verified, True otherwise.
         proxy (bool):False if feed HTTPS server certificate will not use proxies, True otherwise.
     """
 
-    def __init__(self, regions_list: list, services_list: list, polling_timeout: int, insecure: bool,
-                 proxy: bool):
+    def __init__(self, regions_list: list, services_list: list, polling_timeout: int = 20, insecure: bool = False,
+                 proxy: bool = False):
         super().__init__(base_url=AZUREJSON_URL, verify=insecure, proxy=proxy)
         self.regions_list = regions_list
         self.services_list = services_list
@@ -60,7 +62,7 @@ class Client(BaseClient):
         elif address_type.version == 6:
             type_ = 'IPv6'
         else:
-            LOG.error(F'{INTEGRATION_NAME} - Unknown IP version: {address_type.version}')
+            LOG(F'{INTEGRATION_NAME} - Unknown IP version: {address_type.version}')
             return {}
 
         ip_object = {
@@ -85,7 +87,8 @@ class Client(BaseClient):
         )
 
         azure_url_response.raise_for_status()
-        download_link = re.search(r'(https://.+\.json)\",', azure_url_response.text).group(1)
+        download_link_search_regex = re.search(r'downloadData={.+(https://.+\.json)\",', azure_url_response.text)
+        download_link = download_link_search_regex.group(1) if download_link_search_regex else None
 
         return download_link
 
@@ -131,7 +134,7 @@ class Client(BaseClient):
         indicator_properties = indicators_group_data.get('properties', None)
 
         if indicator_properties is None:
-            LOG.error(F'{INTEGRATION_NAME} - no properties for indicators group {indicator_metadata["name"]}')
+            LOG(F'{INTEGRATION_NAME} - no properties for indicators group {indicator_metadata["name"]}')
             return {}
 
         indicator_metadata['region'] = indicator_properties.get('region', None)
@@ -153,7 +156,7 @@ class Client(BaseClient):
         results = []
 
         if values_from_file is None:
-            LOG.error(F'{INTEGRATION_NAME} - No values in JSON response')
+            LOG(F'{INTEGRATION_NAME} - No values in JSON response')
             return []
 
         for indicators_group in values_from_file:
@@ -198,6 +201,10 @@ class Client(BaseClient):
         except (requests.exceptions.SSLError, requests.ConnectionError, requests.exceptions.HTTPError) as err:
             demisto.debug(str(err))
             raise Exception(ERROR_TYPE_TO_MESSAGE[err.__class__] + str(err))
+
+        except AttributeError as err:
+            demisto.debug(str(err))
+            raise AttributeError(F'Could not fetch download link from Azure')
 
         except ValueError as err:
             demisto.debug(str(err))
@@ -245,7 +252,7 @@ def get_indicators_command(client: Client) -> Tuple[str, Dict, Dict]:
     human_readable = tableToMarkdown('Indicators from Azure Feed:', indicators,
                                      headers=['Value', 'Type'], removeNull=True)
 
-    return human_readable, {f'{INTEGRATION_NAME}.Indicator(val.value && val.value === obj.value': indicators}, {
+    return human_readable, {f'{INTEGRATION_NAME}.Indicator(val.value === obj.value)': indicators}, {
         'raw_response': raw_response}
 
 
@@ -270,7 +277,7 @@ def fetch_indicators(client: Client, limit: int = -1) -> Tuple[List[Dict], List]
     for indicator in iterator:
         raw_data = {
             'Value': indicator['value'],
-            'Type': 'ip',
+            'Type': indicator['type'],
             'Azure_group_name': indicator['azure_name'],
             'Azure_group_id': indicator['azure_id'],
             'Azure_region': indicator['azure_region'],
@@ -279,9 +286,9 @@ def fetch_indicators(client: Client, limit: int = -1) -> Tuple[List[Dict], List]
         }
 
         indicators.append({
-            "Value": indicator['value'],
-            "Type": 'ip',
-            'rawJSON': {"Value": indicator['value'], "Type": 'ip'}
+            'Value': indicator['value'],
+            'Type': 'ip',
+            'rawJSON': raw_data
         })
 
         raw_response.append(raw_data)

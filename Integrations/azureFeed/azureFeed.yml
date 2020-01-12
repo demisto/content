@@ -128,6 +128,11 @@ configuration:
   name: polling_timeout
   required: false
   type: 0
+- display: Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: 240
+  type: 19
+  required: true
 description: Azure.CloudIPs Feed Integration.
 display: Azure Feed
 name: azureFeed
