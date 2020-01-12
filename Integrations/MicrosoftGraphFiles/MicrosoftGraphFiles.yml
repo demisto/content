@@ -110,13 +110,11 @@ script:
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.ParentReference.Path
       type: String
-    - contextPath: MsGraphFiles.UploadedFiles.CTag
-      type: String
     - contextPath: MsGraphFiles.UploadedFiles.LastModifiedDateTime
       type: String
-    - contextPath: MsGraphFiles.UploadedFiles.File.mimeType
+    - contextPath: MsGraphFiles.UploadedFiles.File.MimeType
       type: String
-    - contextPath: MsGraphFiles.UploadedFiles.File.hashes.quickXorHash
+    - contextPath: MsGraphFiles.UploadedFiles.File.Hashes
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.CreatedDateTime
       type: String
@@ -186,13 +184,11 @@ script:
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.ParentReference.Path
       type: String
-    - contextPath: MsGraphFiles.ReplacedFiles.CTag
-      type: String
     - contextPath: MsGraphFiles.ReplacedFiles.LastModifiedDateTime
       type: String
-    - contextPath: MsGraphFiles.ReplacedFiles.File.mimeType
+    - contextPath: MsGraphFiles.ReplacedFiles.File.MimeType
       type: String
-    - contextPath: MsGraphFiles.ReplacedFiles.File.hashes.QuickXorHash
+    - contextPath: MsGraphFiles.ReplacedFiles.File.Hashes.QuickXorHash
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.CreatedDateTime
       type: String
@@ -311,27 +307,27 @@ script:
     execution: false
     name: msgraph-list-drives-in-site
     outputs:
-    - contextPath: MsGraphFiles.ListDrives.LastModifiedDateTime
+    - contextPath: MsGraphFiles.ListDrives.Value.LastModifiedDateTime
       type: String
-    - contextPath: MsGraphFiles.ListDrives.Description
+    - contextPath: MsGraphFiles.ListDrives.Value.Description
       type: String
-    - contextPath: MsGraphFiles.ListDrives.CreatedDateTime
+    - contextPath: MsGraphFiles.ListDrives.Value.CreatedDateTime
       type: String
-    - contextPath: MsGraphFiles.ListDrives.WebUrl
+    - contextPath: MsGraphFiles.ListDrives.Value.WebUrl
       type: String
-    - contextPath: MsGraphFiles.ListDrives.CreatedBy
+    - contextPath: MsGraphFiles.ListDrives.Value.CreatedBy
       type: String
-    - contextPath: MsGraphFiles.ListDrives.Owner.DisplayName
+    - contextPath: MsGraphFiles.ListDrives.Value.Owner.DisplayName
       type: String
-    - contextPath: MsGraphFiles.ListDrives.Owner.ID
+    - contextPath: MsGraphFiles.ListDrives.Value.Owner.ID
       type: String
-    - contextPath: MsGraphFiles.ListDrives.Owner.Type
+    - contextPath: MsGraphFiles.ListDrives.Value.Owner.Type
       type: String
-    - contextPath: MsGraphFiles.ListDrives.DriveType
+    - contextPath: MsGraphFiles.ListDrives.Value.DriveType
       type: String
-    - contextPath: MsGraphFiles.ListDrives.ID
+    - contextPath: MsGraphFiles.ListDrives.Value.ID
       type: String
-    - contextPath: MsGraphFiles.ListDrives.Name
+    - contextPath: MsGraphFiles.ListDrives.Value.Name
       type: String
     - contextPath: MsGraphFiles.ListDrives.OdataContext
       type: String
@@ -371,39 +367,37 @@ script:
     execution: false
     name: msgraph-list-drive-children
     outputs:
-    - contextPath: MsGraphFiles.ListChildren.Children.OdataNextLink
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.OdataNextLink
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.ParentReference.DriveId
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.ParentReference.DriveId
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.ParentReference.DriveType
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.ParentReference.DriveType
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.ParentReference.ID
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.ParentReference.ID
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.ParentReference.Path
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.ParentReference.Path
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.CTag
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.LastModifiedDateTime
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.LastModifiedDateTime
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.Name
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.Name
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.CreatedDateTime
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.CreatedDateTime
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.WebUrl
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.WebUrl
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.FileSystemInfo.CreatedDateTime
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.FileSystemInfo.CreatedDateTime
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.FileSystemInfo.LastModifiedDateTime
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.FileSystemInfo.LastModifiedDateTime
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.LastModifiedBy.DisplayName
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.LastModifiedBy.DisplayName
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.LastModifiedBy.ID
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.LastModifiedBy.ID
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.CreatedBy.DisplayName
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.CreatedBy.DisplayName
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.CreatedBy.ID
       type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.CreatedBy.ID
-      type: String
-    - contextPath: MsGraphFiles.ListChildren.Children.CreatedBy.Type
+    - contextPath: MsGraphFiles.ListChildren.Children.Value.CreatedBy.Type
       type: String
     - contextPath: MsGraphFiles.ListChildren.ID
       type: String
@@ -424,25 +418,25 @@ script:
       type: String
     - contextPath: MsGraphFiles.OdataContext
       type: String
-    - contextPath: MsGraphFiles.Values.OdataNextLink
+    - contextPath: MsGraphFiles.OdataNextLink
       type: String
-    - contextPath: MsGraphFiles.ListSites.Values.LastModifiedDateTime
+    - contextPath: MsGraphFiles.ListSites.Value.LastModifiedDateTime
       type: String
-    - contextPath: MsGraphFiles.ListSites.Values.DisplayName
+    - contextPath: MsGraphFiles.ListSites.Value.DisplayName
       type: String
-    - contextPath: MsGraphFiles.ListSites.Values.Description
+    - contextPath: MsGraphFiles.ListSites.Value.Description
       type: String
-    - contextPath: MsGraphFiles.ListSites.Values.CreatedDateTime
+    - contextPath: MsGraphFiles.ListSites.Value.CreatedDateTime
       type: String
-    - contextPath: MsGraphFiles.ListSites.Values.WebUrl
+    - contextPath: MsGraphFiles.ListSites.Value.WebUrl
       type: String
-    - contextPath: MsGraphFiles.ListSites.Values.OdataContext
+    - contextPath: MsGraphFiles.ListSites.Value.OdataContext
       type: String
-    - contextPath: MsGraphFiles.ListSites.Values.SiteCollection.Hostname
+    - contextPath: MsGraphFiles.ListSites.Value.SiteCollection.Hostname
       type: String
-    - contextPath: MsGraphFiles.ListSites.Values.ID
+    - contextPath: MsGraphFiles.ListSites.Value.ID
       type: String
-    - contextPath: MsGraphFiles.ListSites.Values.Name
+    - contextPath: MsGraphFiles.ListSites.Value.Name
       type: String
   - arguments:
     - auto: PREDEFINED
