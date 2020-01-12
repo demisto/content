@@ -1,11 +1,11 @@
-FEED_NAME = 'Bambenek Consulting'
+def main():
+    # Main execution of the CSV API Module.
+    # This function allows to add to or override this execution.
+    feed_main('Bambenek Consulting')
+
 
 
 from CSVFeedApiModule import *  # noqa: E402
-
-
-def main():
-    feed_main()
 
 
 if __name__ == '__builtin__' or __name__ == 'builtins':
