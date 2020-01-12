@@ -23,7 +23,7 @@ def test_get_indicators():
                    r' {"regex": "^.*\\|\\W+(.*)", "transform": "\\1"}}'
         )
         hr, indicators_ec, raw_json = get_indicators_command(client, 'IP', args)
-        indicators_ec = indicators_ec.get('CSV.Indicator')
+        indicators_ec = indicators_ec.get('HTTP.Indicator')
         assert len(indicators_ec) == 35
         for ind_json in raw_json:
             ind_val = ind_json.get('value')
