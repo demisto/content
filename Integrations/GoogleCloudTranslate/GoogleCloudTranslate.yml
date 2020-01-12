@@ -15,10 +15,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 description: A Google API cloud based translation service.
 display: Google Cloud Translate
 name: GoogleCloudTranslate
