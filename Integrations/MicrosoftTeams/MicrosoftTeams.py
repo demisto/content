@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import requests
 from distutils.util import strtobool
@@ -531,7 +532,6 @@ def http_request(
 
 
 def integration_health():
-
     bot_framework_api_health = 'Operational'
     graph_api_health = 'Operational'
 
@@ -992,7 +992,7 @@ def mentioned_users_to_entities(mentioned_users: list, integration_context: dict
     :return: A list of entities
     """
     return [{'type': 'mention', 'mentioned': {'id': get_team_member_id(user, integration_context), 'name': user},
-            'text': f'<at>@{user}</at>'} for user in mentioned_users]
+             'text': f'<at>@{user}</at>'} for user in mentioned_users]
 
 
 def send_message():
@@ -1066,6 +1066,7 @@ def send_message():
             formatted_message: str = urlify_hyperlinks(message)
             mentioned_users, formatted_message_with_mentions = process_mentioned_users_in_message(formatted_message)
             entities = mentioned_users_to_entities(mentioned_users, integration_context)
+            demisto.info(f'msg: {formatted_message_with_mentions}, ent: {entities}')
             conversation = {
                 'type': 'message',
                 'text': formatted_message_with_mentions,
