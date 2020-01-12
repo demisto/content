@@ -992,7 +992,7 @@ def check_for_ip(indicator):
                 if a1.version == 4:
                     return 'IPv4'
 
-        except Exception:
+        except ValueError:
             return None
 
         return None
@@ -1002,7 +1002,7 @@ def check_for_ip(indicator):
         try:
             ip = ipaddress.ip_network(indicator)
 
-        except Exception:
+        except ValueError:
             return None
 
         if ip.version == 4:
