@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CSVFeed",
+            "playbookID": "CSV_Feed_Test"
+        },
+        {
             "integrations": "Digital Shadows",
             "playbookID": "Digital Shadows - Test"
         },
@@ -43,6 +47,11 @@
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
             "instance_names": "ms_graph_mail_dev"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev_no_oproxy"
         },
         {
             "integrations": "MicrosoftGraphMail",
@@ -724,7 +733,12 @@
             "integrations": "Gmail"
         },
         {
-            "playbookID": "reputations.json Test"
+            "playbookID": "reputations.json Test",
+            "toversion": "5.0.0"
+        },
+        {
+            "playbookID": "Indicators reputation-.json Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "Test IP Indicator Fields",
@@ -757,6 +771,9 @@
         },
         {
             "playbookID": "exporttocsv_script_test"
+        },
+        {
+            "playbookID": "Set - Test"
         },
         {
             "integrations": "Intezer v2",
@@ -1505,6 +1522,12 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "Docker Hardening Test",
+            "_comment": "Not testing on 5.5 yet. Waiting for #20951",
+            "fromversion": "5.0.0",
+            "toversion": "5.4.9"
+        },
+        {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory Query V2 configuration with port"
@@ -1991,6 +2014,7 @@
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
             "fromversion": "4.5.0",
+            "timeout": 600,
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
         },
@@ -2051,17 +2075,31 @@
           "fromversion": "4.5.0"
         },
         {
+            "playbookID": "SetAndHandleEmpty test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
         },
         {
             "integrations": "Infoblox",
             "playbookID": "Infoblox Test"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA_Integration",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
-        "Test-Shodan_v2": "Skipping to chack if related to shodan",
-        "Endpoint Malware Investigation - Generic - Test": "Issue 20867",
+        "Phishing - Core - Test": "Issue 20983",
+        "Phishing v2 Test - Attachment": "Issue 20983",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
@@ -2089,7 +2127,7 @@
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
-        "Test Playbook TrendMicroDDA": "Manual test",
+        "Test Playbook TrendMicroDDA": "Issue 16501",
         "PANW - Hunting and threat detection by indicator type Test": "Issue 20952",
         "ssdeepreputationtest": "Issue #20953"
     },
@@ -2117,7 +2155,6 @@
         "ThreatMiner": "Issue 20469",
         "DomainTools Iris": "Issue 20433",
         "Check Point": "Issue 18643",
-        "RSA Archer": "Issue 20335",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "Joe Security": "Issue 17996",
@@ -2153,6 +2190,7 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
+        "QRadar Indicator Hunting Test": "Issue 21150",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
