@@ -51,12 +51,12 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
-        params = assign_params(**{
+        params = {
             "search": search,
             "listType": list_type,
             "extended": True,
             "includeElements": True
-        })
+        }
         return self._http_request(method='GET',
                                   url_suffix='/network-list/v2/network-lists',
                                   params=params)
@@ -70,10 +70,10 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
-        params = assign_params(**{
+        params = {
             "extended": True,
             "includeElements": True
-        })
+        }
         return self._http_request(method='GET',
                                   url_suffix=f'/network-list/v2/network-lists/{network_list_id}',
                                   params=params)
@@ -91,12 +91,12 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
-        body = assign_params(**{
+        body = {
             "name": list_name,
             "type": list_type,
             "description": description,
             "list": elements if elements else []
-        })
+        }
         return self._http_request(method='POST',
                                   url_suffix=f'/network-list/v2/network-lists',
                                   json_data=body)
@@ -164,9 +164,9 @@ class Client(BaseClient):
         Returns:
             Json response as dictionary
         """
-        params = assign_params(**{
+        params = {
             'element': element
-        })
+        }
         return self._http_request(method='DELETE',
                                   url_suffix=f'/network-list/v2/network-lists/{network_list_id}/elements',
                                   params=params,
