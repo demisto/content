@@ -258,7 +258,7 @@ def feed_main(feed_name):
         else:
             args = demisto.args()
             args['feed_name'] = feed_name
-            readable_output, outputs, raw_response = commands[command](client, args)
+            readable_output, outputs, raw_response = commands[command](client, params.get('indicator_type'), args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {feed_name} feed [{e}]'  # FEED_NAME should be in the integration code
