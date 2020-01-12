@@ -105,7 +105,7 @@ def to_readable(indicator_name, raw_incident):
     indicator_tags = ", ".join(indicator.get('fields', {}).get('tags', []))
 
     return {HEADER_ID: raw_incident.get("id", None),
-            HEADER_TYPE: indicator_name,
+            HEADER_TYPE: indicator_name[:indicator_name.find("(")],
             HEADER_INDICATOR_VALUE: indicator_value,
             HEADER_TAGS: indicator_tags}
 

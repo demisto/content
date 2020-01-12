@@ -295,9 +295,9 @@ def test_get_indicators(mocker):
     readable_output, outputs, raw_response = get_indicators()
 
     assert readable_output == "### Sixgill's DarkFeed indicators:\n|ID|Type|Indicator Value|Tags|\n|---|---|---|---|" \
-                              "\n| 123456789 | IP(val.Address == obj.Address) | 1.1.1.1 | DarkWeb |\n| 123456789 | " \
-                              "IP(val.Address == obj.Address) | 2.2.2.2 | DarkWeb |\n| 123456789 | " \
-                              "File(val.MD5 == obj.MD5) | abafbadfbafbafb | DarkWeb, MD5 |\n"
+                              "\n| 123456789 | IP | 1.1.1.1 | DarkWeb |\n| 123456789 | " \
+                              "IP | 2.2.2.2 | DarkWeb |\n| 123456789 | " \
+                              "File | abafbadfbafbafb | DarkWeb, MD5 |\n"
     assert outputs == expected_iocs
     assert raw_response == expected_raw_output
 

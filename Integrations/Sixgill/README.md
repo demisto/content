@@ -190,7 +190,14 @@ There are no context output for this command.
 </p>
 
 <h5>Human Readable Output</h5>
-<pre>Successfully extracted 1000 IOCs of the following types: ["suspicious_ip", "proxy_ip", "crypto_wallet", "mal_md5", "mal_domain"]}</pre>
+<pre>
+### Sixgill's DarkFeed indicators:
+|ID|Type|Indicator Value|Tags|
+|---|---|---|---|
+| 123456789 | IP | 1.1.1.1 | DarkWeb |
+| 123456789 | IP | 2.2.2.2 | DarkWeb |
+| 123456789 | File | abafbadfbafbafb | DarkWeb, MD5 |
+</pre>
 <p>
 
 <!-- remove the following comments to manually add an image: -->
