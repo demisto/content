@@ -1,0 +1,141 @@
+id: Elasticsearch_Fetch_Indicators_Test
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: Elasticsearch_Fetch_Indicators_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 269558b3-0f0c-4c9f-84fb-b7b2fdc2aed2
+    type: start
+    task:
+      id: 269558b3-0f0c-4c9f-84fb-b7b2fdc2aed2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "1":
+    id: "1"
+    taskid: 9c612ada-1490-45b6-8c5f-56c5dc8ffae7
+    type: regular
+    task:
+      id: 9c612ada-1490-45b6-8c5f-56c5dc8ffae7
+      version: -1
+      name: Get Shared Indicators
+      description: Get indicators shared with this tenant (MT only).
+      script: '|||get-shared-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "2":
+    id: "2"
+    taskid: c28ee64d-ff5d-403f-85e2-33df9bb0fdde
+    type: condition
+    task:
+      id: c28ee64d-ff5d-403f-85e2-33df9bb0fdde
+      version: -1
+      name: Assert Indicators was fetched
+      description: Assert results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ElasticsearchFeed.SharedIndicators.value
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "3":
+    id: "3"
+    taskid: 0e9093fc-ffa2-4a85-893b-f90fe75f9424
+    type: title
+    task:
+      id: 0e9093fc-ffa2-4a85-893b-f90fe75f9424
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -519,58 +519,43 @@ def get_indicators_command():
     indicators_list = []
     i = 0
     for hit in search.scan():
-        indicators_list.append(results_to_indicator(hit))
+        ioc = results_to_indicator(hit)
+        if ioc:
+            indicators_list.append(ioc)
         i += 1
         if i >= limit:
             break
     hr = tableToMarkdown('Indicators', indicators_list, ['value'])
-    return_outputs(hr, {'Elasticsearch.SharedIndicators': indicators_list}, indicators_list)
+    return_outputs(hr, {'ElasticsearchFeed.SharedIndicators': indicators_list}, indicators_list)
 
 
 def fetch_indicators_command():
     search, now = get_indicators_search_scan()
     for hit in search.scan():
         ioc = results_to_indicator(hit)
-        if ioc:
+         if ioc:
             demisto.createIndicators([ioc])
     demisto.setLastRun(now)
 
 
 def get_indicators_search_scan():
     now = datetime.now()
-    if 'Timestamp' in TIME_METHOD:
-        now = get_timestamp_first_fetch(now)
     time_field = "calculatedTime"
     last_fetch = get_last_fetch_time()
     es = elasticsearch_builder()
     query = QueryString(query=time_field + ":*")
     tenant_hash = demisto.getIndexHash()
     # all shared indexes minus this tenant shared
-    indexes = f'*-shared*,-{tenant_hash}*-shared*'
+    indexes = f'*-shared*,-asdsad*-shared*'
     search = Search(using=es, index=indexes).filter({'range': {time_field: {'gt': last_fetch, 'lte': now}}}).query(
         query)
     return search, now
 
 
 def results_to_indicator(hit):
-    ioc_dict = create_dict_from_hit(hit)
-    value = ioc_dict.get('value')
-    if value:
-        ioc_dict['rawJSON'] = dict(ioc_dict)
-        return ioc_dict
-    return {}
-
-
-def create_dict_from_hit(hit):
-    hit_dict = {}
-    for key in hit:
-        hit_val = hit[key]
-        if isinstance(hit_val, AttrList):
-            hit_val = list(hit_val)
-        elif isinstance(hit_val, AttrDict):
-            hit_val = create_dict_from_hit(hit_val)
-        hit_dict[key] = hit_val
-    return hit_dict
+    ioc_dict = hit.to_dict()
+    ioc_dict['rawJSON'] = dict(ioc_dict)
+    return ioc_dict
 
 
 def get_last_fetch_time():

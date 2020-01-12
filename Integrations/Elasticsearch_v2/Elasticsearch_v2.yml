@@ -332,7 +332,7 @@ script:
     execution: false
     name: get-shared-indicators
     outputs:
-    - contextPath: Elasticsearch.SharedIndicators
+    - contextPath: ElasticsearchFeed.SharedIndicators
       description: Indicators shared from other tenants.
       type: Unknown
   dockerimage: demisto/elasticsearch:1.0.0.1795
