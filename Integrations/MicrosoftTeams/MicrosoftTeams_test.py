@@ -128,8 +128,8 @@ def test_mentioned_users_to_entities():
 
 def test_process_mentioned_users_in_message():
     from MicrosoftTeams import process_mentioned_users_in_message
-    raw_message = '@demisto dev; @demisto; email@demistodev.com; demisto@demistodev.com'
-    parsed_message = '<at>@demisto dev</at> <at>@demisto</at> email@demistodev.com; demisto@demistodev.com'
+    raw_message = '@demisto dev; @demisto; email@demisto.com; demisto@demisto.com hi; @hi'
+    parsed_message = '<at>@demisto dev</at> <at>@demisto</at> email@demisto.com; demisto@demisto.com hi; @hi'
     users, message = process_mentioned_users_in_message(raw_message)
     assert users == ['demisto dev', 'demisto']
     assert message == parsed_message

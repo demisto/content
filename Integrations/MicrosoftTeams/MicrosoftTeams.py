@@ -978,7 +978,7 @@ def process_mentioned_users_in_message(message: str) -> Tuple[list, str]:
     :param message: The message to be processed
     :return: A list of the mentioned users, The processed message
     """
-    mentioned_users: list = [''.join(u) for u in re.findall(MENTION_REGEX, message)]
+    mentioned_users: list = [''.join(user) for user in re.findall(MENTION_REGEX, message)]
     for user in mentioned_users:
         message = message.replace(f'@{user};', f'<at>@{user}</at>')
     return mentioned_users, message
