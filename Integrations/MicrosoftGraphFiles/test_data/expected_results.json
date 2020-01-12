@@ -1,0 +1,223 @@
+{
+  "list_tenant_sites_response": {
+    "@odata.context": "test",
+    "value": [
+      {
+        "CreatedDateTime": "2016-09-14T11:12:59Z",
+        "ID": "test_id",
+        "LastModifiedDateTime": "2016-09-14T11:13:53Z",
+        "Name": "test_name",
+        "WebUrl": "test/test_url/test",
+        "DisplayName": "Demisto Team Site",
+        "Root": {},
+        "SiteCollection": {
+          "Hostname": "test_hostname"
+        }
+      },
+      {
+        "CreatedDateTime": "2019-09-23T15:55:03Z",
+        "Description": "this is a private site",
+        "ID": "test_id",
+        "LastModifiedDateTime": "2019-09-21T08:17:21Z",
+        "Name": "site_test_1",
+        "WebUrl": "test/test_url/test",
+        "displayName": "site_test_1",
+        "root": {},
+        "siteCollection": {
+          "hostname": "test_hostname"
+        }
+      }
+    ]
+  },
+  "list_drive_children_response": {
+    "@odata.context": "test",
+    "@odata.nextLink": "test",
+    "value": [
+      {
+        "createdDateTime": "2019-12-08T13:24:58Z",
+        "eTag": "\"{test-test},1\"",
+        "ID": "test",
+        "lastModifiedDateTime": "2019-12-08T13:24:58Z",
+        "name": "demisto",
+        "webUrl": "test/test_url/test",
+        "cTag": "\"c:{test-test},0\"",
+        "size": 0,
+        "createdBy": {
+          "application": {
+            "ID": "test",
+            "displayName": "MS Graph Files Dev"
+          }
+        },
+        "lastModifiedBy": {
+          "application": {
+            "ID": "test",
+            "displayName": "MS Graph Files Dev"
+          }
+        },
+        "parentReference": {
+          "driveId": "test",
+          "driveType": "documentLibrary",
+          "ID": "test",
+          "path": "/drive/root:"
+        },
+        "fileSystemInfo": {
+          "createdDateTime": "2019-12-08T13:24:58Z",
+          "lastModifiedDateTime": "2019-12-08T13:24:58Z"
+        },
+        "folder": {
+          "childCount": 0
+        }
+      }
+    ]
+  },
+  "create_new_folder_response": {
+    "@odata.context": "test",
+    "createdDateTime": "2020-01-12T09:35:50Z",
+    "eTag": "\"{test-test},1\"",
+    "ID": "test",
+    "lastModifiedDateTime": "2020-01-12T09:35:50Z",
+    "name": "playbook_folder 51",
+    "webUrl": "test/test_url/test",
+    "cTag": "\"c:{test-test},0\"",
+    "size": 0,
+    "createdBy": {
+      "application": {
+        "ID": "test",
+        "displayName": "MS Graph Files Dev"
+      }
+    },
+    "lastModifiedBy": {
+      "application": {
+        "ID": "test",
+        "displayName": "MS Graph Files Dev"
+      }
+    },
+    "parentReference": {
+      "driveId": "test",
+      "driveType": "documentLibrary",
+      "ID": "test",
+      "path": "/drives/test/root:"
+    },
+    "fileSystemInfo": {
+      "createdDateTime": "2020-01-12T09:35:50Z",
+      "lastModifiedDateTime": "2020-01-12T09:35:50Z"
+    },
+    "folder": {
+      "childCount": 0
+    }
+  },
+  "replace_existing_file_context_response": {
+    "@odata.context": "test",
+    "@microsoft.graph.downloadUrl": "test",
+    "createdDateTime": "2020-01-05T15:30:21Z",
+    "eTag": "\"{test-test},3\"",
+    "ID": "test",
+    "lastModifiedDateTime": "2020-01-12T09:48:02Z",
+    "name": "yaya.txt",
+    "webUrl": "test/test_url/test",
+    "cTag": "\"c:{test-test},3\"",
+    "size": 1226,
+    "createdBy": {
+      "application": {
+        "ID": "test",
+        "displayName": "SharePoint DEV"
+      }
+    },
+    "lastModifiedBy": {
+      "application": {
+        "ID": "test",
+        "displayName": "MS Graph Files Dev"
+      }
+    },
+    "parentReference": {
+      "driveId": "test",
+      "driveType": "documentLibrary",
+      "ID": "test",
+      "path": "/drives/test/root:"
+    },
+    "file": {
+      "mimeType": "text/plain",
+      "hashes": {
+        "quickXorHash": "7MnpZNdLNXuZVoexyoIpMyy3CEg="
+      }
+    },
+    "fileSystemInfo": {
+      "createdDateTime": "2020-01-05T15:30:21Z",
+      "lastModifiedDateTime": "2020-01-12T09:48:02Z"
+    }
+  },
+  "list_drives_in_a_site_response": {
+    "@odata.context": "test",
+    "value": [
+      {
+        "createdDateTime": "2019-09-21T08:17:20Z",
+        "description": "",
+        "ID": "test",
+        "lastModifiedDateTime": "2019-09-21T08:17:20Z",
+        "name": "Documents",
+        "webUrl": "https://test1/sites/test2/test3",
+        "driveType": "documentLibrary",
+        "createdBy": {
+          "user": {
+            "displayName": "System Account"
+          }
+        },
+        "owner": {
+          "group": {
+            "email": "site_test2@demistodev.onmicrosoft.com",
+            "ID": "test",
+            "displayName": "site_test2 Owners"
+          }
+        },
+        "quota": {
+          "deleted": 3380282,
+          "remaining": 27487784407271,
+          "state": "normal",
+          "total": 27487790694400,
+          "used": 21300
+        }
+      }
+    ]
+  },
+  "upload_new_file_response": {
+    "@odata.context": "test",
+    "@microsoft.graph.downloadUrl": "test",
+    "createdDateTime": "2020-01-12T09:57:04Z",
+    "eTag": "\"{test-test},1\"",
+    "ID": "test",
+    "lastModifiedDateTime": "2020-01-12T09:57:04Z",
+    "name": "playbook1.txt",
+    "webUrl": "test/test_url/test",
+    "cTag": "\"c:{test-test},1\"",
+    "size": 145,
+    "createdBy": {
+      "application": {
+        "ID": "test",
+        "displayName": "MS Graph Files Dev"
+      }
+    },
+    "lastModifiedBy": {
+      "application": {
+        "ID": "test",
+        "displayName": "MS Graph Files Dev"
+      }
+    },
+    "parentReference": {
+      "driveId": "test!@#@$#$",
+      "driveType": "documentLibrary",
+      "ID": "test",
+      "path": "/drives/test/root:"
+    },
+    "file": {
+      "mimeType": "text/plain",
+      "hashes": {
+        "quickXorHash": "JSLclnw4KOmNvDoLqa2eo6YAYt0="
+      }
+    },
+    "fileSystemInfo": {
+      "createdDateTime": "2020-01-12T09:57:04Z",
+      "lastModifiedDateTime": "2020-01-12T09:57:04Z"
+    }
+  }
+
+}
