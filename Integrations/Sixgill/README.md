@@ -83,6 +83,11 @@ This integration was integrated and tested with version 0.0.4 of Sixgill
       <td>Should previously-delivered items be included in the response</td>
       <td>Optional</td>
     </tr>
+    <tr>
+      <td>fetch_incidents_limit</td>
+      <td>Max number of incidents that can be fetched</td>
+      <td>Optional</td>
+    </tr>
   </tbody>
 </table>
 
@@ -138,6 +143,11 @@ There are no context output for this command.
     <tr>
       <td>include_delivered_items</td>
       <td>Should previously-delivered items be included in the response</td>
+      <td>Optional</td>
+    </tr>
+     <tr>
+      <td>fetch_indicators_limit</td>
+      <td>Max number of indicators that can be fetched</td>
       <td>Optional</td>
     </tr>
   </tbody>
