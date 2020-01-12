@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CSVFeed",
+            "playbookID": "CSV_Feed_Test"
+        },
+        {
             "integrations": "Digital Shadows",
             "playbookID": "Digital Shadows - Test"
         },
@@ -2071,12 +2075,26 @@
           "fromversion": "4.5.0"
         },
         {
+            "playbookID": "SetAndHandleEmpty test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
         },
         {
             "integrations": "Infoblox",
             "playbookID": "Infoblox Test"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA_Integration",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
@@ -2172,6 +2190,7 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
+        "QRadar Indicator Hunting Test": "Issue 21150",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
