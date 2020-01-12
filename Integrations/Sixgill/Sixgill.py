@@ -55,7 +55,7 @@ def is_ioc(item):
 def get_limit(str_limit, default_limit):
     try:
         return int(str_limit, default_limit)
-    except:
+    except Exception:
         return default_limit
 
 
