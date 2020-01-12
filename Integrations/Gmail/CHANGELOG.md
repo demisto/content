@@ -1,4 +1,12 @@
 ## [Unreleased]
+
+
+## [20.1.0] - 2020-01-07
+You can now run the following commands against user accounts when you have admin credentials.
+  - ***gmail-delegate-user-mailbox***
+  - ***gmail-set-autoreply***
+
+## [19.12.1] - 2019-12-25
   - Added a new command:
     - ***gmail-get-role***
   - Improved the outputs for the following commands:

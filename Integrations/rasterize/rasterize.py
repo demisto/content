@@ -13,6 +13,8 @@ from io import BytesIO
 import sys
 import base64
 import time
+import subprocess
+import traceback
 
 PROXY = demisto.getParam('proxy')
 
@@ -68,6 +70,45 @@ def init_driver(offline_mode=False):
     return driver
 
 
+def find_zombie_processes():
+    """find zombie proceses
+    Returns:
+        ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
+    """
+    ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,cmd'],
+                                     stderr=subprocess.STDOUT, universal_newlines=True)
+    lines = ps_out.splitlines()
+    pid = str(os.getpid())
+    zombies = []
+    if len(lines) > 1:
+        for l in lines[1:]:
+            pinfo = l.split()
+            if pinfo[2] == 'Z' and pinfo[1] == pid:  # zombie process
+                zombies.append(pinfo[0])
+    return zombies, ps_out
+
+
+def quit_driver_and_reap_children(driver):
+    """
+    Quits the driver's session and reaps all of zombie child processes
+    :param driver: The driver
+    :return: None
+    """
+    demisto.debug(f'Quitting driver session: {driver.session_id}')
+    driver.quit()
+    try:
+        zombies, ps_out = find_zombie_processes()
+        if zombies:
+            demisto.info(f'Found zombie processes will waitpid: {ps_out}')
+            for pid in zombies:
+                waitres = os.waitpid(int(pid), os.WNOHANG)[1]
+                demisto.info(f'waitpid result: {waitres}')
+        else:
+            demisto.debug(f'No zombie processes found for ps output: {ps_out}')
+    except Exception as e:
+        demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
+
+
 def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time: int = 0, offline_mode: bool = False):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
@@ -105,6 +146,8 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
             return_error(err_msg) if WITH_ERRORS else return_warning(err_msg, exit=True)
         else:
             return_error(str(ex)) if WITH_ERRORS else return_warning(str(ex), exit=True)
+    finally:
+        quit_driver_and_reap_children(driver)
 
 
 def get_image(driver, width: int, height: int):
@@ -273,7 +316,7 @@ def rasterize_pdf_command():
         demisto.results(res)
 
 
-def test():
+def module_test():
     # setting up a mock email file
     with tempfile.NamedTemporaryFile('w+') as test_file:
         test_file.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
@@ -290,7 +333,7 @@ def test():
 def main():
     try:
         if demisto.command() == 'test-module':
-            test()
+            module_test()
 
         elif demisto.command() == 'rasterize-image':
             rasterize_image_command()
