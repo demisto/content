@@ -3,8 +3,8 @@
     "testInterval": 20,
     "tests": [
          {
-            "integrations": "HTTPFeed",
-            "playbookID": "HTTP_Feed_Test"
+            "integrations": "￿SpamhausFeed",
+            "playbookID": "Spamhaus_Feed_Test"
         },
         {
             "integrations": "Digital Shadows",
