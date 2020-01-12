@@ -186,7 +186,7 @@ There are no context output for this command.
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!fetch-incidents</code>
+  <code>!get-indicators</code>
 </p>
 
 <h5>Human Readable Output</h5>
@@ -194,9 +194,18 @@ There are no context output for this command.
 ### Sixgill's DarkFeed indicators:
 |ID|Type|Indicator Value|Tags|
 |---|---|---|---|
-| 123456789 | IP | 1.1.1.1 | DarkWeb |
-| 123456789 | IP | 2.2.2.2 | DarkWeb |
-| 123456789 | File | abafbadfbafbafb | DarkWeb, MD5 |
+| 1 | IP | 1.1.1.1 | DarkWeb |
+| 2 | IP | 2.2.2.2 | DarkWeb |
+| 3 | File | abafbadfbafbafb | DarkWeb, MD5 |
+</pre>
+
+<h5>Output</h5>
+<pre>
+### Sixgill's DarkFeed indicators:
+{
+'IP(val.Address == obj.Address)': [{'Address': '1.1.1.1'}, {'Address': '2.2.2.2'}], 
+'File(val.MD5 == obj.MD5)': [{'MD5': 'abafbadfbafbafb', 'Tags': 'DarkWeb, MD5'}]
+}
 </pre>
 <p>
 
