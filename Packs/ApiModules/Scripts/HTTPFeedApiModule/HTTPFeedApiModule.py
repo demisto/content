@@ -227,7 +227,8 @@ def get_indicators_command(client, default_indicator_type, args):
     indicators_list = fetch_indicators_command(client, itype)
     entry_result = camelize(indicators_list[:limit])
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
-    return hr, {'CSV.Indicator': entry_result}, indicators_list
+    feed_name = args.get('feed_name', 'HTTP')
+    return hr, {f'{feed_name}.Indicator': entry_result}, indicators_list
 
 
 def test_module(client, args):
@@ -255,7 +256,9 @@ def feed_main(feed_name):
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args())
+            args = demisto.args()
+            args['feed_name'] = feed_name
+            readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {feed_name} feed [{e}]'  # FEED_NAME should be in the integration code
