@@ -11,13 +11,14 @@ def github_errors(response):
 
 def main():
     print('------------------------------------')
-    if len(argv) != 4:
+    if len(argv) != 5:
         raise ValueError('no params.')
     try:
         with open('./skipped_tests.txt', 'r') as tests:
+            # failes
             skipped_tests = tests.read()
     except FileNotFoundError:
-        print('------------------')
+        pass
     else:
         if skipped_tests:
             token = argv[1]
