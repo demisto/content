@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Google Vision AI",
+            "playbookID": "GoogleVisionAPI-Test"
+        },
+        {
             "integrations": "nmap",
             "playbookID": "Nmap - Test"
         },
