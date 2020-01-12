@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added ***ip_to_indicator_type*** command, for python3 only.
 
 ## [20.1.0] - 2020-01-07
  - Added the ***argToBoolean*** command, which takes a input value of type string or boolean and converts it to boolean.
