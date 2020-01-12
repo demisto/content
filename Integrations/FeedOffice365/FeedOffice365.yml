@@ -29,6 +29,11 @@ configuration:
   name: feed
   required: false
   type: 8
+- display: Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: true
 - defaultvalue: IPS
   display: JSON attribute to use as an indicator
   name: indicator
