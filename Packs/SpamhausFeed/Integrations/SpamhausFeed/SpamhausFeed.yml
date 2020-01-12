@@ -59,7 +59,7 @@ configuration:
   name: ignore_regex
   required: false
   type: 0
-- defaultvalue: HTTP
+- defaultvalue: https://www.spamhaus.org/drop/asndrop.txt
   display: Sub Feeds
   name: url
   options:
@@ -86,7 +86,7 @@ configuration:
   required: false
   type: 0
 description: Spamhaus Feed Integration
-display: SpamhausFeed
+display: Spamhaus Feed
 name: SpamhausFeed
 script:
   commands:
