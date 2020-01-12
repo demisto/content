@@ -9,7 +9,7 @@ import traceback
 from google.cloud import translate_v3
 
 
-class Client():
+class Client:
     """Wrapper around the Google Cloud Translate API Client implementing the code
     to handle credentials and proxy under Demisto and a translation between
     the Google Cloud Python library typing system and Python serializable
