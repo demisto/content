@@ -18,6 +18,7 @@
             "integrations": "Digital Defense FrontlineVM",
             "playbookID": "Digital Defense FrontlineVM - Test Playbook"
         },
+        {
             "integrations": "CSVFeed",
             "playbookID": "CSV_Feed_Test"
         },
