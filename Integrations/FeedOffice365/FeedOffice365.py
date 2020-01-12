@@ -239,7 +239,7 @@ def main():
     urls_list = build_urls_dict(regions_list, services_list, unique_id)
     indicator = demisto.params().get('indicator')
     insecure = demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy') == 'true'
+    proxy = demisto.params().get('proxy')
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
