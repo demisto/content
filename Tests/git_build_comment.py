@@ -11,7 +11,7 @@ def github_errors(response):
 
 def main():
     print('------------------------------------')
-    if len(argv) != 5:
+    if len(argv) != 4:
         raise ValueError('no params.')
     try:
         with open('./skipped_tests.txt', 'r') as tests:
