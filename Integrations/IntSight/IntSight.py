@@ -325,38 +325,38 @@ def get_alert_activity():
     human_readable_arr = []
     alert = {'ID': alert_id, 'Activities': []}
 
-    for k in response:
+    for activity in response:
         alert['Activities'].append({
-            'ID': demisto.get(k, '_id'),
-            'Type': demisto.get(k, 'Type'),
-            'Initiator': demisto.get(k, 'Initiator'),
-            'CreatedDate': demisto.get(k, 'CreatedDate'),
-            'UpdateDate': demisto.get(k, 'UpdateDate'),
-            'RemediationBlocklistUpdate': demisto.get(k, 'AdditionalInformation.RemediationBlocklistUpdate'),
-            'AskTheAnalyst': {'Replies': demisto.get(k, 'AdditionalInformation.AskTheAnalyst.Replies')},
-            'Mail': {'Replies': demisto.get(k, 'AdditionalInformation.Mail.Replies')},
-            'ReadBy': demisto.get(k, 'ReadBy')
+            'ID': demisto.get(activity, '_id'),
+            'Type': demisto.get(activity, 'Type'),
+            'Initiator': demisto.get(activity, 'Initiator'),
+            'CreatedDate': demisto.get(activity, 'CreatedDate'),
+            'UpdateDate': demisto.get(activity, 'UpdateDate'),
+            'RemediationBlocklistUpdate': demisto.get(activity, 'AdditionalInformation.RemediationBlocklistUpdate'),
+            'AskTheAnalyst': {'Replies': demisto.get(activity, 'AdditionalInformation.AskTheAnalyst.Replies')},
+            'Mail': {'Replies': demisto.get(activity, 'AdditionalInformation.Mail.Replies')},
+            'ReadBy': demisto.get(activity, 'ReadBy')
         })
         human_readable_arr.append({
-            'ID': demisto.get(k, '_id'),
-            'Type': demisto.get(k, 'Type'),
-            'Initiator': demisto.get(k, 'Initiator'),
-            'CreatedDate': demisto.get(k, 'CreatedDate'),
-            'UpdateDate': demisto.get(k, 'UpdateDate'),
+            'ID': demisto.get(activity, '_id'),
+            'Type': demisto.get(activity, 'Type'),
+            'Initiator': demisto.get(activity, 'Initiator'),
+            'CreatedDate': demisto.get(activity, 'CreatedDate'),
+            'UpdateDate': demisto.get(activity, 'UpdateDate'),
             'RemediationBlocklistUpdate': extract_remediation(
-                demisto.get(k, 'AdditionalInformation.RemediationBlocklistUpdate')),
-            'AskTheAnalyst': {'Replies': demisto.get(k, 'AdditionalInformation.AskTheAnalyst.Replies')},
-            'Mail': extract_mail(demisto.get(k, 'AdditionalInformation.Mail.Replies')),
-            'ReadBy': demisto.get(k, 'ReadBy')
+                demisto.get(activity, 'AdditionalInformation.RemediationBlocklistUpdate')),
+            'AskTheAnalyst': {'Replies': demisto.get(activity, 'AdditionalInformation.AskTheAnalyst.Replies')},
+            'Mail': extract_mail(demisto.get(activity, 'AdditionalInformation.Mail.Replies')),
+            'ReadBy': demisto.get(activity, 'ReadBy')
         })
 
+    headers = ['ID', 'Type', 'Initiator', 'CreatedDate', 'UpdateDate',
+               'RemediationBlocklistUpdate', 'AskTheAnalyst', 'Mail', 'ReadBy']
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alert},
         'Contents': response,
-        'HumanReadable': tableToMarkdown('IntSights Alert Activity Log', human_readable_arr,
-                                         ['ID', 'Type', 'Initiator', 'CreatedDate', 'UpdateDate',
-                                          'RemediationBlocklistUpdate', 'AskTheAnalyst', 'Mail', 'ReadBy']),
+        'HumanReadable': tableToMarkdown('IntSights Alert Activity Log', human_readable_arr, headers=headers),
         'ContentsFormat': formats['json']
     })
 
@@ -369,6 +369,7 @@ def change_severity():
     severity = demisto.getArg('severity')
     req('PATCH', 'public/v1/data/alerts/change-severity/' + alert_id, json_data={'Severity': severity})
     severity_details = {'ID': alert_id, 'Severity': severity}
+
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': severity_details},
@@ -381,8 +382,8 @@ def change_severity():
 
 
 def get_assignee_id(assignee_email):
-    r = req('GET', 'public/v1/account/users-details', json_response=True)
-    for user in r:
+    response = req('GET', 'public/v1/account/users-details', json_response=True)
+    for user in response:
         if assignee_email == user.get('Email', ''):
             return user.get('_id')
 
@@ -472,24 +473,24 @@ def send_mail():
     emails = argToList(demisto.getArg('emails'))
     content = demisto.getArg('content')
     req('POST', 'public/v1/data/alerts/send-mail/' + alert_id, {'Emails': emails, 'Content': content})
-    ec = {
+    context = {
         'ID': alert_id,
         'EmailID': emails,
         'Question': content
     }
     demisto.results({
         'Type': entryTypes['note'],
-        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
-        'Contents': ec,
+        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': context},
+        'Contents': context,
         'HumanReadable': 'Email with content (' + content + ') sent to emails',
         'ContentsFormat': formats['json']
     })
 
 
 def get_tag_id(alert_id, tag_name):
-    res = req('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id, json_response=True)
+    response = req('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id, json_response=True)
 
-    details = res.get('Details', {})
+    details = response.get('Details', {})
     tags = details.get('Tags', [])
     for tag in tags:
         if tag.get('Name', '') == tag_name:
@@ -509,14 +510,14 @@ def add_tag():
         'TagName': tag_name,
         'ID': get_tag_id(alert_id, tag_name)
     }
-    ec = {
+    context = {
         'ID': alert_id,
         'Tags': tag_info
     }
     demisto.results({
         'Type': entryTypes['note'],
-        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
-        'Contents': ec,
+        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': context},
+        'Contents': context,
         'HumanReadable': 'Tag (' + tag_name + ') added to alert id: ' + alert_id,
         'ContentsFormat': formats['json']
     })
@@ -529,14 +530,14 @@ def remove_tag():
     alert_id = demisto.getArg('alert-id')
     tag_id = demisto.getArg('tag-id')
     req('PATCH', 'public/v1/data/alerts/remove-tag/' + alert_id, json_data={'TagID': tag_id})
-    ec = {
+    context = {
         'ID': alert_id,
         'Tags': {'ID': tag_id}
     }
     demisto.results({
         'Type': entryTypes['note'],
-        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
-        'Contents': ec,
+        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': context},
+        'Contents': context,
         'HumanReadable': 'Tag id: ' + tag_id + ' removed from alert id: ' + alert_id,
         'ContentsFormat': formats['json']
     })
@@ -549,14 +550,14 @@ def add_comment():
     alert_id = demisto.getArg('alert-id')
     comment = demisto.getArg('comment')
     req('PATCH', 'public/v1/data/alerts/add-comment/' + alert_id, json_data={'Comment': comment})
-    ec = {
+    context = {
         'ID': alert_id,
         'Comment': comment
     }
     demisto.results({
         'Type': entryTypes['note'],
-        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
-        'Contents': ec,
+        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': context},
+        'Contents': context,
         'HumanReadable': 'Succesfully added comment "' + comment + '" to alert id: ' + alert_id,
         'ContentsFormat': formats['json']
     })
@@ -690,7 +691,7 @@ def translate_severity(sev):
     """
     Translate alert severity to demisto
     """
-    if sev == 'High' or sev == 'Medium':
+    if sev in ['Medium', 'High']:
         return 3
     elif sev == 'Low':
         return 2
@@ -799,16 +800,16 @@ def get_alert_takedown_status():
     Get an alert's takedown status
     """
     alert_id = demisto.getArg('alert-id')
-    r = req('GET', 'public/v1/data/alerts/takedown-status/' + alert_id)
-    ec = {
+    response = req('GET', 'public/v1/data/alerts/takedown-status/' + alert_id)
+    context = {
         'ID': alert_id,
-        'TakedownStatus': r.text
+        'TakedownStatus': response.text
     }
     demisto.results({
         'Type': entryTypes['note'],
-        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': ec},
-        'Contents': ec,
-        'HumanReadable': tableToMarkdown('IntSights Alert Takedown Status', [ec], ['ID', 'TakedownStatus']),
+        'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': context},
+        'Contents': context,
+        'HumanReadable': tableToMarkdown('IntSights Alert Takedown Status', [context], ['ID', 'TakedownStatus']),
         'ContentsFormat': formats['json']
     })
 
