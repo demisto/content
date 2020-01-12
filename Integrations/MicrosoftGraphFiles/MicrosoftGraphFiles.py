@@ -23,8 +23,7 @@ requests.packages.urllib3.disable_warnings()
 VERSION = 'v1.0'
 NETLOC = 'graph.microsoft.com'
 BASE_URL = f'https://{NETLOC}/{VERSION}'
-GRANT_TYPE = 'client_credentials'
-SCOPE = 'https://graph.microsoft.com/.default'
+
 INTEGRATION_NAME = 'MsGraphFiles'
 
 APP_NAME = 'ms-graph-files'
@@ -32,12 +31,56 @@ APP_NAME = 'ms-graph-files'
 RESPONSE_KEYS_DICTIONARY = {
     "@odata.context": "OdataContext",
     "@microsoft.graph.downloadUrl": "DownloadUrl",
-    "id": "ID"
+    "id": "ID",
+    "@odata.nextLink": "OdataNextLink"
 }
 
 EXCLUDE_LIST = ['eTag', 'cTag', 'quota']
 
-REMOVED_IDEN_KEYS = ['createdBy', 'LastModifiedBy']
+
+def parse_key_to_context(obj):
+    parsed_obj = {}
+    for key, value in obj.items():
+        if key in EXCLUDE_LIST:
+            continue
+        new_key = RESPONSE_KEYS_DICTIONARY.get(key, key)
+        parsed_obj[new_key] = value
+        if type(value) == dict:
+            parsed_obj[new_key] = parse_key_to_context(value)
+
+    under_score_obj = createContext(parsed_obj, keyTransform=camel_case_to_underscore)
+    context_entry = createContext(under_score_obj, keyTransform=string_to_context_key)
+
+    if "Id" in list(context_entry.keys()):
+        context_entry['ID'] = context_entry['Id']
+        del context_entry['Id']
+    if 'CreatedBy' in list(context_entry.keys()):
+        context_entry['CreatedBy'] = remove_identity_key(context_entry['CreatedBy'])
+    if 'LastModifiedBy' in list(context_entry.keys()):
+        context_entry['LastModifiedBy'] = remove_identity_key(context_entry['LastModifiedBy'])
+    return context_entry
+
+
+def remove_identity_key(source):
+    if not isinstance(source, dict):
+        LOG('Input is not dictionary. Exist function.')
+        return source
+
+    dict_keys = list(source.keys())
+    if len(dict_keys) != 1:
+        demisto.log('Got more then one identity creator. Exit function')
+        return source
+
+    identity_key = dict_keys[0]
+    new_source = {}
+    if source[identity_key].get('ID'):
+        new_source['ID'] = source[identity_key].get('ID')
+
+    new_source['DisplayName'] = source[identity_key].get('DisplayName')
+    new_source['Type'] = identity_key
+
+    return new_source
+
 
 def epoch_seconds() -> int:
     """
@@ -83,6 +126,27 @@ def get_encrypted(content: str, key: str) -> str:
     return encrypted
 
 
+def validate_url_netloc(url):
+    try:
+        parsed_url = urlparse(url)
+        if NETLOC not in parsed_url.netloc:
+            raise DemistoException(f'Url: {url} is not valid. Please provide another one.')
+    except ValueError:
+        raise DemistoException(f'Value Error has occurred.\n Url: {url} is not valid. Please provide another one.')
+    else:
+        return parsed_url
+
+
+def url_validation(url):
+    # test if netloc
+    parsed_url = validate_url_netloc(url)
+
+    # test if exits $skiptoken
+    url_parameters = parse_qs(parsed_url.query)
+    if not url_parameters.get('$skiptoken') or not url_parameters['$skiptoken']:
+        raise DemistoException(f'Url: {url} is not valid. Please provide another one. missing $skiptoken')
+    return url
+
 class Client(BaseClient):
     """
     Client will implement the service API, should not contain Demisto logic.
@@ -91,8 +155,8 @@ class Client(BaseClient):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.auth_id = demisto.params().get('auth_id')  # TODO: remove to const
-        self.tenant_id = demisto.params().get('tenant_id')  # TODO: remove to const
+        self.auth_id = demisto.params().get('auth_id')
+        self.tenant_id = demisto.params().get('tenant_id')
         self.enc_key = demisto.params().get('enc_key')
         self.host = demisto.params().get('host')
         self.auto_url = f"https://login.microsoftonline.com/{demisto.params().get('tenant_id')}/oauth2/v2.0/token"
@@ -152,90 +216,12 @@ class Client(BaseClient):
         else:
             return self.return_token_and_save_it_in_context(access_token_res)
 
-    def convert_site_name_to_site_id(self, site_name):
-        url = BASE_URL + '/sites/' + self.tenant_domain + f':/sites/{site_name}?'
-        query_string = {"$select": "id"}
-        access_token = self.get_access_token()  # TODO: put this in a class and access token will be an attribute
-        if not access_token:
-            return False  # TODO: return an error
-        final_headers = {}
-        final_headers['Authorization'] = f'Bearer {access_token}'
-        res = self._http_request('GET', url, headers=final_headers, params=query_string)
-        try:
-            site_id = res['id']
-        except KeyError:
-            demisto.error('could not get site id')
-        else:
-            return site_id
-
-    def get_drive_id_for_site(self, site_id):
-        access_token = self.get_access_token()  # TODO: put this in a class and access token will be an attribute
-
-        headers = {'Authorization': f'Bearer {access_token}'}
-        if not access_token:
-            return False  # TODO: return an error
-        url = BASE_URL + '/sites/' + site_id + '/drive'
-        query_string = {"$select": "id"}
-
-        res = self._http_request('GET', url, params=query_string, headers=headers)
-        try:
-            documents_id = res['id']
-        except KeyError:
-            demisto.error('could not get site id')
-        else:
-            return documents_id
-
-    def get_item_id_by_path(self, path, site_id):
-        # site_id = convert_site_name_to_site_id(site_name)  # TODO comment out
-        # # TODO: path: need to add slash and back slash validation - path validation
-        # access_token = self.get_access_token()  # TODO: put this in a class and access token will be an attribute
-        # headers = {'Authorization': f'Bearer {access_token}'}
-        # query_string = {"$select": "id"}
-        # url = BASE_URL + f'/sites/{site_id}/drive/root:/{path}?'
-        #
-        # res = self._http_request('GET', url, params=query_string, headers=headers)
-        # try:
-        #     item_id = res['id']
-        # except KeyError:
-        #     raise  # TODO: handle exception
-        # else:
-        #     return item_id
-        pass
-
-    def validate_url_netloc(self, url):
-        try:
-            parsed_url = urlparse(url)
-            if NETLOC not in parsed_url.netloc:
-                return False  # TODO: need to add demisto error - "url not valid, see @odata.nextLink"
-
-        except ValueError:
-            raise  # TODO see how to return an error to demisto
-        else:
-            return parsed_url
-
-    def url_validation(self, url):
-        # test if netloc
-        parsed_url = self.validate_url_netloc(url)
-
-        # test if exits $skiptoken
-        try:
-            url_parameters = parse_qs(parsed_url.query)
-            if not url_parameters.get('$skiptoken', False) or not url_parameters['$skiptoken']:
-                return False  # TODO: need to add demisto error - "url not valid, see @odata.nextLink, missing $skiptoken"
-
-        except ValueError:
-            raise  # TODO see how to return an error to demisto " could not parse parameters""url not valid, see @odata.nextLink"
-
     def list_tenant_sites(self):
         url = 'https://graph.microsoft.com/v1.0/sites'
         query_string = {"search": "*"}
         return self.http_call(method='GET', full_url=url, headers=self.headers, url_suffix='', params=query_string)
 
     def list_drives_in_site(self, site_id=None, limit=None, next_page_url=None):
-        # check if got site_id or next_page args
-        # if next_page -> do validation to next_page
-        # perform request.
-
         if not any([site_id, next_page_url]):
             raise DemistoException('Please pass at least one argument to this command: \n'
                                    'site_id: if you want to get all sites.\n'
@@ -248,8 +234,7 @@ class Client(BaseClient):
             params = ''
 
         if next_page_url:
-            self.url_validation(next_page_url)
-            url = next_page_url
+            url = url_validation(next_page_url)
         else:
             url = f'{BASE_URL}/sites/{site_id}/drives'
 
@@ -257,7 +242,7 @@ class Client(BaseClient):
 
     def list_drive_children(self, object_type, object_type_id, item_id=None, limit=None, next_page_url=None):
         if next_page_url:
-            url = next_page_url
+            url = url_validation(next_page_url)
         else:
             if not item_id:
                 item_id = 'root'
@@ -318,7 +303,6 @@ class Client(BaseClient):
         :param entry_id:
         :return:
         """
-        # file_path = '/Users/gberger/Desktop/Untitled.txt'
         file_path = demisto.getFilePath(entry_id).get('path')
 
         if 'drives' == object_type:
@@ -357,77 +341,13 @@ class Client(BaseClient):
         url = BASE_URL + f'/{url}'
 
         payload = {
-            'name': folder_name,  # TODO: need to add type validation.
+            'name': folder_name,
             'folder': {},
             '@microsoft.graph.conflictBehavior': 'rename'
         }
         self.headers['Content-Type'] = 'application/json'
         demisto.log(f'sending POST to {url}, with the next payload: {payload}')
         return self.http_call('POST', full_url=url, json_data=payload, headers=self.headers, url_suffix='')
-
-
-def camel_case_to_readable(text: str) -> str:
-    """'camelCase' -> 'Camel Case'
-
-    Args:
-        text: the text to transform
-
-    Returns:
-        A Camel Cased string.
-    """
-    if text == 'id':
-        return 'ID'
-    return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
-
-
-def parse_parent_reference(parent_reference):
-    # if not len(parent_reference):
-    #     demisto.log('ParentReference is empty. exit function')
-    #     return parent_reference
-    #
-    #
-    # new_source = {}
-    # new_source['ID'] = parent_reference.get('id')
-    # new_source['DisplayName'] = parent_reference[identity_key].get('displayName')
-    # new_source['Type'] = identity_key
-
-    # return new_source
-    pass
-
-
-def parse_outputs(raw_data, exclude=None):
-    # Unnecessary fields, dropping as to not load the incident context.
-    if exclude is None:
-        exclude = []
-    fields_to_drop = exclude
-    if isinstance(raw_data, list):
-
-        files_readable, files_outputs = [], []
-        for data in raw_data:
-            # TODO: need to make sure that i convert it to camel case as well
-            if 'createdBy' in list(data.keys()):
-                data['CreatedBy'] = remove_identity_key(data['createdBy'])
-            if 'lastModifiedBy' in list(data.keys()):
-                data['LastModifiedBy'] = remove_identity_key(data['lastModifiedBy'])
-            if 'parentReference' in list(data.keys()):
-                data['ParentReference'] = parse_parent_reference(data['parentReference'])
-
-            human_readable = {camel_case_to_readable(i): j for i, j in data.items() if i not in fields_to_drop}
-            files_readable.append(human_readable)
-
-            files_outputs.append({k.replace(' ', ''): v for k, v in human_readable.copy().items()})
-
-        return files_readable, files_outputs
-
-    if 'CreatedBy' in list(raw_data.keys()):
-        raw_data['CreatedBy'] = remove_identity_key(raw_data['createdBy'])
-
-    if 'LastModifiedBy' in list(raw_data.keys()):
-        raw_data['LastModifiedBy'] = remove_identity_key(raw_data['lastModifiedBy'])
-    human_readable = {camel_case_to_readable(i): j for i, j in raw_data.items() if i not in fields_to_drop}
-    files_outputs = {k.replace(' ', ''): v for k, v in human_readable.copy().items()}
-
-    return human_readable, files_outputs
 
 
 def download_file_command(client, args):
@@ -481,10 +401,10 @@ def list_tenant_sites_command(client, args):
 
     context_entry = {
         'OdataContext': result.get('@odata.context'),
-        'Values': parsed_sites_items
+        'Value': parsed_sites_items
     }
     context = {
-        f'{INTEGRATION_NAME}.￿ListSites(val.ID === obj.ID)': context_entry
+        f'{INTEGRATION_NAME}.ListSites(val.ID === obj.ID)': context_entry
     }
 
     title = 'List Sites:'
@@ -501,6 +421,9 @@ def list_drives_in_site_command(client, args):
     site_id = args.get('site_id')
     limit = args.get('limit')
     next_page_url = args.get('next_page_url')
+
+    if next_page_url:
+        url_validation(next_page_url)
 
     result = client.list_drives_in_site(site_id=site_id, limit=limit, next_page_url=next_page_url)
     parsed_drive_items = [parse_key_to_context(item) for item in result['value']]
@@ -549,70 +472,6 @@ def replace_an_existing_file_command(client, args):
         context,
         result
     )
-
-
-def remove_identity_key(source):
-    dict_keys = list(source.keys())
-    if len(dict_keys) != 1:
-        demisto.log('got more then one identity creator. exit function')
-        return source
-
-    identity_key = dict_keys[0]
-    new_source = {}
-    new_source['ID'] = source[identity_key].get('ID')
-    new_source['DisplayName'] = source[identity_key].get('DisplayName')
-    new_source['Type'] = identity_key
-
-    return new_source
-
-
-def create_file_and_folder_context(source):
-    human_readble, raw_output = parse_outputs(source.get('parentReference'))
-    human_readble, raw_output_file = parse_outputs(source.get('fileSystemInfo'))
-    file_metadata = {
-        'OdataContext': source.get('@odata.context'),
-        'DownloadUrl': source.get('@microsoft.graph.downloadUrl'),
-        'CreatedDateTime': source.get('createdDateTime'),
-        'ETag': source.get('eTag'),
-        'ID': source.get('id'),
-        'LastModifiedDateTime': source.get('lastModifiedDateTime'),
-        'Name': source.get('name'),
-        'WebUrl': source.get('weburl'),
-        'CTag': source.get('cTag'),
-        'Size': source.get('size'),
-        'CreatedBy': remove_identity_key(source.get('createdBy')),
-        'LastModifiedBy': remove_identity_key(source.get('lastModifiedBy')),
-        'ParentReference': source.get('parentReference'),
-        'FileSystemInfo': source.get('fileSystemInfo')  # raw_output_file
-    }
-    if 'file' in list(source.keys()):
-        file_metadata['File']['Hashes'] = parse_outputs(source.get('hashes'))[1]
-        file_metadata['File']['MimeType'] = source['file'].get('mimetype')
-    if 'folder' in list(source.keys()):
-        file_metadata['Folder']['ChildCount'] = source['folder'].get('childCount')
-    return file_metadata
-
-
-def parse_key_to_context(obj):
-    parsed_obj = {}
-    for key, value in obj.items():
-        if key in EXCLUDE_LIST:
-            continue
-        new_key = RESPONSE_KEYS_DICTIONARY.get(key, key)
-        parsed_obj[new_key] = value
-        if type(value) == dict:
-            parsed_obj[new_key] = parse_key_to_context(value)
-
-    under_score_obj = createContext(parsed_obj, keyTransform=camel_case_to_underscore)
-    context_entry = createContext(under_score_obj, keyTransform=string_to_context_key)
-    if "Id" in list(context_entry.keys()):
-        context_entry['ID'] = context_entry['Id']
-        del context_entry['Id']
-    if 'CreatedBy' in list(context_entry.keys()):
-        context_entry['CreatedBy'] = remove_identity_key(context_entry['CreatedBy'])
-    if 'LastModifiedBy' in list(context_entry.keys()):
-        context_entry['LastModifiedBy'] = remove_identity_key(context_entry['LastModifiedBy'])
-    return context_entry
 
 
 def upload_new_file_command(client, args):
