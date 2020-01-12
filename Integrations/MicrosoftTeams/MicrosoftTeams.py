@@ -741,11 +741,7 @@ def add_user_to_channel_command():
             user_id = user.get('id', '')
             break
     if not found_member:
-        demisto.results({
-            'Type': entryTypes['warning'],
-            'Contents': f'User {member} was not found',
-            'ContentsFormat': formats['text']
-        })
+        raise ValueError(f'User {member} was not found')
 
     team_aad_id = get_team_aad_id(team_name)
     channel_id = get_channel_id(channel_name, team_aad_id, investigation_id=None)
