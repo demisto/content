@@ -10,7 +10,6 @@ def github_errors(response):
 
 
 def main():
-    print('------------------------------------')
     if len(argv) != 4:
         raise ValueError('no params.')
     try:
@@ -32,10 +31,8 @@ def main():
             if res and res.get('total_count', 0) == 1:
                 issue_url = res['items'][0].get('comments_url') if res.get('items', []) else None
                 if issue_url:
-                    print('-------------------------------------------'
-                          '---------------------------------------------------')
-                    # res = requests.post(issue_url, json={'body': skipped_tests}, headers=headers, verify=False)
-                    # github_errors(res)
+                    res = requests.post(issue_url, json={'body': skipped_tests}, headers=headers, verify=False)
+                    github_errors(res)
             else:
                 raise Exception('there is more then one open pr to the same branch.')
 
