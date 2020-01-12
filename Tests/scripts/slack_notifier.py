@@ -84,7 +84,6 @@ def get_failing_unit_tests(build_number):
         failing_unit_tests_url = 'https://{0}-60525392-gh.circle-artifacts.com/1/artifacts/failed_unittests.txt'.format(
             build_number)
         res = http_request(failing_unit_tests_url, verify=False, text=True)
-        print(res)
         failing_ut_list = res.split('\n')
     except Exception:
         failing_ut_list = None
