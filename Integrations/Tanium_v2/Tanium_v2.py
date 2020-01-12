@@ -140,7 +140,9 @@ class Client(BaseClient):
         for row in results_sets.get('rows'):
             tmp_row = {}
             for item, column in zip(row.get('data', []), columns):
-                tmp_row[column] = item[0].get('text')
+                item_value = item[0].get('text')
+                if item_value != '[no results]':
+                    tmp_row[column] = item_value
             rows.append(tmp_row)
 
         return rows
