@@ -2,7 +2,7 @@ id: Spamhaus_Feed_Test
 version: -1
 contentitemfields:
   propagationLabels: []
-name: HTTP_Feed_Test
+name: Spamhaus_Feed_Test
 starttaskid: "0"
 tasks:
   "0":
