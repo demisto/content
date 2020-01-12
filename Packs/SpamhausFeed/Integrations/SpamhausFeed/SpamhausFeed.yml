@@ -110,13 +110,13 @@ script:
     execution: false
     name: get-indicators
     outputs:
-    - contextPath: CSV.Indicator.Value
+    - contextPath: Spamhaus.Indicator.Value
       description: Indicator value.
       type: String
-    - contextPath: CSV.Indicator.Type
+    - contextPath: Spamhaus.Indicator.Type
       description: Indicator type.
       type: String
-    - contextPath: CSV.Indicator.RawJSON
+    - contextPath: Spamhaus.Indicator.RawJSON
       description: Indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/python3:3.7.5.4583
