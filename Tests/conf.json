@@ -18,6 +18,9 @@
             "integrations": "Digital Defense FrontlineVM",
             "playbookID": "Digital Defense FrontlineVM - Test Playbook"
         },
+            "integrations": "CSVFeed",
+            "playbookID": "CSV_Feed_Test"
+        },
         {
             "integrations": "Digital Shadows",
             "playbookID": "Digital Shadows - Test"
@@ -59,6 +62,11 @@
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
             "instance_names": "ms_graph_mail_dev"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev_no_oproxy"
         },
         {
             "integrations": "MicrosoftGraphMail",
@@ -740,7 +748,12 @@
             "integrations": "Gmail"
         },
         {
-            "playbookID": "reputations.json Test"
+            "playbookID": "reputations.json Test",
+            "toversion": "5.0.0"
+        },
+        {
+            "playbookID": "Indicators reputation-.json Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "Test IP Indicator Fields",
@@ -2016,6 +2029,7 @@
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
             "fromversion": "4.5.0",
+            "timeout": 600,
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
         },
@@ -2076,12 +2090,26 @@
           "fromversion": "4.5.0"
         },
         {
+            "playbookID": "SetAndHandleEmpty test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
         },
         {
             "integrations": "Infoblox",
             "playbookID": "Infoblox Test"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA_Integration",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
@@ -2177,6 +2205,7 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
+        "QRadar Indicator Hunting Test": "Issue 21150",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
