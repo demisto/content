@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added a new command: ***splunk-submit-event-hec***
 
 ## [20.1.0] - 2020-01-07
 Fixed an issue with the access to a non-existing key when fetching non-ES events.

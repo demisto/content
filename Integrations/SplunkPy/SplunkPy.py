@@ -489,6 +489,53 @@ def splunk_submit_event_command():
         demisto.results('Event was created in Splunk index: ' + r.name)
 
 
+def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_):
+
+    if hec_token is None:
+        raise Exception('The HEC Token was not provided')
+
+    args = {}
+    args['event'] = event
+    if fields:
+        args['fields'] = fields
+    if host:
+        args['host'] = host
+    if index:
+        args['index'] = index
+    if source_type:
+        args['sourcetype'] = source_type
+    if source:
+        args['source'] = source
+    if time_:
+        args['time'] = time_
+
+    auth_header = {'Authorization': 'Splunk %s' % hec_token}
+
+    response = requests.post(baseurl + 'services/collector', data=args, headers=auth_header)
+
+    return response
+
+
+def splunk_submit_event_hec_command():
+
+    hec_token = demisto.params().get('hec_token')
+
+    event = demisto.args().get('event')
+    host = demisto.args().get('host')
+    fields = demisto.args().get('fields')
+    index = demisto.args().get('index')
+    source_type = demisto.args().get('sourcetype')
+    source = demisto.args().get('source')
+    time_ = demisto.args().get('time')
+
+    response_info = splunk_submit_event_hec(hec_token, event, fields, host, index, source_type, source, time_)
+
+    if 'success' not in response_info or not response_info['success']:
+        demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
+                         'Contents': "Could not update notable "})
+    demisto.results('The event was sent successfully to Splunk.')
+
+
 def splunk_edit_notable_event_command():
     if not proxy:
         os.environ["HTTPS_PROXY"] = ""
@@ -553,3 +600,5 @@ if demisto.command() == 'splunk-notable-event-edit':
     splunk_edit_notable_event_command()
 if demisto.command() == 'splunk-parse-raw':
     splunk_parse_raw_command()
+if demisto.command() == 'splunk-submit-event-hec':
+    splunk_submit_event_hec_command()
