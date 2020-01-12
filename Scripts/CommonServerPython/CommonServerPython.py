@@ -2433,3 +2433,38 @@ def batch(iterable, batch_size=1):
         yield current_batch
         current_batch = not_batched[:batch_size]
         not_batched = current_batch[batch_size:]
+
+def ip_to_indicator_type(ip):
+    """Returns the indicator type of the input IP.
+
+    Args:
+        ip (str): IP address to get it's indicator type.
+
+    Returns:
+        str. Indicator type, or none if invalid IP address.
+    """
+    if IS_PY3:
+        import ipaddress  # pylint: disable=import-error
+
+        try:
+            address_type = ipaddress.ip_address(ip)
+            if address_type.version == 4:
+                return 'IPv4'
+            else:
+                return 'IPv6'
+
+        except ValueError:
+            try:
+                address_type = ipaddress.ip_network(ip)
+                if address_type.version == 4:
+                    return 'IPv4CIDR'
+                else:
+                    return 'IPv6CIDR'
+
+            except Exception:
+                return None
+
+        except Exception:
+            return None
+
+    return None
