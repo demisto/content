@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CSVFeed",
+            "playbookID": "CSV_Feed_Test"
+        },
+        {
             "integrations": "Digital Shadows",
             "playbookID": "Digital Shadows - Test"
         },
@@ -20,6 +24,10 @@
             "integrations": "Symantec Data Loss Prevention",
             "playbookID": "Symantec Data Loss Prevention - Test",
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Lockpath KeyLight v2",
+            "playbookID": "Keylight v2 - Test"
         },
         {
             "integrations": "Azure Security Center v2",
@@ -43,6 +51,11 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev_no_oproxy"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
             "instance_names": "ms_graph_mail_prod"
         },
         {
@@ -62,7 +75,8 @@
         },
         {
             "integrations": "ThreatQ v2",
-            "playbookID": "ThreatQ - Test"
+            "playbookID": "ThreatQ - Test",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "AttackIQFireDrill",
@@ -73,10 +87,13 @@
             "playbookID": "PhishlabsIOC_EIR-Test"
         },
         {
+            "integrations": "PhishLabs IOC DRP",
+            "playbookID": "PhishlabsIOC_DRP-Test"
+        },
+        {
             "playbookID": "Create Phishing Classifier V2 ML Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
-
         },
         {
             "integrations": "ZeroFox",
@@ -113,6 +130,10 @@
         {
             "integrations": "ThreatX",
             "playbookID": "ThreatX-test"
+        },
+        {
+            "integrations": "Akamai WAF SIEM",
+            "playbookID": "Akamai_WAF_SIEM-Test"
         },
         {
             "integrations": "AlienVault OTX",
@@ -612,6 +633,10 @@
             "playbookID": "Test Playbook McAfee ePO"
         },
         {
+            "integrations": "McAfee DXL",
+            "playbookID": "McAfee DXL - Test"
+        },
+        {
             "integrations": "activedir",
             "playbookID": "calculate_severity_-_critical_assets_-_test"
         },
@@ -684,11 +709,13 @@
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "get_original_email_-_ews-_test"
+            "playbookID": "get_original_email_-_ews-_test",
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": ["EWS v2", "EWS Mail Sender"],
             "playbookID": "EWS search-mailbox test",
+            "instance_names": "ewv2_regular",
             "timeout": 300
         },
         {
@@ -710,7 +737,12 @@
             "integrations": "Gmail"
         },
         {
-            "playbookID": "reputations.json Test"
+            "playbookID": "reputations.json Test",
+            "toversion": "5.0.0"
+        },
+        {
+            "playbookID": "Indicators reputation-.json Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "Test IP Indicator Fields",
@@ -743,6 +775,9 @@
         },
         {
             "playbookID": "exporttocsv_script_test"
+        },
+        {
+            "playbookID": "Set - Test"
         },
         {
             "integrations": "Intezer v2",
@@ -837,11 +872,13 @@
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "EWSv2_empty_attachment_test"
+            "playbookID": "EWSv2_empty_attachment_test",
+            "instance_names": "ewv2_regular"
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "EWS Public Folders Test"
+            "playbookID": "EWS Public Folders Test",
+            "instance_names": "ewv2_regular"
         },
         {
             "playbookID": "TestWordFileToIOC",
@@ -1027,7 +1064,13 @@
         },
         {
             "integrations": "EWS v2",
-            "playbookID": "pyEWS_Test"
+            "playbookID": "pyEWS_Test",
+            "instance_names": "ewv2_regular"
+        },
+        {
+            "integrations": "EWS v2",
+            "playbookID": "pyEWS_Test",
+            "instance_names": "ewsv2_separate_process"
         },
         {
             "integrations": "remedy_sr_beta",
@@ -1138,6 +1181,16 @@
             "integrations": "Microsoft Graph Groups",
             "playbookID": "Microsoft Graph Groups - Test",
             "instance_names": "ms_graph_groups_prod"
+        },
+                {
+            "integrations": "Microsoft Graph Calendar",
+            "playbookID": "Microsoft Graph Calendar - Test",
+            "instance_names": "ms_graph_calendar_dev"
+        },
+        {
+            "integrations": "Microsoft Graph Calendar",
+            "playbookID": "Microsoft Graph Calendar - Test",
+            "instance_names": "ms_graph_calendar_prod"
         },
         {
             "integrations": "RedLock",
@@ -1463,18 +1516,24 @@
         },
         {
             "playbookID": "Active Directory Test",
-            "instance_names": "active_directory_query_v2",
-            "integrations": "Active Directory Query v2"
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
         },
         {
             "playbookID": "AD v2 - debug-mode - Test",
-            "instance_names": "active_directory_query_v2",
             "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja",
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "Docker Hardening Test",
+            "_comment": "Not testing on 5.5 yet. Waiting for #20951",
+            "fromversion": "5.0.0",
+            "toversion": "5.4.9"
+        },
+        {
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_query_v2_with_port_configuration",
+            "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory Query V2 configuration with port"
         },
         {
@@ -1486,7 +1545,8 @@
         },
         {
             "playbookID": "Email Address Enrichment - Generic v2.1 - Test",
-            "integrations": "Active Directory Query v2"
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
         },
         {
             "integrations": "Cofense Intelligence",
@@ -1520,6 +1580,7 @@
                 "Palo Alto Minemeld",
                 "Active Directory Query v2"
             ],
+            "instance_names": "active_directory_ninja",
             "fromversion": "4.5.0"
         },
         {
@@ -1545,8 +1606,15 @@
                 "Active Directory Query v2",
                 "Demisto REST API"
             ],
+            "instance_names": "active_directory_ninja",
             "fromversion": "5.0.0",
             "timeout": 700
+        },
+        {
+            "playbookID": "Active Directory - Get User Manager Details - Test",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_80k",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Kafka V2",
@@ -1641,7 +1709,8 @@
                 "carbonblack-v2",
                 "epo",
                 "Active Directory Query v2"
-            ]
+            ],
+            "instance_names": "active_directory_ninja"
         },
         {
             "playbookID": "EmailReputationTest",
@@ -1682,7 +1751,8 @@
         },
         {
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
-            "integrations": "Active Directory Query v2"
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja"
         },
         {
             "integrations": "Cisco Umbrella Investigate",
@@ -1720,7 +1790,7 @@
         },
         {
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_query_v2",
+            "instance_names": "active_directory_ninja",
             "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)"
         },
         {
@@ -1885,6 +1955,22 @@
             "playbookID": "ThreatStream-Test"
         },
         {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_event-Test"
+        },
+        {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_forum-Test"
+        },
+        {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_report-Test"
+        },
+        {
+            "integrations": "Flashpoint",
+            "playbookID": "Flashpoint_reputation-Test"
+        },
+        {
             "integrations": "BluecatAddressManager",
             "playbookID": "Bluecat Address Manager test"
         },
@@ -1932,6 +2018,7 @@
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
             "fromversion": "4.5.0",
+            "timeout": 600,
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
         },
@@ -1973,23 +2060,53 @@
             "playbookID": "Google-KMS-test"
         },
         {
+            "integrations": "SecBI",
+            "playbookID": "SecBI - Test"
+        },
+        {
             "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         },
         {
           "integrations": "EWS v2",
           "playbookID": "Get EWS Folder Test",
+          "fromversion": "4.5.0",
+          "instance_names": "ewv2_regular"
+        },
+        {
+          "integrations": "QRadar",
+          "playbookID": "QRadar Indicator Hunting Test",
+          "timeout": 1200,
           "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "SetAndHandleEmpty test",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
+        },
+        {
+            "integrations": "Infoblox",
+            "playbookID": "Infoblox Test"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA_Integration",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
+        "Phishing - Core - Test": "Issue 20983",
+        "Phishing v2 Test - Attachment": "Issue 20983",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
-        "Request Debugging - Test": "Issue 20337",
         "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
@@ -2001,7 +2118,6 @@
         "ArcSight Logger test": "Issue 19117",
         "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
-        "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "Carbon Black Enterprise Protection V2 Test": "Issue 19838",
@@ -2015,7 +2131,9 @@
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
-        "Test Playbook TrendMicroDDA": "Manual test"
+        "Test Playbook TrendMicroDDA": "Issue 16501",
+        "PANW - Hunting and threat detection by indicator type Test": "Issue 20952",
+        "ssdeepreputationtest": "Issue #20953"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
@@ -2031,6 +2149,7 @@
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
         "ExtraHop v2": "No instance",
+        "Fidelis Elevate Network": "Issue 20735",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
         "fireeye": "Issue 19839",
@@ -2039,9 +2158,7 @@
         "ProtectWise": "Issue 20486",
         "ThreatMiner": "Issue 20469",
         "DomainTools Iris": "Issue 20433",
-        "ThreatQ v2": "Issue 19468",
         "Check Point": "Issue 18643",
-        "RSA Archer": "Issue 20335",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "Joe Security": "Issue 17996",
@@ -2077,12 +2194,12 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
+        "QRadar Indicator Hunting Test": "Issue 21150",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tanium": "issue 15497",
         "Tenable.sc": "unstable instance",
-        "Tenable.io": "Issue 16115",
 
 
         "_comment": "~~~ OTHER ~~~",
@@ -2091,6 +2208,7 @@
         "Zoom": "Issue 19832",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "HelloWorldSimple": "This is just an example integration - no need for test",
+        "Lockpath KeyLight": "Deprecated. No tests.",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
         "AWS - Athena - Beta": "Issue 19834",
@@ -2148,6 +2266,7 @@
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
+        "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange"
     }
