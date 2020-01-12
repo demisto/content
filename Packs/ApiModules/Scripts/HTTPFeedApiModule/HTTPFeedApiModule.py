@@ -221,8 +221,8 @@ def fetch_indicators_command(client, itype, **kwargs):
         return indicators
 
 
-def get_indicators_command(client, default_indicator_type, args):
-    itype = args.get('indicator_type', default_indicator_type)
+def get_indicators_command(client, args):
+    itype = args.get('indicator_type', args.get('default_indicator_type'))
     limit = int(args.get('limit'))
     indicators_list = fetch_indicators_command(client, itype)
     entry_result = camelize(indicators_list[:limit])
@@ -258,7 +258,8 @@ def feed_main(feed_name):
         else:
             args = demisto.args()
             args['feed_name'] = feed_name
-            readable_output, outputs, raw_response = commands[command](client, params.get('indicator_type'), args)
+            args['default_indicator_type'] = params.get('indicator_type')
+            readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {feed_name} feed [{e}]'  # FEED_NAME should be in the integration code
