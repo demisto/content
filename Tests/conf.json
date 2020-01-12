@@ -2088,6 +2088,10 @@
           "fromversion": "5.5.0"
         },
         {
+            "integrations": "GoogleCloudTranslate",
+            "playbookID": "GoogleCloudTranslate-Test"
+        },
+        {
             "integrations": "Infoblox",
             "playbookID": "Infoblox Test"
         },
@@ -2261,7 +2265,6 @@
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "RedLock": "SSL Issues",
-        "FeedOffice365": "SSL Issues. Issue 21181",
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
