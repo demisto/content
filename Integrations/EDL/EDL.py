@@ -18,6 +18,8 @@ FORMAT_TEXT: str = 'text'
 FORMAT_JSON_SEQ: str = 'json-seq'
 FORMAT_JSON: str = 'json'
 EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for EDL Size'
+EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
+                                   '6 months, 1 day, etc.)'
 
 ''' HELPER FUNCTIONS '''
 
@@ -188,34 +190,34 @@ def route_edl_values() -> Response:
 
 
 ''' COMMAND FUNCTIONS '''
-''' COMMAND FUNCTIONS '''
 
 
 def test_module(args, params):
     """
     Validates:
-        1.
+        1. Valid port.
+        2. Valid cache_refresh_rate
     """
     get_params_port(params)
-    cache_refresh_rate = params.get('cache_refresh_rate', '')
-    if cache_refresh_rate:
-        # validate cache_refresh_rate value
-        range_split = cache_refresh_rate.split(' ')
-        if len(range_split) != 2:
-            raise ValueError('Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes,'
-                             '6 months, 1 day, etc.)')
-        parse_integer(range_split[0], 'Invalid time value for the Refresh Rate. Must be a valid integer.')
-        if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year',
-                                  'years']:
-            raise ValueError(
-                'Invalid time unit for the Refresh Rate. Must be minutes, hours, days, months, or years.')
-        parse_date_range(cache_refresh_rate, to_timestamp=True)
     on_demand = params.get('on_demand', None)
     if not on_demand:
         parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)  # validate EDL Size was set
         query = params.get('indicators_query')  # validate indicators_query isn't empty
         if not query:
             raise ValueError('"Indicator Query" is required. Provide a valid query.')
+        cache_refresh_rate = params.get('cache_refresh_rate', '')
+        if not cache_refresh_rate:
+            raise ValueError(EDL_MISSING_REFRESH_ERR_MSG)
+        # validate cache_refresh_rate value
+        range_split = cache_refresh_rate.split(' ')
+        if len(range_split) != 2:
+            raise ValueError(EDL_MISSING_REFRESH_ERR_MSG)
+        parse_integer(range_split[0], 'Invalid time value for the Refresh Rate. Must be a valid integer.')
+        if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year',
+                                  'years']:
+            raise ValueError(
+                'Invalid time unit for the Refresh Rate. Must be minutes, hours, days, months, or years.')
+        parse_date_range(cache_refresh_rate, to_timestamp=True)
     return 'ok', {}, {}
 
 
