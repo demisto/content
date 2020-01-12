@@ -230,7 +230,7 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
             if requested_team_member in {team_member.get('name', ''), team_member.get('userPrincipalName', '')}:
                 return team_member.get('id')
 
-    raise ValueError('Team member was not found')
+    raise ValueError(f'Team member {requested_team_member} was not found')
 
 
 def create_adaptive_card(body: list, actions: list = None) -> dict:

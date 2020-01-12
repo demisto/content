@@ -122,7 +122,7 @@ def test_mentioned_users_to_entities():
     assert mentioned_users_to_entities(mentioned_users, integration_context) == [bruce_entity, denzel_entity]
 
     mentioned_users = ['Bruce Willis', 'demisto']
-    with pytest.raises(ValueError, match='Team member was not found'):
+    with pytest.raises(ValueError, match='Team member demisto was not found'):
         mentioned_users_to_entities(mentioned_users, integration_context)
 
 
@@ -867,7 +867,7 @@ def test_get_team_member_id():
     requested_team_member = 'TheRock'
     with pytest.raises(ValueError) as e:
         get_team_member_id(requested_team_member, integration_context)
-    assert str(e.value) == 'Team member was not found'
+    assert str(e.value) == 'Team member TheRock was not found'
 
 
 def test_create_adaptive_card():
