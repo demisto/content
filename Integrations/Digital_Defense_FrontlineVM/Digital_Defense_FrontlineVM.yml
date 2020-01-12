@@ -20,7 +20,7 @@ configuration:
 - display: API Token to access Frontline VM
   name: apiToken
   defaultvalue: ""
-  type: 0
+  type: 4
   required: true
 - display: Fetch incidents
   name: isFetch
