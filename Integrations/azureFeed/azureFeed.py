@@ -52,10 +52,15 @@ class Client(BaseClient):
             Dict. IP data object.
         """
         try:
-            address_type = ipaddress.ip_network(azure_address_prefix)
+            address_type = ipaddress.ip_address(azure_address_prefix)
+
         except Exception:
-            demisto.debug(F'{INTEGRATION_NAME} - Invalid ip range: {azure_address_prefix}')
-            return {}
+            try:
+                address_type = ipaddress.ip_network(azure_address_prefix)
+
+            except Exception:
+                demisto.debug(F'{INTEGRATION_NAME} - Invalid ip range: {azure_address_prefix}')
+                return {}
 
         if address_type.version == 4:
             type_ = 'IPv4'
