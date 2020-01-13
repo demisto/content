@@ -1089,8 +1089,70 @@ script:
     - contextPath: Tanium.ProcessTree.Children
       description: The process children.
       type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      description: The maximum number of evidences to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Offset into the evidence results
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of fields to sort by with +/- prefixes for
+        ascending/descending, in order of priority left to right
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all available evidences in the system.
+    execution: false
+    name: tanium-tr-list-evidences
+  - arguments:
+    - default: false
+      isArray: false
+      name: evidence-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-get-evidence-by-id
+  - arguments:
+    - default: false
+      isArray: false
+      name: connection-name
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: host
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: ptid
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-create-evidence
+  - arguments:
+    - default: false
+      isArray: false
+      name: evidence-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tanium-tr-delete-evidence
   dockerimage: demisto/python3:3.7.4.977
-  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false

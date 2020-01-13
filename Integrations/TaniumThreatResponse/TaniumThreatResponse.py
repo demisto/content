@@ -38,7 +38,7 @@ class Client(BaseClient):
             self.update_session()
 
         res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
-                                 params=params, resp_type='response', ok_codes=(200, 202, 204, 400, 403, 404))
+                                 params=params, resp_type='response', ok_codes=(200, 201, 202, 204, 400, 403, 404))
 
         # if session expired
         if res.status_code == 403:
@@ -288,6 +288,22 @@ class Client(BaseClient):
             tree_item['Children'] = output_arr
 
         return tree_item, human_readable
+
+    def get_evidence_item(self, raw_item):
+        return {
+            'ID': raw_item.get('id'),
+            'CreatedAt': raw_item.get('created'),
+            'UpdatedAt': raw_item.get('lastModified'),
+            'User': raw_item.get('user'),
+            'Host': raw_item.get('host'),
+            'ConnectionID': raw_item.get('connId'),
+            'Type': raw_item.get('type'),
+            'sID': raw_item.get('sID'),
+            'Timestamp': raw_item.get('sTimestamp'),
+            'Summary': raw_item.get('summary'),
+            'Comments': raw_item.get('comments'),
+            'Tags': raw_item.get('tags')
+        }
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -699,6 +715,71 @@ def get_process_tree(client, data_args):
     return human_readable, outputs, raw_response
 
 
+def get_evidences(client, data_args):
+    limit = int(data_args.get('limit'))
+    offset = int(data_args.get('offset'))
+    sort = data_args.get('sort')
+    params = {
+        'sort': sort,
+        'limit': limit,
+        'offset': offset
+    }
+    raw_response = client.do_request('GET', '/plugin/products/trace/evidence', params=params)
+
+    evidences = []
+    for item in raw_response:
+        pass
+        evidence = client.get_evidence_item(item)
+        evidences.append(evidence)
+
+    context = createContext(evidences, removeNull=True)
+    outputs = {'Tanium.Evidence(val.ID && val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Evidences', evidences)
+    return human_readable, outputs, raw_response
+
+
+def get_evidence(client, data_args):
+    evidence_id = data_args.get('evidence-id')
+    raw_response = client.do_request('GET', f'/plugin/products/trace/evidence/{evidence_id}')
+    evidence = client.get_evidence_item(raw_response)
+
+    context = createContext(evidence, removeNull=True)
+    outputs = {'Tanium.Evidence(val.ID && val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Label information', evidence)
+    return human_readable, outputs, raw_response
+
+
+def create_evidence(client, data_args):
+    conn_name = data_args.get('connection-name')
+    host = data_args.get('host')
+    ptid = data_args.get('ptid')
+
+    params = {'match': 'all', 'f1': 'process_table_id', 'o1': 'eq', 'v1': ptid}
+    process_data = client.do_request('GET', f'/plugin/products/trace/conns/{conn_name}/process/events', params=params)
+
+    if not process_data:
+        raise ValueError('Invalid connection-name or ptid.')
+
+    data = {
+        'host': host,
+        'user': client.username,
+        'data': process_data[0],
+        'connId': conn_name,
+        'type': 'ProcessEvent',
+        'sTimestamp': process_data[0].get('create_time'),
+        'sId': ptid
+    }
+
+    client.do_request('POST', '/plugin/products/trace/evidence', data=data, resp_type='content')
+    return "Initiated an evidence creation request.", {}, {}
+
+
+def delete_evidence(client, data_args):
+    evidence_id = data_args.get('evidence-id')
+    client.do_request('DELETE', f'/plugin/products/trace/evidence/{evidence_id}', resp_type='content')
+    return f"Evidence {evidence_id} deleted successfully.", {}, {}
+
+
 def fetch_incidents(client):
     """
     Fetch events from this integration and return them as Demisto incidents
@@ -782,7 +863,11 @@ def main():
         f'tanium-tr-get-process-children': get_process_children,
         f'tanium-tr-get-parent-process': get_parent_process,
         f'tanium-tr-get-parent-process-tree': get_parent_process_tree,
-        f'tanium-tr-get-process-tree': get_process_tree
+        f'tanium-tr-get-process-tree': get_process_tree,
+        f'tanium-tr-list-evidences': get_evidences,
+        f'tanium-tr-get-evidence-by-id': get_evidence,
+        f'tanium-tr-create-evidence': create_evidence,
+        f'tanium-tr-delete-evidence': delete_evidence
     }
 
     try:
