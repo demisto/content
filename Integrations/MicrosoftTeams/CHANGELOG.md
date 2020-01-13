@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Added the ability to mention users in the ***send-notification*** command.
+Added the ability to mention users in the ***send-notification*** command.
 
 ## [19.10.0] - 2019-10-03
   - Added support for single port mapping.
