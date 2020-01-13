@@ -320,7 +320,7 @@ script:
         Event","Injection Event","Load Image Event","Windows Event Log"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action
-      description: The action that triggered the alert
+      description: The action that triggered the alert. "REPORTED", "BLOCKED", "POST_DETECTED", "SCANNED", "DOWNLOAD", "PROMPT_ALLOW", "PROMPT_BLOCK", "DETECTED", "BLOCKED_1", "BLOCKED_2", "BLOCKED_3", "BLOCKED_5", "BLOCKED_6", "BLOCKED_7", "BLOCKED_8", "BLOCKED_9", "BLOCKED_10", "BLOCKED_11", "BLOCKED_13", "BLOCKED_14", "BLOCKED_15", "BLOCKED_16", "BLOCKED_17", "BLOCKED_24", "BLOCKED_25", "DETECTED_0", "DETECTED_4", "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22", "DETECTED_23"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_pretty
       description: The action that triggered the alert "Detected (Reported)" "Prevented
@@ -443,7 +443,7 @@ script:
       description: The domain related to the artifact.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.type
-      description: The artifact type, for example, IP.
+      description: The artifact type. "META", "GID", "CID", "HASH", "IP", "DOMAIN", "REGISTRY", "HOSTNAME"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_country
       description: The country related to the artifact
@@ -1034,6 +1034,30 @@ script:
       name: type
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - REMOTE_TERMINAL
+      - RULES
+      - AUTH
+      - RESPONSE
+      - INCIDENT_MANAGEMENT
+      - ENDPOINT_MANAGEMENT
+      - ALERT_WHITELIST
+      - PUBLIC_API
+      - DISTRIBUTIONS
+      - STARRED_INCIDENTS
+      - POLICY_PROFILES
+      - DEVICE_CONTROL_PROFILE
+      - HOST_FIREWALL_PROFILE
+      - POLICY_RULES
+      - PROTECTION_POLICY
+      - DEVICE_CONTROL_TEMP_EXCEPTIONS
+      - DEVICE_CONTROL_GLOBAL_EXCEPTIONS
+      - GLOBAL_EXCEPTIONS
+      - MSSP
+      - REPORTING
+      - DASHBOARD
+      - BROKER_VM
     - default: false
       description: Subtype of audit log
       isArray: false
@@ -1046,6 +1070,11 @@ script:
       name: result
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - SUCCESS
+      - FAIL
+      - PARTIAL
     - default: false
       description: "Return logs that their timestamp is greater than 'log_time_after'.\n\
         Examples: \n\"1 hour\"\n\"2 days\""
@@ -1168,19 +1197,62 @@ script:
       name: type
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+      - INSTALLATION
+      - POLICY
+      - ACTION
+      - AGENT_SERVICE
+      - AGENT_MODULES
+      - AGENT_STATUS
     - default: false
       description: Subtype of report
       isArray: true
       name: sub_type
       required: false
       secret: false
+      auto: PREDEFINIED
+      predefined:
+      - INSTALL
+      - UNINSTALL
+      - UPGRADE
+      - LOCAL_CONFIGURATION
+      - CONTENT_UPDATE
+      - POLICY_UPDATE
+      - PROCESS_EXCEPTION
+      - HASH_EXCEPTION
+      - SCAN
+      - FILE_RETRIEVAL
+      - FILE_SCAN
+      - TERMINATE_PROCESS
+      - ISOLATE
+      - CANCEL_ISOLATION
+      - PAYLOAD_EXECUTION
+      - QUARANTINE
+      - RESTORE
+      - STOP
+      - START
+      - MODULE_INITIALIZATION
+      - LOCAL_ANALYSIS_MODEL
+      - LOCAL_ANALYSIS_FEATURE_EXTRACTION
+      - FULLY_PROTECTED
+      - OS_INCOMPATIBLE
+      - SOFTWARE_INCOMPATIBLE
+      - KERNEL_DRIVER_INITIALIZATION
+      - KERNEL_EXTENSION_INITIALIZATION
+      - PROXY_COMMUNICATION
+      - QUOTA_EXCEEDED
+      - MINIMAL_CONTENT
+      - REBOOT_REQUIRED
+      - MISSING_DISC_ACCESS
     - auto: PREDEFINED
       default: false
       description: Result type. If not passed, the returns all
       isArray: true
       name: result
       predefined:
-      - Success
+      - SUCCESS
+      - FAIL
       required: false
       secret: false
     - default: false
