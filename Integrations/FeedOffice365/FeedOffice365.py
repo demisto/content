@@ -112,8 +112,7 @@ class Client(BaseClient):
                     i.update({
                         "Region": region,
                         "Service": service,
-                        "FeedURL": feed_url,
-                        'Source': INTEGRATION_NAME
+                        "FeedURL": feed_url
                     })
                 result.extend(indicators)
             except requests.exceptions.SSLError as err:
