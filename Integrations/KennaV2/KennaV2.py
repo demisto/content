@@ -48,7 +48,7 @@ class Client(BaseClient):
         try:
             response_list = response.json() if response.text else {}
             if not response.ok:
-                if response_list.get('error') == 401:
+                if response_list.get('error') == "unauthorized":
                     raise DemistoException(f'Connection error in the API call to Kenna.\n'
                                            f'Check your Api Key parameter.\n\n{demisto.get(response_list, "error.message")}')
                 else:
