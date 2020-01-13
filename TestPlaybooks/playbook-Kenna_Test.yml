@@ -1,5 +1,5 @@
 id: Kenna Test
-version: 40
+version: 41
 contentitemfields:
   propagationLabels: []
 name: Kenna Test
@@ -258,10 +258,10 @@ tasks:
     skipunavailable: false
   "11":
     id: "11"
-    taskid: 826fa020-b8d2-43ac-8065-129c60d8a054
+    taskid: c48c101f-7b28-4ffd-8508-7ee890334c75
     type: regular
     task:
-      id: 826fa020-b8d2-43ac-8065-129c60d8a054
+      id: c48c101f-7b28-4ffd-8508-7ee890334c75
       version: -1
       name: kenna-run-connector
       description: Schedules a run of a connector. If file based, it will use most
@@ -277,6 +277,7 @@ tasks:
           accessor: ConnectorsList.ID
           transformers:
           - operator: FirstArrayElement
+    continueonerror: true
     separatecontext: false
     view: |-
       {
