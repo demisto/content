@@ -438,7 +438,7 @@ class Taxii11(object):
 
 class Client(object):
     def __init__(self, insecure: bool = True, polling_timeout: int = 20, initial_interval: str = '1 day',
-                 discovery_service: str = None, poll_service: str = None, collection: str = None, api_key: str = None,
+                 discovery_service: str = '', poll_service: str = None, collection: str = None, api_key: str = None,
                  api_header: str = None, credentials: dict = None, **kwargs):
         """
         TAXII Client
@@ -843,7 +843,7 @@ def interval_in_sec(val):
     number = int(range_split[0])
     range_unit = range_split[1].lower()
     if range_unit not in ['minute', 'minutes', 'hour', 'hours', 'day', 'days']:
-        return_error('The unit of Interval is invalid. Must be minutes, hours or days')
+        raise ValueError('The unit of Interval is invalid. Must be minutes, hours or days')
 
     multipliers = {
         'minute': 60,
@@ -911,7 +911,7 @@ def main():
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
-        return_error(err_msg)
+        raise Exception(err_msg)
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":

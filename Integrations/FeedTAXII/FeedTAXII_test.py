@@ -1,4 +1,5 @@
 import json
+import pytest
 
 """ helper functions """
 
@@ -30,21 +31,67 @@ class TestStixDecode:
                     assert expctd_res == list(res[1])
 
 
-# def test_fetch_indicators_command(mock):
-#     from FeedTAXII import Client, fetch_indicators_command, get_indicators_command
-#     mock.patch.object(demisto, 'getLastRun', return_value=None)
-#     params = {
-#         'discovery_service': 'https://test.taxiistand.com/read-only/services/discovery',
-#         'collection': 'single-binding-fast',
-#         'credentials': {
-#             'identifier': 'guest',
-#             'password': 'guest'
-#         },
-#         'initial_interval': '1000 days',
-#         'polling_timeout': 30,
-#         # 'poll_service': 'poll_service'
-#     }
-#     client = Client(**params)
-#     get_indicators_command(client, params)
-#     # fetch_indicators_command(client)
-#
+class TestUtilFunctions:
+    multipliers = {
+        'minute': 60,
+        'hour': 3600,
+        'day': 86400,
+    }
+
+    def test_interval_in_sec_1(self):
+        """Empty"""
+        from FeedTAXII import interval_in_sec
+        assert interval_in_sec(None) is None
+
+    def test_interval_in_sec_2(self):
+        """Integer"""
+        from FeedTAXII import interval_in_sec
+        val = 25
+        assert interval_in_sec(val) == val
+
+    def test_interval_in_sec_3(self):
+        """Str with len < 2"""
+        from FeedTAXII import interval_in_sec
+        val = '25'
+        with pytest.raises(ValueError):
+            interval_in_sec(val)
+
+    def test_interval_in_sec_4(self):
+        """Str with len > 2"""
+        from FeedTAXII import interval_in_sec
+        val = '25 minutes ok'
+        with pytest.raises(ValueError):
+            interval_in_sec(val)
+
+    def test_interval_in_sec_5(self):
+        """Invalid str with len == 2"""
+        from FeedTAXII import interval_in_sec
+        val = '25 minu'
+        with pytest.raises(ValueError):
+            interval_in_sec(val)
+
+    def test_interval_in_sec_6(self):
+        """Valid str"""
+        from FeedTAXII import interval_in_sec
+        # Minutes
+        val = '25 minutes'
+        assert interval_in_sec(val) == 25 * self.multipliers['minute']
+        # Hours
+        val = '30 hours'
+        assert interval_in_sec(val) == 30 * self.multipliers['hour']
+        # Days
+        val = '40 hours'
+        assert interval_in_sec(val) == 40 * self.multipliers['hour']
+
+
+class TestCommands:
+    def test_fetch_indicators(self, mocker):
+        from FeedTAXII import Client, fetch_indicators_command
+        client = Client()
+        with open('FeedTAXII_test/TestCommands/raw_indicators.json', 'r') as f:
+            raw_indicators = json.load(f)
+            mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
+            res = fetch_indicators_command(client)
+            with open('FeedTAXII_test/TestCommands/indicators_results.json', 'r') as exp_f:
+                expected = json.load(exp_f)
+                assert res == expected
