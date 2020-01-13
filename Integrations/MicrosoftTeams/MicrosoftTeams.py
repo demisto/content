@@ -32,7 +32,7 @@ INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
 URL_REGEX: str = r'http[s]?://(?:[a-zA-Z]|[0-9]|[:/$_@.&+#-]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 ENTITLEMENT_REGEX: str = \
     r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
-MENTION_REGEX = r'^@([^;]+);| @([^;]+);'
+MENTION_REGEX = r'^@([^@;]+);| @([^@;]+);'
 ENTRY_FOOTER: str = 'From Microsoft Teams'
 
 MESSAGE_TYPES: dict = {
