@@ -1,0 +1,125 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: AutoFocus Feed
+  version: -1
+configuration:
+- display: Indicator feed
+  name: indicator_feeds
+  options:
+  - Daily Threat Feed
+  - URL Feed
+  required: true
+  type: 16
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: The AutoFocus API key
+  name: api_key
+  required: true
+  type: 4
+- display: The URL feed ID to fetch
+  name: output_feed_id
+  required: false
+  type: 0
+- display: The name of the feed ID to fetch
+  name: output_feed_name
+  required: false
+  type: 0
+- display: Reliability
+  name: feedInstanceReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - ""
+  - ""
+  - ""
+  - ""
+  - ""
+  - ""
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- display: ""
+  name: expiration
+  defaultvalue: ""
+  type: 17
+  required: false
+- display: ""
+  name: expirationPolicy
+  defaultvalue: indicatorType
+  type: 0
+  required: false
+  hidden: true
+- display: ""
+  name: expirationInterval
+  defaultvalue: ""
+  type: 1
+  required: false
+  hidden: true
+- display: Fetch indicators
+  name: feed
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Bypass exclusion list
+  name: bypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Mark as reputation
+  name: feedInstanceReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+- display: Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+  additionalinfo: The frequency for fetching indicators from this feed (in minutes).
+description: Indicators Fetched from AutoFocus Feeds
+display: AutoFocus Feed
+name: AutoFocus Feed
+fromversion: 5.5.0
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: How many indicators should be returned
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the indicators from AutoFocus.
+    execution: false
+    name: get-indicators
+    outputs:
+    - contextPath: AutoFocusFeed.Indicator.Type
+      description: The type of the indicator.
+      type: String
+    - contextPath: AutoFocusFeed.Indicator.Value
+      description: The value of the indicator
+      type: String
+  dockerimage: demisto/python3:3.7.4.2245
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
