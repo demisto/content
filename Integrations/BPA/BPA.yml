@@ -29,7 +29,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Palo Alto Networks Best Practice Assessment (BPA) Analyzes NGFW and Panorama configurations and compares them to best practice.
+description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
 display: BPA
 name: BPA
 script:
