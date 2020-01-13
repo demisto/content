@@ -24,6 +24,7 @@ class Client(BaseClient):
         output_feed_id(str): The ID given to the custom feed.
         output_feed_name(str): The name given to the custom feed.
     """
+
     def __init__(self, api_key, insecure, proxy, indicator_feeds, output_feed_id="", output_feed_name=""):
         self.url_feed_base_url = "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/"
         self.daily_feed_base_url = "https://autofocus.paloaltonetworks.com/api/v1.0/output/threatFeedResult"
@@ -32,7 +33,12 @@ class Client(BaseClient):
             'Content-Type': "application/json"
         }
         self.indicator_feeds = indicator_feeds
-        self.url_feed_suffix = output_feed_id + "/" + output_feed_name
+        if 'URL Feed' in indicator_feeds and (output_feed_name is None or output_feed_id is None):
+            return_error("Output Feed ID and Name are required for URL Feed")
+
+        elif 'URL Feed' in indicator_feeds:
+            self.url_feed_suffix = output_feed_id + "/" + output_feed_name
+
         self.verify = not insecure
         if proxy:
             handle_proxy()
@@ -101,10 +107,10 @@ class Client(BaseClient):
         indicators = []
 
         if "Daily Threat Feed" in self.indicator_feeds:
-            indicators.extend(self.http_request("Daily Threat Feed"))
+            indicators.extend(self.http_request(feed_type="Daily Threat Feed"))
 
         if "URL Feed" in self.indicator_feeds:
-            indicators.extend(self.http_request("URL Feed"))
+            indicators.extend(self.http_request(feed_type="URL Feed"))
 
         parsed_indicators = []
 
@@ -149,6 +155,8 @@ def get_indicators_command(client: Client, args: dict):
         str, dict, list. the markdown table, context JSON and list of indicators
     """
     indicators = client.build_iterator()
+    if args.get('page'):
+        indicators = indicators[int(str(args.get('page'))):]
 
     if args.get('limit'):
         indicators = indicators[:int(str(args.get('limit')))]
@@ -163,8 +171,13 @@ def get_indicators_command(client: Client, args: dict):
     human_readable = tableToMarkdown("Indicators from AutoFocus:", hr_indicators,
                                      headers=['Value', 'Type'], removeNull=True)
 
+    if args.get('limit'):
+        human_readable = human_readable + f"\nTo bring the next batch of indicators run:\n!get-indicators " \
+            f"limit={args.get('limit')} page={int(str(args.get('limit'))) + int(str(args.get('page')))}"
+
     return human_readable, {
-        f"{SOURCE_NAME}.Indicator(val.Value == obj.Value && val.Type == obj.Type)": hr_indicators}, indicators
+        f"{SOURCE_NAME}.Indicator(val.Value == obj.Value && val.Type == obj.Type)": hr_indicators
+    }, indicators
 
 
 def fetch_indicators_command(client: Client):
@@ -183,10 +196,16 @@ def fetch_indicators_command(client: Client):
 
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
-    client = Client(params.get('api_key'), params.get('insecure'), params.get('proxy'), params.get('indicator_feeds'),
-                    params.get('output_feed_id'), params.get('output_feed_name'))
+
+    client = Client(params.get('api_key'),
+                    params.get('insecure'),
+                    params.get('proxy'),
+                    params.get('indicator_feeds'),
+                    params.get('output_feed_id'),
+                    params.get('output_feed_name'))
+
     command = demisto.command()
-    demisto.info('Command being called is {}'.format(command))
+    demisto.info(f'Command being called is {command}')
     # Switch case
     commands = {
         'test-module': module_test_command,

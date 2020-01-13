@@ -30,71 +30,54 @@ configuration:
   name: output_feed_name
   required: false
   type: 0
-- display: Reliability
+- defaultvalue: F - Reliability cannot be judged
+  display: Reliability
   name: feedInstanceReliability
-  defaultvalue: F - Reliability cannot be judged
-  type: 15
-  required: true
   options:
-  - ""
-  - ""
-  - ""
-  - ""
-  - ""
-  - ""
   - A - Completely reliable
   - B - Usually reliable
   - C - Fairly reliable
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-- display: ""
-  name: expiration
-  defaultvalue: ""
+  required: true
+  type: 15
+- name: expiration
+  required: false
   type: 17
-  required: false
-- display: ""
+- defaultvalue: indicatorType
   name: expirationPolicy
-  defaultvalue: indicatorType
+  required: false
   type: 0
+- name: expirationInterval
   required: false
-  hidden: true
-- display: ""
-  name: expirationInterval
-  defaultvalue: ""
   type: 1
-  required: false
-  hidden: true
 - display: Fetch indicators
   name: feed
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Bypass exclusion list
   name: bypassExclusionList
-  defaultvalue: ""
+  required: false
   type: 8
-  required: false
-- display: Mark as reputation
+- defaultvalue: feedInstanceReputationNotSet
+  display: Mark as reputation
   name: feedInstanceReputation
-  defaultvalue: feedInstanceReputationNotSet
-  type: 18
-  required: false
   options:
   - None
   - Good
   - Suspicious
   - Bad
-- display: Fetch Interval
-  name: feedFetchInterval
-  defaultvalue: "240"
-  type: 19
   required: false
-  additionalinfo: The frequency for fetching indicators from this feed (in minutes).
+  type: 18
+- defaultvalue: '240'
+  display: Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
 description: Indicators Fetched from AutoFocus Feeds
 display: AutoFocus Feed
 name: AutoFocus Feed
-fromversion: 5.5.0
 script:
   commands:
   - arguments:
@@ -102,6 +85,13 @@ script:
       description: How many indicators should be returned
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: 'The index or the first indicator to fetch '
+      isArray: false
+      name: page
       required: false
       secret: false
     deprecated: false
@@ -122,4 +112,4 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
+fromversion: 5.5.0
