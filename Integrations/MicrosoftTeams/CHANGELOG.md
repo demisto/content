@@ -1,5 +1,7 @@
 ## [Unreleased]
-
+Added 2 commands.
+  - ***add-user-to-channel***
+  - ***create-channel***
 
 ## [19.10.0] - 2019-10-03
   - Added support for single port mapping.
