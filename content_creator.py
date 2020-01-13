@@ -34,8 +34,6 @@ CONTENT_DIRS = [
 ]
 
 PACKAGES_TO_SKIP = [
-    'HelloWorldSimple',
-    'HelloWorldScript'
 ]
 
 # temp folder names
