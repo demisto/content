@@ -2,8 +2,6 @@ import json
 import os
 import sys
 import argparse
-
-from os import path
 from zipfile import ZipFile, ZIP_DEFLATED
 from Tests.test_utils import run_command, print_error
 from google.cloud import storage
@@ -22,7 +20,7 @@ def option_handler():
     return parser.parse_args()
 
 
-class PackStorage:
+class Pack:
     CHANGELOG = "changelog.json"
     PACK_INITIAL_VERSION = "1.0.0"
 
@@ -39,7 +37,7 @@ class PackStorage:
         if self.CHANGELOG not in os.listdir(self.pack_path):
             return self.PACK_INITIAL_VERSION
 
-        changelog_path = path.join(self.pack_path, self.CHANGELOG)
+        changelog_path = os.path.join(self.pack_path, self.CHANGELOG)
 
         with open(changelog_path, "r") as changelog:
             changelog_json = json.load(changelog)
@@ -56,13 +54,13 @@ class PackStorage:
         with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
             for root, dirs, files in os.walk(self.pack_path):
                 for f in files:
-                    full_file_path = path.join(root, f)
-                    relative_file_path = path.relpath(full_file_path, self.pack_path)
+                    full_file_path = os.path.join(root, f)
+                    relative_file_path = os.path.relpath(full_file_path, self.pack_path)
                     pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
         return zip_pack_path
 
-    def store_pack(self, zip_pack_path, latest_version):
+    def upload_to_storage(self, zip_pack_path, latest_version):
         version_pack_path = f"content/packs/{self.pack_name}/{latest_version}"
         existing_files = [f.name for f in self.storage_bucket.list_blobs(prefix=version_pack_path)]
 
@@ -82,11 +80,11 @@ class PackStorage:
 
 def get_modified_packs(is_circle=False, specific_pack=None):
     if not is_circle:
-        return [specific_pack]
+        return {specific_pack}
 
     cmd = f"git diff --name-only HEAD..HEAD^ | grep 'Packs/'"
     modified_packs_path = run_command(cmd, use_shell=True).splitlines()
-    modified_packs = [p.split('/')[1] for p in modified_packs_path]
+    modified_packs = {p.split('/')[1] for p in modified_packs_path}
     print(f"Number of modified packs is: {len(modified_packs)}")
 
     return modified_packs
@@ -99,8 +97,7 @@ def extract_modified_packs(modified_packs, packs_artifacts_path, extract_destina
 
                 if pack.startswith(f"{modified_pack}/"):
                     packs_artifacts.extract(pack, extract_destination_path)
-
-    print(f"Extracted {', '.join(modified_packs)} packs to path: {extract_destination_path}")
+                    print(f"Extracted {pack} to path: {extract_destination_path}")
 
 
 def init_storage_client(is_circle=False, service_account_key_file=None):
@@ -128,13 +125,13 @@ def main():
 
     modified_packs = get_modified_packs(is_circle, specific_pack)
     extract_modified_packs(modified_packs, packs_artifacts_path, extract_destination_path)
-    pack_storage_list = [PackStorage(pack_name, path.join(extract_destination_path, pack_name), storage_bucket)
-                         for pack_name in modified_packs]
+    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), storage_bucket)
+                  for pack_name in modified_packs]
 
-    for pack_storage in pack_storage_list:
-        latest_version = pack_storage.latest_version
-        zip_pack_path = pack_storage.zip_pack()
-        pack_storage.store_pack(zip_pack_path, latest_version)
+    for pack in packs_list:
+        latest_version = pack.latest_version
+        zip_pack_path = pack.zip_pack()
+        pack.upload_to_storage(zip_pack_path, latest_version)
 
 
 if __name__ == '__main__':
