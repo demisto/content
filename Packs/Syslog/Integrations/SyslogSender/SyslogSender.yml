@@ -161,17 +161,16 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The protocol to use. Can be "TCP", "UDP", or, "Unix".
+      description: The protocol to use. Can be "TCP" or "UDP".
       isArray: false
       name: protocol
       predefined:
       - TCP
       - UDP
-      - Unix
       required: false
       secret: false
     - default: false
-      description: The Syslog server port (required for TCP or UDP protocols).
+      description: The Syslog server port.
       isArray: false
       name: port
       required: false
