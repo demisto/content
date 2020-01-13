@@ -234,8 +234,8 @@ class Client(BaseClient):
                       alias_name=None,
                       isolate=None,
                       hostname=None,
-                      search_from=None,
-                      search_to=None,
+                      page_number=0,
+                      limit=20,
                       first_seen_gte=None,
                       first_seen_lte=None,
                       last_seen_gte=None,
@@ -244,7 +244,14 @@ class Client(BaseClient):
                       sort_by_last_seen=None
                       ):
 
-        request_data = {}
+        search_from = page_number * limit
+        search_to = search_from + limit
+
+        request_data = {
+            'search_from': search_from,
+            'search_to': search_to
+        }
+
         filters = []
         if endpoint_id_list:
             filters.append({
@@ -740,6 +747,21 @@ def update_incident_command(client, args):
     return f'Incident {incident_id} has been updated', None, None
 
 
+def try_parse_int_arg(arg, error_msg, required):
+    if arg is None and required is True:
+        raise ValueError(error_msg)
+
+    if isinstance(arg, str):
+        if arg.isdigit():
+            return int(arg)
+        else:
+            raise ValueError(error_msg)
+    elif isinstance(arg, int):
+        return arg
+    else:
+        return ValueError(error_msg)
+
+
 def get_endpoints_command(client, args):
     endpoint_id_list = argToList(args.get('endpoint_id_list'))
     dist_name = argToList(args.get('dist_name'))
@@ -752,17 +774,32 @@ def get_endpoints_command(client, args):
 
     first_seen_gte = args.get('first_seen_gte')
     if first_seen_gte:
-        if first_seen_gte.isdigit():
-            first_seen_gte = int(first_seen_gte)
-        elif isinstance(first_seen_gte, str):
-            first_seen_gte, _ = parse_date_range(first_seen_gte, to_timestamp=True)
+        first_seen_gte = try_parse_datetime_arg(first_seen_gte, 'Failed to parse first_seen_gte.')
 
-    first_seen_lte = None if args.get('first_seen_lte') is None else int(args.get('first_seen_lte'))
-    last_seen_gte = None if args.get('last_seen_gte') is None else int(args.get('last_seen_gte'))
-    last_seen_lte = None if args.get('last_seen_lte') is None else int(args.get('last_seen_lte'))
+    first_seen_lte = args.get('first_seen_lte')
+    if first_seen_lte:
+        first_seen_lte = try_parse_datetime_arg(first_seen_lte, 'Failed to parse first_seen_lte.')
 
-    search_from = None if args.get('search_from') is None else int(args.get('search_from'))
-    search_to = None if args.get('search_from') is None else int(args.get('search_to'))
+    last_seen_gte = args.get('last_seen_gte')
+    if last_seen_gte:
+        last_seen_gte = try_parse_datetime_arg(last_seen_gte, 'Failed to parse last_seen_gte.')
+
+    last_seen_lte = args.get('last_seen_lte')
+    if last_seen_lte:
+        last_seen_lte = try_parse_datetime_arg(last_seen_lte, 'Failed to parse last_seen_lte.')
+
+    page_number = try_parse_int_arg(
+        arg=args.get('page'),
+        error_msg='Failed to parse "page". Must be a number.',
+        required=True
+    )
+
+    limit = try_parse_int_arg(
+        arg=args.get('limit'),
+        error_msg='Failed to parse "limit". Must be a number.',
+        required=True
+    )
+
     sort_by_first_seen = args.get('sort_by_first_seen')
     sort_by_last_seen = args.get('sort_by_last_seen')
 
@@ -775,8 +812,8 @@ def get_endpoints_command(client, args):
         alias_name=alias_name,
         isolate=isolate,
         hostname=hostname,
-        search_from=search_from,
-        search_to=search_to,
+        page_number=page_number,
+        limit=limit,
         first_seen_gte=first_seen_gte,
         first_seen_lte=first_seen_lte,
         last_seen_gte=last_seen_gte,
@@ -911,6 +948,22 @@ def unisolate_endpoint_command(client, args):
     )
 
 
+def try_parse_datetime_arg(arg, error_msg):
+    if isinstance(arg, str) and arg.isdigit():
+        # timestamp that str - we just convert it to int
+        return int(arg)
+    elif isinstance(arg, str):
+        # if the arg is string of date format 2019-10-23T00:00:00 or "3 days", etc
+        d = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'}).timestamp() * 1000
+        if d is None:
+            # if d is None it means dateparser failed to parse it
+            raise ValueError(error_msg)
+
+        return d
+    elif isinstance(arg, (int, float)):
+        return arg
+
+
 def get_audit_management_logs_command(client, args):
     email = argToList(args.get('email'))
     result = argToList(args.get('result'))
@@ -920,16 +973,10 @@ def get_audit_management_logs_command(client, args):
     timestamp_gte = args.get('timestamp_gte')
     timestamp_lte = args.get('timestamp_lte')
     if timestamp_gte:
-        if isinstance(timestamp_gte, str) and timestamp_gte.isdigit():
-            timestamp_gte = int(timestamp_gte)
-        elif isinstance(timestamp_gte, str):
-            timestamp_gte = dateparser.parse(args.get('timestamp_gte'), settings={'TIMEZONE': 'UTC'}).timestamp() * 1000
+        timestamp_gte = try_parse_datetime_arg(timestamp_gte, 'Failed to parse timestamp_gte.')
 
     if timestamp_lte:
-        if isinstance(timestamp_lte, str) and timestamp_lte.isdigit():
-            timestamp_lte = int(timestamp_lte)
-        elif isinstance(timestamp_lte, str):
-            timestamp_lte = dateparser.parse(args.get('timestamp_lte'), settings={'TIMEZONE': 'UTC'}).timestamp() * 1000
+        timestamp_lte = try_parse_datetime_arg(timestamp_lte, 'Failed to parse timestamp_lte.')
 
     search_from = int(args.get('search_from', 0))
     search_to = search_from + int(args.get('limit', 20))
@@ -985,16 +1032,10 @@ def get_audit_agent_reports_command(client, args):
     timestamp_gte = args.get('timestamp_gte')
     timestamp_lte = args.get('timestamp_lte')
     if timestamp_gte:
-        if isinstance(timestamp_gte, str) and timestamp_gte.isdigit():
-            timestamp_gte = int(timestamp_gte)
-        elif isinstance(timestamp_gte, str):
-            timestamp_gte = dateparser.parse(args.get('timestamp_gte'), settings={'TIMEZONE': 'UTC'}).timestamp() * 1000
+        timestamp_gte = try_parse_datetime_arg(timestamp_gte, 'Failed to parse timestamp_gte.')
 
     if timestamp_lte:
-        if isinstance(timestamp_lte, str) and timestamp_lte.isdigit():
-            timestamp_lte = int(timestamp_lte)
-        elif isinstance(timestamp_lte, str):
-            timestamp_lte = dateparser.parse(args.get('timestamp_lte'), settings={'TIMEZONE': 'UTC'}).timestamp() * 1000
+        timestamp_lte = try_parse_datetime_arg(timestamp_lte, 'Failed to parse timestamp_lte.')
 
     search_from = int(args.get('search_from', 0))
     search_to = search_from + int(args.get('limit', 20))

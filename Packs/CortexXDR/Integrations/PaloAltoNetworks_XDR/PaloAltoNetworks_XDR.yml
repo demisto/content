@@ -320,7 +320,13 @@ script:
         Event","Injection Event","Load Image Event","Windows Event Log"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action
-      description: The action that triggered the alert. "REPORTED", "BLOCKED", "POST_DETECTED", "SCANNED", "DOWNLOAD", "PROMPT_ALLOW", "PROMPT_BLOCK", "DETECTED", "BLOCKED_1", "BLOCKED_2", "BLOCKED_3", "BLOCKED_5", "BLOCKED_6", "BLOCKED_7", "BLOCKED_8", "BLOCKED_9", "BLOCKED_10", "BLOCKED_11", "BLOCKED_13", "BLOCKED_14", "BLOCKED_15", "BLOCKED_16", "BLOCKED_17", "BLOCKED_24", "BLOCKED_25", "DETECTED_0", "DETECTED_4", "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22", "DETECTED_23"
+      description: The action that triggered the alert. "REPORTED", "BLOCKED", "POST_DETECTED",
+        "SCANNED", "DOWNLOAD", "PROMPT_ALLOW", "PROMPT_BLOCK", "DETECTED", "BLOCKED_1",
+        "BLOCKED_2", "BLOCKED_3", "BLOCKED_5", "BLOCKED_6", "BLOCKED_7", "BLOCKED_8",
+        "BLOCKED_9", "BLOCKED_10", "BLOCKED_11", "BLOCKED_13", "BLOCKED_14", "BLOCKED_15",
+        "BLOCKED_16", "BLOCKED_17", "BLOCKED_24", "BLOCKED_25", "DETECTED_0", "DETECTED_4",
+        "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22",
+        "DETECTED_23"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_pretty
       description: The action that triggered the alert "Detected (Reported)" "Prevented
@@ -443,7 +449,8 @@ script:
       description: The domain related to the artifact.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.type
-      description: The artifact type. "META", "GID", "CID", "HASH", "IP", "DOMAIN", "REGISTRY", "HOSTNAME"
+      description: The artifact type. "META", "GID", "CID", "HASH", "IP", "DOMAIN",
+        "REGISTRY", "HOSTNAME"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_country
       description: The country related to the artifact
@@ -784,7 +791,7 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Maximum number of incidents to return per page. The default and
+      description: Maximum number of endpoints to return per page. The default and
         maximum is 30.
       isArray: false
       name: limit
@@ -1028,13 +1035,11 @@ script:
       name: email
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Type of audit log
       isArray: false
       name: type
-      required: false
-      secret: false
-      auto: PREDEFINED
       predefined:
       - REMOTE_TERMINAL
       - RULES
@@ -1058,23 +1063,25 @@ script:
       - REPORTING
       - DASHBOARD
       - BROKER_VM
+      required: false
+      secret: false
     - default: false
       description: Subtype of audit log
       isArray: false
       name: sub_type
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Result type
       isArray: false
       name: result
-      required: false
-      secret: false
-      auto: PREDEFINED
       predefined:
       - SUCCESS
       - FAIL
       - PARTIAL
+      required: false
+      secret: false
     - default: false
       description: "Return logs that their timestamp is greater than 'log_time_after'.\n\
         Examples: \n\"1 hour\"\n\"2 days\""
@@ -1191,13 +1198,11 @@ script:
       name: endpoint_names
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Type of report
       isArray: true
       name: type
-      required: false
-      secret: false
-      auto: PREDEFINED
       predefined:
       - INSTALLATION
       - POLICY
@@ -1205,13 +1210,13 @@ script:
       - AGENT_SERVICE
       - AGENT_MODULES
       - AGENT_STATUS
-    - default: false
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Subtype of report
       isArray: true
       name: sub_type
-      required: false
-      secret: false
-      auto: PREDEFINIED
       predefined:
       - INSTALL
       - UNINSTALL
@@ -1245,6 +1250,8 @@ script:
       - MINIMAL_CONTENT
       - REBOOT_REQUIRED
       - MISSING_DISC_ACCESS
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       description: Result type. If not passed, the returns all
