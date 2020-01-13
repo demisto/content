@@ -22,7 +22,7 @@ def main():
     params = demisto.params()
     extractors = get_extractors(params.get('extractors', ['@']))
     params['extractors'] = extractors
-    feed_main(params, 'AWS')
+    feed_main(params, 'AWSFeed')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

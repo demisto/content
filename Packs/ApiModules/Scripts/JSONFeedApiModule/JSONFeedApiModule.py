@@ -1,5 +1,4 @@
 from CommonServerPython import *
-
 ''' IMPORTS '''
 from typing import List, Dict, Union
 import jmespath
@@ -84,7 +83,7 @@ def test_module(client) -> str:
 
 
 def fetch_indicators_command(client: Client, indicator_type: str, update_context: bool = False,
-                             limit: int = None, feed_name: str = 'json') -> Union[Dict, List[Dict]]:
+                             limit: int = None, feed_name: str = 'JSON') -> Union[Dict, List[Dict]]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
@@ -108,7 +107,8 @@ def fetch_indicators_command(client: Client, indicator_type: str, update_context
         indicators.append(indicator)
 
     if update_context:
-        context_output = {"JSON.Indicator": jmespath.search(expression='[].rawJSON', data=indicators)[:limit or 50]}
+        context_output = {f"{feed_name}.Indicator": jmespath.search(expression='[].rawJSON',
+                                                                    data=indicators)[:limit or 50]}
         return context_output
 
     return indicators
@@ -120,18 +120,20 @@ def feed_main(params, feed_name):
 
     client = Client(**params)
     indicator_type = params.get('indicator_type')
-    demisto.info(f'Command being called is {demisto.command()}')
+    command = demisto.command()
 
+    if command != 'fetch-indicators':
+        demisto.info(f'Command being called is {demisto.command()}')
     try:
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             return_outputs(test_module(client))
 
-        elif demisto.command() == 'fetch-indicators':
+        elif command == 'fetch-indicators':
             indicators = fetch_indicators_command(client, indicator_type, feed_name=feed_name)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
 
-        elif demisto.command() == 'get-indicators':
+        elif command == 'get-indicators':
             # dummy command for testing
             limit = demisto.args().get('limit', 50)
             indicators = fetch_indicators_command(client, indicator_type, update_context=True, limit=limit)
