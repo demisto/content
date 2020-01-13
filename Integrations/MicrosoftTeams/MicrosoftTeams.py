@@ -712,6 +712,44 @@ def get_users() -> list:
     return users.get('value', [])
 
 
+def add_user_to_channel(team_aad_id: str, channel_id: str, user_id: str):
+    """
+    Request for adding user to channel
+    """
+    url: str = f'{GRAPH_BASE_URL}/beta/teams/{team_aad_id}/channels/{channel_id}/members'
+    requestjson_: dict = {
+        '@odata.type': '#microsoft.graph.aadUserConversationMember',
+        'roles': [],
+        'user@odata.bind': f'https://graph.microsoft.com/beta/users/{user_id}'  # disable-secrets-detection
+    }
+    http_request('POST', url, json_=requestjson_)
+
+
+def add_user_to_channel_command():
+    """
+    Add user to channel (private channel only as still in beta mode)
+    """
+    channel_name: str = demisto.args().get('channel', '')
+    team_name: str = demisto.args().get('team', '')
+    member = demisto.args().get('member', '')
+    users: list = get_users()
+    user_id: str = str()
+    found_member: bool = False
+    for user in users:
+        if member in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
+            found_member = True
+            user_id = user.get('id', '')
+            break
+    if not found_member:
+        raise ValueError(f'User {member} was not found')
+
+    team_aad_id = get_team_aad_id(team_name)
+    channel_id = get_channel_id(channel_name, team_aad_id, investigation_id=None)
+    add_user_to_channel(team_aad_id, channel_id, user_id)
+
+    demisto.results(f'The User "{member}" has been added to channel "{channel_name}" successfully.')
+
+
 # def create_group_request(
 #         display_name: str, mail_enabled: bool, mail_nickname: str, security_enabled: bool,
 #         owners_ids: list, members_ids: list = None
@@ -812,6 +850,17 @@ def create_channel(team_aad_id: str, channel_name: str, channel_description: str
     channel_data: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
     channel_id: str = channel_data.get('id', '')
     return channel_id
+
+
+def create_channel_command():
+    channel_name: str = demisto.args().get('channel_name', '')
+    channel_description: str = demisto.args().get('description', '')
+    team_name: str = demisto.args().get('team', '')
+    team_aad_id = get_team_aad_id(team_name)
+
+    channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
+    if channel_id:
+        demisto.results(f'The channel "{channel_name}" was created successfully')
 
 
 def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = None) -> str:
@@ -1487,7 +1536,9 @@ def main():
         'send-notification': send_message,
         'mirror-investigation': mirror_investigation,
         'close-channel': close_channel,
-        'microsoft-teams-integration-health': integration_health
+        'microsoft-teams-integration-health': integration_health,
+        'create-channel': create_channel_command,
+        'add-user-to-channel': add_user_to_channel_command,
         # 'microsoft-teams-create-team': create_team,
         # 'microsoft-teams-send-file': send_file,
     }
