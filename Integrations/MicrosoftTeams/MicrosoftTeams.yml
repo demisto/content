@@ -191,37 +191,36 @@ script:
       required: false
       secret: false
     - default: false
-      description: The team to create the channel in.
+      description: The team in which to create the channel.
       isArray: false
       name: team
       required: true
       secret: false
     deprecated: false
-    description: Create a new channel in a Microsoft Team
+    description: Creates a new channel in a Microsoft Teams team.
     execution: false
     name: create-channel
   - arguments:
     - default: false
-      description: Add member to this channel
+      description: The channel to which to add the add the member to this channel
       isArray: false
       name: channel
       required: true
       secret: false
     - default: false
-      description: The channel's team
+      description: The channel's team.
       isArray: false
       name: team
       required: true
       secret: false
     - default: false
-      description: The member to add to the channel (display name)
+      description: The display name of the member to add to the channel.
       isArray: false
       name: member
       required: true
       secret: false
     deprecated: false
-    description: Add user to a private channel (private channel only as still in beta
-      mode)
+    description: Adds a member (user) to a private channel.
     execution: false
     name: add-user-to-channel
   dockerimage: demisto/teams:1.0.0.1701
