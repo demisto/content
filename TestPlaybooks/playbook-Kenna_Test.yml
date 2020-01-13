@@ -1,5 +1,5 @@
 id: Kenna Test
-version: 28
+version: 40
 contentitemfields:
   propagationLabels: []
 name: Kenna Test
@@ -18,13 +18,12 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-      - "13"
       - "30"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 602.5,
+          "x": 480,
           "y": 50
         }
       }
@@ -53,8 +52,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1070
+          "x": 265,
+          "y": 195
         }
       }
     note: false
@@ -86,8 +85,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
-          "y": 1740
+          "x": 592.5,
+          "y": 690
         }
       }
     note: false
@@ -125,8 +124,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2147.5,
-          "y": 2090
+          "x": 705,
+          "y": 1040
         }
       }
     note: false
@@ -163,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1245
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -186,8 +185,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2442.5,
-          "y": 2885
+          "x": 1277.5,
+          "y": 3680
         }
       }
     note: false
@@ -214,8 +213,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 2870
+          "x": 150,
+          "y": 3665
         }
       }
     note: false
@@ -237,7 +236,7 @@ tasks:
       brand: KennaV2
     nexttasks:
       '#none#':
-      - "16"
+      - "31"
     scriptarguments:
       id:
         complex:
@@ -249,8 +248,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 880
+          "x": 1267.5,
+          "y": 3315
         }
       }
     note: false
@@ -282,8 +281,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1245
+          "x": 480,
+          "y": 370
         }
       }
     note: false
@@ -321,8 +320,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
-          "y": 1245
+          "x": 910,
+          "y": 370
         }
       }
     note: false
@@ -331,12 +330,12 @@ tasks:
     skipunavailable: false
   "13":
     id: "13"
-    taskid: 846de942-59ea-486b-8fea-23f1bd2bee13
+    taskid: 832ee0bc-cfc6-45b2-8e42-ef9f18e99d0b
     type: regular
     task:
-      id: 846de942-59ea-486b-8fea-23f1bd2bee13
+      id: 832ee0bc-cfc6-45b2-8e42-ef9f18e99d0b
       version: -1
-      name: kenna-search-assets
+      name: kenna-search-assets-round1
       description: Filtering assets by those that Kenna recommands
       script: '|||kenna-search-assets'
       type: regular
@@ -355,8 +354,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 410
+          "x": 817.5,
+          "y": 1565
         }
       }
     note: false
@@ -378,8 +377,6 @@ tasks:
       '#default#':
       - "9"
       "yes":
-      - "10"
-      - "20"
       - "23"
     separatecontext: false
     conditions:
@@ -402,8 +399,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 560
+          "x": 817.5,
+          "y": 1740
         }
       }
     note: false
@@ -449,8 +446,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1300,
-          "y": 1950
+          "x": 592.5,
+          "y": 865
         }
       }
     note: false
@@ -487,8 +484,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2147.5,
-          "y": 2265
+          "x": 705,
+          "y": 1215
         }
       }
     note: false
@@ -510,7 +507,7 @@ tasks:
       '#default#':
       - "9"
       "yes":
-      - "8"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -526,8 +523,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2147.5,
-          "y": 2440
+          "x": 705,
+          "y": 1390
         }
       }
     note: false
@@ -563,8 +560,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 560
+          "x": 1155,
+          "y": 2790
         }
       }
     note: false
@@ -573,12 +570,12 @@ tasks:
     skipunavailable: false
   "21":
     id: "21"
-    taskid: 4cb15d67-f2b3-47c1-8e90-e2c478f33aa2
+    taskid: f13bcfec-e496-40aa-85ae-babe19a8961b
     type: regular
     task:
-      id: 4cb15d67-f2b3-47c1-8e90-e2c478f33aa2
+      id: f13bcfec-e496-40aa-85ae-babe19a8961b
       version: -1
-      name: kenna-search-assets
+      name: kenna-search-assets-round3
       description: Filtering assets by those that Kenna recommands
       script: '|||kenna-search-assets'
       type: regular
@@ -602,8 +599,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 1155,
+          "y": 2965
         }
       }
     note: false
@@ -625,7 +622,7 @@ tasks:
       '#default#':
       - "9"
       "yes":
-      - "8"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -641,8 +638,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 1155,
+          "y": 3140
         }
       }
     note: false
@@ -678,8 +675,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 545
+          "x": 930,
+          "y": 1915
         }
       }
     note: false
@@ -688,12 +685,12 @@ tasks:
     skipunavailable: false
   "24":
     id: "24"
-    taskid: 74324dd9-ff8d-4f1d-8357-ae48ac75713d
+    taskid: 3fa65d7a-f4e1-427a-8d5e-52dfdfafaea4
     type: regular
     task:
-      id: 74324dd9-ff8d-4f1d-8357-ae48ac75713d
+      id: 3fa65d7a-f4e1-427a-8d5e-52dfdfafaea4
       version: -1
-      name: kenna-search-assets
+      name: kenna-search-assets-round2
       description: Filtering assets by those that Kenna recommands
       script: '|||kenna-search-assets'
       type: regular
@@ -717,8 +714,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 720
+          "x": 930,
+          "y": 2090
         }
       }
     note: false
@@ -727,10 +724,10 @@ tasks:
     skipunavailable: false
   "25":
     id: "25"
-    taskid: 1e4ecdd5-d89e-416b-86bf-ac3a81a28fa4
+    taskid: e4f3596b-3440-44e2-8655-1b50f46b4696
     type: condition
     task:
-      id: 1e4ecdd5-d89e-416b-86bf-ac3a81a28fa4
+      id: e4f3596b-3440-44e2-8655-1b50f46b4696
       version: -1
       name: check tag addition
       type: condition
@@ -756,8 +753,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 895
+          "x": 930,
+          "y": 2265
         }
       }
     note: false
@@ -793,8 +790,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 1115
+          "x": 1042.5,
+          "y": 2440
         }
       }
     note: false
@@ -816,7 +813,7 @@ tasks:
       '#default#':
       - "9"
       "yes":
-      - "28"
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -836,8 +833,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 1340
+          "x": 1042.5,
+          "y": 2615
         }
       }
     note: false
@@ -862,8 +859,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
-          "y": 1560
+          "x": 592.5,
+          "y": 545
         }
       }
     note: false
@@ -897,8 +894,55 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1010,
-          "y": 1020
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "31":
+    id: "31"
+    taskid: e7fa6f7f-af1c-49fa-827e-bdd095d45632
+    type: condition
+    task:
+      id: e7fa6f7f-af1c-49fa-827e-bdd095d45632
+      version: -1
+      name: Check Search Vulnerabilities
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Kenna.AssetID
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Kenna.ID
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1267.5,
+          "y": 3490
         }
       }
     note: false
@@ -913,8 +957,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2915,
-        "width": 2772.5,
+        "height": 3710,
+        "width": 1607.5,
         "x": 50,
         "y": 50
       }

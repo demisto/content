@@ -1,4 +1,3 @@
-from json import JSONDecodeError
 from typing import List, Tuple, Dict, Any, Optional, Callable
 
 import urllib3
@@ -19,46 +18,60 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=header)
 
     def http_request(self, message: str, suffix: str, params: Optional[dict] = None,
-                     data: Optional[dict] = None):
-        return super()._http_request(message, suffix, params=params, json_data=data)
+                     data: Optional[dict] = None) -> Dict[str, Any]:
+
+        """Connects to api and Returns response.
+           Args:
+               message: The HTTP message, for example: GET, POST, and so on
+               suffix :The API endpoint.
+               params: URL parameters to specify the query.
+               data:The data to send in a specific request.
+           Returns:
+               response from the api.
+           """
+        url = f'{self._base_url}{suffix}'
+        try:
+            response = requests.request(
+                message,
+                url,
+                headers=self._headers,
+                params=params,
+                json=data,
+                verify=self._verify,
+            )
+        except requests.exceptions.SSLError as err:
+            raise DemistoException(f'Connection error in the API call to Kenna.\n'
+                                   f'Check your not secure parameter.\n\n{err}')
+        except requests.ConnectionError as err:
+            raise DemistoException(f'Connection error in the API call to Kenna.\n'
+                                   f'Check your Server URL parameter.\n\n{err}')
+        try:
+            response_list = response.json() if response.text else {}
+            if not response.ok:
+                if response_list.get('error'):
+                    raise DemistoException(f'Connection error in the API call to Kenna.\n'
+                                           f'Check your Api Key parameter.\n\n{demisto.get(response_list, "error.message")}')
+                else:
+                    raise DemistoException(f'API call to Kenna failed ,Error code [{response.status_code}]'
+                                           f' - {demisto.get(response_list, "error.message")}')
+            elif response.status_code == 204:
+                return {'status': 'success'}
+            return response_list
+        except TypeError:
+            raise Exception(f'Error in API call to Kenna, could not parse result [{response.status_code}]')
 
 
 def test_module(client: Client, *_):
     """
-    Performs basic get request to get item samples12
+    Performs basic get request from KennaV2
     """
-    res_vulnerabilities = client._http_request('GET', '/vulnerabilities')
-    res_assets = client._http_request('GET', '/assets')
+    res_vulnerabilities = client.http_request('GET', '/vulnerabilities')
+    res_assets = client.http_request('GET', '/assets')
 
     if isinstance(res_vulnerabilities.get('vulnerabilities'), list) and isinstance(res_assets.get('assets'), list):
         return 'ok', None, None
     else:
         raise Exception('Error occurred while trying to query the api.')
-
-
-# ----------------------------------------------- Auxiliary functions -------------------------------------------------
-
-
-def connect_api(client: Client, message: str, suffix: str, params: Optional[dict] = None,
-                data: Optional[dict] = None) -> Dict[str, Any]:
-    """Connects to api and Returns response.
-    Args:
-        client:  BaseClient which connects to api
-        message: The HTTP message, for example: GET, POST, and so on
-        suffix :The API endpoint.
-        params: URL parameters to specify the query.
-        data:The data to send in a specific request.
-    Returns:
-        response from the api.
-    """
-    raw_response = client.http_request(message, suffix, params=params, data=data)
-    # Check if response contains errors
-    if raw_response.get('errors'):
-        raise DemistoException(raw_response.get('errors'))
-    elif raw_response.get('error'):
-        raise DemistoException(raw_response.get('error'))
-    response_list = raw_response
-    return response_list
 
 
 def create_dict(raw_data: List[Dict[str, Any]], wanted_keys: List[Any], actual_keys: List[Any]) -> List[Dict[str, Any]]:
@@ -91,13 +104,10 @@ def create_dict(raw_data: List[Dict[str, Any]], wanted_keys: List[Any], actual_k
     return context_list
 
 
-# ----------------------------------------- Commands Functions ---------------------------------------------------------
-
-
 def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Search vulnerability command.
     Args:
-        client:  BaseClient which connects to api
+        client: Client which connects to api
         args: arguments for the request
     Returns:
         Human Readable
@@ -113,8 +123,8 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
         'min_risk_meter_score': args.get('min-score'),
         'status' + '[]': args.get('status')
     }
-    vulnerability_list = connect_api(client=client, message='GET', suffix=url_suffix,
-                                     params=params).get('vulnerabilities')
+    vulnerability_list = client.http_request(message='GET', suffix=url_suffix,
+                                             params=params).get('vulnerabilities')
     if vulnerability_list:
         wanted_keys = ['AssetID', ['Connectors', 'DefinitionName', 'ID', 'Name', 'Vendor'], 'CveID', 'FixID',
                        'ID', 'Patch',
@@ -139,7 +149,7 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
         context = {
             'Kenna.Vulnerabilities(val.ID === obj.ID)': context_list
         }
-        human_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', human_readable)
+        human_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', human_readable, removeNull=True)
     else:
         human_readable_markdown = "no vulnerabilities found"
     return human_readable_markdown, context, vulnerability_list
@@ -148,7 +158,7 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
 def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Get Connectors command.
     Args:
-        client:  BaseClient which connects to api
+        client:  Client which connects to api
     Returns:
         Human Readable
         Entry Context
@@ -157,7 +167,7 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
     url_suffix = '/connectors'
     human_readable = []
     context: Dict[str, Any] = {}
-    connectors = connect_api(client=client, message='GET', suffix=url_suffix).get('connectors')
+    connectors = client.http_request(message='GET', suffix=url_suffix).get('connectors')
     if connectors:
         wanted_keys = ['Host', 'Name', 'Running', 'ID']
         actual_keys = ['host', 'name', 'running', 'id']
@@ -174,7 +184,7 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
         context = {
             'Kenna.ConnectorsList(val.ID === obj.ID)': context_list
         }
-        human_readable_markdown = tableToMarkdown('Kenna Connectors', human_readable)
+        human_readable_markdown = tableToMarkdown('Kenna Connectors', human_readable, removeNull=True)
     else:
         human_readable_markdown = "no connectors in get response"
 
@@ -184,14 +194,14 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
 def run_connector(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Run Connector command.
     Args:
-        client:  BaseClient which connects to api
+        client:  Client which connects to api
         args: arguments for the request
     Returns:
         Success/ Failure , according to the response
     """
     args_id: str = str(args.get('id'))
     url_suffix = '/connectors/' + args_id + '/run'
-    run_response = connect_api(client=client, message='GET', suffix=url_suffix)
+    run_response = client.http_request(message='GET', suffix=url_suffix)
     if run_response:
         if run_response.get('success') == 'true':
             return 'Connector ran successfully!', {}, []
@@ -204,7 +214,7 @@ def run_connector(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
 def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Search Fixes command.
     Args:
-        client:  BaseClient which connects to api
+        client:  Client which connects to api
         args: arguments for the request
     Returns:
         Human Readable
@@ -220,7 +230,7 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
         'min_risk_meter_score': args.get('min-score'),
         'status' + '[]': args.get('status'),
     }
-    fixes_list = connect_api(client=client, message='GET', suffix=url_suffix, params=params).get('fixes')
+    fixes_list = client.http_request(message='GET', suffix=url_suffix, params=params).get('fixes')
     if fixes_list:
         wanted_keys = ['ID', 'Title', ['Assets', 'ID', 'Locator', 'PrimaryLocator', 'DisplayLocator'],
                        ['Vulnerabilities', 'ID', 'ServiceTicketStatus', 'ScannerIDs'], 'CveID', 'LastUpdatedAt',
@@ -250,7 +260,7 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
 def update_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Update Asset command.
     Args:
-        client:  BaseClient which connects to api
+        client:  Client which connects to api
         args: arguments for the request
     Returns:
         Success/ Failure , according to the response
@@ -263,25 +273,27 @@ def update_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
             'notes': args.get('notes')
         }
     }
+    result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
     try:
-        connect_api(client=client, message='PUT', suffix=url_suffix, data=asset)
-    except DemistoException as exp:
-        if type(exp.__context__) == JSONDecodeError:
-            return 'Asset ' + str(args_id) + ' was updated', {}, []
+        if result.get('status') == "success":
+            return f'Asset {args_id} was updated', {}, []
         else:
             return 'Could not update asset.', {}, []
-    return 'error', {}, []
+    except DemistoException as err:
+        return f'Error occurred while preforming update-asset command {err}', {}, []
 
 
 def update_vulnerability(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Update Vulnerabilities command.
     Args:
-        client:  BaseClient which connects to api
+        client:  Client which connects to api
         args: arguments for the request
     Returns:
         Success/ Failure , according to the response
     """
-    params_to_update: dict = {}
+    params_to_update: dict = {
+        'vulnerability': {}
+    }
     args_id = str(args.get('id'))
     status = str(args.get('status'))
     notes = str(args.get('notes'))
@@ -290,20 +302,20 @@ def update_vulnerability(client: Client, args: dict) -> Tuple[str, Dict[str, Any
     if status:
         params_to_update['vulnerability'].update({'status': status})
     url_suffix = '/vulnerabilities/' + args_id
+    result = client.http_request(message='PUT', suffix=url_suffix, data=params_to_update)
     try:
-        connect_api(client=client, message='PUT', suffix=url_suffix, data=params_to_update)
-    except DemistoException as exp:
-        if type(exp.__context__) == JSONDecodeError:
-            return 'Asset ' + str(args_id) + ' was updated', {}, []
+        if result.get('status') == "success":
+            return f'Asset {args_id} was updated', {}, []
         else:
             return 'Could not update asset.', {}, []
-    return 'error', {}, []
+    except DemistoException as err:
+        return f'Error occurred while preforming update-vulenrability command {err}', {}, []
 
 
 def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Search Asset command.
     Args:
-        client:  BaseClient which connects to api
+        client:  Client which connects to api
         args: arguments for the request
     Returns:
         Human Readable
@@ -320,7 +332,7 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
         'ip_address' + '[]': args.get('ip-address'),
         'tags' + '[]': args.get('tags')
     }
-    assets_list = connect_api(client=client, message='GET', suffix=url_suffix, params=params).get(
+    assets_list = client.http_request(message='GET', suffix=url_suffix, params=params).get(
         'assets')
     if assets_list:
         wanted_keys = ['ID', 'Hostname', 'MinScore', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
@@ -340,7 +352,7 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
         context = {
             'Kenna.Assets(val.ID === obj.ID)': context_list
         }
-        human_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', human_readable)
+        human_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', human_readable, removeNull=True)
     else:
         human_readable_markdown = "no assets in response"
     return human_readable_markdown, context, assets_list
@@ -349,7 +361,7 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
 def get_asset_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Get Asset by Vulnerability command.
     Args:
-        client:  BaseClient which connects to api
+        client:  Client which connects to api
         args: arguments for the request
     Returns:
         Human Readable
@@ -361,7 +373,7 @@ def get_asset_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str
     human_readable = []
     context: Dict[str, Any] = {}
 
-    vulnerabilities_list = connect_api(client=client, message='GET', suffix=url_suffix).get(
+    vulnerabilities_list = client.http_request(message='GET', suffix=url_suffix).get(
         'vulnerabilities')
     if vulnerabilities_list:
         wanted_keys: List[Any] = ['AssetID', 'CveID', 'ID', 'Patch', 'Status', 'TopPriority']
@@ -377,7 +389,7 @@ def get_asset_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str
         context = {
             'Kenna.VulnerabilitiesOfAsset(val.ID === obj.ID)': context_list
         }
-        human_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', human_readable)
+        human_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', human_readable, removeNull=True)
     else:
         human_readable_markdown = "no vulnerabilities in response"
     return human_readable_markdown, context, vulnerabilities_list
@@ -386,7 +398,7 @@ def get_asset_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str
 def add_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Add tags command.
     Args:
-        client:  BaseClient which connects to api
+        client:  Client which connects to api
         args: arguments for the request
     Returns:
         Success/ Failure , according to the response
@@ -399,20 +411,20 @@ def add_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict
             'tags': tags
         }
     }
+    result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
     try:
-        connect_api(client=client, message='PUT', suffix=url_suffix, data=asset)
-    except DemistoException as exp:
-        if type(exp.__context__) == JSONDecodeError:
-            return 'Tag ' + tags + ' was added to asset ' + args_id, {}, []
+        if result.get('status') == "success":
+            return f'Tag {tags} was added to asset {args_id}', {}, []
         else:
-            return 'Tag ' + tags + ' was not added to asset ' + args_id, {}, []
-    return 'error', {}, []
+            return f'Tag {tags} was not added to asset {args_id}', {}, []
+    except DemistoException as err:
+        return f'Error occurred while preforming add-tags command {err}', {}, []
 
 
 def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Delete tags command.
     Args:
-        client:  BaseClient which connects to api
+        client:  Client which connects to api
         args: arguments for the request
     Returns:
         Success/ Failure , according to the response
@@ -425,17 +437,14 @@ def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[D
             'tags': tags
         }
     }
+    result = client.http_request(message='DELETE', suffix=url_suffix, data=asset)
     try:
-        connect_api(client=client, message='DELETE', suffix=url_suffix, data=asset)
-    except DemistoException as exp:
-        if type(exp.__context__) == JSONDecodeError:
-            return 'Tag ' + str(tags) + ' was deleted to asset ' + args_id, {}, []
+        if result.get('status') == "success":
+            return f'Tag {tags} was deleted to asset {args_id}', {}, []
         else:
-            return 'Tag ' + str(tags) + ' was not deleted to asset ' + args_id, {}, []
-    return 'error', {}, []
-
-
-# -------------------------------------------- Main Function -----------------------------------------------------------
+            return f'Tag {tags} was not deleted to asset {args_id}', {}, []
+    except DemistoException as err:
+        return f'Error occurred while preforming delete-tags command {err}', {}, []
 
 
 def main():
@@ -470,10 +479,10 @@ def main():
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f'{command} is not an existing KennaV2 command')
 
-    except Exception as e:
-        return_error(f'Error from Example Integration {e}', e)
+    except Exception as err:
+        return_error(f'Error from KennaV2 Integration \n\n {err} \n', err)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

@@ -29,7 +29,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Vulnerability ID to search
+      description: Vulnerability ID to search.
       isArray: false
       name: id
       required: false
@@ -37,7 +37,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Filtering vulnerabilities by those that Kenna recommends should
-        be a top priority to fix
+        be a top priority to fix.
       isArray: false
       name: top-priority
       predefined:
@@ -46,14 +46,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Find all vulnerabilities with scores greater than this value
+      description: Find all vulnerabilities with scores greater than this value.
       isArray: false
       name: min-score
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Status of the vulnerability
+      description: Status of the vulnerability.
       isArray: false
       name: status
       predefined:
@@ -69,86 +69,86 @@ script:
     name: kenna-search-vulnerabilities
     outputs:
     - contextPath: Kenna.Vulnerabilities.AssetID
-      description: Asset ID related to vulnerability
+      description: Asset ID related to vulnerability.
       type: Number
     - contextPath: Kenna.Vulnerabilities.Connectors.DefinitionName
-      description: Connector definition name related to vulnerability
+      description: Connector definition name related to vulnerability.
       type: String
     - contextPath: Kenna.Vulnerabilities.Connectors.ID
-      description: Connector ID related to vulnerability
+      description: Connector ID related to vulnerability.
       type: Number
     - contextPath: Kenna.Vulnerabilities.Connectors.Name
-      description: Connector name related to vulnerability
-      type: Unknown
+      description: Connector name related to vulnerability.
+      type: String
     - contextPath: Kenna.Vulnerabilities.Connectors.Vendor
-      description: Connector vendor related to vulnerability
-      type: Unknown
+      description: Connector vendor related to vulnerability.
+      type: String
     - contextPath: Kenna.Vulnerabilities.CveID
-      description: CVE ID related to vulnerability
-      type: Unknown
+      description: CVE ID related to vulnerability.
+      type: String
     - contextPath: Kenna.Vulnerabilities.FixID
-      description: Fix ID related to vulnerability
-      type: Unknown
+      description: Fix ID related to vulnerability.
+      type: String
     - contextPath: Kenna.Vulnerabilities.Patch
-      description: There is patch related to vulnerability
-      type: Unknown
+      description: There is patch related to vulnerability.
+      type: Boolean
     - contextPath: Kenna.Vulnerabilities.RiskMeterScore
-      description: Risk meter score of vulnerability
-      type: Unknown
+      description: Risk meter score of vulnerability.
+      type: Number
     - contextPath: Kenna.Vulnerabilities.ScannerVulnerabilities.ExternalID
-      description: Vulnerability scanner external ID
-      type: Unknown
+      description: Vulnerability scanner external ID.
+      type: String
     - contextPath: Kenna.Vulnerabilities.ScannerVulnerabilities.Open
-      description: Vulnerability scanner is open
-      type: Unknown
+      description: Vulnerability scanner is open.
+      type: Boolean
     - contextPath: Kenna.Vulnerabilities.ScannerVulnerabilities.Port
-      description: Vulnerability scanner port
-      type: Unknown
+      description: Vulnerability scanner port.
+      type: Number
     - contextPath: Kenna.Vulnerabilities.Score
-      description: Vulnerability score
-      type: Unknown
+      description: Vulnerability score.
+      type: Number
     - contextPath: Kenna.Vulnerabilities.ServiceTicket.DueDate
-      description: 'Service ticket due date '
-      type: Unknown
+      description: Service ticket due date .
+      type: Date
     - contextPath: Kenna.Vulnerabilities.ServiceTicket.ExternalIdentifier
-      description: Service ticket external identifier
-      type: Unknown
+      description: Service ticket external identifier.
+      type: String
     - contextPath: Kenna.Vulnerabilities.ServiceTicket.Status
-      description: Service ticket status
-      type: Unknown
+      description: Service ticket status.
+      type: String
     - contextPath: Kenna.Vulnerabilities.ServiceTicket.TicketType
-      description: Service ticket type
-      type: Unknown
+      description: Service ticket type.
+      type: String
     - contextPath: Kenna.Vulnerabilities.Severity
-      description: Vulnerability severity
-      type: Unknown
+      description: Vulnerability severity.
+      type: Number
     - contextPath: Kenna.Vulnerabilities.Status
-      description: Vulnerability status
-      type: Unknown
+      description: Vulnerability status.
+      type: String
     - contextPath: Kenna.Vulnerabilities.Threat
       description: Vulnerability threat
-      type: Unknown
+      type: Number
     - contextPath: Kenna.Vulnerabilities.TopPriority
-      description: Vulnerability is top priority
-      type: Unknown
+      description: Vulnerability is top priority.
+      type: Number
     - contextPath: Kenna.Vulnerabilities.ID
-      description: Vulnerability ID
+      description: Vulnerability ID.
       type: Number
   - arguments:
     - default: false
-      description: Connector ID to run
+      description: Connector ID to run.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
     description: Schedules a run of a connector. If file based, it will use most recently
-      uploaded data file
+      uploaded data file.
     execution: true
     name: kenna-run-connector
   - arguments:
     - default: false
-      description: Vulnerability ID to search
+      description: Vulnerability ID to search.
       isArray: false
       name: id
       required: false
@@ -156,7 +156,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Filtering vulnerabilities by those that Kenna recommends should
-        be a top priority to fix
+        be a top priority to fix.
       isArray: false
       name: top-priority
       predefined:
@@ -165,14 +165,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Find all vulnerabilities with scores greater than this value
+      description: Find all vulnerabilities with scores greater than this value.
       isArray: false
       name: min-score
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Status of the vulnerability
+      description: Status of the vulnerability.
       isArray: false
       name: status
       predefined:
@@ -183,58 +183,58 @@ script:
       required: false
       secret: false
     - default: false
-      description: vulnerabilities for search
+      description: vulnerabilities for search.
       isArray: false
       name: vulnerabilities
       required: false
       secret: false
     deprecated: false
     description: Filters fixes by a given set of vulnerability and asset parameters
-      and returns the filtered fixes
+      and returns the filtered fixes.
     execution: false
     name: kenna-search-fixes
     outputs:
     - contextPath: Kenna.Fixes.ID
-      description: Fix ID
+      description: Fix ID.
       type: Number
     - contextPath: Kenna.Fixes.Title
-      description: Fix title
+      description: Fix title.
       type: String
     - contextPath: Kenna.Fixes.Assets.ID
-      description: Asset ID related to current fix
+      description: Asset ID related to current fix.
       type: Number
     - contextPath: Kenna.Fixes.Assets.Locator
-      description: Asset Locator related to current fix
+      description: Asset Locator related to current fix.
       type: String
     - contextPath: Kenna.Fixes.Assets.PrimaryLocator
-      description: Asset Primary Locator related to current fix
+      description: Asset Primary Locator related to current fix.
       type: String
     - contextPath: Kenna.Fixes.Assets.DisplayLocator
-      description: Asset Display Locator related to current fix
+      description: Asset Display Locator related to current fix.
       type: String
     - contextPath: Kenna.Fixes.Vulnerabilities.ID
-      description: Vulnerability ID related to current fix
+      description: Vulnerability ID related to current fix.
       type: Number
     - contextPath: Kenna.Fixes.Vulnerabilities.ServiceTicketStatus
-      description: Vulnerability Service Ticket status related to current fix
+      description: Vulnerability Service Ticket status related to current fix.
       type: String
     - contextPath: Kenna.Fixes.Vulnerabilities.ScannerIDs
-      description: Vulnerability Scanner IDs related to current fix
-      type: Unknown
+      description: Vulnerability Scanner IDs related to current fix.
+      type: Number
     - contextPath: Kenna.Fixes.CveID
-      description: CVE-ID list related to current fix
-      type: Unknown
+      description: CVE-ID list related to current fix.
+      type: String
     - contextPath: Kenna.Fixes.LastUpdatedAt
-      description: Last update of current fix
+      description: Last update of current fix.
       type: String
     - contextPath: Kenna.Fixes.Category
-      description: Category of fix
+      description: Category of fix.
       type: String
     - contextPath: Kenna.Fixes.VulnerabilityCount
-      description: Vulnerability Count of fix
+      description: Vulnerability Count of fix.
       type: Number
     - contextPath: Kenna.Fixes.MaxScore
-      description: Max Score of fix
+      description: Max Score of fix.
       type: Number
   - arguments:
     - default: false
@@ -250,7 +250,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Update a single asset's attributes by ID
+    description: Update a single asset's attributes by ID.
     execution: false
     name: kenna-update-asset
   - arguments:
@@ -279,11 +279,11 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update a single vulnerability's attributes by ID
+    description: Update a single vulnerability's attributes by ID.
     execution: false
     name: kenna-update-vulnerability
   - deprecated: false
-    description: Returns all of your connectors
+    description: Returns all of your connectors.
     execution: false
     name: kenna-get-connectors
     outputs:
@@ -331,7 +331,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Filtering assets by those that Kenna recommands
+    description: Filtering assets by those that Kenna recommands.
     execution: false
     name: kenna-search-assets
     outputs:
@@ -355,10 +355,10 @@ script:
       type: String
     - contextPath: Kenna.Assets.Tags
       description: Assets list of tags
-      type: Unknown
+      type: String
     - contextPath: Kenna.Assets.Fqdn
       description: Assets Fqdn
-      type: Unknown
+      type: String
     - contextPath: Kenna.Assets.Status
       description: Assets Status
       type: String
@@ -379,7 +379,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get Vulenerabilities of specific asset
+    description: Get Vulenerabilities of specific asset.
     execution: false
     name: kenna-get-asset-vulnerabilities
     outputs:
@@ -415,7 +415,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Add tag to Asset id
+    description: Add tag to Asset id.
     execution: false
     name: kenna-add-tag
   - arguments:
@@ -434,7 +434,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete tags from specific Asset
+    description: Delete tags from specific Asset.
     execution: false
     name: kenna-delete-tag
   dockerimage: demisto/python3:3.7.5.4002

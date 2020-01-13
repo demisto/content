@@ -1,2 +1,1 @@
-Kenna is a Risk Intelligence & Vulnerability platform that enables InfoSec
-  teams to prioritize and remediate vulnerabilities faster.
+Don't have a Kenna API key? Go to your Kenna account, Login to: https://app.kennasecurity.com/ Select the "API Keys" tab Copy your API Key
