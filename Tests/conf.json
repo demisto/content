@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CSVFeed",
+            "playbookID": "CSV_Feed_Test"
+        },
+        {
             "integrations": "Digital Shadows",
             "playbookID": "Digital Shadows - Test"
         },
@@ -43,6 +47,11 @@
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
             "instance_names": "ms_graph_mail_dev"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev_no_oproxy"
         },
         {
             "integrations": "MicrosoftGraphMail",
@@ -2066,12 +2075,35 @@
           "fromversion": "4.5.0"
         },
         {
+            "playbookID": "SetAndHandleEmpty test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
         },
         {
+          "integrations": "FeedOffice365",
+          "playbookID": "Office365_Feed_Test",
+          "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "GoogleCloudTranslate",
+            "playbookID": "GoogleCloudTranslate-Test"
+        },
+        {
             "integrations": "Infoblox",
             "playbookID": "Infoblox Test"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA_Integration",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
@@ -2167,6 +2199,7 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
+        "QRadar Indicator Hunting Test": "Issue 21150",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2238,8 +2271,10 @@
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
+        "FeedOffice365": "SSl Issues. issue: 21181",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
-        "Gmail": "googleclient sdk has time based challenge exchange"
+        "Gmail": "googleclient sdk has time based challenge exchange",
+        "GoogleCloudTranslate": "google translate sdk does not support proxy"
     }
 }
