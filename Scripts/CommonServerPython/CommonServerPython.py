@@ -104,7 +104,7 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
 }
 
 
-class IndicatorTypes(object):
+class FeedIndicatorType(object):
     """Type of Indicator (Reputations), used in TIP integrations"""
     Account = "Account"
     CVE = "CVE"
@@ -123,6 +123,27 @@ class IndicatorTypes(object):
     Registry = "Registry Key"
     SSDeep = "ssdeep"
     URL = "URL"
+
+    @classmethod
+    def is_valid_type(cls, _type):
+        return _type in (
+            cls.Account,
+            cls.CVE,
+            cls.Domain,
+            cls.Email,
+            cls.File,
+            cls.MD5,
+            cls.SHA1,
+            cls.SHA256,
+            cls.Host,
+            cls.IP,
+            cls.CIDR,
+            cls.IPv6,
+            cls.IPv6CIDR,
+            cls.Registry,
+            cls.SSDeep,
+            cls.URL
+        )
 
 
 
