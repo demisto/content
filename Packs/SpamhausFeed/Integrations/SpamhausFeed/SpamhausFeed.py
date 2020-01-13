@@ -1,7 +1,7 @@
 def main():
     # Call the main execution of the HTTP API module.
     # This function also allows to add to or override that execution,
-    feed_main('Spamhaus')
+    feed_main('SpamhausFeed')
 
 
 from HTTPFeedApiModule import *  # noqa: E402
