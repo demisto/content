@@ -538,8 +538,8 @@ class McAfeeESMClient(BaseClient):
         for i in range(len(result['rows'])):
             entry[i] = {headers[j]: result['rows'][i]['values'][j] for j in range(len(headers))}
 
-        # condition = '(val.Alert.IPSIDAlertID && val.Alert.IPSIDAlertID == obj.Alert.IPSIDAlertID)'
-        condition = ''
+        condition = '(val.AlertIPSIDAlertID && val.AlertIPSIDAlertID == obj.AlertIPSIDAlertID)'\
+            if 'AlertIPSIDAlertID' in headers else ''
         context_entry = {f'McAfeeESM{condition}': entry}
         return search_readable_outputs(result), context_entry, result
 
@@ -580,18 +580,19 @@ class McAfeeESMClient(BaseClient):
         last_run = demisto.getLastRun()
         current_run = {}
         incidents = []
-        limit = int(params.get('fetchLimit', 5))
         if params.get('fetchType', 'alarms') in ('alarms', 'both'):
             start_time = last_run.get(
                 'alarms', {}).get(
                 'time', parse_date_range(params.get('fetchTime'), self.demisto_format)[0])
             start_id = int(last_run.get('alarms', {}).get('id', params.get('startingFetchID')))
-            temp_incidents, current_run['alarms'] = self.__alarms_to_incidents(start_time=start_time,
-                                                                               start_id=start_id, limit=limit)
+            temp_incidents, current_run['alarms'] = \
+                self.__alarms_to_incidents(start_time, start_id, int(params.get('fetchLimitAlarms', 5)))
             incidents.extend(temp_incidents)
+
         if params.get('fetchType') in ('cases', 'both'):
             start_id = int(last_run.get('cases', {}).get('id', params.get('startingFetchID')))
-            temp_incidents, current_run['cases'] = self.__cases_to_incidents(start_id=start_id, limit=limit)
+            temp_incidents, current_run['cases'] = \
+                self.__cases_to_incidents(start_id=start_id, limit=int(params.get('fetchLimitCases', 5)))
             incidents.extend(temp_incidents)
 
         demisto.setLastRun(current_run)

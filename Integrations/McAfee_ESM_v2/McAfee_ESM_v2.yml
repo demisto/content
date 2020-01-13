@@ -64,9 +64,15 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '5'
-  display: fetchLimit
+  display: fetchLimitAlarms
   hidden: false
-  name: fetchLimit
+  name: fetchLimitAlarms
+  required: false
+  type: 0
+- defaultvalue: '5'
+  display: fetchLimitCases
+  hidden: false
+  name: fetchLimitCases
   required: false
   type: 0
 description: Run queries and receive alarms from Intel Security ESM. Support version

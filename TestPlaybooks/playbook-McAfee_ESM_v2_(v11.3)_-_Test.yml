@@ -222,7 +222,7 @@ tasks:
       - "8"
     scriptarguments:
       name:
-        simple: AAA
+        simple: CCC
       show_in_case_pane: {}
     separatecontext: false
     view: |-
@@ -252,9 +252,9 @@ tasks:
       - "9"
     scriptarguments:
       new_name:
-        simple: BBB
+        simple: DDD
       original_name:
-        simple: AAA
+        simple: CCC
       show_in_case_pane: {}
     separatecontext: false
     view: |-
@@ -284,7 +284,7 @@ tasks:
       - "13"
     scriptarguments:
       name:
-        simple: BBB
+        simple: DDD
     separatecontext: false
     view: |-
       {
