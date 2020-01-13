@@ -86,14 +86,14 @@ tasks:
           left:
             value:
               complex:
-                root: Spamhaus
+                root: SpamhausFeed
                 accessor: Indicator.Value
             iscontext: true
       - - operator: containsGeneral
           left:
             value:
               complex:
-                root: Spamhaus
+                root: SpamhausFeed
                 accessor: Indicator.Type
             iscontext: true
           right:
@@ -103,14 +103,14 @@ tasks:
           left:
             value:
               complex:
-                root: Spamhaus
+                root: SpamhausFeed
                 accessor: Indicator.Rawjson.type
             iscontext: true
       - - operator: isExists
           left:
             value:
               complex:
-                root: Spamhaus
+                root: SpamhausFeed
                 accessor: Indicator.Rawjson.value
             iscontext: true
     view: |-
