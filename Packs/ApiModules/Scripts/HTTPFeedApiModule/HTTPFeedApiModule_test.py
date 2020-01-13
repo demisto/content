@@ -22,7 +22,8 @@ def test_get_indicators():
             fields=r'{"asndrop_country": {"regex": "^.*;\\W([a-zA-Z]+)\\W+", "transform": "\\1"}, "asndrop_org":'
                    r' {"regex": "^.*\\|\\W+(.*)", "transform": "\\1"}}'
         )
-        hr, indicators_ec, raw_json = get_indicators_command(client, 'IP', args)
+        args['default_indicator_type'] = 'IP'
+        hr, indicators_ec, raw_json = get_indicators_command(client, args)
         indicators_ec = indicators_ec.get('HTTP.Indicator')
         assert len(indicators_ec) == 35
         for ind_json in raw_json:
