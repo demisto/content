@@ -78,7 +78,7 @@ configuration:
   name: api_header
   required: false
   type: 0
-- additionalInfo: <number> <time unit> of type minute/hour/day, e.g., 1 minute, 12
+- additionalinfo: <number> <time unit> of type minute/hour/day, e.g., 1 minute, 12
     hours, 7 days
   defaultvalue: 1 day
   display: First Fetch Time
