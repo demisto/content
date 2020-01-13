@@ -5,13 +5,14 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import urllib3
 import csv
+from typing import Optional, Pattern, Dict, Any
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, url: list, fieldnames: str, insecure: bool = False, credentials: dict = None,
+    def __init__(self, url: str, fieldnames: str, insecure: bool = False, credentials: dict = None,
                  ignore_regex: str = None, delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
                  quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
                  **kwargs):
@@ -44,9 +45,6 @@ class Client(BaseClient):
         if username is not None and password is not None:
             auth = (username, password)
 
-        if not isinstance(url, list):
-            url = [url]
-
         super().__init__(base_url=url, proxy=proxy, verify=not insecure, auth=auth)
 
         try:
@@ -54,12 +52,12 @@ class Client(BaseClient):
         except (ValueError, TypeError):
             return_error('Please provide an integer value for "Request Timeout"')
 
-        self.ignore_regex = ignore_regex
-        if self.ignore_regex is not None:
+        self.ignore_regex: Optional[Pattern] = None
+        if ignore_regex is not None:
             self.ignore_regex = re.compile(self.ignore_regex)  # type: ignore
         self.fieldnames = argToList(fieldnames)
 
-        self.dialect = {
+        self.dialect: Dict[str, Any] = {
             'delimiter': delimiter,
             'doublequote': doublequote,
             'escapechar': escapechar,
@@ -78,7 +76,10 @@ class Client(BaseClient):
 
     def build_iterator(self):
         results = []
-        for url in self._base_url:
+        urls = self._base_url
+        if not isinstance(urls, list):
+            urls = [urls]
+        for url in urls:
             _session = requests.Session()
 
             prepreq = self._build_request(url)
@@ -106,19 +107,28 @@ class Client(BaseClient):
             response = r.content.decode('latin-1').split('\n')
             if self.ignore_regex is not None:
                 response = filter(
-                    lambda x: self.ignore_regex.match(x) is None,
+                    lambda x: self.ignore_regex.match(x) is None,  # type: ignore[union-attr]
                     response
                 )
 
-                results.append(response)
+            results.append(response)
 
-            csvreader = csv.DictReader(
-                response,
-                fieldnames=self.fieldnames,
-                **self.dialect
-            )
+        csvreader = csv.DictReader(
+            # flatten the results
+            [r for result in results for r in result],
+            fieldnames=self.fieldnames,
+            **self.dialect
+        )
 
-            return csvreader
+        return csvreader
+
+
+def module_test_command(client, args):
+    fieldnames = argToList(demisto.params().get('fieldnames'))
+    if len(fieldnames) == 1 or any(field in fieldnames for field in ('indicator,', ',indicator')):
+        client.build_iterator()
+        return 'ok', {}, {}
+    return_error('Please provide a column named "indicator" in fieldnames')
 
 
 def fetch_indicators_command(client, itype):
@@ -126,13 +136,17 @@ def fetch_indicators_command(client, itype):
     indicators = []
     for item in iterator:
         raw_json = dict(item)
-        raw_json['value'] = value = item.get('indicator')
-        raw_json['type'] = itype
-        indicators.append({
-            "value": value,
-            "type": itype,
-            "rawJSON": raw_json,
-        })
+        value = item.get('indicator')
+        if not value and len(item) == 1:
+            value = next(iter(item.values()))
+        if value:
+            raw_json['value'] = value
+            raw_json['type'] = itype
+            indicators.append({
+                "value": value,
+                "type": itype,
+                "rawJSON": raw_json,
+            })
     return indicators
 
 
@@ -143,15 +157,7 @@ def get_indicators_command(client, args):
     entry_result = camelize(indicators_list[:limit])
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
     feed_name = args.get('feed_name', 'CSV')
-    return hr, {f'{feed_name}].Indicator': entry_result}, indicators_list
-
-
-def module_test_command(client, args):
-    fieldnames = demisto.params().get('fieldnames')
-    if fieldnames == 'indicator' or any(field in fieldnames for field in ('indicator,', ',indicator')):
-        client.build_iterator()
-        return 'ok', {}, {}
-    return_error('Please provide a column named "indicator" in fieldnames')
+    return hr, {f'{feed_name}.Indicator': entry_result}, indicators_list
 
 
 def feed_main(feed_name):
@@ -178,5 +184,9 @@ def feed_main(feed_name):
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = f'Error in {feed_name} Integration [{e}]'
-        return_error(err_msg)
+        err_msg = f'Error in {feed_name} Integration - Encountered an issue with createIndicators' if \
+            'failed to create' in str(e) else f'Error in {feed_name} Integration [{e}]'
+        if command == 'fetch-indicators':
+            raise Exception(err_msg)
+        else:
+            return_error(err_msg)
