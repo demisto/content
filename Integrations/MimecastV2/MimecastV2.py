@@ -19,21 +19,21 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-BASE_URL = demisto.params()['baseUrl']
-ACCESS_KEY = demisto.params()['accessKey']
-SECRET_KEY = demisto.params()['secretKey']
-APP_ID = demisto.params()['appId']
-APP_KEY = demisto.params()['appKey']
+BASE_URL = None
+ACCESS_KEY = None
+SECRET_KEY = None
+APP_ID = None
+APP_KEY = None
 USE_SSL = None  # assigned in determine_ssl_usage
-PROXY = True if demisto.params().get('proxy') else False
+PROXY = None
 # Flags to control which type of incidents are being fetched
-FETCH_URL = demisto.params().get('fetchURL')
-FETCH_ATTACHMENTS = demisto.params().get('fetchAttachments')
-FETCH_IMPERSONATIONS = demisto.params().get('fetchImpersonations')
+FETCH_URL = None
+FETCH_ATTACHMENTS = None
+FETCH_IMPERSONATIONS = None
 # Used to refresh token / discover available auth types / login
-EMAIL_ADDRESS = demisto.params().get('email')
-PASSWORD = demisto.params().get('password')
-FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+EMAIL_ADDRESS = None
+PASSWORD = None
+FETCH_DELTA = None
 
 # default query xml template for test module
 default_query_xml = "<?xml version=\"1.0\"?> \n\
@@ -421,19 +421,23 @@ def get_policy_request(policy_id=None):
     return response.get('data')
 
 
-def create_policy():
-    headers = ['Policy ID', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
-    contents = {}  # type: Dict[Any, Any]
-    context = {}
-    policies_context = {}  # type: Dict[Any, Any]
-    description = demisto.args().get('description').encode('utf-8')
-    from_part = demisto.args().get('fromPart').encode('utf-8')
-    from_type = demisto.args().get('fromType').encode('utf-8')
-    from_value = demisto.args().get('fromValue').encode('utf-8')
-    to_type = demisto.args().get('toType').encode('utf-8')
-    to_value = demisto.args().get('toValue').encode('utf-8')
-    option = demisto.args().get('option').encode('utf-8')
+def get_arguments_for_policy_command(policy_command_type, args):
+    # type: (str, dict) -> (dict, str, Optional[str])
+    """
+      Args:
+          policy_command_type: create / update
 
+      Returns:
+          Returning a dict with all of the arguments.
+     """
+
+    description = args.get('description', '').encode('utf-8')
+    from_part = args.get('fromPart', '').encode('utf-8')
+    from_type = args.get('fromType', '').encode('utf-8')
+    from_value = args.get('fromValue', '').encode('utf-8')
+    to_type = args.get('toType', '').encode('utf-8')
+    to_value = args.get('toValue', '').encode('utf-8')
+    option = args.get('option', '').encode('utf-8')
     policy_obj = {
         'description': description,
         'fromPart': from_part,
@@ -442,15 +446,32 @@ def create_policy():
         'toType': to_type,
         'toValue': to_value
     }
+    if policy_command_type == "update":
+        policy_id = args.get('policy_id', '').encode('utf-8')
+        if not policy_id:
+            return_error("You need to enter policy ID")
+        return policy_obj, option, policy_id
+    demisto.results("get arguments")
+    demisto.results(policy_obj)
+    return policy_obj, option, None
 
+
+def create_policy(args):
+    headers = ['Policy ID', 'Description', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
+    contents = {}  # type: Dict[Any, Any]
+    context = {}
+    policies_context = {}  # type: Dict[Any, Any]
+    policy_obj, option, policy_id = get_arguments_for_policy_command("create", args)
     policy_list = create_policy_request(policy_obj, option)
     policy = policy_list.get('policy')
     policy_id = policy_list.get('id')
-    title = 'Mimecast Create Policy: \n Policy {} Was Created Successfully!'.format(policy_id)
+    title = 'Mimecast Create Policy: \n Policy Was Created Successfully!'
     sender = policy.get('from')
     reciever = policy.get('to')
+    description = policy.get('description')
     contents = {
         'Policy ID': policy_id,
+        'Description': description,
         'Sender': {
             'Group': sender.get('groupId'),
             'Email Address': sender.get('emailAddress'),
@@ -460,7 +481,7 @@ def create_policy():
         'Reciever': {
             'Group': reciever.get('groupId'),
             'Email Address': reciever.get('emailAddress'),
-            'Domain': reciever.get('domain'),
+            'Domain': reciever.get('emailDomain'),
             'Type': reciever.get('type')
         },
         'Bidirectional': policy.get('bidirectional'),
@@ -469,6 +490,103 @@ def create_policy():
     }
     policies_context = {
         'ID': policy_id,
+        'Description': description,
+        'Sender': {
+            'Group': sender.get('groupId'),
+            'Address': sender.get('emailAddress'),
+            'Domain': sender.get('domain'),
+            'Type': sender.get('type')
+        },
+        'Reciever': {
+            'Group': reciever.get('groupId'),
+            'Address': reciever.get('emailAddress'),
+            'Domain': reciever.get('emailDomain'),
+            'Type': reciever.get('type')
+        },
+        'Bidirectional': policy.get('bidirectional'),
+        'FromDate': policy.get('fromDate'),
+        'ToDate': policy.get('toDate')
+    }
+
+    context['Mimecast.Policy(val.ID && val.ID == obj.ID)'] = policies_context
+
+    results = {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(title, contents, headers),
+        'EntryContext': context
+    }
+
+    return results
+
+
+def create_policy_request(policy, option):
+    # Setup required variables
+    api_endpoint = '/api/policy/blockedsenders/create-policy'
+    payload = {
+        'data': [{
+            'policy': policy,
+            'option': option
+        }]
+    }
+    response = http_request('POST', api_endpoint, str(payload))
+    if response.get('fail'):
+        return_error(json.dumps(response.get('fail')[0].get('errors')))
+    return response.get('data')[0]
+
+
+def update_policy(args):
+    """
+          Update the policy acoording to policy ID
+     """
+    headers = ['Policy ID', 'Description', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
+    contents = {}  # type: Dict[Any, Any]
+    context = {}
+    policies_context = {}  # type: Dict[Any, Any]
+    policy_obj, option, policy_id = get_arguments_for_policy_command("update", args)
+    empty_args_list = []
+    for arg, value in policy_obj.items():
+        if value == '':
+            empty_args_list.append(arg)
+    if option == '':
+        empty_args_list.append("option")
+    if len(empty_args_list) > 0:
+        policy_details = get_policy_request(policy_id)
+        for arg in empty_args_list:
+            if arg == "option":
+                option = policy_details[0]["option"].encode("utf-8")
+            else:
+                policy_obj[arg] = policy_details[0]["policy"][arg].encode("utf-8")
+    respone = update_policy_request(policy_id, policy_obj, option)
+    policy = respone.get('policy')
+    title = 'Mimecast Update Policy: \n Policy Was Updated Successfully!'
+    sender = policy.get('from')
+    reciever = policy.get('to')
+    description = policy.get('description')
+    contents = {
+        'Policy ID': policy_id,
+        'Description': description,
+        'Sender': {
+            'Group': sender.get('groupId'),
+            'Email Address': sender.get('emailAddress'),
+            'Domain': sender.get('emailDomain'),
+            'Type': sender.get('type')
+        },
+        'Reciever': {
+            'Group': reciever.get('groupId'),
+            'Email Address': reciever.get('emailAddress'),
+            'Domain': reciever.get('emailDomain'),
+            'Type': reciever.get('type')
+        },
+        'Bidirectional': policy.get('bidirectional'),
+        'Start': policy.get('fromDate'),
+        'End': policy.get('toDate')
+    }
+    policies_context = {
+        'ID': policy_id,
+        'Description': description,
         'Sender': {
             'Group': sender.get('groupId'),
             'Address': sender.get('emailAddress'),
@@ -500,11 +618,12 @@ def create_policy():
     return results
 
 
-def create_policy_request(policy, option):
+def update_policy_request(policy_id, policy, option):
     # Setup required variables
     api_endpoint = '/api/policy/blockedsenders/create-policy'
     payload = {
         'data': [{
+            'id': policy_id,
             'policy': policy,
             'option': option
         }]
@@ -513,6 +632,8 @@ def create_policy_request(policy, option):
     response = http_request('POST', api_endpoint, str(payload))
     if response.get('fail'):
         return_error(json.dumps(response.get('fail')[0].get('errors')))
+
+    demisto.results(response.get('data')[0])
     return response.get('data')[0]
 
 
@@ -2088,80 +2209,105 @@ def search_file_hash_api_response_to_context(api_response):
     return None
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+def main():
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+    global BASE_URL, ACCESS_KEY, SECRET_KEY, APP_ID, APP_KEY, USE_SSL, PROXY, FETCH_URL, FETCH_ATTACHMENTS, FETCH_IMPERSONATIONS,EMAIL_ADDRESS, PASSWORD, FETCH_DELTA
 
-LOG('command is %s' % (demisto.command(),))
+    BASE_URL = demisto.params()['baseUrl']
+    ACCESS_KEY = demisto.params()['accessKey']
+    SECRET_KEY = demisto.params()['secretKey']
+    APP_ID = demisto.params()['appId']
+    APP_KEY = demisto.params()['appKey']
+    USE_SSL = None  # assigned in determine_ssl_usage
+    PROXY = True if demisto.params().get('proxy') else False
+    # Flags to control which type of incidents are being fetched
+    FETCH_URL = demisto.params().get('fetchURL')
+    FETCH_ATTACHMENTS = demisto.params().get('fetchAttachments')
+    FETCH_IMPERSONATIONS = demisto.params().get('fetchImpersonations')
+    # Used to refresh token / discover available auth types / login
+    EMAIL_ADDRESS = demisto.params().get('email')
+    PASSWORD = demisto.params().get('password')
+    FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 
-# Check if token needs to be refresh, if it does and relevant params are set, refresh.
-if ACCESS_KEY:
-    auto_refresh_token()
+    LOG('command is %s' % (demisto.command(),))
 
-try:
-    handle_proxy()
-    determine_ssl_usage()
 
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
-        demisto.results('ok')
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    elif demisto.command() == 'mimecast-query':
-        demisto.results(query())
-    elif demisto.command() == 'mimecast-list-blocked-sender-policies':
-        demisto.results(get_policy())
-    elif demisto.command() == 'mimecast-get-policy':
-        demisto.results(get_policy())
-    elif demisto.command() == 'mimecast-create-policy':
-        demisto.results(create_policy())
-    elif demisto.command() == 'mimecast-delete-policy':
-        demisto.results(delete_policy())
-    elif demisto.command() == 'mimecast-manage-sender':
-        demisto.results(manage_sender())
-    elif demisto.command() == 'mimecast-list-managed-url':
-        demisto.results(list_managed_url())
-    elif demisto.command() == 'mimecast-create-managed-url':
-        demisto.results(create_managed_url())
-    elif demisto.command() == 'mimecast-list-messages':
-        demisto.results(list_messages())
-    elif demisto.command() == 'mimecast-get-attachment-logs':
-        demisto.results(get_attachment_logs())
-    elif demisto.command() == 'mimecast-get-url-logs':
-        demisto.results(get_url_logs())
-    elif demisto.command() == 'mimecast-get-impersonation-logs':
-        demisto.results(get_impersonation_logs())
-    elif demisto.command() == 'mimecast-url-decode':
-        demisto.results(url_decode())
-    elif demisto.command() == 'mimecast-discover':
-        demisto.results(discover())
-    elif demisto.command() == 'mimecast-login':
-        demisto.results(login())
-    elif demisto.command() == 'mimecast-refresh-token':
-        demisto.results(refresh_token())
-    elif demisto.command() == 'mimecast-get-message':
-        demisto.results(get_message())
-    elif demisto.command() == 'mimecast-download-attachments':
-        demisto.results(download_attachment())
-    elif demisto.command() == 'mimecast-find-groups':
-        find_groups()
-    elif demisto.command() == 'mimecast-get-group-members':
-        get_group_members()
-    elif demisto.command() == 'mimecast-add-group-member':
-        add_remove_member_to_group('add')
-    elif demisto.command() == 'mimecast-remove-group-member':
-        add_remove_member_to_group('remove')
-    elif demisto.command() == 'mimecast-create-group':
-        create_group()
-    elif demisto.command() == 'mimecast-update-group':
-        update_group()
-    elif demisto.command() == 'mimecast-create-remediation-incident':
-        create_mimecast_incident()
-    elif demisto.command() == 'mimecast-get-remediation-incident':
-        get_mimecast_incident()
-    elif demisto.command() == 'mimecast-search-file-hash':
-        search_file_hash()
+    # Check if token needs to be refresh, if it does and relevant params are set, refresh.
+    if ACCESS_KEY:
+        auto_refresh_token()
 
-except Exception as e:
-    LOG(e.message)
-    LOG.print_log()
-    return_error(e.message)
+    try:
+        handle_proxy()
+        determine_ssl_usage()
+
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() == 'mimecast-query':
+            demisto.results(query())
+        elif demisto.command() == 'mimecast-list-blocked-sender-policies':
+            demisto.results(get_policy())
+        elif demisto.command() == 'mimecast-get-policy':
+            demisto.results(get_policy())
+        elif demisto.command() == 'mimecast-create-policy':
+            demisto.results(create_policy(demisto.args()))
+        elif demisto.command() == 'mimecast-update-policy':
+            demisto.results(update_policy(demisto.args()))
+        elif demisto.command() == 'mimecast-delete-policy':
+            demisto.results(delete_policy())
+        elif demisto.command() == 'mimecast-manage-sender':
+            demisto.results(manage_sender())
+        elif demisto.command() == 'mimecast-list-managed-url':
+            demisto.results(list_managed_url())
+        elif demisto.command() == 'mimecast-create-managed-url':
+            demisto.results(create_managed_url())
+        elif demisto.command() == 'mimecast-list-messages':
+            demisto.results(list_messages())
+        elif demisto.command() == 'mimecast-get-attachment-logs':
+            demisto.results(get_attachment_logs())
+        elif demisto.command() == 'mimecast-get-url-logs':
+            demisto.results(get_url_logs())
+        elif demisto.command() == 'mimecast-get-impersonation-logs':
+            demisto.results(get_impersonation_logs())
+        elif demisto.command() == 'mimecast-url-decode':
+            demisto.results(url_decode())
+        elif demisto.command() == 'mimecast-discover':
+            demisto.results(discover())
+        elif demisto.command() == 'mimecast-login':
+            demisto.results(login())
+        elif demisto.command() == 'mimecast-refresh-token':
+            demisto.results(refresh_token())
+        elif demisto.command() == 'mimecast-get-message':
+            demisto.results(get_message())
+        elif demisto.command() == 'mimecast-download-attachments':
+            demisto.results(download_attachment())
+        elif demisto.command() == 'mimecast-find-groups':
+            find_groups()
+        elif demisto.command() == 'mimecast-get-group-members':
+            get_group_members()
+        elif demisto.command() == 'mimecast-add-group-member':
+            add_remove_member_to_group('add')
+        elif demisto.command() == 'mimecast-remove-group-member':
+            add_remove_member_to_group('remove')
+        elif demisto.command() == 'mimecast-create-group':
+            create_group()
+        elif demisto.command() == 'mimecast-update-group':
+            update_group()
+        elif demisto.command() == 'mimecast-create-remediation-incident':
+            create_mimecast_incident()
+        elif demisto.command() == 'mimecast-get-remediation-incident':
+            get_mimecast_incident()
+        elif demisto.command() == 'mimecast-search-file-hash':
+            search_file_hash()
+
+    except Exception as e:
+        LOG(e.message)
+        LOG.print_log()
+        return_error(e.message)
+
+
+if __name__ in ('__builtin__', 'builtins'):
+    main()
