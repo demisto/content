@@ -5,7 +5,7 @@ name: GetFieldsByIncidentType
 script: ''
 type: python
 tags: []
-comment: Returns a dict of incident field names for the specified incident type.
+comment: Returnsthe incident field names associated to the specified incident type.
 enabled: true
 args:
 - name: incident_type
