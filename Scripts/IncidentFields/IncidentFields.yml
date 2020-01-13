@@ -5,7 +5,7 @@ name: IncidentFields
 script: ''
 type: python
 tags: []
-comment: Returns all incident fields.
+comment: Returns a dict of all incident fields that exist in the system.
 enabled: true
 args:
 - name: exclude_system_fields
@@ -14,15 +14,14 @@ args:
   predefined:
   - "true"
   - "false"
-  description: Only output non-system fields
+  description:  Whether to only return non-system fields. If "true", will only output non-system fields. The default value is "false".
   defaultValue: "false"
 - name: short_names
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: If true, output dictionary keys will be field short names rather than
-    long names.
+  description: Whether to shorten the incident field names. If "true", will cause output to use shortened field names. The default value is "true".
   defaultValue: "true"
 scripttarget: 0
 subtype: python3
