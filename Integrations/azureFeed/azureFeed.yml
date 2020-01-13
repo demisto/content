@@ -3,7 +3,67 @@ commonfields:
   id: azureFeed
   version: -1
 configuration:
-- defaultvalue: All
+- display: Reliability
+  name: feedInstanceReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - ""
+  - ""
+  - ""
+  - ""
+  - ""
+  - ""
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- display: ""
+  name: expiration
+  defaultvalue: ""
+  type: 17
+  required: false
+- display: ""
+  name: expirationPolicy
+  defaultvalue: indicatorType
+  type: 0
+  required: false
+  hidden: true
+- display: ""
+  name: expirationInterval
+  defaultvalue: ""
+  type: 1
+  required: false
+  hidden: true
+- display: Fetch indicators
+  name: feed
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: ""
+  name: skipExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Mark as reputation
+  name: feedInstanceReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+- display: Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: 240
+  type: 19
+  required: true
+- defaultvalue: 'All'
   display: Regions
   name: regions
   options:
@@ -53,7 +113,7 @@ configuration:
   - westindia
   - westus
   - westus2
-  required: true
+  required: false
   type: 16
 - defaultvalue: All
   display: Services
@@ -87,7 +147,7 @@ configuration:
   - MicrosoftContainerRegistry
   - ServiceFabric
   - SqlManagement
-  required: true
+  required: false
   type: 16
 - defaultvalue: 'true'
   display: Trust any certificate (not secure)
@@ -98,41 +158,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: F - Reliability cannot be judged
-  display: Reliability
-  name: feedInstanceReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: false
-  type: 15
-- name: expiration
-  required: false
-  type: 17
-- defaultvalue: indicatorType
-  hidden: true
-  name: expirationPolicy
-  required: false
-  type: 0
-- hidden: true
-  name: expirationInterval
-  required: false
-  type: 1
 - defaultvalue: '20'
   display: Request Timeout
   hidden: false
   name: polling_timeout
   required: false
   type: 0
-- display: Fetch Interval
-  name: feedFetchInterval
-  defaultvalue: 240
-  type: 19
-  required: true
 description: Azure.CloudIPs Feed Integration.
 display: Azure Feed
 name: azureFeed
@@ -151,10 +182,10 @@ script:
     execution: false
     name: get-indicators
     outputs:
-    - contextPath: Azure.Indicator.Value
+    - contextPath: AzureFeed.Indicator.Value
       description: Indicator value.
       type: number
-    - contextPath: Azure.Indicator.Type
+    - contextPath: AzureFeed.Indicator.Type
       description: Indicator type.
       type: string
   dockerimage: demisto/python3:3.7.5.4583

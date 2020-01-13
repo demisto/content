@@ -1,7 +1,6 @@
 import re
 import urllib3
 import ipaddress
-import requests
 from typing import Dict, List, Tuple
 
 from CommonServerPython import *
@@ -9,7 +8,6 @@ from CommonServerPython import *
 # disable insecure warnings
 urllib3.disable_warnings()
 
-REGIONS_XPATH = '/AzurePublicIpAddresses/Region'
 AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519'
 
 INTEGRATION_NAME = 'Azure'
@@ -51,21 +49,24 @@ class Client(BaseClient):
         Returns:
             Dict. IP data object.
         """
+        is_CIDR = False
+
         try:
             address_type = ipaddress.ip_address(azure_address_prefix)
 
         except Exception:
             try:
                 address_type = ipaddress.ip_network(azure_address_prefix)
+                is_CIDR = True
 
             except Exception:
                 demisto.debug(F'{INTEGRATION_NAME} - Invalid ip range: {azure_address_prefix}')
                 return {}
 
         if address_type.version == 4:
-            type_ = 'IPv4'
+            type_ = 'CIDR' if is_CIDR else 'IP'
         elif address_type.version == 6:
-            type_ = 'IPv6'
+            type_ = 'IPv6CIDR' if is_CIDR else 'IPv6'
         else:
             LOG(F'{INTEGRATION_NAME} - Unknown IP version: {address_type.version}')
             return {}
@@ -84,15 +85,17 @@ class Client(BaseClient):
         Returns:
             str. The download link.
         """
-        azure_url_response = requests.get(
-            url=self._base_url,
+        azure_url_response = self._http_request(
+            method='GET',
+            full_url=self._base_url,
+            url_suffix='',
             stream=False,
-            verify=self._verify,
-            timeout=self._polling_timeout
+            timeout=self._polling_timeout,
+            resp_type='html'
         )
 
         azure_url_response.raise_for_status()
-        download_link_search_regex = re.search(r'downloadData={.+(https://.+\.json)\",', azure_url_response.text)
+        download_link_search_regex = re.search(r'downloadData={.+(https://(.)+\.json)\",', azure_url_response.text)
         download_link = download_link_search_regex.group(1) if download_link_search_regex else None
 
         return download_link
@@ -108,19 +111,18 @@ class Client(BaseClient):
         """
         if download_link is None:
             raise RuntimeError(F'{INTEGRATION_NAME} - failoverLink not found')
+
         demisto.debug(F'download link: {download_link}')
 
-        file_download_response = requests.get(
-            url=download_link,
+        file_download_response = self._http_request(
+            method='GET',
+            full_url=download_link,
+            url_suffix='',
             stream=True,
-            verify=self._verify,
             timeout=self._polling_timeout
         )
 
-        file_download_response.raise_for_status()
-        file_download_response_json = file_download_response.json()  # type: Dict
-
-        return file_download_response_json.get('values', None)
+        return file_download_response.get('values', None)
 
     @staticmethod
     def extract_metadata_of_indicators_group(indicators_group_data: Dict) -> Dict:
@@ -138,7 +140,7 @@ class Client(BaseClient):
         indicator_metadata['name'] = indicators_group_data.get('name', None)
         indicator_properties = indicators_group_data.get('properties', None)
 
-        if indicator_properties is None:
+        if indicator_properties in [None, {}]:
             LOG(F'{INTEGRATION_NAME} - no properties for indicators group {indicator_metadata["name"]}')
             return {}
 
@@ -257,7 +259,7 @@ def get_indicators_command(client: Client) -> Tuple[str, Dict, Dict]:
     human_readable = tableToMarkdown('Indicators from Azure Feed:', indicators,
                                      headers=['Value', 'Type'], removeNull=True)
 
-    return human_readable, {f'{INTEGRATION_NAME}.Indicator(val.value === obj.value)': indicators}, {
+    return human_readable, {f'{INTEGRATION_NAME}Feed.Indicator(val.value === obj.value)': indicators}, {
         'raw_response': raw_response}
 
 
@@ -292,7 +294,7 @@ def fetch_indicators(client: Client, limit: int = -1) -> Tuple[List[Dict], List]
 
         indicators.append({
             'Value': indicator['value'],
-            'Type': 'ip',
+            'Type': indicator['type'],
             'rawJSON': raw_data
         })
 
@@ -301,12 +303,30 @@ def fetch_indicators(client: Client, limit: int = -1) -> Tuple[List[Dict], List]
     return indicators, raw_response
 
 
+# simple function to iterate list in batches
+def batch_temp(iterable, batch_size=1):
+    current_batch = []
+    for item in iterable:
+        current_batch.append(item)
+        if len(current_batch) == batch_size:
+            yield current_batch
+            current_batch = []
+    if current_batch:
+        yield current_batch
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     regions_list = argToList(demisto.params().get('regions', ''))
+    if regions_list in [None, []]:
+        regions_list = ['All']
+
     services_list = argToList(demisto.params().get('services', ''))
+    if services_list in [None, []]:
+        services_list = ['All']
+
     polling_arg = demisto.params().get('polling_timeout', '')
     polling_timeout = int(polling_arg) if polling_arg.isdigit() else 20
     insecure = demisto.params().get('insecure', False)
@@ -329,7 +349,7 @@ def main():
         elif command == 'fetch-indicators':
             indicators, _ = fetch_indicators(client)
 
-            for single_batch in batch(indicators, batch_size=1500):
+            for single_batch in batch_temp(indicators, batch_size=500):
                 demisto.createIndicators(single_batch)
 
         else:
