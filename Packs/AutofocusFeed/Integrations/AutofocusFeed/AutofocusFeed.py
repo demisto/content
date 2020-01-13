@@ -71,26 +71,26 @@ class Client(BaseClient):
             str. The type of the indicator.
         """
         if re.match(ipv4cidrRegex, indicator):
-            return 'CIDR'
+            return FeedIndicatorType.CIDR
 
         if re.match(ipv6cidrRegex, indicator):
-            return 'IPv6CIDR'
+            return FeedIndicatorType.IPv6CIDR
 
         if re.match(ipv4Regex, indicator):
-            return 'IP'
+            return FeedIndicatorType.IP
 
         if re.match(ipv6Regex, indicator):
-            return 'IPv6'
+            return FeedIndicatorType.IPv6
 
         elif re.match(sha256Regex, indicator):
-            return 'File'
+            return FeedIndicatorType.File
 
         # in AutoFocus, URLs include '/' character while domains do not.
         elif '/' in indicator:
-            return 'URL'
+            return FeedIndicatorType.URL
 
         else:
-            return 'Domain'
+            return FeedIndicatorType.Domain
 
     def build_iterator(self):
         """Builds a list of indicators.
@@ -122,18 +122,6 @@ class Client(BaseClient):
                 })
 
         return parsed_indicators
-
-
-# simple function to iterate list in batches - Temporary
-def temp_batch(iterable, batch_size=1):
-    current_batch = []
-    for item in iterable:
-        current_batch.append(item)
-        if len(current_batch) == batch_size:
-            yield current_batch
-            current_batch = []
-    if current_batch:
-        yield current_batch
 
 
 def module_test_command(client: Client, args: dict):
@@ -208,7 +196,7 @@ def main():
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators_command(client)
             # we submit the indicators in batches
-            for b in temp_batch(indicators, batch_size=500):
+            for b in batch(indicators, batch_size=500):
                 demisto.createIndicators(b)
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
