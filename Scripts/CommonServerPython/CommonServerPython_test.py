@@ -12,7 +12,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, ip_to_indicator_type
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType
 
 try:
     from StringIO import StringIO
@@ -1067,4 +1067,4 @@ IP_TO_INDICATOR_TYPE_PACK = [
 
 @pytest.mark.parametrize('ip, indicator_type', IP_TO_INDICATOR_TYPE_PACK)
 def test_ip_to_indicator(ip, indicator_type):
-    assert ip_to_indicator_type(ip) is indicator_type
+    assert FeedIndicatorType.ip_to_indicator_type(ip) is indicator_type
