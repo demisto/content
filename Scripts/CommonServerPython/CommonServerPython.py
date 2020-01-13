@@ -124,25 +124,25 @@ class FeedIndicatorType(object):
     SSDeep = "ssdeep"
     URL = "URL"
 
-    @classmethod
-    def is_valid_type(cls, _type):
+    @staticmethod
+    def is_valid_type(_type):
         return _type in (
-            cls.Account,
-            cls.CVE,
-            cls.Domain,
-            cls.Email,
-            cls.File,
-            cls.MD5,
-            cls.SHA1,
-            cls.SHA256,
-            cls.Host,
-            cls.IP,
-            cls.CIDR,
-            cls.IPv6,
-            cls.IPv6CIDR,
-            cls.Registry,
-            cls.SSDeep,
-            cls.URL
+            FeedIndicatorType.Account,
+            FeedIndicatorType.CVE,
+            FeedIndicatorType.Domain,
+            FeedIndicatorType.Email,
+            FeedIndicatorType.File,
+            FeedIndicatorType.MD5,
+            FeedIndicatorType.SHA1,
+            FeedIndicatorType.SHA256,
+            FeedIndicatorType.Host,
+            FeedIndicatorType.IP,
+            FeedIndicatorType.CIDR,
+            FeedIndicatorType.IPv6,
+            FeedIndicatorType.IPv6CIDR,
+            FeedIndicatorType.Registry,
+            FeedIndicatorType.SSDeep,
+            FeedIndicatorType.URL
         )
 
 
