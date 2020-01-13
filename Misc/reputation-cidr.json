@@ -1,5 +1,5 @@
 {
-    "id": "cidr",
+    "id": "CIDR",
     "version": -1,
     "fromVersion": "5.5.0",
     "modified": "2019-07-18T07:17:53.843554502Z",
@@ -23,6 +23,7 @@
     "contextPath": "CIDR(val.Address \u0026\u0026 val.Range === obj.Address)",
     "contextValue": "Address",
     "excludedBrands": [],
+    "expiration": 10080,
     "defaultMapping": {
         "asn": {
             "simple": "",
