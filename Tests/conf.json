@@ -4,14 +4,6 @@
     "tests": [
         {
             "integrations": "Digital Defense FrontlineVM",
-            "playbookID": "Digital Defense FrontlineVM - Old Vulnerabilities Found Test"
-        },
-        {
-            "integrations": "Digital Defense FrontlineVM",
-            "playbookID": "Digital Defense FrontlineVM - PAN-OS block assets Test"
-        },
-        {
-            "integrations": "Digital Defense FrontlineVM",
             "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
         },
         {
