@@ -508,14 +508,9 @@
 		"Prisma Cloud": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Account": {
-					"complex": {
-						"accessor": "account",
-						"filters": [],
-						"root": "resource",
-						"transformers": []
-					},
-					"simple": ""
+				"Account Name": {
+					"complex": null,
+					"simple": "resource.account"
 				},
 				"Account ID": {
 					"complex": {
