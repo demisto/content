@@ -120,13 +120,13 @@ script:
     execution: false
     name: get-indicators
     outputs:
-    - contextPath: CSV.Indicator.Value
+    - contextPath: BambenekConsultingFeed.Indicator.Value
       description: Indicator value.
       type: String
-    - contextPath: CSV.Indicator.Type
+    - contextPath: BambenekConsultingFeed.Indicator.Type
       description: Indicator type.
       type: String
-    - contextPath: CSV.Indicator.Rawjson
+    - contextPath: BambenekConsultingFeed.Indicator.Rawjson
       description: Indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/python3:3.7.5.4583
