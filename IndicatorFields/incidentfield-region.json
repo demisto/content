@@ -34,7 +34,7 @@
         "IP",
         "IPv6",
         "CIDR",
-        "IPv6 CIDR"
+        "IPv6CIDR"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,
