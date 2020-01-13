@@ -553,9 +553,9 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "account",
+								"fieldId": "accountname",
 								"height": 24,
-								"id": "c264f4a0-93c4-11e9-9dd5-3b4f6f9f1bae",
+								"id": "209fc340-3066-11ea-9aa4-0df78411179a",
 								"index": 4,
 								"listId": "9c8d74a0-93c4-11e9-9dd5-3b4f6f9f1bae",
 								"startCol": 0
@@ -802,7 +802,7 @@
 			}
 		],
 		"typeId": "Prisma Cloud",
-		"version": 21
+		"version": -1
 	},
 	"typeId": "Prisma Cloud",
 	"version": -1
