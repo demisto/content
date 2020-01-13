@@ -145,6 +145,31 @@ class FeedIndicatorType(object):
             FeedIndicatorType.URL
         )
 
+    @staticmethod
+    def ip_to_indicator_type(ip):
+        """Returns the indicator type of the input IP.
+
+        :type ip: ``str``
+        :param ip: IP address to get it's indicator type.
+
+        :rtype: ``str``
+        :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
+        """
+        if re.match(ipv4cidrRegex, ip):
+            return FeedIndicatorType.CIDR
+
+        elif re.match(ipv4Regex, ip):
+            return FeedIndicatorType.IP
+
+        elif re.match(ipv6cidrRegex, ip):
+            return FeedIndicatorType.IPv6CIDR
+
+        elif re.match(ipv6Regex, ip):
+            return FeedIndicatorType.IPv6
+
+        else:
+            return None
+
 
 
 
@@ -2479,27 +2504,3 @@ def batch(iterable, batch_size=1):
         yield current_batch
         current_batch = not_batched[:batch_size]
         not_batched = not_batched[batch_size:]
-
-def ip_to_indicator_type(ip):
-    """Returns the indicator type of the input IP.
-
-    :type ip: ``str``
-    :param ip: IP address to get it's indicator type.
-
-    :rtype: ``str``
-    :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
-    """
-    if re.match(ipv4cidrRegex, ip):
-        return FeedIndicatorType.CIDR
-
-    elif re.match(ipv4Regex, ip):
-        return FeedIndicatorType.IP
-
-    elif re.match(ipv6cidrRegex, ip):
-        return FeedIndicatorType.IPv6CIDR
-
-    elif re.match(ipv6Regex, ip):
-        return FeedIndicatorType.IPv6
-
-    else:
-        return None
