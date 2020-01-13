@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue when running a scan on an endpoint failed, but was showed as successful in the war-room.
 
 ## [19.10.1] - 2019-10-15
 Updated integration category to *Endpoint*.
