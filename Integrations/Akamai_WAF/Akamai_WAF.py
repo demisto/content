@@ -2,7 +2,7 @@
 # Std imports
 
 # 3-rd party imports
-from typing import Dict, Tuple, Union, Optional, List, Any
+from typing import Dict, Tuple, Union, Optional, List
 import urllib3
 from akamai.edgegrid import EdgeGridAuth
 
