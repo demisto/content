@@ -1,17 +1,17 @@
 ## Overview
 ---
 
-Use the Syslog Sender integration to send messages and mirror incident war room entries to Syslog.
+Use the Syslog Sender integration to send messages and mirror incident War Room entries to Syslog.
 
 
 ## Use Cases
 ---
-* Send messages to syslog via TCP, UDP or Unix.
-* Mirror incident war room entries to syslog.
+* Send messages to Syslog via TCP or UDP.
+* Mirror incident war room entries to Syslog.
 
 ## Configure Syslog Sender on Demisto
 ---
-To allow sending messages to syslog via Demisto, the following lines have to be in the syslog configuration:
+To allow sending messages to syslog via Demisto, the following lines have to be in the Syslog configuration:
 
 For TCP:
 ```
@@ -81,8 +81,8 @@ Sends a message to syslog.
 | --- | --- | --- |
 | message | The message content. | Optional | 
 | entry | An entry ID to send as a link. | Optional | 
-| ignoreAddURL | Whether to include a URL to the relevant component in Demisto. | Optional | 
-| level | Log level to send | Optional | 
+| ignoreAddURL | Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". The default value is "false'. | Optional | 
+| level | Log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL". | Optional | 
 
 
 ##### Context Output
@@ -93,12 +93,12 @@ There is no context output for this command.
 ```!send-notification message=Test ignoreAddURL=true```
 
 ##### Human Readable Output
-Message sent to syslog successfully.
+Message sent to Syslog successfully.
 
 
 ### 3. syslog-send
 ---
-Send a message to syslog
+Send a message to Syslog
 
 ##### Base Command
 
@@ -108,11 +108,11 @@ Send a message to syslog
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | message | The message content. | Optional | 
-| level | The log level. | Optional | 
-| address | The syslog server address. | Optional | 
+| level | The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL". | Optional | 
+| address | The Syslog server address. | Optional | 
 | protocol | The protocol to use | Optional | 
-| port | The syslog server port (required for TCP or UDP protocols). | Optional | 
-| facility | The syslog facility. | Optional | 
+| port | The Syslog server port (required for TCP or UDP protocols). | Optional | 
+| facility | The Syslog facility. | Optional | 
 
 
 ##### Context Output
@@ -127,5 +127,5 @@ Message sent to Syslog successfully.
 
 ## Troubleshooting
 ---
-Make sure you can access the syslog server on the provided IP address and the port is open.
+Make sure you can access the Syslog server on the provided IP address and the port is open.
 If you're experiencing further issues, contact us at [support@demisto.com](mailto:support@demisto.com)
