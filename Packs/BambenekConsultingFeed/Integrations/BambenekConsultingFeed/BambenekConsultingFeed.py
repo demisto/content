@@ -1,8 +1,7 @@
 def main():
     # Main execution of the CSV API Module.
     # This function allows to add to or override this execution.
-    feed_main('Bambenek Consulting')
-
+    feed_main('BambenekConsultingFeed')
 
 
 from CSVFeedApiModule import *  # noqa: E402
