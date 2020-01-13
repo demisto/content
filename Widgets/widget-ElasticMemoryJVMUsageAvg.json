@@ -2,7 +2,7 @@
   "id": "es-jvm-memory-current-usage",
   "version": -1,
   "fromVersion": "5.5.0",
-  "name": "Elastic JVM Memory Current Usage %",
+  "name": "Elastic JVM Memory Current Usage",
   "dataType": "system",
   "widgetType": "number",
   "query": "es-jvm-memory.usedPercent",
