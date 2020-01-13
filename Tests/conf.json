@@ -4,11 +4,13 @@
     "tests": [
         {
             "integrations": "BambenekConsultingFeed",
-            "playbookID": "BambenekConslting_Feed_Test"
+            "playbookID": "BambenekConslting_Feed_Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "CSVFeed",
-            "playbookID": "CSV_Feed_Test"
+            "playbookID": "CSV_Feed_Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "Digital Shadows",
