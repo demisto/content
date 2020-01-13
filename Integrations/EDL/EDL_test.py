@@ -17,9 +17,8 @@ class TestHelperFunctions:
         with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
             params = {'format': 'text', 'on_demand': True, 'edl_size': 50}
-            mocker.patch.object(demisto, 'params', return_value=params)
             mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
-            ioc_list = get_edl_ioc_values()
+            ioc_list = get_edl_ioc_values(params)
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
@@ -32,11 +31,10 @@ class TestHelperFunctions:
         with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
             params = {'format': 'text', 'on_demand': False, 'edl_size': 50, 'cache_refresh_rate': '1 minute'}
-            mocker.patch.object(demisto, 'params', return_value=params)
             mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
             mocker.patch.object(edl, 'refresh_edl_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
-            ioc_list = edl.get_edl_ioc_values()
+            ioc_list = edl.get_edl_ioc_values(params)
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
@@ -49,11 +47,10 @@ class TestHelperFunctions:
         with open('EDL_test/TestHelperFunctions/iocs_cache_values_text.json', 'r') as iocs_text_values_f:
             iocs_text_dict = json.loads(iocs_text_values_f.read())
             params = {'format': 'text', 'on_demand': False, 'edl_size': 50, 'cache_refresh_rate': '1 minute'}
-            mocker.patch.object(demisto, 'params', return_value=params)
             mocker.patch.object(demisto, 'getIntegrationContext', return_value=iocs_text_dict)
             mocker.patch.object(edl, 'refresh_edl_context', return_value=iocs_text_dict)
             mocker.patch.object(demisto, 'getLastRun', return_value={'last_run': 1578383898000})
-            ioc_list = edl.get_edl_ioc_values()
+            ioc_list = edl.get_edl_ioc_values(params)
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 

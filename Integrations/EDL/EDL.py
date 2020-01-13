@@ -47,9 +47,9 @@ def get_params_port(params: dict = demisto.params()) -> int:
     if port_mapping:
         err_msg = f'Listen Port must be an integer. {port_mapping} is not valid.'
         if ':' in port_mapping:
-            port = parse_integer(port_mapping.split(':')[1], err_msg)
+            port = try_parse_integer(port_mapping.split(':')[1], err_msg)
         else:
-            port = parse_integer(port_mapping, err_msg)
+            port = try_parse_integer(port_mapping, err_msg)
     else:
         raise ValueError('Please provide a Listen Port.')
     return port
@@ -131,14 +131,13 @@ def get_edl_mimetype() -> str:
     return ctx.get(EDL_MIMETYPE_KEY, 'text/plain')
 
 
-def get_edl_ioc_values() -> str:
+def get_edl_ioc_values(params) -> str:
     """
     Get the ioc list to return in the edl
     """
-    params = demisto.params()
     out_format = params.get('format')
     on_demand = params.get('on_demand')
-    limit = parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)
+    limit = try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)
     # on_demand ignores cache
     if on_demand:
         values_str = get_ioc_values_str_from_context()
@@ -165,7 +164,7 @@ def get_ioc_values_str_from_context() -> str:
     return cache_dict.get(EDL_VALUES_KEY, '')
 
 
-def parse_integer(int_to_parse: Any, err_msg: str) -> int:
+def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
     """
     Tries to parse an integer, and if fails will throw DemistoException with given err_msg
     """
@@ -184,7 +183,7 @@ def route_edl_values() -> Response:
     """
     Main handler for values saved in the integration context
     """
-    values = get_edl_ioc_values()
+    values = get_edl_ioc_values(demisto.params())
     mimetype = get_edl_mimetype()
     return Response(values, status=200, mimetype=mimetype)
 
@@ -201,7 +200,7 @@ def test_module(args, params):
     get_params_port(params)
     on_demand = params.get('on_demand', None)
     if not on_demand:
-        parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)  # validate EDL Size was set
+        try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)  # validate EDL Size was set
         query = params.get('indicators_query')  # validate indicators_query isn't empty
         if not query:
             raise ValueError('"Indicator Query" is required. Provide a valid query.')
@@ -212,7 +211,7 @@ def test_module(args, params):
         range_split = cache_refresh_rate.split(' ')
         if len(range_split) != 2:
             raise ValueError(EDL_MISSING_REFRESH_ERR_MSG)
-        parse_integer(range_split[0], 'Invalid time value for the Refresh Rate. Must be a valid integer.')
+        try_parse_integer(range_split[0], 'Invalid time value for the Refresh Rate. Must be a valid integer.')
         if not range_split[1] in ['minute', 'minutes', 'hour', 'hours', 'day', 'days', 'month', 'months', 'year',
                                   'years']:
             raise ValueError(
@@ -271,7 +270,7 @@ def update_edl_command(args, params):
     if not on_demand:
         raise DemistoException(
             '"Update EDL On Demand" is off. If you want to update the EDL manually please toggle it on.')
-    limit = parse_integer(args.get('edl_size', params.get('edl_size')), EDL_LIMIT_ERR_MSG)
+    limit = try_parse_integer(args.get('edl_size', params.get('edl_size')), EDL_LIMIT_ERR_MSG)
     print_indicators = args.get('print_indicators')
     query = args.get('query')
     out_format = args.get('format')
@@ -287,7 +286,7 @@ def main():
     """
     params = demisto.params()
     command = demisto.command()
-    demisto.info('Command being called is {}'.format(command))
+    demisto.debug('Command being called is {}'.format(command))
     commands = {
         'test-module': test_module,
         'edl-update': update_edl_command
