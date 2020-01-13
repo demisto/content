@@ -1,5 +1,5 @@
 id: Kenna Test
-version: 44
+version: 46
 contentitemfields:
   propagationLabels: []
 name: Kenna Test
@@ -47,7 +47,6 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
-      - "11"
     separatecontext: false
     view: |-
       {
@@ -62,10 +61,10 @@ tasks:
     skipunavailable: false
   "3":
     id: "3"
-    taskid: 24bcd6ba-1413-4f60-8f5d-b055db05aaf9
+    taskid: 9988c0d2-be19-40e7-875f-0942eadf947c
     type: regular
     task:
-      id: 24bcd6ba-1413-4f60-8f5d-b055db05aaf9
+      id: 9988c0d2-be19-40e7-875f-0942eadf947c
       version: -1
       name: kenna-search-vulnerabilities
       description: Filtering vulnerabilities by those that Kenna recommends.
@@ -95,10 +94,10 @@ tasks:
     skipunavailable: false
   "6":
     id: "6"
-    taskid: c051504e-2b4f-4d86-8bbd-4cd5f8ea941b
+    taskid: 91306420-3cc1-4633-8e99-e39e72129670
     type: regular
     task:
-      id: c051504e-2b4f-4d86-8bbd-4cd5f8ea941b
+      id: 91306420-3cc1-4633-8e99-e39e72129670
       version: -1
       name: kenna-update-vulnerability
       description: Update a single vulnerability's attributes by ID
@@ -113,7 +112,7 @@ tasks:
       id:
         complex:
           root: Kenna
-          accessor: ID
+          accessor: Vulnerabilities.ID
           transformers:
           - operator: FirstArrayElement
       notes:
@@ -223,10 +222,10 @@ tasks:
     skipunavailable: false
   "10":
     id: "10"
-    taskid: 55c7077d-ff76-4c60-8607-99aee7a9d0ca
+    taskid: 1d33cc53-4ec3-44d7-85da-bcd9eb6fc432
     type: regular
     task:
-      id: 55c7077d-ff76-4c60-8607-99aee7a9d0ca
+      id: 1d33cc53-4ec3-44d7-85da-bcd9eb6fc432
       version: -1
       name: kenna-get-asset-vulnerabilities
       description: Get Vulenerabilities of specific asset
@@ -250,40 +249,6 @@ tasks:
         "position": {
           "x": 1267.5,
           "y": 3315
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  "11":
-    id: "11"
-    taskid: c48c101f-7b28-4ffd-8508-7ee890334c75
-    type: regular
-    task:
-      id: c48c101f-7b28-4ffd-8508-7ee890334c75
-      version: -1
-      name: kenna-run-connector
-      description: Schedules a run of a connector. If file based, it will use most
-        recently uploaded data file
-      script: KennaV2|||kenna-run-connector
-      type: regular
-      iscommand: true
-      brand: KennaV2
-    scriptarguments:
-      id:
-        complex:
-          root: Kenna
-          accessor: ConnectorsList.ID
-          transformers:
-          - operator: FirstArrayElement
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
         }
       }
     note: false
@@ -331,10 +296,10 @@ tasks:
     skipunavailable: false
   "13":
     id: "13"
-    taskid: 94569d17-acd0-4dec-8bce-3db8ff24048d
+    taskid: a54caf68-9d6a-4b56-87ab-7b6867c9a1df
     type: regular
     task:
-      id: 94569d17-acd0-4dec-8bce-3db8ff24048d
+      id: a54caf68-9d6a-4b56-87ab-7b6867c9a1df
       version: -1
       name: kenna-search-assets-round1
       description: Filtering assets by those that Kenna recommands
@@ -365,10 +330,10 @@ tasks:
     skipunavailable: false
   "15":
     id: "15"
-    taskid: cc2001f8-2a49-4c49-8906-b6caae2935cb
+    taskid: b013a9fb-99dd-4500-8dd7-d3c0147a5203
     type: condition
     task:
-      id: cc2001f8-2a49-4c49-8906-b6caae2935cb
+      id: b013a9fb-99dd-4500-8dd7-d3c0147a5203
       version: -1
       name: Check Asset List
       type: condition
@@ -410,10 +375,10 @@ tasks:
     skipunavailable: false
   "16":
     id: "16"
-    taskid: eb9b288a-15f8-41f1-8ef1-e98948f72456
+    taskid: aa6db79f-433d-4749-8d05-ee07c805cf12
     type: condition
     task:
-      id: eb9b288a-15f8-41f1-8ef1-e98948f72456
+      id: aa6db79f-433d-4749-8d05-ee07c805cf12
       version: -1
       name: Check Search Vulnerabilities
       type: condition
@@ -457,10 +422,10 @@ tasks:
     skipunavailable: false
   "18":
     id: "18"
-    taskid: 3057945e-0065-4691-8047-7980b346fef3
+    taskid: 9c495c58-9a70-4361-8e9e-185af337581c
     type: regular
     task:
-      id: 3057945e-0065-4691-8047-7980b346fef3
+      id: 9c495c58-9a70-4361-8e9e-185af337581c
       version: -1
       name: check vulnerabilities after update
       description: Filtering vulnerabilities by those that Kenna recommends.
@@ -495,10 +460,10 @@ tasks:
     skipunavailable: false
   "19":
     id: "19"
-    taskid: bfc03ad7-b903-4911-8b5f-28b74033a6c1
+    taskid: a17ddece-3632-4825-8f1a-a08e4db41702
     type: condition
     task:
-      id: bfc03ad7-b903-4911-8b5f-28b74033a6c1
+      id: a17ddece-3632-4825-8f1a-a08e4db41702
       version: -1
       name: check status after update
       type: condition
@@ -905,10 +870,10 @@ tasks:
     skipunavailable: false
   "31":
     id: "31"
-    taskid: e7fa6f7f-af1c-49fa-827e-bdd095d45632
+    taskid: 904afa36-5c28-4070-8203-ceecfee61ccc
     type: condition
     task:
-      id: e7fa6f7f-af1c-49fa-827e-bdd095d45632
+      id: 904afa36-5c28-4070-8203-ceecfee61ccc
       version: -1
       name: Check Search Vulnerabilities
       type: condition
@@ -926,7 +891,7 @@ tasks:
       - - operator: greaterThan
           left:
             value:
-              simple: Kenna.AssetID
+              simple: Kenna.VulnerabilitiesOfAsset.AssetID
             iscontext: true
           right:
             value:
@@ -934,7 +899,7 @@ tasks:
       - - operator: greaterThan
           left:
             value:
-              simple: Kenna.ID
+              simple: Kenna.VulnerabilitiesOfAsset.ID
             iscontext: true
           right:
             value:
