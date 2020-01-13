@@ -1019,7 +1019,6 @@ batch_params = [
     ([1, 2, 3], 5, [[1, 2, 3]]),
     # out of index in end with batches
     ([1, 2, 3, 4, 5], 2, [[1, 2], [3, 4], [5]]),
-    # a test for happy bar saar
     ([1] * 100, 2, [[1, 1]] * 50)
 ]
 
