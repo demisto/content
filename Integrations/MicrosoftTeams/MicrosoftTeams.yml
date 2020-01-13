@@ -104,7 +104,7 @@ script:
     deprecated: false
     description: |-
       Sends a message to the specified teams.
-      If you want to mention a user please make sure to add ";" at the end of the mention. For example: @Bruce Willis;
+      To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;
     execution: false
     name: send-notification
   - arguments:
