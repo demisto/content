@@ -1,6 +1,6 @@
 commonfields:
   id: VerifyContext
-  version: 16
+  version: -1
 name: VerifyContext
 script: |-
   var path = args.path;
