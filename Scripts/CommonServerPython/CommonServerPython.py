@@ -2487,30 +2487,31 @@ def ip_to_indicator_type(ip):
         ip (str): IP address to get it's indicator type.
 
     Returns:
-        str. Indicator type, or none if invalid IP address.
+        str. Indicator type from FeedIndicatorType, or None if invalid IP address.
     """
     if IS_PY3:
         import ipaddress  # pylint: disable=import-error
 
+        is_cidr = False
+
         try:
             address_type = ipaddress.ip_address(ip)
-            if address_type.version == 4:
-                return 'IPv4'
-            else:
-                return 'IPv6'
 
-        except ValueError:
+        except Exception:
             try:
                 address_type = ipaddress.ip_network(ip)
-                if address_type.version == 4:
-                    return 'IPv4CIDR'
-                else:
-                    return 'IPv6CIDR'
+                is_cidr = True
 
             except Exception:
                 return None
 
-        except Exception:
+        if address_type.version == 4:
+            return FeedIndicatorType.CIDR if is_cidr else FeedIndicatorType.IP
+
+        elif address_type.version == 6:
+            return FeedIndicatorType.IPv6CIDR if is_cidr else FeedIndicatorType.IPv6
+
+        else:
             return None
 
     return None
