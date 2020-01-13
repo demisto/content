@@ -63,8 +63,11 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '3'
-    scriptarguments: {}
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "100"
+      page: {}
     separatecontext: false
     view: '{"position": {"x": 50, "y": 400}}'
     note: false
