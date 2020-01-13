@@ -36,7 +36,7 @@ script:
         return json && res.Body ? JSON.parse(res.Body) : res.Body;
     }
 
-    var base = 'http://ipinfo.io/';
+    var base = 'https://ipinfo.io/';
     var token = params.token ? '?token=' + params.token : '';
     var jsonSuffix = '/json' + token;
     switch (command) {
