@@ -2483,11 +2483,11 @@ def batch(iterable, batch_size=1):
 def ip_to_indicator_type(ip):
     """Returns the indicator type of the input IP.
 
-    Args:
-        ip (str): IP address to get it's indicator type.
+    :type ip: ``str``
+    :param ip: IP address to get it's indicator type.
 
-    Returns:
-        str. Indicator type from FeedIndicatorType, or None if invalid IP address.
+    :rtype: ``str``
+    :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
     """
     if re.match(ipv4cidrRegex, ip):
         return FeedIndicatorType.CIDR
