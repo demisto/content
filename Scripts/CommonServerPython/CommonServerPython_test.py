@@ -1011,9 +1011,11 @@ def test_argToBoolean():
 
 
 batch_params = [
-    # full batch
-    ([1, 2, 3], 2, [[1, 2], [3]]),
+    # full batch case
+    ([1, 2, 3], 1, [[1], [2], [3]]),
+    # empty case
     ([], 1, []),
+    # out of index case
     ([1, 2, 3], 5, [[1, 2, 3]])
 ]
 
