@@ -69,7 +69,7 @@ configuration:
   required: false
   type: 15
 description: Use the Syslog Sender integration to send messages and mirror incident
-  war room entries to Syslog.
+  War Room entries to Syslog.
 display: Syslog Sender
 name: Syslog Sender
 script:
@@ -108,7 +108,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to include a URL to the relevant component in Demisto.
+      description: Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". The default value is "false'.
       isArray: false
       name: ignoreAddURL
       predefined:
@@ -118,7 +118,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The log level to send.
+      description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL".
       isArray: false
       name: level
       predefined:
@@ -130,7 +130,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sends a message to syslog. Used by the mirroring functionality.
+    description: Sends a message to Syslog. Used by the mirroring functionality.
     execution: false
     name: send-notification
   - arguments:
@@ -142,7 +142,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The log level.
+      description: The log level to send. Can be "DEBUG", "INFO", "WARNING", "ERROR", or "CRITICAL".
       isArray: false
       name: level
       predefined:
@@ -154,14 +154,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The syslog server address.
+      description: The Syslog server address.
       isArray: false
       name: address
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The protocol to use
+      description: The protocol to use. Can be "TCP", "UDP", or, "Unix".
       isArray: false
       name: protocol
       predefined:
@@ -171,14 +171,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The syslog server port (required for TCP or UDP protocols).
+      description: The Syslog server port (required for TCP or UDP protocols).
       isArray: false
       name: port
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The syslog facility.
+      description: The Syslog facility.
       isArray: false
       name: facility
       predefined:
@@ -205,7 +205,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Send a message to Syslog.
+    description: Sends a message to Syslog.
     execution: false
     name: syslog-send
   dockerimage: demisto/python3:3.7.5.4583
