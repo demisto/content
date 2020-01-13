@@ -8,15 +8,14 @@ from CommonServerPython import *
 # disable insecure warnings
 urllib3.disable_warnings()
 
+INTEGRATION_NAME = 'Azure'
 AZUREJSON_URL = 'https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519'
 
-INTEGRATION_NAME = 'Azure'
-
 ERROR_TYPE_TO_MESSAGE = {
-    requests.exceptions.SSLError: F'Connection error in the API call to {INTEGRATION_NAME}.\n'
-                                  F'Check your not secure parameter.\n\n',
     requests.ConnectionError: F'Connection error in the API call to {INTEGRATION_NAME}.\n'
                               F'Check your Server URL parameter.\n\n',
+    requests.exceptions.SSLError: F'Connection error in the API call to {INTEGRATION_NAME}.\n'
+                                  F'Check your not secure parameter.\n\n',
     requests.exceptions.HTTPError: F'Error issuing the request call to {INTEGRATION_NAME}.\n\n',
 }
 
@@ -303,18 +302,6 @@ def fetch_indicators(client: Client, limit: int = -1) -> Tuple[List[Dict], List]
     return indicators, raw_response
 
 
-# simple function to iterate list in batches
-def batch_temp(iterable, batch_size=1):
-    current_batch = []
-    for item in iterable:
-        current_batch.append(item)
-        if len(current_batch) == batch_size:
-            yield current_batch
-            current_batch = []
-    if current_batch:
-        yield current_batch
-
-
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -349,7 +336,7 @@ def main():
         elif command == 'fetch-indicators':
             indicators, _ = fetch_indicators(client)
 
-            for single_batch in batch_temp(indicators, batch_size=500):
+            for single_batch in batch(indicators, batch_size=500):
                 demisto.createIndicators(single_batch)
 
         else:
