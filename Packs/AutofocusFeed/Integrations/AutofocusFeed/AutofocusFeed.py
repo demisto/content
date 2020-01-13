@@ -196,7 +196,7 @@ def main():
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators_command(client)
             # we submit the indicators in batches
-            for b in batch(indicators, batch_size=500):
+            for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
