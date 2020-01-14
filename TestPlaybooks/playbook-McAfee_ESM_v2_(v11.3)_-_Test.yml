@@ -332,7 +332,7 @@ tasks:
       iscommand: true
     nexttasks:
       '#none#':
-      - "15"
+      - "13"
     scriptarguments:
       assignedUser: {}
       customEnd: {}
@@ -345,64 +345,6 @@ tasks:
         "position": {
           "x": -350,
           "y": 170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: de9a7ab9-c7a5-409f-8d85-d24917aa93f9
-    type: regular
-    task:
-      id: de9a7ab9-c7a5-409f-8d85-d24917aa93f9
-      version: -1
-      name: acknowledge_alarms
-      description: Mark triggered alarms as acknowledged
-      script: '|||esm-acknowledge-alarms'
-      type: regular
-      iscommand: true
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      alarmIds:
-        simple: ${Alarm.[0].ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -350,
-          "y": 310
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 524e8fa6-0e1f-48fd-8e92-c9ffb5530b23
-    type: regular
-    task:
-      id: 524e8fa6-0e1f-48fd-8e92-c9ffb5530b23
-      version: -1
-      name: unacknowledge_alarms
-      description: Mark triggered alarms as unacknowledged
-      script: '|||esm-unacknowledge-alarms'
-      type: regular
-      iscommand: true
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      alarmIds:
-        simple: ${Alarm.[0].ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -350,
-          "y": 450
         }
       }
     note: false
