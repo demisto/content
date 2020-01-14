@@ -7,7 +7,6 @@ from CommonServerUserPython import *
 import re
 import json
 import requests
-import ipaddress
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -23,8 +22,6 @@ USE_SSL = not PARAMS.get('insecure', False)
 BASE_URL = SERVER + '/api/v1.0'
 
 VENDOR_NAME = 'AutoFocus V2'
-
-DOMAIN_RE = re.compile(r'^[a-zA-Z\d-]{,63}(\.[a-zA-Z\d-]{,63})*$')
 
 # Headers to be sent in requests
 HEADERS = {
@@ -980,61 +977,65 @@ def get_indicator_outputs(indicator_type, indicators, indicator_context_output):
 def check_for_ip(indicator):
     if '-' in indicator:
         # check for address range
-        a1, a2 = indicator.split('-', 1)
+        ip1, ip2 = indicator.split('-', 1)
 
-        try:
-            a1 = ipaddress.ip_address(a1)
-            a2 = ipaddress.ip_address(a2)
+        if re.match(ipv4Regex, ip1) and re.match(ipv4Regex, ip2):
+            return FeedIndicatorType.IP
 
-            if a1.version == a2.version:
-                if a1.version == 6:
-                    return 'IPv6'
-                if a1.version == 4:
-                    return 'IPv4'
+        elif re.match(ipv6Regex, ip1) and re.match(ipv6Regex, ip2):
+            return FeedIndicatorType.IPv6
 
-        except ValueError:
-            return None
+        elif re.match(ipv4cidrRegex, ip1) and re.match(ipv4cidrRegex, ip2):
+            return FeedIndicatorType.CIDR
+
+        elif re.match(ipv6cidrRegex, ip1) and re.match(ipv6cidrRegex, ip2):
+            return FeedIndicatorType.IPv6CIDR
 
         return None
 
     if '/' in indicator:
-        # check for network
-        try:
-            ip = ipaddress.ip_network(indicator)
 
-        except ValueError:
-            return None
+        if re.match(ipv4cidrRegex, indicator):
+            return FeedIndicatorType.CIDR
 
-        if ip.version == 4:
-            return 'CIDR'
-        if ip.version == 6:
-            return 'IPv6CIDR'
+        elif re.match(ipv6cidrRegex, indicator):
+            return FeedIndicatorType.IPv6CIDR
 
         return None
 
-    try:
-        ip = ipaddress.ip_address(indicator)
+    else:
+        if re.match(ipv4Regex, indicator):
+            return FeedIndicatorType.IP
 
-    except Exception:
-        return None
-
-    if ip.version == 4:
-        return 'IPv4'
-    if ip.version == 6:
-        return 'IPv6'
+        elif re.match(ipv6Regex, indicator):
+            return FeedIndicatorType.IPv6
 
     return None
 
 
-def type_of_indicator(indicator):
-    ipversion = check_for_ip(indicator)
-    if ipversion is not None:
-        return ipversion
+def find_indicator_type(indicator):
+    """Infer the type of the indicator.
 
-    if DOMAIN_RE.match(indicator):
-        return 'domain'
+    Args:
+        indicator(str): The indicator whose type we want to check.
 
-    return 'URL'
+    Returns:
+        str. The type of the indicator.
+    """
+    type = check_for_ip(indicator)
+
+    if type:
+        return type
+
+    elif re.match(sha256Regex, indicator):
+        return FeedIndicatorType.File
+
+    # in AutoFocus, URLs include '/' character while domains do not.
+    elif '/' in indicator:
+        return FeedIndicatorType.URL
+
+    else:
+        return FeedIndicatorType.Domain
 
 
 ''' COMMANDS'''
@@ -1310,16 +1311,53 @@ def get_export_list_command(args):
                            err_operation=f"Failed to fetch export list: {args.get('label')}")
 
     indicators = []
+    context_ip = []
+    context_url = []
+    context_domain = []
+    context_file = []
     for indicator_value in results.get('export_list'):
-        indicator_type = type_of_indicator(indicator_value)
+        indicator_type = find_indicator_type(indicator_value)
         indicators.append({
             'Type': indicator_type,
             'Value': indicator_value,
         })
+        if indicator_type in [FeedIndicatorType.IP,
+                              FeedIndicatorType.IPv6, FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]:
+            if '-' in indicator_value:
+                context_ip.append({
+                    'Address': indicator_value.split('-')[0]
+                })
+                context_ip.append({
+                    'Address': indicator_value.split('-')[1]
+                })
+
+            else:
+                context_ip.append({
+                    'Address': indicator_value
+                })
+
+        elif indicator_type in [FeedIndicatorType.Domain]:
+            context_domain.append({
+                'Name': indicator_value
+            })
+
+        elif indicator_type in [FeedIndicatorType.File]:
+            context_file.append({
+                'SHA256': indicator_value
+            })
+
+        elif indicator_type in [FeedIndicatorType.URL]:
+            context_url.append({
+                'Data': indicator_value,
+            })
 
     hr = tableToMarkdown(f"Export list {args.get('label')}", indicators, headers=['Type', 'Value'])
 
-    return_outputs(hr, {'AutoFocus.ExportListIndicator(val.Value == obj.Value && val.Type == obj.Type)': indicators},
+    return_outputs(hr, {'AutoFocus.Indicator(val.Value == obj.Value && val.Type == obj.Type)': indicators,
+                        'IP(obj.Address == val.Address)': context_ip,
+                        'URL(obj.Data == val.Data)': context_url,
+                        'File(obj.SHA256 == val.SHA256)': context_file,
+                        'Domain(obj.Name == val.Name)': context_domain},
                    results)
 
 
