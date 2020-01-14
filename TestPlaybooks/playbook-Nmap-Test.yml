@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0adcccad-7dea-4779-814a-ae5a49ee8a87
+    taskid: bceb8372-36f8-473d-8bd5-d850d9e1da5b
     type: start
     task:
-      id: 0adcccad-7dea-4779-814a-ae5a49ee8a87
+      id: bceb8372-36f8-473d-8bd5-d850d9e1da5b
       version: -1
       name: ""
       iscommand: false
@@ -16,6 +16,8 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "5"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -23,12 +25,15 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: bfaa79f3-b5b3-4442-8fb0-a7d4b8baf613
+    taskid: 8735f586-8871-4f39-8ff5-a1d766fa8b6c
     type: regular
     task:
-      id: bfaa79f3-b5b3-4442-8fb0-a7d4b8baf613
+      id: 8735f586-8871-4f39-8ff5-a1d766fa8b6c
       version: -1
       name: nmap-scan
       description: Scan targets with the given parameters
@@ -40,8 +45,11 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      options: -sV
-      targets: scanme.nmap.org
+      options:
+        simple: -sV
+      targets:
+        simple: scanme.nmap.org
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -49,12 +57,15 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: ab16a6d9-8841-4682-871c-4ab26488514e
+    taskid: 863dd4f6-35d6-4ef6-8986-86520b0ddc2e
     type: condition
     task:
-      id: ab16a6d9-8841-4682-871c-4ab26488514e
+      id: 863dd4f6-35d6-4ef6-8986-86520b0ddc2e
       version: -1
       name: Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -69,20 +80,25 @@ tasks:
       "yes":
       - "3"
     scriptarguments:
-      value: ${NMAP.Scan.Hosts.Services.Port(val==22)}
+      value:
+        simple: ${NMAP.Scan.Hosts.Services.Port(val==22)}
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 375
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: cd018324-9ab4-448c-8a62-e8fc66621456
+    taskid: 535a46d7-43ac-44c3-8f7d-23e137e4c453
     type: regular
     task:
-      id: cd018324-9ab4-448c-8a62-e8fc66621456
+      id: 535a46d7-43ac-44c3-8f7d-23e137e4c453
       version: -1
       name: Close investigation
       scriptName: CloseInvestigation
@@ -90,21 +106,27 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      notes: Found the service
-      reason: All good
+      notes:
+        simple: Found the service
+      reason:
+        simple: All good
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 170,
+          "y": 765
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: ab149f17-3ed3-4265-81b4-2383ba8f1e90
+    taskid: 18e87031-813b-48e3-8add-5025d348fae0
     type: regular
     task:
-      id: ab149f17-3ed3-4265-81b4-2383ba8f1e90
+      id: 18e87031-813b-48e3-8add-5025d348fae0
       version: -1
       name: Oops, problem
       scriptName: Print
@@ -112,24 +134,116 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      value: Service not found
+      value:
+        simple: Service not found
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 970,
+          "y": 660
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 45144983-0008-465e-8f48-6764e4f6d0c0
+    type: regular
+    task:
+      id: 45144983-0008-465e-8f48-6764e4f6d0c0
+      version: -1
+      name: nmap-scan
+      description: Scan targets with the given parameters
+      script: '|||nmap-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      options:
+        simple: -sn
+      targets:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 2a5d4701-319b-446c-8282-a5df519f46a4
+    type: condition
+    task:
+      id: 2a5d4701-319b-446c-8282-a5df519f46a4
+      version: -1
+      name: check Hostname
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: NMAP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: NMAP.Scan.Hosts.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 8.8.8.8
+                accessor: Scan.Hosts.Hostname
+            iscontext: true
+          right:
+            value:
+              simple: dns.google
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "2_4_no": 0.26,
+      "6_3_yes": 0.63
+    },
     "paper": {
       "dimensions": {
-        "height": 590,
-        "width": 810,
-        "x": 50,
+        "height": 810,
+        "width": 1180,
+        "x": 170,
         "y": 50
       }
     }
   }
 inputs: []
+outputs: []

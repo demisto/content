@@ -25,11 +25,13 @@
     "hidden": false,
     "associatedTypes": [
         "Access",
-        "Malware"
+        "Malware",
+        "Traps"
     ],
     "systemAssociatedTypes": [
         "Access",
-        "Malware"
+        "Malware",
+        "Traps"
     ],
     "associatedToAll": false,
     "unmapped": false,

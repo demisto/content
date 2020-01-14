@@ -1,0 +1,40 @@
+args:
+- default: false
+  description: The object value to check, if empty.
+  isArray: false
+  name: value
+  required: false
+  secret: false
+- default: false
+  description: The new value to return if the original value was empty.
+  isArray: false
+  name: defaultValue
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: true
+  defaultValue: 'true'
+  description: If set to true, empty strings, arrays and dictionaries are considered
+    empty entities and the default value is returned.
+  isArray: false
+  name: applyIfEmpty
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: Checks an object for an empty value and returns a pre-set default value.
+commonfields:
+  id: SetIfEmpty
+  version: -1
+enabled: false
+name: SetIfEmpty
+script: '-'
+subtype: python3
+system: false
+tags:
+- transformer
+- general
+- entirelist
+timeout: '0'
+type: python

@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Improved handling of error messages.
 
 ## [19.9.1] - 2019-09-18
   - Updated documentation to reflect capabilities of the Whois integration.

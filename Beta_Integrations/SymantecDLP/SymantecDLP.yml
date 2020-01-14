@@ -1,0 +1,460 @@
+category: Network Security
+commonfields:
+  id: Symantec Data Loss Prevention
+  version: -1
+configuration:
+- display: Enforce Server (e.g. https://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- display: Saved Report ID (Required for list incidents)
+  name: saved_report_id
+  required: false
+  type: 0
+- defaultvalue: '10'
+  display: Fetch limit
+  name: fetch_limit
+  required: false
+  type: 0
+description: Symantec Data Loss Prevention enables you to discover, monitor and protect your sensitive corporate information.
+display: Symantec Data Loss Prevention (Beta)
+name: Symantec Data Loss Prevention
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: 1 day
+      description: Returns incidents with a creation date later than specified. Given in
+        free text. For example, 2 days.
+      isArray: false
+      name: creation_date
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of incidents.
+    execution: false
+    name: symantec-dlp-list-incidents
+    outputs:
+    - contextPath: SymantecDLP.Incident.ID
+      description: The ID of the Incident.
+      type: Number
+  - arguments:
+    - default: false
+      description: The Incident ID for which to return details.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: none
+      description: |-
+        Adds additional information to an incident. The following values can be used:
+        all - All custom attributes are needed.
+        none - None of the custom attributes are needed.
+        specific attributes - A comma separated list of custom attributes names. For example, ca1,ca2,ca3.
+        custom attribute group name - A comma separated list of custom attributes group names. For example, cag1, cag2, cag3. This value retrieves all custom attributes in the relevant group.
+        Default is none.
+      isArray: false
+      name: custom_attributes
+      predefined:
+      - all
+      - none
+      - specific attributes
+      - custom attribute group name
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma separated list of custom attributes names or group names.
+        For example, item1,item2,item3.'
+      isArray: false
+      name: custom_data
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the details of the specified incident.
+    execution: false
+    name: symantec-dlp-get-incident-details
+    outputs:
+    - contextPath: SymantecDLP.Incident.ID
+      description: The ID of the incident.
+      type: Number
+    - contextPath: SymantecDLP.Incident.LongID
+      description: The long ID of the incident.
+      type: Number
+    - contextPath: SymantecDLP.Incident.StatusCode
+      description: The status code of the incident.
+      type: String
+    - contextPath: SymantecDLP.Incident.CreationDate
+      description: The creation date of the incident.
+      type: Date
+    - contextPath: SymantecDLP.Incident.DetectionDate
+      description: The detection date of the incident.
+      type: Date
+    - contextPath: SymantecDLP.Incident.Severity
+      description: The severity of the incident.
+      type: String
+    - contextPath: SymantecDLP.Incident.MessageSource
+      description: The localized label that corresponds to the Symantec DLP product that generated the incident.
+      type: String
+    - contextPath: SymantecDLP.Incident.MessageSourceType
+      description: 'Indicates the Symantec DLP product that generated
+        the incident. Can be: "NETWORK", "DISCOVER", "ENDPOINT", "DIM", and "DAR".'
+      type: String
+    - contextPath: SymantecDLP.Incident.MessageType
+      description: Indicates the Symantec DLP product component that
+        generated the incident.
+      type: String
+    - contextPath: SymantecDLP.Incident.MessageTypeID
+      description: The ID of the Message Type.
+      type: Number
+    - contextPath: SymantecDLP.Incident.Policy.Name
+      description: The name of the policy.
+      type: String
+    - contextPath: SymantecDLP.Incident.Policy.Version
+      description: The version of the policy.
+      type: String
+    - contextPath: SymantecDLP.Incident.Policy.Label
+      description: The label of the policy.
+      type: String
+    - contextPath: SymantecDLP.Incident.Policy.ID
+      description: The ID of the policy.
+      type: Number
+    - contextPath: SymantecDLP.Incident.BlockedStatus
+      description: Indicates whether the message was blocked.
+      type: String
+    - contextPath: SymantecDLP.Incident.MatchCount
+      description: Indicates the number of detection rule matches in the incident.
+      type: Number
+    - contextPath: SymantecDLP.Incident.RuleViolationCount
+      description: Indicates the number of policy rules that were violated.
+      type: Number
+    - contextPath: SymantecDLP.Incident.DetectionServer
+      description: The name of the detection server that created the incident.
+      type: String
+    - contextPath: SymantecDLP.Incident.DataOwner.Name
+      description: The name of the data owner.
+      type: String
+    - contextPath: SymantecDLP.Incident.DataOwner.Email
+      description: The email of the data owner.
+      type: String
+    - contextPath: SymantecDLP.Incident.EventDate
+      description: The date and time at which the violation event occurred.
+      type: Date
+    - contextPath: SymantecDLP.Incident.ViolatedPolicyRule.Name
+      description: The name of the rule within the policy that the message violated.
+      type: String
+    - contextPath: SymantecDLP.Incident.ViolatedPolicyRule.ID
+      description: The ID of the rule within the policy that the message violated.
+      type: Number
+    - contextPath: SymantecDLP.Incident.OtherViolatedPolicy.Name
+      description: The name of any additional policies that the message violated.
+      type: String
+    - contextPath: SymantecDLP.Incident.OtherViolatedPolicy.Version
+      description: The version of any additional policies that the message violated.
+      type: String
+    - contextPath: SymantecDLP.Incident.OtherViolatedPolicy.Label
+      description: The label of any additional policies that the message violated.
+      type: String
+    - contextPath: SymantecDLP.Incident.OtherViolatedPolicy.ID
+      description: The ID of any additional policies that the message violated.
+      type: Number
+    - contextPath: SymantecDLP.Incident.CustomAttribute.Name
+      description: The custom attribute name.
+      type: String
+    - contextPath: SymantecDLP.Incident.CustomAttribute.Value
+      description: The custom attribute value.
+      type: String
+  - arguments:
+    - default: false
+      description: Incident ID to update.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Represents the severity level of the incident. Can be: "High", "Medium", "Low", and "Info".'
+      isArray: false
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+      - Info
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Represents the status value of the incident.
+        Define incident status values using the
+        Enforce Server administration console.
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Represents the remediation status of an
+        incident.
+      isArray: false
+      name: remediation_status
+      predefined:
+      - BLOCKED
+      - CONTENT_REMOVED
+      - CUSTOM_ACTION_ON_EMAIL
+      - EMAIL_APPROVED
+      - EMAIL_BLOCKED
+      - EMAIL_MESSAGE_EXPUNGED
+      - EMAIL_QUARANTINED
+      - ENDPOINT_BLOCK
+      - ENDPOINT_NOTIFY
+      - ENDPOINT_FILE_QUARANTINED
+      - ENDPOINT_FILE_QUARANTINE_FAILED
+      - ENDPOINT_NOTIFY_CANCEL_ALLOW
+      - ENDPOINT_NOTIFY_CANCEL_BLOCK
+      - ENDPOINT_NOTIFY_CANCEL_TIMEOUT_ALLOW
+      - ENDPOINT_NOTIFY_CANCEL_TIMEOUT_BLOCK
+      - FLEX_RESPONSE_ERROR
+      - FLEX_RESPONSE_EXECUTED
+      - FLEX_RESPONSE_REQUESTED
+      - MESSAGE_MODIFIED
+      - PASSED
+      - PLACE_HOLDER_DO_NOT_USE
+      - PROTECT_FILE_COPIED
+      - PROTECT_FILE_DELETED
+      - PROTECT_FILE_QUARANTINED
+      - PROTECT_REMEDIATION_ERROR
+      - REST_ENCRYTPED
+      - REST_PERFORMED_DRM
+      - REST_PERFORMED_BREAK_LINKS
+      - REST_PERFORMED_CUSTOM_ACTION
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Represents the remediation location of the
+        incident. Values can be user-defined.
+      isArray: false
+      name: remediation_location
+      required: false
+      secret: false
+    - default: false
+      description: The custom attribute name.
+      isArray: false
+      name: custom_attribute_name
+      required: false
+      secret: false
+    - default: false
+      description: The custom attribute value.
+      isArray: false
+      name: custom_attribute_value
+      required: false
+      secret: false
+    - default: false
+      description: The data owner name.
+      isArray: false
+      name: data_owner_name
+      required: false
+      secret: false
+    - default: false
+      description: The data owner email.
+      isArray: false
+      name: data_owner_email
+      required: false
+      secret: false
+    - default: false
+      description: The note to be added.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    - default: false
+      description: The time of the note in ISO format.
+      isArray: false
+      name: note_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates the details of a specific incident.
+    execution: false
+    name: symantec-dlp-update-incident
+  - arguments:
+    - default: false
+      description: The Incident ID for which to get binaries.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: Whether the Web Service includes the original message
+        in the response document.
+      isArray: false
+      name: include_original_message
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: Whether the Web Service includes all message components
+        (such as, headers and file attachments) in the response document.
+      isArray: false
+      name: include_all_components
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      Retrieves additional components of the message that generated the
+      incident. May include binary files.
+    execution: true
+    name: symantec-dlp-incident-binaries
+    outputs:
+    - contextPath: SymantecDLP.Incident.ID
+      description: The ID of the incident.
+      type: Number
+    - contextPath: SymantecDLP.Incident.LongID
+      description: The long ID of the incident.
+      type: Number
+    - contextPath: SymantecDLP.Incident.OriginalMessage
+      description: The original message of the incident.
+      type: String
+    - contextPath: SymantecDLP.Component.ID
+      description: The ID of the component.
+      type: Number
+    - contextPath: SymantecDLP.Component.Name
+      description: The name of the component.
+      type: String
+    - contextPath: SymantecDLP.Component.TypeID
+      description: The ID of the type of the component.
+      type: Number
+    - contextPath: SymantecDLP.Component.Type
+      description: The type of the component.
+      type: String
+    - contextPath: SymantecDLP.Component.Content
+      description: The content of the component.
+      type: String
+    - contextPath: SymantecDLP.Component.LongID
+      description: The long ID of the component.
+      type: Number
+  - deprecated: false
+    description: |-
+      Returns a list of all custom attribute names defined in
+      the Symantec DLP deployment.
+    execution: false
+    name: symantec-dlp-list-custom-attributes
+  - deprecated: false
+    description: |-
+      Returns a list of the custom status values defined in the
+      Symantec DLP deployment.
+    execution: false
+    name: symantec-dlp-list-incident-status
+  - arguments:
+    - default: false
+      description: The ID of the incident.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: Whether image violations should be included in the Incident
+        Violations Response.
+      isArray: false
+      name: include_image_violations
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the highlighted matches of a specific incident.
+    execution: false
+    name: symantec-dlp-incident-violations
+    outputs:
+    - contextPath: SymantecDLP.Incident.ID
+      description: The ID of the incident.
+      type: Number
+    - contextPath: SymantecDLP.Incident.LongID
+      description: The long ID of the incident.
+      type: Number
+    - contextPath: SymantecDLP.Incident.StatusCode
+      description: The status code of the incident.
+      type: String
+    - contextPath: SymantecDLP.Incident.ViolatingComponent.Name
+      description: The name of the violating component.
+      type: String
+    - contextPath: SymantecDLP.Incident.ViolatingComponent.DocumentFormat
+      description: The document format of the violating component.
+      type: String
+    - contextPath: SymantecDLP.Incident.ViolatingComponent.Type
+      description: The type of the violating component.
+      type: String
+    - contextPath: SymantecDLP.Incident.ViolatingComponent.TypeID
+      description: The type ID of the violating component.
+      type: Number
+    - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingCount
+      description: The number of policy rules that were violated.
+      type: Number
+    - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.DocumentViolation
+      description: Details about the document violation.
+      type: String
+    - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.FileSizeViolation
+      description: Details about the file size violation.
+      type: Number
+    - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.Text.Data
+      description: The data that triggered the violation.
+      type: String
+    - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.Text.Type
+      description: The type of data that triggered the violation.
+      type: String
+    - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.Text.RuleID
+      description: The rule ID which triggered the violation.
+      type: Number
+    - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.Text.RuleName
+      description: The rule name which triggered the violation.
+      type: String
+  dockerimage: demisto/zeep:1.0.0.3833
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 4.5.0
+beta: true
