@@ -19,7 +19,7 @@ GENERAL_SCORES = {
 }
 
 DBOT_TAG_FIELD = "dbot_internal_tag_field"
-
+MIN_INCIDENTS_THRESHOLD = 5
 
 def canonize_label(label):
     return label.replace(" ", "_")
@@ -28,7 +28,7 @@ def canonize_label(label):
 def get_phishing_map_labels(comma_values):
     if comma_values == ALL_LABELS:
         return comma_values
-    values = map(lambda x: x.strip(), comma_values.split(","))
+    values = [x.strip() for x in comma_values.split(",")]
     labels_dict = {}
     for v in values:
         v = v.strip()
@@ -217,8 +217,16 @@ def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, deta
 
 
 def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing_labels_counter):
-    if len(data) == 0:
-        return_error("There is not data to read")
+    if len(data) < MIN_INCIDENTS_THRESHOLD:
+        error = ['Only {} incident(s) correspond to the given label mapping.'.format(len(data))]
+        error += ['Minimum number of incidents required for training is {} ({}<{}).'.format(MIN_INCIDENTS_THRESHOLD,
+                                                                                           len(data),
+                                                                                           MIN_INCIDENTS_THRESHOLD)]
+        error += ['Please make sure that the mapping is correct and includes all the existing labels.']
+        error += ['The following existing labels could not be found in the labels mapping: ' +
+                  '{}.'.format(', '.join(missing_labels_counter.keys()))]
+        error += ['The given mapped labels are: {}.'.format(', '.join(labels_mapping.keys()))]
+        return_error('\n'.join(error))
     if len(missing_labels_counter) > 0:
         human_readable = tableToMarkdown("Skip labels - did not match any of specified labels", missing_labels_counter)
         entry = {
@@ -265,7 +273,17 @@ def main():
 
     demisto.results(len(data))
     if len(data) == 0:
-        return_error("There is not data to read")
+        error = ['No incidents were received.']
+        error += ['Please make sure that all arguments are set correctly and that incidents exist in the environment.']
+        return_error(' '.join(error))
+    if len(data) < MIN_INCIDENTS_THRESHOLD:
+        error = ['Only {} incident(s) were received.'.format(len(data))]
+        error += ['Minimum number of incidents required for training is {} ({}<{}).'.format(MIN_INCIDENTS_THRESHOLD,
+                                                                                           len(data),
+                                                                                           MIN_INCIDENTS_THRESHOLD)]
+        error += ['Please make sure that all arguments are set correctly, and that enough incidents exist in the ' + \
+                  'environment.']
+        return_error('\n'.join(error))
 
     data = set_tag_field(data, tag_fields)
     data, exist_labels_counter, missing_labels_counter = get_data_with_mapped_label(data, labels_mapping,
@@ -278,8 +296,8 @@ def main():
             find_keywords(data, DBOT_TAG_FIELD, text_field, keyword_min_score)
         except Exception:
             pass
-    train_tag_data = map(lambda x: x[DBOT_TAG_FIELD], data)
-    train_text_data = map(lambda x: x[text_field], data)
+    train_tag_data = [x[DBOT_TAG_FIELD] for x in data]
+    train_text_data = [x[text_field] for x in data]
     if len(train_text_data) != len(train_tag_data):
         return_error("Error: data and tag data are different length")
     y_test, y_pred = get_predictions_for_test_set(train_text_data, train_tag_data)
