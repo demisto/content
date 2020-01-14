@@ -1,9 +1,9 @@
 from CommonServerPython import *
 
-''' IMPORTS '''
-
-import requests
+""" IMPORTS """
 import ipaddress
+import requests
+import urllib3
 
 
 # error class for token errors
@@ -12,7 +12,7 @@ class TokenException(Exception):
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -439,5 +439,5 @@ def main():
         return_error(str(e))
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__builtin__', 'builtins'):
     main()

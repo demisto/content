@@ -1,9 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
-# The command demisto.command() holds the command sent from the user.
+import urllib3
+
 from cloakensdk.client import SyncClient
 from cloakensdk.resources import Url
+from cloakensdk import utility
+
+# Disable insecure warnings
+urllib3.disable_warnings()
+
 
 PROXY = handle_proxy("proxy", False)
 
@@ -42,7 +47,7 @@ if demisto.command() == 'cloaken-unshorten-url':
         cloaken_context = {
             'OriginalURL': url,
             'UnshortenedURL': url_data,
-            'Status': response_code
+            'Status': response_code,
         }
         ec = {
             outputPaths['url']: {
@@ -57,16 +62,36 @@ if demisto.command() == 'cloaken-unshorten-url':
         )
     elif response_code == 400:
         # url was malformed
-        context = {
-            'original_url': url,
-            'unshortened_url': '',
-            'status': response_code
-        }
-        return_outputs(
-            tableToMarkdown("Not able to resolve or malformed URL ", context),
-            {},
-            context
-        )
+        return_warning("Not able to resolve or malformed URL ")
     else:
         # server error or unavailable
         return_error('Error Cloaken Unshorten: ' + str(response.get('data', 'key missing')))
+
+if demisto.command() == 'cloaken-screenshot-url':
+    client = get_client()
+    url = demisto.args()["url"]
+    screenshot = utility.RasterizeAndRetrieveImage(client, url=url)
+    context = {"Url": url, "Status": 'failed'}
+    try:
+        result = screenshot.get_screenshot()
+        if result.get("data", "") != "":
+            stored_img = fileResult(result.get("filename", "screenshot.png"),
+                                    result.get("data", ""), "image")
+            demisto.results({'Type': entryTypes['image'],
+                             'ContentsFormat': formats['text'],
+                             'File': stored_img['File'],
+                             'FileID': stored_img['FileID'],
+                             'Contents': ''
+                             })
+            context["Status"] = "Success"
+            return_outputs(tableToMarkdown("Screenshot Succeeded", context),
+                           {"CloakenScreenshot": context},
+                           context
+                           )
+        else:
+            return_warning("No Screenshot data available")
+
+    except utility.RasterizeTimeout as e:
+        return_warning("Screenshot Timed Out: " + str(e))
+    except utility.RasterizeException as e:
+        return_warning("Screenshot Failed: " + str(e))

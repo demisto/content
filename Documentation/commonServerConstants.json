@@ -70,6 +70,42 @@
     "description": "An object containing commonly used context (output) paths - file, ip url, domain, email, dbotscore (e.g. outputPaths.domain)",
     "name": "outputPaths",
     "arguments": []
+  },
+  {
+    "language": "powershell",
+    "origin": "CommonServerPowerShell",
+    "cmdType": "builtinVar",
+    "return_value": {},
+    "description": "An object containing all possible entry types - note, file, error, image, etc (e.g. entryTypes.note)",
+    "name": "entryTypes",
+    "arguments": []
+  },
+  {
+    "language": "powershell",
+    "origin": "CommonServerPowerShell",
+    "cmdType": "builtinVar",
+    "return_value": {},
+    "description": "An object containing all supported values of entry ContentsFormat/ReadableContentsFormat - json, markdown, text, image, html, etc (e.g. formats.markdown)",
+    "name": "formats",
+    "arguments": []
+  },
+  {
+    "language": "powershell",
+    "origin": "CommonServerPowerShell",
+    "cmdType": "builtinVar",
+    "return_value": {},
+    "description": "An object containing all supported dbotscore values and their numeric representations - critical, high, medium, low, unknown and informational (e.g. dbotscores.high)",
+    "name": "dbotscores",
+    "arguments": []
+  },
+  {
+    "language": "powershell",
+    "origin": "CommonServerPowerShell",
+    "cmdType": "builtinVar",
+    "return_value": {},
+    "description": "An object containing commonly used context (output) paths - file, ip url, domain, email, dbotscore (e.g. outputPaths.domain)",
+    "name": "outputPaths",
+    "arguments": []
   }
 ]
 

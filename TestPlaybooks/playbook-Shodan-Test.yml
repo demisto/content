@@ -1,0 +1,200 @@
+id: ShodanTest
+version: -1
+name: ShodanTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f50ccca6-eb90-4d74-8299-c128a80ccba9
+    type: start
+    task:
+      id: f50ccca6-eb90-4d74-8299-c128a80ccba9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 5e24c48c-eb4e-44d4-8d41-21dacb7caa99
+    type: regular
+    task:
+      id: 5e24c48c-eb4e-44d4-8d41-21dacb7caa99
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: e0973ef7-c26c-45d4-815a-7debb4982073
+    type: regular
+    task:
+      id: e0973ef7-c26c-45d4-815a-7debb4982073
+      version: -1
+      name: ip
+      description: Check IP reputation (when information is available, returns a JSON
+        with details).  Uses all configured Threat Intelligence feeds
+      script: Shodan|||ip
+      type: regular
+      iscommand: true
+      brand: Shodan
+    nexttasks:
+      '#none#':
+      - "4"
+      - "3"
+      - "5"
+    scriptarguments:
+      ip:
+        simple: 1.1.1.1
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: b1ba2075-3fc1-4d9e-8c51-a4dbc2347d05
+    type: regular
+    task:
+      id: b1ba2075-3fc1-4d9e-8c51-a4dbc2347d05
+      version: -1
+      name: VerifyContext Geo
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Description,Country,Location
+      path:
+        simple: IP.Geo
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 51,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 5909d66a-33a7-4b2d-8d17-0bbe69f90bb4
+    type: regular
+    task:
+      id: 5909d66a-33a7-4b2d-8d17-0bbe69f90bb4
+      version: -1
+      name: VerifyContext Address
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Address
+      path:
+        simple: IP
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 4ee20456-5491-468c-8564-7d6f35d389be
+    type: regular
+    task:
+      id: 4ee20456-5491-468c-8564-7d6f35d389be
+      version: -1
+      name: VerifyContext Address
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Hostname
+      path:
+        simple: IP
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 916,
+          "y": 545
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 1245,
+        "x": 51,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -158,3 +158,42 @@ def test_prettify_logs():
                 {'Action': 'my_action2', 'CategoryOrVerdict': 'my_category2', 'Rule': 'my_rule2',
                  'NATDestinationPort': '101'}]
     assert response == expected
+
+
+def test_build_policy_match_query():
+    from Panorama import build_policy_match_query
+    source = '1.1.1.1'
+    destination = '6.7.8.9'
+    protocol = '1'
+    application = 'gmail-base'
+    response = build_policy_match_query(application, None, destination, None, None, None, protocol, source)
+    expected = '<test><security-policy-match><source>1.1.1.1</source><destination>6.7.8.9</destination>' \
+               '<protocol>1</protocol><application>gmail-base</application></security-policy-match></test>'
+    assert response == expected
+
+
+def test_prettify_matching_rule():
+    from Panorama import prettify_matching_rule
+    matching_rule = {'action': 'my_action1', '@name': 'very_important_rule', 'source': '6.7.8.9', 'destination': 'any'}
+    response = prettify_matching_rule(matching_rule)
+    expected = {'Action': 'my_action1', 'Name': 'very_important_rule', 'Source': '6.7.8.9', 'Destination': 'any'}
+    assert response == expected
+
+
+def test_prettify_static_route():
+    from Panorama import prettify_static_route
+    static_route = {'@name': 'name1', 'destination': '1.2.3.4', 'metric': '10', 'nexthop': {'fqdn': 'demisto.com'}}
+    virtual_router = 'my_virtual_router'
+    response = prettify_static_route(static_route, virtual_router)
+    expected = {'Name': 'name1', 'Destination': '1.2.3.4', 'Metric': 10,
+                'NextHop': 'demisto.com', 'VirtualRouter': 'my_virtual_router'}
+    assert response == expected
+
+
+def test_validate_search_time():
+    from Panorama import validate_search_time
+    assert validate_search_time('2019/12/26')
+    assert validate_search_time('2019/12/26 00:00:00')
+    with pytest.raises(Exception):
+        assert validate_search_time('219/12/26 00:00:00')
+        assert validate_search_time('219/10/35')

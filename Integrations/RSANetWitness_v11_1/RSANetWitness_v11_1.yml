@@ -17,7 +17,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 'false'
-  display: Trust any certificate (unsecure)
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -42,6 +42,11 @@ configuration:
 - defaultvalue: 1 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: 100
+  display: 'Fetch limit: the maximum number of incidents to fetch'
+  name: fetch_limit
   required: false
   type: 0
 description: RSA NetWitness Platform provides systems Logs, Network, and endpoint

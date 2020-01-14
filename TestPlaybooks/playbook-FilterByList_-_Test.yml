@@ -43,7 +43,7 @@ tasks:
       - "2"
     scriptarguments:
       listData:
-        simple: ^demisto.com$,foo.google.com
+        simple: demisto.com,google.com,foo.google.com
       listName:
         simple: whiteList
     separatecontext: false
@@ -76,7 +76,7 @@ tasks:
       listname:
         simple: whiteList
       values:
-        simple: demisto.com,google.com,foo.google.com
+        simple: ^demisto.com$,foo.google.com,walla.com
     separatecontext: false
     view: |-
       {
@@ -105,7 +105,7 @@ tasks:
       - "4"
     scriptarguments:
       expectedValue:
-        simple: '["demisto.com","foo.google.com"]'
+        simple: '["^demisto.com$","foo.google.com"]'
       fields: {}
       path:
         simple: List.In
@@ -137,7 +137,7 @@ tasks:
       - "15"
     scriptarguments:
       expectedValue:
-        simple: '["google.com"]'
+        simple: '["walla.com"]'
       fields: {}
       path:
         simple: List.NotIn
@@ -440,7 +440,7 @@ tasks:
       - "17"
     scriptarguments:
       listData:
-        simple: ^demisto.com$,FOO.GOOGLE.COM
+        simple: FOO.GOOGLE.COM,DEMISTO.COM
       listName:
         simple: whiteList
     separatecontext: false
@@ -475,7 +475,7 @@ tasks:
       listname:
         simple: whiteList
       values:
-        simple: DEMISTO.COM,google.com,foo.google.com
+        simple: ^DEMISTO.COM$,FOO.GOOGLE.COM,walla.com
     separatecontext: false
     view: |-
       {
@@ -504,7 +504,7 @@ tasks:
       - "19"
     scriptarguments:
       expectedValue:
-        simple: '["DEMISTO.COM","foo.google.com"]'
+        simple: '["^DEMISTO.COM$","FOO.GOOGLE.COM"] '
       fields: {}
       path:
         simple: List.In
@@ -536,7 +536,7 @@ tasks:
       - "5"
     scriptarguments:
       expectedValue:
-        simple: '["google.com"]'
+        simple: '["walla.com"]'
       fields: {}
       path:
         simple: List.NotIn
@@ -565,4 +565,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 4.1.0
+fromversion: 4.5.0
