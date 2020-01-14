@@ -33,7 +33,7 @@ configuration:
 - name: expirationInterval
   required: false
   type: 1
-- display: Sub Feeds
+- display: Sub-Feeds
   name: url
   options:
   - http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt
@@ -79,7 +79,7 @@ configuration:
   name: doublequote
   required: false
   type: 8
-- display: Escape character
+- display: Escape Character
   name: escapechar
   required: false
   type: 0
@@ -96,7 +96,7 @@ configuration:
   name: source_name
   required: false
   type: 0
-description: Bambenek Conslting Feed Integration
+description: Use the Bambenek Consulting feed integration to fetch indicators from the feed.
 display: Bambenek Consulting Feed
 name: Bambenek Consulting Feed
 script:
@@ -104,27 +104,27 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Limit results returned to the output.
+      description: The maximum number of results to return. The default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Indicator type.
+      description: The indicator type.
       isArray: false
       name: indicator_type
       required: false
       secret: false
     deprecated: false
-    description: Get the feed indicators.
+    description: Gets the feed indicators.
     execution: false
     name: get-indicators
     outputs:
     - contextPath: BambenekConsultingFeed.Indicator.Value
-      description: Indicator value.
+      description: The indicator value.
       type: String
     - contextPath: BambenekConsultingFeed.Indicator.Type
-      description: Indicator type.
+      description: The indicator type.
       type: String
     - contextPath: BambenekConsultingFeed.Indicator.Rawjson
       description: Indicator rawJSON value.
