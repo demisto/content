@@ -29,6 +29,7 @@ OUTPUTS = {
         'Name': 'name',
         'Domain': 'domain',
         'Platform': 'platform',
+        'ScanStatus': 'scanStatus',
         'Status': 'status',
         'IP': 'ip',
         'ComputerSid': 'computerSid',
@@ -88,7 +89,7 @@ def extract_and_validate_http_response(response, operation_err_message, test=Fal
     """
 
     Args:
-        resp: raw response
+        response: raw response
         operation_err_message: error message to present in case of error
         test: boolean value, true if test
 
@@ -240,13 +241,13 @@ def endpoint_scan(endpoint_id):
         Operation data.
     """
     path = f'agents/{endpoint_id}/scan'
-    resp = http_request('POST', path, operation_err=f'Scanning endpoint: {endpoint_id} failed')
-    operation_obj = parse_data_from_response(resp, 'endpoint_scan')
+    response = http_request('POST', path, operation_err=f'Scanning endpoint: {endpoint_id} failed')
+    operation_obj = parse_data_from_response(response, 'endpoint_scan')
     operation_obj.update({
         'EndpointID': endpoint_id,
         'Type': 'endpoint-scan'
     })
-    return operation_obj
+    return operation_obj, response
 
 
 def endpoint_scan_result(operation_id):
@@ -258,7 +259,7 @@ def endpoint_scan_result(operation_id):
     Returns:
         scan data.
     """
-    status, additional_data = sam_operation(operation_id, f'Could not get scan results')
+    status, additional_data = sam_operation(operation_id, 'Could not get scan results')
     scan_data = parse_data_from_response(additional_data.get('scanData'),
                                          'endpoint_scan_result') if additional_data else {}
     scan_data['Status'] = status
@@ -441,8 +442,17 @@ def sam_operation(operation_id, operation_err):
     """
     path = f'sam/operations/{operation_id}'
     result = http_request('GET', path, operation_err=operation_err)
-    if result.get('summaryData').get('incompatible'):
-        raise Exception(f'{operation_err} incompatible operation')
+    summary_data = result.get('summaryData')
+    if summary_data and (summary_data.get('incompatible') or summary_data.get('samExists')):
+        if operation_err == 'Could not get scan results':  # Get scan result
+            requested_scans = int(summary_data.get('requested', 0))
+            incompatible_scans = int(summary_data.get('incompatible', 0))
+            sam_exists_scans = int(summary_data.get('samExists', 0))
+            if requested_scans <= incompatible_scans + sam_exists_scans:
+                raise Exception(f'{operation_err}.\nRequested scans number: {requested_scans}.\n'
+                                f'Incompatible scans number: {requested_scans}.\n'
+                                f'Sam exists scans number: {sam_exists_scans}.')
+        raise Exception(f'{operation_err}')
     if result.get('summaryData').get('samExists'):
         return 'ignored', None
     for status_obj in result.get('statuses'):
@@ -570,14 +580,15 @@ def endpoint_scan_command():
     # check that running a scan is possible
     _, raw_data = get_endpoint_by_id(endpoint_id)
     scan_status = raw_data.get('scanStatus')
-    if scan_status in ['pending', 'in_progress']:
+    if scan_status and scan_status in ['pending', 'in_progress']:
         raise Exception(f'Could not initiate a scan on the endpoint {endpoint_id}'
                         f' because endpoint scan status is {scan_status}.')
-    operation_obj = endpoint_scan(endpoint_id)
+
+    operation_obj, raw_data = endpoint_scan(endpoint_id)
     human_readable = tableToMarkdown(f'Scan command on endpoint: {endpoint_id} received', operation_obj,
                                      headerTransform=pascalToSpace)
     context = {'Traps.Scan(val.OperationID == obj.OperationID)': operation_obj}
-    return_outputs(human_readable, context, operation_obj)
+    return_outputs(human_readable, context, raw_data)
 
 
 def endpoint_scan_result_command():
