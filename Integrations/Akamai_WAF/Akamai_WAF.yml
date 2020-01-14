@@ -28,8 +28,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Akamai WAF integration to manage common sets of lists used by various Akamai security products
-  and features.
+description: Use the Akamai WAF integration to manage common sets of lists used by
+  various Akamai security products and features.
 display: Akamai WAF
 name: Akamai WAF
 script:
@@ -37,7 +37,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The network list type by which to filter the results. Can be "IP" or "GEO".'
+      description: The network list type by which to filter the results. Can be "IP"
+        or "GEO".
       isArray: false
       name: list_type
       predefined:
@@ -52,8 +53,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list all network lists available for an authenticated user who belongs
-      to a group.
+    description: Returns a list of all network lists available for an authenticated user
+      who belongs to a group.
     execution: false
     name: akamai-get-network-lists
     outputs:
@@ -215,14 +216,15 @@ script:
     name: akamai-delete-network-list
   - arguments:
     - default: false
-      description: The ID of the network list that was deleted.
+      description: The ID of the network list to be activated.
       isArray: false
       name: network_list_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The environment type to activate the network list. Can be "STAGING" OR 'PRODUCTION".
+      description: The environment type to activate the network list. Can be "STAGING"
+        OR 'PRODUCTION".
       isArray: false
       name: env
       predefined:
@@ -248,7 +250,7 @@ script:
     name: akamai-activate-network-list
   - arguments:
     - default: false
-      description: The ID of the network that was activated.
+      description: The ID of the network to add elements.
       isArray: false
       name: network_list_id
       required: true
