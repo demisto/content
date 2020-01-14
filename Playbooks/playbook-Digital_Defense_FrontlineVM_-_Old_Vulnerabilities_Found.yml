@@ -243,3 +243,5 @@ inputs:
   description: Input number of days from now in which to search if vulnerabilities
     exist.
 outputs: []
+tests:
+  - No test - manual task
