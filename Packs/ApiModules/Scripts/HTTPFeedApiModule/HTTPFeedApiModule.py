@@ -117,20 +117,18 @@ class Client(BaseClient):
                     LOG(f'{self.feed_name} - no transform string for field {f} but pattern contains groups')
                 fattrs['transform'] = r'\g<0>'
 
-    def build_iterator(self):
-        rkwargs = dict(
-            stream=True,
-            verify=self._verify,
-            timeout=self.polling_timeout
-        )
+    def build_iterator(self, **kwargs):
+        kwargs['stream'] = True
+        kwargs['verify'] = self._verify
+        kwargs['timeout'] = self.polling_timeout
 
         if self.user_agent is not None:
-            rkwargs['headers'] = {
+            kwargs['headers'] = {
                 'User-Agent': self.user_agent
             }
 
         if self.username is not None and self.password is not None:
-            rkwargs['auth'] = (self.username, self.password)
+            kwargs['auth'] = (self.username, self.password)
         try:
             urls = self._base_url
             rs = []
@@ -139,7 +137,7 @@ class Client(BaseClient):
             for url in urls:
                 r = requests.get(
                     url,
-                    **rkwargs
+                    **kwargs
                 )
                 try:
                     r.raise_for_status()
