@@ -19,12 +19,13 @@ tasks:
       - "2"
       - "5"
       - "7"
+      - "14"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 30
+          "x": 250,
+          "y": 40
         }
       }
     note: false
@@ -222,7 +223,7 @@ tasks:
       - "8"
     scriptarguments:
       name:
-        simple: CCC
+        simple: AAA
       show_in_case_pane: {}
     separatecontext: false
     view: |-
@@ -252,9 +253,9 @@ tasks:
       - "9"
     scriptarguments:
       new_name:
-        simple: DDD
+        simple: BBB
       original_name:
-        simple: CCC
+        simple: AAA
       show_in_case_pane: {}
     separatecontext: false
     view: |-
@@ -284,7 +285,7 @@ tasks:
       - "13"
     scriptarguments:
       name:
-        simple: DDD
+        simple: BBB
     separatecontext: false
     view: |-
       {
@@ -317,15 +318,105 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 653bc4d6-3858-41c9-8a79-f4843eafc859
+    type: regular
+    task:
+      id: 653bc4d6-3858-41c9-8a79-f4843eafc859
+      version: -1
+      name: fetch_alarms
+      description: Retrieves a list of alarms that have been triggered
+      script: '|||esm-fetch-alarms'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      assignedUser: {}
+      customEnd: {}
+      customStart: {}
+      timeRange:
+        simple: CURRENT_YEAR
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: de9a7ab9-c7a5-409f-8d85-d24917aa93f9
+    type: regular
+    task:
+      id: de9a7ab9-c7a5-409f-8d85-d24917aa93f9
+      version: -1
+      name: acknowledge_alarms
+      description: Mark triggered alarms as acknowledged
+      script: '|||esm-acknowledge-alarms'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      alarmIds:
+        simple: ${Alarm.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 524e8fa6-0e1f-48fd-8e92-c9ffb5530b23
+    type: regular
+    task:
+      id: 524e8fa6-0e1f-48fd-8e92-c9ffb5530b23
+      version: -1
+      name: unacknowledge_alarms
+      description: Mark triggered alarms as unacknowledged
+      script: '|||esm-unacknowledge-alarms'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      alarmIds:
+        simple: ${Alarm.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 775,
-        "width": 1180,
-        "x": 50,
-        "y": 30
+        "height": 765,
+        "width": 1580,
+        "x": -350,
+        "y": 40
       }
     }
   }

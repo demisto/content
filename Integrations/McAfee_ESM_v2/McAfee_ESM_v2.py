@@ -421,7 +421,7 @@ class McAfeeESMClient(BaseClient):
 
     def __handle_alarms(self, command: str):
         path = f'alarm{command}TriggeredAlarm'
-        alarm_ids = argToList(self.args.get('alarmIds'))
+        alarm_ids = argToList(str(self.args.get('alarmIds')))
         alarm_ids = [int(i) for i in alarm_ids]
         data = {
             'triggeredIds': {"alarmIdList": alarm_ids} if not self.version < '11.3' else alarm_ids

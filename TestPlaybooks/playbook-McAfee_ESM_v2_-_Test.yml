@@ -3,49 +3,51 @@ version: -1
 contentitemfields:
   propagationLabels: []
 name: McAfee ESM v2 - Test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 9bf83909-cc81-4210-8140-42372a9d6568
+  '0':
+    id: '0'
+    taskid: 6c85c7f9-79e8-4c47-8f3e-ed0829043436
     type: start
     task:
-      id: 9bf83909-cc81-4210-8140-42372a9d6568
+      id: 6c85c7f9-79e8-4c47-8f3e-ed0829043436
       version: -1
-      name: ""
+      name: ''
       iscommand: false
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
-      - "5"
-      - "7"
-      - "10"
+      - '2'
+      - '5'
+      - '7'
+      - '10'
+      - '14'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 250,
+          "x": 50,
           "y": 40
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 513f641e-df38-4749-863d-53401a5904a0
+  '1':
+    id: '1'
+    taskid: 74fef4c8-89b0-4205-88b8-9d3194ce9470
     type: regular
     task:
-      id: 513f641e-df38-4749-863d-53401a5904a0
+      id: 74fef4c8-89b0-4205-88b8-9d3194ce9470
       version: -1
       name: get_user_list
-      description: Get a list of all users.
+      description: ''
       script: '|||esm-get-user-list'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     separatecontext: false
     view: |-
       {
@@ -57,21 +59,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 24ef0e21-06ff-41e3-8556-1addd7634c13
+  '2':
+    id: '2'
+    taskid: 72596641-c90d-49c3-8581-2bd3bf84fa63
     type: regular
     task:
-      id: 24ef0e21-06ff-41e3-8556-1addd7634c13
+      id: 72596641-c90d-49c3-8581-2bd3bf84fa63
       version: -1
       name: get_organization_list
-      description: Get case organization
+      description: ''
       script: '|||esm-get-organization-list'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -83,21 +85,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 2f9cd8d1-39ab-4bb8-81a5-1ceea627db28
+  '3':
+    id: '3'
+    taskid: 321419e2-cf89-4b02-88f7-47621c7974e0
     type: regular
     task:
-      id: 2f9cd8d1-39ab-4bb8-81a5-1ceea627db28
+      id: 321419e2-cf89-4b02-88f7-47621c7974e0
       version: -1
       name: get_case_list
-      description: Get a list of cases from the system
+      description: ''
       script: '|||esm-get-case-list'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       since:
         simple: 3 months
@@ -112,21 +114,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 27a42616-ff5d-404e-82cc-e5e21d6cc1e6
+  '4':
+    id: '4'
+    taskid: 2694f7e2-a958-4d35-8235-2ebef5d31dfc
     type: regular
     task:
-      id: 27a42616-ff5d-404e-82cc-e5e21d6cc1e6
+      id: 2694f7e2-a958-4d35-8235-2ebef5d31dfc
       version: -1
       name: get_case_statuses
-      description: Get a list of valid case statuses from the system
+      description: ''
       script: '|||esm-get-case-statuses'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     separatecontext: false
     view: |-
       {
@@ -138,21 +140,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 5a1fa7f4-c192-40ed-8fb1-6c2780bc2a73
+  '5':
+    id: '5'
+    taskid: 9916bdac-ccab-4bb2-8e6c-4a6a174daed2
     type: regular
     task:
-      id: 5a1fa7f4-c192-40ed-8fb1-6c2780bc2a73
+      id: 9916bdac-ccab-4bb2-8e6c-4a6a174daed2
       version: -1
       name: add_case
-      description: Add a case to the system
+      description: ''
       script: '|||esm-add-case'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       assignee: {}
       organization: {}
@@ -171,21 +173,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
-    taskid: a4afa7a2-8623-4d34-8107-745366fad7af
+  '6':
+    id: '6'
+    taskid: faf090e4-8b64-41fa-809c-0157f80b806c
     type: regular
     task:
-      id: a4afa7a2-8623-4d34-8107-745366fad7af
+      id: faf090e4-8b64-41fa-809c-0157f80b806c
       version: -1
       name: edit_case
-      description: Edit an existing case
+      description: ''
       script: '|||esm-edit-case'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       assignee: {}
       id:
@@ -206,21 +208,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 3f98d640-8aa4-45f2-86c9-86b00731762d
+  '7':
+    id: '7'
+    taskid: be8598d9-8f07-41c0-8ffa-99e9b51f2f74
     type: regular
     task:
-      id: 3f98d640-8aa4-45f2-86c9-86b00731762d
+      id: be8598d9-8f07-41c0-8ffa-99e9b51f2f74
       version: -1
       name: add_case_status
-      description: Add a case status
+      description: ''
       script: '|||esm-add-case-status'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       name:
         simple: AAA
@@ -236,21 +238,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
-    taskid: f01e58f4-0142-4bf3-8089-6e750f1c5f7b
+  '8':
+    id: '8'
+    taskid: a7d57d20-5894-419d-8f23-9100e32133f6
     type: regular
     task:
-      id: f01e58f4-0142-4bf3-8089-6e750f1c5f7b
+      id: a7d57d20-5894-419d-8f23-9100e32133f6
       version: -1
       name: edit_case_status
-      description: Edit a case status
+      description: ''
       script: '|||esm-edit-case-status'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       new_name:
         simple: BBB
@@ -268,21 +270,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: a9cac9c1-fed9-49b9-8e9c-6664469db66b
+  '9':
+    id: '9'
+    taskid: 796ee327-acba-4a41-8b4f-3398254d0ea0
     type: regular
     task:
-      id: a9cac9c1-fed9-49b9-8e9c-6664469db66b
+      id: 796ee327-acba-4a41-8b4f-3398254d0ea0
       version: -1
       name: delete_case_status
-      description: Delete a case status
+      description: ''
       script: '|||esm-delete-case-status'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       name:
         simple: BBB
@@ -297,21 +299,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "10":
-    id: "10"
-    taskid: bd8ea07c-f74f-41a7-87ad-71395117b8cc
+  '10':
+    id: '10'
+    taskid: e2c9cbc2-042f-48f7-8aa3-9da384fef5c6
     type: regular
     task:
-      id: bd8ea07c-f74f-41a7-87ad-71395117b8cc
+      id: e2c9cbc2-042f-48f7-8aa3-9da384fef5c6
       version: -1
       name: search
-      description: Perform a query against Mcafee ESM SIEM
+      description: ''
       script: '|||esm-search'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       customEnd: {}
       customStart: {}
@@ -319,11 +321,11 @@ tasks:
       filters:
         simple: '[{"type":"EsmFieldFilter","field":{"name":"SrcIP"},"operator":"IN"}]'
       limit:
-        simple: "30"
+        simple: '30'
       queryType: {}
       timeOut: {}
       timeRange:
-        simple: "CURRENT_YEAR"
+        simple: CURRENT_YEAR
     separatecontext: false
     view: |-
       {
@@ -335,21 +337,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 3a00bd17-4862-4be3-86f8-40a38478b60c
+  '11':
+    id: '11'
+    taskid: 3b17b873-5b14-40e8-811a-3f8552100403
     type: regular
     task:
-      id: 3a00bd17-4862-4be3-86f8-40a38478b60c
+      id: 3b17b873-5b14-40e8-811a-3f8552100403
       version: -1
       name: get_alarm_event_details
-      description: Gets the details for the triggered alarm
+      description: ''
       script: '|||esm-get-alarm-event-details'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
       eventId:
         simple: ${McAfeeESM.[0].AlertIPSIDAlertID}
@@ -364,21 +366,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 548ac3e3-df00-4bb4-84c8-f8ab4d2c6438
+  '12':
+    id: '12'
+    taskid: 5b5cb169-549d-40e8-8e72-126070ab2d20
     type: regular
     task:
-      id: 548ac3e3-df00-4bb4-84c8-f8ab4d2c6438
+      id: 5b5cb169-549d-40e8-8e72-126070ab2d20
       version: -1
       name: get_case_event_list
-      description: Get case events details
+      description: ''
       script: '|||esm-get-case-event-list'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       ids:
         simple: ${McAfeeESM.[0].AlertIPSIDAlertID}
@@ -393,16 +395,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "13":
-    id: "13"
-    taskid: e9735ca4-375f-4b33-892f-2b095914ebc6
+  '13':
+    id: '13'
+    taskid: ebc94931-e657-4f4d-80ec-aca375b4cc2a
     type: title
     task:
-      id: e9735ca4-375f-4b33-892f-2b095914ebc6
+      id: ebc94931-e657-4f4d-80ec-aca375b4cc2a
       version: -1
       name: done
       type: title
       iscommand: false
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -414,17 +417,108 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  '14':
+    id: '14'
+    taskid: 4839ab10-25de-4f2e-8b82-96f8a2997a94
+    type: regular
+    task:
+      id: 4839ab10-25de-4f2e-8b82-96f8a2997a94
+      version: -1
+      name: fetch_alarms
+      description: ''
+      script: esm-fetch-alarms
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      assignedUser: {}
+      customEnd: {}
+      customStart: {}
+      timeRange:
+        simple: CURRENT_YEAR
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -750,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: ab28365b-bd3d-4893-8585-92887f1dab3e
+    type: regular
+    task:
+      id: ab28365b-bd3d-4893-8585-92887f1dab3e
+      version: -1
+      name: acknowledge_alarms
+      description: ''
+      script: '|||esm-acknowledge-alarms'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      alarmIds:
+        simple: ${Alarm.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -750,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '16':
+    id: '16'
+    taskid: 85a6c1ef-e779-4b05-8898-ec8d84104c37
+    type: regular
+    task:
+      id: 85a6c1ef-e779-4b05-8898-ec8d84104c37
+      version: -1
+      name: unacknowledge_alarms
+      description: ''
+      script: '|||esm-unacknowledge-alarms'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      alarmIds:
+        simple: ${Alarm.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -750,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 785,
-        "width": 1580,
-        "x": -350,
+        "width": 1980,
+        "x": -750,
         "y": 40
       }
     }
   }
 inputs: []
 outputs: []
+description: ''
