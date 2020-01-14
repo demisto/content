@@ -36,6 +36,7 @@ config = Config(
 
 def safe_load_json(o):
     kwargs = None
+    ## Here we are checking the length of the entry to decide if it's a entry ID or json string.
     if len(o) > 40:
         try:
             kwargs = json.loads(o)
@@ -74,6 +75,30 @@ def remove_empty_elements(d):
     else:
         return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if
                 not empty(v)}
+
+
+def aws_table_to_markdown(response, table_header):
+    if isinstance(response, dict):
+        if len(response) == 1:
+            if isinstance(response[list(response.keys())[0]], dict) or isinstance(
+                    response[list(response.keys())[0]], list):
+                if isinstance(response[list(response.keys())[0]], list):
+                    list_response = response[list(response.keys())[0]]
+                    if isinstance(list_response[0], str):
+                        human_readable = tableToMarkdown(table_header, response)
+                    else:
+                        human_readable = tableToMarkdown(table_header,
+                                                         response[list(response.keys())[0]])
+                else:
+                    human_readable = tableToMarkdown(table_header,
+                                                     response[list(response.keys())[0]])
+            else:
+                human_readable = tableToMarkdown(table_header, response)
+        else:
+            human_readable = tableToMarkdown(table_header, response)
+    else:
+        human_readable = tableToMarkdown(table_header, response)
+    return human_readable
 
 
 def parse_tag_field(tags_str):
@@ -208,26 +233,19 @@ def batch_get_item_command(args):
         "ReturnConsumedCapacity": args.get("return_consumed_capacity", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.batch_get_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB BatchGetItem',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB BatchGetItem', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB BatchGetItem', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB BatchGetItem', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB BatchGetItem'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def batch_write_item_command(args):
@@ -243,26 +261,19 @@ def batch_write_item_command(args):
         "ReturnItemCollectionMetrics": args.get("return_item_collection_metrics", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.batch_write_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB BatchWriteItem',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB BatchWriteItem', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB BatchWriteItem', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB BatchWriteItem', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB BatchWriteItem'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def create_backup_command(args):
@@ -277,27 +288,22 @@ def create_backup_command(args):
         "BackupName": args.get("backup_name", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.create_backup(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.BackupDetails(val.BackupArn && val.BackupArn == obj.BackupArn)': response}
+        'AWS-DynamoDB.BackupDetails(val.BackupName && val.BackupName === obj.BackupName)':
+            response.get(
+            'BackupDetails')}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB CreateBackup',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB CreateBackup', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB CreateBackup', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB CreateBackup', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB CreateBackup'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def create_global_table_command(args):
@@ -309,38 +315,29 @@ def create_global_table_command(args):
     )
     kwargs = {
         "GlobalTableName": args.get("global_table_name", None),
-        "ReplicationGroup": safe_load_json(args.get("ReplicationGroup")) if args.get(
-            "ReplicationGroup") else [{
-            "Replica": {
-                "RegionName": args.get("replica_region_name", None)
-            },
+        "ReplicationGroup": [{
+            "RegionName": args.get("replication_group_region_name", None),
 
         }],
 
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.create_global_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn == '
-        'obj.GlobalTableArn)': response}
+        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn === '
+        'obj.GlobalTableArn)': response.get(
+            'GlobalTableDescription')}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB CreateGlobalTable',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB CreateGlobalTable', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB CreateGlobalTable', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB CreateGlobalTable', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB CreateGlobalTable'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def create_table_command(args):
@@ -351,75 +348,48 @@ def create_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "AttributeDefinitions": safe_load_json(args.get("AttributeDefinitions")) if args.get(
-            "AttributeDefinitions") else [{
-            "AttributeDefinition": {
-                "AttributeName": args.get("attribute_definition_attribute_name", None),
-                "AttributeType": args.get("attribute_definition_attribute_type", None)
-            },
+        "AttributeDefinitions": [{
+            "AttributeName": args.get("attribute_definitions_attribute_name", None),
+            "AttributeType": args.get("attribute_definitions_attribute_type", None),
 
         }],
         "TableName": args.get("table_name", None),
-        "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
-            "KeySchemaElement": {
-                "AttributeName": args.get("key_schema_element_attribute_name", None),
-                "KeyType": args.get("key_schema_element_key_type", None)
-            },
+        "KeySchema": [{
+            "AttributeName": args.get("key_schema_attribute_name", None),
+            "KeyType": args.get("key_schema_key_type", None),
 
         }],
-        "LocalSecondaryIndexes": safe_load_json(args.get("LocalSecondaryIndexes")) if args.get(
-            "LocalSecondaryIndexes") else [{
-            "LocalSecondaryIndex": {
-                "IndexName": args.get("local_secondary_index_index_name", None),
-                "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
-                    "KeySchemaElement": {
-                        "AttributeName": args.get("key_schema_element_attribute_name", None),
-                        "KeyType": args.get("key_schema_element_key_type", None)
-                    },
+        "LocalSecondaryIndexes": [{
+            "IndexName": args.get("local_secondary_indexes_index_name", None),
+            "KeySchema": [{
+                "AttributeName": args.get("key_schema_attribute_name", None),
+                "KeyType": args.get("key_schema_key_type", None),
 
-                }],
-                "Projection": {
-                    "ProjectionType": args.get("projection_projection_type", None),
-                    "NonKeyAttributes": safe_load_json(args.get("NonKeyAttributes")) if args.get(
-                        "NonKeyAttributes") else [{
-                        "NonKeyAttributeName": args.get("non_key_attributes_non_key_attribute_name",
-                                                        None),
-
-                    }],
-
-                }
+            }],
+            "Projection": {
+                "ProjectionType": args.get("projection_projection_type", None),
+                "NonKeyAttributes": [
+                    parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
 
         }],
-        "GlobalSecondaryIndexes": safe_load_json(args.get("GlobalSecondaryIndexes")) if args.get(
-            "GlobalSecondaryIndexes") else [{
-            "GlobalSecondaryIndex": {
-                "IndexName": args.get("global_secondary_index_index_name", None),
-                "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
-                    "KeySchemaElement": {
-                        "AttributeName": args.get("key_schema_element_attribute_name", None),
-                        "KeyType": args.get("key_schema_element_key_type", None)
-                    },
+        "GlobalSecondaryIndexes": [{
+            "IndexName": args.get("global_secondary_indexes_index_name", None),
+            "KeySchema": [{
+                "AttributeName": args.get("key_schema_attribute_name", None),
+                "KeyType": args.get("key_schema_key_type", None),
 
-                }],
-                "Projection": {
-                    "ProjectionType": args.get("projection_projection_type", None),
-                    "NonKeyAttributes": safe_load_json(args.get("NonKeyAttributes")) if args.get(
-                        "NonKeyAttributes") else [{
-                        "NonKeyAttributeName": args.get("non_key_attributes_non_key_attribute_name",
-                                                        None),
+            }],
+            "Projection": {
+                "ProjectionType": args.get("projection_projection_type", None),
+                "NonKeyAttributes": [
+                    parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
-                    }],
-
-                },
-                "ProvisionedThroughput": {
-                    "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
-                                                  None),
-                    "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units",
-                                                   None),
-
-                }
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units", None),
+                "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units", None),
 
             },
 
@@ -446,27 +416,22 @@ def create_table_command(args):
 
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.create_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn == obj.TableArn)': response}
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)':
+            response.get(
+            'TableDescription')}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB CreateTable',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB CreateTable', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB CreateTable', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB CreateTable', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB CreateTable'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def delete_backup_command(args):
@@ -480,28 +445,22 @@ def delete_backup_command(args):
         "BackupArn": args.get("backup_arn", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.delete_backup(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.BackupDescriptionBackupDetails(val.BackupArn && val.BackupArn == '
-        'obj.BackupArn)': response}
+        'AWS-DynamoDB.BackupDetails(val.BackupName && val.BackupName === obj.BackupName)':
+            response.get(
+            'BackupDetails')}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB DeleteBackup',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB DeleteBackup', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB DeleteBackup', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB DeleteBackup', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB DeleteBackup'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def delete_item_command(args):
@@ -524,26 +483,19 @@ def delete_item_command(args):
         "ExpressionAttributeValues": json.loads(args.get("expression_attribute_values", "{}"))
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.delete_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB DeleteItem',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB DeleteItem', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB DeleteItem', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB DeleteItem', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB DeleteItem'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def delete_table_command(args):
@@ -557,27 +509,22 @@ def delete_table_command(args):
         "TableName": args.get("table_name", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.delete_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn == obj.TableArn)': response}
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)':
+            response.get(
+            'TableDescription')}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB DeleteTable',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB DeleteTable', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB DeleteTable', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB DeleteTable', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB DeleteTable'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def describe_backup_command(args):
@@ -591,28 +538,19 @@ def describe_backup_command(args):
         "BackupArn": args.get("backup_arn", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.describe_backup(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {
-        'AWS-DynamoDB.BackupDescriptionBackupDetails(val.BackupArn && val.BackupArn == '
-        'obj.BackupArn)': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeBackup',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeBackup', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB DescribeBackup', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB DescribeBackup', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB DescribeBackup'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def describe_continuous_backups_command(args):
@@ -626,26 +564,19 @@ def describe_continuous_backups_command(args):
         "TableName": args.get("table_name", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.describe_continuous_backups(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeContinuousBackups',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeContinuousBackups', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB DescribeContinuousBackups', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB DescribeContinuousBackups', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB DescribeContinuousBackups'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def describe_endpoints_command(args):
@@ -655,30 +586,23 @@ def describe_endpoints_command(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    kwargs = {  # type: ignore
+    kwargs = {
 
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.describe_endpoints(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeEndpoints',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeEndpoints', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB DescribeEndpoints', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB DescribeEndpoints', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB DescribeEndpoints'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def describe_global_table_command(args):
@@ -692,28 +616,22 @@ def describe_global_table_command(args):
         "GlobalTableName": args.get("global_table_name", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.describe_global_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn == '
-        'obj.GlobalTableArn)': response}
+        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn === '
+        'obj.GlobalTableArn)': response.get(
+            'GlobalTableDescription')}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTable',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTable', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTable', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTable', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB DescribeGlobalTable'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def describe_global_table_settings_command(args):
@@ -727,29 +645,21 @@ def describe_global_table_settings_command(args):
         "GlobalTableName": args.get("global_table_name", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.describe_global_table_settings(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB'
-        '.ReplicaSettingsReplicaSettingsDescriptionReplicaProvisionedReadCapacityAutoScalingSettings(val.AutoScalingRoleArn && val.AutoScalingRoleArn == obj.AutoScalingRoleArn)': response}
+        'AWS-DynamoDB(val.GlobalTableName && val.GlobalTableName === obj.GlobalTableName)':
+            response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTableSettings',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTableSettings',
-                                                 response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTableSettings', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB DescribeGlobalTableSettings', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB DescribeGlobalTableSettings'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def describe_limits_command(args):
@@ -759,30 +669,23 @@ def describe_limits_command(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    kwargs = {  # type: ignore
+    kwargs = {
 
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.describe_limits(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeLimits',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeLimits', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB DescribeLimits', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB DescribeLimits', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB DescribeLimits'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def describe_table_command(args):
@@ -796,26 +699,20 @@ def describe_table_command(args):
         "TableName": args.get("table_name", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.describe_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB.Table(val.TableArn && val.TableArn == obj.TableArn)': response}
+    outputs = {
+        'AWS-DynamoDB.Table(val.TableArn && val.TableArn === obj.TableArn)': response.get('Table')}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeTable',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeTable', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB DescribeTable', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB DescribeTable', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB DescribeTable'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def describe_time_to_live_command(args):
@@ -829,26 +726,19 @@ def describe_time_to_live_command(args):
         "TableName": args.get("table_name", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.describe_time_to_live(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeTimeToLive',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB DescribeTimeToLive', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB DescribeTimeToLive', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB DescribeTimeToLive', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB DescribeTimeToLive'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def get_item_command(args):
@@ -861,37 +751,26 @@ def get_item_command(args):
     kwargs = {
         "TableName": args.get("table_name", None),
         "Key": json.loads(args.get("key", "{}")),
-        "AttributesToGet": safe_load_json(args.get("AttributesToGet")) if args.get(
-            "AttributesToGet") else [{
-            "AttributeName": args.get("attributes_to_get_attribute_name", None),
-
-        }],
+        "AttributesToGet": [parse_resource_ids(args.get("attributes_to_get", ""))],
         "ConsistentRead": True if args.get("consistent_read", "") == "true" else None,
         "ReturnConsumedCapacity": args.get("return_consumed_capacity", None),
         "ProjectionExpression": args.get("projection_expression", None),
         "ExpressionAttributeNames": json.loads(args.get("expression_attribute_names", "{}"))
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.get_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB GetItem',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB GetItem', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB GetItem', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB GetItem', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB GetItem'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def list_backups_command(args):
@@ -907,28 +786,22 @@ def list_backups_command(args):
         "BackupType": args.get("backup_type", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.list_backups(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.BackupSummariesBackupSummary(val.TableArn && val.TableArn == '
-        'obj.TableArn)': response}
+        'AWS-DynamoDB.BackupSummaries(val.BackupArn && val.BackupArn === obj.BackupArn)':
+            response.get(
+            'BackupSummaries')}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB ListBackups',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB ListBackups', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB ListBackups', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB ListBackups', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB ListBackups'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def list_global_tables_command(args):
@@ -943,26 +816,19 @@ def list_global_tables_command(args):
         "RegionName": args.get("region_name", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.list_global_tables(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB ListGlobalTables',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB ListGlobalTables', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB ListGlobalTables', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB ListGlobalTables', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB ListGlobalTables'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def list_tables_command(args):
@@ -977,26 +843,19 @@ def list_tables_command(args):
 
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.list_tables(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB ListTables',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB ListTables', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB ListTables', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB ListTables', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB ListTables'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def list_tags_of_resource_command(args):
@@ -1011,26 +870,19 @@ def list_tags_of_resource_command(args):
         "NextToken": args.get("next_token", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.list_tags_of_resource(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB ListTagsOfResource',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB ListTagsOfResource', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB ListTagsOfResource', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB ListTagsOfResource', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB ListTagsOfResource'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def put_item_command(args):
@@ -1053,26 +905,19 @@ def put_item_command(args):
         "ExpressionAttributeValues": json.loads(args.get("expression_attribute_values", "{}"))
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.put_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB PutItem',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB PutItem', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB PutItem', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB PutItem', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB PutItem'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def query_command(args):
@@ -1086,11 +931,7 @@ def query_command(args):
         "TableName": args.get("table_name", None),
         "IndexName": args.get("index_name", None),
         "Select": args.get("select", None),
-        "AttributesToGet": safe_load_json(args.get("AttributesToGet")) if args.get(
-            "AttributesToGet") else [{
-            "AttributeName": args.get("attributes_to_get_attribute_name", None),
-
-        }],
+        "AttributesToGet": [parse_resource_ids(args.get("attributes_to_get", ""))],
         "ConsistentRead": True if args.get("consistent_read", "") == "true" else None,
         "KeyConditions": json.loads(args.get("key_conditions", "{}")),
         "QueryFilter": json.loads(args.get("query_filter", "{}")),
@@ -1105,26 +946,19 @@ def query_command(args):
         "ExpressionAttributeValues": json.loads(args.get("expression_attribute_values", "{}"))
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.query(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB Query',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB Query', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB Query', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB Query', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB Query'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def restore_table_from_backup_command(args):
@@ -1138,61 +972,37 @@ def restore_table_from_backup_command(args):
         "TargetTableName": args.get("target_table_name", None),
         "BackupArn": args.get("backup_arn", None),
         "BillingModeOverride": args.get("billing_mode_override", None),
-        "GlobalSecondaryIndexOverride": safe_load_json(
-            args.get("GlobalSecondaryIndexOverride")) if args.get(
-            "GlobalSecondaryIndexOverride") else [{
-            "GlobalSecondaryIndex": {
-                "IndexName": args.get("global_secondary_index_index_name", None),
-                "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
-                    "KeySchemaElement": {
-                        "AttributeName": args.get("key_schema_element_attribute_name", None),
-                        "KeyType": args.get("key_schema_element_key_type", None)
-                    },
+        "GlobalSecondaryIndexOverride": [{
+            "IndexName": args.get("global_secondary_index_override_index_name", None),
+            "KeySchema": [{
+                "AttributeName": args.get("key_schema_attribute_name", None),
+                "KeyType": args.get("key_schema_key_type", None),
 
-                }],
-                "Projection": {
-                    "ProjectionType": args.get("projection_projection_type", None),
-                    "NonKeyAttributes": safe_load_json(args.get("NonKeyAttributes")) if args.get(
-                        "NonKeyAttributes") else [{
-                        "NonKeyAttributeName": args.get("non_key_attributes_non_key_attribute_name",
-                                                        None),
+            }],
+            "Projection": {
+                "ProjectionType": args.get("projection_projection_type", None),
+                "NonKeyAttributes": [
+                    parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
-                    }],
-
-                },
-                "ProvisionedThroughput": {
-                    "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
-                                                  None),
-                    "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units",
-                                                   None),
-
-                }
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units", None),
+                "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units", None),
 
             },
 
         }],
-        "LocalSecondaryIndexOverride": safe_load_json(
-            args.get("LocalSecondaryIndexOverride")) if args.get(
-            "LocalSecondaryIndexOverride") else [{
-            "LocalSecondaryIndex": {
-                "IndexName": args.get("local_secondary_index_index_name", None),
-                "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
-                    "KeySchemaElement": {
-                        "AttributeName": args.get("key_schema_element_attribute_name", None),
-                        "KeyType": args.get("key_schema_element_key_type", None)
-                    },
+        "LocalSecondaryIndexOverride": [{
+            "IndexName": args.get("local_secondary_index_override_index_name", None),
+            "KeySchema": [{
+                "AttributeName": args.get("key_schema_attribute_name", None),
+                "KeyType": args.get("key_schema_key_type", None),
 
-                }],
-                "Projection": {
-                    "ProjectionType": args.get("projection_projection_type", None),
-                    "NonKeyAttributes": safe_load_json(args.get("NonKeyAttributes")) if args.get(
-                        "NonKeyAttributes") else [{
-                        "NonKeyAttributeName": args.get("non_key_attributes_non_key_attribute_name",
-                                                        None),
-
-                    }],
-
-                }
+            }],
+            "Projection": {
+                "ProjectionType": args.get("projection_projection_type", None),
+                "NonKeyAttributes": [
+                    parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
 
@@ -1207,27 +1017,22 @@ def restore_table_from_backup_command(args):
 
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.restore_table_from_backup(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn == obj.TableArn)': response}
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)':
+            response.get(
+            'TableDescription')}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB RestoreTableFromBackup',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB RestoreTableFromBackup', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB RestoreTableFromBackup', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB RestoreTableFromBackup', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB RestoreTableFromBackup'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def restore_table_to_point_in_time_command(args):
@@ -1243,61 +1048,37 @@ def restore_table_to_point_in_time_command(args):
         "UseLatestRestorableTime": True if args.get("use_latest_restorable_time",
                                                     "") == "true" else None,
         "BillingModeOverride": args.get("billing_mode_override", None),
-        "GlobalSecondaryIndexOverride": safe_load_json(
-            args.get("GlobalSecondaryIndexOverride")) if args.get(
-            "GlobalSecondaryIndexOverride") else [{
-            "GlobalSecondaryIndex": {
-                "IndexName": args.get("global_secondary_index_index_name", None),
-                "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
-                    "KeySchemaElement": {
-                        "AttributeName": args.get("key_schema_element_attribute_name", None),
-                        "KeyType": args.get("key_schema_element_key_type", None)
-                    },
+        "GlobalSecondaryIndexOverride": [{
+            "IndexName": args.get("global_secondary_index_override_index_name", None),
+            "KeySchema": [{
+                "AttributeName": args.get("key_schema_attribute_name", None),
+                "KeyType": args.get("key_schema_key_type", None),
 
-                }],
-                "Projection": {
-                    "ProjectionType": args.get("projection_projection_type", None),
-                    "NonKeyAttributes": safe_load_json(args.get("NonKeyAttributes")) if args.get(
-                        "NonKeyAttributes") else [{
-                        "NonKeyAttributeName": args.get("non_key_attributes_non_key_attribute_name",
-                                                        None),
+            }],
+            "Projection": {
+                "ProjectionType": args.get("projection_projection_type", None),
+                "NonKeyAttributes": [
+                    parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
-                    }],
-
-                },
-                "ProvisionedThroughput": {
-                    "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
-                                                  None),
-                    "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units",
-                                                   None),
-
-                }
+            },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units", None),
+                "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units", None),
 
             },
 
         }],
-        "LocalSecondaryIndexOverride": safe_load_json(
-            args.get("LocalSecondaryIndexOverride")) if args.get(
-            "LocalSecondaryIndexOverride") else [{
-            "LocalSecondaryIndex": {
-                "IndexName": args.get("local_secondary_index_index_name", None),
-                "KeySchema": safe_load_json(args.get("KeySchema")) if args.get("KeySchema") else [{
-                    "KeySchemaElement": {
-                        "AttributeName": args.get("key_schema_element_attribute_name", None),
-                        "KeyType": args.get("key_schema_element_key_type", None)
-                    },
+        "LocalSecondaryIndexOverride": [{
+            "IndexName": args.get("local_secondary_index_override_index_name", None),
+            "KeySchema": [{
+                "AttributeName": args.get("key_schema_attribute_name", None),
+                "KeyType": args.get("key_schema_key_type", None),
 
-                }],
-                "Projection": {
-                    "ProjectionType": args.get("projection_projection_type", None),
-                    "NonKeyAttributes": safe_load_json(args.get("NonKeyAttributes")) if args.get(
-                        "NonKeyAttributes") else [{
-                        "NonKeyAttributeName": args.get("non_key_attributes_non_key_attribute_name",
-                                                        None),
-
-                    }],
-
-                }
+            }],
+            "Projection": {
+                "ProjectionType": args.get("projection_projection_type", None),
+                "NonKeyAttributes": [
+                    parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
 
@@ -1312,27 +1093,22 @@ def restore_table_to_point_in_time_command(args):
 
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.restore_table_to_point_in_time(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn == obj.TableArn)': response}
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)':
+            response.get(
+            'TableDescription')}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB RestoreTableToPointInTime',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB RestoreTableToPointInTime', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB RestoreTableToPointInTime', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB RestoreTableToPointInTime', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB RestoreTableToPointInTime'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def scan_command(args):
@@ -1345,11 +1121,7 @@ def scan_command(args):
     kwargs = {
         "TableName": args.get("table_name", None),
         "IndexName": args.get("index_name", None),
-        "AttributesToGet": safe_load_json(args.get("AttributesToGet")) if args.get(
-            "AttributesToGet") else [{
-            "AttributeName": args.get("attributes_to_get_attribute_name", None),
-
-        }],
+        "AttributesToGet": [parse_resource_ids(args.get("attributes_to_get", ""))],
         "Select": args.get("select", None),
         "ScanFilter": json.loads(args.get("scan_filter", "{}")),
         "ConditionalOperator": args.get("conditional_operator", None),
@@ -1362,26 +1134,19 @@ def scan_command(args):
         "ConsistentRead": True if args.get("consistent_read", "") == "true" else None
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.scan(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB Scan',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB Scan', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB Scan', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB Scan', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB Scan'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def tag_resource_command(args):
@@ -1397,26 +1162,19 @@ def tag_resource_command(args):
 
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.tag_resource(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB TagResource',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB TagResource', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB TagResource', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB TagResource', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB TagResource'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def transact_get_items_command(args):
@@ -1427,17 +1185,13 @@ def transact_get_items_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TransactItems": safe_load_json(args.get("TransactItems")) if args.get(
-            "TransactItems") else [{
-            "TransactGetItem": {
-                "Get": {
-                    "Key": json.loads(args.get("get_key", "{}")),
-                    "TableName": args.get("get_table_name", None),
-                    "ProjectionExpression": args.get("get_projection_expression", None),
-                    "ExpressionAttributeNames": json.loads(
-                        args.get("get_expression_attribute_names", "{}")),
-
-                }
+        "TransactItems": [{
+            "Get": {
+                "Key": json.loads(args.get("get_key", "{}")),
+                "TableName": args.get("get_table_name", None),
+                "ProjectionExpression": args.get("get_projection_expression", None),
+                "ExpressionAttributeNames": json.loads(
+                    args.get("get_expression_attribute_names", "{}")),
 
             },
 
@@ -1445,26 +1199,19 @@ def transact_get_items_command(args):
         "ReturnConsumedCapacity": args.get("return_consumed_capacity", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.transact_get_items(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB TransactGetItems',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB TransactGetItems', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB TransactGetItems', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB TransactGetItems', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB TransactGetItems'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def transact_write_items_command(args):
@@ -1475,58 +1222,54 @@ def transact_write_items_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "TransactItems": safe_load_json(args.get("TransactItems")) if args.get(
-            "TransactItems") else [{
-            "TransactWriteItem": {
-                "ConditionCheck": {
-                    "Key": json.loads(args.get("condition_check_key", "{}")),
-                    "TableName": args.get("condition_check_table_name", None),
-                    "ConditionExpression": args.get("condition_check_condition_expression", None),
-                    "ExpressionAttributeNames": json.loads(
-                        args.get("condition_check_expression_attribute_names", "{}")),
-                    "ExpressionAttributeValues": json.loads(
-                        args.get("condition_check_expression_attribute_values", "{}")),
-                    "ReturnValuesOnConditionCheckFailure": args.get(
-                        "condition_check_return_values_on_condition_check_failure", None),
+        "TransactItems": [{
+            "ConditionCheck": {
+                "Key": json.loads(args.get("condition_check_key", "{}")),
+                "TableName": args.get("condition_check_table_name", None),
+                "ConditionExpression": args.get("condition_check_condition_expression", None),
+                "ExpressionAttributeNames": json.loads(
+                    args.get("condition_check_expression_attribute_names", "{}")),
+                "ExpressionAttributeValues": json.loads(
+                    args.get("condition_check_expression_attribute_values", "{}")),
+                "ReturnValuesOnConditionCheckFailure": args.get(
+                    "condition_check_return_values_on_condition_check_failure", None),
 
-                },
-                "Put": {
-                    "Item": json.loads(args.get("put_item", "{}")),
-                    "TableName": args.get("put_table_name", None),
-                    "ConditionExpression": args.get("put_condition_expression", None),
-                    "ExpressionAttributeNames": json.loads(
-                        args.get("put_expression_attribute_names", "{}")),
-                    "ExpressionAttributeValues": json.loads(
-                        args.get("put_expression_attribute_values", "{}")),
-                    "ReturnValuesOnConditionCheckFailure": args.get(
-                        "put_return_values_on_condition_check_failure", None),
+            },
+            "Put": {
+                "Item": json.loads(args.get("put_item", "{}")),
+                "TableName": args.get("put_table_name", None),
+                "ConditionExpression": args.get("put_condition_expression", None),
+                "ExpressionAttributeNames": json.loads(
+                    args.get("put_expression_attribute_names", "{}")),
+                "ExpressionAttributeValues": json.loads(
+                    args.get("put_expression_attribute_values", "{}")),
+                "ReturnValuesOnConditionCheckFailure": args.get(
+                    "put_return_values_on_condition_check_failure", None),
 
-                },
-                "Delete": {
-                    "Key": json.loads(args.get("delete_key", "{}")),
-                    "TableName": args.get("delete_table_name", None),
-                    "ConditionExpression": args.get("delete_condition_expression", None),
-                    "ExpressionAttributeNames": json.loads(
-                        args.get("delete_expression_attribute_names", "{}")),
-                    "ExpressionAttributeValues": json.loads(
-                        args.get("delete_expression_attribute_values", "{}")),
-                    "ReturnValuesOnConditionCheckFailure": args.get(
-                        "delete_return_values_on_condition_check_failure", None),
+            },
+            "Delete": {
+                "Key": json.loads(args.get("delete_key", "{}")),
+                "TableName": args.get("delete_table_name", None),
+                "ConditionExpression": args.get("delete_condition_expression", None),
+                "ExpressionAttributeNames": json.loads(
+                    args.get("delete_expression_attribute_names", "{}")),
+                "ExpressionAttributeValues": json.loads(
+                    args.get("delete_expression_attribute_values", "{}")),
+                "ReturnValuesOnConditionCheckFailure": args.get(
+                    "delete_return_values_on_condition_check_failure", None),
 
-                },
-                "Update": {
-                    "Key": json.loads(args.get("update_key", "{}")),
-                    "UpdateExpression": args.get("update_update_expression", None),
-                    "TableName": args.get("update_table_name", None),
-                    "ConditionExpression": args.get("update_condition_expression", None),
-                    "ExpressionAttributeNames": json.loads(
-                        args.get("update_expression_attribute_names", "{}")),
-                    "ExpressionAttributeValues": json.loads(
-                        args.get("update_expression_attribute_values", "{}")),
-                    "ReturnValuesOnConditionCheckFailure": args.get(
-                        "update_return_values_on_condition_check_failure", None),
-
-                }
+            },
+            "Update": {
+                "Key": json.loads(args.get("update_key", "{}")),
+                "UpdateExpression": args.get("update_update_expression", None),
+                "TableName": args.get("update_table_name", None),
+                "ConditionExpression": args.get("update_condition_expression", None),
+                "ExpressionAttributeNames": json.loads(
+                    args.get("update_expression_attribute_names", "{}")),
+                "ExpressionAttributeValues": json.loads(
+                    args.get("update_expression_attribute_values", "{}")),
+                "ReturnValuesOnConditionCheckFailure": args.get(
+                    "update_return_values_on_condition_check_failure", None),
 
             },
 
@@ -1536,26 +1279,19 @@ def transact_write_items_command(args):
         "ClientRequestToken": args.get("client_request_token", None)
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.transact_write_items(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB TransactWriteItems',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB TransactWriteItems', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB TransactWriteItems', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB TransactWriteItems', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB TransactWriteItems'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def untag_resource_command(args):
@@ -1567,33 +1303,22 @@ def untag_resource_command(args):
     )
     kwargs = {
         "ResourceArn": args.get("resource_arn", None),
-        "TagKeys": safe_load_json(args.get("TagKeys")) if args.get("TagKeys") else [{
-            "TagKeyString": args.get("tag_keys_tag_key_string", None),
-
-        }],
-
+        "TagKeys": [parse_resource_ids(args.get("tag_keys", ""))]
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.untag_resource(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB UntagResource',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB UntagResource', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB UntagResource', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB UntagResource', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB UntagResource'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def update_continuous_backups_command(args):
@@ -1614,26 +1339,19 @@ def update_continuous_backups_command(args):
 
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.update_continuous_backups(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB UpdateContinuousBackups',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB UpdateContinuousBackups', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB UpdateContinuousBackups', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB UpdateContinuousBackups', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB UpdateContinuousBackups'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def update_global_table_command(args):
@@ -1645,17 +1363,13 @@ def update_global_table_command(args):
     )
     kwargs = {
         "GlobalTableName": args.get("global_table_name", None),
-        "ReplicaUpdates": safe_load_json(args.get("ReplicaUpdates")) if args.get(
-            "ReplicaUpdates") else [{
-            "ReplicaUpdate": {
-                "Create": {
-                    "RegionName": args.get("create_region_name", None),
+        "ReplicaUpdates": [{
+            "Create": {
+                "RegionName": args.get("create_region_name", None),
 
-                },
-                "Delete": {
-                    "RegionName": args.get("delete_region_name", None),
-
-                }
+            },
+            "Delete": {
+                "RegionName": args.get("delete_region_name", None),
 
             },
 
@@ -1663,28 +1377,22 @@ def update_global_table_command(args):
 
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.update_global_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn == '
-        'obj.GlobalTableArn)': response}
+        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn === '
+        'obj.GlobalTableArn)': response.get(
+            'GlobalTableDescription')}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTable',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTable', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTable', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTable', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB UpdateGlobalTable'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def update_global_table_settings_command(args):
@@ -1724,142 +1432,47 @@ def update_global_table_settings_command(args):
             },
 
         },
-        "GlobalTableGlobalSecondaryIndexSettingsUpdate": safe_load_json(
-            args.get("GlobalTableGlobalSecondaryIndexSettingsUpdate")) if args.get(
-            "GlobalTableGlobalSecondaryIndexSettingsUpdate") else [{
-            "GlobalTableGlobalSecondaryIndexSettingsUpdate": {
-                "IndexName": args.get(
-                    "global_table_global_secondary_index_settings_update_index_name", None),
-                "ProvisionedWriteCapacityUnits": args.get(
-                    "global_table_global_secondary_index_settings_update_provisioned_write_capacity_units",
-                    None),
-                "ProvisionedWriteCapacityAutoScalingSettingsUpdate": {
-                    "MinimumUnits": args.get(
-                        "provisioned_write_capacity_auto_scaling_settings_update_minimum_units",
-                        None),
-                    "MaximumUnits": args.get(
-                        "provisioned_write_capacity_auto_scaling_settings_update_maximum_units",
-                        None),
-                    "AutoScalingDisabled": True if args.get(
-                        "provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_disabled",
+        "IndexName": args.get("index_name", None),
+        "ProvisionedWriteCapacityUnits": args.get("provisioned_write_capacity_units", None),
+        "ProvisionedWriteCapacityAutoScalingSettingsUpdate": {
+            "MinimumUnits": args.get(
+                "provisioned_write_capacity_auto_scaling_settings_update_minimum_units", None),
+            "MaximumUnits": args.get(
+                "provisioned_write_capacity_auto_scaling_settings_update_maximum_units", None),
+            "AutoScalingDisabled": True if args.get(
+                "provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_disabled",
+                "") == "true" else None,
+            "AutoScalingRoleArn": args.get(
+                "provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
+                None),
+            "ScalingPolicyUpdate": {
+                "PolicyName": args.get("scaling_policy_update_policy_name", None),
+                "TargetTrackingScalingPolicyConfiguration": {
+                    "DisableScaleIn": True if args.get(
+                        "target_tracking_scaling_policy_configuration_disable_scale_in",
                         "") == "true" else None,
-                    "AutoScalingRoleArn": args.get(
-                        "provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
-                        None),
-                    "ScalingPolicyUpdate": {
-                        "PolicyName": args.get("scaling_policy_update_policy_name", None),
-                        "TargetTrackingScalingPolicyConfiguration": {
-                            "DisableScaleIn": True if args.get(
-                                "target_tracking_scaling_policy_configuration_disable_scale_in",
-                                "") == "true" else None,
-
-                        },
-
-                    },
-
-                }
-
-            },
-
-        }],
-        "ReplicaSettingsUpdate": safe_load_json(args.get("ReplicaSettingsUpdate")) if args.get(
-            "ReplicaSettingsUpdate") else [{
-            "ReplicaSettingsUpdate": {
-                "RegionName": args.get("replica_settings_update_region_name", None),
-                "ReplicaProvisionedReadCapacityUnits": args.get(
-                    "replica_settings_update_replica_provisioned_read_capacity_units", None),
-                "ReplicaProvisionedReadCapacityAutoScalingSettingsUpdate": {
-                    "MinimumUnits": args.get(
-                        "replica_provisioned_read_capacity_auto_scaling_settings_update_minimum_units",
-                        None),
-                    "MaximumUnits": args.get(
-                        "replica_provisioned_read_capacity_auto_scaling_settings_update_maximum_units",
-                        None),
-                    "AutoScalingDisabled": True if args.get(
-                        "replica_provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_disabled",
-                        "") == "true" else None,
-                    "AutoScalingRoleArn": args.get(
-                        "replica_provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
-                        None),
-                    "ScalingPolicyUpdate": {
-                        "PolicyName": args.get("scaling_policy_update_policy_name", None),
-                        "TargetTrackingScalingPolicyConfiguration": {
-                            "DisableScaleIn": True if args.get(
-                                "target_tracking_scaling_policy_configuration_disable_scale_in",
-                                "") == "true" else None,
-
-                        },
-
-                    },
 
                 },
-                "ReplicaGlobalSecondaryIndexSettingsUpdate": safe_load_json(
-                    args.get("ReplicaGlobalSecondaryIndexSettingsUpdate")) if args.get(
-                    "ReplicaGlobalSecondaryIndexSettingsUpdate") else [{
-                    "ReplicaGlobalSecondaryIndexSettingsUpdate": {
-                        "IndexName": args.get(
-                            "replica_global_secondary_index_settings_update_index_name", None),
-                        "ProvisionedReadCapacityUnits": args.get(
-                            "replica_global_secondary_index_settings_update_provisioned_read_capacity_units",
-                            None),
-                        "ProvisionedReadCapacityAutoScalingSettingsUpdate": {
-                            "MinimumUnits": args.get(
-                                "provisioned_read_capacity_auto_scaling_settings_update_minimum_units",
-                                None),
-                            "MaximumUnits": args.get(
-                                "provisioned_read_capacity_auto_scaling_settings_update_maximum_units",
-                                None),
-                            "AutoScalingDisabled": True if args.get(
-                                "provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_disabled",
-                                "") == "true" else None,
-                            "AutoScalingRoleArn": args.get(
-                                "provisioned_read_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
-                                None),
-                            "ScalingPolicyUpdate": {
-                                "PolicyName": args.get("scaling_policy_update_policy_name", None),
-                                "TargetTrackingScalingPolicyConfiguration": {
-                                    "DisableScaleIn": True if args.get(
-                                        "target_tracking_scaling_policy_configuration_disable_scale_in",
-                                        "") == "true" else None,
-
-                                },
-
-                            },
-
-                        }
-
-                    },
-
-                }],
 
             },
 
-        }],
+        },
 
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.update_global_table_settings(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {
-        'AWS-DynamoDB'
-        '.ReplicaSettingsReplicaSettingsDescriptionReplicaProvisionedReadCapacityAutoScalingSettings(val.AutoScalingRoleArn && val.AutoScalingRoleArn == obj.AutoScalingRoleArn)': response}
+    outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTableSettings',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTableSettings', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTableSettings', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB UpdateGlobalTableSettings', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB UpdateGlobalTableSettings'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def update_item_command(args):
@@ -1884,26 +1497,19 @@ def update_item_command(args):
         "ExpressionAttributeValues": json.loads(args.get("expression_attribute_values", "{}"))
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.update_item(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB UpdateItem',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB UpdateItem', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB UpdateItem', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB UpdateItem', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB UpdateItem'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def update_table_command(args):
@@ -1914,12 +1520,9 @@ def update_table_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        "AttributeDefinitions": safe_load_json(args.get("AttributeDefinitions")) if args.get(
-            "AttributeDefinitions") else [{
-            "AttributeDefinition": {
-                "AttributeName": args.get("attribute_definition_attribute_name", None),
-                "AttributeType": args.get("attribute_definition_attribute_type", None)
-            },
+        "AttributeDefinitions": [{
+            "AttributeName": args.get("attribute_definitions_attribute_name", None),
+            "AttributeType": args.get("attribute_definitions_attribute_type", None),
 
         }],
         "TableName": args.get("table_name", None),
@@ -1929,54 +1532,42 @@ def update_table_command(args):
             "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units", None),
 
         },
-        "GlobalSecondaryIndexUpdates": safe_load_json(
-            args.get("GlobalSecondaryIndexUpdates")) if args.get(
-            "GlobalSecondaryIndexUpdates") else [{
-            "GlobalSecondaryIndexUpdate": {
-                "Update": {
-                    "IndexName": args.get("update_index_name", None),
-                    "ProvisionedThroughput": {
-                        "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
-                                                      None),
-                        "WriteCapacityUnits": args.get(
-                            "provisioned_throughput_write_capacity_units", None),
-
-                    },
+        "GlobalSecondaryIndexUpdates": [{
+            "Update": {
+                "IndexName": args.get("update_index_name", None),
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
+                                                  None),
+                    "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units",
+                                                   None),
 
                 },
-                "Create": {
-                    "IndexName": args.get("create_index_name", None),
-                    "KeySchema": safe_load_json(args.get("KeySchema")) if args.get(
-                        "KeySchema") else [{
-                        "KeySchemaElement": {
-                            "AttributeName": args.get("key_schema_element_attribute_name", None),
-                            "KeyType": args.get("key_schema_element_key_type", None)
-                        },
 
-                    }],
-                    "Projection": {
-                        "ProjectionType": args.get("projection_projection_type", None),
-                        "NonKeyAttributes": safe_load_json(
-                            args.get("NonKeyAttributes")) if args.get("NonKeyAttributes") else [{
-                            "NonKeyAttributeName": args.get(
-                                "non_key_attributes_non_key_attribute_name", None),
+            },
+            "Create": {
+                "IndexName": args.get("create_index_name", None),
+                "KeySchema": [{
+                    "AttributeName": args.get("key_schema_attribute_name", None),
+                    "KeyType": args.get("key_schema_key_type", None),
 
-                        }],
-
-                    },
-                    "ProvisionedThroughput": {
-                        "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
-                                                      None),
-                        "WriteCapacityUnits": args.get(
-                            "provisioned_throughput_write_capacity_units", None),
-
-                    },
+                }],
+                "Projection": {
+                    "ProjectionType": args.get("projection_projection_type", None),
+                    "NonKeyAttributes": [
+                        parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
                 },
-                "Delete": {
-                    "IndexName": args.get("delete_index_name", None),
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
+                                                  None),
+                    "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units",
+                                                   None),
 
-                }
+                },
+
+            },
+            "Delete": {
+                "IndexName": args.get("delete_index_name", None),
 
             },
 
@@ -1996,27 +1587,22 @@ def update_table_command(args):
 
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.update_table(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn == obj.TableArn)': response}
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)':
+            response.get(
+            'TableDescription')}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB UpdateTable',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB UpdateTable', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB UpdateTable', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB UpdateTable', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB UpdateTable'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 def update_time_to_live_command(args):
@@ -2037,26 +1623,19 @@ def update_time_to_live_command(args):
 
     }
     kwargs = remove_empty_elements(kwargs)
-    if args.get('raw_json') is not None:
+    if args.get('raw_json') is not None and not kwargs:
         del kwargs
-        kwargs = safe_load_json(args.get('raw_json'))
+        kwargs = safe_load_json(args.get('raw_json', "{ }"))
+    elif args.get('raw_json') is not None and kwargs:
+        return_error("Please remove other arguments before using 'raw-json'.")
     response = client.update_time_to_live(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {'AWS-DynamoDB': response}
     del response['ResponseMetadata']
-    if isinstance(response, dict):
-        if len(response) == 1:
-            if isinstance(list(response.keys())[0], dict):
-                human_readable = tableToMarkdown('AWS DynamoDB UpdateTimeToLive',
-                                                 response[list(response.keys())[0]])
-            else:
-                human_readable = tableToMarkdown('AWS DynamoDB UpdateTimeToLive', response)
-        else:
-            human_readable = tableToMarkdown('AWS DynamoDB UpdateTimeToLive', response)
-    else:
-        human_readable = tableToMarkdown('AWS DynamoDB UpdateTimeToLive', response)
-    return human_readable, outputs
+    table_header = 'AWS DynamoDB UpdateTimeToLive'
+    human_readable = aws_table_to_markdown(response, table_header)
+    return human_readable, outputs, response
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -2071,83 +1650,83 @@ def main():  # pragma: no cover
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             client = aws_session()
-            response = client.list_tables()
+            response = client.REPLACE_WITH_TEST_FUNCTION()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 demisto.results('ok')
 
         elif demisto.command() == 'aws-dynamodb-batch-get-item':
-            human_readable, outputs = batch_get_item_command(args)
+            human_readable, outputs, response = batch_get_item_command(args)
         elif demisto.command() == 'aws-dynamodb-batch-write-item':
-            human_readable, outputs = batch_write_item_command(args)
+            human_readable, outputs, response = batch_write_item_command(args)
         elif demisto.command() == 'aws-dynamodb-create-backup':
-            human_readable, outputs = create_backup_command(args)
+            human_readable, outputs, response = create_backup_command(args)
         elif demisto.command() == 'aws-dynamodb-create-global-table':
-            human_readable, outputs = create_global_table_command(args)
+            human_readable, outputs, response = create_global_table_command(args)
         elif demisto.command() == 'aws-dynamodb-create-table':
-            human_readable, outputs = create_table_command(args)
+            human_readable, outputs, response = create_table_command(args)
         elif demisto.command() == 'aws-dynamodb-delete-backup':
-            human_readable, outputs = delete_backup_command(args)
+            human_readable, outputs, response = delete_backup_command(args)
         elif demisto.command() == 'aws-dynamodb-delete-item':
-            human_readable, outputs = delete_item_command(args)
+            human_readable, outputs, response = delete_item_command(args)
         elif demisto.command() == 'aws-dynamodb-delete-table':
-            human_readable, outputs = delete_table_command(args)
+            human_readable, outputs, response = delete_table_command(args)
         elif demisto.command() == 'aws-dynamodb-describe-backup':
-            human_readable, outputs = describe_backup_command(args)
+            human_readable, outputs, response = describe_backup_command(args)
         elif demisto.command() == 'aws-dynamodb-describe-continuous-backups':
-            human_readable, outputs = describe_continuous_backups_command(args)
+            human_readable, outputs, response = describe_continuous_backups_command(args)
         elif demisto.command() == 'aws-dynamodb-describe-endpoints':
-            human_readable, outputs = describe_endpoints_command(args)
+            human_readable, outputs, response = describe_endpoints_command(args)
         elif demisto.command() == 'aws-dynamodb-describe-global-table':
-            human_readable, outputs = describe_global_table_command(args)
+            human_readable, outputs, response = describe_global_table_command(args)
         elif demisto.command() == 'aws-dynamodb-describe-global-table-settings':
-            human_readable, outputs = describe_global_table_settings_command(args)
+            human_readable, outputs, response = describe_global_table_settings_command(args)
         elif demisto.command() == 'aws-dynamodb-describe-limits':
-            human_readable, outputs = describe_limits_command(args)
+            human_readable, outputs, response = describe_limits_command(args)
         elif demisto.command() == 'aws-dynamodb-describe-table':
-            human_readable, outputs = describe_table_command(args)
+            human_readable, outputs, response = describe_table_command(args)
         elif demisto.command() == 'aws-dynamodb-describe-time-to-live':
-            human_readable, outputs = describe_time_to_live_command(args)
+            human_readable, outputs, response = describe_time_to_live_command(args)
         elif demisto.command() == 'aws-dynamodb-get-item':
-            human_readable, outputs = get_item_command(args)
+            human_readable, outputs, response = get_item_command(args)
         elif demisto.command() == 'aws-dynamodb-list-backups':
-            human_readable, outputs = list_backups_command(args)
+            human_readable, outputs, response = list_backups_command(args)
         elif demisto.command() == 'aws-dynamodb-list-global-tables':
-            human_readable, outputs = list_global_tables_command(args)
+            human_readable, outputs, response = list_global_tables_command(args)
         elif demisto.command() == 'aws-dynamodb-list-tables':
-            human_readable, outputs = list_tables_command(args)
+            human_readable, outputs, response = list_tables_command(args)
         elif demisto.command() == 'aws-dynamodb-list-tags-of-resource':
-            human_readable, outputs = list_tags_of_resource_command(args)
+            human_readable, outputs, response = list_tags_of_resource_command(args)
         elif demisto.command() == 'aws-dynamodb-put-item':
-            human_readable, outputs = put_item_command(args)
+            human_readable, outputs, response = put_item_command(args)
         elif demisto.command() == 'aws-dynamodb-query':
-            human_readable, outputs = query_command(args)
+            human_readable, outputs, response = query_command(args)
         elif demisto.command() == 'aws-dynamodb-restore-table-from-backup':
-            human_readable, outputs = restore_table_from_backup_command(args)
+            human_readable, outputs, response = restore_table_from_backup_command(args)
         elif demisto.command() == 'aws-dynamodb-restore-table-to-point-in-time':
-            human_readable, outputs = restore_table_to_point_in_time_command(args)
+            human_readable, outputs, response = restore_table_to_point_in_time_command(args)
         elif demisto.command() == 'aws-dynamodb-scan':
-            human_readable, outputs = scan_command(args)
+            human_readable, outputs, response = scan_command(args)
         elif demisto.command() == 'aws-dynamodb-tag-resource':
-            human_readable, outputs = tag_resource_command(args)
+            human_readable, outputs, response = tag_resource_command(args)
         elif demisto.command() == 'aws-dynamodb-transact-get-items':
-            human_readable, outputs = transact_get_items_command(args)
+            human_readable, outputs, response = transact_get_items_command(args)
         elif demisto.command() == 'aws-dynamodb-transact-write-items':
-            human_readable, outputs = transact_write_items_command(args)
+            human_readable, outputs, response = transact_write_items_command(args)
         elif demisto.command() == 'aws-dynamodb-untag-resource':
-            human_readable, outputs = untag_resource_command(args)
+            human_readable, outputs, response = untag_resource_command(args)
         elif demisto.command() == 'aws-dynamodb-update-continuous-backups':
-            human_readable, outputs = update_continuous_backups_command(args)
+            human_readable, outputs, response = update_continuous_backups_command(args)
         elif demisto.command() == 'aws-dynamodb-update-global-table':
-            human_readable, outputs = update_global_table_command(args)
+            human_readable, outputs, response = update_global_table_command(args)
         elif demisto.command() == 'aws-dynamodb-update-global-table-settings':
-            human_readable, outputs = update_global_table_settings_command(args)
+            human_readable, outputs, response = update_global_table_settings_command(args)
         elif demisto.command() == 'aws-dynamodb-update-item':
-            human_readable, outputs = update_item_command(args)
+            human_readable, outputs, response = update_item_command(args)
         elif demisto.command() == 'aws-dynamodb-update-table':
-            human_readable, outputs = update_table_command(args)
+            human_readable, outputs, response = update_table_command(args)
         elif demisto.command() == 'aws-dynamodb-update-time-to-live':
-            human_readable, outputs = update_time_to_live_command(args)
-        return_outputs(human_readable, outputs)
+            human_readable, outputs, response = update_time_to_live_command(args)
+        return_outputs(human_readable, outputs, response)
 
     except ResponseParserError as e:
         return_error(
