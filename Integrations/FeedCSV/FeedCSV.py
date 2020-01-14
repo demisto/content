@@ -102,14 +102,14 @@ class Client(BaseClient):
         response = r.content.decode('latin-1').split('\n')
         if self.ignore_regex is not None:
             response = filter(
-                lambda x: self.ignore_regex.match(x) is None,
+                lambda x: self.ignore_regex.match(x) is None,  # type: ignore
                 response
             )
 
         csvreader = csv.DictReader(
             response,
             fieldnames=self.fieldnames,
-            **self.dialect
+            **self.dialect  # type: ignore
         )
 
         return csvreader
