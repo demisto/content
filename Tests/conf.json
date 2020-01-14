@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "BambenekConsultingFeed",
+            "integrations": "Bambenek Consulting Feed",
             "playbookID": "BambenekConslting_Feed_Test",
             "fromversion": "5.5.0"
         },
