@@ -606,10 +606,13 @@ def test_module():
         demisto.results('ok')
 
 
-def fetch_incidents(query, id_offset=0, fetch_by_created=None, **_):
+def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
     last_run = demisto.getLastRun()
     demisto.debug(f"last_run: {last_run}" if last_run else 'last_run is empty')
-    id_offset = last_run.get("idOffset") if (last_run and last_run.get("idOffset")) else id_offset
+    if last_run and last_run.get("idOffset"):
+        id_offset = last_run.get("idOffset")
+    if not id_offset:
+        id_offset = 0
 
     incidents, max_results = [], 50
     if id_offset:
