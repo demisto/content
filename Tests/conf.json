@@ -3,6 +3,14 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Digital Defense FrontlineVM",
+            "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
+        },
+        {
+            "integrations": "Digital Defense FrontlineVM",
+            "playbookID": "Digital Defense FrontlineVM - Test Playbook"
+        },
+        {
             "integrations": "CSVFeed",
             "playbookID": "CSV_Feed_Test"
         },
