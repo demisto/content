@@ -1,3 +1,5 @@
+from typing import Tuple, List, Dict, Any
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -20,7 +22,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 BASE_URL = None
-ACCESS_KEY = None
+ACCESS_KEY = ''
 SECRET_KEY = None
 APP_ID = None
 APP_KEY = None
@@ -31,9 +33,9 @@ FETCH_URL = None
 FETCH_ATTACHMENTS = None
 FETCH_IMPERSONATIONS = None
 # Used to refresh token / discover available auth types / login
-EMAIL_ADDRESS = None
-PASSWORD = None
-FETCH_DELTA = None
+EMAIL_ADDRESS = ''
+PASSWORD = ''
+FETCH_DELTA = 0.0
 
 # default query xml template for test module
 default_query_xml = "<?xml version=\"1.0\"?> \n\
@@ -108,7 +110,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
         hdr_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S") + " UTC"
 
         # Create the HMAC SHA1 of the Base64 decoded secret key for the Authorization header
-        hmac_sha1 = hmac.new(SECRET_KEY.decode("base64"), ':'.join([hdr_date, request_id, api_endpoint, APP_KEY]),
+        hmac_sha1 = hmac.new(SECRET_KEY.decode("base64"), ':'.join([hdr_date, request_id, api_endpoint, APP_KEY]),  # type: ignore
                              digestmod=hashlib.sha1).digest()
 
         # Use the HMAC SHA1 value to sign the hdrDate + ":" requestId + ":" + URI + ":" + appkey
@@ -157,7 +159,8 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
         if e.response.status_code == 418:  # type: ignore  # pylint: disable=no-member
             if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
                 return_error(
-                    'Credentials provided are expired, could not automatically refresh tokens. App ID + Email Address '
+                    'Credentials provided are expired, could not automatically refresh tokens.'
+                    ' App ID + Email Address '
                     '+ Password are required.')
         else:
             raise
@@ -422,13 +425,14 @@ def get_policy_request(policy_id=None):
 
 
 def get_arguments_for_policy_command(policy_command_type, args):
-    # type: (str, dict) -> (dict, str, Optional[str])
+    # type: (str, dict) -> Tuple[dict, str]
     """
       Args:
-          policy_command_type: create / update
+          policy_command_type (str): create / update
+          args: Demisto arguments
 
       Returns:
-          Returning a dict with all of the arguments.
+          Returning a tuple with all of policy arguments (Tuple).
      """
 
     description = args.get('description', '').encode('utf-8')
@@ -437,7 +441,7 @@ def get_arguments_for_policy_command(policy_command_type, args):
     from_value = args.get('fromValue', '').encode('utf-8')
     to_type = args.get('toType', '').encode('utf-8')
     to_value = args.get('toValue', '').encode('utf-8')
-    option = args.get('option', '').encode('utf-8')
+    option = str(args.get('option', '').encode('utf-8'))
     policy_obj = {
         'description': description,
         'fromPart': from_part,
@@ -446,14 +450,8 @@ def get_arguments_for_policy_command(policy_command_type, args):
         'toType': to_type,
         'toValue': to_value
     }
-    if policy_command_type == "update":
-        policy_id = args.get('policy_id', '').encode('utf-8')
-        if not policy_id:
-            return_error("You need to enter policy ID")
-        return policy_obj, option, policy_id
-    demisto.results("get arguments")
-    demisto.results(policy_obj)
-    return policy_obj, option, None
+
+    return policy_obj, option
 
 
 def create_policy(args):
@@ -467,7 +465,7 @@ def create_policy(args):
     policy_id = policy_list.get('id')
     title = 'Mimecast Create Policy: \n Policy Was Created Successfully!'
     sender = policy.get('from')
-    reciever = policy.get('to')
+    receiver = policy.get('to')
     description = policy.get('description')
     contents = {
         'Policy ID': policy_id,
@@ -479,10 +477,10 @@ def create_policy(args):
             'Type': sender.get('type')
         },
         'Reciever': {
-            'Group': reciever.get('groupId'),
-            'Email Address': reciever.get('emailAddress'),
-            'Domain': reciever.get('emailDomain'),
-            'Type': reciever.get('type')
+            'Group': receiver.get('groupId'),
+            'Email Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
         },
         'Bidirectional': policy.get('bidirectional'),
         'Start': policy.get('fromDate'),
@@ -498,10 +496,10 @@ def create_policy(args):
             'Type': sender.get('type')
         },
         'Reciever': {
-            'Group': reciever.get('groupId'),
-            'Address': reciever.get('emailAddress'),
-            'Domain': reciever.get('emailDomain'),
-            'Type': reciever.get('type')
+            'Group': receiver.get('groupId'),
+            'Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
         },
         'Bidirectional': policy.get('bidirectional'),
         'FromDate': policy.get('fromDate'),
@@ -537,15 +535,16 @@ def create_policy_request(policy, option):
     return response.get('data')[0]
 
 
-def update_policy(args):
+def set_empty_value_args(policy_obj, option, policy_id):
     """
-          Update the policy acoording to policy ID
+      Args:
+        policy_obj (Dict): Dict of policy details
+        option: (str) Policy option
+        policy_id: (str) Policy ID
+
+      Returns:
+          Returning a tuple with all of policy arguments filled with data (Tuple).
      """
-    headers = ['Policy ID', 'Description', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
-    contents = {}  # type: Dict[Any, Any]
-    context = {}
-    policies_context = {}  # type: Dict[Any, Any]
-    policy_obj, option, policy_id = get_arguments_for_policy_command("update", args)
     empty_args_list = []
     for arg, value in policy_obj.items():
         if value == '':
@@ -559,11 +558,28 @@ def update_policy(args):
                 option = policy_details[0]["option"].encode("utf-8")
             else:
                 policy_obj[arg] = policy_details[0]["policy"][arg].encode("utf-8")
-    respone = update_policy_request(policy_id, policy_obj, option)
-    policy = respone.get('policy')
+
+    return policy_obj, option, policy_id
+
+
+def update_policy(args):
+    """
+          Update policy according to policy ID
+     """
+    headers = ['Policy ID', 'Description', 'Sender', 'Receiver', 'Bidirectional', 'Start', 'End']
+    contents = {}  # type: Dict[Any, Any]
+    context = {}
+    policies_context = {}  # type: Dict[Any, Any]
+    policy_obj, option = get_arguments_for_policy_command("update", args)
+    policy_id = str(args.get('policy_id', '').encode('utf-8'))
+    if not policy_id:
+        return_error("You need to enter policy ID")
+    policy_obj, option, policy_id = set_empty_value_args(policy_obj, option, policy_id)
+    response = update_policy_request(policy_id, policy_obj, option)
+    policy = response.get('policy')
     title = 'Mimecast Update Policy: \n Policy Was Updated Successfully!'
     sender = policy.get('from')
-    reciever = policy.get('to')
+    receiver = policy.get('to')
     description = policy.get('description')
     contents = {
         'Policy ID': policy_id,
@@ -575,10 +591,10 @@ def update_policy(args):
             'Type': sender.get('type')
         },
         'Reciever': {
-            'Group': reciever.get('groupId'),
-            'Email Address': reciever.get('emailAddress'),
-            'Domain': reciever.get('emailDomain'),
-            'Type': reciever.get('type')
+            'Group': receiver.get('groupId'),
+            'Email Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('emailDomain'),
+            'Type': receiver.get('type')
         },
         'Bidirectional': policy.get('bidirectional'),
         'Start': policy.get('fromDate'),
@@ -594,10 +610,10 @@ def update_policy(args):
             'Type': sender.get('type')
         },
         'Reciever': {
-            'Group': reciever.get('groupId'),
-            'Address': reciever.get('emailAddress'),
-            'Domain': reciever.get('domain'),
-            'Type': reciever.get('type')
+            'Group': receiver.get('groupId'),
+            'Address': receiver.get('emailAddress'),
+            'Domain': receiver.get('domain'),
+            'Type': receiver.get('type')
         },
         'Bidirectional': policy.get('bidirectional'),
         'FromDate': policy.get('fromDate'),
@@ -632,8 +648,6 @@ def update_policy_request(policy_id, policy, option):
     response = http_request('POST', api_endpoint, str(payload))
     if response.get('fail'):
         return_error(json.dumps(response.get('fail')[0].get('errors')))
-
-    demisto.results(response.get('data')[0])
     return response.get('data')[0]
 
 
@@ -1214,7 +1228,7 @@ def fetch_incidents():
         last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
     current_fetch = last_fetch
 
-    incidents = []
+    incidents = []  # type: List[Any]
     if FETCH_URL:
         search_params = {
             'from': last_fetch_date_time,
@@ -2211,7 +2225,8 @@ def search_file_hash_api_response_to_context(api_response):
 
 def main():
     ''' COMMANDS MANAGER / SWITCH PANEL '''
-    global BASE_URL, ACCESS_KEY, SECRET_KEY, APP_ID, APP_KEY, USE_SSL, PROXY, FETCH_URL, FETCH_ATTACHMENTS, FETCH_IMPERSONATIONS,EMAIL_ADDRESS, PASSWORD, FETCH_DELTA
+    global BASE_URL, ACCESS_KEY, SECRET_KEY, APP_ID, APP_KEY, USE_SSL, PROXY, FETCH_URL, FETCH_ATTACHMENTS,\
+        FETCH_IMPERSONATIONS, EMAIL_ADDRESS, PASSWORD, FETCH_DELTA
 
     BASE_URL = demisto.params()['baseUrl']
     ACCESS_KEY = demisto.params()['accessKey']
@@ -2227,10 +2242,9 @@ def main():
     # Used to refresh token / discover available auth types / login
     EMAIL_ADDRESS = demisto.params().get('email')
     PASSWORD = demisto.params().get('password')
-    FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+    FETCH_DELTA = (demisto.params().get('fetchDelta', 24))
 
-    LOG('command is %s' % (demisto.command(),))
-
+    LOG("command is {}".format(demisto.command()))
 
     # Check if token needs to be refresh, if it does and relevant params are set, refresh.
     if ACCESS_KEY:
@@ -2239,7 +2253,6 @@ def main():
     try:
         handle_proxy()
         determine_ssl_usage()
-
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
