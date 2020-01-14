@@ -81,6 +81,14 @@ configuration:
   name: app
   required: false
   type: 0
+- display: HEC Token (HTTP Event Collector)
+  name: hec_token
+  required: false
+  type: 4
+- display: HEC Port
+  name: hec_port
+  required: false
+  type: 0
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
