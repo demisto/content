@@ -2111,8 +2111,6 @@
         }
     ],
     "skipped_tests": {
-        "Phishing - Core - Test": "Issue 20983",
-        "Phishing v2 Test - Attachment": "Issue 20983",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
