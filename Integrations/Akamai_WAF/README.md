@@ -1,216 +1,100 @@
-<p>
-    manage a common set of lists for use in various Akamai security products such as Kona Site Defender, Web App
-    Protector, and Bot Manager.
-    This integration was integrated and tested with <a
-        href="https://developer.akamai.com/api/cloud_security/network_lists/v2.html"> Network Lists API v2.0 </a>
-</p>
+Manage a common set of lists for use in various Akamai security products such as Kona Site Defender, Web App Protector,
+and Bot Manager. This integration was integrated and tested with [Network Lists API v2.0](https://developer.akamai.com/api/cloud_security/network_lists/v2.html)
 
-<h2>Use Cases</h2>
-<ul>
-    <li>Get network list details - activations status, elements etc</li>
-    <li>Network create or remove.</li>
-    <li>Network list editing - add/remove elements.</li>
-    <li>Network list activation.</li>
-</ul>
-<h2>Detailed Description</h2>
-<p>
-    The Akamai WAF integration allows you to manage a common set of lists for use in various Akamai security products
-    such as
-    Kona Site Defender, Web App Protector, and Bot Manager. Network lists are shared sets of IP addresses, CIDR blocks,
-    or broad geographic areas. Along with managing your own lists, you can also access read-only lists that Akamai
-    dynamically updates for you.
-</p>
+## Use Cases
 
-<h2>API keys generating steps</h2>
-<ol>
-    <li>Go to `WEB & DATA CENTER SECURITY`>`Security Configuration`>choose you configuration>`Advanced settings`> Enable
-        SIEM integration.
-    </li>
-    <li><a href="https://control.akamai.com/">Open Control panel</a> and login with admin account.</li>
-    <li>Open <code>identity and access management</code> menu.</li>
-    <li>Create user with assign roles <code>Network List</code> or make sure the admin has rights for manage SIEM.</li>
-    <li>Log in to new account you created in the last step.</li>
-    <li>Open <code>identity and access management</code> menu.</li>
-    <li>Create <code>new api client for me</code></li>
-    <li>Assign API key to the relevant users group, and assign on next page <code>Read/Write</code> access for <code>SIEM</code>.
-    </li>
-    <li>Save configuration and go to API detail you created.</li>
-    <li>Press <code>new credentials</code> and download or copy it.</li>
-    <li>Now use the credentials for configure Akamai WAF in Demisto</li>
-</ol>
-<h2>Configure Akamai WAF on Demisto</h2>
-<ol>
-    <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
-        &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.
-    </li>
-    <li>Search for Akamai WAF.</li>
-    <li>
-        Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
-        <ul>
-            <li><strong>Name</strong>: a textual name for the integration instance.</li>
-            <li><strong>Server URL (e.g., https://example.net)</strong></li>
-            <li><strong>Client token</strong></li>
-            <li><strong>Access token</strong></li>
-            <li><strong>Client secret</strong></li>
-            <li><strong>Trust any certificate (not secure)</strong></li>
-            <li><strong>Use system proxy settings</strong></li>
-        </ul>
-    </li>
-    <li>
-        Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
-    </li>
-</ol>
-<h2>Commands</h2>
-<p>
-    You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
-    After you successfully execute a command, a DBot message appears in the War Room with the command details.
-</p>
-<ol>
-    <li>List all network lists available:
-        <a href="#akamai-get-network-lists" target="_self"> akamai-get-network-lists</a></li>
-    <li>Get network list by ID:
-        <a href="#akamai-get-network-list-by-id" target="_self"> akamai-get-network-list-by-id</a>
-    </li>
-    <li>Create new network list (Support txt file upload for elements):
-        <a href="#akamai-create-network-list" target="_self"> akamai-create-network-list</a></li>
-    <li>Delete network list:<a href="#akamai-delete-network-list" target="_self"> akamai-delete-network-list</a></li>
-    <li>Activate network list on Staging or Production: <a href="#akamai-activate-network-list" target="_self">
-        akamai-activate-network-list</a></li>
-    <li>Add elements to network list: <a href="#akamai-add-elements-to-network-list" target="_self">
-        akamai-add-elements-to-network-list</a></li>
-    <li>Remove element from network list:<a href="#akamai-remove-element-from-network-list" target="_self">
-        akamai-remove-element-from-network-list</a></li>
-    <li>Production or staging:<a href="#akamai-get-network-list-activation-status" target="_self">Get network list
-        activation status in akamai-get-network-list-activation-status</a></li>
-</ol>
-<h3 id="akamai-get-network-lists">1. akamai-get-network-lists</h3>
-<hr>
-<p>List all network lists available for an authenticated user who belongs to a group.</p>
-<h5>Base Command</h5>
-<p>
-    <code>akamai-get-network-lists</code>
-</p>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th>
-            <strong>Argument Name</strong>
-        </th>
-        <th>
-            <strong>Description</strong>
-        </th>
-        <th>
-            <strong>Required</strong>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>list_type</td>
-        <td>Filters the output to lists of only the given type of network lists if provided, either IP or GEO.</td>
-        <td>Optional</td>
-    </tr>
-    <tr>
-        <td>search</td>
-        <td>Only list items that match the specified substring in any network list’s name or list of items.</td>
-        <td>Optional</td>
-    </tr>
-    </tbody>
-</table>
+*   Get network list details - activations status, elements etc
+*   Create or remove network lists.
+*   Network list editing - add or remove elements.
+*   Network list activation.
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th>
-            <strong>Path</strong>
-        </th>
-        <th>
-            <strong>Type</strong>
-        </th>
-        <th>
-            <strong>Description</strong>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>Akamai.NetworkLists.Name</td>
-        <td>String</td>
-        <td>Network list name</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.Type</td>
-        <td>String</td>
-        <td>Network list type GEO/IP</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.UniqueID</td>
-        <td>String</td>
-        <td>Network list unique ID</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.ElementCount</td>
-        <td>String</td>
-        <td>Network list elements count</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.CreateDate</td>
-        <td>Date</td>
-        <td>Network list creation date</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.CreatedBy</td>
-        <td>String</td>
-        <td>Network list creator</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.ExpeditedProductionActivationStatus</td>
-        <td>String</td>
-        <td>Expedited production activation status</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.ExpeditedStagingActivationStatus</td>
-        <td>String</td>
-        <td>Expedited staging activation status</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.ProductionActivationStatus</td>
-        <td>String</td>
-        <td>Production activation status</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.StagingActivationStatus</td>
-        <td>String</td>
-        <td>Staging activation status</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.UpdateDate</td>
-        <td>String</td>
-        <td>Network list update date</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.UpdatedBy</td>
-        <td>String</td>
-        <td>Last user updated the network list</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.Elements</td>
-        <td>String</td>
-        <td>Elemnts in the network list</td>
-    </tr>
-    </tbody>
-</table>
+## Detailed Description
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-    <code>!akamai-get-network-lists</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+The Akamai WAF integration allows you to manage a common set of lists for use in various Akamai security products such as Kona Site Defender, Web App Protector, and Bot Manager. Network lists are shared sets of IP addresses, CIDR blocks, or broad geographic areas. Along with managing your own lists, you can also access read-only lists that Akamai dynamically updates for you.
+
+## API keys generating steps
+
+1.  Go to `WEB & DATA CENTER SECURITY`>`Security Configuration`>choose you configuration>`Advanced settings`> Enable SIEM integration.
+2.  [Open Control panel](https://control.akamai.com/) and login with admin account.
+3.  Open `identity and access management` menu.
+4.  Create user with assign roles `Network List` or make sure the admin has rights for manage SIEM.
+5.  Log in to new account you created in the last step.
+6.  Open `identity and access management` menu.
+7.  Create `new api client for me`
+8.  Assign API key to the relevant users group, and assign on next page `Read/Write` access for `SIEM`.
+9.  Save configuration and go to API detail you created.
+10.  Press `new credentials` and download or copy it.
+11.  Now use the credentials for configure Akamai WAF in Demisto
+
+## Configure Akamai WAF on Demisto
+
+1.  Navigate to **Settings** > **Integrations**  > **Servers & Services**.
+2.  Search for Akamai WAF.
+3.  Click **Add instance** to create and configure a new integration instance.
+    *   **Name**: a textual name for the integration instance.
+    *   **Server URL (e.g., https://example.net)**
+    *   **Client token**
+    *   **Access token**
+    *   **Client secret**
+    *   **Trust any certificate (not secure)**
+    *   **Use system proxy settings**
+4.  Click **Test** to validate the new instance.
+
+## Commands
+
+You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+1.  Returns a list of all network lists available for an authenticated user who belongs to a group: [akamai-get-network-lists](#akamai-get-network-lists)
+2.  Gets a network list by the network list ID: [akamai-get-network-list-by-id](#akamai-get-network-list-by-id)
+3.  Creates a new network list. Supports TXT file upload for elements: [akamai-create-network-list](#akamai-create-network-list)
+4.  Deletes the specified network list: [akamai-delete-network-list](#akamai-delete-network-list)
+5.  Activates a network list on the specified environment: [akamai-activate-network-list](#akamai-activate-network-list)
+6.  Adds elements to the specified network list: [akamai-add-elements-to-network-list](#akamai-add-elements-to-network-list)
+7.  Removes elements from the specified network list: [akamai-remove-element-from-network-list](#akamai-remove-element-from-network-list)
+8.  Production or staging:[Get network list activation status in akamai-get-network-list-activation-status](#akamai-get-network-list-activation-status)
+
+### 1\. akamai-get-network-lists
+
+* * *
+
+Returns a list of all network lists available for an authenticated user who belongs to a group.
+
+##### Base Command
+
+`akamai-get-network-lists`
+
+##### Input
+
+|**Argument Name**|**Description**|**Required**|
+|--- |--- |--- |
+|list_type|The network list type by which to filter the results. Can be "IP" or "GEO".|Optional|
+|search|The query by which to search for list names and list items.|Optional|
+
+##### Context Output
+
+|**Path**|**Type**|**Description**|
+|--- |--- |--- |
+|Akamai.NetworkLists.Name|String|The network list name.|
+|Akamai.NetworkLists.Type|String|The network list type.|
+|Akamai.NetworkLists.UniqueID|String|The network list unique ID.|
+|Akamai.NetworkLists.ElementCount|String|The network list elements coun.t|
+|Akamai.NetworkLists.CreateDate|Date|The network list creation date.|
+|Akamai.NetworkLists.CreatedBy|String|The network list creator.|
+|Akamai.NetworkLists.ExpeditedProductionActivationStatus|String|The expedited production activation status.|
+|Akamai.NetworkLists.ExpeditedStagingActivationStatus|String|The expedited staging activation status.|
+|Akamai.NetworkLists.ProductionActivationStatus|String|The production activation status.|
+|Akamai.NetworkLists.StagingActivationStatus|String|The staging activation status.|
+|Akamai.NetworkLists.UpdateDate|String|The date that the network list was updated.|
+|Akamai.NetworkLists.UpdatedBy|String|The last user that updated the network list.|
+|Akamai.NetworkLists.Elements|String|The number of elements in the list.|
+
+##### Command Example
+
+`!akamai-get-network-lists`
+
+##### Context Example
+   
+```
 {
     "Akamai":{
         "NetworkLists":[
@@ -255,175 +139,60 @@
         ]
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Akamai WAF - network lists</h3>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th><strong>Element count</strong></th>
-        <th><strong>Name</strong></th>
-        <th><strong>Production Activation Status</strong></th>
-        <th><strong>Staging Activation Status</strong></th>
-        <th><strong>Type</strong></th>
-        <th><strong>Unique ID</strong></th>
-        <th><strong>Updated by</strong></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td> 2</td>
-        <td> Test</td>
-        <td> PENDING_ACTIVATION</td>
-        <td> INACTIVE</td>
-        <td> IP</td>
-        <td> uniqe_id</td>
-        <td> user</td>
-    </tr>
-    <tr>
-        <td> 1</td>
-        <td> test</td>
-        <td> INACTIVE</td>
-        <td> INACTIVE</td>
-        <td> IP</td>
-        <td> uniqe_id</td>
-        <td> user</td>
-    </tr>
-    </tbody>
-</table>
+```
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
+##### Human Readable Output
 
-<h3 id="akamai-get-network-list-by-id">2. akamai-get-network-list-by-id</h3>
-<hr>
-<p>Get network list by ID</p>
-<h5>Base Command</h5>
-<p>
-    <code>akamai-get-network-list-by-id</code>
-</p>
+### Akamai WAF - network lists
+
+|**Element count**|**Name**|**The production Activation Status**|**The staging Activation Status**|**Type**|**Unique ID**|**Updated by**|
+|--- |--- |--- |--- |--- |--- |--- |
+|2|Test|PENDING_ACTIVATION|INACTIVE|IP|uniqe_id|user|
+|1|test|INACTIVE|INACTIVE|IP|uniqe_id|user|
 
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th>
-            <strong>Argument Name</strong>
-        </th>
-        <th>
-            <strong>Description</strong>
-        </th>
-        <th>
-            <strong>Required</strong>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>network_list_id</td>
-        <td>Network list ID</td>
-        <td>Required</td>
-    </tr>
-    </tbody>
-</table>
+### 2\. akamai-get-network-list-by-id
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th>
-            <strong>Path</strong>
-        </th>
-        <th>
-            <strong>Type</strong>
-        </th>
-        <th>
-            <strong>Description</strong>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>Akamai.NetworkLists.Name</td>
-        <td>String</td>
-        <td>Network list name</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.Type</td>
-        <td>String</td>
-        <td>Network list type GEO/IP</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.UniqueID</td>
-        <td>String</td>
-        <td>Network list unique ID</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.ElementCount</td>
-        <td>String</td>
-        <td>Network list elements count</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.CreateDate</td>
-        <td>Date</td>
-        <td>Network list creation date</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.CreatedBy</td>
-        <td>String</td>
-        <td>Network list creator</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.ExpeditedProductionActivationStatus</td>
-        <td>String</td>
-        <td>Expedited production activation status</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.ExpeditedStagingActivationStatus</td>
-        <td>String</td>
-        <td>Expedited staging activation status</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.ProductionActivationStatus</td>
-        <td>String</td>
-        <td>Production activation status</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.StagingActivationStatus</td>
-        <td>String</td>
-        <td>Staging activation status</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.UpdateDate</td>
-        <td>String</td>
-        <td>Network list update date</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.UpdatedBy</td>
-        <td>String</td>
-        <td>Last user updated the network list</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.Elements</td>
-        <td>String</td>
-        <td>Elemnts in the network list</td>
-    </tr>
-    </tbody>
-</table>
+* * *
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-    <code>!akamai-get-network-list-by-id network_list_id=69988_TEST</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+Gets a network list by the network list ID.
+
+##### Base Command
+
+`akamai-get-network-list-by-id`
+
+##### Input
+
+|**Argument Name**|**Description**|**Required**|
+|--- |--- |--- |
+|network_list_id|The network list ID|Required|
+
+##### Context Output
+
+|**Path**|**Type**|**Description**|
+|--- |--- |--- |
+|Akamai.NetworkLists.Name|String|The network list name.|
+|Akamai.NetworkLists.Type|String|The network list type.|
+|Akamai.NetworkLists.UniqueID|String|The network list unique ID.|
+|Akamai.NetworkLists.ElementCount|String|The network list elements.|
+|Akamai.NetworkLists.CreateDate|Date|The network list creation date.|
+|Akamai.NetworkLists.CreatedBy|String|The network list creator.|
+|Akamai.NetworkLists.ExpeditedProductionActivationStatus|String|The expedited production activation status.|
+|Akamai.NetworkLists.ExpeditedStagingActivationStatus|String|The expedited staging activation status.|
+|Akamai.NetworkLists.ProductionActivationStatus|String|The production activation status.|
+|Akamai.NetworkLists.StagingActivationStatus|String|The staging activation status.|
+|Akamai.NetworkLists.UpdateDate|String|The date that the network list was updated.|
+|Akamai.NetworkLists.UpdatedBy|String|The last user that updated the network list.|
+|Akamai.NetworkLists.Elements|String|The number of elements in the list.|
+
+
+##### Command Example
+
+`!akamai-get-network-list-by-id network_list_id=69988_TEST`
+
+##### Context Example
+
+```
 {
     "Akamai": {
         "NetworkLists": [
@@ -447,145 +216,54 @@
         ]
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Akamai WAF - network list 69988_TEST</h3>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th><strong>Element count</strong></th>
-        <th><strong>Name</strong></th>
-        <th><strong>Production Activation Status</strong></th>
-        <th><strong>Staging Activation Status</strong></th>
-        <th><strong>Type</strong></th>
-        <th><strong>Unique ID</strong></th>
-        <th><strong>Updated by</strong></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td> 2</td>
-        <td> Test</td>
-        <td> PENDING_ACTIVATION</td>
-        <td> INACTIVE</td>
-        <td> IP</td>
-        <td> uique_id</td>
-        <td> user</td>
-    </tr>
-    </tbody>
-</table>
+```
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
+##### Human Readable Output
 
-<h3 id="akamai-create-network-list">3. akamai-create-network-list</h3>
-<hr>
-<p>Create new network list (Support txt file upload for elements)</p>
-<h5>Base Command</h5>
-<p>
-    <code>akamai-create-network-list</code>
-</p>
+### Akamai WAF - network list 69988_TEST
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th>
-            <strong>Argument Name</strong>
-        </th>
-        <th>
-            <strong>Description</strong>
-        </th>
-        <th>
-            <strong>Required</strong>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>list_name</td>
-        <td>Network list name</td>
-        <td>Required</td>
-    </tr>
-    <tr>
-        <td>list_type</td>
-        <td>Network list type</td>
-        <td>Required</td>
-    </tr>
-    <tr>
-        <td>elements</td>
-        <td>Network list elements</td>
-        <td>Optional</td>
-    </tr>
-    <tr>
-        <td>entry_id</td>
-        <td>War-room entry ID of sample file</td>
-        <td>Optional</td>
-    </tr>
-    <tr>
-        <td>description</td>
-        <td>Network list description</td>
-        <td>Optional</td>
-    </tr>
-    </tbody>
-</table>
+|**Element count**|**Name**|**The production Activation Status**|**The staging Activation Status**|**Type**|**Unique ID**|**Updated by**|
+|--- |--- |--- |--- |--- |--- |--- |
+|2|Test|PENDING_ACTIVATION|INACTIVE|IP|uique_id|user|
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th>
-            <strong>Path</strong>
-        </th>
-        <th>
-            <strong>Type</strong>
-        </th>
-        <th>
-            <strong>Description</strong>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>Akamai.NetworkLists.Name</td>
-        <td>String</td>
-        <td>Network list ID</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.UniqueID</td>
-        <td>String</td>
-        <td>Network list ID - Get it from akamai-get-network-lists</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.Type</td>
-        <td>String</td>
-        <td>Network list type</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.ElementCount</td>
-        <td>Number</td>
-        <td>Number of element in the list</td>
-    </tr>
-    <tr>
-        <td>Akamai.NetworkLists.Elements</td>
-        <td>String</td>
-        <td>Elements in the lisy</td>
-    </tr>
-    </tbody>
-</table>
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-    <code>!akamai-create-network-list list_name=test list_type=IP description=test elements=8.8.8.8</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### 3\. akamai-create-network-list
+
+* * *
+
+Creates a new network list. Supports TXT file upload for elements.
+
+##### Base Command
+
+`akamai-create-network-list`
+
+##### Input
+
+|**Argument Name**|**Description**|**Required**|
+|--- |--- |--- |
+|list_name|The network list name|Required|
+|list_type|The network list type|Required|
+|elements|The network list elements|Optional|
+|entry_id|The War Room entry ID of the sample file.|Optional|
+|description|The network list description|Optional|
+
+##### Context Output
+
+|**Path**|**Type**|**Description**|
+|--- |--- |--- |
+|Akamai.NetworkLists.Name|String|The network list name.|
+|Akamai.NetworkLists.UniqueID|String|The ID of the network list to create.|
+|Akamai.NetworkLists.Type|String|The network list type.|
+|Akamai.NetworkLists.ElementCount|Number|Number of element in the list.|
+|Akamai.NetworkLists.Elements|String|Elements in the list.|
+
+##### Command Example
+
+`!akamai-create-network-list list_name=test list_type=IP description=test elements=8.8.8.8`
+
+##### Context Example
+
+```
 {
     "Akamai": {
         "NetworkLists": [
@@ -600,362 +278,199 @@
         ]
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Akamai WAF - network list test created successfully</h3>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th><strong>Name</strong></th>
-        <th><strong>Type</strong></th>
-        <th><strong>Unique ID</strong></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td> test</td>
-        <td> IP</td>
-        <td> 70548_TEST</td>
-    </tr>
-    </tbody>
-</table>
+```
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+##### Human Readable Output
 
-<h3 id="akamai-delete-network-list">4. akamai-delete-network-list</h3>
-<hr>
-<p>Delete network list</p>
-<h5>Base Command</h5>
-<p>
-    <code>akamai-delete-network-list</code>
-</p>
+### Akamai WAF - network list test created successfully
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th>
-            <strong>Argument Name</strong>
-        </th>
-        <th>
-            <strong>Description</strong>
-        </th>
-        <th>
-            <strong>Required</strong>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>network_list_id</td>
-        <td>Network list ID</td>
-        <td>Required</td>
-    </tr>
-    </tbody>
-</table>
+|**Name**|**Type**|**Unique ID**|
+|--- |--- |--- |
+|test|IP|70548_TEST|
 
-<h5>Context Output</h5>
+### 4\. akamai-delete-network-list
+
+* * *
+
+Deletes the specified network list.
+
+##### Base Command
+
+`akamai-delete-network-list`
+
+##### Input
+
+|**Argument Name**|**Description**|**Required**|
+|--- |--- |--- |
+|network_list_id|The ID of the network list to delete.|Required|
+
+
+##### Context Output
+
 There are no context output for this command.
 
-<h5>Command Example</h5>
-<p>
-    <code>!akamai-delete-network-list network_list_id=69856_NEW</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+##### Command Example
+
+`!akamai-delete-network-list network_list_id=69856_NEW`
+
+##### Context Example
+
+```
 {}
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
-    Akamai WAF - network list <strong>69856_NEW</strong> deleted.
-</p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+```
 
-<h3 id="akamai-activate-network-list">5. akamai-activate-network-list</h3>
-<hr>
-<p>Activate network list on Staging or Production</p>
-<h5>Base Command</h5>
-<p>
-    <code>akamai-activate-network-list</code>
-</p>
+##### Human Readable Output
 
+Akamai WAF - network list **69856_NEW** deleted.
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th>
-            <strong>Argument Name</strong>
-        </th>
-        <th>
-            <strong>Description</strong>
-        </th>
-        <th>
-            <strong>Required</strong>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>network_list_id</td>
-        <td>Network list ID</td>
-        <td>Required</td>
-    </tr>
-    <tr>
-        <td>env</td>
-        <td>Enviorment to activate the network list</td>
-        <td>Required</td>
-    </tr>
-    <tr>
-        <td>comment</td>
-        <td>Comment to be logged</td>
-        <td>Optional</td>
-    </tr>
-    <tr>
-        <td>notify</td>
-        <td>List of emails seprated with commas</td>
-        <td>Optional</td>
-    </tr>
-    </tbody>
-</table>
+### 5\. akamai-activate-network-list
 
-<h5>Context Output</h5>
+Activates a network list on the specified environment.
+
+##### Base Command
+
+`akamai-activate-network-list`
+
+##### Input
+
+|**Argument Name**|**Description**|**Required**|
+|--- |--- |--- |
+|network_list_id|The ID of the network to activate.|Required|
+|env|The environment type to activate the network list. Can be "STAGING" OR 'PRODUCTION".|Required|
+|comment|A comment to be logged.|Optional|
+|notify|A comma-separated list of email addresses.|Optional|
+
+##### Context Output
+
 There are no context output for this command.
 
-<h5>Command Example</h5>
-<p>
-    <code>!akamai-activate-network-list network_list_id=69988_TEST env=PRODUCTION comment=test</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+##### Command Example
+
+`!akamai-activate-network-list network_list_id=69988_TEST env=PRODUCTION comment=test`
+
+##### Context Example
+
+```
 {}
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
-    <strong>Akamai WAF - network list 69988_TEST activated on PRODUCTION successfully</strong>
-</p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+```
 
-<h3 id="akamai-add-elements-to-network-list">6. akamai-add-elements-to-network-list</h3>
-<hr>
-<p>Add elements to network list</p>
-<h5>Base Command</h5>
-<p>
-    <code>akamai-add-elements-to-network-list</code>
-</p>
+##### Human Readable Output
+
+**Akamai WAF - network list 69988_TEST activated on PRODUCTION successfully**
+
+### 6\. akamai-add-elements-to-network-list
+
+* * *
+
+Adds elements to the specified network list.
+
+##### Base Command
+
+`akamai-add-elements-to-network-list`
+
+##### Input
+
+|**Argument Name**|**Description**|**Required**|
+|--- |--- |--- |
+|network_list_id|The network list ID|Required|
+|entry_id|The War Room entry ID of the sample file.|Optional|
+|elements| A comma-separated list of elements to add to the network list.|Optional|
 
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th>
-            <strong>Argument Name</strong>
-        </th>
-        <th>
-            <strong>Description</strong>
-        </th>
-        <th>
-            <strong>Required</strong>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>network_list_id</td>
-        <td>Network list ID</td>
-        <td>Required</td>
-    </tr>
-    <tr>
-        <td>entry_id</td>
-        <td>War-room entry ID of sample file</td>
-        <td>Optional</td>
-    </tr>
-    <tr>
-        <td>elements</td>
-        <td>Elements to be added, comma seprated</td>
-        <td>Optional</td>
-    </tr>
-    </tbody>
-</table>
+##### Context Output
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
 There are no context output for this command.
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-    <code>!akamai-add-elements-to-network-list network_list_id=69988_TEST elements="8.8.8.8, 9.9.9.9"</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+
+##### Command Example
+
+`!akamai-add-elements-to-network-list network_list_id=69988_TEST elements="8.8.8.8, 9.9.9.9"`
+
+##### Context Example
+
+```
 {}
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Akamai WAF - elements added to network list 69988_TEST successfully</h3>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th><strong>elements</strong></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td> 8.8.8.8,<br>9.9.9.9</td>
-    </tr>
-    </tbody>
-</table>
+```
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+##### Human Readable Output
 
-<h3 id="akamai-remove-element-from-network-list">7. akamai-remove-element-from-network-list</h3>
-<hr>
-<p>Remove element from network list</p>
-<h5>Base Command</h5>
-<p>
-    <code>akamai-remove-element-from-network-list</code>
-</p>
+### Akamai WAF - elements added to network list 69988_TEST successfully
 
+|**elements**|
+|--- |
+|8.8.8.8,  
+9.9.9.9|
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th>
-            <strong>Argument Name</strong>
-        </th>
-        <th>
-            <strong>Description</strong>
-        </th>
-        <th>
-            <strong>Required</strong>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>network_list_id</td>
-        <td>Network list ID</td>
-        <td>Required</td>
-    </tr>
-    <tr>
-        <td>element</td>
-        <td>Element to be removed</td>
-        <td>Required</td>
-    </tr>
-    </tbody>
-</table>
+### 7\. akamai-remove-element-from-network-list
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
+Removes elements from the specified network list.
+
+##### Base Command
+
+`akamai-remove-element-from-network-list`
+
+##### Input
+
+|**Argument Name**|**Description**|**Required**|
+|--- |--- |--- |
+|network_list_id|The ID of the network list from which to remove elements.|Required|
+|element|The element to remove from the network list.|Required|
+
+##### Context Output
+
 There are no context output for this command.
 
-<h5>Command Example</h5>
-<p>
-    <code>!akamai-remove-element-from-network-list network_list_id=69988_TEST element=8.8.8.8</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+##### Command Example
+
+`!akamai-remove-element-from-network-list network_list_id=69988_TEST element=8.8.8.8`
+
+##### Context Example
+
+```
 {}
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
-    Akamai WAF - element <strong>8.8.8.8</strong> removed from network list <strong>69988_TEST</strong> successfully
-</p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+```
 
-<h3 id="akamai-get-network-list-activation-status">8. akamai-get-network-list-activation-status</h3>
-<hr>
-<p>Get network list activation status in Production or staging</p>
-<h5>Base Command</h5>
-<p>
-    <code>akamai-get-network-list-activation-status</code>
-</p>
+##### Human Readable Output
 
+Akamai WAF - element **8.8.8.8** removed from network list **69988_TEST** successfully
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-    <thead>
-    <tr>
-        <th>
-            <strong>Argument Name</strong>
-        </th>
-        <th>
-            <strong>Description</strong>
-        </th>
-        <th>
-            <strong>Required</strong>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>network_list_id</td>
-        <td>Network list ID</td>
-        <td>Required</td>
-    </tr>
-    <tr>
-        <td>env</td>
-        <td>Enviorment Produciton or Staginf</td>
-        <td>Required</td>
-    </tr>
-    </tbody>
-</table>
+### 8\. akamai-get-network-list-activation-status
 
+Gets the activation status of the specified network list
 
-<h5>Context Output</h5>
+##### Base Command
+
+`akamai-get-network-list-activation-status`
+
+##### Input
+
+|**Argument Name**|**Description**|**Required**|
+|--- |--- |--- |
+|network_list_id|The ID of the network list for which to get the activation status.|Required|
+|env|The environment type. Can be "PRODUCTION" or "STAGING".|Required|
+
+##### Context Output
+
 There are no context output for this command.
 
-<h5>Command Example</h5>
-<p>
-    <code>!akamai-get-network-list-activation-status network_list_id=69988_TEST env=PRODUCTION</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+##### Command Example
+
+`!akamai-get-network-list-activation-status network_list_id=69988_TEST env=PRODUCTION`
+
+##### Context Example
+
+```
 {
-    "Akamai.NetworkLists.ActivationStatus": {
-        "Status": "PENDING_ACTIVATION",
-        "UniqueID": "69988_TEST"
+    "Akamai": {
+        "NetworkLists": {
+            "ActivationStatus": {
+                "Status": "PENDING_ACTIVATION",
+                "UniqueID": "69988_TEST"
+            }
+        }
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
-    Akamai WAF - network list <strong>69988_TEST</strong> is <strong>PENDING_ACTIVATION</strong> in <strong>PRODUCTION</strong>
-</p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
+```
+
+##### Human Readable Output
+
+Akamai WAF - network list **69988_TEST** is **PENDING_ACTIVATION** in **PRODUCTION**
