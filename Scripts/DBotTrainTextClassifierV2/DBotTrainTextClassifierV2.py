@@ -21,6 +21,7 @@ GENERAL_SCORES = {
 DBOT_TAG_FIELD = "dbot_internal_tag_field"
 MIN_INCIDENTS_THRESHOLD = 5
 
+
 def canonize_label(label):
     return label.replace(" ", "_")
 
@@ -37,6 +38,11 @@ def get_phishing_map_labels(comma_values):
             labels_dict[splited[0].strip()] = splited[1].strip()
         else:
             labels_dict[v] = v
+    if len(set(labels_dict.values())) == 1:
+        mapped_value = list(labels_dict.values())[0]
+        error = ['Illegal label mapping: all labels are mapped into a single label: {}.'.format(mapped_value)]
+        error += ['Please make sure the labels are mapped into at least two different labels.']
+        return_error('\n'.join(error))
     return {k: canonize_label(v) for k, v in labels_dict.items()}
 
 
@@ -101,6 +107,7 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
                 continue
         exist_labels_counter[original_label] += 1
         new_data.append(row)
+
     return new_data, dict(exist_labels_counter), dict(missing_labels_counter)
 
 
@@ -218,15 +225,15 @@ def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, deta
 
 def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing_labels_counter):
     if len(data) < MIN_INCIDENTS_THRESHOLD:
-        error = ['Only {} incident(s) correspond to the given label mapping.'.format(len(data))]
-        error += ['Minimum number of incidents required for training is {} ({}<{}).'.format(MIN_INCIDENTS_THRESHOLD,
-                                                                                           len(data),
-                                                                                           MIN_INCIDENTS_THRESHOLD)]
-        error += ['Please make sure that the mapping is correct and includes all the existing labels.']
-        error += ['The following existing labels could not be found in the labels mapping: ' +
-                  '{}.'.format(', '.join(missing_labels_counter.keys()))]
-        error += ['The given mapped labels are: {}.'.format(', '.join(labels_mapping.keys()))]
-        return_error('\n'.join(error))
+        err = ['Only {} incident(s) correspond to the given label mapping.'.format(len(data))]
+        err += ['Minimum number of incidents required for training is {} ({}<{}).'.format(MIN_INCIDENTS_THRESHOLD,
+                                                                                          len(data),
+                                                                                          MIN_INCIDENTS_THRESHOLD)]
+        err += ['Please make sure that the mapping is correct and includes all the existing labels.']
+        missing_labels = ', '.join(missing_labels_counter.keys())
+        err += ['The following existing labels could not be found in the labels mapping: {}.'.format(missing_labels)]
+        err += ['The given mapped labels are: {}.'.format(', '.join(labels_mapping.keys()))]
+        return_error('\n'.join(err))
     if len(missing_labels_counter) > 0:
         human_readable = tableToMarkdown("Skip labels - did not match any of specified labels", missing_labels_counter)
         entry = {
@@ -253,6 +260,19 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
             'HumanReadableFormat': formats['markdown'],
         }
         demisto.results(entry)
+    demisto.results(set([x[DBOT_TAG_FIELD] for x in data]))
+    if len(set([x[DBOT_TAG_FIELD] for x in data])) == 1:
+        single_label = [x[DBOT_TAG_FIELD] for x in data][0]
+        err = ['All received incidents are labeled the same: {}.'.format(single_label)]
+        err += ['At least 2 different labels are needed in order to train a classifier.']
+        if labels_mapping == ALL_LABELS:
+            err += ['Please make sure that incidents of at least 2 labels exist in the environment.']
+        else:
+            unfound_mapped_label = [l for l in labels_mapping if l not in exist_labels_counter
+                                    or exist_labels_counter[l] == 0]
+            missing = ', '.join(unfound_mapped_label)
+            err += ['Notice that the following mapped labels were not found among all incidents: {}.'.format(missing)]
+        return_error('\n'.join(err))
 
 
 def main():
@@ -273,17 +293,16 @@ def main():
 
     demisto.results(len(data))
     if len(data) == 0:
-        error = ['No incidents were received.']
-        error += ['Please make sure that all arguments are set correctly and that incidents exist in the environment.']
-        return_error(' '.join(error))
+        err = ['No incidents were received.']
+        err += ['Please make sure that all arguments are set correctly and that incidents exist in the environment.']
+        return_error(' '.join(err))
     if len(data) < MIN_INCIDENTS_THRESHOLD:
-        error = ['Only {} incident(s) were received.'.format(len(data))]
-        error += ['Minimum number of incidents required for training is {} ({}<{}).'.format(MIN_INCIDENTS_THRESHOLD,
-                                                                                           len(data),
-                                                                                           MIN_INCIDENTS_THRESHOLD)]
-        error += ['Please make sure that all arguments are set correctly, and that enough incidents exist in the ' + \
-                  'environment.']
-        return_error('\n'.join(error))
+        err = ['Only {} incident(s) were received.'.format(len(data))]
+        err += ['Minimum number of incidents required for training is {} ({}<{}).'.format(MIN_INCIDENTS_THRESHOLD,
+                                                                                          len(data),
+                                                                                          MIN_INCIDENTS_THRESHOLD)]
+        err += ['Please make sure that all arguments are set correctly, and enough incidents exist in the environment.']
+        return_error('\n'.join(err))
 
     data = set_tag_field(data, tag_fields)
     data, exist_labels_counter, missing_labels_counter = get_data_with_mapped_label(data, labels_mapping,
