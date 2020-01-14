@@ -8,6 +8,37 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 
+def parse_response(raw_data: List[Dict[str, Any]], wanted_keys: List[Any], actual_keys: List[Any]) -> \
+        List[Dict[str, Any]]:
+    """Lists all raw data and return outputs in Demisto's format.
+    Args:
+        raw_data: raw response from the api.
+        wanted_keys: The keys as we would like them to be.
+        actual_keys :The keys as they are in raw response.
+    Returns:
+        Specific Keys from the raw data.
+    """
+
+    context_list = []
+    for raw in raw_data:
+        context = {}
+        for wanted_key, actual_key in zip(wanted_keys, actual_keys):
+            if isinstance(wanted_key, list):
+                inner_raw = raw.get(actual_key[0])
+                if inner_raw:
+                    lst_inner = []
+                    for in_raw in inner_raw:
+                        inner_dict = {}
+                        for inner_wanted_key, inner_actual_key in zip(wanted_key[1:], actual_key[1:]):
+                            inner_dict.update({inner_wanted_key: in_raw.get(inner_actual_key)})
+                        lst_inner.append(inner_dict)
+                    context.update({wanted_key[0]: lst_inner})
+            else:
+                context.update({wanted_key: raw.get(actual_key)})
+        context_list.append(context)
+    return context_list
+
+
 class Client(BaseClient):
     def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool):
         header = {
@@ -74,36 +105,6 @@ def test_module(client: Client, *_):
         raise Exception('Error occurred while trying to query the api.')
 
 
-def create_dict(raw_data: List[Dict[str, Any]], wanted_keys: List[Any], actual_keys: List[Any]) -> List[Dict[str, Any]]:
-    """Lists all raw data and return outputs in Demisto's format.
-    Args:
-        raw_data: raw response from the api.
-        wanted_keys: The keys as we would like them to be.
-        actual_keys :The keys as they are in raw response.
-    Returns:
-        Specific Keys from the raw data.
-    """
-
-    context_list = []
-    for raw in raw_data:
-        context = {}
-        for wanted_key, actual_key in zip(wanted_keys, actual_keys):
-            if isinstance(wanted_key, list):
-                inner_raw = raw.get(actual_key[0])
-                if inner_raw:
-                    lst_inner = []
-                    for in_raw in inner_raw:
-                        inner_dict = {}
-                        for inner_wanted_key, inner_actual_key in zip(wanted_key[1:], actual_key[1:]):
-                            inner_dict.update({inner_wanted_key: in_raw.get(inner_actual_key)})
-                        lst_inner.append(inner_dict)
-                    context.update({wanted_key[0]: lst_inner})
-            else:
-                context.update({wanted_key: raw.get(actual_key)})
-        context_list.append(context)
-    return context_list
-
-
 def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Search vulnerability command.
     Args:
@@ -115,6 +116,8 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
         Raw Data
     """
     url_suffix = '/vulnerabilities/search'
+    limit: int = int(args.get('limit', 500))
+    to_context = args.get('to_context')
     human_readable = []
     context: Dict[str, Any] = {}
     params = {
@@ -123,9 +126,11 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
         f'min_risk_meter_score': args.get('min-score'),
         f'status[]': args.get('status')
     }
-    vulnerability_list = client.http_request(message='GET', suffix=url_suffix,
-                                             params=params).get('vulnerabilities')
-    if vulnerability_list:
+    response = client.http_request(message='GET', suffix=url_suffix,
+                                   params=params).get('vulnerabilities')
+
+    if response:
+        vulnerability_list = response[:limit]
         wanted_keys = ['AssetID', ['Connectors', 'DefinitionName', 'ID', 'Name', 'Vendor'], 'CveID', 'FixID',
                        'ID', 'Patch',
                        'Score', ['ScannerVulnerabilities', 'ExternalID', 'Open', 'Port'],
@@ -136,10 +141,10 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
                        'fix_id',
                        'id', 'patch', 'risk_meter_score',
                        ['scanner_vulnerabilities', 'external_unique_id', 'open', 'port'],
-                        'severity', 'status', 'threat', 'top_priority',
+                       'severity', 'status', 'threat', 'top_priority',
                        ['service_ticket', 'due_date', 'external_identifier', 'status', 'ticket_type']]
 
-        context_list = create_dict(vulnerability_list, wanted_keys, actual_keys)
+        context_list = parse_response(vulnerability_list, wanted_keys, actual_keys)
         for lst in vulnerability_list:
             human_readable.append({
                 'id': lst.get('id'),
@@ -151,8 +156,11 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
         }
         human_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', human_readable, removeNull=True)
     else:
-        human_readable_markdown = "no vulnerabilities found"
-    return human_readable_markdown, context, vulnerability_list
+        human_readable_markdown = "no vulnerabilities found."
+
+    if to_context == "False":
+        return human_readable_markdown, {}, response
+    return human_readable_markdown, context, response
 
 
 def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -171,7 +179,7 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
     if connectors:
         wanted_keys = ['Host', 'Name', 'Running', 'ID']
         actual_keys = ['host', 'name', 'running', 'id']
-        context_list = create_dict(connectors, wanted_keys, actual_keys)
+        context_list = parse_response(connectors, wanted_keys, actual_keys)
 
         for connector in connectors:
             curr_dict = {
@@ -186,7 +194,7 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
         }
         human_readable_markdown = tableToMarkdown('Kenna Connectors', human_readable, removeNull=True)
     else:
-        human_readable_markdown = "no connectors in get response"
+        human_readable_markdown = "no connectors in get response."
 
     return human_readable_markdown, context, connectors
 
@@ -200,15 +208,11 @@ def run_connector(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
         Success/ Failure , according to the response
     """
     args_id: str = str(args.get('id'))
-    url_suffix = '/connectors/' + args_id + '/run'
+    url_suffix = f'/connectors/{args_id}/run'
     run_response = client.http_request(message='GET', suffix=url_suffix)
-    if run_response:
-        if run_response.get('success') == 'true':
-            return 'Connector ran successfully!', {}, []
-        else:
-            return 'Connector did not run successfully!', {}, []
-    else:
-        return "error from response", {}, []
+    if run_response and run_response.get('success') == 'true':
+        return f'Connector {args_id} ran successfully.', {}, []
+    return f'Connector {args_id} did not ran successfully.', {}, []
 
 
 def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -223,15 +227,19 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
     """
     human_readable_markdown = ''
     url_suffix = '/fixes/search'
+    limit: int = int(args.get('limit', 500))
+    to_context = args.get('to_context')
     context: Dict[str, Any] = {}
     params = {
-        'id' + '[]': args.get('id'),
-        'top_priority' + '[]': args.get('top-priority'),
-        'min_risk_meter_score': args.get('min-score'),
-        'status' + '[]': args.get('status'),
+        f'id[]': args.get('id'),
+        f'top_priority[]': args.get('top-priority'),
+        f'min_risk_meter_score': args.get('min-score'),
+        f'status[]': args.get('status'),
     }
-    fixes_list = client.http_request(message='GET', suffix=url_suffix, params=params).get('fixes')
-    if fixes_list:
+    response = client.http_request(message='GET', suffix=url_suffix, params=params).get('fixes')
+    if response:
+        fixes_list = response[:limit]
+
         wanted_keys = ['ID', 'Title', ['Assets', 'ID', 'Locator', 'PrimaryLocator', 'DisplayLocator'],
                        ['Vulnerabilities', 'ID', 'ServiceTicketStatus', 'ScannerIDs'], 'CveID', 'LastUpdatedAt',
                        'Category', 'VulnerabilityCount', 'MaxScore']
@@ -239,7 +247,7 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
                        ['vulnerabilities', 'id', 'service_ticket_status', 'scanner_ids'], 'cves', 'updated_at',
                        'category',
                        'vuln_count', 'max_vuln_score']
-        context_list = create_dict(fixes_list, wanted_keys, actual_keys)
+        context_list = parse_response(fixes_list, wanted_keys, actual_keys)
 
         remove_html = re.compile(r'<[^>]+>')
         for fix in fixes_list:
@@ -253,8 +261,10 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
             'Kenna.Fixes(val.ID === obj.ID)': context_list
         }
     else:
-        human_readable_markdown = "no fixes in response"
-    return human_readable_markdown, context, fixes_list
+        human_readable_markdown = "no fixes in response."
+    if to_context == "False":
+        return human_readable_markdown, {}, response
+    return human_readable_markdown, context, response
 
 
 def update_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -267,7 +277,7 @@ def update_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
     """
 
     args_id = str(args.get('id'))
-    url_suffix = '/assets/' + args_id
+    url_suffix = f'/assets/{args_id}'
     asset = {
         'asset': {
             'notes': args.get('notes')
@@ -301,7 +311,7 @@ def update_vulnerability(client: Client, args: dict) -> Tuple[str, Dict[str, Any
         params_to_update['vulnerability'].update({'notes': notes})
     if status:
         params_to_update['vulnerability'].update({'status': status})
-    url_suffix = '/vulnerabilities/' + args_id
+    url_suffix = f'/vulnerabilities/{args_id}'
     result = client.http_request(message='PUT', suffix=url_suffix, data=params_to_update)
     try:
         if result.get('status') == "success":
@@ -324,9 +334,11 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
     """
     url_suffix = '/assets/search'
     human_readable = []
+    limit: int = int(args.get('limit', 500))
+    to_context = args.get('to_context')
     context: Dict[str, Any] = {}
     if args.get('tags'):
-        tags = argToList(args.get('tags'),',')
+        tags = argToList(args.get('tags'), ',')
     else:
         tags = args.get('tags')
     params = {
@@ -335,15 +347,16 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
         f'min_risk_meter_score': args.get('min-score'),
         f'tags[]': tags
     }
-    assets_list = client.http_request(message='GET', suffix=url_suffix, params=params).get(
+    response = client.http_request(message='GET', suffix=url_suffix, params=params).get(
         'assets')
-    if assets_list:
+    if response:
+        assets_list = response[:limit]
         wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
-                       'Fqdn', 'Status', 'Owner', 'Priority', 'Notes','OperatingSystem']
+                       'Fqdn', 'Status', 'Owner', 'Priority', 'Notes', 'OperatingSystem']
         actual_keys = ['id', 'hostname', 'risk_meter_score', 'ip_address', 'vulnerabilities_count',
                        'operating_system',
-                       'tags', 'fqdn', 'status', 'owner', 'priority', 'notes','operating_system']
-        context_list: List[Dict[str, Any]] = create_dict(assets_list, wanted_keys, actual_keys)
+                       'tags', 'fqdn', 'status', 'owner', 'priority', 'notes', 'operating_system']
+        context_list: List[Dict[str, Any]] = parse_response(assets_list, wanted_keys, actual_keys)
 
         for lst in assets_list:
             human_readable.append({
@@ -360,7 +373,9 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
         human_readable_markdown = tableToMarkdown('Kenna Assets', human_readable, removeNull=True)
     else:
         human_readable_markdown = "no assets in response"
-    return human_readable_markdown, context, assets_list
+    if to_context == "False":
+        return human_readable_markdown, {}, response
+    return human_readable_markdown, context, response
 
 
 def get_asset_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -374,16 +389,19 @@ def get_asset_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str
         Raw Data
     """
     args_id = str(args.get('id'))
+    limit: int = int(args.get('limit', 500))
+    to_context = args.get('to_context')
     url_suffix = f'/assets/{args_id}/vulnerabilities'
     human_readable = []
     context: Dict[str, Any] = {}
 
-    vulnerabilities_list = client.http_request(message='GET', suffix=url_suffix).get(
+    response = client.http_request(message='GET', suffix=url_suffix).get(
         'vulnerabilities')
-    if vulnerabilities_list:
-        wanted_keys: List[Any] = ['AssetID', 'CveID', 'ID', 'Patch', 'Status', 'TopPriority','Score']
-        actual_keys: List[Any] = ['asset_id', 'cve_id', 'id', 'patch', 'status', 'top_priority','risk_meter_score']
-        context_list: List[Dict[str, Any]] = create_dict(vulnerabilities_list, wanted_keys, actual_keys)
+    if response:
+        vulnerabilities_list = response[:limit]
+        wanted_keys: List[Any] = ['AssetID', 'CveID', 'ID', 'Patch', 'Status', 'TopPriority', 'Score']
+        actual_keys: List[Any] = ['asset_id', 'cve_id', 'id', 'patch', 'status', 'top_priority', 'risk_meter_score']
+        context_list: List[Dict[str, Any]] = parse_response(vulnerabilities_list, wanted_keys, actual_keys)
 
         for lst in vulnerabilities_list:
             human_readable.append({
@@ -397,7 +415,9 @@ def get_asset_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str
         human_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', human_readable, removeNull=True)
     else:
         human_readable_markdown = "no vulnerabilities in response"
-    return human_readable_markdown, context, vulnerabilities_list
+    if to_context == "False":
+        return human_readable_markdown, {}, response
+    return human_readable_markdown, context, response
 
 
 def add_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -410,7 +430,7 @@ def add_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict
     """
     args_id = str(args.get('id'))
     tags = str(args.get('tag'))
-    url_suffix = '/assets/' + args_id + '/tags'
+    url_suffix = f'/assets/{args_id}/tags'
     asset = {
         'asset': {
             'tags': tags
@@ -436,7 +456,7 @@ def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[D
     """
     args_id = str(args.get('id'))
     tags = str(args.get('tag'))
-    url_suffix = '/assets/' + args_id + '/tags'
+    url_suffix = f'/assets/{args_id}/tags'
     asset = {
         'asset': {
             'tags': tags

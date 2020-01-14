@@ -64,6 +64,24 @@ script:
       - false_positive
       required: false
       secret: false
+    - default: false
+      defaultValue: '500'
+      description: limit number of vulnerabilities to return to context
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'True'
+      description: true for flush to context, false for not
+      isArray: false
+      name: to_context
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Filtering vulnerabilities by those that Kenna recommends.
     execution: false
@@ -184,6 +202,24 @@ script:
       description: vulnerabilities for search.
       isArray: false
       name: vulnerabilities
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '500'
+      description: limit number of vulnerabilities to return to context
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: true for flush to context, false for not
+      isArray: false
+      name: to_context
+      predefined:
+      - 'True'
+      - 'False'
       required: false
       secret: false
     deprecated: false
@@ -322,6 +358,24 @@ script:
       name: tags
       required: false
       secret: false
+    - default: false
+      defaultValue: '500'
+      description: limit number of vulnerabilities to return to context
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: true for flush to context, false for not
+      isArray: false
+      name: to_context
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Filtering assets by those that Kenna recommands.
     execution: false
@@ -372,6 +426,24 @@ script:
       isArray: false
       name: id
       required: true
+      secret: false
+    - default: false
+      defaultValue: '500'
+      description: limit number of vulnerabilities to return to context
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: true for flush to context, false for not
+      isArray: false
+      name: to_context
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
       secret: false
     deprecated: false
     description: Get Vulnerability of specific asset.
