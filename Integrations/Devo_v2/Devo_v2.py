@@ -15,7 +15,7 @@ from devo.sender import Lookup, SenderConfigSSL, Sender
 from typing import List, Dict, Set
 
 ''' GLOBAL VARS '''
-ALLOW_INSECURE = demisto.params().get('allow_insecure', False)
+ALLOW_INSECURE = demisto.params().get('insecure', False)
 READER_ENDPOINT = demisto.params().get('reader_endpoint', None)
 READER_OAUTH_TOKEN = demisto.params().get('reader_oauth_token', None)
 WRITER_RELAY = demisto.params().get('writer_relay', None)
