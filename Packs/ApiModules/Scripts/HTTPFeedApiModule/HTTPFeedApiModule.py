@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
     def __init__(self, url: str, feed_name: str = 'http', insecure: bool = False, credentials: dict = None,
-                 ignore_regex: str = None, encoding: str = None,
+                 ignore_regex: str = None, encoding: str = None, indicator_type: str = '',
                  indicator: str = None, fields: str = '{}', polling_timeout: int = 20,
                  user_agent: str = None, proxy: bool = False, **kwargs):
         """Implements class for miners of plain text feeds over http/https.
@@ -88,7 +88,7 @@ class Client(BaseClient):
             credentials = {}
         self.username = credentials.get('identifier', None)
         self.password = credentials.get('password', None)
-
+        self.indicator_type = indicator_type
         self.ignore_regex: Optional[Pattern] = None
         if ignore_regex is not None:
             self.ignore_regex = re.compile(ignore_regex)
@@ -118,6 +118,11 @@ class Client(BaseClient):
                 fattrs['transform'] = r'\g<0>'
 
     def build_iterator(self, **kwargs):
+        """
+        For each URL (sub-feed), send an HTTP request to get indicators and return them after filtering by Regex
+        :param kwargs: Arguments to send to the HTTP API endpoint
+        :return: List of indicators
+        """
         kwargs['stream'] = True
         kwargs['verify'] = self._verify
         kwargs['timeout'] = self.polling_timeout
@@ -219,8 +224,8 @@ def fetch_indicators_command(client, itype, **kwargs):
         return indicators
 
 
-def get_indicators_command(client, args):
-    itype = args.get('indicator_type', args.get('default_indicator_type'))
+def get_indicators_command(client: Client, args):
+    itype = args.get('indicator_type', client.indicator_type)
     limit = int(args.get('limit'))
     indicators_list = fetch_indicators_command(client, itype)
     entry_result = camelize(indicators_list[:limit])
@@ -256,7 +261,6 @@ def feed_main(feed_name):
         else:
             args = demisto.args()
             args['feed_name'] = feed_name
-            args['default_indicator_type'] = params.get('indicator_type')
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
