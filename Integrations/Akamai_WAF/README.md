@@ -45,15 +45,15 @@ The Akamai WAF integration allows you to manage a common set of lists for use in
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1.  Returns a list of all network lists available for an authenticated user who belongs to a group: [akamai-get-network-lists](#akamai-get-network-lists)
-2.  Gets a network list by the network list ID: [akamai-get-network-list-by-id](#akamai-get-network-list-by-id)
-3.  Creates a new network list. Supports TXT file upload for elements: [akamai-create-network-list](#akamai-create-network-list)
-4.  Deletes the specified network list: [akamai-delete-network-list](#akamai-delete-network-list)
-5.  Activates a network list on the specified environment: [akamai-activate-network-list](#akamai-activate-network-list)
-6.  Adds elements to the specified network list: [akamai-add-elements-to-network-list](#akamai-add-elements-to-network-list)
-7.  Removes elements from the specified network list: [akamai-remove-element-from-network-list](#akamai-remove-element-from-network-list)
-8.  Production or staging:[Get network list activation status in akamai-get-network-list-activation-status](#akamai-get-network-list-activation-status)
+2.  Gets a network list by the network list ID: [akamai-get-network-list-by-id](###akamai-get-network-lists)
+3.  Creates a new network list. Supports TXT file upload for elements: [akamai-create-network-list](###akamai-create-network-list)
+4.  Deletes the specified network list: [akamai-delete-network-list](###akamai-delete-network-list)
+5.  Activates a network list on the specified environment: [akamai-activate-network-list](###akamai-activate-network-list)
+6.  Adds elements to the specified network list: [akamai-add-elements-to-network-list](###akamai-add-elements-to-network-list)
+7.  Removes elements from the specified network list: [akamai-remove-element-from-network-list](###akamai-remove-element-from-network-list)
+8.  Production or staging:[Get network list activation status in akamai-get-network-list-activation-status](###akamai-get-network-list-activation-status)
 
-### 1\. akamai-get-network-lists
+1. ### akamai-get-network-lists
 
 * * *
 
@@ -151,7 +151,7 @@ Returns a list of all network lists available for an authenticated user who belo
 |1|test|INACTIVE|INACTIVE|IP|uniqe_id|user|
 
 
-### 2\. akamai-get-network-list-by-id
+2. ### akamai-get-network-list-by-id
 
 * * *
 
@@ -227,7 +227,7 @@ Gets a network list by the network list ID.
 |2|Test|PENDING_ACTIVATION|INACTIVE|IP|uique_id|user|
 
 
-### 3\. akamai-create-network-list
+3. ### akamai-create-network-list
 
 * * *
 
@@ -288,7 +288,7 @@ Creates a new network list. Supports TXT file upload for elements.
 |--- |--- |--- |
 |test|IP|70548_TEST|
 
-### 4\. akamai-delete-network-list
+4. ### akamai-delete-network-list
 
 * * *
 
@@ -323,7 +323,7 @@ There are no context output for this command.
 
 Akamai WAF - network list **69856_NEW** deleted.
 
-### 5\. akamai-activate-network-list
+5. ### akamai-activate-network-list
 
 Activates a network list on the specified environment.
 
@@ -358,7 +358,7 @@ There are no context output for this command.
 
 **Akamai WAF - network list 69988_TEST activated on PRODUCTION successfully**
 
-### 6\. akamai-add-elements-to-network-list
+6. ### akamai-add-elements-to-network-list
 
 * * *
 
@@ -400,7 +400,7 @@ There are no context output for this command.
 |8.8.8.8,  
 9.9.9.9|
 
-### 7\. akamai-remove-element-from-network-list
+7. ### akamai-remove-element-from-network-list
 
 Removes elements from the specified network list.
 
@@ -433,7 +433,7 @@ There are no context output for this command.
 
 Akamai WAF - element **8.8.8.8** removed from network list **69988_TEST** successfully
 
-### 8\. akamai-get-network-list-activation-status
+8. ### akamai-get-network-list-activation-status
 
 Gets the activation status of the specified network list
 
