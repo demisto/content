@@ -48,7 +48,6 @@ configuration:
 description: Use the Securonix integration to manage incidents and watchlists.
 display: Securonix
 name: Securonix
-fromversion: 4.5.0
 script:
   commands:
   - deprecated: false
@@ -705,84 +704,6 @@ script:
     name: securonix-perform-action-on-incident
   - arguments:
     - default: false
-      description: Policy name.
-      isArray: false
-      name: policy_name
-      required: true
-      secret: false
-    - default: false
-      description: Resource group name.
-      isArray: false
-      name: resource_group
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Entity type.
-      isArray: false
-      name: entity_type
-      predefined:
-      - Users
-      - Activityaccount
-      - RGActivityaccount
-      - Resources
-      - Activityip
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Action name.
-      isArray: false
-      name: action_name
-      predefined:
-      - Mark as concern and create incident
-      - Non-Concern
-      - Mark in progress (still investigating)
-      required: true
-      secret: false
-    - default: false
-      description: Entity ID.
-      isArray: false
-      name: entity_id
-      required: true
-      secret: false
-    - default: false
-      description: Resource name. Required for entity_type:Activityaccount, Resources.
-      isArray: false
-      name: resource_name
-      required: false
-      secret: false
-    - default: false
-      description: 'Workflow name. Required for action_name: Mark as concern and create
-        incident.'
-      isArray: false
-      name: workflow
-      required: false
-      secret: false
-    - default: false
-      description: Comment to post.
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - default: false
-      description: Employee ID.
-      isArray: false
-      name: employee_id
-      required: false
-      secret: false
-    - default: false
-      description: Criticality of the incident which is being created.
-      isArray: false
-      name: criticality
-      required: false
-      secret: false
-    deprecated: false
-    description: Create an incident.
-    execution: false
-    name: securonix-create-incident
-  - arguments:
-    - default: false
       description: Incident ID.
       isArray: false
       name: incident_id
@@ -872,79 +793,8 @@ script:
     - contextPath: Securonix.Watchlists.Events.Status
       description: Status of the entity in the watchlist.
       type: String
-  - arguments:
-    - default: false
-      description: Watchlist name.
-      isArray: false
-      name: watchlist
-      required: true
-      secret: false
-    deprecated: false
-    description: Create a watchlist.
-    execution: false
-    name: securonix-create-watchlist
-  - arguments:
-    - default: false
-      description: Entity ID.
-      isArray: false
-      name: entity_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Check if entity is in a watchlist.
-    execution: false
-    name: securonix-check-entity-in-watchlist
-    outputs:
-    - contextPath: Securonix.EntityInWatchlist.Watchlistnames
-      description: Watchlists names.
-      type: String
-    - contextPath: Securonix.EntityInWatchlist.EntityID
-      description: Entity ID.
-      type: String
-  - arguments:
-    - default: false
-      description: Watchlist name.
-      isArray: false
-      name: watchlist_name
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Entity Type.
-      isArray: false
-      name: entity_type
-      predefined:
-      - Users
-      - Activityaccount
-      - RGActivityaccount
-      - Resources
-      - Activityip
-      required: true
-      secret: false
-    - default: false
-      description: Entity ID.
-      isArray: false
-      name: entity_id
-      required: true
-      secret: false
-    - default: false
-      description: Resource name. Required for entity_type:Activityaccount, Resources.
-      isArray: false
-      name: resource_name
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Expiry in days.
-      isArray: false
-      name: expiry_days
-      required: false
-      secret: false
-    deprecated: false
-    description: Add an entity to a watchlist.
-    execution: false
-    name: securonix-add-entity-to-watchlist
   dockerimage: demisto/python3:3.7.5.4328
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -954,3 +804,4 @@ script:
   type: python
 tests:
 - No test - no instance
+fromversion: 4.5.0
