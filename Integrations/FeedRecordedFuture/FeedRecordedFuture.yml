@@ -24,16 +24,16 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: indicator types
+- display: indicator type
   hidden: false
-  name: indicator_types
+  name: indicator_type
   options:
   - domain
   - ip
   - hash
   - url
-  required: true
-  type: 16
+  required: false
+  type: 15
 - display: api token
   hidden: false
   name: api_token
@@ -64,23 +64,29 @@ configuration:
   required: false
   type: 1
 - defaultvalue: connectApi
-  display: api type
+  display: feed source
   hidden: false
-  name: api_type
+  name: feed_source
   options:
   - connectApi
   - fusion
   required: false
   type: 15
-- display: risk_rule
+- display: risk rule
   hidden: false
-  name: risk rule
+  name: risk_rule
   required: false
   type: 0
-- display: fusion_path
+- display: fusion file path
   hidden: false
-  name: fusion path
+  name: fusion_file_path
   required: false
+  type: 0
+- defaultvalue: '20'
+  display: Request Timeout
+  hidden: false
+  name: polling_timeout
+  required: true
   type: 0
 description: This is the Hello World integration for getting started.
 display: FeedRecordedFuture

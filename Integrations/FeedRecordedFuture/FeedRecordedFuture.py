@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple
 from CommonServerUserPython import *
 # IMPORTS
 import requests
@@ -16,6 +16,9 @@ INTEGRATION_NAME = 'Recorded Future'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 SOURCE_NAME = 'recordedfuture.masterrisklist'
 BASE_URL = 'https://api.recordedfuture.com/v2/'
+PARAMS = {'output_format': 'csv/splunk'}
+HEADERS = {'X-RF-User-Agent': 'Demisto',
+           'content-type': 'application/json'}
 
 
 class Client(BaseClient):
@@ -24,8 +27,9 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, indicator_types: str, api_token: str, api_type: str, risk_rule: str = None, fusion_path: str = None, insecure: bool = False,
-                 ignore_regex: str = None, polling_timeout: int = 20, proxy: bool = False, path: str = None, **kwargs):
+    def __init__(self, indicator_type: str, api_token: str, feed_source: str, risk_rule: str = None,
+                 fusion_file_path: str = None, insecure: bool = False,
+                 polling_timeout: int = 20, proxy: bool = False, path: str = None, **kwargs):
         """
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         :param credentials: username and password used for basic authentication
@@ -43,70 +47,52 @@ class Client(BaseClient):
             return_error('Please provide an integer value for "Request Timeout"')
 
         self.risk_rule = risk_rule
-        self.ignore_regex = ignore_regex
-        self.fusion_path = fusion_path
-        if self.ignore_regex is not None:
-            self.ignore_regex = re.compile(self.ignore_regex)  # type: ignore
-
-        self.dialect = {
-            'delimiter': ',',
-            'doublequote': True,
-            'escapechar': '',
-            'quotechar': '"',
-            'skipinitialspace': False
-        }
-
-        self.api_token = api_token
-        self.api_type = api_type
-        self.indicator_types = indicator_types
+        self.fusion_file_path = fusion_file_path
+        self.api_token = HEADERS['X-RFToken'] = api_token
+        self.feed_source = feed_source
+        self.indicator_type = indicator_type
         self.path = path
 
-    def _build_request(self, indicator_type):
+    def _build_request(self):
 
-        if self.api_type == 'connectApi':
+        if self.feed_source == 'connectApi':
             if self.risk_rule is None:
-                url = BASE_URL + str(indicator_type) + '/risklist'
+                url = BASE_URL + str(self.indicator_type) + '/risklist'
             else:
-                url = BASE_URL + str(indicator_type) + '/risklist?list=' + self.risk_rule
-            params = {'output_format': 'csv/splunk'}
-            headers = {'X-RFToken': self.api_token, 'X-RF-User-Agent': 'Demisto',
-                       'content-type': 'application/json'}
+                url = BASE_URL + str(self.indicator_type) + '/risklist?list=' + self.risk_rule
 
             r = requests.Request(
                 'GET',
                 url,
-                headers=headers,
-                params=params
+                headers=HEADERS,
+                params=PARAMS
             )
             return r.prepare()
 
-        if self.api_type == 'fusion':
-            if self.path is None:
-                suffix = '/public/risklists/default_' + str(indicator_type) + '_risklist.csv'
+        if self.feed_source == 'fusion':
+            url = BASE_URL + 'fusion/files/?path='
+            if self.fusion_file_path is None:
+                fusion_path = '/public/risklists/default_' + str(self.indicator_type) + '_risklist.csv'
             else:
-                suffix = self.path
+                fusion_path = self.fusion_file_path
 
-            suffix = suffix.replace('/', '%2F')
-            params = {'output_format': 'csv/splunk'}
-            headers = {'X-RFToken': self.api_token, 'X-RF-User-Agent': 'Demisto',
-                       'content-type': 'application/json'}
+            fusion_path = fusion_path.replace('/', '%2F')
             r = requests.Request('GET',
-                                 BASE_URL + 'fusion/files/?path=' + suffix,
-                                 headers=headers,
-                                 params=params)
-
+                                 url + fusion_path,
+                                 headers=HEADERS,
+                                 params=PARAMS)
             return r.prepare()
 
-    def build_iterator(self, indicator_type):
+    def build_iterator(self):
         """Retrieves all entries from the feed.
         Args:
 
         Returns:
-        A list of objects, containing the indicators.
+        csv iterator
         """
         _session = requests.Session()
 
-        prepreq = self._build_request(indicator_type)
+        prepreq = self._build_request()
         # this is to honour the proxy environment variables
         rkwargs = _session.merge_environment_settings(
             prepreq.url,
@@ -127,30 +113,22 @@ class Client(BaseClient):
             raise
 
         response = r.content.decode('latin-1').split('\n')
-        if self.ignore_regex is not None:
-            response = filter(
-                lambda x: self.ignore_regex.match(x) is None,
-                response
-            )
 
-        csvreader = csv.DictReader(
-            response,
-            **self.dialect
-        )
+        csvreader = csv.DictReader(response)
 
         return csvreader
 
 
-# simple function to iterate list in batches
-def batch(iterable, batch_size=1):
-    current_batch = []
-    for item in iterable:
-        current_batch.append(item)
-        if len(current_batch) == batch_size:
-            yield current_batch
-            current_batch = []
-    if current_batch:
-        yield current_batch
+# # simple function to iterate list in batches
+# def batch(iterable, batch_size=1):
+#     current_batch = []
+#     for item in iterable:
+#         current_batch.append(item)
+#         if len(current_batch) == batch_size:
+#             yield current_batch
+#             current_batch = []
+#     if current_batch:
+#         yield current_batch
 
 
 def test_module(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -161,7 +139,7 @@ def test_module(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         Outputs.
     """
 
-    client.build_iterator('ip')
+    client.build_iterator()
     return 'ok', {}, {}
 
 
@@ -217,17 +195,16 @@ def fetch_indicators_command(client):
         Indicators.
     """
     indicators = []
-    for indicator_type in client.indicator_types:
-        iterator = client.build_iterator(indicator_type)
-        for item in iterator:
-            raw_json = dict(item)
-            raw_json['value'] = value = item.get('Name')
-            raw_json['type'] = get_indicator_type(indicator_type, item)
-            indicators.append({
-                "value": value,
-                "type": raw_json['type'],
-                "rawJSON": raw_json,
-            })
+    iterator = client.build_iterator()
+    for item in iterator:
+        raw_json = dict(item)
+        raw_json['value'] = value = item.get('Name')
+        raw_json['type'] = get_indicator_type(client.indicator_type, item)
+        indicators.append({
+            "value": value,
+            "type": raw_json['type'],
+            "rawJSON": raw_json,
+        })
     return indicators
 
 
