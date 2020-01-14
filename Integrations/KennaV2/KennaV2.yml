@@ -17,14 +17,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Trust any certificate (not secure)
-  defaultvalue: 'false'
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
 description: Kenna is a Risk Intelligence & Vulnerability platform that enables InfoSec
   teams to prioritize and remediate vulnerabilities faster.
-display: KennaV2
+display: Kenna v2
 name: KennaV2
 script:
   commands:
@@ -93,9 +93,6 @@ script:
     - contextPath: Kenna.Vulnerabilities.Patch
       description: There is patch related to vulnerability.
       type: Boolean
-    - contextPath: Kenna.Vulnerabilities.RiskMeterScore
-      description: Risk meter score of vulnerability.
-      type: Number
     - contextPath: Kenna.Vulnerabilities.ScannerVulnerabilities.ExternalID
       description: Vulnerability scanner external ID.
       type: String
@@ -308,12 +305,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: IP address of asset to search for
-      isArray: false
-      name: ip-address
-      required: false
-      secret: false
-    - default: false
       description: Hostname of asset to search
       isArray: false
       name: hostname
@@ -345,8 +336,8 @@ script:
     - contextPath: Kenna.Assets.IpAddress
       description: assets IP
       type: String
-    - contextPath: Kenna.Assets.MinScore
-      description: Asset Min Score
+    - contextPath: Kenna.Assets.Score
+      description: Asset risk Score
       type: Number
     - contextPath: Kenna.Assets.VulnerabilitiesCount
       description: Assets Vulnerabilities Count
@@ -372,6 +363,9 @@ script:
     - contextPath: Kenna.Assets.Notes
       description: Notes of current asset
       type: String
+    - contextPath: Kenna.Assets.OperatingSystem
+      description: Operating system of asset
+      type: String
   - arguments:
     - default: false
       description: Asset id to filter
@@ -380,7 +374,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get Vulenerabilities of specific asset.
+    description: Get Vulnerability of specific asset.
     execution: false
     name: kenna-get-asset-vulnerabilities
     outputs:
@@ -402,6 +396,9 @@ script:
     - contextPath: Kenna.VulnerabilitiesOfAsset.TopPriority
       description: 'Top Priority of Vulnerabilities Of Asset '
       type: Boolean
+    - contextPath: Kenna.VulnerabilitiesOfAsset.Score
+      description: 'Score of Vulnerabilities Of Asset '
+      type: Number
   - arguments:
     - default: false
       description: List of tags to add

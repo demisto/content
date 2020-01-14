@@ -91,9 +91,9 @@ def create_dict(raw_data: List[Dict[str, Any]], wanted_keys: List[Any], actual_k
             if isinstance(wanted_key, list):
                 inner_raw = raw.get(actual_key[0])
                 if inner_raw:
-                    inner_dict = {}
                     lst_inner = []
                     for in_raw in inner_raw:
+                        inner_dict = {}
                         for inner_wanted_key, inner_actual_key in zip(wanted_key[1:], actual_key[1:]):
                             inner_dict.update({inner_wanted_key: in_raw.get(inner_actual_key)})
                         lst_inner.append(inner_dict)
@@ -118,25 +118,25 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
     human_readable = []
     context: Dict[str, Any] = {}
     params = {
-        'id' + '[]': args.get('id'),
-        'top_priority' + '[]': args.get('top-priority'),
-        'min_risk_meter_score': args.get('min-score'),
-        'status' + '[]': args.get('status')
+        f'id[]': args.get('id'),
+        f'top_priority[]': args.get('top-priority'),
+        f'min_risk_meter_score': args.get('min-score'),
+        f'status[]': args.get('status')
     }
     vulnerability_list = client.http_request(message='GET', suffix=url_suffix,
                                              params=params).get('vulnerabilities')
     if vulnerability_list:
         wanted_keys = ['AssetID', ['Connectors', 'DefinitionName', 'ID', 'Name', 'Vendor'], 'CveID', 'FixID',
                        'ID', 'Patch',
-                       'RiskMeterScore', ['ScannerVulnerabilities', 'ExternalID', 'Open', 'Port'], 'Score',
+                       'Score', ['ScannerVulnerabilities', 'ExternalID', 'Open', 'Port'],
                        'Severity',
                        'Status', 'Threat', 'TopPriority',
                        ['ServiceTicket', 'DueDate', 'ExternalIdentifier', 'Status', 'TicketType']]
         actual_keys = ['asset_id', ['connectors', 'connector_definition_name', 'id', 'name', 'vendor'], 'cve_id',
                        'fix_id',
-                       'id', 'patch', 'lisk_meter_score',
+                       'id', 'patch', 'risk_meter_score',
                        ['scanner_vulnerabilities', 'external_unique_id', 'open', 'port'],
-                       'score', 'severity', 'status', 'threat', 'top_priority',
+                        'severity', 'status', 'threat', 'top_priority',
                        ['service_ticket', 'due_date', 'external_identifier', 'status', 'ticket_type']]
 
         context_list = create_dict(vulnerability_list, wanted_keys, actual_keys)
@@ -325,21 +325,24 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
     url_suffix = '/assets/search'
     human_readable = []
     context: Dict[str, Any] = {}
+    if args.get('tags'):
+        tags = argToList(args.get('tags'),',')
+    else:
+        tags = args.get('tags')
     params = {
-        'id' + '[]': args.get('id'),
-        'hostname' + '[]': args.get('hostname'),
-        'min_risk_meter_score': args.get('min-score'),
-        'ip_address' + '[]': args.get('ip-address'),
-        'tags' + '[]': args.get('tags')
+        f'id[]': args.get('id'),
+        f'hostname[]': args.get('hostname'),
+        f'min_risk_meter_score': args.get('min-score'),
+        f'tags[]': tags
     }
     assets_list = client.http_request(message='GET', suffix=url_suffix, params=params).get(
         'assets')
     if assets_list:
-        wanted_keys = ['ID', 'Hostname', 'MinScore', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
-                       'Fqdn', 'Status', 'Owner', 'Priority', 'Notes']
-        actual_keys = ['id', 'hostname', 'min_risk_meter_score', 'ip_address', 'vulnerabilities_count',
+        wanted_keys = ['ID', 'Hostname', 'Score', 'IpAddress', 'VulnerabilitiesCount', 'OperatingSystem', 'Tags',
+                       'Fqdn', 'Status', 'Owner', 'Priority', 'Notes','OperatingSystem']
+        actual_keys = ['id', 'hostname', 'risk_meter_score', 'ip_address', 'vulnerabilities_count',
                        'operating_system',
-                       'tags', 'fqdn', 'status', 'owner', 'priority', 'notes']
+                       'tags', 'fqdn', 'status', 'owner', 'priority', 'notes','operating_system']
         context_list: List[Dict[str, Any]] = create_dict(assets_list, wanted_keys, actual_keys)
 
         for lst in assets_list:
@@ -347,12 +350,14 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
                 'id': lst.get('id'),
                 'Hostname': lst.get('hostname'),
                 'IP-address': lst.get('ip_address'),
-                'Vulnerabilities Count': args.get('vulnerabilities_count')
+                'Vulnerabilities Count': args.get('vulnerabilities_count'),
+                'Operating System': lst.get('operating_system'),
+                'Score': lst.get('risk_meter_score')
             })
         context = {
             'Kenna.Assets(val.ID === obj.ID)': context_list
         }
-        human_readable_markdown = tableToMarkdown('Kenna Vulnerabilities', human_readable, removeNull=True)
+        human_readable_markdown = tableToMarkdown('Kenna Assets', human_readable, removeNull=True)
     else:
         human_readable_markdown = "no assets in response"
     return human_readable_markdown, context, assets_list
@@ -369,15 +374,15 @@ def get_asset_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str
         Raw Data
     """
     args_id = str(args.get('id'))
-    url_suffix = '/assets/' + args_id + '/vulnerabilities'
+    url_suffix = f'/assets/{args_id}/vulnerabilities'
     human_readable = []
     context: Dict[str, Any] = {}
 
     vulnerabilities_list = client.http_request(message='GET', suffix=url_suffix).get(
         'vulnerabilities')
     if vulnerabilities_list:
-        wanted_keys: List[Any] = ['AssetID', 'CveID', 'ID', 'Patch', 'Status', 'TopPriority']
-        actual_keys: List[Any] = ['asset_id', 'cve_id', 'id', 'patch', 'status', 'top_priority']
+        wanted_keys: List[Any] = ['AssetID', 'CveID', 'ID', 'Patch', 'Status', 'TopPriority','Score']
+        actual_keys: List[Any] = ['asset_id', 'cve_id', 'id', 'patch', 'status', 'top_priority','risk_meter_score']
         context_list: List[Dict[str, Any]] = create_dict(vulnerabilities_list, wanted_keys, actual_keys)
 
         for lst in vulnerabilities_list:
