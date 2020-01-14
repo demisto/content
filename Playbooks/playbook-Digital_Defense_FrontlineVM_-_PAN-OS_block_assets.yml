@@ -455,3 +455,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+  - No test - manual task
