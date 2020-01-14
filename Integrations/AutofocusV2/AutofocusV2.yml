@@ -987,6 +987,18 @@ script:
     - contextPath: AutoFocus.ExportListIndicator.Value
       description: The value of the indicator in the export list.
       type: String
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
   dockerimage: demisto/python3:3.7.2.214
   isfetch: false
   longRunning: false
