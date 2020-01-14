@@ -53,9 +53,9 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 7.  Removes elements from the specified network list: [akamai-remove-element-from-network-list](###akamai-remove-element-from-network-list)
 8.  Production or staging:[Get network list activation status in akamai-get-network-list-activation-status](###akamai-get-network-list-activation-status)
 
-1. ### akamai-get-network-lists
-
 * * *
+
+1. ### akamai-get-network-lists
 
 Returns a list of all network lists available for an authenticated user who belongs to a group.
 
@@ -150,10 +150,11 @@ Returns a list of all network lists available for an authenticated user who belo
 |2|Test|PENDING_ACTIVATION|INACTIVE|IP|uniqe_id|user|
 |1|test|INACTIVE|INACTIVE|IP|uniqe_id|user|
 
+* * *
 
 2. ### akamai-get-network-list-by-id
 
-* * *
+
 
 Gets a network list by the network list ID.
 
@@ -226,10 +227,9 @@ Gets a network list by the network list ID.
 |--- |--- |--- |--- |--- |--- |--- |
 |2|Test|PENDING_ACTIVATION|INACTIVE|IP|uique_id|user|
 
+* * *
 
 3. ### akamai-create-network-list
-
-* * *
 
 Creates a new network list. Supports TXT file upload for elements.
 
@@ -288,9 +288,9 @@ Creates a new network list. Supports TXT file upload for elements.
 |--- |--- |--- |
 |test|IP|70548_TEST|
 
-4. ### akamai-delete-network-list
-
 * * *
+
+4. ### akamai-delete-network-list
 
 Deletes the specified network list.
 
@@ -322,6 +322,8 @@ There are no context output for this command.
 ##### Human Readable Output
 
 Akamai WAF - network list **69856_NEW** deleted.
+
+* * *
 
 5. ### akamai-activate-network-list
 
@@ -358,9 +360,9 @@ There are no context output for this command.
 
 **Akamai WAF - network list 69988_TEST activated on PRODUCTION successfully**
 
-6. ### akamai-add-elements-to-network-list
-
 * * *
+
+6. ### akamai-add-elements-to-network-list
 
 Adds elements to the specified network list.
 
@@ -400,6 +402,8 @@ There are no context output for this command.
 |8.8.8.8,  
 9.9.9.9|
 
+* * *
+
 7. ### akamai-remove-element-from-network-list
 
 Removes elements from the specified network list.
@@ -432,6 +436,8 @@ There are no context output for this command.
 ##### Human Readable Output
 
 Akamai WAF - element **8.8.8.8** removed from network list **69988_TEST** successfully
+
+* * *
 
 8. ### akamai-get-network-list-activation-status
 
