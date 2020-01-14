@@ -509,9 +509,12 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     if time_:
         args['time'] = time_
 
-    auth_header = {'Authorization': 'Splunk %s' % hec_token}
+    headers = {
+        'Authorization': 'Splunk %s' % hec_token,
+        'Content-Type': 'application/json'
+    }
 
-    response = requests.post(baseurl + 'services/collector', data=args, headers=auth_header)
+    response = requests.post(baseurl + '/services/collector', data=args, headers=headers)
 
     return response
 
@@ -519,6 +522,8 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
 def splunk_submit_event_hec_command():
 
     hec_token = demisto.params().get('hec_token')
+    hec_port = demisto.params().get('hec_port')
+    baseurl = 'https://' + demisto.params()['host'] + ':' + hec_port
 
     event = demisto.args().get('event')
     host = demisto.args().get('host')
@@ -528,7 +533,7 @@ def splunk_submit_event_hec_command():
     source = demisto.args().get('source')
     time_ = demisto.args().get('time')
 
-    response_info = splunk_submit_event_hec(hec_token, event, fields, host, index, source_type, source, time_)
+    response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_)
 
     if 'success' not in response_info or not response_info['success']:
         demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
