@@ -1,5 +1,3 @@
-from typing import Tuple, List, Dict, Any
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -424,11 +422,10 @@ def get_policy_request(policy_id=None):
     return response.get('data')
 
 
-def get_arguments_for_policy_command(policy_command_type, args):
-    # type: (str, dict) -> Tuple[dict, str]
+def get_arguments_for_policy_command(args):
+    # type: (dict) -> Tuple[dict, str]
     """
       Args:
-          policy_command_type (str): create / update
           args: Demisto arguments
 
       Returns:
@@ -459,7 +456,7 @@ def create_policy(args):
     contents = {}  # type: Dict[Any, Any]
     context = {}
     policies_context = {}  # type: Dict[Any, Any]
-    policy_obj, option, policy_id = get_arguments_for_policy_command("create", args)
+    policy_obj, option = get_arguments_for_policy_command(args)
     policy_list = create_policy_request(policy_obj, option)
     policy = policy_list.get('policy')
     policy_id = policy_list.get('id')
@@ -467,7 +464,7 @@ def create_policy(args):
     sender = policy.get('from')
     receiver = policy.get('to')
     description = policy.get('description')
-    contents = {
+    raw_response = {
         'Policy ID': policy_id,
         'Description': description,
         'Sender': {
@@ -511,9 +508,9 @@ def create_policy(args):
     results = {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': contents,
+        'Contents': raw_response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers),
+        'HumanReadable': tableToMarkdown(title, raw_response, headers),
         'EntryContext': context
     }
 
@@ -570,7 +567,7 @@ def update_policy(args):
     contents = {}  # type: Dict[Any, Any]
     context = {}
     policies_context = {}  # type: Dict[Any, Any]
-    policy_obj, option = get_arguments_for_policy_command("update", args)
+    policy_obj, option = get_arguments_for_policy_command(args)
     policy_id = str(args.get('policy_id', '').encode('utf-8'))
     if not policy_id:
         return_error("You need to enter policy ID")
