@@ -17,16 +17,16 @@ if not demisto.getParam('proxy'):
 
 VALIDATE_CERT = not demisto.params().get('insecure', True)
 
-id_and_api_key = demisto.getParam('credentials')['identifier'] + ':' + demisto.getParam('credentials')['password']
-encoded_auth_key = base64.b64encode(id_and_api_key.encode("utf-8"))
-mssp_account_id = demisto.getParam('mssp_sub_account_id')
+ID_AND_API_KEY = demisto.getParam('credentials')['identifier'] + ':' + demisto.getParam('credentials')['password']
+ENCODED_AUTH_KEY = base64.b64encode(ID_AND_API_KEY.encode("utf-8"))
+MSSP_ACCOUNT_ID = demisto.getParam('mssp_sub_account_id')
 
-HEADERS = {'Authorization': 'Basic {}'.format(encoded_auth_key.decode()), 'Content-Type': 'application/json',
+HEADERS = {'Authorization': 'Basic {}'.format(ENCODED_AUTH_KEY.decode()), 'Content-Type': 'application/json',
            'Account-Id': demisto.getParam('credentials')['identifier']}
 
 # Change the Account-Id to the sub account id, so all actions will be on the sub account.
-if mssp_account_id:
-    HEADERS['Account-Id'] = mssp_account_id
+if MSSP_ACCOUNT_ID:
+    HEADERS['Account-Id'] = MSSP_ACCOUNT_ID
 
 IOC_TYPE_TO_DBOT_TYPE = {
     'IpAddresses': 'ip',
@@ -133,7 +133,7 @@ def update_params_dict_according_to_delta_arg(params, time_delta_in_days_int):
     return params
 
 
-def handle_filters(foundDateFrom=None):
+def handle_filters(found_date_from=None):
     """
     Apply filters to alert list
     """
@@ -161,14 +161,13 @@ def handle_filters(foundDateFrom=None):
     if demisto.getArg('time-delta'):
         time_delta_in_days = demisto.getArg('time-delta')
         update_params_dict_according_to_delta_arg(params, int(time_delta_in_days))
-    elif foundDateFrom:
-        params['foundDateFrom'] = foundDateFrom
+    elif found_date_from:
+        params['foundDateFrom'] = int(found_date_from)
     return params
 
 
 def get_alerts_helper(params):
     demisto.info("Executing get_alerts with params: {}".format(params))
-
     response = http_request('GET', 'public/v1/data/alerts/alerts-list', params=params, json_response=True)
 
     alerts_human_readable = []
@@ -200,9 +199,9 @@ def extract_remediation(remidiations):
 def hash_identifier(hash_val):
     if md5Regex.match(hash_val):
         return 'MD5'
-    elif sha1Regex.match(hash_val):
+    if sha1Regex.match(hash_val):
         return 'SHA1'
-    elif sha256Regex.match(hash_val):
+    if sha256Regex.match(hash_val):
         return 'SHA256'
     return 'Unknown'
 
@@ -232,31 +231,31 @@ def get_alerts():
     })
 
 
-def alert_to_readable(r, parse_tags):
+def alert_to_readable(alert, parse_tags):
     """
     Convert alert to readable format
     """
 
     readable = {
-        'ID': demisto.get(r, '_id'),
-        'Severity': demisto.get(r, 'Details.Severity'),
-        'Type': demisto.get(r, 'Details.Type'),
-        'FoundDate': demisto.get(r, 'FoundDate'),
-        'SourceType': demisto.get(r, 'Details.Source.Type'),
-        'SourceURL': demisto.get(r, 'Details.Source.URL'),
-        'SourceEmail': demisto.get(r, 'Details.Source.Email'),
-        'SourceNetworkType': demisto.get(r, 'Details.Source.NetworkType'),
-        'IsClosed': demisto.get(r, 'IsClosed'),
-        'IsFlagged': demisto.get(r, 'IsFlagged'),
-        'Assets': demisto.get(r, 'Assets'),
-        'Images': demisto.get(r, 'Details.Images'),
-        'Description': demisto.get(r, 'Details.Description'),
-        'Title': demisto.get(r, 'Details.Title'),
-        'TakedownStatus': demisto.get(r, 'TakedownStatus'),
-        'SubType': demisto.get(r, 'Details.SubType')
+        'ID': demisto.get(alert, '_id'),
+        'Severity': demisto.get(alert, 'Details.Severity'),
+        'Type': demisto.get(alert, 'Details.Type'),
+        'FoundDate': demisto.get(alert, 'FoundDate'),
+        'SourceType': demisto.get(alert, 'Details.Source.Type'),
+        'SourceURL': demisto.get(alert, 'Details.Source.URL'),
+        'SourceEmail': demisto.get(alert, 'Details.Source.Email'),
+        'SourceNetworkType': demisto.get(alert, 'Details.Source.NetworkType'),
+        'IsClosed': demisto.get(alert, 'IsClosed'),
+        'IsFlagged': demisto.get(alert, 'IsFlagged'),
+        'Assets': demisto.get(alert, 'Assets'),
+        'Images': demisto.get(alert, 'Details.Images'),
+        'Description': demisto.get(alert, 'Details.Description'),
+        'Title': demisto.get(alert, 'Details.Title'),
+        'TakedownStatus': demisto.get(alert, 'TakedownStatus'),
+        'SubType': demisto.get(alert, 'Details.SubType')
     }
 
-    tags = demisto.get(r, 'Details.Tags')
+    tags = demisto.get(alert, 'Details.Tags')
     if parse_tags:
         readable['Tags'] = extract_tags(tags)
     else:
@@ -271,8 +270,8 @@ def get_alert_by_id_helper(alert_id):
     """
     Helper for getting details by ID
     """
-    r = http_request('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id, json_response=True)
-    return alert_to_readable(r, True), alert_to_readable(r, False)
+    response = http_request('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id, json_response=True)
+    return alert_to_readable(response, True), alert_to_readable(response, False)
 
 
 def get_alert_by_id():
@@ -298,8 +297,8 @@ def get_alert_image():
     Retrieves the alert image by image_id
     """
     image_id = demisto.getArg('image-id')
-    r = http_request('GET', 'public/v1/data/alerts/alert-image/' + image_id)
-    demisto.results(fileResult(image_id + '-image.jpeg', r.content))
+    response = http_request('GET', 'public/v1/data/alerts/alert-image/' + image_id)
+    demisto.results(fileResult(image_id + '-image.jpeg', response.content))
 
 
 def ask_analyst():
@@ -590,27 +589,27 @@ def ioc_to_readable(ioc_data):
         'SourceConfidence': demisto.get(ioc_data, 'Source.Confidence'),
         'Flags': {'IsInAlexa': demisto.get(ioc_data, 'Flags.IsInAlexa')},
         'Enrichment': {
-            'Status': demisto.get(r, 'Enrichment.Status'),
-            'Data': demisto.get(r, 'Enrichment.Data'),
-            'Date': demisto.get(r, 'Enrichment.Data')  # Backwards compatibility issue
+            'Status': demisto.get(ioc_data, 'Enrichment.Status'),
+            'Data': demisto.get(ioc_data, 'Enrichment.Data'),
+            'Date': demisto.get(ioc_data, 'Enrichment.Data')  # Backwards compatibility issue
         }
     }
     ioc_readable = {
-        'ID': demisto.get(r, '_id'),
-        'SourceID': demisto.get(r, 'SourceID'),
-        'AccountID': demisto.get(r, 'AccountID'),
-        'Type': demisto.get(r, 'Type'),
-        'Value': demisto.get(r, 'Value'),
-        'FirstSeen': demisto.get(r, 'FirstSeen'),
-        'LastSeen': demisto.get(r, 'LastSeen'),
-        'Domain': demisto.get(r, 'Domain'),
-        'Status': demisto.get(r, 'Status'),
-        'Severity': demisto.get(r, 'Severity').get('Value'),
-        'SourceName': demisto.get(r, 'Source.Name'),
-        'SourceConfidence': demisto.get(r, 'Source.Confidence'),
-        'IsInAlexa': demisto.get(r, 'Flags.IsInAlexa'),
-        'Enrichment Status': demisto.get(r, 'Enrichment.Status'),
-        'Enrichment Data': demisto.get(r, 'Enrichment.Data')
+        'ID': demisto.get(ioc_data, '_id'),
+        'SourceID': demisto.get(ioc_data, 'SourceID'),
+        'AccountID': demisto.get(ioc_data, 'AccountID'),
+        'Type': demisto.get(ioc_data, 'Type'),
+        'Value': demisto.get(ioc_data, 'Value'),
+        'FirstSeen': demisto.get(ioc_data, 'FirstSeen'),
+        'LastSeen': demisto.get(ioc_data, 'LastSeen'),
+        'Domain': demisto.get(ioc_data, 'Domain'),
+        'Status': demisto.get(ioc_data, 'Status'),
+        'Severity': demisto.get(ioc_data, 'Severity').get('Value'),
+        'SourceName': demisto.get(ioc_data, 'Source.Name'),
+        'SourceConfidence': demisto.get(ioc_data, 'Source.Confidence'),
+        'IsInAlexa': demisto.get(ioc_data, 'Flags.IsInAlexa'),
+        'Enrichment Status': demisto.get(ioc_data, 'Enrichment.Status'),
+        'Enrichment Data': demisto.get(ioc_data, 'Enrichment.Data')
     }
     dbot_score = {
         'Indicator': ioc_context['Value'],
@@ -830,11 +829,11 @@ def update_ioc_blocklist_status():
     if len(types) != len(values) or len(types) != len(statuses):
         return_error('The lists must be of equal length. For each IOC, provide an entry in each list.')
     data = []
-    for i in range(len(types)):
+    for count, type_ in enumerate(types):
         data.append({
-            'Type': types[i],
-            'Value': values[i],
-            'BlocklistStatus': statuses[i]
+            'Type': type_,
+            'Value': values[count],
+            'BlocklistStatus': statuses[count]
         })
     http_request('PATCH', 'public/v1/data/alerts/change-iocs-blocklist-status/' + alert_id, json_data={'Iocs': data})
     demisto.results({
@@ -875,9 +874,9 @@ def get_mssp_sub_accounts():
         return_error('Current MSSP Account has no sub accounts.')
 
     account_ids = [i["ID"] for i in accounts]
-    if mssp_account_id not in account_ids:
+    if MSSP_ACCOUNT_ID not in account_ids:
         demisto.log("[DEBUG] - MSSP sub accounts:" + str(accounts))
-        return_error('Entered sub account id ({}) is not part of this mssp account'.format(mssp_account_id))
+        return_error('Entered sub account id ({}) is not part of this mssp account'.format(MSSP_ACCOUNT_ID))
 
     for i, account in enumerate(account_ids):
         # Call account
@@ -899,7 +898,7 @@ def get_mssp_sub_accounts():
     })
 
     # Restore the header
-    HEADERS['Account-Id'] = mssp_account_id
+    HEADERS['Account-Id'] = MSSP_ACCOUNT_ID
 
 
 def test_module():
@@ -916,6 +915,8 @@ def test_module():
 try:
     if demisto.command() == 'test-module':
         test_module()
+    elif demisto.command() == 'fetch-incidents':
+        fetch_incidents()
     elif demisto.command() == 'intsights-mssp-get-sub-accounts':
         get_mssp_sub_accounts()
     elif demisto.command() == 'intsights-get-alerts':
@@ -948,8 +949,6 @@ try:
         get_iocs()
     elif demisto.command() == 'intsights-alert-takedown-request':
         takedown_request()
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
     elif demisto.command() == 'intsights-get-alert-takedown-status':
         get_alert_takedown_status()
     elif demisto.command() == 'intsights-get-ioc-blocklist-status':
