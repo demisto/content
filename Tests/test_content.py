@@ -76,6 +76,7 @@ class TestsSettings:
         self.memCheck = options.memCheck
         self.serverVersion = options.serverVersion
         self.serverNumericVersion = None
+        self.is_local_run = (self.server is not None)
 
 
 class PrintJob:
@@ -254,12 +255,13 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
     )
 
 
-def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
+def run_test_logic(tests_settings, c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, build_name, is_mock_run=False,
                    thread_index=0, prints_manager=None):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run,
                                       thread_index=thread_index, prints_manager=prints_manager)
     # c.api_client.pool.close()
+    # TODO: make sure to pass tests_settings to every call to run_test_logic
     if status == PB_Status.COMPLETED:
         prints_manager.add_print_job('PASS: {} succeed'.format(test_message), print_color, thread_index,
                                      message_color=LOG_COLORS.GREEN)
@@ -277,7 +279,8 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
         if not is_mock_run:
             playbook_id_with_mock += " (Mock Disabled)"
         failed_playbooks.append(playbook_id_with_mock)
-        notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url, build_name)
+        if not tests_settings.is_local_run:
+            notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url, build_name)
 
     succeed = status == PB_Status.COMPLETED or status == PB_Status.NOT_SUPPORTED_VERSION
     return succeed
@@ -324,8 +327,8 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
             return
 
         elif status == PB_Status.NOT_SUPPORTED_VERSION:
-            not_supported_version_messagr = 'PASS: {} skipped - not supported version'.format(test_message)
-            prints_manager.add_print_job(not_supported_version_messagr, print, thread_index)
+            not_supported_version_message = 'PASS: {} skipped - not supported version'.format(test_message)
+            prints_manager.add_print_job(not_supported_version_message, print, thread_index)
             succeed_playbooks.append(playbook_id)
             end_mock_message = '------ Test {} end ------\n'.format(test_message)
             prints_manager.add_print_job(end_mock_message, print, thread_index)
@@ -351,21 +354,22 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
     prints_manager.add_print_job(test_end_message, print, thread_index)
 
 
-def run_test(demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
-             succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
+def run_test(tests_settings, demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations,
+             playbook_id, succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
              server_url, build_name, is_ami=True, thread_index=0, prints_manager=None):
+    # TODO: verify all calls to run_test are done with the test_Settings arg
     start_message = '------ Test %s start ------' % (test_message,)
     client = demisto_client.configure(base_url=server_url, api_key=demisto_api_key, verify_ssl=False)
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
         prints_manager.add_print_job(start_message + ' (Mock: Disabled)', print, thread_index)
-        run_test_logic(client, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
+        run_test_logic(tests_settings, client, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
                        test_options, slack, circle_ci, build_number, server_url, build_name, thread_index=thread_index,
                        prints_manager=prints_manager)
         prints_manager.add_print_job('------ Test %s end ------\n' % (test_message,), print, thread_index)
 
         return
-
+    # TODO: understand how mock runs when we run locally
     mock_run(client, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
              test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message,
              thread_index=thread_index, prints_manager=prints_manager)
@@ -497,7 +501,10 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
     return has_skipped_integration, integrations, is_nightly_integration
 
 
-def extract_filtered_tests():
+def extract_filtered_tests(tests_settings):
+    if tests_settings.nightly:
+        # TODO: verify this response
+        return [], False, False
     with open(FILTER_CONF, 'r') as filter_file:
         filtered_tests = filter_file.readlines()
         filtered_tests = [line.strip('\n') for line in filtered_tests]
@@ -519,11 +526,12 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
+def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
                       filtered_tests, skipped_tests, secret_params, failed_playbooks,
                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
                       server_numeric_version, demisto_api_key, is_ami=True, thread_index=0, prints_manager=None):
+    # TODO: make sure every call to run_test_scenario is done with the tests_settings argument
     playbook_id = t['playbookID']
     nightly_test = t.get('nightly', False)
     integrations_conf = t.get('integrations', [])
@@ -590,18 +598,21 @@ def run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightl
     options = options_handler()
     stdout, stderr = get_docker_memory_data()
     text = 'Memory Usage: {}'.format(stdout) if not stderr else stderr
-    if options.nightly and options.memCheck:
+    if options.nightly and options.memCheck and not tests_settings.is_local_run:
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
         stdout, stderr = get_docker_processes_data()
         text = stdout if not stderr else stderr
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
-    run_test(demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
+    run_test(tests_settings, demisto_api_key, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
              succeed_playbooks, test_message, test_options, slack, circle_ci,
              build_number, server, build_name, is_ami, thread_index=thread_index, prints_manager=prints_manager)
 
 
 def get_and_print_server_numeric_version(tests_settings):
+    if tests_settings.is_local_run:
+        # TODO: verify this logic, it's a workaround because the test_image file does not exist on local run
+        return '99.99.98' # latest
     with open('./Tests/images_data.txt', 'r') as image_data_file:
         image_data = [line for line in image_data_file if line.startswith(tests_settings.serverVersion)]
         if len(image_data) != 1:
@@ -618,7 +629,11 @@ def get_and_print_server_numeric_version(tests_settings):
             return server_numeric_version
 
 
-def get_instances_ips_and_names():
+def get_instances_ips_and_names(tests_settings):
+    if tests_settings.server:
+        # TODO: verify this logic, it's a workaround because the instance_ips file does not exist on local run
+        # TODO: also not sure about the format returned as well
+        return [tests_settings.server]
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
         instance_ips = instance_file.readlines()
         instance_ips = [line.strip('\n').split(":") for line in instance_ips]
@@ -648,8 +663,9 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     circle_ci = tests_settings.circleci
     build_number = tests_settings.buildNumber
     build_name = tests_settings.buildName
-
+    # TODO: delete print("CONF PATH: {}, SECRET CONF PATH: {}".format(tests_settings.conf_path, tests_settings.secret_conf_path))
     conf, secret_conf = load_conf_files(tests_settings.conf_path, tests_settings.secret_conf_path)
+
     demisto_api_key = tests_settings.api_key
 
     default_test_timeout = conf.get('testTimeout', 30)
@@ -661,8 +677,9 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     unmockable_integrations = conf['unmockable_integrations']
 
     secret_params = secret_conf['integrations'] if secret_conf else []
+    # TODO: delete print("SECRET PARAMS: {}".format(secret_params))
 
-    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests()
+    filtered_tests, is_filter_configured, run_all_tests = extract_filtered_tests(tests_settings)
     if is_filter_configured and not run_all_tests:
         is_nightly = True
 
@@ -681,7 +698,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
-
+    # TODO: remove this line. print('API KEY:{}, Server: {}'.format(demisto_api_key, server))
+    # server = "http://localhost:8080"
     disable_all_integrations(demisto_api_key, server, thread_index=thread_index, prints_manager=prints_manager)
     prints_manager.execute_thread_prints(thread_index)
     mockable_tests = get_test_records_of_given_test_names(tests_settings, mockable_tests_names)
@@ -697,7 +715,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     if is_ami and mockable_tests:
         proxy.configure_proxy_in_demisto(demisto_api_key, server, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
         for t in mockable_tests:
-            run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
+            print("current t: {}\n\n\n".format(t))
+            run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                               skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                               is_filter_configured,
                               filtered_tests, skipped_tests, secret_params, failed_playbooks,
@@ -717,7 +736,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
             sys.exit(1)
         sleep(10)
     for t in unmockable_tests:
-        run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
+        print("current t: {}\n\n\n".format(t))
+        run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                           is_filter_configured,
                           filtered_tests, skipped_tests, secret_params, failed_playbooks,
@@ -770,26 +790,30 @@ def manage_tests(tests_settings):
         tests_settings (TestsSettings): An object containing all the relevant data regarding how the tests should be ran
 
     """
+    # TODO: I think the fact all the stages before did not run when running the build locally will cause multiple problems
+    # TODO: For example, when are instances configured?
     tests_settings.serverNumericVersion = get_and_print_server_numeric_version(tests_settings)
-    instances_ips = get_instances_ips_and_names()
+    instances_ips = get_instances_ips_and_names(tests_settings)
     is_nightly = tests_settings.nightly
     server_version = tests_settings.serverVersion
     number_of_instances = len(instances_ips)
     prints_manager = ParallelPrintsManager(number_of_instances)
     tests_data_keeper = TestsDataKeeper()
 
-    if tests_settings.isAMI:
-        if tests_settings.server:
-            # TODO: This part should not be here, when we run locally it isn't AMI IMHO
-            # If the user supplied a server - all tests will be done on that server.
-            server_ip = tests_settings.server
-            print_color("Starting tests for {}".format(server_ip), LOG_COLORS.GREEN)
-            print("Starts tests with server url - https://{}".format(server_ip))
-            all_tests = get_all_tests(tests_settings)
-            execute_testing(tests_settings, server_ip, [], all_tests, is_ami=False, thread_index=0,
-                            prints_manager=prints_manager, tests_data_keeper=tests_data_keeper)
-
-        elif is_nightly:
+    if tests_settings.server:
+        # If the user supplied a server - all tests will be done on that server.
+        server_ip = tests_settings.server
+        print_color("Starting tests for {}".format(server_ip), LOG_COLORS.GREEN)
+        print("Starts tests with server url - https://{}".format(server_ip))
+        all_tests = get_all_tests(tests_settings)
+        execute_testing(tests_settings, server_ip, [], all_tests, is_ami=False, thread_index=0,
+                        prints_manager=prints_manager, tests_data_keeper=tests_data_keeper)
+    elif tests_settings.isAMI:
+        """
+        Running tests in AMI configuration.
+        This is the way we run most tests, including running Circle for PRs and nightly.
+        """
+        if is_nightly:
             """
             If the build is a nightly build, run tests in parallel.
             """
@@ -837,6 +861,7 @@ def manage_tests(tests_settings):
 
     else:
         # TODO: understand better when this occurs and what will be the settings
+        # TODO: Understand how the username and password are taken from env variables, when and why, and how can I get around that with an API key
         """
         This case is rare, and usually occurs on two cases:
         1. When someone from Server wants to trigger a content build on their branch.
@@ -865,15 +890,9 @@ def manage_tests(tests_settings):
 
 
 def main():
+    print("Time is: {}\n\n\n".format(datetime.now()))
     tests_settings = options_handler()
-    if tests_settings.isAMI:
-        """
-        Running tests in AMI configuration.
-        This is the way we run most tests, including running Circle for PRs and nightly.
-        """
-        manage_tests(tests_settings)
-    else:
-
+    manage_tests(tests_settings)
 
 
 if __name__ == '__main__':
