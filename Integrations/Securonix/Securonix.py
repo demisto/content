@@ -117,13 +117,13 @@ class Client(BaseClient):
     """
     Client to use in the Securonix integration. Overrides BaseClient
     """
-
     def __init__(self, tenant: str, server_url: str, username: str, password: str, verify: bool,
                  proxy: bool):
-        super().__init__(base_url=server_url, verify=verify, proxy=proxy)
+        super().__init__(base_url=server_url, verify=verify)
         self._username = username
         self._password = password
         self._tenant = tenant
+        self._proxies = handle_proxy() if proxy else None
         self._token = self._generate_token()
 
     def http_request(self, method, url_suffix, headers=None, params=None, response_type: str = 'json'):
@@ -1156,7 +1156,7 @@ def main():
     username = params.get('username')
     password = params.get('password')
     verify = not params.get('unsecure', False)
-    proxy = demisto.params().get('proxy') == 'true'
+    proxy = demisto.params().get('proxy') is True
 
     command = demisto.command()
     LOG(f'Command being called in Securonix is: {command}')
