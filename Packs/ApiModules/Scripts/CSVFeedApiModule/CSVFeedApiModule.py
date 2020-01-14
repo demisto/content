@@ -125,7 +125,7 @@ class Client(BaseClient):
 
 def module_test_command(client, args):
     fieldnames = argToList(demisto.params().get('fieldnames'))
-    if len(fieldnames) == 1 or any(field in fieldnames for field in ('indicator,', ',indicator')):
+    if len(fieldnames) == 1 or 'indicator' in fieldnames:
         client.build_iterator()
         return 'ok', {}, {}
     return_error('Please provide a column named "indicator" in fieldnames')
