@@ -1,5 +1,5 @@
 id: Kenna Test
-version: 48
+version: 49
 contentitemfields:
   propagationLabels: []
 name: Kenna Test
@@ -917,10 +917,10 @@ tasks:
     skipunavailable: false
   "33":
     id: "33"
-    taskid: 352e4303-7443-4804-8916-7a7eadf7e4ea
+    taskid: 0ef2ac87-b5b7-402e-86ba-95c5bf2927f6
     type: regular
     task:
-      id: 352e4303-7443-4804-8916-7a7eadf7e4ea
+      id: 0ef2ac87-b5b7-402e-86ba-95c5bf2927f6
       version: -1
       name: sleep after update
       description: Sleep for X seconds
@@ -933,7 +933,7 @@ tasks:
       - "24"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "20"
     separatecontext: false
     sla:
       hours: 0
