@@ -102,11 +102,11 @@ def http_request(method, url, params_dict=None, data=None):
                                )
         res.raise_for_status()
 
-        return res.json()
+        return unicode_to_str_recur(res.json())
 
     except Exception as e:
         LOG(e)
-        raise(e)
+        raise
 
 
 def translate_severity(sev):
@@ -117,11 +117,24 @@ def translate_severity(sev):
     return 0
 
 
+def unicode_to_str_recur(obj):
+    """Converts unicode elements of obj (incl. dictionary and list) to string recursively"""
+    if IS_PY3:
+        return obj
+    if isinstance(obj, dict):
+        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        obj = map(unicode_to_str_recur, obj)
+    elif isinstance(obj, unicode):
+        obj = obj.encode('utf-8')
+    return obj
+
+
 def test_module():
     try:
         get_on_call_now_users_command()
     except Exception as e:
-        raise Exception(e.message)
+        return_error(e)
 
     demisto.results('ok')
 
@@ -734,6 +747,4 @@ try:
 
 
 except Exception as e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
+    return_error(e)

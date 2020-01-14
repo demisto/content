@@ -60,7 +60,7 @@ args:
   secret: false
 comment: Populate indicators by the PhishLabs IOC global feed.
 commonfields:
-  id: 73f6af4b-6e5b-4aff-88fb-e18c8cfa1154
+  id: PhishLabsPopulateIndicators
   version: -1
 enabled: true
 name: PhishLabsPopulateIndicators

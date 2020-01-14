@@ -23,9 +23,8 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
   type: 8
   required: false
 script:
@@ -206,21 +205,28 @@ script:
     }
 
     function searchFixes(args) {
-        var urlQuery = {};
-            argKeys = Object.keys(args);
-            for (var i = 0; i < argKeys.length; i++) {
-                if (argKeys[i] === 'min-score') {
-                    urlQuery['min_risk_meter_score'] = args[argKeys[i]];
-                } else {
-                    urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
+        var urlSuffix;
+        if (args.id) {
+            urlSuffix = '/' + args.id;
+        } else {
+            var urlQuery = {};
+                argKeys = Object.keys(args);
+                for (var i = 0; i < argKeys.length; i++) {
+                    if (argKeys[i] === 'min-score') {
+                        urlQuery['min_risk_meter_score'] = args[argKeys[i]];
+                    } else {
+                        urlQuery[argKeys[i].replace('-','_') + '[]'] = args[argKeys[i]];
+                    }
                 }
-            }
-        var res = searchFixesRequest(urlQuery);
+            urlSuffix = encodeToURLQuery(urlQuery);
+        }
+        var res = searchFixesRequest(urlSuffix);
 
         var rex = /(<([^>]+)>)/ig; //Removes HTML tags (i.e. <p>, </p>, <br>)
         var hr = '';
         for (var i = 0; i < res.length; i++) {
             hr += res[i].title + '\n';
+            hr += '#### ID: ' + res[i].id + '\n';
             hr += res[i].vuln_count + ' vulnerabilities affected\n';
             hr += '#### Diagnosis:\n';
             hr += res[i].diagnosis.replace(rex,' ') + '\n' + '&nbsp;' + '\n';
@@ -234,8 +240,8 @@ script:
         };
     }
 
-    function searchFixesRequest(urlQuery) {
-        var requestUrl = URL + '/fixes' + encodeToURLQuery(urlQuery);
+    function searchFixesRequest(urlSuffix) {
+        var requestUrl = URL + '/fixes' + urlSuffix;
         var res = http(
             requestUrl,
             {
@@ -253,7 +259,13 @@ script:
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
         }
         var response = JSON.parse(res.Body);
-        return response.fixes;
+        var fixes;
+        if (response.fixes) {
+            fixes = response.fixes;
+        } else if (response.fix) {
+            fixes = [response.fix];
+        }
+        return fixes;
     }
 
     function updateAsset(id, notes) {

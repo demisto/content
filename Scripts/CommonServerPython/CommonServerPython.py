@@ -24,6 +24,8 @@ try:
 except Exception:
     pass
 
+CONTENT_RELEASE_VERSION = '0.0.0'
+CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
@@ -76,6 +78,7 @@ thresholds = {
     'vtPositives': 10,
     'vtPositiveUrlsForIP': 30
 }
+# The dictionary below does not represent DBot Scores correctly, and should not be used
 dbotscores = {
     'Critical': 4,
     'High': 3,
@@ -99,6 +102,52 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ctph': 'file',
     'ssdeep': 'file'
 }
+
+
+class FeedIndicatorType(object):
+    """Type of Indicator (Reputations), used in TIP integrations"""
+    Account = "Account"
+    CVE = "CVE"
+    Domain = "Domain"
+    Email = "Email"
+    File = "File"
+    FQDN = "Domain"
+    MD5 = "File MD5"
+    SHA1 = "File SHA-1"
+    SHA256 = "File SHA-256"
+    Host = "Host"
+    IP = "IP"
+    CIDR = "CIDR"
+    IPv6 = "IPv6"
+    IPv6CIDR = "IPv6CIDR"
+    Registry = "Registry Key"
+    SSDeep = "ssdeep"
+    URL = "URL"
+
+    @staticmethod
+    def is_valid_type(_type):
+        return _type in (
+            FeedIndicatorType.Account,
+            FeedIndicatorType.CVE,
+            FeedIndicatorType.Domain,
+            FeedIndicatorType.Email,
+            FeedIndicatorType.File,
+            FeedIndicatorType.MD5,
+            FeedIndicatorType.SHA1,
+            FeedIndicatorType.SHA256,
+            FeedIndicatorType.Host,
+            FeedIndicatorType.IP,
+            FeedIndicatorType.CIDR,
+            FeedIndicatorType.IPv6,
+            FeedIndicatorType.IPv6CIDR,
+            FeedIndicatorType.Registry,
+            FeedIndicatorType.SSDeep,
+            FeedIndicatorType.URL
+        )
+
+
+
+
 # ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
 try:
@@ -610,16 +659,17 @@ class IntegrationLogger(object):
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
             # add common params
-            if isinstance(demisto.getParam('credentials'), dict) and demisto.getParam('credentials').get('password'):
-                pswrd = self.encode(demisto.getParam('credentials').get('password'))
-                self.add_replace_strs(pswrd, b64_encode(pswrd))
-            sensitive_params = ('key', 'private', 'password', 'secret', 'token')
+            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials')
             if demisto.params():
                 for (k, v) in demisto.params().items():
                     k_lower = k.lower()
                     for p in sensitive_params:
-                        if p in k_lower and v:
-                            self.add_replace_strs(v, b64_encode(v))
+                        if p in k_lower:
+                            if isinstance(v, STRING_OBJ_TYPES):
+                                self.add_replace_strs(v, b64_encode(v))
+                            if isinstance(v, dict) and v.get('password'):  # credentials object case
+                                pswrd = v.get('password')
+                                self.add_replace_strs(pswrd, b64_encode(pswrd))
 
     def encode(self, message):
         try:
@@ -835,6 +885,31 @@ def argToList(arg, separator=','):
             return json.loads(arg)
         return [s.strip() for s in arg.split(separator)]
     return arg
+
+
+def argToBoolean(value):
+    """
+        Boolean-ish arguments that are passed through demisto.args() could be type bool or type string.
+        This command removes the guesswork and returns a value of type bool, regardless of the input value's type.
+        It will also return True for 'yes' and False for 'no'.
+
+        :param value: the value to evaluate
+        :type value: ``string|bool``
+
+        :return: a boolean representatation of 'value'
+        :rtype: ``bool``
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, STRING_OBJ_TYPES):
+        if value.lower() in ['true', 'yes']:
+            return True
+        elif value.lower() in ['false', 'no']:
+            return False
+        else:
+            raise ValueError('Argument does not contain a valid boolean-like value')
+    else:
+        raise ValueError('Argument is neither a string nor a boolean')
 
 
 def appendContext(key, data, dedup=False):
@@ -1463,7 +1538,7 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
-def return_outputs(readable_output, outputs, raw_response=None):
+def return_outputs(readable_output, outputs=None, raw_response=None):
     """
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
@@ -1488,11 +1563,13 @@ def return_outputs(readable_output, outputs, raw_response=None):
         "Contents": raw_response,
         "EntryContext": outputs
     }
-
-    if outputs and raw_response is None:
+    # Return 'readable_output' only if needed
+    if readable_output and not outputs and not raw_response:
+        return_entry["Contents"] = readable_output
+        return_entry["ContentsFormat"] = formats["text"]
+    elif outputs and raw_response is None:
         # if raw_response was not provided but outputs were provided then set Contents as outputs
         return_entry["Contents"] = outputs
-
     demisto.results(return_entry)
 
 
@@ -1642,6 +1719,9 @@ regexFlags = re.M  # Multi line matching
 # else, use re.match({regex_format},str)
 
 ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
+ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'
+ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'
+ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'
 emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
@@ -1926,10 +2006,21 @@ def get_demisto_version():
         raise AttributeError('demistoVersion attribute not found.')
 
 
+def is_debug_mode():
+    """Return if this script/command was passed debug-mode=true option
+
+    :return: true if debug-mode is enabled
+    :rtype: ``bool``
+    """
+    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+    return hasattr(demisto, 'is_debug') and demisto.is_debug
+
+
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to demisto.debug
     """
+
     def __init__(self):
         logging.Handler.__init__(self)
 
@@ -1946,6 +2037,7 @@ class DebugLogger(object):
         Wrapper to initiate logging at logging.DEBUG level.
         Is used when `debug-mode=True`.
     """
+
     def __init__(self):
         logging.raiseExceptions = False
         self.handler = None  # just incase our http_client code throws an exception. so we don't error in the __del__
@@ -1985,8 +2077,7 @@ class DebugLogger(object):
 
 _requests_logger = None
 try:
-    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
-    if hasattr(demisto, 'is_debug') and demisto.is_debug:
+    if is_debug_mode():
         _requests_logger = DebugLogger()
 except Exception as ex:
     # Should fail silently so that if there is a problem with the logger it will
@@ -2212,16 +2303,16 @@ if 'requests' in sys.modules:
         :return: No data returned
         :rtype: ``None``
         """
+
         def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
             self._base_url = base_url
             self._verify = verify
             self._ok_codes = ok_codes
             self._headers = headers
             self._auth = auth
-            if proxy:
-                self._proxies = handle_proxy()
-            else:
-                self._proxies = None
+            self._session = requests.Session()
+            if not proxy:
+                self._session.trust_env = False
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, json_data=None, params=None, data=None, files=None,
@@ -2268,7 +2359,7 @@ if 'requests' in sys.modules:
             :type resp_type: ``str``
             :param resp_type:
                 Determines which data format to return from the HTTP request. The default
-                is 'json'. Other options are 'text', 'content' or 'response'. Use 'response'
+                is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
                  to return the full response object.
 
             :type ok_codes: ``tuple``
@@ -2285,7 +2376,7 @@ if 'requests' in sys.modules:
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
                 # Execute
-                res = requests.request(
+                res = self._session.request(
                     method,
                     address,
                     verify=self._verify,
@@ -2296,7 +2387,6 @@ if 'requests' in sys.modules:
                     headers=headers,
                     auth=auth,
                     timeout=timeout,
-                    proxies=self._proxies,
                     **kwargs
                 )
                 # Handle error responses gracefully
@@ -2306,7 +2396,7 @@ if 'requests' in sys.modules:
                     try:
                         # Try to parse json error response
                         error_entry = res.json()
-                        err_msg += '\n{}'.format(error_entry)
+                        err_msg += '\n{}'.format(json.dumps(error_entry))
                         raise DemistoException(err_msg)
                     except ValueError as exception:
                         raise DemistoException(err_msg, exception)
@@ -2319,6 +2409,8 @@ if 'requests' in sys.modules:
                         return res.text
                     if resp_type == 'content':
                         return res.content
+                    if resp_type == 'xml':
+                        ET.parse(res.text)
                     return res
                 except ValueError as exception:
                     raise DemistoException('Failed to parse json object from response: {}'
@@ -2368,3 +2460,22 @@ if 'requests' in sys.modules:
 
 class DemistoException(Exception):
     pass
+
+def batch(iterable, batch_size=1):
+    """Gets an iterable and yields slices of it.
+
+    :type iterable: ``list``
+    :param iterable: list or other iterable object.
+
+    :type batch_size: ``int``
+    :param batch_size: the size of batches to fetch
+
+    :rtype: ``list``
+    :return:: Iterable slices of given
+    """
+    current_batch = iterable[:batch_size]
+    not_batched = iterable[batch_size:]
+    while current_batch:
+        yield current_batch
+        current_batch = not_batched[:batch_size]
+        not_batched = not_batched[batch_size:]

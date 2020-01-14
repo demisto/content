@@ -17,7 +17,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -25,6 +25,7 @@ configuration:
 script:
   script: ''
   type: python
+  subtype: python2
   commands:
   - name: exchange2016-start-compliance-search
     arguments:

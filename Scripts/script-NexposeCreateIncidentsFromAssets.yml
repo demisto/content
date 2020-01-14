@@ -1,5 +1,5 @@
 commonfields:
-  id: nexpose_create_incidents_from_assets
+  id: NexposeCreateIncidentsFromAssets
   version: -1
 name: NexposeCreateIncidentsFromAssets
 script: |-

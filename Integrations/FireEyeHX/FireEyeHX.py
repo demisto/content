@@ -2160,7 +2160,8 @@ def file_acquisition():
     LOG('acquisition request was successful. Waiting for acquisition process to be complete.')
     while True:
         acquisition_info = file_acquisition_information_request(acquisition_id)
-        if acquisition_info.get('state') == 'COMPLETE':
+        state = acquisition_info.get('state')
+        if state in ['COMPLETE', 'ERROR', 'FAILED']:
             break
         time.sleep(10)
     LOG('acquisition process has been complete. Fetching zip file.')

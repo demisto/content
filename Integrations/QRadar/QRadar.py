@@ -5,6 +5,8 @@ import os
 import json
 import requests
 import traceback
+import urllib
+import re
 from requests.exceptions import HTTPError
 from copy import deepcopy
 
@@ -397,7 +399,7 @@ def create_note(offense_id, note_text, fields):
 
 # Returns the result of a reference request
 def get_reference_by_name(ref_name, _range='', _filter='', _fields=''):
-    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
     params = {'filter': _filter} if _filter else {}
     headers = dict(AUTH_HEADERS)
     if _fields:
@@ -418,12 +420,12 @@ def create_reference_set(ref_name, element_type, timeout_type, time_to_live):
 
 
 def delete_reference_set(ref_name):
-    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
     return send_request('DELETE', url)
 
 
 def update_reference_set_value(ref_name, value, source=None):
-    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
     params = {'name': ref_name, 'value': value}
     if source:
         params['source'] = source
@@ -431,7 +433,8 @@ def update_reference_set_value(ref_name, value, source=None):
 
 
 def delete_reference_set_value(ref_name, value):
-    url = '{0}/api/reference_data/sets/{1}/{2}'.format(SERVER, ref_name, value)
+    url = '{0}/api/reference_data/sets/{1}/{2}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''),
+                                                       urllib.quote(convert_to_str(value), safe=''))
     params = {'name': ref_name, 'value': value}
     return send_request('DELETE', url, params=params)
 
@@ -465,6 +468,7 @@ def test_module():
 
 def fetch_incidents():
     query = demisto.params().get('query')
+    full_enrich = demisto.params().get('full_enrich')
     last_run = demisto.getLastRun()
     offense_id = last_run['id'] if last_run and 'id' in last_run else 0
     if last_run and offense_id == 0:
@@ -477,14 +481,19 @@ def fetch_incidents():
         # start looking for the end of the list by doubling the page position until we're empty.
         # then start binary search back until you find the end of the list and finally return
         # `offensesPerCall` from the end.
+    demisto.debug('QRadarMsg - Fetching {}'.format(fetch_query))
     raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
+    demisto.debug('QRadarMsg - Fetched {} successfully'.format(fetch_query))
     if len(raw_offenses) >= OFFENSES_PER_CALL:
         last_offense_pos = find_last_page_pos(fetch_query)
         raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos),
                                     _filter=fetch_query)
     raw_offenses = unicode_to_str_recur(raw_offenses)
     incidents = []
-    enrich_offense_res_with_source_and_destination_address(raw_offenses)
+    if full_enrich:
+        demisto.debug('QRadarMsg - Enriching  {}'.format(fetch_query))
+        enrich_offense_res_with_source_and_destination_address(raw_offenses)
+        demisto.debug('QRadarMsg - Enriched  {} successfully'.format(fetch_query))
     for offense in raw_offenses:
         offense_id = max(offense_id, offense['id'])
         incidents.append(create_incident_from_offense(offense))
@@ -523,8 +532,10 @@ def create_incident_from_offense(offense):
     labels = []
     for i in range(len(keys)):
         labels.append({'type': keys[i], 'value': convert_to_str(offense[keys[i]])})
+    formatted_description = re.sub(r'\s\n', ' ', offense['description']).replace('\n', ' ') if \
+        offense['description'] else ''
     return {
-        'name': '{0} {1}'.format(offense['id'], offense['description']),
+        'name': '{id} {description}'.format(id=offense['id'], description=formatted_description),
         'labels': labels,
         'rawJSON': json.dumps(offense),
         'occurred': occured
@@ -588,9 +599,9 @@ def enrich_offense_res_with_source_and_destination_address(response):
                 enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs)
         else:
             enrich_single_offense_res_with_source_and_destination_address(response, src_adrs, dst_adrs)
-    except ValueError:
-        pass
-    return response
+    # The function is meant to be safe, so it shouldn't raise any error
+    finally:
+        return response
 
 
 # Helper method: Extracts all source and destination addresses ids from an offense result
@@ -717,7 +728,7 @@ def get_search_results_command():
     context_key = demisto.args().get('output_path') if demisto.args().get(
         'output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
     context_obj = unicode_to_str_recur(raw_search_results[result_key])
-    human_readable = tableToMarkdown(title, context_obj, None).replace('\t', '\n')
+    human_readable = tableToMarkdown(title, context_obj, None).replace('\t', ' ')
     return get_entry_for_object(title, context_obj, raw_search_results, demisto.args().get('headers'), context_key,
                                 human_readable=human_readable)
 
@@ -765,8 +776,11 @@ def create_assets_result(assets, full_values=False):
     human_readable_trans_assets = {}
     endpoint_dict = create_empty_endpoint_dict(full_values)
     for asset in assets:
-        asset_key = 'QRadar.Asset(val.ID === "{0}")'.format(asset['id'])
-        human_readable_key = 'Asset(ID:{0})'.format(asset['id'])
+        asset_key = 'QRadar.Asset'
+        human_readable_key = 'Asset'
+        if 'id' in asset:
+            asset_key += '(val.ID === "{0}")'.format(asset['id'])
+            human_readable_key += '(ID:{0})'.format(asset['id'])
         populated_asset = create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values)
         trans_assets[asset_key] = populated_asset
         human_readable_trans_assets[human_readable_key] = transform_single_asset_to_hr(populated_asset)
@@ -790,31 +804,33 @@ def transform_single_asset_to_hr(asset):
 
 
 def create_single_asset_result_and_enrich_endpoint_dict(asset, endpoint_dict, full_values):
-    asset_dict = {'ID': asset['id']}
-    for interface in asset['interfaces']:
+    asset_dict = {'ID': asset.get('id')}
+    for interface in asset.get('interfaces', []):
         if full_values:
-            endpoint_dict['MACAddress'].append(interface['mac_address'])
-        for ip_address in interface['ip_addresses']:
-            endpoint_dict['IPAddress'].append(ip_address['value'])
+            endpoint_dict.get('MACAddress').append(interface.get('mac_address'))
+        for ip_address in interface.get('ip_addresses'):
+            endpoint_dict.get('IPAddress').append(ip_address.get('value'))
     if full_values:
-        domain_name = get_domain_name(asset['domain_id'])
-        endpoint_dict['Domain'].append(domain_name)
+        if 'domain_id' in asset:
+            domain_name = get_domain_name(asset.get('domain_id'))
+            endpoint_dict.get('Domain').append(domain_name)
     # Adding values found in properties of the asset
     enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values)
     return asset_dict
 
 
 def enrich_dict_using_asset_properties(asset, asset_dict, endpoint_dict, full_values):
-    for prop in asset['properties']:
-        if prop['name'] in ASSET_PROPERTIES_NAMES_MAP:
-            asset_dict[ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = {'Value': prop['value'],
-                                                                    'LastUser': prop['last_reported_by']}
-        elif prop['name'] in ASSET_PROPERTIES_ENDPOINT_NAMES_MAP:
-            endpoint_dict[ASSET_PROPERTIES_ENDPOINT_NAMES_MAP[prop['name']]] = prop['value']
+    for prop in asset.get('properties', []):
+        if prop.get('name') in ASSET_PROPERTIES_NAMES_MAP:
+            asset_dict[ASSET_PROPERTIES_NAMES_MAP[prop.get('name')]] = {'Value': prop.get('value'),
+                                                                        'LastUser': prop.get('last_reported_by')}
+        elif prop.get('name') in ASSET_PROPERTIES_ENDPOINT_NAMES_MAP:
+            endpoint_dict[ASSET_PROPERTIES_ENDPOINT_NAMES_MAP[prop.get('name')]] = prop.get('value')
         elif full_values:
-            if prop['name'] in FULL_ASSET_PROPERTIES_NAMES_MAP:
-                asset_dict[FULL_ASSET_PROPERTIES_NAMES_MAP[prop['name']]] = {'Value': prop['value'],
-                                                                             'LastUser': prop['last_reported_by']}
+            if prop.get('name') in FULL_ASSET_PROPERTIES_NAMES_MAP:
+                asset_dict[FULL_ASSET_PROPERTIES_NAMES_MAP[prop.get('name')]] = {'Value': prop.get('value'),
+                                                                                 'LastUser': prop.get(
+                                                                                     'last_reported_by')}
     return None
 
 

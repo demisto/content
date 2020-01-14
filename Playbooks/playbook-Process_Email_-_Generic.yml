@@ -1,7 +1,7 @@
 id: process_email_-_generic
 version: -1
 name: Process Email - Generic
-fromversion: 4.0.0
+fromversion: '5.0.0'
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
@@ -194,13 +194,13 @@ tasks:
       id: 79efc198-1523-4a55-89ad-668e64fba48c
       version: -1
       name: Render HTML to an image
-      description: ""
+      description: Rasterize an email body into an image
       tags:
       - email_html_image
-      script: Rasterize|||rasterize-email
+      script: '|||rasterize-email'
       type: regular
       iscommand: true
-      brand: Rasterize
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -210,6 +210,8 @@ tasks:
         complex:
           root: Email
           accessor: HTML
+      offline:
+        simple: "true"
       type: {}
       width: {}
     reputationcalc: 1
@@ -728,10 +730,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: be23418a-f7f1-4ed8-8d53-7e8cfcef87b5
+    taskid: c021141e-c505-472a-8139-9807ab7ba703
     type: regular
     task:
-      id: be23418a-f7f1-4ed8-8d53-7e8cfcef87b5
+      id: c021141e-c505-472a-8139-9807ab7ba703
       version: -1
       name: Set incident with the Email object data
       description: Updates Demisto incident fields using data from the email object.
@@ -867,6 +869,13 @@ tasks:
           - operator: uniq
           - operator: Stringify
       emailfromdisplayname: {}
+      emailheaders: {}
+      emailhtml:
+        complex:
+          root: Email
+          accessor: HTML
+          transformers:
+          - operator: uniq
       emailimage:
         complex:
           root: Email
@@ -1081,7 +1090,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {

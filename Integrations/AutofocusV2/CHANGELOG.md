@@ -1,4 +1,20 @@
 ## [Unreleased]
+
+
+## [20.1.0] - 2020-01-07
+Fixed an issue where errors for the reputation commands: ***ip***, ***domain***, ***file***, ***url*** were not handled.
+
+## [19.12.1] - 2019-12-25
+Added four reputation commands.
+  - ***ip***
+  - ***domain***
+  - ***file***
+  - ***url***
+
+## [19.11.0] - 2019-11-12
+Added descriptions to the ***autofocus-tag-details*** command.
+
+## [19.10.0] - 2019-10-03
   - Improved handling of empty responses for the  ***autofocus-samples-search*** and ***autofocus-sessions-search*** commands.
 
 

@@ -102,7 +102,7 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: Joe.Analysis.WebID
+          root: Joe.Analysis.ID
       Interval:
         complex:
           root: inputs.Interval
@@ -114,7 +114,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: Joe.Analysis(val.Status != 'finished').WebID
+        simple: Joe.Analysis(val.Status != 'finished').ID
     separatecontext: true
     loop:
       iscommand: false
@@ -167,7 +167,7 @@ tasks:
             args:
               field:
                 value:
-                  simple: WebID
+                  simple: ID
     separatecontext: false
     view: |-
       {
@@ -315,7 +315,7 @@ tasks:
       webid:
         complex:
           root: Joe
-          accessor: Analysis.WebID
+          accessor: Analysis.ID
     separatecontext: false
     view: |-
       {
@@ -421,9 +421,9 @@ inputs:
     pcapslim, memdumps, yara'
 outputs:
 - contextPath: DBotScore.Vendor
-  description: 'The name of the vendor: JoeSecurity'
+  description: The vendor used to calculate the score.
   type: string
-- contextPath: Joe.Analysis.WebID
+- contextPath: Joe.Analysis.ID
   description: Web ID
   type: string
 - contextPath: Joe.Analysis.Status
@@ -457,15 +457,16 @@ outputs:
   description: Sample Data, could be a file name or URL
   type: string
 - contextPath: DBotScore.Indicator
-  description: The name of the sample file or URL
+  description: The indicator that was tested.
+  type: string
 - contextPath: DBotScore.Type
-  description: '''url'' for url samples, otherwise ''file'''
+  description: The indicator type.
   type: string
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score.
   type: number
 - contextPath: DBotScore.Malicious.Vendor
-  description: 'The name of the vendor: JoeSecurity'
+  description: The vendor used to calculate the score.
   type: string
 - contextPath: DBotScore.Malicious.Detections
   description: The sub analysis detection statuses

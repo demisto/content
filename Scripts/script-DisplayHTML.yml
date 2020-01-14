@@ -1,5 +1,5 @@
 commonfields:
-  id: displayhtml
+  id: DisplayHTML
   version: -1
 name: DisplayHTML
 script: |

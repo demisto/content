@@ -633,4 +633,4 @@ outputs:
   description: Endpoint domain name
   type: string
 tests:
-- ip_enrichment_generic_test
+  - No test - deprecated. use V2.1 instead.

@@ -1,0 +1,125 @@
+args:
+- default: false
+  description: The input file entry ID or the file content (as a string).
+  isArray: false
+  name: input
+  required: true
+  secret: false
+- default: false
+  defaultValue: '15'
+  description: Sample text of which the total number words are less than or equal to this number
+    will be ignored.
+  isArray: false
+  name: removeShortTextThreshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.99'
+  description: Remove emails with similarity greater then this threshold, range 0-1,
+    where 1 is completly identical.
+  isArray: false
+  name: dedupThreshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailsubject|name,emailbody|emailbodyhtml
+  description: A comma-separated list of incident fields names with the text to process.
+    You can also use "|" if you want to choose the first non-empty value from a list
+    of fields.
+  isArray: false
+  name: textFields
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: json
+  description: The input type.
+  isArray: false
+  name: inputType
+  predefined:
+  - json
+  - pickle
+  - csv
+  - json_string
+  - pickle_string
+  - csv_string
+  - json_b64_string
+  - pickle_b64_string
+  - csv_b64_string
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: nlp
+  description: Text pre-processing type.
+  isArray: false
+  name: preProcessType
+  predefined:
+  - nlp
+  - none
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: Whether to remove HTML tags. Default is "true".
+  isArray: false
+  name: cleanHTML
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- default: false
+  description: A comma-separate list of fields inside the JSON by which to filter.
+  isArray: false
+  name: whitelistFields
+  required: false
+  secret: false
+- default: false
+  description: If non-empty, hash every word with this seed.
+  isArray: false
+  name: hashSeed
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: pickle
+  description: The output file format.
+  isArray: false
+  name: outputFormat
+  predefined:
+  - json
+  - pickle
+  required: false
+  secret: false
+comment: Pre-process text data for the machine learning text classifier.
+commonfields:
+  id: DBotPreProcessTextData
+  version: -1
+enabled: false
+name: DBotPreProcessTextData
+outputs:
+- contextPath: DBotPreProcessTextData.Filename
+  description: The output file name.
+  type: String
+- contextPath: DBotPreProcessTextData.TextField
+  description: The original text field inside the file.
+  type: String
+- contextPath: DBotPreProcessTextData.TextFieldProcessed
+  description: The processed text field inside the JSON file.
+  type: String
+- contextPath: DBotPreProcessTextData.FileFormat
+  description: The output file format.
+  type: String
+script: '-'
+system: false
+tags:
+- ml
+timeout: 120µs
+type: python
+dockerimage: demisto/dl:1.4
+runonce: true
+tests:
+- Create Phishing Classifier V2 ML Test
+fromversion: 4.5.0
