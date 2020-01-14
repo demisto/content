@@ -101,8 +101,7 @@ def test_module(client: Client, *_):
 
     if isinstance(res_vulnerabilities.get('vulnerabilities'), list) and isinstance(res_assets.get('assets'), list):
         return 'ok', None, None
-    else:
-        raise Exception('Error occurred while trying to query the api.')
+    raise Exception('Error occurred while trying to query the api.')
 
 
 def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -285,10 +284,9 @@ def update_asset(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
     }
     result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
     try:
-        if result.get('status') == "success":
-            return f'Asset {args_id} was updated', {}, []
-        else:
+        if result.get('status') != "success":
             return 'Could not update asset.', {}, []
+        return f'Asset {args_id} was updated', {}, []
     except DemistoException as err:
         return f'Error occurred while preforming update-asset command {err}', {}, []
 
@@ -314,10 +312,9 @@ def update_vulnerability(client: Client, args: dict) -> Tuple[str, Dict[str, Any
     url_suffix = f'/vulnerabilities/{args_id}'
     result = client.http_request(message='PUT', suffix=url_suffix, data=params_to_update)
     try:
-        if result.get('status') == "success":
-            return f'Asset {args_id} was updated', {}, []
-        else:
+        if result.get('status') != "success":
             return 'Could not update asset.', {}, []
+        return f'Asset {args_id} was updated', {}, []
     except DemistoException as err:
         return f'Error occurred while preforming update-vulenrability command {err}', {}, []
 
@@ -438,10 +435,9 @@ def add_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict
     }
     result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
     try:
-        if result.get('status') == "success":
-            return f'Tag {tags} was added to asset {args_id}', {}, []
-        else:
+        if result.get('status') != "success":
             return f'Tag {tags} was not added to asset {args_id}', {}, []
+        return f'Tag {tags} was added to asset {args_id}', {}, []
     except DemistoException as err:
         return f'Error occurred while preforming add-tags command {err}', {}, []
 
@@ -464,10 +460,9 @@ def delete_tags(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[D
     }
     result = client.http_request(message='DELETE', suffix=url_suffix, data=asset)
     try:
-        if result.get('status') == "success":
-            return f'Tag {tags} was deleted to asset {args_id}', {}, []
-        else:
+        if result.get('status') != "success":
             return f'Tag {tags} was not deleted to asset {args_id}', {}, []
+        return f'Tag {tags} was deleted to asset {args_id}', {}, []
     except DemistoException as err:
         return f'Error occurred while preforming delete-tags command {err}', {}, []
 
