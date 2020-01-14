@@ -20,7 +20,7 @@
                 "AWS IAM Policy Misconfiguration": {
                         "dontMapEventToLabels": false,
                         "internalMapping": {
-                                "Account": {
+                                "Account Name": {
                                         "complex": {
                                                 "accessor": "account",
                                                 "filters": [],
