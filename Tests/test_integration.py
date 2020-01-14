@@ -30,10 +30,13 @@ def __get_integration_config(client, integration_name, thread_index=0, prints_ma
     body = {
         'page': 0, 'size': 100, 'query': 'name:' + integration_name
     }
+    # print(body)
     try:
         res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
                                                       method='POST', body=body)
     except ApiException as conn_error:
+        # TODO: delete next line
+        print("GET INTEGRATION CONFIG - API EXCEPTION: {}".format(conn_error))
         prints_manager.add_print_job(conn_error, print, thread_index)
         return None
 
@@ -46,18 +49,26 @@ def __get_integration_config(client, integration_name, thread_index=0, prints_ma
             error_message = "Timeout - failed to get integration {} configuration. Error: {}".format(integration_name,
                                                                                                      res)
             prints_manager.add_print_job(error_message, print_error, thread_index)
+            # TODO: delete next
+            print("GET INTEGRATION CONFIG - TIMEOUT")
             return None
 
         time.sleep(SLEEP_INTERVAL)
         total_sleep += SLEEP_INTERVAL
-
     all_configurations = res['configurations']
+    # with open('outputs.json', "w") as f:
+    #     f.write(str(all_configurations))
+
+    # print("ALL CONFIGURATIONS: {}".format(all_configurations))
     match_configurations = [x for x in all_configurations if x['name'] == integration_name]
+    # print("Integration name: {}, is on match config? {}".format(integration_name, match_configurations))
 
     if not match_configurations or len(match_configurations) == 0:
         prints_manager.add_print_job('integration was not found', print_error, thread_index)
+        # TODO: delete print("GET INTEGRATION CONFIG - INTEGRATION NOT FOUND")
         return None
 
+    # print(match_configurations[0])
     return match_configurations[0]
 
 
