@@ -139,4 +139,4 @@ script:
   subtype: python3
 fromversion: 5.5.0
 tests:
-- BambenekConslting_Feed_Test
+- BambenekConsultingFeed_Test

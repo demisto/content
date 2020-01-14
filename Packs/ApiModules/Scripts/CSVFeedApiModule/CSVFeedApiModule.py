@@ -54,7 +54,7 @@ class Client(BaseClient):
 
         self.ignore_regex: Optional[Pattern] = None
         if ignore_regex is not None:
-            self.ignore_regex = re.compile(self.ignore_regex)
+            self.ignore_regex = re.compile(ignore_regex)
         self.fieldnames = argToList(fieldnames)
 
         self.dialect: Dict[str, Any] = {
