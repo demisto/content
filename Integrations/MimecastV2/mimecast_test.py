@@ -17,7 +17,7 @@ policy_data = {
 policy_args = policy_data.copy()
 del policy_args['option']
 del policy_args['policy_id']
-get_args_response = (policy_args, 'no_action', 'IDFROMMIMECAST')
+get_args_response = (policy_args, 'no_action')
 
 # Parameters for Update policy test
 policy_obj = {
@@ -32,7 +32,9 @@ policy_obj = {
     }
 }
 
-update_policy_args = {'fromType': 'free_mail_domains', 'description': 'new new', 'policy_id': 'IDFROMMIMECAST'}
+update_two_args = {'fromType': 'free_mail_domains', 'description': 'new new', 'policy_id': 'IDFROMMIMECAST'}
+update_all_args = {'fromType': 'free_mail_domains', 'fromValue': 'gmail.com', 'toType':'email_domain',
+                   'toValue': 'gmail.com', 'description':'new new', 'policy_id': 'IDFROMMIMECAST'}
 update_policy_req_response = {
     'policy': policy_obj,
     'option': 'no_action',
@@ -41,13 +43,24 @@ update_policy_req_response = {
 
 
 def get_arguments_for_policy_command():
-    res = MimecastV2.get_arguments_for_policy_command('update', policy_data)
+    res = MimecastV2.get_arguments_for_policy_command(policy_data)
     assert get_args_response == res
 
 
 def test_update_policy(mocker):
     mocker.patch.object(MimecastV2, 'get_arguments_for_policy_command', return_value=get_args_response)
+    mocker.patch.object(MimecastV2, 'set_empty_value_args', return_value=policy_obj)
     mocker.patch.object(MimecastV2, 'update_policy_request', return_value=update_policy_req_response)
-    res = MimecastV2.update_policy(update_policy_args)
+    res = MimecastV2.update_policy(update_two_args)
     assert res['Contents']['Description'] == 'new new'
     assert res['Contents']['Sender']['Type'] == 'free_mail_domains'
+
+    mocker.patch.object(MimecastV2, 'get_arguments_for_policy_command', return_value=get_args_response)
+    mocker.patch.object(MimecastV2, 'set_empty_value_args', return_value=policy_obj)
+    mocker.patch.object(MimecastV2, 'update_policy_request', return_value=update_policy_req_response)
+    res = MimecastV2.update_policy(update_all_args)
+    assert res['Contents']['Description'] == 'new new'
+    assert res['Contents']['Sender']['Type'] == 'free_mail_domains'
+    assert res['Contents']['Sender']['Domain'] == 'gmail.com'
+    assert res['Contents']['Reciever']['Type'] == 'email_domain'
+    assert res['Contents']['Reciever']['Domain'] == 'gmail.com'

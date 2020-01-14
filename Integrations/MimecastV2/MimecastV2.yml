@@ -1647,6 +1647,43 @@ script:
     description: update policy
     execution: false
     name: mimecast-update-policy
+    outputs:
+    - contextPath: Mimecast.Policy.ID
+      description: Policy ID
+      type: string
+    - contextPath: Mimecast.Policy.Sender.Address
+      description: Block Sender by email address
+      type: string
+    - contextPath: Mimecast.Policy.Sender.Domain
+      description: Block Sender by domain
+      type: string
+    - contextPath: Mimecast.Policy.Sender.Group
+      description: Block Sender by group
+      type: string
+    - contextPath: Mimecast.Policy.Bidirectional
+      description: Blocked policy is Bidirectional or not
+      type: boolean
+    - contextPath: Mimecast.Policy.Receiver.Address
+      description: Block emails to Receiver type address
+      type: string
+    - contextPath: Mimecast.Policy.Receiver.Domain
+      description: Block emails to Receiver type domain
+      type: string
+    - contextPath: Mimecast.Policy.Receiver.Group
+      description: Block emails to Receiver type group
+      type: string
+    - contextPath: Mimecast.Policy.Fromdate
+      description: Policy validation start date
+      type: date
+    - contextPath: Mimecast.Policy.Todate
+      description: Policy expiration date
+      type: date
+    - contextPath: Mimecast.Policy.Sender.Type
+      description: The sender type
+      type: String
+    - contextPath: Mimecast.Policy.Receiver.Type
+      description: The Receiver type
+      type: String
   feed: false
   isfetch: true
   longRunning: false
