@@ -1,5 +1,5 @@
 id: Kenna Test
-version: 49
+version: 51
 contentitemfields:
   propagationLabels: []
 name: Kenna Test
@@ -19,12 +19,13 @@ tasks:
       '#none#':
       - "1"
       - "30"
+      - "13"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 305,
-          "y": 50
+          "x": 90,
+          "y": 65
         }
       }
     note: false
@@ -52,7 +53,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 225
         }
       }
     note: false
@@ -84,8 +85,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 417.5,
-          "y": 690
+          "x": 520,
+          "y": 720
         }
       }
     note: false
@@ -123,8 +124,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": 1040
+          "x": 560,
+          "y": 1070
         }
       }
     note: false
@@ -162,7 +163,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 400
         }
       }
     note: false
@@ -184,8 +185,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1102.5,
-          "y": 3855
+          "x": 1410,
+          "y": 3185
         }
       }
     note: false
@@ -212,8 +213,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": 3840
+          "x": 457.5,
+          "y": 3170
         }
       }
     note: false
@@ -247,8 +248,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1092.5,
-          "y": 3490
+          "x": 980,
+          "y": 2820
         }
       }
     note: false
@@ -287,7 +288,7 @@ tasks:
       {
         "position": {
           "x": 520,
-          "y": 370
+          "y": 400
         }
       }
     note: false
@@ -320,8 +321,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 642.5,
-          "y": 1565
+          "x": 1307.5,
+          "y": 50
         }
       }
     note: false
@@ -365,8 +366,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 642.5,
-          "y": 1740
+          "x": 1307.5,
+          "y": 225
         }
       }
     note: false
@@ -412,8 +413,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 417.5,
-          "y": 865
+          "x": 520,
+          "y": 895
         }
       }
     note: false
@@ -450,8 +451,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": 1215
+          "x": 560,
+          "y": 1245
         }
       }
     note: false
@@ -473,7 +474,7 @@ tasks:
       '#default#':
       - "9"
       "yes":
-      - "13"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -489,8 +490,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": 1390
+          "x": 560,
+          "y": 1420
         }
       }
     note: false
@@ -526,8 +527,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 2965
+          "x": 867.5,
+          "y": 2295
         }
       }
     note: false
@@ -565,8 +566,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 3140
+          "x": 867.5,
+          "y": 2470
         }
       }
     note: false
@@ -604,8 +605,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 3315
+          "x": 867.5,
+          "y": 2645
         }
       }
     note: false
@@ -627,7 +628,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "33"
+      - "28"
     scriptarguments:
       id:
         complex:
@@ -641,8 +642,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 755,
-          "y": 1915
+          "x": 1195,
+          "y": 400
         }
       }
     note: false
@@ -680,8 +681,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 755,
-          "y": 2265
+          "x": 642.5,
+          "y": 1595
         }
       }
     note: false
@@ -719,8 +720,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 755,
-          "y": 2440
+          "x": 642.5,
+          "y": 1770
         }
       }
     note: false
@@ -756,8 +757,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 867.5,
-          "y": 2615
+          "x": 755,
+          "y": 1945
         }
       }
     note: false
@@ -799,8 +800,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 867.5,
-          "y": 2790
+          "x": 755,
+          "y": 2120
         }
       }
     note: false
@@ -825,8 +826,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 417.5,
-          "y": 545
+          "x": 520,
+          "y": 575
         }
       }
     note: false
@@ -861,7 +862,7 @@ tasks:
       {
         "position": {
           "x": 520,
-          "y": 195
+          "y": 225
         }
       }
     note: false
@@ -907,43 +908,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1092.5,
-          "y": 3665
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  "33":
-    id: "33"
-    taskid: 0ef2ac87-b5b7-402e-86ba-95c5bf2927f6
-    type: regular
-    task:
-      id: 0ef2ac87-b5b7-402e-86ba-95c5bf2927f6
-      version: -1
-      name: sleep after update
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      seconds:
-        simple: "20"
-    separatecontext: false
-    sla:
-      hours: 0
-      days: 0
-      weeks: 0
-    view: |-
-      {
-        "position": {
-          "x": 755,
-          "y": 2090
+          "x": 980,
+          "y": 2995
         }
       }
     note: false
@@ -953,13 +919,12 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "15_9_#default#": 0.22,
       "16_9_#default#": 0.54
     },
     "paper": {
       "dimensions": {
-        "height": 3885,
-        "width": 1432.5,
+        "height": 3215,
+        "width": 1740,
         "x": 50,
         "y": 50
       }
