@@ -60,7 +60,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: https://www.spamhaus.org/drop/asndrop.txt
-  display: Sub Feeds
+  display: Sub-Feeds
   name: url
   options:
   - https://www.spamhaus.org/drop/asndrop.txt
@@ -85,7 +85,7 @@ configuration:
   name: user_agent
   required: false
   type: 0
-description: Spamhaus Feed Integration
+description: Use the Spamhaus feed integration to fetch indicators from the feed.
 display: Spamhaus Feed
 name: SpamhausFeed
 script:
@@ -93,30 +93,30 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Limit results returned to the output.
+      description: The maximum number of results to return. The default value is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Indicator type.
+      description: The indicator type.
       isArray: false
       name: indicator_type
       required: false
       secret: false
     deprecated: false
-    description: Get the feed indicators.
+    description: Gets the feed indicators.
     execution: false
     name: get-indicators
     outputs:
     - contextPath: SpamhausFeed.Indicator.Value
-      description: Indicator value.
+      description: The indicator value.
       type: String
     - contextPath: SpamhausFeed.Indicator.Type
-      description: Indicator type.
+      description: The indicator type.
       type: String
     - contextPath: SpamhausFeed.Indicator.RawJSON
-      description: Indicator rawJSON value.
+      description: The indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/python3:3.7.5.4583
   isfetch: false
