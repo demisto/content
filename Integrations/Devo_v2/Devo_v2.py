@@ -470,7 +470,7 @@ def multi_table_query_command():
         for q in sub_queries:
             futures.append(executor.submit(parallel_query_helper, q, all_results, time_range[0], time_range[1]))
 
-    done, pending = concurrent.futures.wait(futures)
+    concurrent.futures.wait(futures)
 
     entry = {
         'Type': entryTypes['note'],
