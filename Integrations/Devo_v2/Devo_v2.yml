@@ -51,8 +51,8 @@ configuration:
   defaultvalue: ""
   type: 12
   required: false
-- display: Allow insecure Devo endpoint connection
-  name: allow_insecure
+- display: Trust any certificate (not secure)
+  name: insecure
   defaultvalue: "false"
   type: 8
   required: true
