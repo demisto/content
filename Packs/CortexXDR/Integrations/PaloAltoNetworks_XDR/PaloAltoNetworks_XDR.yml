@@ -749,8 +749,10 @@ script:
     - default: false
       description: |-
         All the agents that were first seen after {first_seen_gte}.
-        Integer representing the number of
-        milliseconds after the Unix epoch, UTC timezone.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: first_seen_gte
       required: false
@@ -758,8 +760,10 @@ script:
     - default: false
       description: |-
         All the agents that were first seen before {first_seen_lte}.
-        Integer representing the number of
-        milliseconds after the Unix epoch, UTC timezone.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: first_seen_lte
       required: false
@@ -767,8 +771,10 @@ script:
     - default: false
       description: |-
         All the agents that were last seen before {last_seen_gte}.
-        Integer representing the number of
-        milliseconds after the Unix epoch, UTC timezone.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: last_seen_gte
       required: false
@@ -776,8 +782,10 @@ script:
     - default: false
       description: |-
         All the agents that were last seen before {last_seen_lte}.
-        Integer representing the number of
-        milliseconds after the Unix epoch, UTC timezone.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: last_seen_lte
       required: false
@@ -1083,8 +1091,12 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Return logs that their timestamp is greater than 'log_time_after'.\n\
-        Examples: \n\"1 hour\"\n\"2 days\""
+      description: |-
+        Return logs that their timestamp is greater than 'log_time_after'.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: timestamp_gte
       required: false
@@ -1092,9 +1104,10 @@ script:
     - default: false
       description: |-
         Return logs that their timestamp is lesser than 'log_time_after'.
-        Examples:
-        "1 hour"
-        "2 days"
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: timestamp_lte
       required: false
@@ -1263,15 +1276,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Return logs that their timestamp is greater than 'log_time_after'.\n\
-        Examples: \n\"1 hour\"\n\"2 days\""
+      description: |-
+        Return logs that their timestamp is greater than 'log_time_after'.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: timestamp_gte
       required: false
       secret: false
     - default: false
-      description: "Return logs that their timestamp is lesser than 'log_time_after'.\n\
-        Examples: \n\"1 hour\"\n\"2 days\""
+      description: |-
+        Return logs that their timestamp is lesser than 'timestamp_lte'.
+
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
       isArray: false
       name: timestamp_lte
       required: false

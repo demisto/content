@@ -621,7 +621,7 @@ def get_incidents_command(client, args):
 
     # sometimes incident id can be passed as integer from the playbook
     incident_id_list = args.get('incident_id_list')
-    if isinstance(incident_id_list, (int)):
+    if isinstance(incident_id_list, int):
         incident_id_list = str(incident_id_list)
 
     incident_id_list = argToList(incident_id_list)
@@ -747,19 +747,22 @@ def update_incident_command(client, args):
     return f'Incident {incident_id} has been updated', None, None
 
 
-def try_parse_int_arg(arg, error_msg, required):
-    if arg is None and required is True:
-        raise ValueError(error_msg)
+def arg_to_int(arg, arg_name: str, required: bool = False):
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        else:
+            return None
 
     if isinstance(arg, str):
         if arg.isdigit():
             return int(arg)
         else:
-            raise ValueError(error_msg)
+            raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
     elif isinstance(arg, int):
         return arg
     else:
-        return ValueError(error_msg)
+        return ValueError(f'Invalid number: "{arg_name}"')
 
 
 def get_endpoints_command(client, args):
@@ -772,31 +775,35 @@ def get_endpoints_command(client, args):
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
 
-    first_seen_gte = args.get('first_seen_gte')
-    if first_seen_gte:
-        first_seen_gte = try_parse_datetime_arg(first_seen_gte, 'Failed to parse first_seen_gte.')
+    first_seen_gte = arg_to_timestamp(
+        arg=args.get('first_seen_gte'),
+        arg_name='first_seen_gte'
+    )
 
-    first_seen_lte = args.get('first_seen_lte')
-    if first_seen_lte:
-        first_seen_lte = try_parse_datetime_arg(first_seen_lte, 'Failed to parse first_seen_lte.')
+    first_seen_lte = arg_to_timestamp(
+        arg=args.get('first_seen_lte'),
+        arg_name='first_seen_lte'
+    )
 
-    last_seen_gte = args.get('last_seen_gte')
-    if last_seen_gte:
-        last_seen_gte = try_parse_datetime_arg(last_seen_gte, 'Failed to parse last_seen_gte.')
+    last_seen_gte = arg_to_timestamp(
+        arg=args.get('last_seen_gte'),
+        arg_name='last_seen_gte'
+    )
 
-    last_seen_lte = args.get('last_seen_lte')
-    if last_seen_lte:
-        last_seen_lte = try_parse_datetime_arg(last_seen_lte, 'Failed to parse last_seen_lte.')
+    last_seen_lte = arg_to_timestamp(
+        arg=args.get('last_seen_lte'),
+        arg_name='last_seen_lte'
+    )
 
-    page_number = try_parse_int_arg(
+    page_number = arg_to_int(
         arg=args.get('page'),
-        error_msg='Failed to parse "page". Must be a number.',
+        arg_name='Failed to parse "page". Must be a number.',
         required=True
     )
 
-    limit = try_parse_int_arg(
+    limit = arg_to_int(
         arg=args.get('limit'),
-        error_msg='Failed to parse "limit". Must be a number.',
+        arg_name='Failed to parse "limit". Must be a number.',
         required=True
     )
 
@@ -851,9 +858,16 @@ def insert_single_alert_command(client, args):
     product = args.get('product')
     vendor = args.get('vendor')
     local_ip = args.get('local_ip')
-    local_port = int(args.get('local_port')) if args.get('local_port') is not None else None
+    local_port = arg_to_int(
+        arg=args.get('local_port'),
+        arg_name='local_port'
+    )
     remote_ip = args.get('remote_ip')
-    remote_port = int(args.get('remote_port')) if args.get('remote_port') is not None else None
+    remote_port = arg_to_int(
+        arg=args.get('remote_port'),
+        arg_name='remote_port'
+    )
+
     severity = args.get('severity')
     alert_name = args.get('alert_name')
     alert_description = args.get('alert_description', '')
@@ -948,7 +962,13 @@ def unisolate_endpoint_command(client, args):
     )
 
 
-def try_parse_datetime_arg(arg, error_msg):
+def arg_to_timestamp(arg, arg_name: str, required: bool = False):
+    if arg is None:
+        if required is True:
+            raise ValueError(f'Missing "{arg_name}"')
+        else:
+            return None
+
     if isinstance(arg, str) and arg.isdigit():
         # timestamp that str - we just convert it to int
         return int(arg)
@@ -957,7 +977,7 @@ def try_parse_datetime_arg(arg, error_msg):
         d = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'}).timestamp() * 1000
         if d is None:
             # if d is None it means dateparser failed to parse it
-            raise ValueError(error_msg)
+            raise ValueError(f'Invalid date: {arg_name}')
 
         return d
     elif isinstance(arg, (int, float)):
@@ -970,16 +990,28 @@ def get_audit_management_logs_command(client, args):
     _type = argToList(args.get('type'))
     sub_type = argToList(args.get('sub_type'))
 
-    timestamp_gte = args.get('timestamp_gte')
-    timestamp_lte = args.get('timestamp_lte')
-    if timestamp_gte:
-        timestamp_gte = try_parse_datetime_arg(timestamp_gte, 'Failed to parse timestamp_gte.')
+    timestamp_gte = arg_to_timestamp(
+        arg=args.get('timestamp_gte'),
+        arg_name='timestamp_gte'
+    )
 
-    if timestamp_lte:
-        timestamp_lte = try_parse_datetime_arg(timestamp_lte, 'Failed to parse timestamp_lte.')
+    timestamp_lte = arg_to_timestamp(
+        arg=args.get('timestamp_lte'),
+        arg_name='timestamp_lte'
+    )
 
-    search_from = int(args.get('search_from', 0))
-    search_to = search_from + int(args.get('limit', 20))
+    page_number = arg_to_int(
+        arg=args.get('page', 0),
+        arg_name='Failed to parse "page". Must be a number.',
+        required=True
+    )
+    limit = arg_to_int(
+        arg=args.get('limit', 20),
+        arg_name='Failed to parse "limit". Must be a number.',
+        required=True
+    )
+    search_from = page_number * limit
+    search_to = search_from + limit
 
     sort_by = args.get('sort_by')
     sort_order = args.get('sort_order', 'asc')
@@ -991,7 +1023,6 @@ def get_audit_management_logs_command(client, args):
         sub_type=sub_type,
         timestamp_gte=timestamp_gte,
         timestamp_lte=timestamp_lte,
-
         search_from=search_from,
         search_to=search_to,
         sort_by=sort_by,
@@ -1029,16 +1060,28 @@ def get_audit_agent_reports_command(client, args):
     _type = argToList(args.get('type'))
     sub_type = argToList(args.get('sub_type'))
 
-    timestamp_gte = args.get('timestamp_gte')
-    timestamp_lte = args.get('timestamp_lte')
-    if timestamp_gte:
-        timestamp_gte = try_parse_datetime_arg(timestamp_gte, 'Failed to parse timestamp_gte.')
+    timestamp_gte = arg_to_timestamp(
+        arg=args.get('timestamp_gte'),
+        arg_name='timestamp_gte'
+    )
 
-    if timestamp_lte:
-        timestamp_lte = try_parse_datetime_arg(timestamp_lte, 'Failed to parse timestamp_lte.')
+    timestamp_lte = arg_to_timestamp(
+        arg=args.get('timestamp_lte'),
+        arg_name='timestamp_lte'
+    )
 
-    search_from = int(args.get('search_from', 0))
-    search_to = search_from + int(args.get('limit', 20))
+    page_number = arg_to_int(
+        arg=args.get('page', 0),
+        arg_name='Failed to parse "page". Must be a number.',
+        required=True
+    )
+    limit = arg_to_int(
+        arg=args.get('limit', 20),
+        arg_name='Failed to parse "limit". Must be a number.',
+        required=True
+    )
+    search_from = page_number * limit
+    search_to = search_from + limit
 
     sort_by = args.get('sort_by')
     sort_order = args.get('sort_order', 'asc')
