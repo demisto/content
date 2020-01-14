@@ -2121,7 +2121,6 @@
         "NetWitness Endpoint Test": "Issue 19878",
         "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
-        "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "ArcSight Logger test": "Issue 19117",
