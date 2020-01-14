@@ -28,6 +28,9 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+- name: skipExclusionList
+  required: false
+  type: 8
 - name: expiration
   required: false
   type: 17
