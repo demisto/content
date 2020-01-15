@@ -17,8 +17,9 @@ CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
 
 from Tests.scripts.constants import *  # noqa: E402
-from Tests.test_utils import get_yaml, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
-    LOG_COLORS, print_color, run_command, print_error, print_warning  # noqa: E402
+from Tests.test_utils import get_yaml, get_json, get_to_version, get_from_version, collect_ids,\
+    get_script_or_integration_id, get_pack_name, LOG_COLORS, print_color,\
+    run_command, print_error, print_warning  # noqa: E402
 
 
 CHECKED_TYPES_REGEXES = (
@@ -34,11 +35,15 @@ CHECKED_TYPES_REGEXES = (
     PLAYBOOK_REGEX,
     TEST_PLAYBOOK_REGEX,
     PACKS_PLAYBOOK_YML_REGEX,
-    PACKS_TEST_PLAYBOOKS_REGEX
+    PACKS_TEST_PLAYBOOKS_REGEX,
+    # Classifiers
+    PACKS_CLASSIFIERS_REGEX,
+    CLASSIFIER_REGEX
 )
 
 
 def checked_type(file_path, regex_list=CHECKED_TYPES_REGEXES):
+    file_path = file_path[6:]  #TODO: remove this
     for regex in regex_list:
         if re.match(regex, file_path, re.IGNORECASE):
             return True
@@ -135,6 +140,7 @@ def get_integration_data(file_path):
     fromversion = data_dictionary.get('fromversion')
     commands = data_dictionary.get('script', {}).get('commands', [])
     cmd_list = [command.get('name') for command in commands]
+    pack = get_pack_name(file_path)
 
     deprecated_commands = []
     for command in commands:
@@ -155,7 +161,8 @@ def get_integration_data(file_path):
         integration_data['deprecated'] = deprecated
     if deprecated_commands:
         integration_data['deprecated_commands'] = deprecated_commands
-
+    if pack:
+        integration_data['pack'] = pack
     return {id: integration_data}
 
 
@@ -172,6 +179,7 @@ def get_playbook_data(file_path):
     implementing_scripts = get_task_ids_from_playbook('scriptName', data_dictionary)
     implementing_playbooks = get_task_ids_from_playbook('playbookName', data_dictionary)
     command_to_integration = get_commmands_from_playbook(data_dictionary)
+    pack = get_pack_name(file_path)
 
     playbook_data['name'] = name
     playbook_data['file_path'] = file_path
@@ -189,6 +197,8 @@ def get_playbook_data(file_path):
         playbook_data['tests'] = tests
     if deprecated:
         playbook_data['deprecated'] = deprecated
+    if pack:
+        playbook_data['pack'] = pack
 
     return {id: playbook_data}
 
@@ -228,6 +238,74 @@ def get_script_data(file_path, script_code=None):
 
     return {id: script_data}
 
+
+def get_layout_data(path):
+    data = OrderedDict()
+    json_data = get_json(path)
+    layout = json_data.get('layout')
+    name = layout.get('name', '-')
+    id = layout.get('id', '-')
+    typeID = json_data.get('typeId') #TODO: make sure this is the ID
+    typeName = json_data.get('TypeName') #TODO: make sure this is the name
+    fromversion = json_data.get('fromVersion')
+    toversion = json_data.get('toVersion')
+    pack = get_pack_name(path)
+    if typeID:
+        data['typeID'] = typeID
+    if typeName:
+        data['typename'] = typeName
+    if name:
+        data['name'] = name
+    if not name:
+        data['name'] = '-'
+    if toversion:
+        data['toversion'] = toversion
+    if fromversion:
+        data['fromversion'] = fromversion
+    if pack:
+        data['pack'] = pack
+
+    return {id: data}
+
+def get_general_data(path):
+    data = OrderedDict()
+    json_data = get_json(path)
+    id = json_data.get('id')
+    brandname = json_data.get('brandName', '')
+    name = json_data.get('name', '')
+    fromversion = json_data.get('fromVersion')
+    toversion = json_data.get('toVersion')
+    pack = get_pack_name(path)
+    if brandname: # for classifiers
+        data['name'] = brandname
+    if name: # for the rest
+        data['name'] = name
+    if toversion:
+        data['toversion'] = toversion
+    if fromversion:
+        data['fromversion'] = fromversion
+    if pack:
+        data['pack'] = pack
+
+    return {id: data}
+
+def get_dashboard_data(classifier_path):
+    classifier_data = OrderedDict()
+    json_data = get_json(classifier_path)
+    id = json_data.get('id', '-')
+    classifier_data['name'] = json_data.get('brandName', '')
+    fromversion = json_data.get('fromversion')
+    toversion = json_data.get('toversion')
+    pack = get_pack_name(classifier_path)
+
+    if toversion:
+        classifier_data['toversion'] = toversion
+    if fromversion:
+        classifier_data['fromversion'] = fromversion
+    if pack:
+        classifier_data['pack'] = pack
+
+    return {id: classifier_data}
 
 def get_depends_on(data_dict):
     depends_on = data_dict.get('dependson', {}).get('must', [])
@@ -371,6 +449,132 @@ def process_playbook(file_path):
     return res
 
 
+def process_classifier(file_path):
+    """
+    Process a classifier JSON file
+    Args:
+        file_path: The file path from Classifiers folder
+
+    Returns:
+        a list of classifier data.
+    """
+    res = []
+    if checked_type(file_path, (CLASSIFIER_REGEX, PACKS_CLASSIFIERS_REGEX)):
+        print("adding {} to id_set".format(file_path))
+        res.append(get_general_data(file_path))
+    return res
+
+
+def process_dashboards(file_path):
+    """
+    Process a dashboard JSON file
+    Args:
+        file_path: The file path from Dashboard folder
+
+    Returns:
+        a list of dashboard data.
+    """
+    res = []
+    if checked_type(file_path, (DASHBOARD_REGEX, PACKS_DASHBOARDS_REGEX)):
+        print("adding {} to id_set".format(file_path))
+        res.append(get_general_data(file_path))
+    return res
+
+def process_incidet_fields(file_path):
+    """
+    Process a incident_fields JSON file
+    Args:
+        file_path: The file path from incident field folder
+
+    Returns:
+        a list of incident field data.
+    """
+    res = []
+    if checked_type(file_path, (INCIDENT_FIELD_REGEX, PACKS_INCIDENT_FIELDS_REGEX)):
+        print("adding {} to id_set".format(file_path))
+        res.append(get_general_data(file_path))
+    return res
+
+
+def process_incident_types(file_path):
+    """
+    Process a incident_fields JSON file
+    Args:
+        file_path: The file path from incident field folder
+
+    Returns:
+        a list of incident field data.
+    """
+    res = []
+    if checked_type(file_path, (INCIDENT_TYPE_REGEX, PACKS_INCIDENT_TYPES_REGEX)):
+        print("adding {} to id_set".format(file_path))
+        res.append(get_general_data(file_path))
+    return res
+
+
+def process_indicator_fields(file_path):
+    """
+    Process a indicator fields JSON file
+    Args:
+        file_path: The file path from indicator field folder
+
+    Returns:
+        a list of indicator field data.
+    """
+    res = []
+    if checked_type(file_path, [INDICATOR_FIELDS_REGEX]):  #TODO: check why there's no pack INDICATOR TYPE REGEX
+        print("adding {} to id_set".format(file_path))
+        res.append(get_general_data(file_path))
+    return res
+
+
+def process_layouts(file_path):
+    """
+    Process a Layouts JSON file
+    Args:
+        file_path: The file path from layout folder
+
+    Returns:
+        a list of layout data.
+    """
+    res = []
+    if checked_type(file_path, (LAYOUT_REGEX, PACKS_LAYOUTS_REGEX)):
+        print("adding {} to id_set".format(file_path))
+        res.append(get_layout_data(file_path))
+    return res
+
+
+def process_reports(file_path):
+    """
+    Process a report JSON file
+    Args:
+        file_path: The file path from report folder
+
+    Returns:
+        a list of report data.
+    """
+    res = []
+    if checked_type(file_path, [REPORT_REGEX]): #TODO: check why no PACKS regex
+        print("adding {} to id_set".format(file_path))
+        res.append(get_general_data(file_path))
+    return res
+
+
+def process_widgets(file_path):
+    """
+    Process a widgets JSON file
+    Args:
+        file_path: The file path from widgets folder
+
+    Returns:
+        a list of widgets data.
+    """
+    res = []
+    if checked_type(file_path, [WIDGETS_REGEX, PACKS_WIDGETS_REGEX]):
+        print("adding {} to id_set".format(file_path))
+        res.append(get_general_data(file_path))
+    return res
+
 def process_test_playbook_path(file_path):
     """
     Process a yml file in the testplyabook dir. Maybe either a script or playbook
@@ -397,9 +601,9 @@ def process_test_playbook_path(file_path):
 
 def get_integrations_paths():
     path_list = [
-        ['Integrations', '*'],
-        ['Beta_Integrations', '*'],
-        ['Packs', '*', 'Integrations', '*']
+        ['../../Integrations', '*'],  ## TODO: remove ../../
+        ['../../Beta_Integrations', '*'],  ## TODO: remove ../../
+        ['../../Packs', '*', 'Integrations', '*']  ## TODO: remove ../../
     ]
     integration_files = list()
     for path in path_list:
@@ -408,23 +612,11 @@ def get_integrations_paths():
     return integration_files
 
 
-def get_scripts_paths():
-    path_list = [
-        ['Scripts', '*'],
-        ['Packs', '*', 'Scripts', '*']
-    ]
-    script_files = list()
-    for path in path_list:
-        script_files.extend(glob.glob(os.path.join(*path)))
-
-    return script_files
-
-
 def get_playbooks_paths():
     path_list = [
-        ['Playbooks', '*.yml'],
-        ['Packs', '*', 'Playbooks', '*.yml'],
-        ['Beta_Integrations', '*.yml']
+        ['../../Playbooks', '*.yml'],  #TODO: remove ../../
+        ['../../Packs', '*', 'Playbooks', '*.yml'], #TODO: remove ../../
+        ['../../Beta_Integrations', '*.yml']  #TODO: remove ../../
     ]
 
     playbook_files = list()
@@ -434,16 +626,16 @@ def get_playbooks_paths():
     return playbook_files
 
 
-def get_test_playbooks_paths():
+def get_general_paths(path, name_forpacks):
     path_list = [
-        ['TestPlaybooks', '*'],
-        ['Packs', '*', 'TestPlaybooks', '*.yml']
+        ['../../'+path, '*'], #TODO: remove ../../
+        ['../../Packs', '*', name_forpacks, '*'] #TODO: remove ../../
     ]
-    test_playbook_files = list()
+    files = list()
     for path in path_list:
-        test_playbook_files.extend(glob.glob(os.path.join(*path)))
+        files.extend(glob.glob(os.path.join(*path)))
 
-    return test_playbook_files
+    return files
 
 
 def re_create_id_set():
@@ -453,83 +645,163 @@ def re_create_id_set():
     integration_list = []
     testplaybooks_list = []
 
+    classifiers_list = []
+    dashboards_list = []
+    incident_fields_list = []
+    incident_type_list = []
+    indicator_fields_list = []
+    layouts_list = []
+    reports_list = []
+    widgets_list = []
+
     pool = Pool(processes=cpu_count() * 2)
 
     print_color("Starting the creation of the id_set", LOG_COLORS.GREEN)
     print_color("Starting iterating over Integrations", LOG_COLORS.GREEN)
-    for arr in pool.map(process_integration, get_integrations_paths()):
-        integration_list.extend(arr)
+##    for arr in pool.map(process_integration, get_integrations_paths()):
+##       integration_list.extend(arr)
 
-    print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
-    for arr in pool.map(process_playbook, get_playbooks_paths()):
-        playbooks_list.extend(arr)
+    # print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
+    # for arr in pool.map(process_playbook, get_playbooks_paths()):
+    #     playbooks_list.extend(arr)
+    #
+    # print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
+    # for arr in pool.map(process_script, get_general_paths(SCRIPTS_DIR, 'Scripts')):
+    #     scripts_list.extend(arr)
+    #
+    # print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
+    # for pair in pool.map(process_test_playbook_path, get_general_paths(TEST_PLAYBOOKS_DIR, 'TestPlaybooks')):
+    #     if pair[0]:
+    #         testplaybooks_list.append(pair[0])
+    #     if pair[1]:
+    #         scripts_list.append(pair[1])
 
-    print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
-    for arr in pool.map(process_script, get_scripts_paths()):
-        scripts_list.extend(arr)
+    print_color("Starting iterating over Classifiers", LOG_COLORS.GREEN)
+    for arr in pool.map(process_classifier, get_general_paths(CLASSIFIERS_DIR, 'Classifiers')):
+        #TODO: remove ../../ Debug here see if it works
+        classifiers_list.extend(arr)
 
-    print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
-    for pair in pool.map(process_test_playbook_path, get_test_playbooks_paths()):
-        if pair[0]:
-            testplaybooks_list.append(pair[0])
-        if pair[1]:
-            scripts_list.append(pair[1])
+    print_color("Starting iterating over Dashboards", LOG_COLORS.GREEN)
+    for arr in pool.map(process_dashboards, get_general_paths(DASHBOARDS_DIR, 'Dashboards')):
+        dashboards_list.extend(arr)
+
+    print_color("Starting iterating over Incident Fields", LOG_COLORS.GREEN)
+    for arr in pool.map(process_incidet_fields, get_general_paths(INCIDENT_FIELDS_DIR, 'IncidentFields')):
+        incident_fields_list.extend(arr)
+
+    print_color("Starting iterating over Incident Types", LOG_COLORS.GREEN)
+    for arr in pool.map(process_incident_types, get_general_paths(INCIDENT_TYPES_DIR, 'IncidentTypes')):
+        incident_type_list.extend(arr)
+
+    print_color("Starting iterating over Indicator Fields", LOG_COLORS.GREEN)
+    for arr in pool.map(process_indicator_fields, get_general_paths(INDICATOR_FIELDS_DIR, 'IndicatorFields')):
+        indicator_fields_list.extend(arr)
+
+    print_color("Starting iterating over Layouts", LOG_COLORS.GREEN)
+    for arr in pool.map(process_layouts, get_general_paths(LAYOUTS_DIR, 'Layouts')):
+        layouts_list.extend(arr)
+
+    print_color("Starting iterating over Reports", LOG_COLORS.GREEN)
+    for arr in pool.map(process_reports, get_general_paths(REPORTS_DIR, 'Reports')):
+        reports_list.extend(arr)
+
+    print_color("Starting iterating over Widgets", LOG_COLORS.GREEN)
+    for arr in pool.map(process_widgets, get_general_paths(WIDGETS_DIR, 'Widgets')):
+        widgets_list.extend(arr)
 
     new_ids_dict = OrderedDict()
     # we sort each time the whole set in case someone manually changed something
     # it shouldn't take too much time
-    new_ids_dict['scripts'] = sort(scripts_list)
-    new_ids_dict['playbooks'] = sort(playbooks_list)
-    new_ids_dict['integrations'] = sort(integration_list)
+    new_ids_dict['Scripts'] = sort(scripts_list)
+    new_ids_dict['Playbooks'] = sort(playbooks_list)
+    new_ids_dict['Integrations'] = sort(integration_list)
     new_ids_dict['TestPlaybooks'] = sort(testplaybooks_list)
+    new_ids_dict['Classifiers'] = sort(classifiers_list)
+    new_ids_dict['Dashboards'] = sort(dashboards_list)
+    new_ids_dict['IncidentFields'] = sort(incident_fields_list)
+    new_ids_dict['IncidentTypes'] = sort(incident_type_list)
+    new_ids_dict['IndicatorFields'] = sort(indicator_fields_list)
+    new_ids_dict['Layouts'] = sort(layouts_list)
+    new_ids_dict['Reports'] = sort(reports_list)
+    new_ids_dict['Widgets'] = sort(widgets_list)
 
-    with open('./Tests/id_set.json', 'w') as id_set_file:
+    with open('../id_set.json', 'w') as id_set_file: #TODO: change back to ./Tests/id_set.json
         json.dump(new_ids_dict, id_set_file, indent=4)
     exec_time = time.time() - start_time
     print_color("Finished the creation of the id_set. Total time: {} seconds".format(exec_time), LOG_COLORS.GREEN)
 
-    duplicates = find_duplicates(new_ids_dict)
+    duplicates = find_duplicates(new_ids_dict) ## TODO: make sure this checks duplicates for new things
     if any(duplicates):
         print_error('The following duplicates were found: {}'.format(duplicates))
 
 
 def find_duplicates(id_set):
-    scripts = id_set['scripts']
+    print_color("Checking diff for Scripts", LOG_COLORS.GREEN)
+    scripts = id_set['Scripts']
     script_ids = set(list(script.keys())[0] for script in scripts)
 
     scripts_list = []
     for script_id in script_ids:
-        if has_duplicate(scripts, script_id):
+        if has_duplicate(scripts, script_id, 'Scripts'):
             scripts_list.append(script_id)
 
-    integrations = id_set['integrations']
+    print_color("Checking diff for Integrations", LOG_COLORS.GREEN)
+    integrations = id_set['Integrations']
     integration_ids = set(list(integration.keys())[0] for integration in integrations)
 
     integration_list = []
     for integration_id in integration_ids:
-        if has_duplicate(integrations, integration_id):
+        if has_duplicate(integrations, integration_id, 'Integrations'):
             integration_list.append(integration_id)
 
-    playbooks = id_set['playbooks']
+    print_color("Checking diff for Playbooks", LOG_COLORS.GREEN)
+    playbooks = id_set['Playbooks']
     playbook_ids = set(list(playbook.keys())[0] for playbook in playbooks)
 
     playbooks_list = []
     for playbook_id in playbook_ids:
-        if has_duplicate(playbooks, playbook_id):
+        if has_duplicate(playbooks, playbook_id, 'Playbooks'):
             integration_list.append(playbook_id)
 
+    print_color("Checking diff for Test Playbooks", LOG_COLORS.GREEN)
     test_playbooks = id_set['TestPlaybooks']
     test_playbook_ids = set(list(test_playbook.keys())[0] for test_playbook in test_playbooks)
 
     test_playbooks_list = []
     for test_playbook_id in test_playbook_ids:
-        if has_duplicate(test_playbooks, test_playbook_id):
+        if has_duplicate(test_playbooks, test_playbook_id, 'Test Playbooks'):
             test_playbooks_list.append(test_playbook_id)
+
+    lists_to_return = [scripts_list, integration_list, playbooks_list, test_playbooks_list]
+
+    objects_to_check = ['Classifiers', 'Dashboards', 'IncidentFields', 'IndicatorFields',
+                        'Layouts', 'Reports', 'Widgets']
+    for object_type in objects_to_check:
+        print_color("Checking diff for {}".format(object_type), LOG_COLORS.GREEN)
+        objects = id_set.get(object_type)
+        ids = set(list(specific_item.keys())[0] for specific_item in objects)
+
+        dup_list = []
+        for id_to_check in ids:
+            if has_duplicate(objects, id_to_check, object_type):
+                dup_list.append(id_to_check)
+        lists_to_return.append(dup_list)
+
+    print_color("Checking diff for Incident and Idicator Fields", LOG_COLORS.GREEN)
+
+    fields = id_set['IncidentFields'] + id_set['IndicatorFields']
+    field_ids = set(list(field.keys())[0] for field in fields)
+
+    field_list = []
+    for field_to_check in field_ids:
+        if has_duplicate(fields, field_to_check, 'Indicator and Incident Fields'):
+            field_list.append(field_to_check)
+    lists_to_return.append(field_list)
 
     return scripts_list, integration_list, playbooks_list, test_playbooks_list
 
 
-def has_duplicate(id_set, id_to_check):
+def has_duplicate(id_set, id_to_check, object_type=None):
     duplicates = [duplicate for duplicate in id_set if duplicate.get(id_to_check)]
 
     if len(duplicates) < 2:
@@ -544,8 +816,8 @@ def has_duplicate(id_set, id_to_check):
         dict2_to_version = LooseVersion(dict2.get('toversion', '99.99.99'))
 
         if dict1['name'] != dict2['name']:
-            print_warning('The following objects has the same ID but different names: '
-                          '"{}", "{}".'.format(dict1['name'], dict2['name']))
+            print_warning('The following {} have the same ID but different names: '
+                          '"{}", "{}".'.format(object_type, dict1['name'], dict2['name']))
 
         # A: 3.0.0 - 3.6.0
         # B: 3.5.0 - 4.5.0
