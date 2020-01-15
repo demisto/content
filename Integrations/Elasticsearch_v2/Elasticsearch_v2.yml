@@ -80,6 +80,26 @@ configuration:
   name: expirationInterval
   required: false
   type: 1
+- display: Bypass exclusion list
+  name: bypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Mark As Reputation
+  name: feedInstanceReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
 - display: Fetch indicators
   name: feed
   required: false

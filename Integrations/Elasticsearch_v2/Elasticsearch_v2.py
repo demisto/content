@@ -525,16 +525,19 @@ def get_indicators_command():
         i += 1
         if i >= limit:
             break
-    hr = tableToMarkdown('Indicators', indicators_list, ['value'])
+    hr = tableToMarkdown('Indicators', indicators_list, ['name'])
     return_outputs(hr, {'ElasticsearchFeed.SharedIndicators': indicators_list}, indicators_list)
 
 
 def fetch_indicators_command():
     search, now = get_indicators_search_scan()
+    ioc_lst = []
     for hit in search.scan():
         ioc = results_to_indicator(hit)
-         if ioc:
-            demisto.createIndicators([ioc])
+        if ioc:
+            ioc_lst.append(ioc)
+    if ioc_lst:
+        demisto.createIndicators(ioc_lst)
     demisto.setLastRun(now)
 
 
@@ -546,7 +549,7 @@ def get_indicators_search_scan():
     query = QueryString(query=time_field + ":*")
     tenant_hash = demisto.getIndexHash()
     # all shared indexes minus this tenant shared
-    indexes = f'*-shared*,-asdsad*-shared*'
+    indexes = f'*-shared*,-{tenant_hash}*-shared*'
     search = Search(using=es, index=indexes).filter({'range': {time_field: {'gt': last_fetch, 'lte': now}}}).query(
         query)
     return search, now
