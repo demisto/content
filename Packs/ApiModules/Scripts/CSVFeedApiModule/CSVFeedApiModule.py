@@ -74,7 +74,7 @@ class Client(BaseClient):
 
         return r.prepare()
 
-    def build_iterator(self):
+    def build_iterator(self, **kwargs):
         results = []
         urls = self._base_url
         if not isinstance(urls, list):
@@ -85,16 +85,16 @@ class Client(BaseClient):
             prepreq = self._build_request(url)
 
             # this is to honour the proxy environment variables
-            rkwargs = _session.merge_environment_settings(
+            kwargs.update(_session.merge_environment_settings(
                 prepreq.url,
                 {}, None, None, None  # defaults
-            )
-            rkwargs['stream'] = True
-            rkwargs['verify'] = self._verify
-            rkwargs['timeout'] = self.polling_timeout
+            ))
+            kwargs['stream'] = True
+            kwargs['verify'] = self._verify
+            kwargs['timeout'] = self.polling_timeout
 
             try:
-                r = _session.send(prepreq, **rkwargs)
+                r = _session.send(prepreq, **kwargs)
             except requests.ConnectionError:
                 raise requests.ConnectionError('Failed to establish a new connection.'
                                                ' Please make sure your URL is valid.')
@@ -131,8 +131,8 @@ def module_test_command(client, args):
     return_error('Please provide a column named "indicator" in fieldnames')
 
 
-def fetch_indicators_command(client, itype):
-    iterator = client.build_iterator()
+def fetch_indicators_command(client, itype, **kwargs):
+    iterator = client.build_iterator(**kwargs)
     indicators = []
     for item in iterator:
         raw_json = dict(item)
@@ -156,12 +156,11 @@ def get_indicators_command(client, args):
     indicators_list = fetch_indicators_command(client, itype)
     entry_result = camelize(indicators_list[:limit])
     hr = tableToMarkdown('Indicators', entry_result, headers=['Value', 'Type', 'Rawjson'])
-    feed_name = args.get('feed_name', 'CSV')
-    return hr, {f'{feed_name}.Indicator': entry_result}, indicators_list
+    feed_name_context = args.get('feed_name', 'CSV').replace(' ', '')
+    return hr, {f'{feed_name_context}.Indicator': entry_result}, indicators_list
 
 
-def feed_main(feed_name):
-    params = {k: v for k, v in demisto.params().items() if v is not None}
+def feed_main(feed_name, params):
     handle_proxy()
     client = Client(**params)
     command = demisto.command()
