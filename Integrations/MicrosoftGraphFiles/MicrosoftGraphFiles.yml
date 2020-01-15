@@ -357,6 +357,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
+      description: MS Graph resource.
       isArray: false
       name: object_type
       predefined:
@@ -367,21 +368,25 @@ script:
       required: true
       secret: false
     - default: false
+      description: MS Graph resource id.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
+      description: Ms Graph item_id.
       isArray: false
       name: item_id
       required: false
       secret: false
     - default: false
+      description: Sets the page size of results.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
+      description: The URL for the next results page.
       isArray: false
       name: next_page_url
       required: false
@@ -434,6 +439,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Returns a list of the tenant Sites
     execution: false
     name: msgraph-list-tenant-sites
     outputs:
@@ -464,6 +470,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
+      description: MS Graph resource.
       isArray: false
       name: object_type
       predefined:
@@ -474,16 +481,19 @@ script:
       required: true
       secret: false
     - default: false
+      description: MS Graph resource id.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
+      description: Ms Graph item_id.
       isArray: false
       name: item_id
       required: true
       secret: false
     deprecated: false
+    description: Download the contents of the file of a DriveItem.
     execution: false
     name: msgraph-download-file
     outputs:
