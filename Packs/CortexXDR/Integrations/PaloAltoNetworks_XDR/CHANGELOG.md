@@ -3,10 +3,14 @@
     - ***xdr-isolate-endpoint***
     - ***xdr-unisolate-endpoint***
     - ***xdr-get-endpoints***
-    - ***xdr-insert-single-alert***
+    - ***xdr-insert-parsed-alert***
     - ***xdr-insert-cef-alerts***
     - ***xdr-get-audit-management-logs***
     - ***xdr-get-audit-agent-reports***
+    - ***xdr-get-distribution-versions***
+    - ***xdr-get-distribution-url***
+    - ***xdr-get-create-distribution-status***
+    - ***xdr-create-distribution***
     
 
 ## [19.9.0] - 2019-09-04

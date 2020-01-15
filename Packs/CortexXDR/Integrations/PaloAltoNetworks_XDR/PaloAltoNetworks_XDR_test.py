@@ -123,8 +123,8 @@ def test_get_endpoints(requests_mock):
     assert expected_output == outputs
 
 
-def test_insert_single_alert(requests_mock):
-    from PaloAltoNetworks_XDR import insert_single_alert_command, Client
+def test_insert_parsed_alert(requests_mock):
+    from PaloAltoNetworks_XDR import insert_parsed_alert_command, Client
 
     insert_alerts_response = load_test_data('./test_data/create_alerts.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/insert_parsed_alerts/', json=insert_alerts_response)
@@ -145,7 +145,7 @@ def test_insert_single_alert(requests_mock):
         "alert_description": "Alert Description"
     }
 
-    readable_output, outputs, _ = insert_single_alert_command(client, args)
+    readable_output, outputs, _ = insert_parsed_alert_command(client, args)
     assert outputs is None
     assert readable_output == 'Alert inserted successfully'
 

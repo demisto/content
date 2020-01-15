@@ -639,13 +639,12 @@ script:
       successfully in related incidents and views. You can send 600 alerts per minute. Each request can contain a
       maximum of 60 alerts.
     execution: false
-    name: xdr-insert-single-alert
+    name: xdr-insert-parsed-alert
   - arguments:
     - default: false
-      description: Comma-separated list of alerts in CEF format. Supports list of
-        alerts.
+      description: List of alerts in CEF format.
       isArray: true
-      name: alerts
+      name: cef_alerts
       required: true
       secret: false
     deprecated: false
@@ -1027,7 +1026,7 @@ script:
     deprecated: false
     description: Check the status of the installation package.
     execution: false
-    name: xdr-get-distribution-status
+    name: xdr-get-create-distribution-status
     outputs:
     - contextPath: PaloAltoNetworksXDR.Distribution.id
       description: Distribution ID

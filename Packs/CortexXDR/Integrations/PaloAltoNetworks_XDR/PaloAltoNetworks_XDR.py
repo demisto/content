@@ -854,7 +854,7 @@ def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote
     return alert
 
 
-def insert_single_alert_command(client, args):
+def insert_parsed_alert_command(client, args):
     product = args.get('product')
     vendor = args.get('vendor')
     local_ip = args.get('local_ip')
@@ -901,7 +901,21 @@ def insert_single_alert_command(client, args):
 
 
 def insert_cef_alerts_command(client, args):
-    alerts = argToList(args.get('cef_alerts'))
+    # parsing alerts list. the reason we don't use argToList is because cef_alerts could contain comma (,) so
+    # we shouldn't split them by comma
+    alerts = args.get('cef_alerts')
+    if isinstance(alerts, list):
+        pass
+    elif isinstance(alerts, str):
+        if alerts[0] == '[' and alerts[-1] == ']':
+            # if the string contains [] it means it is a list and must be parsed
+            alerts = json.loads(alerts)
+        else:
+            # otherwise it is a single alert
+            alerts = [alerts]
+    else:
+        raise ValueError('Invalid argument "cef_alerts". It should be either list of strings (cef alerts), '
+                         'or single string')
 
     client.insert_cef_alerts(alerts)
 
@@ -974,12 +988,12 @@ def arg_to_timestamp(arg, arg_name: str, required: bool = False):
         return int(arg)
     elif isinstance(arg, str):
         # if the arg is string of date format 2019-10-23T00:00:00 or "3 days", etc
-        d = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'}).timestamp() * 1000
+        d = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
         if d is None:
             # if d is None it means dateparser failed to parse it
             raise ValueError(f'Invalid date: {arg_name}')
 
-        return d
+        return int(d.timestamp() * 1000)
     elif isinstance(arg, (int, float)):
         return arg
 
@@ -1173,8 +1187,11 @@ def create_distribution_command(client, args):
     name = args.get('name')
     platform = args.get('platform')
     package_type = args.get('package_type')
-    agent_version = args.get('agent_version')
     description = args.get('description')
+    agent_version = args.get('agent_version')
+    if not platform == 'android' and not agent_version:
+        # agent_version must be provided for all the platforms except android
+        raise ValueError(f'Missing argument "agent_version" for platform "{platform}"')
 
     distribution_id = client.create_distribution(
         name=name,
@@ -1290,8 +1307,8 @@ def main():
         elif demisto.command() == 'xdr-get-endpoints':
             return_outputs(*get_endpoints_command(client, demisto.args()))
 
-        elif demisto.command() == 'xdr-insert-single-alert':
-            return_outputs(*insert_single_alert_command(client, demisto.args()))
+        elif demisto.command() == 'xdr-insert-parsed-alert':
+            return_outputs(*insert_parsed_alert_command(client, demisto.args()))
 
         elif demisto.command() == 'xdr-insert-cef-alerts':
             return_outputs(*insert_cef_alerts_command(client, demisto.args()))
@@ -1305,7 +1322,7 @@ def main():
         elif demisto.command() == 'xdr-get-distribution-url':
             return_outputs(*get_distribution_url_command(client, demisto.args()))
 
-        elif demisto.command() == 'xdr-get-distribution-status':
+        elif demisto.command() == 'xdr-get-create-distribution-status':
             return_outputs(*get_distribution_status_command(client, demisto.args()))
 
         elif demisto.command() == 'xdr-get-distribution-versions':
@@ -1325,7 +1342,8 @@ def main():
             LOG(str(e))
             raise
         else:
-            raise
+            demisto.error()
+            return_error(str(e))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

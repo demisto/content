@@ -236,8 +236,8 @@ tasks:
     task:
       id: 641203bd-5db1-4534-843f-26ade782eff4
       version: -1
-      name: xdr-insert-single-alert
-      script: '|||xdr-insert-single-alert'
+      name: xdr-insert-parsed-alert
+      script: '|||xdr-insert-parsed-alert'
       type: regular
       iscommand: true
       brand: ''
@@ -678,8 +678,8 @@ tasks:
     task:
       id: 071926f6-3a06-4c3f-8b24-c6952641bbf4
       version: -1
-      name: xdr-get-distribution-status
-      script: '|||xdr-get-distribution-status'
+      name: xdr-get-create-distribution-status
+      script: '|||xdr-get-create-distribution-status'
       type: regular
       iscommand: true
       brand: ''
