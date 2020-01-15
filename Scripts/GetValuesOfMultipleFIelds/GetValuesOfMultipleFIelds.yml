@@ -26,7 +26,6 @@ comment: |-
 enabled: true
 timeout: '0'
 type: python
-display: GetValuesOfMultipleFields
 fromversion: 4.5.0
 tests:
   - GetValuesOfMultipleFields test
