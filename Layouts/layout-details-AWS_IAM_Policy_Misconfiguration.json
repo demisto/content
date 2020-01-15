@@ -695,7 +695,7 @@
 		],
 		"typeId": "AWS IAM Policy Misconfiguration",
 		"vcShouldIgnore": false,
-		"version": 3
+		"version": -1
 	},
 	"typeId": "AWS IAM Policy Misconfiguration",
 	"version": -1
