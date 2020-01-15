@@ -10,17 +10,14 @@ from multiprocessing import Pool, cpu_count
 from distutils.version import LooseVersion
 import time
 import sys
-
-
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
-sys.path.append(CONTENT_DIR)
-
 from Tests.scripts.constants import *  # noqa: E402
 from Tests.test_utils import get_yaml, get_json, get_to_version, get_from_version, collect_ids,\
     get_script_or_integration_id, get_pack_name, LOG_COLORS, print_color,\
     run_command, print_error, print_warning  # noqa: E402
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+sys.path.append(CONTENT_DIR)
 
 CHECKED_TYPES_REGEXES = (
     # Integrations
@@ -43,7 +40,6 @@ CHECKED_TYPES_REGEXES = (
 
 
 def checked_type(file_path, regex_list=CHECKED_TYPES_REGEXES):
-    file_path = file_path[6:]  #TODO: remove this
     for regex in regex_list:
         if re.match(regex, file_path, re.IGNORECASE):
             return True
@@ -245,8 +241,8 @@ def get_layout_data(path):
     layout = json_data.get('layout')
     name = layout.get('name', '-')
     id = layout.get('id', '-')
-    typeID = json_data.get('typeId') #TODO: make sure this is the ID
-    typeName = json_data.get('TypeName') #TODO: make sure this is the name
+    typeID = json_data.get('typeId')
+    typeName = json_data.get('TypeName')
     fromversion = json_data.get('fromVersion')
     toversion = json_data.get('toVersion')
     pack = get_pack_name(path)
@@ -601,9 +597,9 @@ def process_test_playbook_path(file_path):
 
 def get_integrations_paths():
     path_list = [
-        ['../../Integrations', '*'],  ## TODO: remove ../../
-        ['../../Beta_Integrations', '*'],  ## TODO: remove ../../
-        ['../../Packs', '*', 'Integrations', '*']  ## TODO: remove ../../
+        ['Integrations', '*'],
+        ['Beta_Integrations', '*'],
+        ['Packs', '*', 'Integrations', '*']
     ]
     integration_files = list()
     for path in path_list:
@@ -614,9 +610,9 @@ def get_integrations_paths():
 
 def get_playbooks_paths():
     path_list = [
-        ['../../Playbooks', '*.yml'],  #TODO: remove ../../
-        ['../../Packs', '*', 'Playbooks', '*.yml'], #TODO: remove ../../
-        ['../../Beta_Integrations', '*.yml']  #TODO: remove ../../
+        ['Playbooks', '*.yml'],
+        ['Packs', '*', 'Playbooks', '*.yml'],
+        ['Beta_Integrations', '*.yml']
     ]
 
     playbook_files = list()
@@ -628,8 +624,8 @@ def get_playbooks_paths():
 
 def get_general_paths(path, name_forpacks):
     path_list = [
-        ['../../'+path, '*'], #TODO: remove ../../
-        ['../../Packs', '*', name_forpacks, '*'] #TODO: remove ../../
+        [path, '*'], #
+        ['Packs', '*', name_forpacks, '*']
     ]
     files = list()
     for path in path_list:
@@ -658,27 +654,26 @@ def re_create_id_set():
 
     print_color("Starting the creation of the id_set", LOG_COLORS.GREEN)
     print_color("Starting iterating over Integrations", LOG_COLORS.GREEN)
-##    for arr in pool.map(process_integration, get_integrations_paths()):
-##       integration_list.extend(arr)
+   for arr in pool.map(process_integration, get_integrations_paths()):
+      integration_list.extend(arr)
 
-    # print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
-    # for arr in pool.map(process_playbook, get_playbooks_paths()):
-    #     playbooks_list.extend(arr)
-    #
-    # print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
-    # for arr in pool.map(process_script, get_general_paths(SCRIPTS_DIR, 'Scripts')):
-    #     scripts_list.extend(arr)
-    #
-    # print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
-    # for pair in pool.map(process_test_playbook_path, get_general_paths(TEST_PLAYBOOKS_DIR, 'TestPlaybooks')):
-    #     if pair[0]:
-    #         testplaybooks_list.append(pair[0])
-    #     if pair[1]:
-    #         scripts_list.append(pair[1])
+    print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
+    for arr in pool.map(process_playbook, get_playbooks_paths()):
+        playbooks_list.extend(arr)
+
+    print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
+    for arr in pool.map(process_script, get_general_paths(SCRIPTS_DIR, 'Scripts')):
+        scripts_list.extend(arr)
+
+    print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
+    for pair in pool.map(process_test_playbook_path, get_general_paths(TEST_PLAYBOOKS_DIR, 'TestPlaybooks')):
+        if pair[0]:
+            testplaybooks_list.append(pair[0])
+        if pair[1]:
+            scripts_list.append(pair[1])
 
     print_color("Starting iterating over Classifiers", LOG_COLORS.GREEN)
     for arr in pool.map(process_classifier, get_general_paths(CLASSIFIERS_DIR, 'Classifiers')):
-        #TODO: remove ../../ Debug here see if it works
         classifiers_list.extend(arr)
 
     print_color("Starting iterating over Dashboards", LOG_COLORS.GREEN)
@@ -725,12 +720,12 @@ def re_create_id_set():
     new_ids_dict['Reports'] = sort(reports_list)
     new_ids_dict['Widgets'] = sort(widgets_list)
 
-    with open('../id_set.json', 'w') as id_set_file: #TODO: change back to ./Tests/id_set.json
+    with open('./Tests/id_set.json', 'w') as id_set_file:
         json.dump(new_ids_dict, id_set_file, indent=4)
     exec_time = time.time() - start_time
     print_color("Finished the creation of the id_set. Total time: {} seconds".format(exec_time), LOG_COLORS.GREEN)
 
-    duplicates = find_duplicates(new_ids_dict) ## TODO: make sure this checks duplicates for new things
+    duplicates = find_duplicates(new_ids_dict)
     if any(duplicates):
         print_error('The following duplicates were found: {}'.format(duplicates))
 
