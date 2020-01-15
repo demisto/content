@@ -3,7 +3,8 @@ commonfields:
   id: Microsoft_Graph_Files
   version: -1
 configuration:
-- display: Server URL
+- defaultvalue: https://graph.microsoft.com
+  display: Server URL
   name: host
   required: true
   type: 0
@@ -28,7 +29,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'Integration description: Microsoft Graph lets your app get authorized
+description: 'Integration description: Microsoft Graph lets your app get an authorized
   access to files in OneDrive, SharePoint and MS Teams across all organization. (requires
   admin consent).'
 display: Microsoft Graph Files
@@ -38,6 +39,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
+      description: MS Graph resource.
       isArray: true
       name: object_type
       predefined:
@@ -48,6 +50,7 @@ script:
       required: true
       secret: false
     - default: false
+      description: MS Graph resource id.
       isArray: false
       name: object_type_id
       predefined:
@@ -55,11 +58,13 @@ script:
       required: true
       secret: false
     - default: false
+      description: Ms Graph item_id.
       isArray: false
       name: item_id
       required: true
       secret: false
     deprecated: false
+    description: Delete a DriveItem by using its ID
     execution: false
     name: msgraph-delete-file
     outputs:
@@ -68,6 +73,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
+      description: MS Graph resource.
       isArray: false
       name: object_type
       predefined:
@@ -78,27 +84,31 @@ script:
       required: true
       secret: false
     - default: false
-      description: id of object type
+      description: MS Graph resource id.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
+      description: An ID of the folder to upload the file to.
       isArray: false
       name: parent_id
       required: true
       secret: false
     - default: false
+      description: the file name for the uploaded file.
       isArray: false
       name: file_name
       required: true
       secret: false
     - default: false
+      description: Desmito entry ID of the file
       isArray: false
       name: entry_id
       required: true
       secret: false
     deprecated: false
+    description: Uploads a file from Demisto to MS Graph resource
     execution: false
     name: msgraph-upload-new-file
     outputs:
@@ -476,4 +486,4 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- test_MsGraphFiles
