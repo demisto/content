@@ -3201,7 +3201,7 @@ There are no context output for this command.
 <h5>Human Readable Output</h5>
 <p>
 </p>
-<h3 id="mimecast-update-policy">5. mimecast-update-policy</h3>
+<h3 id="mimecast-update-policy">28. mimecast-update-policy</h3>
 <hr>
 <p>update policy</p>
 <h5>Base Command</h5>
