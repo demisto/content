@@ -1575,14 +1575,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: Policy Description
+      description: Policy description
       isArray: false
       name: description
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Blocked Sender type. *Most times you will have to change fromValue
+      description: Blocked Sender type. Most times you will have to change fromValue
         according to fromType
       isArray: false
       name: fromType
@@ -1600,7 +1600,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Blocked Receiver type. *Most times you will have to change fromValue
+      description: Blocked Receiver type. Most times you will have to change fromValue
         according to fromType
       isArray: false
       name: toType
@@ -1624,13 +1624,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Blocked Sender value. *fromValue depends on fromType
+      description: Blocked Sender value. FromValue depends on fromType
       isArray: false
       name: fromValue
       required: false
       secret: false
     - default: false
-      description: Blocked Receiver value. *toValue depends on toType
+      description: Blocked Receiver value. ToValue depends on toType
       isArray: false
       name: toValue
       required: false
@@ -1647,7 +1647,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: update policy
+    description: Update policy
     execution: false
     name: mimecast-update-policy
     outputs:
