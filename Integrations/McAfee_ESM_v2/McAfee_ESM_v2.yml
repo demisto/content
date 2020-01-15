@@ -221,31 +221,31 @@ script:
     execution: false
     name: esm-fetch-alarms
     outputs:
-    - contextPath: Alarm.ID
+    - contextPath: McAfeeESM.Alarm.ID
       description: Alarm ID
       type: number
-    - contextPath: Alarm.summary
+    - contextPath: McAfeeESM.Alarm.summary
       description: Alarm summary
       type: string
-    - contextPath: Alarm.assignee
+    - contextPath: McAfeeESM.Alarm.assignee
       description: Alarm assignee
       type: string
-    - contextPath: Alarm.severity
+    - contextPath: McAfeeESM.Alarm.severity
       description: Alarm severity
       type: number
-    - contextPath: Alarm.triggeredDate
+    - contextPath: McAfeeESM.Alarm.triggeredDate
       description: Alarm triggered date
       type: date
-    - contextPath: Alarm.acknowledgedDate
+    - contextPath: McAfeeESM.Alarm.acknowledgedDate
       description: Alarm acknowledged date
       type: date
-    - contextPath: Alarm.acknowledgedUsername
+    - contextPath: McAfeeESM.Alarm.acknowledgedUsername
       description: Alarm acknowledged username
       type: string
-    - contextPath: Alarm.alarmName
+    - contextPath: McAfeeESM.Alarm.alarmName
       description: Alarm name
       type: string
-    - contextPath: Alarm.conditionType
+    - contextPath: McAfeeESM.Alarm.conditionType
       description: Alarm condition type
       type: number
   - arguments:
@@ -261,19 +261,19 @@ script:
     execution: false
     name: esm-get-case-list
     outputs:
-    - contextPath: Case.ID
+    - contextPath: McAfeeESM.Case.ID
       description: The ID of the case
       type: number
-    - contextPath: Case.Summary
+    - contextPath: McAfeeESM.Case.Summary
       description: The summary of the case
       type: string
-    - contextPath: Case.Status
+    - contextPath: McAfeeESM.Case.Status
       description: The status of the case
       type: string
-    - contextPath: Case.OpenTime
+    - contextPath: McAfeeESM.Case.OpenTime
       description: The open time of the case
       type: date
-    - contextPath: Case.Severity
+    - contextPath: McAfeeESM.Case.Severity
       description: The severity of the case
       type: number
   - arguments:
@@ -317,31 +317,31 @@ script:
     execution: false
     name: esm-add-case
     outputs:
-    - contextPath: Case.ID
+    - contextPath: McAfeeESM.Case.ID
       description: The ID of the case
       type: number
-    - contextPath: Case.Summary
+    - contextPath: McAfeeESM.Case.Summary
       description: The summary of the case
       type: string
-    - contextPath: Case.Status
+    - contextPath: McAfeeESM.Case.Status
       description: The status of the case
       type: string
-    - contextPath: Case.OpenTime
+    - contextPath: McAfeeESM.Case.OpenTime
       description: The open time of the case
       type: date
-    - contextPath: Case.Severity
+    - contextPath: McAfeeESM.Case.Severity
       description: The severity of the case
       type: number
-    - contextPath: Case.Assignee
+    - contextPath: McAfeeESM.Case.Assignee
       description: The Assignee of the case
       type: string
-    - contextPath: Case.Organization
+    - contextPath: McAfeeESM.Case.Organization
       description: The organization of the case
       type: string
-    - contextPath: Case.EventList
+    - contextPath: McAfeeESM.Case.EventList
       description: List of case's events
       type: Unknown
-    - contextPath: Case.Notes
+    - contextPath: McAfeeESM.Case.Notes
       description: List of case's notes
       type: Unknown
   - arguments:
@@ -388,31 +388,31 @@ script:
     execution: false
     name: esm-edit-case
     outputs:
-    - contextPath: Case.ID
+    - contextPath: McAfeeESM.Case.ID
       description: The ID of the case
       type: number
-    - contextPath: Case.Summary
+    - contextPath: McAfeeESM.Case.Summary
       description: The summary of the case
       type: string
-    - contextPath: Case.Status
+    - contextPath: McAfeeESM.Case.Status
       description: The status of the case
       type: string
-    - contextPath: Case.OpenTime
+    - contextPath: McAfeeESM.Case.OpenTime
       description: The open time of the case
       type: date
-    - contextPath: Case.Severity
+    - contextPath: McAfeeESM.Case.Severity
       description: The severity of the case
       type: number
-    - contextPath: Case.Assignee
+    - contextPath: McAfeeESM.Case.Assignee
       description: The Assignee of the case
       type: string
-    - contextPath: Case.Organization
+    - contextPath: McAfeeESM.Case.Organization
       description: The organization of the case
       type: string
-    - contextPath: Case.EventList
+    - contextPath: McAfeeESM.Case.EventList
       description: List of case's events
       type: Unknown
-    - contextPath: Case.Notes
+    - contextPath: McAfeeESM.Case.Notes
       description: List of case's notes
       type: Unknown
   - deprecated: false
@@ -458,31 +458,31 @@ script:
     execution: false
     name: esm-get-case-detail
     outputs:
-    - contextPath: Case.ID
+    - contextPath: McAfeeESM.Case.ID
       description: The ID of the case
       type: number
-    - contextPath: Case.Summary
+    - contextPath: McAfeeESM.Case.Summary
       description: The summary of the case
       type: string
-    - contextPath: Case.Status
+    - contextPath: McAfeeESM.Case.Status
       description: The status of the case
       type: string
-    - contextPath: Case.OpenTime
+    - contextPath: McAfeeESM.Case.OpenTime
       description: The open time of the case
       type: date
-    - contextPath: Case.Severity
+    - contextPath: McAfeeESM.Case.Severity
       description: The severity of the case
       type: number
-    - contextPath: Case.Assignee
+    - contextPath: McAfeeESM.Case.Assignee
       description: The Assignee of the case
       type: string
-    - contextPath: Case.Organization
+    - contextPath: McAfeeESM.Case.Organization
       description: The organization of the case
       type: string
-    - contextPath: Case.EventList
+    - contextPath: McAfeeESM.Case.EventList
       description: List of case's events
       type: Unknown
-    - contextPath: Case.Notes
+    - contextPath: McAfeeESM.Case.Notes
       description: List of case's notes
       type: Unknown
   - arguments:
@@ -497,13 +497,13 @@ script:
     execution: false
     name: esm-get-case-event-list
     outputs:
-    - contextPath: CaseEvents.ID
+    - contextPath: McAfeeESM.CaseEvent.ID
       description: The ID of the event
       type: string
-    - contextPath: CaseEvents.LastTime
+    - contextPath: McAfeeESM.CaseEvent.LastTime
       description: The last updated time of the event
       type: date
-    - contextPath: CaseEvents.Message
+    - contextPath: McAfeeESM.CaseEvent.Message
       description: The massage of the event
       type: string
   - arguments:
@@ -544,10 +544,10 @@ script:
     execution: false
     name: esm-get-organization-list
     outputs:
-    - contextPath: Organizations.ID
+    - contextPath: McAfeeESM.Organization.ID
       description: Organization ID
       type: number
-    - contextPath: Organizations.Name
+    - contextPath: McAfeeESM.Organization.Name
       description: Organization Name
       type: string
   - deprecated: false
@@ -555,22 +555,22 @@ script:
     execution: false
     name: esm-get-user-list
     outputs:
-    - contextPath: EsmUser.ID
+    - contextPath: McAfeeESM.User.ID
       description: the ID of the user
       type: number
-    - contextPath: EsmUser.Name
+    - contextPath: McAfeeESM.User.Name
       description: the esm user name
       type: string
-    - contextPath: EsmUser.Email
+    - contextPath: McAfeeESM.User.Email
       description: the e-mail of the user
       type: string
-    - contextPath: EsmUser.SMS
+    - contextPath: McAfeeESM.User.SMS
       description: the SMS details of the user
       type: string
-    - contextPath: EsmUser.IsMaster
+    - contextPath: McAfeeESM.User.IsMaster
       description: whether the user is a master user
       type: boolean
-    - contextPath: EsmUser.IsAdmin
+    - contextPath: McAfeeESM.User.IsAdmin
       description: whether the user is an admin
       type: boolean
   - arguments:
@@ -620,61 +620,61 @@ script:
     execution: false
     name: esm-get-alarm-event-details
     outputs:
-    - contextPath: EsmAlarmEvent.ID
+    - contextPath: McAfeeESM.AlarmEvent.ID
       description: Event ID
       type: string
-    - contextPath: EsmAlarmEvent.SubType
+    - contextPath: McAfeeESM.AlarmEvent.SubType
       description: Event Type
       type: string
-    - contextPath: EsmAlarmEvent.Severity
+    - contextPath: McAfeeESM.AlarmEvent.Severity
       description: Event Severity
       type: number
-    - contextPath: EsmAlarmEvent.Message
+    - contextPath: McAfeeESM.AlarmEvent.Message
       description: Event Message
       type: string
-    - contextPath: EsmAlarmEvent.LastTime
+    - contextPath: McAfeeESM.AlarmEvent.LastTime
       description: Event Time
       type: date
-    - contextPath: EsmAlarmEvent.SrcIP
+    - contextPath: McAfeeESM.AlarmEvent.SrcIP
       description: Source IP of the event
       type: string
-    - contextPath: EsmAlarmEvent.DstIP
+    - contextPath: McAfeeESM.AlarmEvent.DstIP
       description: Destination IP of the event
       type: string
-    - contextPath: EsmAlarmEvent.Cases
+    - contextPath: McAfeeESM.AlarmEvent.Cases
       description: A list of related cases to the event
       type: Unknown
-    - contextPath: EsmAlarmEvent.Cases.ID
+    - contextPath: McAfeeESM.AlarmEvent.Cases.ID
       description: Case ID
       type: string
-    - contextPath: EsmAlarmEvent.Cases.OpenTime
+    - contextPath: McAfeeESM.AlarmEvent.Cases.OpenTime
       description: Case creation time
       type: date
-    - contextPath: EsmAlarmEvent.Cases.Severity
+    - contextPath: McAfeeESM.AlarmEvent.Cases.Severity
       description: Case severity
       type: number
-    - contextPath: EsmAlarmEvent.Cases.Status
+    - contextPath: McAfeeESM.AlarmEvent.Cases.Status
       description: Case status
       type: string
-    - contextPath: EsmAlarmEvent.Cases.Summary
+    - contextPath: McAfeeESM.AlarmEvent.Cases.Summary
       description: Case summary
       type: string
-    - contextPath: EsmAlarmEvent.DstMac
+    - contextPath: McAfeeESM.AlarmEvent.DstMac
       description: Destination MAC of the event
       type: string
-    - contextPath: EsmAlarmEvent.SrcMac
+    - contextPath: McAfeeESM.AlarmEvent.SrcMac
       description: Source MAC of the event
       type: string
-    - contextPath: EsmAlarmEvent.DstPort
+    - contextPath: McAfeeESM.AlarmEvent.DstPort
       description: Destination port of the event
       type: string
-    - contextPath: EsmAlarmEvent.SrcPort
+    - contextPath: McAfeeESM.AlarmEvent.SrcPort
       description: Source port of the event
       type: string
-    - contextPath: EsmAlarmEvent.FirstTime
+    - contextPath: McAfeeESM.AlarmEvent.FirstTime
       description: The first time for the event
       type: date
-    - contextPath: EsmAlarmEvent.NormalizedDescription
+    - contextPath: McAfeeESM.AlarmEvent.NormalizedDescription
       description: Normalized description of the event
       type: string
   - arguments:
@@ -690,43 +690,43 @@ script:
     execution: false
     name: esm-list-alarm-events
     outputs:
-    - contextPath: EsmAlarmEvent.ID
+    - contextPath: McAfeeESM.AlarmEvent.ID
       description: Event ID
       type: string
-    - contextPath: EsmAlarmEvent.SubType
+    - contextPath: McAfeeESM.AlarmEvent.SubType
       description: Event Type
       type: string
-    - contextPath: EsmAlarmEvent.Severity
+    - contextPath: McAfeeESM.AlarmEvent.Severity
       description: Event Severity
       type: number
-    - contextPath: EsmAlarmEvent.Message
+    - contextPath: McAfeeESM.AlarmEvent.Message
       description: Event Message
       type: string
-    - contextPath: EsmAlarmEvent.LastTime
+    - contextPath: McAfeeESM.AlarmEvent.LastTime
       description: Event Time
       type: date
-    - contextPath: EsmAlarmEvent.SrcIP
+    - contextPath: McAfeeESM.AlarmEvent.SrcIP
       description: Source IP of the event
       type: string
-    - contextPath: EsmAlarmEvent.DstIP
+    - contextPath: McAfeeESM.AlarmEvent.DstIP
       description: Destination IP of the event
       type: string
-    - contextPath: EsmAlarmEvent.Cases
+    - contextPath: McAfeeESM.AlarmEvent.Cases
       description: A list of related cases to the event
       type: Unknown
-    - contextPath: EsmAlarmEvent.Cases.ID
+    - contextPath: McAfeeESM.AlarmEvent.Cases.ID
       description: Case ID
       type: string
-    - contextPath: EsmAlarmEvent.Cases.OpenTime
+    - contextPath: McAfeeESM.AlarmEvent.Cases.OpenTime
       description: Case creation time
       type: date
-    - contextPath: EsmAlarmEvent.Cases.Severity
+    - contextPath: McAfeeESM.AlarmEvent.Cases.Severity
       description: Case severity
       type: number
-    - contextPath: EsmAlarmEvent.Cases.Status
+    - contextPath: McAfeeESM.AlarmEvent.Cases.Status
       description: Case status
       type: string
-    - contextPath: EsmAlarmEvent.Cases.Summary
+    - contextPath: McAfeeESM.AlarmEvent.Cases.Summary
       description: Case summary
       type: string
   dockerimage: demisto/python3:3.7.5.4583
@@ -740,3 +740,4 @@ script:
   type: python
 tests:
 - McAfee ESM v2 - Test
+- McAfee ESM v2 (v11.3) - Test

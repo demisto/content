@@ -7,25 +7,22 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a42529a0-d221-4613-8f28-389e4903fce8
+    taskid: d8f0ee1b-8085-42fc-8e38-70ba1668b8c7
     type: start
     task:
-      id: a42529a0-d221-4613-8f28-389e4903fce8
+      id: d8f0ee1b-8085-42fc-8e38-70ba1668b8c7
       version: -1
       name: ""
       iscommand: false
     nexttasks:
       '#none#':
-      - "2"
-      - "5"
-      - "7"
-      - "14"
+      - "23"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 40
+          "x": 660,
+          "y": -130
         }
       }
     note: false
@@ -33,25 +30,29 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 49083e86-de28-496a-88be-29a53cb3136e
+    taskid: 8314ec46-31ef-4fc1-8304-f24a615bdc97
     type: regular
     task:
-      id: 49083e86-de28-496a-88be-29a53cb3136e
+      id: 8314ec46-31ef-4fc1-8304-f24a615bdc97
       version: -1
-      name: get_user_list
-      description: Get a list of all users.
-      script: '|||esm-get-user-list'
+      name: ' add_case_status'
+      description: Add a case status
+      script: McAfee ESM_v2|||esm-add-case-status
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "3"
+      - "2"
+    scriptarguments:
+      name:
+        simple: CCC
+      show_in_case_pane: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 310
+          "x": 450,
+          "y": 160
         }
       }
     note: false
@@ -59,25 +60,31 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 9084566d-525c-4254-8ccc-8e3ff80e1277
+    taskid: 6595f75c-2296-4d31-845d-74c4fc2b7942
     type: regular
     task:
-      id: 9084566d-525c-4254-8ccc-8e3ff80e1277
+      id: 6595f75c-2296-4d31-845d-74c4fc2b7942
       version: -1
-      name: get_organization_list
-      description: Get case organization
-      script: '|||esm-get-organization-list'
+      name: edit_case_status
+      description: Edit a case status
+      script: '|||esm-edit-case-status'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "1"
+      - "3"
+    scriptarguments:
+      new_name:
+        simple: DDD
+      original_name:
+        simple: CCC
+      show_in_case_pane: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 170
+          "x": 450,
+          "y": 300
         }
       }
     note: false
@@ -85,28 +92,28 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 61e3be01-c532-44b3-822c-4f9532cc4761
+    taskid: 7db3cf62-273a-48e7-83c8-6d10d9aa3415
     type: regular
     task:
-      id: 61e3be01-c532-44b3-822c-4f9532cc4761
+      id: 7db3cf62-273a-48e7-83c8-6d10d9aa3415
       version: -1
-      name: get_case_list
-      description: Get a list of cases from the system
-      script: '|||esm-get-case-list'
+      name: delete_case_status
+      description: Delete a case status
+      script: '|||esm-delete-case-status'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
       - "4"
     scriptarguments:
-      since:
-        simple: 3 months
+      name:
+        simple: DDD
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 450
+          "x": 450,
+          "y": 440
         }
       }
     note: false
@@ -114,25 +121,20 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 555a07f0-1130-4ca5-8377-17a2cda3cc0d
-    type: regular
+    taskid: bc37d5d4-7c44-406f-84b5-3eea55c7a76a
+    type: title
     task:
-      id: 555a07f0-1130-4ca5-8377-17a2cda3cc0d
+      id: bc37d5d4-7c44-406f-84b5-3eea55c7a76a
       version: -1
-      name: get_case_statuses
-      description: Get a list of valid case statuses from the system
-      script: '|||esm-get-case-statuses'
-      type: regular
-      iscommand: true
-    nexttasks:
-      '#none#':
-      - "13"
+      name: Done
+      type: title
+      iscommand: false
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 590
+          "x": 640,
+          "y": 1085
         }
       }
     note: false
@@ -140,10 +142,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: e4927545-91df-4f7c-856f-bf7f8639735e
+    taskid: 80e080a2-00df-4b36-8944-630d7e5aefb1
     type: regular
     task:
-      id: e4927545-91df-4f7c-856f-bf7f8639735e
+      id: 80e080a2-00df-4b36-8944-630d7e5aefb1
       version: -1
       name: add_case
       description: Add a case to the system
@@ -159,13 +161,13 @@ tasks:
       severity: {}
       status: {}
       summary:
-        simple: McAfee ESM v2 add case test
+        simple: Test McAfee ESM v2 add case
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 170
+          "x": 860,
+          "y": 160
         }
       }
     note: false
@@ -173,10 +175,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 60840e6e-31b7-4eaf-897e-c5b7e5aa4076
+    taskid: 21dffd0a-f3b9-467a-8470-ea89bb53b9e5
     type: regular
     task:
-      id: 60840e6e-31b7-4eaf-897e-c5b7e5aa4076
+      id: 21dffd0a-f3b9-467a-8470-ea89bb53b9e5
       version: -1
       name: edit_case
       description: Edit an existing case
@@ -185,22 +187,22 @@ tasks:
       iscommand: true
     nexttasks:
       '#none#':
-      - "13"
+      - "19"
     scriptarguments:
       assignee: {}
       id:
-        simple: ${Case.ID}
+        simple: ${McAfeeESM.Case.ID}
       organization: {}
       severity: {}
       status: {}
       summary:
-        simple: McAfee v2 edit case test
+        simple: Test McAfee ESM v2 edit case
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 310
+          "x": 860,
+          "y": 300
         }
       }
     note: false
@@ -208,29 +210,25 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 618170bf-4bcd-413e-8292-8389b6f33857
+    taskid: 01c8b904-568f-427d-8581-4788ecc739c0
     type: regular
     task:
-      id: 618170bf-4bcd-413e-8292-8389b6f33857
+      id: 01c8b904-568f-427d-8581-4788ecc739c0
       version: -1
-      name: add_case_status
-      description: Add a case status
-      script: '|||esm-add-case-status'
+      name: get_organization_list
+      description: Get case organization
+      script: '|||esm-get-organization-list'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
       - "8"
-    scriptarguments:
-      name:
-        simple: AAA
-      show_in_case_pane: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 170
+          "x": 1270,
+          "y": 160
         }
       }
     note: false
@@ -238,31 +236,25 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: cfa04cef-a1f8-410f-806e-df0d5069f38a
+    taskid: ad9833b1-560a-4551-8a1b-4fdc9d93e649
     type: regular
     task:
-      id: cfa04cef-a1f8-410f-806e-df0d5069f38a
+      id: ad9833b1-560a-4551-8a1b-4fdc9d93e649
       version: -1
-      name: edit_case_status
-      description: Edit a case status
-      script: '|||esm-edit-case-status'
+      name: get_user_list
+      description: Get a list of all users.
+      script: '|||esm-get-user-list'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
       - "9"
-    scriptarguments:
-      new_name:
-        simple: BBB
-      original_name:
-        simple: AAA
-      show_in_case_pane: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 310
+          "x": 1270,
+          "y": 300
         }
       }
     note: false
@@ -270,49 +262,54 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 46ec09ce-ce1d-486b-8e0a-69ae38a59abb
+    taskid: ba33a5fc-bc78-493d-811d-0379b34ca2d7
     type: regular
     task:
-      id: 46ec09ce-ce1d-486b-8e0a-69ae38a59abb
+      id: ba33a5fc-bc78-493d-811d-0379b34ca2d7
       version: -1
-      name: delete_case_status
-      description: Delete a case status
-      script: '|||esm-delete-case-status'
+      name: get_case_list
+      description: Get a list of cases from the system
+      script: '|||esm-get-case-list'
       type: regular
       iscommand: true
     nexttasks:
       '#none#':
-      - "13"
+      - "10"
     scriptarguments:
-      name:
-        simple: BBB
+      since:
+        simple: 3 months
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 450
+          "x": 1270,
+          "y": 440
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "13":
-    id: "13"
-    taskid: 678e11b0-68f2-4723-865f-37df2b69f946
-    type: title
+  "10":
+    id: "10"
+    taskid: a245cc46-ac19-4abc-8bba-3e7876f399ef
+    type: regular
     task:
-      id: 678e11b0-68f2-4723-865f-37df2b69f946
+      id: a245cc46-ac19-4abc-8bba-3e7876f399ef
       version: -1
-      name: done
-      type: title
-      iscommand: false
+      name: get_case_statuses
+      description: Get a list of valid case statuses from the system
+      script: '|||esm-get-case-statuses'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "17"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 740
+          "x": 1270,
+          "y": 580
         }
       }
     note: false
@@ -320,10 +317,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 653bc4d6-3858-41c9-8a79-f4843eafc859
+    taskid: ce296afb-f36f-4fce-8032-3e42383dd682
     type: regular
     task:
-      id: 653bc4d6-3858-41c9-8a79-f4843eafc859
+      id: ce296afb-f36f-4fce-8032-3e42383dd682
       version: -1
       name: fetch_alarms
       description: Retrieves a list of alarms that have been triggered
@@ -332,7 +329,7 @@ tasks:
       iscommand: true
     nexttasks:
       '#none#':
-      - "13"
+      - "4"
     scriptarguments:
       assignedUser: {}
       customEnd: {}
@@ -343,8 +340,197 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -350,
-          "y": 170
+          "x": 40,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 03f603b9-28c1-4975-8e8d-26e11d7c5e1b
+    type: condition
+    task:
+      id: 03f603b9-28c1-4975-8e8d-26e11d7c5e1b
+      version: -1
+      name: check_get_outputs
+      type: condition
+      iscommand: false
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: McAfeeESM.Organization.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: McAfeeESM.Organization.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: McAfeeESM.User.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: McAfeeESM.User.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: e882fbb2-fd5c-44a2-813c-d47b1e0880a9
+    type: condition
+    task:
+      id: e882fbb2-fd5c-44a2-813c-d47b1e0880a9
+      version: -1
+      name: check_cases_outputs
+      type: condition
+      iscommand: false
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: McAfeeESM.Case.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: McAfeeESM.Case.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: McAfeeESM.Case.OpenTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: McAfeeESM.Case.Severity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: e12aa969-6c1e-4302-8aae-0bafb4308c3f
+    type: regular
+    task:
+      id: e12aa969-6c1e-4302-8aae-0bafb4308c3f
+      version: -1
+      name: get_case_detail
+      description: Get detail on an existing case
+      script: '|||esm-get-case-detail'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      id:
+        simple: ${McAfeeESM.Case.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: f2e37ff3-9609-4a7b-8404-debde4771d8b
+    type: regular
+    task:
+      id: f2e37ff3-9609-4a7b-8404-debde4771d8b
+      version: -1
+      name: failed
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+    scriptarguments:
+      message:
+        simple: failed to run McAfee ESM v2 test playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 442601d0-8bee-4ce3-8731-fa47311cf29b
+    type: regular
+    task:
+      id: 442601d0-8bee-4ce3-8731-fa47311cf29b
+      version: -1
+      name: Delete_context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "5"
+      - "7"
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": -10
         }
       }
     note: false
@@ -355,12 +541,13 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
-        "width": 1580,
-        "x": -350,
-        "y": 40
+        "height": 1295,
+        "width": 1610,
+        "x": 40,
+        "y": -130
       }
     }
   }
 inputs: []
 outputs: []
+sourceplaybookid: a9795169-cad1-4519-8bfd-c19a1033be8a

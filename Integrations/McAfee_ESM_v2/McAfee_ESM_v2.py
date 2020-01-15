@@ -8,7 +8,7 @@ import time
 
 disable_warnings()
 INTEGRATION_NAME = 'McAfee ESM v2'
-COMMAND_INTEGRATION_NAME = 'esm'
+CONTEXT_INTEGRATION_NAME = 'McAfeeESM.'
 
 
 class McAfeeESMClient(BaseClient):
@@ -136,7 +136,6 @@ class McAfeeESMClient(BaseClient):
     def get_user_list(self, row: bool = False) -> Tuple[str, Dict, Dict]:
         path = 'userGetUserList'
         headers = ['ID', 'Name', 'Email', 'Groups', 'IsMaster', 'IsAdmin', 'SMS']
-        condition = '(val.ID && val.ID == obj.ID)'
         result = self.__request(path, data={"authPW": {"value": self.__password}})
         context_entry: List = [Dict] * len(result)
         human_readable = ''
@@ -154,11 +153,10 @@ class McAfeeESMClient(BaseClient):
                     context_entry[i]['Groups'] = ''.join(str(result[i]['groups']))
 
             human_readable = tableToMarkdown(name='User list', t=context_entry, headers=headers)
-        return human_readable, {f'EsmUser{condition}': context_entry}, result
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}User(val.ID && val.ID == obj.ID)': context_entry}, result
 
     def get_organization_list(self, raw: bool = False) -> Tuple[str, Dict, List[Dict]]:
         path = 'caseGetOrganizationList'
-        condition = '(val.ID && val.ID == obj.ID)'
         result = self.__request(path)
         entry: List = [None] * len(result)
         context_entry: Dict = {}
@@ -169,14 +167,13 @@ class McAfeeESMClient(BaseClient):
                     'ID': result[i].get('id'),
                     'Name': result[i].get('name')
                 }
-            context_entry = {f'Organizations{condition}': entry}
+            context_entry = {f'{CONTEXT_INTEGRATION_NAME}Organization(val.ID && val.ID == obj.ID)': entry}
             human_readable = tableToMarkdown(name='Organizations', t=result)
 
         return human_readable, context_entry, result
 
     def get_case_list(self, start_time: str = None, raw: bool = False) -> Tuple[str, Dict, List]:
         path = 'caseGetCaseList'
-        condition = '(val.ID && val.ID == obj.ID)'
         since = self.args.get('since')
         context_entry = []
         human_readable: str = ''
@@ -201,11 +198,10 @@ class McAfeeESMClient(BaseClient):
                 context_entry.append(temp_case)
         if not raw:
             human_readable = tableToMarkdown(name=f'cases since {since}', t=context_entry)
-        return human_readable, {f'Case{condition}': context_entry}, result
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)': context_entry}, result
 
     def get_case_event_list(self) -> Tuple[str, Dict, List[Dict]]:
         path = 'caseGetCaseEventsDetail'
-        condition = '(val.ID && val.ID == obj.ID)'
         ids = argToList(self.args.get('ids'))
         result = self.__request(path, data={'eventIds': {'list': ids}})
         case_event: List = [None] * len(result)
@@ -217,13 +213,12 @@ class McAfeeESMClient(BaseClient):
                 'Message': result[i].get('message')
             }
 
-        context_entry = {f'CaseEvents{condition}': case_event}
+        context_entry = {f'{CONTEXT_INTEGRATION_NAME}CaseEvent(val.ID && val.ID == obj.ID)': case_event}
         human_readable = tableToMarkdown(name='case event list', t=result)
         return human_readable, context_entry, result
 
     def get_case_detail(self, case_id: str = None, raw: bool = False) -> Tuple[str, Dict, Dict]:
         path = 'caseGetCaseDetail'
-        condition = '(val.ID && val.ID == obj.ID)'
         result = self.__request(path, data={'id': case_id if case_id else self.args.get('id')})
         result = dict_times_set(result, difference=self.difference)
         status_id = result.get('statusId', {})
@@ -246,7 +241,7 @@ class McAfeeESMClient(BaseClient):
         del readable_outputs['EventList']
         if not raw:
             human_readable = tableToMarkdown(name='Case', t=readable_outputs)
-        return human_readable, {f'Case{condition}': context_entry}, result
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)': context_entry}, result
 
     def get_case_statuses(self, raw: bool = False) -> Tuple[str, Dict, Dict]:
         path = 'caseGetCaseStatusList'
@@ -348,7 +343,6 @@ class McAfeeESMClient(BaseClient):
     def fetch_alarms(self, since: str = None, start_time: str = None, end_time: str = None, raw: bool = False)\
             -> Tuple[str, Dict, List]:
         path = 'alarmGetTriggeredAlarms'
-        condition = '(val.ID && val.ID == obj.ID)'
         human_readable = ''
         context_entry: List = []
         since = since if since else self.args.get('timeRange')
@@ -395,7 +389,7 @@ class McAfeeESMClient(BaseClient):
             table_headers = ['id', 'acknowledgedDate', 'acknowledgedUsername', 'alarmName', 'assignee', 'conditionType',
                              'severity', 'summary', 'triggeredDate']
             human_readable = tableToMarkdown(name='Alarms', t=result, headers=table_headers)
-        return human_readable, {f'Alarm{condition}': context_entry}, result
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Alarm(val.ID && val.ID == obj.ID)': context_entry}, result
 
     def acknowledge_alarms(self) -> Tuple[str, Dict, Dict]:
         try:
@@ -434,11 +428,10 @@ class McAfeeESMClient(BaseClient):
         result = dict_times_set(result, self.difference)
         context_entry = self.__alarm_event_context_and_times_set(result)
         human_readable = tableToMarkdown(name='Alarm events', t=context_entry)
-        return human_readable, {'EsmAlarmEvent': context_entry}, result
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}AlarmEvent': context_entry}, result
 
     def list_alarm_events(self) -> Tuple[str, Dict, Dict]:
         path = 'notifyGetTriggeredNotificationDetail'
-        condition = '(val.ID && val.ID == obj.ID)'
         result = self.__request(path, data={'id': self.args.get('alarmId')})
         result = dict_times_set(result, self.difference)
         human_readable: str = ''
@@ -449,7 +442,8 @@ class McAfeeESMClient(BaseClient):
                 context_entry[event] = self.__alarm_event_context_and_times_set(result['events'][event])
             human_readable = tableToMarkdown(name='Alarm events', t=context_entry)
 
-        return human_readable, {f'EsmAlarmEvent{condition}': context_entry}, result
+        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}'
+                                f'AlarmEvent(val.ID && val.ID == obj.ID)': context_entry}, result
 
     def complete_search(self):
         time_out = self.args.get('timeOut', 30)
@@ -540,13 +534,12 @@ class McAfeeESMClient(BaseClient):
 
         condition = '(val.AlertIPSIDAlertID && val.AlertIPSIDAlertID == obj.AlertIPSIDAlertID)'\
             if 'AlertIPSIDAlertID' in headers else ''
-        context_entry = {f'McAfeeESM{condition}': entry}
+        context_entry = {f'{CONTEXT_INTEGRATION_NAME}results{condition}': entry}
         return search_readable_outputs(result), context_entry, result
 
     def __alarm_event_context_and_times_set(self, result: Dict) -> Dict:
-        condition = '(val.ID && val.ID == obj.ID)'
         context_entry = {
-            'ID': result.get('eventId'),
+            'ID': result.get('eventId', result.get('alertId')),
             'SubType': result.get('subtype', result.get('eventSubType')),
             'Severity': result.get('severity'),
             'Message': result.get('ruleName', result.get('ruleMessage')),
@@ -573,7 +566,7 @@ class McAfeeESMClient(BaseClient):
                     'Status': case_status.get('name'),
                     'Summary': result['cases'][i].get('summary')
                 }
-            context_entry[f'Cases{condition}'] = cases
+            context_entry[f'Case'] = cases
         return context_entry
 
     def fetch_incidents(self, params: Dict):
@@ -774,89 +767,6 @@ def mcafee_severity_to_demisto(severity: int) -> int:
         return 1
     else:
         return 0
-
-
-def block_1(client):
-    client.test_module()
-    print(client.get_user_list())
-    print(client.get_organization_list())
-    client.args = {'since': '1 day'}
-    print(client.get_case_list())
-    print(client.get_case_statuses())
-    client.args = {
-        'summary': 'test',
-        'severity': 12
-    }
-    _, _, res = client.add_case()
-    print(res)
-    client.args['id'] = res.get('id')
-    client.args['summary'] = 'test2'
-    client.edit_case()
-    client.args = {
-        'name': 'flow',
-        'should_show_in_case_pane': True
-    }
-    res = client.add_case_status()
-    print(res)
-    client.args = {
-        'new_name': 'flow2',
-        'original_name': 'flow'
-    }
-    client.edit_case_status()
-    print(client.get_case_statuses())
-    client.args = {'name': 'flow2'}
-    client.delete_case_status()
-    print(client.get_case_statuses())
-
-
-def block_2(client):
-    client.args = {'timeRange': 'CURRENT_YEAR'}
-    _, _, res = client.fetch_alarms()
-    print(res[0])
-    client.args = {'alarmId': res[0].get('id')}
-    _, _, res = client.list_alarm_events()
-    print(res)
-    client.args = {'id': res.get('id')}
-    print(client.get_case_detail())
-    client.args = {'timeRange': 'CURRENT_YEAR'}
-    _, _, res = client.fetch_alarms()
-    print(res)
-    client.args = {'alarmIds': str(res[0].get('id'))}
-    client.acknowledge_alarms()
-    client.args = {'timeRange': 'CURRENT_YEAR'}
-    print(client.fetch_alarms()[2])
-    client.args = {'alarmIds': str(res[0].get('id'))}
-    client.unacknowledge_alarms()
-    client.args = {'timeRange': 'CURRENT_YEAR'}
-    print(client.fetch_alarms()[2])
-    client.args = {'alarmIds': str(res[0].get('id'))}
-    client.delete_alarm()
-    client.args = {'timeRange': 'CURRENT_YEAR'}
-    print(client.fetch_alarms()[2])
-
-
-def block_3(client: McAfeeESMClient):
-    client.args = {
-        'filters': '[{\"type\":\"EsmFieldFilter\",\"field\":{\"name\":\"SrcIP\"},\"operator\":\"IN\"}]',
-        'timeRange': 'CURRENT_DAY',
-        'limit': 5
-    }
-    _, context, res = client.complete_search()
-    print(res)
-    client.args = {'eventId': res['rows'][0]['values'][0]}
-    print(client.get_alarm_event_details())
-    client.args = {'ids': res['rows'][0]['values'][0]}
-    print(client.get_case_event_list())
-
-
-def try_block(client, blocks_done):
-    if blocks_done:
-        if blocks_done[0]:
-            block_1(client)
-        if blocks_done[1]:
-            block_2(client)
-        if blocks_done[2]:
-            block_3(client)
 
 
 def main():

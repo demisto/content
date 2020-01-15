@@ -844,24 +844,6 @@
             "playbookID": "SalesforceTestPlaybook"
         },
         {
-            "integrations": "McAfee ESM-v10",
-            "instance_names": "v10.2.0",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "instance_names": "v10.3.0",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "instance_names": "v11.1.3",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
             "integrations": "McAfee ESM_v2",
             "instance_names": "v10.2.0",
             "playbookID": "McAfee ESM v2 - Test",
@@ -869,7 +851,19 @@
         },
         {
             "integrations": "McAfee ESM_v2",
+            "instance_names": "vv10.3.0",
+            "playbookID": "McAfee ESM v2 (v11.3) - Test",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee ESM_v2",
             "instance_names": "v11.1.3",
+            "playbookID": "McAfee ESM v2 (v11.3) - Test",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee ESM_v2",
+            "instance_names": "v11.3",
             "playbookID": "McAfee ESM v2 (v11.3) - Test",
             "timeout": 500
         },
@@ -2210,7 +2204,6 @@
         "Phish.AI": "Issue 17291",
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
-        "McAfee ESM-v10": "Issue 20225",
         "QRadar Indicator Hunting Test": "Issue 21150",
 
         "_comment": "~~~ UNSTABLE ~~~",
@@ -2240,7 +2233,6 @@
     ],
     "unmockable_integrations": {
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
-        "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
