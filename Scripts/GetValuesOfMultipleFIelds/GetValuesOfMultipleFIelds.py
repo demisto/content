@@ -13,11 +13,11 @@ def main():
         for _key in keys:
             temp = obj.get(_key)
             if temp:
-                t = t.extend(temp) if isinstance(temp, list) else t.append(temp)
+                _ = t.extend(temp) if isinstance(temp, list) else t.append(temp)
 
     initial_value = args.get('value')
     if initial_value:
-        t = t.extend(initial_value) if isinstance(initial_value, list) else t.append(initial_value)
+        _ = t.extend(initial_value) if isinstance(initial_value, list) else t.append(initial_value)
     demisto.results(t)
 
 
