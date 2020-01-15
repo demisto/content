@@ -4,15 +4,10 @@
         "fromVersion": "5.0.0",
 	"layout": {
 		"TypeName": "",
-		"commitMessage": "",
 		"id": "AWS IAM Policy Misconfiguration",
 		"kind": "details",
 		"modified": "2019-12-17T22:12:21.768434567Z",
 		"name": "",
-		"prevKind": "details",
-		"prevTypeId": "AWS IAM Policy Misconfiguration",
-		"shouldCommit": false,
-		"sortValues": null,
 		"system": false,
 		"tabs": [
 			{
@@ -694,7 +689,6 @@
 			}
 		],
 		"typeId": "AWS IAM Policy Misconfiguration",
-		"vcShouldIgnore": false,
 		"version": -1
 	},
 	"typeId": "AWS IAM Policy Misconfiguration",
