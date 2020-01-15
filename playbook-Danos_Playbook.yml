@@ -1,0 +1,40 @@
+id: 9c85c2b7-c9d3-471e-8c88-1aa68d25201d
+inputs: []
+name: Danos Playbook
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: c97c7ca8-59cc-498a-8d6b-f65bb79e4754
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: c97c7ca8-59cc-498a-8d6b-f65bb79e4754
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 65,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
