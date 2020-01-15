@@ -77,6 +77,12 @@ def remove_empty_elements(d):
                 not empty(v)}
 
 
+def parse_resource_ids(resource_id):
+    id_list = resource_id.replace(" ", "")
+    resourceIds = id_list.split(",")
+    return resourceIds
+
+
 def aws_table_to_markdown(response, table_header):
     if isinstance(response, dict):
         if len(response) == 1:
