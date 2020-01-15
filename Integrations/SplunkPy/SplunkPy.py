@@ -514,7 +514,7 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
         'Content-Type': 'application/json'
     }
 
-    response = requests.post(baseurl + '/services/collector', data=args, headers=headers)
+    response = requests.post(baseurl + '/services/collector', data=json.dumps(args), headers=headers)
 
     return response
 
@@ -535,10 +535,10 @@ def splunk_submit_event_hec_command():
 
     response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_)
 
-    if 'success' not in response_info or not response_info['success']:
-        demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
-                         'Contents': "Could not update notable "})
-    demisto.results('The event was sent successfully to Splunk.')
+    if 'Success' not in response_info.text:
+        return_error('Could not send event to Splunk', response_info.text.encode('utf8'))
+    else:
+        demisto.results('The event was sent successfully to Splunk.')
 
 
 def splunk_edit_notable_event_command():
@@ -551,7 +551,8 @@ def splunk_edit_notable_event_command():
     username = demisto.params()['authentication']['identifier']
     password = demisto.params()['authentication']['password']
     auth_req = requests.post(baseurl + 'services/auth/login',
-                             data={'username': username, 'password': password, 'output_mode': 'json'}, verify=VERIFY_CERTIFICATE)
+                             data={'username': username, 'password': password, 'output_mode': 'json'},
+                             verify=VERIFY_CERTIFICATE)
 
     sessionKey = auth_req.json()['sessionKey']
     eventIDs = None
