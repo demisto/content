@@ -19,8 +19,13 @@ ENDPOINT_SUFFIX = "v1/alerts/triggered-alerts"
 
 
 class Client:
+    def __init__(self, logzio_url, region, api_token):
+        self.base_url = logzio_url
+        self.api_token = api_token
+        self.region = region
+
     def fetch_triggered_rules(self, from_page=None, search=None, severities=None, tags=None):
-        url = get_api_url()
+        url = self.get_api_url()
         payload = {
             "size": 50,
             "sortBy": "DATE",
@@ -39,7 +44,7 @@ class Client:
         # demisto.log(API_TOKEN)
         # demisto.log(payload_string)
         headers = {
-            'X-API-TOKEN': API_TOKEN,
+            'X-API-TOKEN': self.api_token,
             'Content-Type': "application/json",
         }
         response = requests.request("POST", url, data=payload_string, headers=headers)
@@ -47,27 +52,24 @@ class Client:
             return_error('Error in API call [%d] - %s' % (response.status_code, response.reason))
         return response.json()
 
+    def get_api_url(self):
+        return "{}{}".format(self.base_url.replace("api.", "api{}.".format(self.get_region_code())),ENDPOINT_SUFFIX)
 
+    def get_region_code(self):
+        if self.region != "us" and self.region != "":
+            return "-{}".format(REGION)
+        return ""
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def get_api_url():
-    return URL.replace("api.", "api{}.".format(get_region_code()))
-
-def get_region_code():
-    if REGION != "us" and REGION != "":
-        return "-{}".format(REGION)
-    return ""
-
-
 def test_module(client):
-    # try:
-    # result = client.fetch_triggered_rules()
-    return 'ok'
-    # except Exception as e:
-    # return 'Test failed: {}'.format(e)
+    try:
+        result = client.fetch_triggered_rules()
+        return 'ok'
+    except Exception as e:
+        return 'Test failed: {}'.format(e)
 
 
 def fetch_triggered_rules_command(client, args):
@@ -93,7 +95,7 @@ def fetch_incidents(client, last_run, first_fetch_time=None, integration_context
     # start_query_time = last_run.get("last_fetch")
     # if not start_query_time:
     #     start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
-    raw_events = client.fetch_triggered_rules(None, None, None, None)
+    raw_events = client.fetch_triggered_rules()
     for event in raw_events['results']:
         event_date = datetime.fromtimestamp(event["eventDate"])
         event_date_string = event_date.strftime(DATE_FORMAT)
@@ -141,7 +143,7 @@ def main():
     # Log exceptions
     except Exception as e:
         # demisto.log(str(e))
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error('Failed to execute command. Error: {}'.format(str(e)))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
