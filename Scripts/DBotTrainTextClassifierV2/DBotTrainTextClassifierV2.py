@@ -40,7 +40,7 @@ def get_phishing_map_labels(comma_values):
             labels_dict[v] = v
     if len(set(labels_dict.values())) == 1:
         mapped_value = list(labels_dict.values())[0]
-        error = ['Label mapping error: you need to map to at least two labels: {}.'.format(mapped_value)]        
+        error = ['Label mapping error: you need to map to at least two labels: {}.'.format(mapped_value)]
         return_error('\n'.join(error))
     return {k: canonize_label(v) for k, v in labels_dict.items()}
 
