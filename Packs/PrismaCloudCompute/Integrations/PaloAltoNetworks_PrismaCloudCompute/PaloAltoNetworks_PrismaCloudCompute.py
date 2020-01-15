@@ -116,10 +116,13 @@ def camel_case_transformer(s):
     """
     Converts a camel case string into space separated words starting with a capital letters
     E.g. input: 'camelCase' output: 'Camel Case'
-
+    REMARK: the exceptions list below is returned uppercase, e.g. "cve" => "ID"
     """
 
-    return re.sub('([a-z])([A-Z])', r'\g<1> \g<2>', s).title()
+    str = re.sub('([a-z])([A-Z])', r'\g<1> \g<2>', s)
+    if str in ['id', 'cve', 'arn']:
+        return str.upper()
+    return str.title()
 
 
 def test_module(client):
@@ -155,17 +158,31 @@ def fetch_incidents(client):
             name = ALERT_TITLE
             severity = 0
 
+            # always save the raw JSON data under this argument (used in scripts)
+            a['rawJSONAlert'] = json.dumps(a)
+
+            # parse any list into a markdown list, since tableToMarkdown takes the headers from the first object in
+            # list check headers manually some entries might have omit empty fields
             tables = {}
+            fields: list = []
             for key, value in a.items():
                 if isinstance(value, list):
-                    tables[key + 'MarkdownTable'] = tableToMarkdown(camel_case_transformer(key + ' table'), value,
+                    for item in value:
+                        for field in item.keys():
+                            if field not in fields:
+                                fields.append(field)
+
+                    fields.sort()
+                    tables[key + 'MarkdownTable'] = tableToMarkdown(camel_case_transformer(key + ' table'),
+                                                                    value,
+                                                                    headers=fields,
                                                                     headerTransform=camel_case_transformer)
 
             a.update(tables)
 
             if alert_type == ALERT_TYPE_VULNERABILITY:
-                # E.g. "Prisma Cloud Compute Alert - Vulnerability in imageName"
-                name += camel_case_transformer(alert_type) + ' in ' + a.get('imageName')
+                # E.g. "Prisma Cloud Compute Alert - imageName Vulnerabilities"
+                name += a.get('imageName') + ' Vulnerabilities'
                 # Set the severity to the highest vulnerability, take the first from the list
                 severity = translate_severity(a.get('vulnerabilities')[0].get('severity'))
 
