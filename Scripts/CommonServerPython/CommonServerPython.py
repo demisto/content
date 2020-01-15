@@ -15,6 +15,7 @@ import logging
 from collections import OrderedDict
 import xml.etree.cElementTree as ET
 from datetime import datetime, timedelta
+from abc import abstractmethod
 
 import demistomock as demisto
 
@@ -128,7 +129,7 @@ thresholds = {
 }
 
 
-class IndicatorType(object):
+class DBotScoreType(object):
     """
     Enum: contains all the indicator types, used DBotScore.Type)
     """
@@ -142,10 +143,10 @@ class IndicatorType(object):
         # type: (str) -> bool
 
         return _type in (
-            IndicatorType.IP,
-            IndicatorType.HASH,
-            IndicatorType.DOMAIN,
-            IndicatorType.URL
+            DBotScoreType.IP,
+            DBotScoreType.HASH,
+            DBotScoreType.DOMAIN,
+            DBotScoreType.URL
         )
 
 
@@ -1553,10 +1554,11 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
-class Indicator:
-    def __init__(self):
-        pass
-
+class Indicator(object):
+    """
+    interface class
+    """
+    @abstractmethod
     def to_context(self):
         pass
 
@@ -1611,8 +1613,8 @@ class DBotScore(Indicator):
     CONTEXT_PATH = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 
     def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None):
-        if not IndicatorType.is_valid_type(indicator_type):
-            raise TypeError('indicator_type must be of type IndicatorType enum')
+        if not DBotScoreType.is_valid_type(indicator_type):
+            raise TypeError('indicator_type must be of type DBotScoreType enum')
 
         if not DBotScore.is_valid_score(score):
             raise TypeError('indicator_type must be of type DBotScore enum')
@@ -1649,6 +1651,9 @@ class DBotScore(Indicator):
 
 
 class IP(Indicator):
+    """
+    IP indicator - https://demisto.pan.dev/docs/context-standards#ip
+    """
     CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
     def __init__(self, ip, asn, hostname, geo_latitude, geo_longitude, geo_country, geo_description,
@@ -1716,12 +1721,282 @@ class IP(Indicator):
         return ret_value
 
 
+class Signature(object):
+    def __init(self, authentihash, copyright, description, file_version, internal_name, original_name):
+        self.authentihash = authentihash
+        self.copyright = copyright
+        self.description = description
+        self.file_version = file_version
+        self.internal_name = internal_name
+        self.original_name = original_name
+
+    def to_context(self):
+        return {
+            'Authentihash': self.authentihash,
+            'Copyright': self.copyright,
+            'Description': self.description,
+            'FileVersion': self.file_version,
+            'InternalName': self.internal_name,
+            'OriginalName': self.original_name,
+        }
+
+
+class DigitalSignature(object):
+    def __init__(self, publisher):
+        self.publisher = publisher
+
+    def to_context(self):
+        return {
+            'Publisher': self.publisher
+        }
+
+
+class File(Indicator):
+    """
+    File indicator - https://demisto.pan.dev/docs/context-standards#file
+    """
+    CONTEXT_PATH = 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
+                   'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || ' \
+                   'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || ' \
+                   'val.SSDeep && val.SSDeep == obj.SSDeep)'
+
+    def __init__(self, name, entry_id, size, md5, sha1, sha256, sha512, ssdeep, extension, type_, hostname, path,
+                 company, product_name, digital_signature, signature, author, tags):
+        self.name = name
+        self.entry_id = entry_id
+        self.size = size
+        self.md5 = md5
+        self.sha1 = sha1
+        self.sha256 = sha256
+        self.sha512 = sha512
+        self.ssdeep = ssdeep
+        self.extension = extension
+        self.type_ = type_
+        self.hostname = hostname
+        self.path = path
+        self.company = company
+        self.product_name = product_name
+        self.digital_signature = digital_signature
+        self.signature = signature
+        self.author = author
+        self.tags = tags
+
+        # DBotScore fields
+        self.dbot_score = None  # type: ignore
+
+    def set_dbot_score(self, dbot_score):
+        # type: (DBotScore) -> None
+
+        self.dbot_score = dbot_score
+
+    def to_context(self):
+        file_context = {
+            'Name': self.name
+        }
+
+        if self.name:
+            file_context['Name'] = self.name
+        if self.entry_id:
+            file_context['EntryID'] = self.entry_id
+        if self.size:
+            file_context['Size'] = self.size
+        if self.md5:
+            file_context['MD5'] = self.md5
+        if self.sha1:
+            file_context['SHA1'] = self.sha1
+        if self.sha256:
+            file_context['SHA256'] = self.sha256
+        if self.sha512:
+            file_context['SHA512'] = self.sha512
+        if self.ssdeep:
+            file_context['SSDeep'] = self.ssdeep
+        if self.extension:
+            file_context['Extension'] = self.extension
+        if self.type_:
+            file_context['Type'] = self.type_
+        if self.hostname:
+            file_context['Hostname'] = self.hostname
+        if self.path:
+            file_context['Path'] = self.path
+        if self.company:
+            file_context['Company'] = self.company
+        if self.product_name:
+            file_context['ProductName'] = self.product_name
+        if self.digital_signature:
+            file_context['DigitalSignature'] = self.digital_signature.to_context()
+        if self.signature:
+            file_context['Signature'] = self.signature.to_context()
+        if self.author:
+            file_context['Author'] = self.author
+        if self.tags:
+            file_context['Tags'] = self.tags
+
+
+        if self.dbot_score and self.dbot_score.score == DBotScore.BAD:
+            file_context['Malicious'] = {
+                'Vendor': self.dbot_score.integration_name,
+                'Description': self.dbot_score.malicious_description
+            }
+
+        ret_value = {
+            File.CONTEXT_PATH: file_context
+        }
+
+        if self.dbot_score:
+            ret_value.update(self.dbot_score.to_context())
+
+        return ret_value
+
+
+class CVE(Indicator):
+    """
+    CVE indicator - https://demisto.pan.dev/docs/context-standards#cve
+    """
+    CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
+
+    def __init__(self, id, cvss, published, modified, description):
+        self.id = id
+        self.cvss = cvss
+        self.published = published
+        self.modified = modified
+        self.description = description
+
+    def to_context(self):
+        cve_context = {
+            'ID': self.id
+        }
+
+        if self.cvss:
+            cve_context['CVSS'] = self.cvss
+
+        if self.published:
+            cve_context['Published'] = self.published
+
+        if self.modified:
+            cve_context['Modified'] = self.modified
+
+        if self.description:
+            cve_context['Description'] = self.description
+
+        ret_value = {
+            URL.CONTEXT_PATH: cve_context
+        }
+
+        if self.dbot_score:
+            ret_value.update(self.dbot_score.to_context())
+
+        return ret_value
+
+
+class URL(Indicator):
+    """
+    URL indicator - https://demisto.pan.dev/docs/context-standards#url
+    """
+    CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
+
+    def __init__(self, url, detection_engines, positive_detections):
+        self.url = url
+        self.detection_engines = detection_engines
+        self.positive_detections = positive_detections
+
+        # DBotScore fields
+        self.dbot_score = None  # type: ignore
+
+    def set_dbot_score(self, dbot_score):
+        # type: (DBotScore) -> None
+
+        self.dbot_score = dbot_score
+
+    def to_context(self):
+        url_context = {
+            'Data': self.url
+        }
+
+        if self.detection_engines:
+            url_context['DetectionEngines'] = self.detection_engines
+
+        if self.positive_detections:
+            url_context['PositiveDetections'] = self.positive_detections
+
+        if self.dns:
+            url_context['DNS'] = self.dns
+
+        if self.dbot_score and self.dbot_score.score == DBotScore.BAD:
+            url_context['Malicious'] = {
+                'Vendor': self.dbot_score.integration_name,
+                'Description': self.dbot_score.malicious_description
+            }
+
+        ret_value = {
+            URL.CONTEXT_PATH: url_context
+        }
+
+        if self.dbot_score:
+            ret_value.update(self.dbot_score.to_context())
+
+        return ret_value
+
+
+
+class WHOIS(object):
+    """
+    WHOIS is a class that used with Domain class
+    """
+    def __init__(self, domain_status, name_servers, creation_date, update_date, expiration_date, registrar, registrant,
+                 admin):
+        self.domain_status = domain_status
+        self.name_servers = name_servers
+        self.creation_date = creation_date
+        self.update_date = update_date
+        self.expiration_date = expiration_date
+        self.registrar = registrar
+        self.registrant = registrant
+        self.admin = admin
+
+    def to_context(self):
+        whois_context = {}
+
+        if self.domain_status:
+            whois_context['DomainStatus'] = self.domain_status
+
+        if self.name_servers:
+            whois_context['NameServers'] = self.name_servers
+
+        if self.creation_date:
+            whois_context['CreationDate'] = self.creation_date
+
+        if self.update_date:
+            whois_context['UpdateDate'] = self.update_date
+
+        if self.expiration_date:
+            whois_context['ExpirationDate'] = self.expiration_date
+
+        if self.registrar:
+            whois_context['Registrar'] = self.registrar.to_context()
+
+        if self.registrant:
+            whois_context['Registrant'] = self.registrant.to_context()
+
+        if self.admin:
+            whois_context['Admin'] = self.admin.to_context()
+
+        return whois_context
+
+
 class Domain(Indicator):
+    """
+    Domain indicator - https://demisto.pan.dev/docs/context-standards#domain
+    """
     CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
-    def __init__(self, domain, dns):
+    def __init__(self, domain, dns, detection_engines, positive_detections, whois, organazation, sub_domains):
         self.domain = domain
         self.dns = dns
+        self.detection_engines = detection_engines
+        self.positive_detections = positive_detections
+        self.whois = whois
+        self.organazation = organazation
+        self.sub_domains = sub_domains
 
         # DBotScore fields
         self.dbot_score = None  # type: ignore
@@ -1754,6 +2029,22 @@ class Domain(Indicator):
 
         return ret_value
 
+
+old_demisto_results = demisto.results
+def new_demisto_results(results):
+    if results is None:
+        # backward compatibility reasons
+        old_demisto_results('None')
+        return
+
+    if isinstance(results, CommandResults):
+        old_demisto_results(results.to_context())
+        return
+
+    old_demisto_results(results)
+
+
+demisto.results = new_demisto_results
 
 def return_outputs(readable_output, outputs=None, raw_response=None):
     """

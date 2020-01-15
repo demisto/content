@@ -12,7 +12,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, IndicatorType, DBotScore, IP
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, DBotScoreType, DBotScore, IP
 
 try:
     from StringIO import StringIO
@@ -791,7 +791,7 @@ class TestCommandResults:
         dbot_score = DBotScore(
             indicator='8.8.8.8',
             integration_name='Virus Total',
-            indicator_type=IndicatorType.IP,
+            indicator_type=DBotScoreType.IP,
             score=DBotScore.GOOD
         )
         ip.set_dbot_score(dbot_score)
@@ -829,7 +829,7 @@ class TestCommandResults:
         dbot_score = DBotScore(
             indicator='8.8.8.8',
             integration_name='Virus Total',
-            indicator_type=IndicatorType.IP,
+            indicator_type=DBotScoreType.IP,
             score=DBotScore.GOOD
         )
 
@@ -889,7 +889,7 @@ class TestCommandResults:
                 indicator='8.8.8.8',
                 integration_name='Virus Total',
                 score=100,
-                indicator_type=IndicatorType.IP
+                indicator_type=DBotScoreType.IP
             )
 
             assert False
