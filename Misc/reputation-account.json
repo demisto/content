@@ -108,7 +108,7 @@
         ]
       }
     },
-    "indicator_id": {
+    "indicator_indicator_id": {
       "simple": "",
       "complex": {
         "root": "Account",
