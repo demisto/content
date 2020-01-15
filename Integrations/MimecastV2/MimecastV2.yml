@@ -1575,6 +1575,7 @@ script:
       required: true
       secret: false
     - default: false
+      description: Policy Description
       isArray: false
       name: description
       required: false
@@ -1599,8 +1600,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Receiver type. *Most times you will have to change fromValue according
-        to fromType
+      description: Blocked Receiver type. *Most times you will have to change fromValue
+        according to fromType
       isArray: false
       name: toType
       predefined:
@@ -1623,11 +1624,13 @@ script:
       required: false
       secret: false
     - default: false
+      description: Blocked Sender value. *fromValue depends on fromType
       isArray: false
       name: fromValue
       required: false
       secret: false
     - default: false
+      description: Blocked Receiver value. *toValue depends on toType
       isArray: false
       name: toValue
       required: false

@@ -14,9 +14,15 @@ policy_data = {
     'policy_id': 'IDFROMMIMECAST'
 }
 
-policy_args = policy_data.copy()
-del policy_args['option']
-del policy_args['policy_id']
+policy_args = {
+    'description': 'new',
+    'fromPart': 'bla bla',
+    'fromType': 'free_mail_domains',
+    'fromValue': 'gmail.com',
+    'toType': 'email_domain',
+    'toValue': 'gmail.com'
+}
+
 get_args_response = (policy_args, 'no_action')
 
 # Parameters for Update policy test
@@ -42,7 +48,7 @@ update_policy_req_response = {
 }
 
 
-def get_arguments_for_policy_command():
+def test_get_arguments_for_policy_command():
     res = MimecastV2.get_arguments_for_policy_command(policy_data)
     assert get_args_response == res
 
