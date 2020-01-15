@@ -537,7 +537,8 @@ def fetch_indicators_command():
         if ioc.get('value'):
             ioc_lst.append(ioc)
     if ioc_lst:
-        demisto.createIndicators(ioc_lst)
+        for b in batch(ioc_lst, batch_size=2000):
+            demisto.createIndicators(b)
     demisto.setLastRun(now)
 
 
