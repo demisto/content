@@ -9,7 +9,7 @@ tags:
 - Prisma Cloud Compute
 comment: Parse Compliance alert raw JSON data
 commonfields:
-  id: f71cbb4c-b971-4e21-acb5-90ee02e610b7
+  id: PrismaCloudComputeParseComplianceAlert
   version: -1
 enabled: false
 name: PrismaCloudComputeParseComplianceAlert

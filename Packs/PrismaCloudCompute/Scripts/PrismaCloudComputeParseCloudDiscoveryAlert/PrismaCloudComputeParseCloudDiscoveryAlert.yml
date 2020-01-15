@@ -9,7 +9,7 @@ tags:
 - Prisma Cloud Compute
 comment: Parse Cloud Discovery alert raw JSON data
 commonfields:
-  id: e4d6d155-5373-42a5-90d9-06eef90276fd
+  id: PrismaCloudComputeParseCloudDiscoveryAlert
   version: -1
 enabled: false
 name: PrismaCloudComputeParseCloudDiscoveryAlert
