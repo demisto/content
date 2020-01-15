@@ -40,8 +40,7 @@ def get_phishing_map_labels(comma_values):
             labels_dict[v] = v
     if len(set(labels_dict.values())) == 1:
         mapped_value = list(labels_dict.values())[0]
-        error = ['Illegal label mapping: all labels are mapped into a single label: {}.'.format(mapped_value)]
-        error += ['Please make sure the labels are mapped into at least two different labels.']
+        error = ['Label mapping error: you need to map to at least two labels: {}.'.format(mapped_value)]        
         return_error('\n'.join(error))
     return {k: canonize_label(v) for k, v in labels_dict.items()}
 
@@ -229,7 +228,7 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
         err += ['Minimum number of incidents required for training is {} ({}<{}).'.format(MIN_INCIDENTS_THRESHOLD,
                                                                                           len(data),
                                                                                           MIN_INCIDENTS_THRESHOLD)]
-        err += ['Please make sure that the mapping is correct and includes all the existing labels.']
+        err += ['Make sure that the label mapping is correct and includes all existing labels.']
         missing_labels = ', '.join(missing_labels_counter.keys())
         err += ['The following existing labels could not be found in the labels mapping: {}.'.format(missing_labels)]
         err += ['The given mapped labels are: {}.'.format(', '.join(labels_mapping.keys()))]
@@ -263,8 +262,8 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
     demisto.results(set([x[DBOT_TAG_FIELD] for x in data]))
     if len(set([x[DBOT_TAG_FIELD] for x in data])) == 1:
         single_label = [x[DBOT_TAG_FIELD] for x in data][0]
-        err = ['All received incidents are labeled the same: {}.'.format(single_label)]
-        err += ['At least 2 different labels are needed in order to train a classifier.']
+        err = ['All received incidents have the same label: {}.'.format(single_label)]
+        err += ['At least 2 different labels are required to train a classifier.']
         if labels_mapping == ALL_LABELS:
             err += ['Please make sure that incidents of at least 2 labels exist in the environment.']
         else:
@@ -294,14 +293,14 @@ def main():
     demisto.results(len(data))
     if len(data) == 0:
         err = ['No incidents were received.']
-        err += ['Please make sure that all arguments are set correctly and that incidents exist in the environment.']
+        err += ['Make sure that all arguments are set correctly and that incidents exist in the environment.']
         return_error(' '.join(err))
     if len(data) < MIN_INCIDENTS_THRESHOLD:
         err = ['Only {} incident(s) were received.'.format(len(data))]
         err += ['Minimum number of incidents required for training is {} ({}<{}).'.format(MIN_INCIDENTS_THRESHOLD,
                                                                                           len(data),
                                                                                           MIN_INCIDENTS_THRESHOLD)]
-        err += ['Please make sure that all arguments are set correctly, and enough incidents exist in the environment.']
+        err += ['Make sure that all arguments are set correctly and that enough incidents exist in the environment.']
         return_error('\n'.join(err))
 
     data = set_tag_field(data, tag_fields)
