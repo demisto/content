@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 '''IMPORTS'''
 from typing import List
 from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
-from elasticsearch_dsl import Search, AttrList, AttrDict
+from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import QueryString
 from datetime import datetime
 import json
@@ -520,7 +520,7 @@ def get_indicators_command():
     i = 0
     for hit in search.scan():
         ioc = results_to_indicator(hit)
-        if ioc:
+        if ioc.get('value'):
             indicators_list.append(ioc)
         i += 1
         if i >= limit:
@@ -534,7 +534,7 @@ def fetch_indicators_command():
     ioc_lst = []
     for hit in search.scan():
         ioc = results_to_indicator(hit)
-        if ioc:
+        if ioc.get('value'):
             ioc_lst.append(ioc)
     if ioc_lst:
         demisto.createIndicators(ioc_lst)
@@ -549,7 +549,7 @@ def get_indicators_search_scan():
     query = QueryString(query=time_field + ":*")
     tenant_hash = demisto.getIndexHash()
     # all shared indexes minus this tenant shared
-    indexes = f'*-shared*,-{tenant_hash}*-shared*'
+    indexes = f'*-shared*,-*{tenant_hash}*-shared*'
     search = Search(using=es, index=indexes).filter({'range': {time_field: {'gt': last_fetch, 'lte': now}}}).query(
         query)
     return search, now
@@ -557,6 +557,7 @@ def get_indicators_search_scan():
 
 def results_to_indicator(hit):
     ioc_dict = hit.to_dict()
+    ioc_dict['value'] = ioc_dict.get('name')
     ioc_dict['rawJSON'] = dict(ioc_dict)
     return ioc_dict
 
