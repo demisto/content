@@ -12,10 +12,13 @@ configuration:
   name: feedFetchInterval
   required: true
   type: 19
-- display: Indicator Type
+- defaultvalue: IP
+  display: Indicator Type
   name: indicator_type
+  options:
+  - IP
   required: true
-  type: 0
+  type: 15
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
   name: feedInstanceReliability
