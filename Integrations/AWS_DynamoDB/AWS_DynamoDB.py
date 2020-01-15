@@ -1650,7 +1650,7 @@ def main():  # pragma: no cover
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             client = aws_session()
-            response = client.REPLACE_WITH_TEST_FUNCTION()
+            response = client.describe_limits()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 demisto.results('ok')
 
