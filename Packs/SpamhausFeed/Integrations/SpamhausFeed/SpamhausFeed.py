@@ -39,7 +39,7 @@ def main():
     }
 
     params['feed_types'] = feed_types
-    feed_main('SpamhausFeed', params)
+    feed_main('Spamhaus Feed', params)
 
 
 from HTTPFeedApiModule import *  # noqa: E402
