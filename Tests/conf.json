@@ -2154,6 +2154,7 @@
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "PANW - Hunting and threat detection by indicator type Test": "Issue 20952",
+        "QRadar Indicator Hunting Test": "Issue 21150",
         "ssdeepreputationtest": "Issue #20953"
     },
     "skipped_integrations": {
