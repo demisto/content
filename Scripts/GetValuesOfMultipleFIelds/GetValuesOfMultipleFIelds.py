@@ -1,23 +1,31 @@
 import demistomock as demisto
+from typing import List, Dict
+
+
+def update_list(_list: List, update_with):
+    if isinstance(update_with, list):
+        _list.extend(update_with)
+    else:
+        _list.append(update_with)
 
 
 def main():
-    args = demisto.args()
+    args: Dict = demisto.args()
     root = args.get('Key')
     if not isinstance(root, list):
         root = [root]
-    keys = args.get('List', '').split(',')
+    keys: List = args.get('List', '').split(',')
 
-    t = []
+    t: List = []
     for obj in root:
         for _key in keys:
             temp = obj.get(_key)
             if temp:
-                _ = t.extend(temp) if isinstance(temp, list) else t.append(temp)
+                update_list(t, temp)
 
     initial_value = args.get('value')
     if initial_value:
-        _ = t.extend(initial_value) if isinstance(initial_value, list) else t.append(initial_value)
+        update_list(t, initial_value)
     demisto.results(t)
 
 
