@@ -181,7 +181,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name, container):
         print_color("Starting Slack notifications about nightly build", LOG_COLORS.GREEN)
         print("Extracting build status")
         if container:
-            content_team_attachments, _ = get_attachments_for_unit_test(build_url)
+            content_team_attachments = get_attachments_for_unit_test(build_url)
         else:
             content_team_attachments, _ = get_attachments_for_test_playbooks(build_url, env_results_file_name)
 
