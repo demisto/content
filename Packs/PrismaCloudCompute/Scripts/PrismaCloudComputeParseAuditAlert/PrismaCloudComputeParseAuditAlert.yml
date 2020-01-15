@@ -9,7 +9,7 @@ tags:
 - Prisma Cloud Compute
 comment: Parse Audit alert raw JSON data
 commonfields:
-  id: 67ad6d3b-271c-42c6-968c-0953d58fa97d
+  id: PrismaCloudComputeParseAuditAlert
   version: -1
 enabled: false
 name: PrismaCloudComputeParseAuditAlert
