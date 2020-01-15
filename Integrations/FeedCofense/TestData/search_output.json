@@ -392,7 +392,7 @@
               },
               {
                 "detected": false,
-                "threatVendorName": "TrendMicro-HouseCall"
+                "threatVendorName": "not secret"
               },
               {
                 "detected": false,
@@ -613,7 +613,7 @@
               },
               {
                 "detected": false,
-                "threatVendorName": "TrendMicro-HouseCall"
+                "threatVendorName": "not secret"
               },
               {
                 "detected": false,
@@ -902,7 +902,7 @@
               },
               {
                 "detected": false,
-                "threatVendorName": "TrendMicro-HouseCall"
+                "threatVendorName": "not secret"
               },
               {
                 "detected": false,
@@ -1588,7 +1588,7 @@
               },
               {
                 "detected": true,
-                "threatVendorName": "TrendMicro-HouseCall"
+                "threatVendorName": "not secret"
               },
               {
                 "detected": true,
