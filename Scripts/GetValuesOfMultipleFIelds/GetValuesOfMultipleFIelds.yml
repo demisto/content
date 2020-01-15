@@ -8,7 +8,7 @@ args:
     seperated values. For example key1,key1
   isArray: true
 commonfields:
-  id: 7aa373ab-5ebe-4147-8cb8-e792ba8c9560
+  id: GetValuesOfMultipleFields
   version: -1
 name: GetValuesOfMultipleFields
 scripttarget: 0
