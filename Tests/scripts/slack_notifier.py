@@ -71,11 +71,12 @@ def get_attachments_for_unit_test(build_url):
     unittests_fields = get_unittests_fields()
     color = 'good' if not unittests_fields else 'danger'
     title = 'Content Nightly Unit Tests - Success' if not unittests_fields else 'Content Nightly Unit Tests - Failure'
+    container_one_build_url = build_url + '#queue-placeholder/containers/1'
     content_team_attachment = [{
         'fallback': title,
         'color': color,
         'title': title,
-        'title_link': build_url,
+        'title_link': container_one_build_url,
         'fields': unittests_fields
     }]
     return content_team_attachment
