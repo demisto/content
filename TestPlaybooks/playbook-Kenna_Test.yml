@@ -1,5 +1,5 @@
 id: Kenna Test
-version: 28
+version: 51
 contentitemfields:
   propagationLabels: []
 name: Kenna Test
@@ -18,14 +18,14 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-      - "13"
       - "30"
+      - "13"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 50
+          "x": 90,
+          "y": 65
         }
       }
     note: false
@@ -48,13 +48,12 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
-      - "11"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1070
+          "x": 50,
+          "y": 225
         }
       }
     note: false
@@ -63,10 +62,10 @@ tasks:
     skipunavailable: false
   "3":
     id: "3"
-    taskid: 24bcd6ba-1413-4f60-8f5d-b055db05aaf9
+    taskid: 9988c0d2-be19-40e7-875f-0942eadf947c
     type: regular
     task:
-      id: 24bcd6ba-1413-4f60-8f5d-b055db05aaf9
+      id: 9988c0d2-be19-40e7-875f-0942eadf947c
       version: -1
       name: kenna-search-vulnerabilities
       description: Filtering vulnerabilities by those that Kenna recommends.
@@ -86,8 +85,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
-          "y": 1740
+          "x": 520,
+          "y": 720
         }
       }
     note: false
@@ -96,10 +95,10 @@ tasks:
     skipunavailable: false
   "6":
     id: "6"
-    taskid: c051504e-2b4f-4d86-8bbd-4cd5f8ea941b
+    taskid: 91306420-3cc1-4633-8e99-e39e72129670
     type: regular
     task:
-      id: c051504e-2b4f-4d86-8bbd-4cd5f8ea941b
+      id: 91306420-3cc1-4633-8e99-e39e72129670
       version: -1
       name: kenna-update-vulnerability
       description: Update a single vulnerability's attributes by ID
@@ -114,7 +113,7 @@ tasks:
       id:
         complex:
           root: Kenna
-          accessor: ID
+          accessor: Vulnerabilities.ID
           transformers:
           - operator: FirstArrayElement
       notes:
@@ -125,8 +124,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2147.5,
-          "y": 2090
+          "x": 560,
+          "y": 1070
         }
       }
     note: false
@@ -163,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1245
+          "x": 50,
+          "y": 400
         }
       }
     note: false
@@ -186,8 +185,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2442.5,
-          "y": 2885
+          "x": 1410,
+          "y": 3185
         }
       }
     note: false
@@ -214,8 +213,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 2870
+          "x": 457.5,
+          "y": 3170
         }
       }
     note: false
@@ -224,10 +223,10 @@ tasks:
     skipunavailable: false
   "10":
     id: "10"
-    taskid: dc2f365a-d05f-45c9-8fef-c6ef71dd3438
+    taskid: 1d33cc53-4ec3-44d7-85da-bcd9eb6fc432
     type: regular
     task:
-      id: dc2f365a-d05f-45c9-8fef-c6ef71dd3438
+      id: 1d33cc53-4ec3-44d7-85da-bcd9eb6fc432
       version: -1
       name: kenna-get-asset-vulnerabilities
       description: Get Vulenerabilities of specific asset
@@ -237,7 +236,7 @@ tasks:
       brand: KennaV2
     nexttasks:
       '#none#':
-      - "16"
+      - "31"
     scriptarguments:
       id:
         complex:
@@ -249,41 +248,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 880
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  "11":
-    id: "11"
-    taskid: 826fa020-b8d2-43ac-8065-129c60d8a054
-    type: regular
-    task:
-      id: 826fa020-b8d2-43ac-8065-129c60d8a054
-      version: -1
-      name: kenna-run-connector
-      description: Schedules a run of a connector. If file based, it will use most
-        recently uploaded data file
-      script: KennaV2|||kenna-run-connector
-      type: regular
-      iscommand: true
-      brand: KennaV2
-    scriptarguments:
-      id:
-        complex:
-          root: Kenna
-          accessor: ConnectorsList.ID
-          transformers:
-          - operator: FirstArrayElement
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 1245
+          "x": 980,
+          "y": 2820
         }
       }
     note: false
@@ -321,8 +287,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
-          "y": 1245
+          "x": 520,
+          "y": 400
         }
       }
     note: false
@@ -331,12 +297,12 @@ tasks:
     skipunavailable: false
   "13":
     id: "13"
-    taskid: 846de942-59ea-486b-8fea-23f1bd2bee13
+    taskid: a54caf68-9d6a-4b56-87ab-7b6867c9a1df
     type: regular
     task:
-      id: 846de942-59ea-486b-8fea-23f1bd2bee13
+      id: a54caf68-9d6a-4b56-87ab-7b6867c9a1df
       version: -1
-      name: kenna-search-assets
+      name: kenna-search-assets-round1
       description: Filtering assets by those that Kenna recommands
       script: '|||kenna-search-assets'
       type: regular
@@ -355,8 +321,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 410
+          "x": 1307.5,
+          "y": 50
         }
       }
     note: false
@@ -365,10 +331,10 @@ tasks:
     skipunavailable: false
   "15":
     id: "15"
-    taskid: 99448d0a-d0c9-4db6-8f29-51beb49340da
+    taskid: b013a9fb-99dd-4500-8dd7-d3c0147a5203
     type: condition
     task:
-      id: 99448d0a-d0c9-4db6-8f29-51beb49340da
+      id: b013a9fb-99dd-4500-8dd7-d3c0147a5203
       version: -1
       name: Check Asset List
       type: condition
@@ -378,8 +344,6 @@ tasks:
       '#default#':
       - "9"
       "yes":
-      - "10"
-      - "20"
       - "23"
     separatecontext: false
     conditions:
@@ -402,8 +366,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 560
+          "x": 1307.5,
+          "y": 225
         }
       }
     note: false
@@ -412,10 +376,10 @@ tasks:
     skipunavailable: false
   "16":
     id: "16"
-    taskid: 016e6272-5f36-4e70-8db5-c9ce9555bc55
+    taskid: aa6db79f-433d-4749-8d05-ee07c805cf12
     type: condition
     task:
-      id: 016e6272-5f36-4e70-8db5-c9ce9555bc55
+      id: aa6db79f-433d-4749-8d05-ee07c805cf12
       version: -1
       name: Check Search Vulnerabilities
       type: condition
@@ -433,7 +397,7 @@ tasks:
       - - operator: greaterThan
           left:
             value:
-              simple: Kenna.AssetID
+              simple: Kenna.Vulnerabilities.AssetID
             iscontext: true
           right:
             value:
@@ -441,7 +405,7 @@ tasks:
       - - operator: greaterThan
           left:
             value:
-              simple: Kenna.ID
+              simple: Kenna.Vulnerabilities.Connectors.ID
             iscontext: true
           right:
             value:
@@ -449,8 +413,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1300,
-          "y": 1950
+          "x": 520,
+          "y": 895
         }
       }
     note: false
@@ -459,10 +423,10 @@ tasks:
     skipunavailable: false
   "18":
     id: "18"
-    taskid: 09e6b5ae-7e5e-43de-80a8-84a6eb06c42a
+    taskid: 9c495c58-9a70-4361-8e9e-185af337581c
     type: regular
     task:
-      id: 09e6b5ae-7e5e-43de-80a8-84a6eb06c42a
+      id: 9c495c58-9a70-4361-8e9e-185af337581c
       version: -1
       name: check vulnerabilities after update
       description: Filtering vulnerabilities by those that Kenna recommends.
@@ -477,7 +441,7 @@ tasks:
       id:
         complex:
           root: Kenna
-          accessor: ID
+          accessor: Vulnerabilities.ID
           transformers:
           - operator: FirstArrayElement
       min-score: {}
@@ -487,8 +451,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2147.5,
-          "y": 2265
+          "x": 560,
+          "y": 1245
         }
       }
     note: false
@@ -497,10 +461,10 @@ tasks:
     skipunavailable: false
   "19":
     id: "19"
-    taskid: d2b80764-4457-44a9-830b-c453c9f290be
+    taskid: a17ddece-3632-4825-8f1a-a08e4db41702
     type: condition
     task:
-      id: d2b80764-4457-44a9-830b-c453c9f290be
+      id: a17ddece-3632-4825-8f1a-a08e4db41702
       version: -1
       name: check status after update
       type: condition
@@ -510,7 +474,7 @@ tasks:
       '#default#':
       - "9"
       "yes":
-      - "8"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -518,7 +482,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Kenna.Status
+              simple: Kenna.Vulnerabilities.Status
             iscontext: true
           right:
             value:
@@ -526,8 +490,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2147.5,
-          "y": 2440
+          "x": 560,
+          "y": 1420
         }
       }
     note: false
@@ -563,8 +527,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 560
+          "x": 867.5,
+          "y": 2295
         }
       }
     note: false
@@ -573,12 +537,12 @@ tasks:
     skipunavailable: false
   "21":
     id: "21"
-    taskid: 4cb15d67-f2b3-47c1-8e90-e2c478f33aa2
+    taskid: f13bcfec-e496-40aa-85ae-babe19a8961b
     type: regular
     task:
-      id: 4cb15d67-f2b3-47c1-8e90-e2c478f33aa2
+      id: f13bcfec-e496-40aa-85ae-babe19a8961b
       version: -1
-      name: kenna-search-assets
+      name: kenna-search-assets-round3
       description: Filtering assets by those that Kenna recommands
       script: '|||kenna-search-assets'
       type: regular
@@ -602,8 +566,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 867.5,
+          "y": 2470
         }
       }
     note: false
@@ -625,7 +589,7 @@ tasks:
       '#default#':
       - "9"
       "yes":
-      - "8"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -641,8 +605,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 867.5,
+          "y": 2645
         }
       }
     note: false
@@ -664,7 +628,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
+      - "28"
     scriptarguments:
       id:
         complex:
@@ -678,8 +642,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 545
+          "x": 1195,
+          "y": 400
         }
       }
     note: false
@@ -688,12 +652,12 @@ tasks:
     skipunavailable: false
   "24":
     id: "24"
-    taskid: 74324dd9-ff8d-4f1d-8357-ae48ac75713d
+    taskid: 3fa65d7a-f4e1-427a-8d5e-52dfdfafaea4
     type: regular
     task:
-      id: 74324dd9-ff8d-4f1d-8357-ae48ac75713d
+      id: 3fa65d7a-f4e1-427a-8d5e-52dfdfafaea4
       version: -1
-      name: kenna-search-assets
+      name: kenna-search-assets-round2
       description: Filtering assets by those that Kenna recommands
       script: '|||kenna-search-assets'
       type: regular
@@ -717,8 +681,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 720
+          "x": 642.5,
+          "y": 1595
         }
       }
     note: false
@@ -727,10 +691,10 @@ tasks:
     skipunavailable: false
   "25":
     id: "25"
-    taskid: 1e4ecdd5-d89e-416b-86bf-ac3a81a28fa4
+    taskid: e4f3596b-3440-44e2-8655-1b50f46b4696
     type: condition
     task:
-      id: 1e4ecdd5-d89e-416b-86bf-ac3a81a28fa4
+      id: e4f3596b-3440-44e2-8655-1b50f46b4696
       version: -1
       name: check tag addition
       type: condition
@@ -756,8 +720,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 895
+          "x": 642.5,
+          "y": 1770
         }
       }
     note: false
@@ -793,8 +757,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 1115
+          "x": 755,
+          "y": 1945
         }
       }
     note: false
@@ -816,7 +780,7 @@ tasks:
       '#default#':
       - "9"
       "yes":
-      - "28"
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -836,8 +800,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 1340
+          "x": 755,
+          "y": 2120
         }
       }
     note: false
@@ -862,8 +826,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
-          "y": 1560
+          "x": 520,
+          "y": 575
         }
       }
     note: false
@@ -897,8 +861,55 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1010,
-          "y": 1020
+          "x": 520,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "31":
+    id: "31"
+    taskid: 904afa36-5c28-4070-8203-ceecfee61ccc
+    type: condition
+    task:
+      id: 904afa36-5c28-4070-8203-ceecfee61ccc
+      version: -1
+      name: Check Search Vulnerabilities
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Kenna.VulnerabilitiesOfAsset.AssetID
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Kenna.VulnerabilitiesOfAsset.ID
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 2995
         }
       }
     note: false
@@ -908,13 +919,12 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "15_9_#default#": 0.22,
       "16_9_#default#": 0.54
     },
     "paper": {
       "dimensions": {
-        "height": 2915,
-        "width": 2772.5,
+        "height": 3215,
+        "width": 1740,
         "x": 50,
         "y": 50
       }

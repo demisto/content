@@ -19,7 +19,7 @@ VULNERABILITIES_SEARCH_EXPECTED = {
         "FixID": 1,
         "ID": 1,
         "Patch": True,
-        "RiskMeterScore": None,
+        "Score": 1,
         "ScannerVulnerabilities": [
             {
                 "ExternalID": "Kenna",
@@ -32,7 +32,6 @@ VULNERABILITIES_SEARCH_EXPECTED = {
                 "Port": None
             }
         ],
-        "Score": None,
         "Severity": 1,
         "Status": "open",
         "Threat": 1,
@@ -99,7 +98,7 @@ SEARCH_ASSETS_EXPECTED = {
             "Hostname": None,
             "ID": 3,
             "IpAddress": "Kenna",
-            "MinScore": None,
+            "Score": 3,
             "OperatingSystem": "Kenna",
             "Owner": None,
             "Priority": 3,
@@ -120,7 +119,8 @@ GET_ASSETS_VULNERABILITIES_EXPECTED = {
             "ID": 4,
             "Patch": True,
             "Status": "open",
-            "TopPriority": True
+            "TopPriority": True,
+            "Score": 4
         }
     ]
 }
