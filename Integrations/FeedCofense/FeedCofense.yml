@@ -2,6 +2,7 @@ category: Vulnerability Management
 commonfields:
   id: FeedCofense
   version: -1
+fromversion: 5.5.0
 configuration:
 - defaultvalue: https://threathq.com
   display: URL
@@ -47,7 +48,7 @@ configuration:
   required: false
   type: 15
 description: Cofense Feed Integration
-detaileddescription: http://jmespath.org/
+detaileddescription: ""
 display: Cofense Feed
 name: FeedCofense
 script:
@@ -88,3 +89,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+  - TestCofenseFeed

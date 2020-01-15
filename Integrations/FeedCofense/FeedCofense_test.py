@@ -34,7 +34,7 @@ class TestFetchIndicators:
             threats,
             [
                 "http://example.com/mal.exe",
-                "104.0.0.0",
+                "5.5.5.111",
                 "https://example.com/raw/malp",
                 "example.com",
                 "user@example.com",

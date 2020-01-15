@@ -63,7 +63,7 @@
             },
             "impact": "Major",
             "ipDetail": {
-              "ip": "104.0.0.0",
+              "ip": "5.5.5.111",
               "lookupOn": 1578063269817,
               "latitude": 99.0170,
               "longitude": -90.5811,
@@ -83,8 +83,8 @@
             "blockType": "IPv4 Address",
             "role": "C2",
             "roleDescription": "Command and control location used by malware",
-            "data": "104.0.0.0",
-            "data_1": "104.0.0.0"
+            "data": "5.5.5.111",
+            "data_1": "5.5.5.111"
           },
           {
             "malwareFamily": {
@@ -993,7 +993,7 @@
                 "threatVendorName": "Emsisoft"
               }
             ],
-            "fileName": "BANK_SWIFT_COPY.doc",
+            "fileName": "file name.doc",
             "type": "Attachment",
             "dateEntered": 1578063166476,
             "severityLevel": "Major",
@@ -1255,7 +1255,7 @@
               },
               {
                 "detected": false,
-                "threatVendorName": "TrendMicro-HouseCall"
+                "threatVendorName": "not secret"
               }
             ],
             "fileName": "Excel.Sheet.8.xls",

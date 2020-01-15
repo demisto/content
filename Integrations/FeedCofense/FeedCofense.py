@@ -241,7 +241,7 @@ def get_indicators_command(client: Client, args: dict) -> Tuple[dict, list]:
     indicators = fetch_indicators_command(
         client, begin_time=begin_time, end_time=end_time, limit=limit
     )
-    context_output = {"CofenceFeed.Indicator": indicators[:limit]}
+    context_output = {"Cofense.Indicator": indicators[:limit]}
     return context_output, [indicator.get("rawJSON") for indicator in indicators]
 
 
