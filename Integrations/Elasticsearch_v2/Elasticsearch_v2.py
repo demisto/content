@@ -545,14 +545,14 @@ def fetch_indicators_command():
 def get_indicators_search_scan():
     now = datetime.now()
     time_field = "calculatedTime"
-    last_fetch = get_last_fetch_time()
+    last_fetch = demisto.getLastRun().get('time')
+    range_field = {time_field: {'gt': last_fetch, 'lte': now}} if last_fetch else {time_field: {'lte': now}}
     es = elasticsearch_builder()
     query = QueryString(query=time_field + ":*")
     tenant_hash = demisto.getIndexHash()
     # all shared indexes minus this tenant shared
     indexes = f'*-shared*,-*{tenant_hash}*-shared*'
-    search = Search(using=es, index=indexes).filter({'range': {time_field: {'gt': last_fetch, 'lte': now}}}).query(
-        query)
+    search = Search(using=es, index=indexes).filter({'range': range_field}).query(query)
     return search, now
 
 
