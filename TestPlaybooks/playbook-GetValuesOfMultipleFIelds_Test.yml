@@ -92,7 +92,7 @@ tasks:
           root: ${
           accessor: =[]}
           transformers:
-          - operator: 7aa373ab-5ebe-4147-8cb8-e792ba8c9560
+          - operator: GetValuesOfMultipleFields
             args:
               Key:
                 value:
@@ -102,7 +102,7 @@ tasks:
                 value:
                   simple: inputs.List
                 iscontext: true
-          - operator: 7aa373ab-5ebe-4147-8cb8-e792ba8c9560
+          - operator: GetValuesOfMultipleFields
             args:
               Key:
                 value:
