@@ -4,6 +4,8 @@ To connect the McAfee TIE using the DXL TIE client, you need to create certifica
    * Client certificate ('client.crt' file)
    * Client private key ('client.key' file)
    * Broker list properties file ('brokerlist.properties' file)
+   
+   * Notice these are the certificates themselves and not request certificates.
 
 To use the **tie-set-file-reputation** command, you need authorize the client (Demisto) to run the command. Follow the instructions in the [OpenDXL documentation](https://opendxl.github.io/opendxl-client-python/pydoc/marsendauth.html). In step #4, instead of selecting **Active Response Server API**, select **TIE Server Set Enterprise Reputation**.
 

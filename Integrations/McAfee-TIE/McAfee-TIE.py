@@ -13,13 +13,23 @@ broker_ca_bundle = './brokercerts.crt'
 with open(broker_ca_bundle, "w") as text_file:
     text_file.write(demisto.params()['broker_ca_bundle'])
 
+if not demisto.params()['broker_ca_bundle'].startswith('-----BEGIN CERTIFICATE-----'):
+    return_error("The broker certificate seem to be incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
+
 cert_file = './cert_file.crt'
 with open(cert_file, "w") as text_file:
     text_file.write(demisto.params()['cert_file'])
 
+if not demisto.params()['cert_file'].startswith('-----BEGIN CERTIFICATE-----'):
+    return_error("The client certificates content seem to be "
+                 "incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
+
 private_key = './private_key.key'
 with open(private_key, "w") as text_file:
     text_file.write(demisto.params()['private_key'])
+
+if not demisto.params()['private_key'].startswith('-----BEGIN PRIVATE KEY-----'):
+    return_error("The private key content seems to be incorrect as it doesn't start with -----BEGIN PRIVATE KEY-----")
 
 broker_urls = demisto.params()['broker_urls'].split(',')
 

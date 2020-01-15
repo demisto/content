@@ -5,3 +5,5 @@
        * Client certificate (`client.crt` file)
        * Client private key (`client.key` file)
        * Broker list properties file (`brokerlist.properties` file)
+       
+   * Notice these are the certificates themselves and not request certificates.

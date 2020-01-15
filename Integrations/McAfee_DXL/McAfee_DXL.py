@@ -112,6 +112,16 @@ def main():
     args = demisto.args()
     command = demisto.command()
     event_sender = EventSender(demisto.params())
+    if not demisto.params()['private_key'].startswith('-----BEGIN PRIVATE KEY-----'):
+        return_error(
+            "The private key content seems to be incorrect as it doesn't start with -----BEGIN PRIVATE KEY-----")
+    if not demisto.params()['cert_file'].startswith('-----BEGIN CERTIFICATE-----'):
+        return_error("The client certificates content seem to be "
+                     "incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
+    if not demisto.params()['broker_ca_bundle'].startswith('-----BEGIN CERTIFICATE-----'):
+        return_error(
+            "The broker certificate seem to be incorrect as they don't start with '-----BEGIN CERTIFICATE-----'")
+
     try:
         result = ''
         if command == 'test-module':

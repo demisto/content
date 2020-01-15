@@ -11,7 +11,7 @@ configuration:
   name: cert_file
   required: true
   type: 12
-- display: Client private key path (e.g., /usr/config/client.key)
+- display: Client private key content (e.g. `client.key`)
   name: private_key
   required: true
   type: 14
