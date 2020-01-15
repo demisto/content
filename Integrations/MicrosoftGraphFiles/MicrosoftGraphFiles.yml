@@ -96,7 +96,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: the file name for the uploaded file.
+      description: A file name for the uploaded file.
       isArray: false
       name: file_name
       required: true
@@ -157,6 +157,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
+      description: MS Graph resource.
       isArray: false
       name: object_type
       predefined:
@@ -167,22 +168,25 @@ script:
       required: true
       secret: false
     - default: false
+      description: MS Graph resource id.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
+      description: Ms Graph item_id.
       isArray: false
       name: item_id
       required: true
       secret: false
     - default: false
-      description: demisto entry id
+      description: Demisto file entry id.
       isArray: false
       name: entry_id
       required: true
       secret: false
     deprecated: false
+    description: Replace file conent in MS Graph resource
     execution: false
     name: msgraph-replace-existing-file
     outputs:
@@ -231,6 +235,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
+      description: MS Graph resource.
       isArray: false
       name: object_type
       predefined:
@@ -241,21 +246,25 @@ script:
       required: true
       secret: false
     - default: false
+      description: MS Graph resource id.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
+      description: An ID of the Drive to upload the folder to.
       isArray: false
       name: parent_id
       required: true
       secret: false
     - default: false
+      description: the folder name for the created folder.
       isArray: false
       name: folder_name
       required: true
       secret: false
     deprecated: false
+    description: Create a new folder in a Drive with a specified parent item or path.
     execution: false
     name: msgraph-create-new-folder
     outputs:
@@ -299,21 +308,25 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: Selected Site ID.
       isArray: false
       name: site_id
       required: false
       secret: false
     - default: false
+      description: Sets the page size of results.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
+      description: The URL for the next results page.
       isArray: false
       name: next_page_url
       required: false
       secret: false
     deprecated: false
+    description: Returns the list of Drive resources available for a target Site
     execution: false
     name: msgraph-list-drives-in-site
     outputs:

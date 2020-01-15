@@ -2097,7 +2097,7 @@
             "fromversion": "4.5.0"
         },
         {
-            "integrations": "MsGraphFiles",
+            "integrations": "Microsoft_Graph_Files",
             "playbookID": "test_MsGraphFiles"
         }
     ],
