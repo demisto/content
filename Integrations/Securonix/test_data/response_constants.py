@@ -239,8 +239,3 @@ RESPONSE_GET_WATCHLIST = {
     "to": "1536521067887",
     "totalDocuments": "1"
 }
-RESPONSE_ENTITY_IN_WATCHLIST = {
-    "result": [
-        "Domain_Admin"
-    ]
-}
