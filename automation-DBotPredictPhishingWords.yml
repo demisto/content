@@ -1,0 +1,146 @@
+args:
+- description: The model name (or list name) in Demisto.
+  name: modelName
+  required: true
+- description: Seed for the hash function, at the pre-process stage.
+  name: hashSeed
+- description: Subject of the email.
+  name: emailSubject
+- description: Body of the email.
+  name: emailBody
+- defaultValue: "50"
+  description: 'Maximum number of positive/negative words to return for the model
+    decision. '
+  name: topWordsLimit
+- defaultValue: "0.1"
+  description: Threshold to determine word importance (range 0-1).
+  name: wordThreshold
+- auto: PREDEFINED
+  defaultValue: list
+  description: How the model is stored in Demisto.
+  name: modelStoreType
+  predefined:
+  - list
+  - mlModel
+- defaultValue: "20"
+  description: Minimum number of characters for the prediction.
+  name: minTextLength
+- defaultValue: "0.8"
+  description: The label probability threshold.
+  name: labelProbabilityThreshold
+comment: Predict text label using a pre-trained machine learning phishing model, and
+  get the most important words used in the classification decision.
+commonfields:
+  id: DBotPredictPhishingWords
+  version: -1
+dockerimage: demisto/dl:1.3
+name: DBotPredictPhishingWords
+outputs:
+- contextPath: DBotPredictPhishingWords.Label
+  description: The predicted label.
+  type: String
+- contextPath: DBotPredictPhishingWords.Probability
+  description: The predicted probability (range 0-1).
+  type: Number
+- contextPath: DBotPredictPhishingWords.PositiveWords
+  description: A list of words in the input text that supports the model decision.
+  type: Unknown
+- contextPath: DBotPredictPhishingWords.NegativeWords
+  description: A list of words in the input text that do not support the model decision.
+    These words better support a different classification class.
+  type: Unknown
+- contextPath: DBotPredictPhishingWords.TextTokensHighlighted
+  description: The input text (after pre-processing) with the positive words that
+    support the model decision.
+  type: String
+runonce: false
+script: |-
+  # pylint: disable=no-member
+
+
+
+
+  import demisto_ml
+
+
+  def get_model_data(model_name, store_type):
+      if store_type == 'list':
+          res = demisto.executeCommand("getList", {"listName": model_name})
+          res = res[0]
+          if is_error(res):
+              return_error("error reading list %s from Demisto" % model_name)
+          return res["Contents"]
+      elif store_type == 'mlModel':
+          res = demisto.executeCommand("getMLModel", {"modelName": model_name})
+          res = res[0]
+          if is_error(res):
+              return_error("error reading model %s from Demisto" % model_name)
+          return res['Contents']['modelData']
+
+
+  def predict_phishing_words(model_name, model_store_type, email_subject, email_body):
+      model_data = get_model_data(model_name, model_store_type)
+      model = demisto_ml.decode_model(model_data)
+      text = "%s %s" % (email_subject, email_body)
+      res = demisto.executeCommand('WordTokenizerNLP', {'value': text,
+                                                        'hashWordWithSeed': demisto.args().get('hashSeed')})
+      if is_error(res[0]):
+          return_error(res[0]['Contents'])
+      tokenized_text_result = res[0]['Contents']
+      input_text = tokenized_text_result['hashedTokenizedText'] if tokenized_text_result.get('hashedTokenizedText') else \
+          tokenized_text_result['tokenizedText']
+      filtered_text, filtered_text_number_of_words = demisto_ml.filter_model_words(input_text, model)
+      if filtered_text_number_of_words == 0:
+          return_error("The model does not contains any of the input text words")
+
+      explain_result = demisto_ml.explain_model_words(model,
+                                                      input_text,
+                                                      float(demisto.args().get('labelProbabilityThreshold', 0)),
+                                                      float(demisto.args().get('wordThreshold', 0)),
+                                                      int(demisto.args()['topWordsLimit']))
+
+      if tokenized_text_result.get('hashedTokenizedText'):
+          hash_word_to_plain = dict(
+              zip(tokenized_text_result['hashedTokenizedText'].split(" "),
+                  tokenized_text_result['tokenizedText'].split(" ")))
+          explain_result['PositiveWords'] = map(lambda x: hash_word_to_plain[x], explain_result['PositiveWords'])
+          explain_result['NegativeWords'] = map(lambda x: hash_word_to_plain[x], explain_result['NegativeWords'])
+      explain_result['OriginalText'] = tokenized_text_result['originalText']
+      explain_result['TextTokensHighlighted'] = tokenized_text_result['tokenizedText']
+
+      res = demisto.executeCommand('HighlightWords', {'text': tokenized_text_result['tokenizedText'],
+                                                      'terms': ",".join(explain_result['PositiveWords'])})
+      res = res[0]
+      if not is_error(res):
+          highlighted_text_markdown = res['Contents']
+          explain_result['TextTokensHighlighted'] = highlighted_text_markdown
+
+      return {
+          'Type': entryTypes['note'],
+          'Contents': explain_result,
+          'ContentsFormat': formats['json'],
+          'HumanReadable': tableToMarkdown('DBot Predict Phihsing Words', explain_result,
+                                           headers=['TextTokensHighlighted', 'Label', 'Probability',
+                                                    'PositiveWords', 'NegativeWords'],
+                                           removeNull=True),
+          'HumanReadableFormat': formats['markdown'],
+          'EntryContext': {
+              'DBotPredictPhishingWords': explain_result
+          }
+      }
+
+
+  if __name__ in ['__main__', '__builtin__', 'builtins']:
+      result = predict_phishing_words(demisto.args()['modelName'],
+                                      demisto.args()['modelStoreType'],
+                                      demisto.args().get('emailSubject', ''),
+                                      demisto.args().get('emailBody', '')
+                                      )
+
+      demisto.results(result)
+scripttarget: 0
+system: true
+tags:
+- ml
+- phishing
+type: python

@@ -1,0 +1,528 @@
+description: Creates or edits a Panorama rule and moves it into the desired position
+id: PAN-OS - Create Or Edit Rule
+inputs:
+- description: The device group to work on. Exists only in panorama!
+  key: device-group
+  required: false
+  value: {}
+- description: The name of the rule to update, or the name of the rule that will be
+    created.
+  key: rule_name
+  required: true
+  value: {}
+- description: The server address to which to forward logs.
+  key: log-forwarding-object-name
+  required: false
+  value: {}
+- description: |-
+    The position of the rule in the ruleset. Valid values are:
+      * Top
+      * Bottom
+      * Before
+      * After
+  key: rule-position
+  required: true
+  value: {}
+- description: If the rule-position that is chosen is before or after, specify the
+    rule name to which it is related.
+  key: relative-rule-name
+  required: false
+  value: {}
+- description: Determines if the rule is inbound or outbound.
+  key: inbound-or-outbound-rule
+  required: false
+  value: {}
+- description: the element to add to the rule
+  key: element-to-add
+  required: true
+  value: {}
+- description: |-
+    The action that will be defined in the rule. Valid values are:
+    * allow
+    * deny
+    * drop
+  key: action-type
+  required: true
+  value: {}
+- description: Determines whether the rule is a pre-rulebase or post-rulebase rule,
+    according to the rule structure. Exists only in panorama!
+  key: pre-post-rulebase
+  required: false
+  value: {}
+name: PAN-OS - Create Or Edit Rule
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: e69fbe1a-056a-4929-8dbe-d535f61246e6
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: e69fbe1a-056a-4929-8dbe-d535f61246e6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 60
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre-post-rulebase
+      tag: {}
+    separatecontext: false
+    task:
+      brand: Panorama
+      description: Returns a list of predefined security rules.
+      id: cced98b4-611a-4dbc-8bc4-0a00e9982b20
+      iscommand: true
+      name: List all rules
+      script: Panorama|||panorama-list-rules
+      type: regular
+      version: -1
+    taskid: cced98b4-611a-4dbc-8bc4-0a00e9982b20
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 190
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.SecurityRule.Name
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              simple: inputs.rule_name
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether the rule exists
+      id: f02513b5-9cd4-435b-8bc6-d326954e50db
+      iscommand: false
+      name: Does the rule exist?
+      type: condition
+      version: -1
+    taskid: f02513b5-9cd4-435b-8bc6-d326954e50db
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 350
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.inbound-or-outbound-rule
+          operator: isEqualString
+          right:
+            value:
+              simple: inbound
+      label: Inbound
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.inbound-or-outbound-rule
+          operator: isEqualString
+          right:
+            value:
+              simple: outbound
+      label: Outbound
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      Inbound:
+      - "5"
+      Outbound:
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether the rule is inbound or outbound based on playbook
+        input
+      id: baccdbc9-eb31-4a3f-8e18-73996824ef3e
+      iscommand: false
+      name: Is the rule inbound or outbound?
+      type: condition
+      version: -1
+    taskid: baccdbc9-eb31-4a3f-8e18-73996824ef3e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 530
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.inbound-or-outbound-rule
+          operator: isEqualString
+          right:
+            value:
+              simple: inbound
+      label: Inbound
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.inbound-or-outbound-rule
+          operator: isEqualString
+          right:
+            value:
+              simple: outbound
+      label: Outbound
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      Inbound:
+      - "11"
+      Outbound:
+      - "8"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether the rule is inbound or outbound based on playbook
+        input
+      id: f6317490-2c98-48a3-8ff8-c87e7d441343
+      iscommand: false
+      name: Is the rule inbound or outbound?
+      type: condition
+      version: -1
+    taskid: f6317490-2c98-48a3-8ff8-c87e7d441343
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 530
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      element_to_change:
+        simple: source
+      element_value:
+        complex:
+          root: inputs.element-to-add
+      pre_post:
+        complex:
+          root: inputs.pre-post-rulebase
+      rulename:
+        complex:
+          root: inputs.rule_name
+    separatecontext: false
+    task:
+      brand: Panorama
+      description: Add the element in the input as the new source of the rule
+      id: c206e911-4183-40d4-8b25-957d1be68dc8
+      iscommand: true
+      name: Add new source to the rule
+      script: Panorama|||panorama-edit-rule
+      type: regular
+      version: -1
+    taskid: c206e911-4183-40d4-8b25-957d1be68dc8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 700
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      element_to_change:
+        simple: destination
+      element_value:
+        complex:
+          root: inputs.element-to-add
+      pre_post:
+        complex:
+          root: inputs.pre-post-rulebase
+      rulename:
+        complex:
+          root: inputs.rule_name
+    separatecontext: false
+    task:
+      brand: Panorama
+      description: Add the element in the input as the new destination of the rule
+      id: cf41bad0-14d7-4937-8ffc-052e1172fd71
+      iscommand: true
+      name: Add the new destination to the rule
+      script: Panorama|||panorama-edit-rule
+      type: regular
+      version: -1
+    taskid: cf41bad0-14d7-4937-8ffc-052e1172fd71
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 700
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.action-type
+      application: {}
+      description: {}
+      destination:
+        complex:
+          root: inputs.element-to-add
+      device-group:
+        complex:
+          root: inputs.device-group
+      disable: {}
+      log_forwarding:
+        complex:
+          root: inputs.log-forwarding-object-name
+      negate_destination: {}
+      negate_source: {}
+      pre_post:
+        complex:
+          root: inputs.pre-post-rulebase
+      rulename:
+        complex:
+          root: inputs.rule_name
+      service: {}
+      source: {}
+      source_user: {}
+      tags: {}
+      target: {}
+    separatecontext: false
+    task:
+      brand: Panorama
+      description: Add the element in the input as the new destination of the rule.
+      id: c139ee90-815c-449d-84a9-f9457a0f5f89
+      iscommand: true
+      name: Create an outbound rule
+      script: Panorama|||panorama-create-rule
+      type: regular
+      version: -1
+    taskid: c139ee90-815c-449d-84a9-f9457a0f5f89
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 700
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      dst:
+        complex:
+          root: inputs.relative-rule-name
+      pre_post:
+        complex:
+          root: inputs.pre-post-rulebase
+      rulename:
+        complex:
+          root: inputs.rule_name
+      where:
+        complex:
+          root: inputs.rule-position
+    separatecontext: false
+    task:
+      brand: Panorama
+      description: Changes the location of a policy rule.
+      id: 479277f1-e37f-445b-87c0-4b5b996e4f65
+      iscommand: true
+      name: Move the rule into its position
+      script: Panorama|||panorama-move-rule
+      type: regular
+      version: -1
+    taskid: 479277f1-e37f-445b-87c0-4b5b996e4f65
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 870
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 4cb1e4d5-8722-4b7b-825a-9742e42f8344
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 4cb1e4d5-8722-4b7b-825a-9742e42f8344
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1040
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.action-type
+      application: {}
+      description: {}
+      destination: {}
+      device-group:
+        complex:
+          root: inputs.device-group
+      disable: {}
+      log_forwarding:
+        simple: ${inputs.log-forwarding-object-name}
+      negate_destination: {}
+      negate_source: {}
+      pre_post:
+        complex:
+          root: inputs.pre-post-rulebase
+      rulename:
+        complex:
+          root: inputs.rule_name
+      service: {}
+      source:
+        complex:
+          root: inputs.element-to-add
+      source_user: {}
+      tags: {}
+      target: {}
+    separatecontext: false
+    task:
+      brand: Panorama
+      description: Add the element in the input as the new source of the rule
+      id: a1f5cff3-18ca-4e44-864f-b15a03e17254
+      iscommand: true
+      name: Create an inbound rule
+      script: Panorama|||panorama-create-rule
+      type: regular
+      version: -1
+    taskid: a1f5cff3-18ca-4e44-864f-b15a03e17254
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 700
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_yes": 0.6,
+      "2_4_#default#": 0.65,
+      "3_5_Inbound": 0.52,
+      "3_6_Outbound": 0.61,
+      "4_8_Outbound": 0.6
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1045,
+        "width": 1660,
+        "x": -50,
+        "y": 60
+      }
+    }
+  }

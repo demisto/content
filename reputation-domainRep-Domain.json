@@ -1,0 +1,348 @@
+{
+	"contextPath": "Domain(val.Name \u0026\u0026 val.Name === obj.Name)",
+	"contextValue": "Name",
+	"defaultMapping": {
+		"admincountry": {
+			"complex": {
+				"accessor": "Admin.Country",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"adminemail": {
+			"complex": {
+				"accessor": "Admin.Email",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"adminname": {
+			"complex": {
+				"accessor": "Admin.Name",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"adminphone": {
+			"complex": {
+				"accessor": "Admin.Phone",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"blocked": {
+			"complex": {
+				"accessor": "Blocked",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"creationdate": {
+			"complex": {
+				"accessor": "CreationDate",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"detectionengines": {
+			"complex": {
+				"accessor": "DetectionEngines",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"dns": {
+			"complex": {
+				"accessor": "DNS",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"domainstatus": {
+			"complex": {
+				"accessor": "DomainStatus",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"expirationdate": {
+			"complex": {
+				"accessor": "ExpirationDate",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"internal": {
+			"complex": {
+				"accessor": "Internal",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"nameservers": {
+			"complex": {
+				"accessor": "NameServers",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"organization": {
+			"complex": {
+				"accessor": "Organization",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"positivedetections": {
+			"complex": {
+				"accessor": "PositiveDetections",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"registrantcountry": {
+			"complex": {
+				"accessor": "Registrant.Country",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"registrantemail": {
+			"complex": {
+				"accessor": "Registrant.Email",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"registrantname": {
+			"complex": {
+				"accessor": "Registrant.Name",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"registrantphone": {
+			"complex": {
+				"accessor": "Registrant.Phone",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"registrarabuseemail": {
+			"complex": {
+				"accessor": "Registrar.AbuseEmail",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"registrarabusephone": {
+			"complex": {
+				"accessor": "Registrar.AbusePhone",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"registrarname": {
+			"complex": {
+				"accessor": "Registrar.Name",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"subdomains": {
+			"complex": {
+				"accessor": "Subdomains",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"updateddate": {
+			"complex": {
+				"accessor": "UpdatedDate",
+				"filters": [],
+				"root": "Domain",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		}
+	},
+	"details": "Domain",
+	"disabled": false,
+	"enhancementScriptNames": [
+		"DomainReputation"
+	],
+	"excludedBrands": [],
+	"file": false,
+	"fileHashesPriority": null,
+	"formatScript": "ExtractDomainFromUrlAndEmail",
+	"id": "domainRep",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "(?i)(?:(?:https?|ftp|hxxps?):\\/\\/|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-\\d\\p{L}]+\\[?\\.\\]?)+[-\\d\\p{L}]+(?::\\d+)?(?:((\\/)|(\\*|\\?))+[-\\d\\p{L}+\u0026@#\\/%=~_$?!\\-:,.\\(\\);\\\\*–—―|]+)?|\\b[A-Za-z0-9._%=+\\p{L}-]+@[A-Za-z0-9\\p{L}.-]+\\.[A-Za-z]{2,}\\b",
+	"reputationCommand": "domain",
+	"reputationScriptName": "",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

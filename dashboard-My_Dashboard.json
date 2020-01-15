@@ -1,0 +1,317 @@
+{
+	"fromDate": "0001-01-01T00:00:00Z",
+	"fromDateLicense": "0001-01-01T00:00:00Z",
+	"id": "my-home-dashboard",
+	"isCommon": true,
+	"layout": [
+		{
+			"forceRange": true,
+			"h": 4,
+			"i": "a0e381e0-1c86-11e8-8581-45a91cd24d8e",
+			"id": "a0e381e0-1c86-11e8-8581-45a91cd24d8e",
+			"w": 4,
+			"widget": {
+				"category": "",
+				"commitMessage": "",
+				"dataType": "tasks",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": null,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"id": "my-tasks",
+				"isPredefined": true,
+				"modified": "2018-02-28T14:55:09.423998+02:00",
+				"name": "My Tasks",
+				"params": null,
+				"prevName": "",
+				"query": "assignee:\"{me}\" and (state:Waiting or state:inprogress or state:error)",
+				"shouldCommit": false,
+				"size": 10,
+				"sort": [
+					{
+						"asc": true,
+						"field": "dueDate",
+						"fieldType": ""
+					}
+				],
+				"sortValues": null,
+				"vcShouldIgnore": false,
+				"version": 1,
+				"widgetType": "list"
+			},
+			"x": 8,
+			"y": 0
+		},
+		{
+			"forceRange": true,
+			"h": 2,
+			"i": "d9955cc0-1c86-11e8-8581-45a91cd24d8e",
+			"id": "d9955cc0-1c86-11e8-8581-45a91cd24d8e",
+			"w": 4,
+			"widget": {
+				"category": "others",
+				"commitMessage": "",
+				"dataType": "messages",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": null,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"id": "my-mentions",
+				"isPredefined": true,
+				"modified": "2018-02-28T14:56:46.359548+02:00",
+				"name": "Mentions",
+				"params": null,
+				"prevName": "",
+				"query": "type:mention*",
+				"shouldCommit": false,
+				"size": 10,
+				"sort": null,
+				"sortValues": null,
+				"vcShouldIgnore": false,
+				"version": 1,
+				"widgetType": "list"
+			},
+			"x": 0,
+			"y": 0
+		},
+		{
+			"forceRange": false,
+			"h": 1,
+			"i": "173ed090-1c89-11e8-a678-fdff55233dc8",
+			"id": "173ed090-1c89-11e8-a678-fdff55233dc8",
+			"w": 2,
+			"widget": {
+				"category": "",
+				"commitMessage": "",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": 7,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"id": "",
+				"isPredefined": false,
+				"modified": "2018-02-28T15:09:00.074192+02:00",
+				"name": "My Incidents",
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": -1
+							},
+							"#FAC100": {
+								"value": 1
+							},
+							"#FF1B15": {
+								"value": 5
+							}
+						},
+						"type": "above"
+					}
+				},
+				"prevName": "",
+				"query": "-category:job and -status:archived and -status:closed and owner:\"{me}\"",
+				"shouldCommit": false,
+				"size": 0,
+				"sort": null,
+				"sortValues": null,
+				"vcShouldIgnore": false,
+				"version": 0,
+				"widgetType": "number"
+			},
+			"x": 4,
+			"y": 0
+		},
+		{
+			"forceRange": false,
+			"h": 1,
+			"i": "51fa5e20-1c89-11e8-a678-fdff55233dc8",
+			"id": "51fa5e20-1c89-11e8-a678-fdff55233dc8",
+			"w": 2,
+			"widget": {
+				"category": "",
+				"commitMessage": "",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": 30,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"id": "",
+				"isPredefined": false,
+				"modified": "2018-02-28T15:14:29.146947+02:00",
+				"name": "Late Incidents",
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": -1
+							},
+							"#FAC100": {
+								"value": 5
+							},
+							"#FF1B15": {
+								"value": 10
+							}
+						},
+						"type": "above"
+					}
+				},
+				"prevName": "",
+				"query": "-category:job and -status:archived and -status:closed and dueDate:\u003cnow and owner:\"{me}\"",
+				"shouldCommit": false,
+				"size": 0,
+				"sort": null,
+				"sortValues": null,
+				"vcShouldIgnore": false,
+				"version": 0,
+				"widgetType": "number"
+			},
+			"x": 6,
+			"y": 0
+		},
+		{
+			"forceRange": false,
+			"h": 2,
+			"i": "f12d1f00-1c8e-11e8-b5cb-47979f799c06",
+			"id": "f12d1f00-1c8e-11e8-b5cb-47979f799c06",
+			"w": 8,
+			"widget": {
+				"category": "",
+				"commitMessage": "",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "2018-01-17T00:00:00+02:00",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": 7,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"id": "65",
+				"isPredefined": false,
+				"modified": "2018-02-28T15:54:38.768401+02:00",
+				"name": "My Active Incidents by Type",
+				"params": {
+					"groupBy": [
+						"occurred(d)",
+						"type"
+					]
+				},
+				"prevName": "",
+				"query": "-category:job and -status:archived and -status:closed and owner:\"{me}\"",
+				"shouldCommit": false,
+				"size": 0,
+				"sort": null,
+				"sortValues": null,
+				"vcShouldIgnore": false,
+				"version": 2,
+				"widgetType": "line"
+			},
+			"x": 0,
+			"y": 2
+		},
+		{
+			"forceRange": true,
+			"h": 1,
+			"i": "0cce7c40-1c8f-11e8-b5cb-47979f799c06",
+			"id": "0cce7c40-1c8f-11e8-b5cb-47979f799c06",
+			"w": 4,
+			"widget": {
+				"category": "",
+				"commitMessage": "",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": null,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"id": "my-mean-time-to-resolution",
+				"isPredefined": true,
+				"modified": "2018-02-28T15:55:31.609278+02:00",
+				"name": "My Mean Time to Resolution",
+				"params": {
+					"keys": [
+						"avg|openDuration",
+						"count|1"
+					]
+				},
+				"prevName": "",
+				"query": "-category:job and status:closed and owner:\"{me}\"",
+				"shouldCommit": false,
+				"size": 0,
+				"sort": null,
+				"sortValues": null,
+				"vcShouldIgnore": false,
+				"version": 2,
+				"widgetType": "duration"
+			},
+			"x": 4,
+			"y": 1
+		}
+	],
+	"name": "My Dashboard",
+	"owner": "",
+	"period": {
+		"by": "",
+		"byFrom": "days",
+		"byTo": "",
+		"field": "",
+		"fromValue": 7,
+		"toValue": null
+	},
+	"shared": false,
+	"sortValues": null,
+	"system": true,
+	"toDate": "0001-01-01T00:00:00Z",
+	"version": -1
+}

@@ -1,0 +1,46 @@
+args:
+- default: true
+  description: The System to remote execute on, can be a list of systems
+  name: system
+  required: true
+- description: The osquery query to execute on remote system
+  name: query
+  required: true
+comment: |-
+  Returns the results from a basic OSQuery query on a remote Linux machine.
+  For more information read documentation at https://osquery.readthedocs.io/
+commonfields:
+  id: OSQueryBasicQuery
+  version: -1
+dependson:
+  must:
+  - RemoteExec
+name: OSQueryBasicQuery
+runonce: false
+script: |-
+  import json
+
+  ## ssh command to run, json format, param = query to execute
+  COMMAND = 'osqueryi --json "{0}"'
+
+  systems = argToList(demisto.args()['system'])
+  query = demisto.get(demisto.args(), 'query')
+
+  res = []
+  error_res = []
+
+  if query and systems:
+      for system in systems:
+          temp_res = demisto.executeCommand("RemoteExec", {'cmd' : COMMAND.format(str(query)), 'system': system})
+          if isError(temp_res[0]):
+              error_res += [{"Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'An Error occurred on remote system:\"{0}\". Error={1}.'.format(system,temp_res[0]['Contents'])}]
+          else:
+              data = json.loads(temp_res[0]['Contents'])
+              res += [{'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], "Contents": tblToMd("{0} results:".format(system),data)}]
+
+  demisto.results(res + error_res)
+scripttarget: 0
+system: true
+tags:
+- OSQuery
+type: python

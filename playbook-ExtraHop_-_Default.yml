@@ -1,0 +1,328 @@
+description: Default playbook to run for all ExtraHop Detection incidents.  This playbook
+  handles ticket tracking as well as triggering specific playbooks based on the name
+  of the ExtraHop Detection.
+id: ExtraHop - Default
+inputs: []
+name: ExtraHop - Default
+outputs:
+- contextPath: CVE
+  description: Details on the CVE.
+  type: unknown
+- contextPath: ExtraHop.Device
+  description: 'Details on the host and any peer devices found. '
+  type: unknown
+- contextPath: ExtraHop.ActivityMap
+  description: The link to a visual activity map in ExtraHop.
+  type: string
+- contextPath: ExtraHop.Record.Source
+  description: Associated transaction records from ExtraHop.
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: e05c49e8-d5fc-49cc-8e4f-febae049f470
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: e05c49e8-d5fc-49cc-8e4f-febae049f470
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: aacb39b5-ff6b-405e-8891-e03e73e4b101
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: aacb39b5-ff6b-405e-8891-e03e73e4b101
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 920
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "18"
+      - "19"
+    note: false
+    scriptarguments:
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: brand
+              operator: isEqualString
+              right:
+                value:
+                  simple: ExtraHop v2
+          - - left:
+                iscontext: true
+                value:
+                  simple: state
+              operator: isEqualString
+              right:
+                value:
+                  simple: active
+          root: modules
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of the ExtraHop Reveal(x)
+        integration enabled.
+      id: c46704ba-c334-4b3b-887f-fa1dd8339fd0
+      iscommand: false
+      name: Is ExtraHop Reveal(x) enabled?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: c46704ba-c334-4b3b-887f-fa1dd8339fd0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      description: Links the Demisto incident back to the ExtraHop detection that
+        created it for ticket tracking purposes.
+      id: b24f8753-bb48-4a77-8b97-a33ed472cd05
+      iscommand: false
+      name: ExtraHop - Ticket Tracking
+      playbookName: ExtraHop - Ticket Tracking
+      type: playbook
+      version: -1
+    taskid: b24f8753-bb48-4a77-8b97-a33ed472cd05
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 500
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: This task is for the ExtraHop analyst to enter notes on the ExtraHop
+        Detection that created this Incident.  Used as a method of initial investigation
+        and tracking notes within the Work Plan.
+      id: a67d8b24-4516-46c0-85a0-3fd3cf7c2279
+      iscommand: false
+      name: Add initial investigation notes
+      type: regular
+      version: -1
+    taskid: a67d8b24-4516-46c0-85a0-3fd3cf7c2279
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 685
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 03bac09d-d03d-45d5-86f1-4209973b4a4d
+      iscommand: false
+      name: Detection Playbooks
+      type: title
+      version: -1
+    taskid: 03bac09d-d03d-45d5-86f1-4209973b4a4d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 370
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f4749919-007f-47da-85ce-4428c0000d64
+      iscommand: false
+      name: Ticket Tracking
+      type: title
+      version: -1
+    taskid: f4749919-007f-47da-85ce-4428c0000d64
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 370
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.name
+          operator: containsString
+          right:
+            value:
+              simple: CVE-2019-0708
+      label: BlueKeep
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      BlueKeep:
+      - "21"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if the incoming detection has a specific playbook to run.
+      id: 7a4202c3-81a2-4275-8ceb-474fa9f90a39
+      iscommand: false
+      name: Does the detection have a playbook?
+      type: condition
+      version: -1
+    taskid: 7a4202c3-81a2-4275-8ceb-474fa9f90a39
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 500
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      AutoBlockIp:
+        simple: "False"
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        This server received a Remote Desktop Protocol (RDP) connection request that is consistent with a known vulnerability, also known as BlueKeep, in older versions of Microsoft Windows. This vulnerability allows an unauthenticated attacker to remotely run arbitrary code on an RDP server. The attacker can then tamper with data or install malware that could propagate to other Windows devices across the network. Investigate to determine if this server is hosting a version affected by CVE-2019-0708: Windows 7, Windows XP, Windows Vista, Windows Server 2003, and Windows Server 2008.
+
+        MITIGATION OPTIONS
+        - Disable Remote Desktop Services if they are not required
+        - Implement Network Level Authentication (NLA) on systems running supported versions of Windows 7, Windows Server 2008, and Windows Server 2008 R2
+        - Configure firewalls to block traffic on TCP port 3389
+      id: ecbb3f9e-7e2b-4497-800d-b13e7dfcb858
+      iscommand: false
+      name: ExtraHop - CVE-2019-0708 (BlueKeep)
+      playbookName: ExtraHop - CVE-2019-0708 (BlueKeep)
+      type: playbook
+      version: -1
+    taskid: ecbb3f9e-7e2b-4497-800d-b13e7dfcb858
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 730
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_2_#default#": 0.18,
+      "20_21_BlueKeep": 0.44,
+      "20_2_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 935,
+        "width": 950,
+        "x": -290,
+        "y": 50
+      }
+    }
+  }

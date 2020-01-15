@@ -1,0 +1,415 @@
+description: Enrich CVE using one or more integrations.
+id: cve_enrichment_-_generic
+inputs:
+- description: The CVE to enrich.
+  key: CVE
+  required: false
+  value:
+    complex:
+      root: CVE
+- description: Should the playbook retrieve the reputation for the CVE?
+  key: GetReputation
+  required: true
+  value:
+    simple: "True"
+name: CVE Enrichment - Generic
+outputs:
+- contextPath: CVE
+  description: The CVE object
+  type: unknown
+- contextPath: CVE.ID
+  description: The ID of the CVE
+  type: string
+- contextPath: CVE.CVSS
+  description: The CVSS score of the CVE
+  type: number
+- contextPath: CVE.Published
+  description: The date this was published
+  type: date
+- contextPath: CVE.Modified
+  description: When CVE was last modified
+  type: date
+- contextPath: CVE.Description
+  description: The CVE description
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 8a9b5f57-93dc-4f6e-847a-472c93c1af17
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 8a9b5f57-93dc-4f6e-847a-472c93c1af17
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: ID
+                root: inputs.CVE
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "8"
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that the playbook input includes at least one CVE ID to
+        enrich.
+      id: 8bb9a465-c8c6-4c01-855c-949ae425e1ee
+      iscommand: false
+      name: Are there any CVE IDs?
+      type: condition
+      version: -1
+    taskid: 8bb9a465-c8c6-4c01-855c-949ae425e1ee
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1c1df4a5-6a12-4724-8cf5-586f7743fc57
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 1c1df4a5-6a12-4724-8cf5-586f7743fc57
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 865
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f7b01173-8ceb-4a00-843c-ae25be38be72
+      iscommand: false
+      name: Enrich CVE
+      type: title
+      version: -1
+    taskid: f7b01173-8ceb-4a00-843c-ae25be38be72
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 370
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: XFE
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that there's a valid instance of XFE enabled.
+      id: ec903a88-c4cd-4c15-8cf4-3e2065626e24
+      iscommand: false
+      name: Is XFE enabled?
+      type: condition
+      version: -1
+    taskid: ec903a88-c4cd-4c15-8cf4-3e2065626e24
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 515
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: CVE Search
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that there's a valid instance of "CVE Search" enabled.
+      id: 306a2d9e-6bf5-483e-8dae-7f65b705e535
+      iscommand: false
+      name: Is "CVE Search" enabled?
+      type: condition
+      version: -1
+    taskid: 306a2d9e-6bf5-483e-8dae-7f65b705e535
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 515
+        }
+      }
+  "6":
+    continueonerror: true
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      cveId:
+        complex:
+          accessor: ID
+          root: inputs.CVE
+    separatecontext: false
+    task:
+      brand: CVE Search
+      description: Retrieve CVE information from "CVE Search".
+      id: 7674b375-bbfd-4ac0-877a-42110ffc1a89
+      iscommand: true
+      name: Get CVE info from "CVE Search"
+      script: CVE Search|||cve-search
+      type: regular
+      version: -1
+    taskid: 7674b375-bbfd-4ac0-877a-42110ffc1a89
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 690
+        }
+      }
+  "7":
+    continueonerror: true
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      cveId:
+        complex:
+          accessor: ID
+          root: inputs.CVE
+    separatecontext: false
+    task:
+      brand: XFE
+      description: Retrieve CVE information from XFE.
+      id: 64e794a4-8cf1-4f18-8d0c-0dd74d6f295e
+      iscommand: true
+      name: Get CVE info from XFE
+      script: XFE|||cve-search
+      type: regular
+      version: -1
+    taskid: 64e794a4-8cf1-4f18-8d0c-0dd74d6f295e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 690
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.GetReputation
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "9"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Is the GetReputation input set to 'True'?
+      id: a8dc9bc9-7c74-4b59-86a4-aa7c09063fd0
+      iscommand: false
+      name: Should the system retrieve the CVE reputation?
+      type: condition
+      version: -1
+    taskid: a8dc9bc9-7c74-4b59-86a4-aa7c09063fd0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      input:
+        complex:
+          accessor: ID
+          root: inputs.CVE
+    separatecontext: false
+    task:
+      brand: ""
+      description: Retrieve CVE reputation using one or more integrations.
+      id: f779358d-7e46-4afd-8b42-b48167adb764
+      iscommand: false
+      name: Retrieve CVE reputation
+      scriptName: cveReputation
+      type: regular
+      version: -1
+    taskid: f779358d-7e46-4afd-8b42-b48167adb764
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 880,
+        "width": 1485,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,31 @@
+{
+	"category": "",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "active-incidents-by-severity",
+	"isPredefined": true,
+	"name": "Active Incidents - Pie chart",
+	"params": {
+		"groupBy": [
+			"severity"
+		]
+	},
+	"query": "-category:job and -status:archived and -status:closed",
+	"size": 0,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "pie"
+}

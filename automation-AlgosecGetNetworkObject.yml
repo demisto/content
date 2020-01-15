@@ -1,0 +1,41 @@
+args:
+- default: true
+  description: The IP/Subnet to search
+  name: address
+  required: true
+- auto: PREDEFINED
+  description: The search method for the address (default is INTERSECT)
+  name: type
+  predefined:
+  - INTERSECT
+  - CONTAINED
+  - CONTAINING
+  - EXACT
+comment: Find network objects related to IP address
+commonfields:
+  id: AlgosecGetNetworkObject
+  version: -1
+dependson:
+  must:
+  - algosec-get-network-object
+name: AlgosecGetNetworkObject
+runonce: false
+script: |2
+
+  resp = demisto.executeCommand("algosec-get-network-object", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = [demisto.get(entry, "Contents") for entry in resp]
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = flattenTable(data)
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- Algosec
+type: python

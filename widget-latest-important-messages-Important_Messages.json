@@ -1,0 +1,27 @@
+{
+	"category": "others",
+	"dataType": "messages",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": null,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "latest-important-messages",
+	"isPredefined": true,
+	"name": "Important Messages",
+	"params": null,
+	"query": "type:investigation* or type:newContentAvailable or type:mention*",
+	"size": 10,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "list"
+}

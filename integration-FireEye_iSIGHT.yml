@@ -1,0 +1,482 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: FireEye iSIGHT
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Public Key
+  name: publicKey
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Private Key
+  name: privateKey
+  required: true
+  type: 4
+- defaultvalue: "2.5"
+  display: Version
+  name: version
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: FireEye cyber threat intelligence
+display: FireEye iSIGHT
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHMAAAAhCAYAAADqBZQaAAAGqUlEQVR4Ae3ZA3AcfR/A8V/Y6GI711xSK8ldH9u2bdu2bdsoHte2bdt2+3u/M+9mZmdnb7N1b2Y782mM/X/zx+3Jnvg3qbIuFSGIZ//ZU98oGm+hFBLJvJjAJXgCEvm8mI3wN1pDIpkXE/gN70IinxezA7pCIpsXMwbj8AEksnkx67ACbXEd2kIikxfzRbyOIqzEoZDI48WMRQcU4Wgo7oJEHi9mBd6B4GIo5sEPiSBezOmBYJpxBygOT+I2jMdwZEMighcTWFgdqptbFSqfEwhWQHhfayzHVFRCIoAX00EQS7EA7SEOopGARi4kIAqCHJQhEbK3iWRHQQ5Mu/aFUUhDAYpFsniZ6YNYGTN0qaENJIzmGI1xmOhgKgYjH4IOUJy8D0KehtEYjGENGI+jD9SYCTgSL6EH5mA5VmAlFqELYa/Kjc2LHu6vLZlTFToP5iV3HkogNtphGxSrHazHHBRB0A2KM/dBzMuhhq3Y5kBxJmRviorNi0I0RPjPEV8QwNMYAw1jG2ZgPKYxI/883VcSmBEIPjW1Mvg8xJg5il8gNtpCMQuNkYMCB9EQtMHxyNkHMS+GYiiKUYbyMPxI2gchT8ZtaO4UsQRvYK0l2jKoyQAcyoyMhyAGh4mknntfduPERdXtJ0ysrLsUwoC8CcWJDjFnIg3ikg9ZiIMYElCKPAjScApuRR3EJAVBXI6bcC78iHaI2QfiUiZKkQ1xkItypEJM8nAULsWFqEWyETMRN+AZHGEXMQ3PWSLOxvsI4TGoYQJyIVY1CUVRkFmB4F2T/7/PRSMPW/BpAzMzA+JSR5s983jswJ9ogmlQw2cQw6WYAbXYjh+QGyZmP4hLJ2Iz5qAMYqMFlhpaQpCB97EOajENZxlB89EaPnPEGFyO6VCswdc4B6kQw+dQw/WQeguqQjHEu35eVegQCITHoOcZA3QwBF0xFtFhYk6HD+LSP1CcCjGcBMUkTMZqdEBHPATBPVBswze4CufiHoyFYjDXkwGBOWZfiEvR6AvFExAb70DRwRSyHxRz8Cyuwg34GtuhuNp6AGqEELpAsRQvohRi42sodqA9pB4X/wCehdSbyEywHFCewSIk2cTcji0YhH7ob2MUHmsg5glQQ18UQkzaYBMUV0IsktENyqryHAQiklUfcy0GY2gYI9EVORBcDcVsm+W2GEuhOAGC96EYhQKIxSVQLEaxOeZlWGX6YBOIgwehhhMtMXvhNIjhVii2oBUE92EOEmxiboW68IXLmKtQCbF4ymbJtToIihmzq4KpEJHMi12eZhWLTCFSMA6KayAmt0DRDYIsLMZ2BCFh/ATFneaYgoPQDYou8EHCqMZKKL6G1GNJ/YqZuM6YjQOghvcghtfQx2HPnIs2qEDARjXyXcYcBrHRAYqx6IJeFj3RHVugLLEhmGfmUJSgHBU2/ChFDMRwMxT9EA1BIkZDcR4EIezAenRAR3Sy+BljoPgZpphANO7BFgxDISSMp6HYgbMhkFH+2pzF1e07QQmrRF3DYLxvWVKH4KE9eJp1ijkYYuM/KOZgMqbZmIrRmEDIgywx+0B2Ui4WQnESBBdAMRkpEBwDxSbMxDwb8zEDs/GFNaZZBf7BCpwHCeMlKLbgYZagZMgTOdWxb+Q39Xcta1MzLRAsMN12E1yMQUjeg6dZp5hDIDY+hOJhCBrZiIYgnpAxlpj9ILvgOSg6QfA3FLdDDFXYjEXIRxySLRIQhRgkOMQEcBGGogNqITZOQAcsxwgu9mOC3iviK4GYMSgX4j80huznmOe5eJruQvTEsxCY98zekF1QhmVYhfOwHnORDTHEYTAUT0Fs+PA6fkVNwzGBRNyOwfgWZyAnzDdvhiqRjFQIZAZ/0QxCDV7GK8iE7OGYf+9CzDh0hWIcjoEPCcjGLdgA5RpOhsD80GQizsTZOCeMC9ECYvERFKugeB1icTbU8AwKEIt4BPAbFH3sZ6azeByLt9EZn+ImHI8qJELMuCfbgj3zTgbkbjSHNKAGivnIgrjU1ebe7GlQjICEkY3/oIaVmI1NUCzHOZabBldBd8IbEIsabDYFDUBsXI2NUGzCZMzCdii6IHd3nzVJQluci3twKdqJZPkgkJmBYBwXX450iEv5eAA3IAHi0rl4FJUQgx8P41KIg3icjY8wEGPxLx6CH2KJ2QrP4FE81oBncQzERkco3oM4aIan0B3TMAk/4WIkQKwxPftWAeZBcTDEpSiDAPBi7nfvm0+0O8+Lub/dgCEYBcVa1HoxI9NtWI7ZGIzTIHva/wAx/Zd/Mj383wAAAABJRU5ErkJggg==
+name: FireEye iSIGHT
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: ip to search by
+      name: ip
+      required: true
+    description: basic search reports by ip
+    name: ip
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    - contextPath: Report.ID
+      description: Report ID
+    - contextPath: Report.title
+      description: Report title
+    - contextPath: Report.publishDate
+      description: Report publish date
+    - contextPath: Report.intelligenceType
+      description: Report intelligence type (overview, vulnerability, malware, threat)
+  - arguments:
+    - default: true
+      description: domain to search by
+      name: domain
+      required: true
+    description: basic search reports by domain
+    name: domain
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    - contextPath: Report.ID
+      description: Report ID
+    - contextPath: Report.title
+      description: Report title
+    - contextPath: Report.publishDate
+      description: Report publish date
+    - contextPath: Report.intelligenceType
+      description: Report intelligence type (overview, vulnerability, malware, threat)
+  - arguments:
+    - description: md5 or sha1 to search by
+      name: file
+    description: basic search file report by md5/sha1. NOTE - specify only one of
+      md5/sha1 arguments
+    name: file
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    - contextPath: Report.ID
+      description: Report ID
+    - contextPath: Report.title
+      description: Report title
+    - contextPath: Report.publishDate
+      description: Report publish date
+    - contextPath: Report.intelligenceType
+      description: Report intelligence type (overview, vulnerability, malware, threat)
+  - arguments:
+    - default: true
+      description: Report ID to search by
+      name: reportID
+      required: true
+    description: Get specific report
+    name: isight-get-report
+    outputs:
+    - contextPath: Report.ID
+      description: Report ID
+    - contextPath: Report.title
+      description: Report title
+    - contextPath: Report.publishDate
+      description: Report publish date
+    - contextPath: Report.intelligenceType
+      description: Report intelligence type (overview, vulnerability, malware, threat)
+    - contextPath: Report.audience
+      description: Report audience
+    - contextPath: Report.ThreatScape
+      description: Report threat scape
+    - contextPath: Report.operatingSystems
+      description: Report operating systems
+    - contextPath: Report.riskRating
+      description: Report risk rating
+    - contextPath: Report.version
+      description: Report version
+    - contextPath: Report.tagSection
+      description: Report tag section
+  - arguments:
+    - default: true
+      description: entry-id of the file to submit (e.g. 41@18)
+      name: entryID
+      required: true
+    - description: file description
+      name: description
+      required: true
+    - auto: PREDEFINED
+      description: Type of the given file
+      name: type
+      predefined:
+      - malware
+      - other
+      required: true
+    description: Submission of malware and other files for community sharing
+    name: isight-submit-file
+  runonce: false
+  script: |2
+
+    var baseUrl = 'https://api.isightpartners.com'; // iSight base url
+    var publicKey = params.publicKey;
+    var privateKey = params.privateKey;
+    var acceptVersion = params.version;
+    var insecure = params.insecure;
+    var proxy = params.proxy;
+
+    var VENDOR_NAME = 'FireEye iSIGHT';
+
+    // we use this to map record-type to dbot-score
+    var intelligenceTypeToScore = {
+        'overview': 1,
+        'vulnerability': 2,
+        'malware': 3,
+        'threat': 3
+    };
+
+    // we use this to determine the order of reputation sevirity of the types
+    var intelligenceTypeOrder = ['overview', 'vulnerability', 'malware', 'threat'];
+
+    var epoch2DateStr = function(epochStr) {
+        return new Date(parseInt(epochStr) * 1000).toString();
+    }
+
+    var createTableEntry = function (name, contents, table, context) {
+        return {
+            // type
+            Type: entryTypes.note,
+             // contents
+            ContentsFormat: formats.json,
+            Contents: contents,
+            // human-readable
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: tableToMarkdown(name, table),
+            // context
+            EntryContext: context
+        };
+    }
+
+    var getHeaders = function(query) {
+        var timestamp = new Date().toUTCString();
+        if (timestamp.indexOf('+') > 0) {
+            timestamp = timestamp.substring(0,timestamp.indexOf('+'));
+        } else if (timestamp.indexOf('-') > 0) {
+            timestamp = timestamp.substring(0,timestamp.indexOf('-'));
+        }
+        message = query + acceptVersion + 'application/json' + timestamp;
+        hashed = HMAC_SHA256_MAC(privateKey, message);
+
+        return {
+            'Accept': ['application/json'],
+            'Accept-Version': [acceptVersion],
+            'X-Auth': [publicKey],
+            'X-Auth-Hash': [hashed],
+            'Date': [timestamp]
+        }
+    }
+
+    var sendRequest = function(query) {
+        var headers = getHeaders(query);
+        var requestUrl = baseUrl + query;
+
+        var res = http(
+            requestUrl,
+            {
+                Method: 'GET',
+                Headers: headers,
+                Body: ''
+            },
+            insecure,
+            proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nUrl: ' + requestUrl + '\nStatus code: ' + res.StatusCode + '.\nResult: ' + JSON.stringify(res);
+        }
+
+        if (res.StatusCode === 204) {
+            return [];
+        }
+
+        var body = JSON.parse(res.Body);
+        if (!body || !body.success) {
+            throw 'Request Failed.\nResonse body: ' + body;
+        }
+        return body;
+    };
+
+    var basicSearch = function(key, value) {
+        var basicSearchQuery = '/search/basic?' + key + '=' + encodeURIComponent(value);
+        var res = sendRequest(basicSearchQuery);
+        return res.message;
+    }
+
+    var createContextReportsAndScore = function(records) {
+        var dbotScore = 0;
+        var highetsRecordType = 'None';
+        var reports = [];
+
+        // 1. set dbotScore to to the highest record-type among all records
+        // 2. create report context-object for each record
+        records && records.forEach(function(record) {
+           var recordType = record['intelligenceType'];
+           var recordScore =  intelligenceTypeToScore[recordType] || 0;
+           if (dbotScore < recordScore) {
+               dbotScore = recordScore;
+           }
+           if(intelligenceTypeOrder.indexOf(highetsRecordType) < intelligenceTypeOrder.indexOf(recordType)) {
+               highetsRecordType = recordType;
+           }
+           var reportUrl = record['reportLink'];
+           reports.push({
+               ID: record['reportId'],
+               title: record['title'],
+               publishDate: epoch2DateStr(record['publishDate']),
+               intelligenceType: recordType
+           });
+        });
+
+        return {
+            dbotScore: dbotScore,
+            reports: reports,
+            highetsRecordType: highetsRecordType
+        }
+    }
+
+    var basicSearchIP = function(ip) {
+        var records = basicSearch('ip', ip);
+
+        if (!records) {
+            return {
+                Type: entryTypes.note,
+                Contents: "No items match your search",
+                ContentsFormat: formats.text,
+                EntryContext: {
+                    DBotScore: {
+                        Indicator: ip,
+                        Type: 'IP',
+                        Vendor: VENDOR_NAME,
+                        Score: 0
+                    }
+                }
+            };
+        }
+
+        var res = createContextReportsAndScore(records);
+        var context = {
+            DBotScore: {Indicator: ip, Type: 'IP', Vendor: VENDOR_NAME, Score: res.dbotScore},
+            'Report(val.ID && val.ID == obj.ID)': res.reports
+        };
+
+        if (res.dbotScore > 2) {
+            addMalicious(context, outputPaths.ip,{
+                Address: ip,
+                Malicious: {Vendor: VENDOR_NAME, Description: 'IP was identified as ' + res.highetsRecordType}
+            });
+        }
+
+        return createTableEntry("Results:", records, records, context);
+    }
+
+    var basicSearchDomain = function(domain) {
+        var records = basicSearch('domain', domain);
+
+        if (!records) {
+            return {
+                Type: entryTypes.note,
+                Contents: "No items match your search",
+                ContentsFormat: formats.text,
+                EntryContext: {
+                    DBotScore: {
+                        Indicator: domain,
+                        Type: 'domain',
+                        Vendor: VENDOR_NAME,
+                        Score: 0
+                    }
+                }
+            };
+        }
+
+        var res = createContextReportsAndScore(records);
+        var context = {
+            DBotScore: {Indicator: domain, Type: 'domain', Vendor: VENDOR_NAME, Score: res.dbotScore},
+            'Report(val.ID && val.ID == obj.ID)': res.reports
+        };
+
+        if (res.dbotScore > 2) {
+            addMalicious(context, outputPaths.domain,{
+                Name: domain,
+                Malicious: {Vendor: VENDOR_NAME, Description: 'domain was identified as ' + res.highetsRecordType}
+            });
+        }
+
+        return createTableEntry("Results:", records, records, context);
+    }
+
+    var basicSearchfile = function(key, value) {
+        var records = basicSearch(key, value);
+
+        if (!records) {
+            return {
+                Type: entryTypes.note,
+                Contents: "No items match your search",
+                ContentsFormat: formats.text,
+                EntryContext: {
+                    DBotScore: {
+                        Indicator: value,
+                        Type: 'file',
+                        Vendor: VENDOR_NAME,
+                        Score: 0
+                    }
+                }
+            };
+        }
+
+        var res = createContextReportsAndScore(records);
+        var context = {
+            DBotScore: {Indicator: value, Type: 'file', Vendor: VENDOR_NAME, Score: res.dbotScore},
+            'Report(val.ID && val.ID == obj.ID)': res.reports
+        };
+
+        if (res.dbotScore > 2) {
+            var malicuousObj = {
+                Malicious: {
+                    Vendor: VENDOR_NAME,
+                    Description: 'file was identified as ' + res.highetsRecordType
+                }
+            };
+            malicuousObj[key.toUpperCase()] = value;
+            addMalicious(context, outputPaths.file, malicuousObj);
+        }
+
+        return createTableEntry("Results:", records, records, context);
+    }
+
+    var getReport = function(reportID) {
+        var reportQuery = '/report/'+ encodeURIComponent(reportID);
+
+        var res = sendRequest(reportQuery);
+        var report = res.message.report;
+
+        var context = {
+            'Report(val.ID && val.ID == obj.ID)' : {
+                ID: report.reportId,
+                title: report.title,
+                intelligenceType: report.intelligenceType,
+                audience: report.audience,
+                publishDate: report.publishDate,
+                ThreatScape: report.ThreatScape.product,
+                operatingSystems: report.operatingSystems,
+                riskRating: report.riskRating,
+                version: report.version,
+                tagSection: report.tagSection
+            }
+        }
+
+        var table = [{
+            ID: report.reportId,
+            title: report.title,
+            intelligenceType: report.intelligenceType,
+            audience: report.audience.join(),
+            publishDate: report.publishDate,
+            ThreatScape: report.ThreatScape.product.join(),
+            operatingSystems: report.operatingSystems,
+            riskRating: report.riskRating,
+            version: report.version
+        }];
+
+        return createTableEntry("Report - " + reportID, res, table, context);
+    }
+
+    var submitFile = function(entryID, description, type) {
+        var query = '/submit/data';
+        var requestUrl = baseUrl + query;
+        var headers = getHeaders(query);
+        var res = httpMultipart(
+                requestUrl, // URL
+                entryID, // Optional - FilePath / EntryID
+                { // HTTP Request Headers
+                    Method: 'POST',
+                    Headers: headers
+                },
+                { // Multipart Contents
+                    type: type,
+                    description: description
+                },
+                insecure,
+                proxy
+            );
+
+        var statusCode = res && res.StatusCode;
+
+        switch (statusCode) {
+            case 200:
+                return "The file was submitted sucessfully";
+            case 403:
+                throw "\nGot 403 error\nQuery valid but the response was refused because the user has exceeded their daily quota of submission requests";
+            default:
+                throw '\nSubmit File Failed.\nUrl: ' + requestUrl + '\nStatus code: ' + statusCode + '.\nResult: ' + JSON.stringify(res, null, 2);
+        }
+    }
+
+    switch (command) {
+        case 'test-module':
+            basicSearch('ip', '66.34.253.56');
+            return 'ok';
+        case 'ip':
+            return basicSearchIP(args.ip);
+        case 'domain':
+            return basicSearchDomain(args.domain);
+        case 'file':
+            var hash = args.file;
+            var hashLength = hash && hash.length
+            if(hashLength === 32) {
+                return basicSearchfile('md5', hash);
+            } else if(hashLength === 40) {
+                return basicSearchfile('sha1', hash);
+            } else {
+                throw 'file argument must be md5(32 charecters) or sha1(40 charecters) ';
+            }
+        case 'isight-get-report':
+            return getReport(args.reportID);
+        case 'isight-submit-file':
+            return submitFile(args.entryID, args.description, args.type);
+    }
+  type: javascript
+system: true

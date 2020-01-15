@@ -1,0 +1,758 @@
+category: Authentication
+commonfields:
+  id: Netcraft
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: "100"
+  display: The maximum number of entries (takedowns/notes) to return. Default is 100.
+  name: limit
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+description: An integration for Netcraft, allowing you to open and handle takedown
+  requests.
+display: Netcraft
+image: data:image/png;base64,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
+name: Netcraft
+script:
+  commands:
+  - arguments:
+    - description: The attack location you want taken down. For example, a phishing
+        URL or fraudulent email address.
+      name: attack
+      required: true
+    - description: The reason for submitting the attack, such as a description of
+        the attack.
+      name: comment
+      required: true
+    description: Reports an attack to Netcraft.
+    name: netcraft-report-attack
+    outputs:
+    - contextPath: Netcraft.Takedown.DateSubmitted
+      description: The date and time of reporting.
+      type: String
+    - contextPath: Netcraft.Takedown.LastUpdated
+      description: The date and time of the last action taken on the takedown.
+      type: String
+    - contextPath: Netcraft.Takedown.EvidenceURL
+      description: The URL of the evidence page on incident.netcraft.com.
+      type: String
+    - contextPath: Netcraft.Takedown.Reporter
+      description: The person/account that submitted the takedown.
+      type: String
+    - contextPath: Netcraft.Takedown.Domain
+      description: The domain of the URL or email address being taken down. This will
+        be blank for attacks without a domain name.
+      type: String
+    - contextPath: Netcraft.Takedown.Hostname
+      description: The full hostname of the URL or email address being taken down.
+        This will be blank for attacks without a hostname.
+      type: String
+    - contextPath: Netcraft.Takedown.CountryCode
+      description: ISO country code of the hosting country.
+      type: String
+    - contextPath: Netcraft.Takedown.DomainAttack
+      description: Whether the domain is thought to be fraudulent.
+      type: String
+    - contextPath: Netcraft.Takedown.TargetedURL
+      description: The URL that this attack is masquarading as. For example, the URL
+        of the legitimate login form that the attack targets.
+      type: String
+    - contextPath: Netcraft.Takedown.Certificate
+      description: HTTPS certificate details for the hostname, or null if no certificate
+        was found. The value returned is the output of PHP's openssl_x509_parse function.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.ID
+      description: The ID of the takedown.
+      type: Number
+    - contextPath: Netcraft.Takedown.GroupID
+      description: The group ID of the takedown, can potentially be the same as ID,
+        or empty if there is no group.
+      type: Number
+    - contextPath: Netcraft.Takedown.Status
+      description: The status of the takedown.
+      type: String
+    - contextPath: Netcraft.Takedown.AttackType
+      description: The type of takedown.
+      type: String
+    - contextPath: Netcraft.Takedown.AttackURL
+      description: The location of the attack being taken down.
+      type: String
+    - contextPath: Netcraft.Takedown.Region
+      description: The customer area in which the attack resides.
+      type: String
+    - contextPath: Netcraft.Takedown.IP
+      description: The IPv4 address of the attack.
+      type: String
+  - arguments:
+    - description: The ID of the takedowns for which to get information.
+      name: id
+    - description: 'Retrieve information for takedowns submitted after this date.
+        Format: YYYY-MM-DD HH:MM:SS.'
+      name: date_from
+    - description: 'Retrieve information for takedowns updated after this date. Format:
+        YYYY-MM-DD HH:MM:SS.'
+      name: updated_since
+    - description: The URL by which to filter.
+      name: url
+    - description: The IP by which to filter.
+      name: ip
+    - description: The region by which to filter. If the region is invalid or not
+        specified, all regions are returned.
+      name: region
+    description: Returns information on existing takedowns. You can retrieve the takedown
+      ID when you report the malicious URL and open the takedown, using the netcraft-report-attack
+      command.
+    name: netcraft-get-takedown-info
+    outputs:
+    - contextPath: Netcraft.Takedown.ID
+      description: The ID of the takedown.
+      type: number
+    - contextPath: Netcraft.Takedown.GroupID
+      description: The group ID of the takedown, can potentially be the same as ID
+        or empty if there is no group.
+      type: number
+    - contextPath: Netcraft.Takedown.Status
+      description: The status of the takedown.
+      type: string
+    - contextPath: Netcraft.Takedown.AttackType
+      description: The type of takedown.
+      type: string
+    - contextPath: Netcraft.Takedown.AttackURL
+      description: The location of the attack being taken down.
+      type: string
+    - contextPath: Netcraft.Takedown.Region
+      description: The customer area in which the attack resides.
+      type: string
+    - contextPath: Netcraft.Takedown.DateSubmitted
+      description: The date and time of reporting.
+      type: string
+    - contextPath: Netcraft.Takedown.LastUpdated
+      description: The date and time of the last action taken on the takedown.
+      type: string
+    - contextPath: Netcraft.Takedown.EvidenceURL
+      description: The URL of the evidence page on incident.netcraft.com.
+      type: string
+    - contextPath: Netcraft.Takedown.Reporter
+      description: The person/account that submitted the takedown.
+      type: string
+    - contextPath: Netcraft.Takedown.IP
+      description: The IPv4 address of the attack.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.Domain
+      description: "\tThe domain of the URL or email address being taken down. This
+        will be blank for attacks without a domain name."
+      type: Unknown
+    - contextPath: Netcraft.Takedown.Hostname
+      description: The full hostname of the URL or email address being taken down.
+        This will be blank for attacks without a hostname.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.CountryCode
+      description: ISO country code of the hosting country.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.DomainAttack
+      description: Whether the domain is thought to be fraudulent.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.TargetedURL
+      description: The URL which this attack is masquerading as. For example, the
+        URL of the legitimate login form that the attack targets.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.Certificate
+      description: TTPS certificate details for the hostname, or null if no certificate
+        was found. The value returned is the output of PHP's openssl_x509_parse function.
+      type: Unknown
+  - arguments:
+    - description: The takedown to get notes for.
+      name: takedown_id
+    - description: A takedown group to get notes for.
+      name: group_id
+    - description: Retrieve notes created after this date.
+      name: date_from
+    - description: Retrieve notes created before this date.
+      name: date_to
+    - description: A specific user to get notes for.
+      name: author
+    description: Returns notes for takedowns.
+    name: netcraft-get-takedown-notes
+    outputs:
+    - contextPath: Netcraft.Takedown.Note.TakedownID
+      description: The ID of the takedown to which the note belongs.
+      type: number
+    - contextPath: Netcraft.Takedown.Note.NoteID
+      description: The ID of the note.
+      type: number
+    - contextPath: Netcraft.Takedown.Note.GroupID
+      description: If this note is attached to all takedowns in a group, group_id
+        is the ID of that group. Otherwise, the value 0 means the note is sent to
+        a single takedown.
+      type: number
+    - contextPath: Netcraft.Takedown.Note.Author
+      description: The author of the note. "Netcraft" denotes a Netcraft authored
+        note.
+      type: string
+    - contextPath: Netcraft.Takedown.Note.Note
+      description: The content (text) of the note.
+      type: string
+    - contextPath: Netcraft.Takedown.Note.Time
+      description: 'The date/time the note was created. Format (UTC): YYYY-MM-DD HH:MM:SS.'
+      type: string
+  - arguments:
+    - description: A valid takedown ID to add the note to.
+      name: takedown_id
+      required: true
+    - description: The text to add to the takedown.
+      name: note
+      required: true
+    - auto: PREDEFINED
+      description: Whether to notify Netcraft. Default is "true".
+      name: notify
+      predefined:
+      - "True"
+      - "False"
+    description: Adds notes to an existing takedown.
+    name: netcraft-add-notes-to-takedown
+  - arguments:
+    - description: The ID of the takedown to escalate.
+      name: takedown_id
+      required: true
+    description: Escalates a takedown.
+    name: netcraft-escalate-takedown
+  dockerimage: demisto/python3:3.7.3.221
+  runonce: false
+  script: |2-
+
+
+
+
+    ''' IMPORTS '''
+    import requests
+    from requests.auth import HTTPBasicAuth
+
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    LIMIT = int(demisto.params().get('limit'))
+
+    USE_SSL = not demisto.params().get('unsecure', False)
+
+
+    # Service base URL
+    BASE_URL = "https://takedown.netcraft.com/"
+
+
+    # codes for maicious site report
+    MALICIOUS_REPORT_SUCCESS = "TD_OK"
+    MALICIOUS_REPORT_ALREADY_EXISTS = "TD_EXISTS"
+    MALICIOUS_REPORT_URL_IS_WILDCARD = "TD_WILDCARD"
+    MALICIOUS_REPORT_ACCESS_DENIED = "TD_DENIED"
+    MALICIOUS_REPORT_ERROR = "TD_ERROR"
+
+
+    # suffix endpoints
+    REPORT_MALICIOUS_SUFFIX = "authorise.php"
+    GET_TAKEDOWN_INFO_SUFFIX = "apis/get-info.php"
+    ACCESS_TAKEDOWN_NOTES_SUFFIX = "apis/note.php"
+    ESCALATE_TAKEDOWN_SUFFIX = "apis/escalate.php"
+    TEST_MODULE_SUFFIX = "authorise-test.php"
+
+
+    # Table Headers
+    TAKEDOWN_INFO_HEADER = ["ID", "Status", "Attack Type", "Date Submitted", "Last Updated", "Reporter", "Group ID",
+                            "Region", "Evidence URL", "Attack URL", "IP", "Domain", "Hostname", "Country Code",
+                            "Domain Attack", "Targeted URL", "Certificate"]
+    TAKEDOWN_NOTE_HEADERS = ["Takedown ID", "Note ID", "Note", "Author", "Time", "Group ID"]
+
+    # Titles for human readables
+    TAKEDOWN_INFO_TITLE = "Takedowns information found:"
+    REPORT_MALICIOUS_SUCCESS_TITLE = "New takedown successfully created"
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    @logger
+    def http_request(method, request_suffix, params=None, data=None, should_convert_to_json=True):
+        # A wrapper for requests lib to send our requests and handle requests and responses better
+        # the Netcraft API gets the arguments as params for GET requests, as data for POST
+        res = requests.request(
+            method,
+            BASE_URL + request_suffix,
+            verify=USE_SSL,
+            params=params,
+            data=data,
+            auth=HTTPBasicAuth(USERNAME, PASSWORD)
+        )
+
+        if should_convert_to_json:
+            return res.json()
+        else:
+            return res.text.splitlines()
+
+
+    @logger
+    def filter_by_id(result_list_to_filter, filtering_id_field, desired_id):
+        """ Given a list of results, returns only the ones that are tied to a given ID.
+
+        Args:
+             result_list_to_filter (list): list of dictionaries, containing data about entries.
+             filtering_id_field: The name of the field containing the IDs to filter.
+             desired_id: The ID to keep when filtering.
+
+        Returns:
+            list: A copy of the input list, containing only entries with the desired ID.
+        """
+
+        new_results_list = [result for result in result_list_to_filter if result[filtering_id_field] == desired_id]
+        return new_results_list
+
+
+    @logger
+    def generate_report_malicious_site_human_readable(response_lines_array):
+        response_status_code = response_lines_array[0]
+        human_readable = ""
+        if response_status_code == MALICIOUS_REPORT_ALREADY_EXISTS:
+            human_readable = "### Takedown not submitted.\n " \
+                             "A takedown for this URL already exists.\n" \
+                             "ID number of the existing takedown: {}.".format(response_lines_array[1])
+        elif response_status_code == MALICIOUS_REPORT_URL_IS_WILDCARD:
+            human_readable = "### Takedown not submitted\n " \
+                             "This URL is a wildcard sub-domain variation of an existing takedown.\n"
+        elif response_status_code == MALICIOUS_REPORT_ACCESS_DENIED:
+            human_readable = "### Takedown not submitted\n Access is denied."
+        elif response_status_code == MALICIOUS_REPORT_ERROR:
+            human_readable = "### Takedown not submitted\n " \
+                             "An error has occurred while submitting your takedown.\n" \
+                             "Error is: {}".format(" ".join(response_lines_array))
+        return human_readable
+
+
+    @logger
+    def return_dict_without_none_values(dict_with_none_values):
+        """ Removes all keys from given dict which have None as a value.
+
+        Args:
+            dict_with_none_values (dict): dict which may include keys with None as their value.
+
+        Returns:
+            dict: A new copy of the input dictionary, from which all keys with None as a value were removed.
+        """
+        new_dict = {key: dict_with_none_values[key] for key in dict_with_none_values if
+                    dict_with_none_values[key] is not None}
+        return new_dict
+
+
+    @logger
+    def generate_takedown_info_context(takedown_info):
+        takedown_info_context = {
+            "ID": takedown_info.get("id"),
+            "GroupID": takedown_info.get("group_id"),
+            "Status": takedown_info.get("status"),
+            "AttackType": takedown_info.get("attack_type"),
+            "AttackURL": takedown_info.get("attack_url"),
+            "Region": takedown_info.get("region"),
+            "DateSubmitted": takedown_info.get("date_submitted"),
+            "LastUpdated": takedown_info.get("last_updated"),
+            "EvidenceURL": takedown_info.get("evidence_url"),
+            "Reporter": takedown_info.get("reporter"),
+            "IP": takedown_info.get("ip"),
+            "Domain": takedown_info.get("domain"),
+            "Hostname": takedown_info.get("hostname"),
+            "CountryCode": takedown_info.get("country_code"),
+            "DomainAttack": takedown_info.get("domain_attack"),
+            "TargetedURL": takedown_info.get("targeted_url"),
+            "Certificate": takedown_info.get("certificate")
+        }
+
+        return createContext(takedown_info_context, removeNull=True)
+
+
+    @logger
+    def gen_takedown_info_human_readable(list_of_takedowns_contexts, title=TAKEDOWN_INFO_TITLE):
+        contexts_in_human_readable_format = []
+        for takedown_info_context in list_of_takedowns_contexts:
+            human_readable_dict = {
+                "ID": takedown_info_context.get("ID"),
+                "Status": takedown_info_context.get("Status"),
+                "Attack Type": takedown_info_context.get("AttackType"),
+                "Date Submitted": takedown_info_context.get("DateSubmitted"),
+                "Last Updated": takedown_info_context.get("LastUpdated"),
+                "Reporter": takedown_info_context.get("Reporter"),
+                "Group ID": takedown_info_context.get("GroupID"),
+                "Region": takedown_info_context.get("Region"),
+                "Evidence URL": takedown_info_context.get("EvidenceURL"),
+                "Attack URL": takedown_info_context.get("AttackURL"),
+                "IP": takedown_info_context.get("IP"),
+                "Domain": takedown_info_context.get("Domain"),
+                "Hostname": takedown_info_context.get("Hostname"),
+                "Country Code": takedown_info_context.get("CountryCode"),
+                "Domain Attack": takedown_info_context.get("DomainAttack"),
+                "Targeted URL": takedown_info_context.get("TargetedURL"),
+                "Certificate": takedown_info_context.get("Certificate")
+            }
+            contexts_in_human_readable_format.append(human_readable_dict)
+
+        human_readable = tableToMarkdown(title, contexts_in_human_readable_format,
+                                         headers=TAKEDOWN_INFO_HEADER, removeNull=True)
+        return human_readable
+
+
+    @logger
+    def generate_list_of_takedowns_context(list_of_takedowns_infos):
+        takedowns_contexts_list = []
+        for takedown_info in list_of_takedowns_infos:
+            takedown_context = generate_takedown_info_context(takedown_info)
+            takedowns_contexts_list.append(takedown_context)
+        return takedowns_contexts_list
+
+
+    @logger
+    def generate_takedown_note_context(takedown_note_json):
+        takedown_note_context = {
+            "TakedownID": takedown_note_json.get("takedown_id"),
+            "NoteID": takedown_note_json.get("note_id"),
+            "GroupID": takedown_note_json.get("group_id"),
+            "Author": takedown_note_json.get("author"),
+            "Note": takedown_note_json.get("note"),
+            "Time": takedown_note_json.get("time")
+        }
+        takedown_note_context = return_dict_without_none_values(takedown_note_context)
+        return takedown_note_context
+
+
+    @logger
+    def generate_list_of_takedown_notes_contexts(list_of_takedowns_notes):
+        takedown_notes_contexts_list = []
+        for takedown_note in list_of_takedowns_notes:
+            takedown_note_context = generate_takedown_note_context(takedown_note)
+            takedown_notes_contexts_list.append(takedown_note_context)
+        return takedown_notes_contexts_list
+
+
+    @logger
+    def gen_takedown_notes_human_readable(entry_context):
+        contexts_in_human_readable_format = []
+        for takedown_note_context in entry_context:
+            human_readable_dict = {
+                "Takedown ID": takedown_note_context.get("TakedownID"),
+                "Note ID": takedown_note_context.get("NoteID"),
+                "Group ID": takedown_note_context.get("GroupID"),
+                "Author": takedown_note_context.get("Author"),
+                "Note": takedown_note_context.get("Note"),
+                "Time": takedown_note_context.get("Time")
+            }
+            human_readable_dict = return_dict_without_none_values(human_readable_dict)
+            contexts_in_human_readable_format.append(human_readable_dict)
+
+        human_readable = tableToMarkdown(TAKEDOWN_INFO_TITLE, contexts_in_human_readable_format,
+                                         headers=TAKEDOWN_NOTE_HEADERS)
+        return human_readable
+
+
+    @logger
+    def generate_add_note_human_readable(response):
+        # if the request was successful, the response includes the id of the created note
+        if "note_id" in response:
+            human_readable = "### Note added succesfully\n" \
+                             "ID of the note created: {0}".format(response["note_id"])
+        else:
+            human_readable = "### Failed to add note\n" \
+                             "An error occured while trying to add the note.\n" \
+                             "The error code is: {0}.\n" \
+                             "The error message is: {1}.".format(response["error_code"], response["error_code"])
+        return human_readable
+
+
+    @logger
+    def string_to_bool(string_representing_bool):
+        return string_representing_bool.lower() == "true"
+
+
+    @logger
+    def generate_escalate_takedown_human_readable(response):
+        if "status" in response:
+            human_readable = "### Takedown escalated successfully"
+        else:
+            human_readable = "### Takedown escalation failed\n" \
+                             "An error occured on the takedown escalation attempt.\n" \
+                             "Error code is: {0}\n" \
+                             "Error message from Netcraft is: {1}".format(response["error_code"], response["error_message"])
+        return human_readable
+
+
+    def add_or_update_note_context_in_takedown(note_context, cur_notes_in_takedown):
+        if isinstance(cur_notes_in_takedown, dict):
+            return [note_context]
+        else:
+            note_already_in_context = False
+            for i, cur_note_context in enumerate(cur_notes_in_takedown):
+                cur_note_context = cur_notes_in_takedown[i]
+                if cur_note_context["NoteID"] == note_context["NoteID"]:
+                    note_already_in_context = True
+                    cur_notes_in_takedown[i] = note_context
+            if not note_already_in_context:
+                cur_notes_in_takedown.append(note_context)
+            return cur_notes_in_takedown
+
+
+    def add_note_to_suitable_takedown_in_context(note_context, all_takedowns_entry_context):
+        note_takedown_index = -1
+        if isinstance(all_takedowns_entry_context, dict):
+            new_takedown_entry_context = {
+                "ID": note_context["TakedownID"],
+                "Note": [note_context]
+            }
+            all_takedowns_entry_context = [all_takedowns_entry_context, new_takedown_entry_context] \
+                if all_takedowns_entry_context else [new_takedown_entry_context]
+        else:
+            for i in range(len(all_takedowns_entry_context)):
+                cur_takedown_context = all_takedowns_entry_context[i]
+                if cur_takedown_context["ID"] == note_context["TakedownID"]:
+                    note_takedown_index = i
+            if note_takedown_index == -1:
+                new_takedown_entry_context = {
+                    "ID": note_context["TakedownID"],
+                    "Note": [note_context]
+                }
+                all_takedowns_entry_context.append(new_takedown_entry_context)
+            else:
+                takedown_context_to_change = all_takedowns_entry_context[note_takedown_index]
+                cur_notes_in_takedown = takedown_context_to_change["Note"]
+                takedown_context_to_change["Note"] = add_or_update_note_context_in_takedown(note_context,
+                                                                                            cur_notes_in_takedown)
+                all_takedowns_entry_context[note_takedown_index] = takedown_context_to_change
+        return all_takedowns_entry_context
+
+
+    def generate_netcraft_context_with_notes(list_of_notes_contexts):
+        all_takedowns_entry_context = demisto.context().get("Netcraft", {}).get("Takedown", {})
+        for note_context in list_of_notes_contexts:
+            all_takedowns_entry_context = add_note_to_suitable_takedown_in_context(note_context,
+                                                                                   all_takedowns_entry_context)
+        return all_takedowns_entry_context
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    @logger
+    def escalate_takedown(takedown_id):
+        data_for_request = {
+            "takedown_id": takedown_id
+        }
+        request_result = http_request("POST", ESCALATE_TAKEDOWN_SUFFIX, data=data_for_request)
+        return request_result
+
+
+    def escalate_takedown_command():
+        args = demisto.args()
+        response = escalate_takedown(args["takedown_id"])
+        human_readable = generate_escalate_takedown_human_readable(response)
+        return_outputs(
+            readable_output=human_readable,
+            outputs={},
+            raw_response=response
+        )
+
+
+    @logger
+    def add_notes_to_takedown(takedown_id, note, notify):
+        data_for_request = {
+            "takedown_id": takedown_id,
+            "note": note,
+            "notify": notify
+        }
+
+        data_for_request = return_dict_without_none_values(data_for_request)
+
+        request_result = http_request("POST", ACCESS_TAKEDOWN_NOTES_SUFFIX, data=data_for_request)
+        return request_result
+
+
+    def add_notes_to_takedown_command():
+        args = demisto.args()
+        note = args.get("note")
+        notify = string_to_bool(args.get("notify")) if args.get("notify") else None
+        takedown_id = int(args["takedown_id"])
+        response = add_notes_to_takedown(takedown_id, note, notify)
+        human_readable = generate_add_note_human_readable(response)
+        return_outputs(
+            readable_output=human_readable,
+            outputs=response
+        )
+
+
+    def get_takedown_notes(takedown_id, group_id, date_from, date_to, author):
+        params_for_request = {
+            "takedown_id": takedown_id,
+            "group_id": group_id,
+            "date_to": date_to,
+            "date_from": date_from,
+            "author": author
+        }
+
+        params_for_request = return_dict_without_none_values(params_for_request)
+
+        request_result = http_request("GET", ACCESS_TAKEDOWN_NOTES_SUFFIX, params=params_for_request)
+        return request_result
+
+
+    def get_takedown_notes_command():
+        args = demisto.args()
+        takedown_id = int(args.get("takedown_id")) if args.get("takedown_id") else None
+        group_id = int(args.get("group_id")) if args.get("group_id") else None
+        date_from = args.get("date_from")
+        date_to = args.get("date_to")
+        author = args.get("author")
+        list_of_takedowns_notes = get_takedown_notes(takedown_id, group_id, date_from, date_to, author)
+        list_of_takedowns_notes = list_of_takedowns_notes[:LIMIT]
+        if takedown_id:
+            list_of_takedowns_notes = filter_by_id(list_of_takedowns_notes, "takedown_id", int(takedown_id))
+        list_of_notes_contexts = generate_list_of_takedown_notes_contexts(list_of_takedowns_notes)
+        entry_context = {
+            "Netcraft.Takedown(val.ID == obj.ID)": generate_netcraft_context_with_notes(list_of_notes_contexts)
+        }
+        human_readable = gen_takedown_notes_human_readable(list_of_notes_contexts)
+        return_outputs(
+            readable_output=human_readable,
+            outputs=entry_context,
+            raw_response=list_of_takedowns_notes
+        )
+
+
+    @logger
+    def get_takedown_info(takedown_id, ip, url, updated_since, date_from, region):
+        params_for_request = {
+            "id": takedown_id,
+            "ip": ip,
+            "url": url,
+            "updated_since": updated_since,
+            "date_from": date_from,
+            "region": region,
+        }
+
+        params_for_request = return_dict_without_none_values(params_for_request)
+
+        request_result = http_request("GET", GET_TAKEDOWN_INFO_SUFFIX, params=params_for_request)
+        return request_result
+
+
+    def get_takedown_info_command():
+        args = demisto.args()
+        takedown_id = int(args.get("id")) if args.get("id") else None
+        ip = args.get("ip")
+        url = args.get("url")
+        updated_since = args.get("updated_since")
+        date_from = args.get("date_from")
+        region = args.get("region")
+        list_of_takedowns_infos = get_takedown_info(takedown_id, ip, url, updated_since, date_from, region)
+        list_of_takedowns_infos = list_of_takedowns_infos[:LIMIT]
+        if takedown_id:
+            list_of_takedowns_infos = filter_by_id(list_of_takedowns_infos, "id", str(takedown_id))
+        list_of_takedowns_contexts = generate_list_of_takedowns_context(list_of_takedowns_infos)
+        human_readable = gen_takedown_info_human_readable(list_of_takedowns_contexts)
+        entry_context = {
+            'Netcraft.Takedown(val.ID == obj.ID)': list_of_takedowns_contexts
+        }
+        return_outputs(
+            readable_output=human_readable,
+            raw_response=list_of_takedowns_infos,
+            outputs=entry_context,
+        )
+
+
+    @logger
+    def report_attack(malicious_site_url, comment, is_test_request=False):
+        data_for_request = {
+            "attack": malicious_site_url,
+            "comment": comment
+        }
+        if is_test_request:
+            request_url_suffix = TEST_MODULE_SUFFIX
+        else:
+            request_url_suffix = REPORT_MALICIOUS_SUFFIX
+        request_result = http_request("POST", request_url_suffix, data=data_for_request, should_convert_to_json=False)
+        return request_result
+
+
+    def report_attack_command():
+        args = demisto.args()
+        entry_context: dict = {}
+        response_lines_array = report_attack(args["attack"], args["comment"])
+        result_answer = response_lines_array[0]
+        if result_answer == MALICIOUS_REPORT_SUCCESS:
+            new_takedown_id = response_lines_array[1]
+            # Until the API bug is fixed, this list will include info of all takedowns and not just the new one
+            new_takedown_infos = get_takedown_info(new_takedown_id, None, None, None, None, None)
+            new_takedown_infos = new_takedown_infos[:LIMIT]
+            new_takedown_infos = filter_by_id(new_takedown_infos, "id", new_takedown_id)
+            list_of_new_takedown_contexts = generate_list_of_takedowns_context(new_takedown_infos)
+            human_readable = gen_takedown_info_human_readable(list_of_new_takedown_contexts, REPORT_MALICIOUS_SUCCESS_TITLE)
+            entry_context = {
+                'Netcraft.Takedown(val.ID == obj.ID)': list_of_new_takedown_contexts
+            }
+        else:
+            human_readable = generate_report_malicious_site_human_readable(response_lines_array)
+
+        return_outputs(
+            readable_output=human_readable,
+            outputs=entry_context,
+            raw_response=entry_context
+        )
+
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        test_result = report_attack("https://www.test.com", "test", True)
+        if test_result[0] != MALICIOUS_REPORT_SUCCESS:
+            raise Exception("Test request failed.")
+        demisto.results("ok")
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+    try:
+        # Remove proxy if not set to true in params
+        handle_proxy()
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'netcraft-report-attack':
+            report_attack_command()
+        elif demisto.command() == 'netcraft-get-takedown-info':
+            get_takedown_info_command()
+        elif demisto.command() == 'netcraft-get-takedown-notes':
+            get_takedown_notes_command()
+        elif demisto.command() == 'netcraft-add-notes-to-takedown':
+            add_notes_to_takedown_command()
+        elif demisto.command() == 'netcraft-escalate-takedown':
+            escalate_takedown_command()
+
+
+    # Log exceptions
+    except Exception as e:
+        return_error(str(e))
+  subtype: python3
+  type: python
+system: true

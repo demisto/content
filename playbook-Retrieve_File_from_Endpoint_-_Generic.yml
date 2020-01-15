@@ -1,0 +1,198 @@
+description: |-
+  This playbook retrieves a file sample from an endpoint using the following playbooks:
+  - Get File Sample From Path - Generic
+  - Get File Sample By Hash - Generic v2
+id: Retrieve File from Endpoint - Generic
+inputs:
+- description: Get file sample from MD5 input.
+  key: MD5
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+      transformers:
+      - operator: uniq
+- description: Get file sample from SHA256 input.
+  key: SHA256
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      root: File
+      transformers:
+      - operator: uniq
+- description: Hostname of the machine on which the file is located.
+  key: Hostname
+  required: false
+  value:
+    complex:
+      accessor: Hostname
+      root: Endpoint
+      transformers:
+      - operator: uniq
+- description: File path.
+  key: Path
+  required: false
+  value:
+    complex:
+      accessor: Path
+      root: File
+- description: |-
+    Determines whether a D2 agent will be used to retrieve the file.
+    Default is no.
+  key: UseD2
+  required: false
+  value:
+    simple: "no"
+name: Retrieve File from Endpoint - Generic
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: aafd2bad-97ae-4462-85cb-8ef1cad54fc5
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: aafd2bad-97ae-4462-85cb-8ef1cad54fc5
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.Hostname
+      Path:
+        complex:
+          root: inputs.Path
+      UseD2:
+        complex:
+          root: inputs.UseD2
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Returns a file sample to the war-room from a path on an endpoint using one or more integrations
+
+        inputs:
+        * UseD2 - if "True", use Demisto Dissolvable Agent (D2) to return the file (default: False)
+      id: 91b91a1f-227c-433f-8fa0-80fd671e1a1d
+      iscommand: false
+      name: Get File Sample From Path - Generic
+      playbookName: Get File Sample From Path - Generic
+      type: playbook
+      version: -1
+    taskid: 91b91a1f-227c-433f-8fa0-80fd671e1a1d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 21df4e3f-565e-48ca-8937-7106ed312e6e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 21df4e3f-565e-48ca-8937-7106ed312e6e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        This playbook returns a file sample correlating to a hash from the war-room using the following sub-playbooks:
+        - Get File Sample By Hash - Carbon Black Enterprise Response
+        - Get File Sample By Hash - Cylance Protect v2
+      id: e6fa1361-9097-4532-8d10-e0c53b74aee7
+      iscommand: false
+      name: Get File Sample By Hash - Generic v2
+      playbookName: Get File Sample By Hash - Generic v2
+      type: playbook
+      version: -1
+    taskid: e6fa1361-9097-4532-8d10-e0c53b74aee7
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

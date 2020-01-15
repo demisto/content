@@ -1,0 +1,92 @@
+args:
+- description: The name of the instance you want to fetch from
+  name: instance_name
+- defaultValue: "true"
+  description: Whether to expect data to return from the fetch
+  name: expect_data
+- description: The name of the brand you want to fetch from
+  name: brand_name
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Add the raw JSON of incidents to context
+  name: add_to_context
+  predefined:
+  - "true"
+  - "false"
+- defaultValue: Error
+  description: If this error message appears in the contents of the fetched incidents,
+    will return error
+  name: error_msg_in_incident
+comment: Execute FetchIncident for a given instance
+commonfields:
+  id: FetchFromInstance
+  version: -1
+deprecated: true
+enabled: true
+name: FetchFromInstance
+outputs:
+- contextPath: FetchedIncidents
+  description: All incidents entries (raw JSON)
+runonce: false
+script: |-
+  import re
+  from distutils.util import strtobool
+
+  incidents_context = []
+  context = {}
+  add_to_context = bool(strtobool(demisto.args().get('add_to_context')))
+  res = []
+  brand_name = demisto.args().get("brand_name")
+  instance_name = None
+  if brand_name:
+      context_modules = demisto.getModules()
+      for module_name, module in context_modules.iteritems():
+          if module.get("brand") == brand_name and module.get('state') == 'active':
+              instance_name = module_name.replace(' ', '_')
+              break
+  elif demisto.args().get("instance_name"):
+      instance_name = demisto.args()["instance_name"]
+  if not instance_name:
+      raise Exception("No instance name was found")
+  expect_data = False if demisto.args()["expect_data"] == 'false' else True
+  instance_name = instance_name.replace(" ","_")
+  command = '!{0}-fetch'.format(instance_name)
+
+  response = demisto.executeCommand(command, {})
+
+  try:
+      if not response and expect_data:
+          raise Exception("Error occurred while fetching incidents from {}".format(instance_name))
+
+      for inc in response:
+          contents = inc.get('Contents', '')
+          error_msg_in_incident = demisto.args().get('error_msg_in_incident')
+          if error_msg_in_incident and error_msg_in_incident in str(contents):
+              return_error("Error message '{0}' encountered while fetching incidents from {1}: {2}".format(error_msg_in_incident, instance_name, str(contents)))
+          if re.match("invalid character \'[a-zA-Z]\' looking for beginning of value", str(contents), re.IGNORECASE):
+              return_error("Error occurred while fetching incidents from {0}: {1}".format(instance_name, str(contents)))
+          if add_to_context:
+              try:
+                  for entry in contents:
+                      raw_json = ''
+                      if isinstance(entry, dict):
+                          raw_json = entry.get('rawJSON')
+                      if raw_json:
+                          incidents_context.append(json.loads(raw_json))
+              except TypeError:
+                  return_error('Could not retrieve JSON data from the response contents')
+
+      if not response and not expect_data:
+          response = "No data returned"
+
+      context['FetchedIncidents'] = incidents_context
+      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": response, "EntryContext": context})
+
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)})
+
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags: []
+type: python

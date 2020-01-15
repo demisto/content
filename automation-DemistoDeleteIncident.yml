@@ -1,0 +1,42 @@
+args:
+- default: true
+  description: Incident ID to delete
+  name: id
+  required: true
+comment: Delete an incident from Demisto (note action is irreversible)
+commonfields:
+  id: DemistoDeleteIncident
+  version: -1
+dependson:
+  must:
+  - demisto-api-post
+deprecated: true
+enabled: true
+name: DemistoDeleteIncident
+runonce: false
+script: |-
+  var body = {
+      ids: [args.id],
+      all: false,
+      filter: {}
+  };
+
+  var res = executeCommand('demisto-api-post', {uri: '/incident/batchDelete', body: body});
+  if (isError(res[0])) {
+      throw res[0].Contents;
+  }
+
+  var response = res[0].Contents.response;
+  var md = tableToMarkdown('Demisto delete incidents', response);
+
+  return {
+      ContentsFormat: formats.json,
+      Type: entryTypes.note,
+      Contents: response,
+      HumanReadable: md
+  };
+scripttarget: 0
+system: true
+tags:
+- DemistoAPI
+type: javascript

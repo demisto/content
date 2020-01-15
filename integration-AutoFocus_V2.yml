@@ -1,0 +1,1555 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: AutoFocus V2
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: API Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the Palo Alto Networks AutoFocus integration to distinguish the most
+  important threats from everyday commodity attacks.
+detaileddescription: "## Get Your API Key\nTo get your API key, you need to add an
+  authorization code, and then activate the API.\n\n ### Add your authorization code\n
+  \ 1. Go to the [Palo Alto Networks support site](https://support.paloaltonetworks.com).\n
+  \ 2. From the left-side navigation menu, select **Assets > Site Licenses**.\n  3.
+  Click the **Add Site License** button.\n  4. Enter the authorization code.\n  \n
+  ### Activate the API\n  1. From the **Site Licenses** page, click **Enable**.\n
+  \ 2. Select the API Key link.\n\n  Enter this API key when configuring the AutoFocus
+  integration in Demisto.\n  For more info on activating the license see [Activating
+  AutoFocus Licenses](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/get-started-with-autofocus/activate-autofocus-licenses.html).\n\n##
+  How to Build a Query \nThese instructions explain how to build a query, which you
+  can use as the value for the `query` argument. You can use this argument in the
+  **autofocus-search-samples** and **autofocus-search-sessions** commands.\n   1.
+  Go to the [AutoFocus platform](https://autofocus.paloaltonetworks.com/#/samples/global).\n
+  \  2. From the left-side navigation menu, click **Search**.\n   3. From the top
+  navigation bar, click **Advanced...**. \n   3. Build a query by selecting fields
+  operators and relevant values. You can always add an additional condition by \n
+  \  selecting the **+** button on the right. For more information on how to use the
+  search editor see [Work with the Search Editor\n](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-search/work-with-the-search-editor.html#id791798e0-2277-41b5-a723-383bd0787816_id597cae40-646e-4a2f-acf5-5fe04d9e2cf0).\n4.
+  To export the query, click the **>_API** button.\n5. Copy the query value  and paste
+  it as the value for the `query` argument for both search commands. For example:\n```\n{\"operator\":\"all\",\"children\":[{\"field\":\"sample.malware\",\"operator\":\"is\",\"value\":1},{\"field\":\"sample.create_date\",\"operator\":\"is
+  after\",\"value\":[\"2019-06-13\",\"2019-06-13\"]}]} \n```\n\n## Note for the autofocus-sample-analysis
+  Command\nDue to a large amount of dynamic outputs, run the command once to get the
+  fields and the operating system's under HTTP, Coverage, Behavior, Registry, Files,
+  Processes, Connections, and DNS.\n"
+display: Palo Alto Networks AutoFocus V2
+image: data:image/png;base64,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
+name: AutoFocus V2
+script:
+  commands:
+  - arguments:
+    - description: The query for which to retrieve samples. For additional information
+        on how to build your query using the AF GUI, see the detailed description
+        section.
+      name: query
+    - defaultValue: "30"
+      description: The number of results to return.
+      name: max_results
+    - auto: PREDEFINED
+      description: The field by which to sort the results.
+      name: sort
+      predefined:
+      - App Name
+      - App Packagename
+      - File type
+      - Size
+      - Finish Date
+      - First Seen (Create Date)
+      - Last Updated (Update Date)
+      - MD5
+      - SHA1
+      - SHA256
+      - Ssdeep Fuzzy Hash
+    - auto: PREDEFINED
+      description: The order of the results. Can be "Ascending" or "Descending".
+      name: order
+      predefined:
+      - Ascending
+      - Descending
+    - auto: PREDEFINED
+      description: ' The scope of the search. Can be "Private", "Public", or "Global".'
+      name: scope
+      predefined:
+      - Private
+      - Public
+      - Global
+      required: true
+    - description: The MD5, SHA1 or SHA256 hash of the file.
+      name: file_hash
+    - description: The domain to search.
+      name: domain
+    - description: The IP address to search.
+      name: ip
+    - description: The URL to search.
+      name: url
+    - auto: PREDEFINED
+      description: The Wildfire verdict. Can be "Malware", "Grayware", "Benign", or
+        "Phishing".
+      name: wildfire_verdict
+      predefined:
+      - Malware
+      - Grayware
+      - Benign
+      - Phishing
+    - description: 'The date range of the creation date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS
+        where the first date is the beginning and the second is the end. Example:
+        2019-09-09T00:00:00,2019-09-09T23:01:59'
+      name: first_seen
+    - description: 'The date range of the last updated date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS
+        where the first date is the beginning and the second is the end. Example:
+        2019-09-09T00:00:00,2019-09-09T23:01:59'
+      name: last_updated
+    description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
+      command with the returned AF Cookie. The AF Cookie expires 120 seconds after
+      the search completes.
+    name: autofocus-search-samples
+    outputs:
+    - contextPath: AutoFocus.SamplesSearch.AFCookie
+      description: The AutoFocus search ID. Use this ID to retrieve search results.
+        The AF Cookie expires 120 seconds after the search completes.
+      type: String
+    - contextPath: AutoFocus.SamplesSearch.Status
+      description: The search status. Can be "in progress" or "complete".
+      type: String
+  - arguments:
+    - description: The query for which to retrieve samples. For additional information
+        on how to build your query using the AF GUI, see the detailed description
+        section.
+      name: query
+    - defaultValue: "30"
+      description: The maximum number of results to return. Default is 30.
+      name: max_results
+    - auto: PREDEFINED
+      description: The field by which to sort the results.
+      name: sort
+      predefined:
+      - Application
+      - Device Country
+      - Device Country Code
+      - Device Hostname
+      - Device Serial
+      - Device vsys
+      - Destination Country
+      - Destination Country Code
+      - Destination IP
+      - Destination Port
+      - Email Charset
+      - Industry
+      - Source Country
+      - Source Country Code
+      - Source IP
+      - Source Port
+      - SHA256
+      - Time
+      - Upload source
+    - auto: PREDEFINED
+      description: The order of the results. Can be "Ascending" or "Descending".
+      name: order
+      predefined:
+      - Ascending
+      - Descending
+    - description: The MD5, SHA1 or SHA256 hash of the file.
+      name: file_hash
+    - description: The domain to search.
+      name: domain
+    - description: The IP address to search.
+      name: ip
+    - description: The URL to search.
+      name: url
+    - description: 'The date range in which to search for sessions. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS
+        where the first date is the beginning and the second is the end. Example:
+        2019-09-09T00:00:00,2019-09-09T23:01:59'
+      name: time_range
+      predefined:
+      - ""
+    - description: 'The date after which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS
+        Example: 2019-09-09T23:01:59'
+      name: time_after
+    - description: 'The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS
+        Example: 2019-09-09T23:01:59'
+      name: time_before
+    description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
+      command with the returned AF Cookie. The AF Cookie expires 120 seconds after
+      the search completes.
+    name: autofocus-search-sessions
+    outputs:
+    - contextPath: AutoFocus.SessionsSearch.AFCookie
+      description: The AutoFocus search ID. Use this ID to get search results. The
+        AF Cookie expires 120 seconds after the search completes.
+      type: String
+    - contextPath: AutoFocus.SessionsSearch.Status
+      description: The search status. Can be "in progress" or "complete".
+      type: String
+  - arguments:
+    - description: The AF Cookie for retrieving results of previous searches. The
+        AF Cookie expires 120 seconds after the search completes.
+      name: af_cookie
+      required: true
+    description: Returns results of a previous samples search.
+    name: autofocus-samples-search-results
+    outputs:
+    - contextPath: AutoFocus.SamplesResults.Size
+      description: The file size in bytes.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Created
+      description: The date that the file was created.
+      type: Date
+    - contextPath: AutoFocus.SamplesResults.Finished
+      description: Date finished.
+      type: Date
+    - contextPath: AutoFocus.SamplesResults.Region
+      description: Region of the sample.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.FileType
+      description: The file type.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Tags
+      description: The tags attached to the sample.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Verdict
+      description: The verdict of the sample.
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.TagGroups
+      description: Groups of relevant tags.
+      type: String
+    - contextPath: AutoFocus.SamplesSearch.Status
+      description: The search status. Can be "in progress" or "complete".
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
+    - contextPath: File.Tags
+      description: Tags of the file.
+      type: String
+  - arguments:
+    - description: The AF Cookie for retrieving the results of a previous search.
+        The AF Cookie expires 120 seconds after the search completes.
+      name: af_cookie
+      required: true
+    description: Returns results of a previous sessions search.
+    name: autofocus-sessions-search-results
+    outputs:
+    - contextPath: AutoFocus.SessionsResults.FileName
+      description: The name of the file..
+      type: String
+    - contextPath: AutoFocus.SessionsResults.ID
+      description: The session ID. Used to get session details.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Industry
+      description: The related industry.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Region
+      description: The regions of the sessions.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Seen
+      description: Seen date.
+      type: Date
+    - contextPath: AutoFocus.SessionsResults.UploadSource
+      description: The source of the uploaded sample.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.FileURL
+      description: The URL of the file.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Tags
+      description: Relevant tags.
+      type: String
+    - contextPath: AutoFocus.SessionsSearch.Status
+      description: The search status. Can be "in progress" or "complete".
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Tags
+      description: Tags of the file.
+      type: String
+  - arguments:
+    - description: The session ID.
+      name: session_id
+      required: true
+    description: Get session details by session ID
+    name: autofocus-get-session-details
+    outputs:
+    - contextPath: AutoFocus.Sessions.FileName
+      description: The file name.
+      type: String
+    - contextPath: AutoFocus.Sessions.ID
+      description: The session ID.
+      type: String
+    - contextPath: AutoFocus.Sessions.Industry
+      description: The related industry.
+      type: String
+    - contextPath: AutoFocus.Sessions.Region
+      description: Session regions.
+      type: String
+    - contextPath: AutoFocus.Sessions.SHA256
+      description: TheSHA256 hash of the file.
+      type: String
+    - contextPath: AutoFocus.Sessions.Seen
+      description: Seen date.
+      type: Date
+    - contextPath: AutoFocus.Sessions.UploadSource
+      description: The source that uploaded the sample.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+  - arguments:
+    - description: The SHA256 hash of the sample to analyze.
+      name: sample_id
+      required: true
+    - auto: PREDEFINED
+      description: The analysis environment. Can be "win7", "winxp", "android", "static_analyzer",
+        "mac", or "bare_metal".
+      name: os
+      predefined:
+      - win7
+      - winxp
+      - android
+      - static_analyzer
+      - mac
+      - bare_metal
+    - auto: PREDEFINED
+      defaultValue: "True"
+      description: Whether to smartly filter the data. If "False", the data returned
+        will not be smartly filtered, and will significantly reduce integration performance.
+        We recommend setting this to "True".
+      name: filter_data
+      predefined:
+      - "True"
+      - "False"
+    description: Returns properties, behaviors, and activities observed for a sample.
+      Run the command a single time to get the fields and operating systems under
+      HTTP, Coverage, Behavior, Registry, Files, Processes, Connections, and DNS.
+    name: autofocus-sample-analysis
+    outputs:
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Http
+      description: HTTP requests made when the sample was executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Coverage
+      description: WildFire signatures that matched to the sample.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Behavior
+      description: 'Sample behavior: created or modified files, started a process,
+        spawned new processes, modified the registry, or installed browser help objects.'
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Registry
+      description: Registry settings and options that showed activity when the sample
+        was executed in the analysis environment.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Files
+      description: Files that showed activity as a result of the sample being executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Processes
+      description: Processes that showed activity when the sample was executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Connections
+      description: Connections to other hosts on the network when the sample was executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Dns
+      description: DNS activity observed when the sample was executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Mutex
+      description: The mutex created when the programs start is listed with the parent
+        process if the sample generates other program threads when executed in the
+        analysis environment.
+      type: Unknown
+  - arguments:
+    - description: The public tag name. Can be retrieved from the top-tags command.
+      name: tag_name
+      required: true
+    description: Returns details about the given tag.
+    name: autofocus-tag-details
+    outputs:
+    - contextPath: AutoFocus.Tag.TagName
+      description: The simple name of the tag.
+      type: String
+    - contextPath: AutoFocus.Tag.PublicTagName
+      description: The public name of the tag. This is used as an ID of the tag.
+      type: String
+    - contextPath: AutoFocus.Tag.Count
+      description: The number of samples that matched this tag.
+      type: Number
+    - contextPath: AutoFocus.Tag.Lasthit
+      description: The date that the tag was last encountered.
+      type: Date
+    - contextPath: AutoFocus.Tag.TagDefinitionScope
+      description: The scope of the tag ("public", "private", or "Unit42").
+      type: String
+    - contextPath: AutoFocus.Tag.CustomerName
+      description: The organization that created the tag.
+      type: String
+    - contextPath: AutoFocus.Tag.Source
+      description: The organization or individual that discovered the threat that
+        is defined in the tag.
+      type: String
+    - contextPath: AutoFocus.Tag.TagClass
+      description: The classification of the tag.
+      type: String
+    - contextPath: AutoFocus.Tag.TagDefinitionStatus
+      description: The status of the tag definition ("enabled", "disabled", "removing",
+        or "rescoping").
+      type: String
+    - contextPath: AutoFocus.Tag.TagGroup
+      description: The tag group of the tag.
+      type: String
+    - contextPath: AutoFocus.Tag.Description
+      description: Tag description.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: Scope of the search. Can be "industry", "organization", "all",
+        or "global".
+      name: scope
+      predefined:
+      - industry
+      - organization
+      - all
+      - global
+      required: true
+    - auto: PREDEFINED
+      description: 'Tag class. - Malware Family: group of malware that have shared
+        properties or common functions. - Campaign:  targeted attack, which might
+        include several incidents or sets of activities. - Actor: individual or group
+        that initiates a campaign using malware families. - Exploit: an attack, which
+        takes advantage of a software or network weakness, bug, or vulnerability to
+        manipulate the behavior of the system. - Malicious Behavior: behavior that
+        is not specific to a malware family or campaign, but indicates that your system
+        has been compromised.'
+      name: class
+      predefined:
+      - Actor
+      - Campaign
+      - Exploit
+      - Malicious Behavior
+      - Malware Family
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Whether the tag scope is "private". If "True", the tag scope is
+        private. Default is "False".
+      name: private
+      predefined:
+      - "True"
+      - "False"
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Whether the tag scope is "public". If "True", the tag scope is
+        public. Default is "False".
+      name: public
+      predefined:
+      - "True"
+      - "False"
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Whether the tag scope is "commodity". If "True", the tag scope
+        is commodity. Default is "False".
+      name: commodity
+      predefined:
+      - "True"
+      - "False"
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Whether the tag scope is "Unit42". If "True", the tag scope is
+        unit42. Default is "False".
+      name: unit42
+      predefined:
+      - "True"
+      - "False"
+    description: Performs a search to identify the most popular tags.
+    name: autofocus-top-tags-search
+    outputs:
+    - contextPath: AutoFocus.TopTagsSearch.AFCookie
+      description: AutoFocus search ID. Use this ID to get search results. The AF
+        Cookie expires 120 seconds after the search completes.
+      type: String
+    - contextPath: AutoFocus.TopTagsSearch.Status
+      description: The search status. Can be "in progress" or "complete".
+      type: String
+  - arguments:
+    - description: 'The AF Cookie for retrieving results of previous search. Note:
+        The AF Cookie expires 120 seconds after the search completes.'
+      name: af_cookie
+      required: true
+    description: Returns the results of a previous top tags search.
+    name: autofocus-top-tags-results
+    outputs:
+    - contextPath: AutoFocus.TopTagsResults.Count
+      description: The number of samples that matched this tag.
+      type: Number
+    - contextPath: AutoFocus.TopTagsResults.PublicTagName
+      description: The public name of the tag. This is used as an ID of the tag.
+      type: String
+    - contextPath: AutoFocus.TopTagsResults.TagName
+      description: The simple name of the tag.
+      type: String
+    - contextPath: AutoFocus.TopTagsResults.Lasthit
+      description: The last encounter date of the tag.
+      type: Date
+    - contextPath: AutoFocus.TopTagsSearch.Status
+      description: The search status. Can be "in progress" or "complete".
+      type: String
+  dockerimage: demisto/python3:3.7.2.214
+  runonce: false
+  script: |2-
+
+
+
+
+    ''' IMPORTS '''
+
+    import json
+    import requests
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+    PARAMS = demisto.params()
+    API_KEY = PARAMS.get('api_key')
+    # Remove trailing slash to prevent wrong URL path to service
+    SERVER = 'https://autofocus.paloaltonetworks.com'
+    # Should we use SSL
+    USE_SSL = not PARAMS.get('insecure', False)
+    # Service base URL
+    BASE_URL = SERVER + '/api/v1.0'
+    # Headers to be sent in requests
+    HEADERS = {
+        'Content-Type': 'application/json'
+    }
+
+    API_PARAM_DICT = {
+        'scope': {
+            'Private': 'private',
+            'Public': 'public',
+            'Global': 'global'
+        },
+        'order': {
+            'Ascending': 'asc',
+            'Descending': 'desc'
+        },
+        'sort': {
+            'App Name': 'app_name',
+            'App Packagename': 'app_packagename',
+            'File type': 'filetype',
+            'Size': 'size',
+            'Finish Date': 'finish_date',
+            'First Seen (Create Date)': 'create_date',
+            'Last Updated (Update Date)': 'update_date',
+            'MD5': 'md5',
+            'SHA1': 'sha1',
+            'SHA256': 'sha256',
+            'Ssdeep Fuzzy Hash': 'ssdeep',
+            'Application': 'app',
+            'Device Country': 'device_country',
+            'Device Country Code': 'device_countrycode',
+            'Device Hostname': 'device_hostname',
+            'Device Serial': 'device_serial',
+            'Device vsys': 'vsys',
+            'Destination Country': 'dst_country',
+            'Destination Country Code': 'dst_countrycode',
+            'Destination IP': 'dst_ip',
+            'Destination Port': 'dst_port',
+            'Email Charset': 'emailsbjcharset',
+            'Industry': 'device_industry',
+            'Source Country': 'src_country',
+            'Source Country Code': 'src_countrycode',
+            'Source IP': 'src_ip',
+            'Source Port': 'src_port',
+            'Time': 'tstamp',
+            'Upload source': 'upload_srcPossible'
+        },
+        'tag_class': {
+            'Actor': 'actor',
+            'Campaign': 'campaign',
+            'Exploit': 'exploit',
+            'Malicious Behavior': 'malicious_behavior',
+            'Malware Family': 'malware_family'
+
+        },
+        'search_arguments': {
+            'file_hash': {
+                'api_name': 'alias.hash',
+                'operator': 'contains'
+            },
+            'domain': {
+                'api_name': 'alias.domain',
+                'operator': 'contains'
+            },
+            'ip': {
+                'api_name': 'alias.ip_address',
+                'operator': 'contains'
+            },
+            'url': {
+                'api_name': 'alias.url',
+                'operator': 'contains'
+            },
+            'wildfire_verdict': {
+                'api_name': 'sample.malware',
+                'operator': 'is',
+                'translate': {
+                    'Malware': 1,
+                    'Grayware': 2,
+                    'Benign': 3,
+                    'Phishing': 4,
+                }
+            },
+            'first_seen': {
+                'api_name': 'sample.create_date',
+                'operator': 'is in the range'
+            },
+            'last_updated': {
+                'api_name': 'sample.update_date',
+                'operator': 'is in the range'
+            },
+            'time_range': {
+                'api_name': 'session.tstamp',
+                'operator': 'is in the range'
+            },
+            'time_after': {
+                'api_name': 'session.tstamp',
+                'operator': 'is after'
+            },
+            'time_before': {
+                'api_name': 'session.tstamp',
+                'operator': 'is before'
+            }
+        },
+
+        'file_indicators': {
+            'Size': 'Size',
+            'SHA1': 'SHA1',
+            'SHA256': 'SHA256',
+            'FileType': 'Type',
+            'Tags': 'Tags',
+            'FileName': 'Name'
+        },
+        'search_results': {
+            'sha1': 'SHA1',
+            'sha256': 'SHA256',
+            'filetype': 'FileType',
+            'malware': 'Verdict',
+            'size': 'Size',
+            'create_date': 'Created',
+            'finish_date': 'Finished',
+            'md5': 'MD5',
+            'region': 'Region',
+            'tag': 'Tags',
+            '_id': 'ID',
+            'tstamp': 'Seen',
+            'filename': 'FileName',
+            'device_industry': 'Industry',
+            'upload_src': 'UploadSource',
+            'fileurl': 'FileURL'
+        }
+    }
+    SAMPLE_ANALYSIS_LINE_KEYS = {
+        'behavior': {
+            'display_name': 'behavior',
+            'indexes': {
+                'risk': 0,
+                'behavior': -1
+            }
+        },
+        'process': {
+            'display_name': 'processes',
+            'indexes': {
+                'parent_process': 0,
+                'action': 1
+            }
+        },
+        'file': {
+            'display_name': 'files',
+            'indexes': {
+                'parent_process': 0,
+                'action': 1
+            }
+        },
+        'registry': {
+            'display_name': 'registry',
+            'indexes': {
+                'action': 1,
+                'parameters': 2
+            }
+        },
+        'dns': {
+            'display_name': 'DNS',
+            'indexes': {
+                'query': 0,
+                'response': 1
+            }
+        },
+        'http': {
+            'display_name': 'HTTP',
+            'indexes': {
+                'host': 0,
+                'method': 1,
+                'url': 2
+            }
+        },
+        'connection': {
+            'display_name': 'connections',
+            'indexes': {
+                'destination': 2
+            }
+        },
+        'mutex': {
+            'display_name': 'mutex',
+            'indexes': {
+                'process': 0,
+                'action': 1,
+                'parameters': 2
+            }
+        }
+    }
+    SAMPLE_ANALYSIS_COVERAGE_KEYS = {
+        'wf_av_sig': {
+            'display_name': 'wildfire_signatures',
+            'fields': ['name', 'create_date']
+        },
+        'fileurl_sig': {
+            'display_name': 'fileurl_signatures',
+            'fields': ['name', 'create_date']
+        },
+        'dns_sig': {
+            'display_name': 'dns_signatures',
+            'fields': ['name', 'create_date']
+        },
+        'url_cat': {
+            'display_name': 'url_categories',
+            'fields': ['url', 'cat']
+        }
+    }
+    ''' HELPER FUNCTIONS '''
+
+
+    def parse_response(resp, err_operation):
+        try:
+            # Handle error responses gracefully
+            res_json = resp.json()
+            resp.raise_for_status()
+            return res_json
+        # Errors returned from AutoFocus
+        except requests.exceptions.HTTPError:
+            err_msg = f'{err_operation}: {res_json.get("message")}'
+            if res_json.get("message").find('Requested sample not found') != -1:
+                demisto.results(err_msg)
+                sys.exit(0)
+            elif res_json.get("message").find("AF Cookie Not Found") != -1:
+                demisto.results(err_msg)
+                sys.exit(0)
+            elif err_operation == 'Tag details operation failed' and \
+                    res_json.get("message").find("Tag") != -1 and res_json.get("message").find("not found") != -1:
+                demisto.results(err_msg)
+                sys.exit(0)
+            else:
+                return return_error(err_msg)
+        # Unexpected errors (where no json object was received)
+        except Exception as err:
+            err_msg = f'{err_operation}: {err}'
+            return return_error(err_msg)
+
+
+    def http_request(url_suffix, method='POST', data={}, err_operation=None):
+        # A wrapper for requests lib to send our requests and handle requests and responses better
+        data.update({'apiKey': API_KEY})
+        res = requests.request(
+            method=method,
+            url=BASE_URL + url_suffix,
+            verify=USE_SSL,
+            data=json.dumps(data),
+            headers=HEADERS
+        )
+        return parse_response(res, err_operation)
+
+
+    def validate_sort_and_order(sort, order):
+        if sort and not order:
+            return_error('Please specify the order of sorting (Ascending or Descending).')
+        if order and not sort:
+            return_error('Please specify a field to sort by.')
+        return sort and order
+
+
+    def do_search(search_object, query, scope, size=None, sort=None, order=None, err_operation=None):
+        path = '/samples/search' if search_object == 'samples' else '/sessions/search'
+        data = {
+            'query': query,
+            'size': size
+        }
+        if scope:
+            data.update({'scope': API_PARAM_DICT['scope'][scope]})  # type: ignore
+        if validate_sort_and_order(sort, order):
+            data.update({'sort': {API_PARAM_DICT['sort'][sort]: {'order': API_PARAM_DICT['order'][order]}}})  # type: ignore
+
+        # Remove nulls
+        data = createContext(data, removeNull=True)
+        result = http_request(path, data=data, err_operation=err_operation)
+        return result
+
+
+    def run_search(search_object, query, scope=None, size=None, sort=None, order=None):
+        result = do_search(search_object, query=json.loads(query), scope=scope, size=size, sort=sort, order=order,
+                           err_operation='Search operation failed')
+        in_progress = result.get('af_in_progress')
+        status = 'in progress' if in_progress else 'complete'
+        search_info = {
+            'AFCookie': result.get('af_cookie'),
+            'Status': status
+        }
+        return search_info
+
+
+    def run_get_search_results(search_object, af_cookie):
+        path = f'/samples/results/{af_cookie}' if search_object == 'samples' else f'/sessions/results/{af_cookie}'
+        results = http_request(path, err_operation='Fetching search results failed')
+        return results
+
+
+    def get_fields_from_hit_object(result_object, response_dict_name):
+        new_object = {}
+        af_params_dict = API_PARAM_DICT.get(response_dict_name)
+        for key, value in result_object.items():
+            if key in af_params_dict:  # type: ignore
+                new_key = af_params_dict.get(key)  # type: ignore
+                new_object[new_key] = value
+            else:
+                new_object[key] = value
+        return new_object
+
+
+    def parse_hits_response(hits, response_dict_name):
+        parsed_objects = []  # type: ignore
+        if not hits:
+            return parsed_objects
+        else:
+            for hit in hits:
+                flattened_obj = {}  # type: ignore
+                flattened_obj.update(hit.get('_source'))
+                flattened_obj['_id'] = hit.get('_id')
+                parsed_obj = get_fields_from_hit_object(flattened_obj, response_dict_name)
+                parsed_objects.append(parsed_obj)
+            return parsed_objects
+
+
+    def get_search_results(search_object, af_cookie):
+        results = run_get_search_results(search_object, af_cookie)
+        parsed_results = parse_hits_response(results.get('hits'), 'search_results')
+        in_progress = results.get('af_in_progress')
+        status = 'in progress' if in_progress else 'complete'
+        return parsed_results, status
+
+
+    def get_session_details(session_id):
+        path = f'/session/{session_id}'
+        result = http_request(path, err_operation='Get session failed')
+        parsed_result = parse_hits_response(result.get('hits'), 'search_results')
+        return parsed_result
+
+
+    def validate_if_line_needed(category, info_line):
+        line = info_line.get('line')
+        line_values = line.split(',')
+        category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category).get('indexes')  # type: ignore
+        if category == 'behavior':
+            risk_index = category_indexes.get('risk')  # type: ignore
+            risk = line_values[risk_index].strip()
+            # only lines with risk higher the informational are considered
+            return not risk == 'informational'
+        elif category == 'registry':
+            action_index = category_indexes.get('action')  # type: ignore
+            action = line_values[action_index].strip()
+            # Only lines with actions SetValueKey, CreateKey or RegSetValueEx are considered
+            return action == 'SetValueKey' or action == 'CreateKey' or action == 'RegSetValueEx'
+        elif category == 'file':
+            action_index = category_indexes.get('action')  # type: ignore
+            action = line_values[action_index].strip()
+            benign_count = info_line.get('b') if info_line.get('b') else 0
+            malicious_count = info_line.get('m') if info_line.get('m') else 0
+            # Only lines with actions Create or CreateFileW where malicious count is grater than benign count are considered
+            return (action == 'Create' or action == 'CreateFileW') and malicious_count > benign_count
+        elif category == 'process':
+            action_index = category_indexes.get('action')  # type: ignore
+            action = line_values[action_index].strip()
+            # Only lines with actions created, CreateKey or CreateProcessInternalW are considered
+            return action == 'created' or action == 'CreateProcessInternalW'
+        else:
+            return True
+
+
+    def get_data_from_line(line, category_name):
+        category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category_name).get('indexes')  # type: ignore
+        values = line.split(',')
+        sub_categories = {}  # type: ignore
+        if not category_indexes:
+            return sub_categories
+        else:
+            for sub_category in category_indexes:  # type: ignore
+                sub_category_index = category_indexes.get(sub_category)  # type: ignore
+                sub_categories.update({
+                    sub_category: values[sub_category_index]
+                })
+            return sub_categories
+
+
+    def get_data_from_coverage_sub_category(sub_category_name, sub_category_data):
+        sub_categories_list = []
+        for item in sub_category_data:
+            new_sub_category = {}
+            fields_to_extract = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get('fields')  # type: ignore
+            for field in fields_to_extract:  # type: ignore
+                new_sub_category[field] = item.get(field)  # type: ignore
+            sub_categories_list.append(new_sub_category)
+        return sub_categories_list
+
+
+    def parse_coverage_sub_categories(coverage_data):
+        new_coverage = {}
+        for sub_category_name, sub_category_data in coverage_data.items():
+            if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS:
+                new_sub_category_data = get_data_from_coverage_sub_category(sub_category_name, sub_category_data)
+                new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get(  # type: ignore
+                    'display_name')  # type: ignore
+                new_coverage[new_sub_category_name] = new_sub_category_data
+        return {'coverage': new_coverage}
+
+
+    def parse_lines_from_os(category_name, data, filter_data_flag):
+        new_lines = []
+        for info_line in data:
+            if not filter_data_flag or validate_if_line_needed(category_name, info_line):
+                new_sub_categories = get_data_from_line(info_line.get('line'), category_name)
+                new_lines.append(new_sub_categories)
+        return new_lines
+
+
+    def parse_sample_analysis_response(resp, filter_data_flag):
+        analysis = {}
+        for category_name, category_data in resp.items():
+            if category_name in SAMPLE_ANALYSIS_LINE_KEYS:
+                new_category = {}
+                for os_name, os_data in category_data.items():
+                    os_sanitized_data = parse_lines_from_os(category_name, os_data, filter_data_flag)
+                    new_category[os_name] = os_sanitized_data
+
+                category_dict = SAMPLE_ANALYSIS_LINE_KEYS.get(category_name)
+                analysis.update({category_dict['display_name']: new_category})  # type: ignore
+
+            elif category_name == 'coverage':
+                new_category = parse_coverage_sub_categories(category_data)
+                analysis.update(new_category)
+
+        return analysis
+
+
+    def sample_analysis(sample_id, os, filter_data_flag):
+        path = f'/sample/{sample_id}/analysis'
+        data = {
+            'coverage': 'true'
+        }
+        if os:
+            data['platforms'] = [os]  # type: ignore
+        result = http_request(path, data=data, err_operation='Sample analysis failed')
+        analysis_obj = parse_sample_analysis_response(result, filter_data_flag)
+        return analysis_obj
+
+
+    def parse_tag_details_response(resp):
+        tag_details = resp.get('tag')
+        fields_to_extract_from_tag_details = [
+            'public_tag_name',
+            'tag_name',
+            'customer_name',
+            'source',
+            'tag_definition_scope',
+            'tag_definition_status',
+            'tag_class',
+            'count',
+            'lasthit',
+            'description'
+        ]
+        new_tag_info = {}
+        for field in fields_to_extract_from_tag_details:
+            new_tag_info[field] = tag_details.get(field)
+
+        tag_group_details = resp.get('tag_groups')
+        if tag_group_details:
+            new_tag_info['tag_group'] = tag_group_details
+
+        return new_tag_info
+
+
+    def autofocus_tag_details(tag_name):
+        path = f'/tag/{tag_name}'
+        resp = http_request(path, err_operation='Tag details operation failed')
+        tag_info = parse_tag_details_response(resp)
+        return tag_info
+
+
+    def validate_tag_scopes(private, public, commodity, unit42):
+        if not private and not public and not commodity and not unit42:
+            return_error('Add at least one Tag scope by setting `commodity`, `private`, `public` or `unit42` to True')
+
+
+    def autofocus_top_tags_search(scope, tag_class_display, private, public, commodity, unit42):
+        validate_tag_scopes(private, public, commodity, unit42)
+        tag_class = API_PARAM_DICT['tag_class'][tag_class_display]  # type: ignore
+        query = {
+            "operator": "all",
+            "children": [
+                {
+                    "field": "sample.tag_class",
+                    "operator": "is",
+                    "value": tag_class
+                }
+            ]
+        }
+        tag_scopes = list()
+        if private:
+            tag_scopes.append('private')
+        if public:
+            tag_scopes.append('public')
+        if commodity:
+            tag_scopes.append('commodity')
+        if unit42:
+            tag_scopes.append('unit42')
+        data = {
+            'query': query,
+            'scope': scope,
+            'tagScopes': tag_scopes
+        }
+        path = '/top-tags/search/'
+        resp = http_request(path, data=data, err_operation='Top tags operation failed')
+        in_progress = resp.get('af_in_progress')
+        status = 'in progress' if in_progress else 'complete'
+        search_info = {
+            'AFCookie': resp.get('af_cookie'),
+            'Status': status
+        }
+        return search_info
+
+
+    def parse_top_tags_response(response):
+        top_tags_list = []  # type: ignore
+        top_tags = response.get('top_tags')
+        if not top_tags:
+            return top_tags_list
+        else:
+            for tag in top_tags:
+                fields_to_extract_from_top_tags = ['tag_name', 'public_tag_name', 'count', 'lasthit']
+                new_tag = {}
+                for field in fields_to_extract_from_top_tags:
+                    new_tag[field] = tag[field]
+                top_tags_list.append(new_tag)
+            return top_tags_list
+
+
+    def get_top_tags_results(af_cookie):
+        path = f'/top-tags/results/{af_cookie}'
+        results = http_request(path, err_operation='Fetching top tags results failed')
+        top_tags = parse_top_tags_response(results)
+        in_progress = results.get('af_in_progress')
+        status = 'in progress' if in_progress else 'complete'
+        return top_tags, status
+
+
+    def print_hr_by_category(category_name, category_data):
+        hr = content = f'### {string_to_table_header(category_name)}:\nNo entries'
+        if category_name == 'coverage':
+            content = category_data
+            if category_data:
+                hr = tableToMarkdown(f'{string_to_table_header(category_name)}:', category_data,
+                                     headerTransform=string_to_table_header)
+            else:
+                hr = f'### {string_to_table_header(category_name)}:\nNo entries'
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': content,
+                'HumanReadable': hr
+            })
+        else:
+            for os_name, os_data in category_data.items():
+                content = os_data
+                table_header = f'{category_name}_{os_name}'
+                if os_data:
+                    hr = tableToMarkdown(f'{string_to_table_header(table_header)}:', os_data,
+                                         headerTransform=string_to_table_header)
+                else:
+                    hr = f'### {string_to_table_header(table_header)}:\nNo entries'
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['text'],
+                    'Contents': content,
+                    'HumanReadable': hr
+                })
+
+
+    def get_files_data_from_results(results):
+        """
+        Gets a list of results and for each result returns a file object includes all relevant file indicators exists
+        in that result
+        :param results: a list of dictionaries
+        :return: a list of file objects
+        """
+        files = []
+        if results:
+            for result in results:
+                raw_file = get_fields_from_hit_object(result, 'file_indicators')
+                file_data = filter_object_entries_by_dict_values(raw_file, 'file_indicators')
+                files.append(file_data)
+        return files
+
+
+    def filter_object_entries_by_dict_values(result_object, response_dict_name):
+        """
+        Gets a dictionary (result_object) and filters it's keys by the values of another
+        dictionary (response_dict_name)
+        input: response_dict_name = 'file_indicators' - see API_PARAM_DICT above
+               result_object = {
+                                  "app": "web-browsing",
+                                  "vsys": 1,
+                                  "SHA256": "18c9acd34a3aea09121f027857e0004a3ea33a372b213a8361e8a978330f0dc8",
+                                  "UploadSource": "Firewall",
+                                  "src_port": 80,
+                                  "device_serial": "007051000050926",
+                                  "Seen": "2019-07-24T09:37:04",
+                                  "Name": "wildfire-test-pe-file.exe",
+                                  "user_id": "unknown",
+                                  "src_country": "United States",
+                                  "src_countrycode": "US",
+                                  "dst_port": 65168,
+                                  "device_countrycode": "US",
+                                  "Industry": "High Tech",
+                                  "Region": "us",
+                                  "device_country": "United States",
+                                  "ID": "179972200903"
+                                }
+        output: {
+                    "SHA256": "18c9acd34a3aea09121f027857e0004a3ea33a372b213a8361e8a978330f0dc8",
+                    "Name": "wildfire-test-pe-file.exe"
+                }
+        :param result_object: a dictionary representing an object
+        :param response_dict_name: a dictionary which it's values are the relevant fields (filters)
+        :return: the result_object filtered by the relevant fields
+        """
+        af_params_dict = API_PARAM_DICT.get(response_dict_name)
+        result_object_filtered = {}
+        if af_params_dict and isinstance(result_object, dict) and isinstance(af_params_dict, dict):
+            for key in result_object.keys():
+                if key in af_params_dict.values():  # type: ignore
+                    result_object_filtered[key] = result_object.get(key)
+        return result_object_filtered
+
+
+    def search_samples(query=None, scope=None, size=None, sort=None, order=None, file_hash=None, domain=None, ip=None,
+                       url=None, wildfire_verdict=None, first_seen=None, last_updated=None):
+        validate_no_query_and_indicators(query, [file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated])
+        if not query:
+            validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
+            query = build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated)
+        return run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order)
+
+
+    def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated):
+        indicator_args_for_query = {
+            'file_hash': file_hash,
+            'domain': domain,
+            'ip': ip,
+            'url': url
+        }
+        indicator_list = build_indicator_children_query(indicator_args_for_query)
+        indicator_query = build_logic_query('OR', indicator_list)
+        filtering_args_for_search = {}  # type: ignore
+        if wildfire_verdict:
+            filtering_args_for_search['wildfire_verdict'] = \
+                demisto.get(API_PARAM_DICT, f'search_arguments.wildfire_verdict.translate.{wildfire_verdict}')
+        if first_seen:
+            filtering_args_for_search['first_seen'] = first_seen
+        if last_updated:
+            filtering_args_for_search['last_updated'] = last_updated
+        filters_list = build_children_query(filtering_args_for_search)
+        filters_list.append(indicator_query)
+        logic_query = build_logic_query('AND', filters_list)
+        return json.dumps(logic_query)
+
+
+    def search_sessions(query=None, size=None, sort=None, order=None, file_hash=None, domain=None, ip=None, url=None,
+                        from_time=None, to_time=None):
+        validate_no_query_and_indicators(query, [file_hash, domain, ip, url, from_time, to_time])
+        if not query:
+            validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
+            query = build_session_search_query(file_hash, domain, ip, url, from_time, to_time)
+        return run_search('sessions', query=query, size=size, sort=sort, order=order)
+
+
+    def build_session_search_query(file_hash, domain, ip, url, from_time, to_time):
+        indicator_args_for_query = {
+            'file_hash': file_hash,
+            'domain': domain,
+            'ip': ip,
+            'url': url
+        }
+        indicator_list = build_indicator_children_query(indicator_args_for_query)
+        indicator_query = build_logic_query('OR', indicator_list)
+        time_filters_for_search = {}  # type: ignore
+        if from_time and to_time:
+            time_filters_for_search = {'time_range': [from_time, to_time]}
+        elif from_time:
+            time_filters_for_search = {'time_after': [from_time]}
+        elif to_time:
+            time_filters_for_search = {'time_before': [to_time]}
+
+        filters_list = build_children_query(time_filters_for_search)
+        filters_list.append(indicator_query)
+        logic_query = build_logic_query('AND', filters_list)
+        return json.dumps(logic_query)
+
+
+    def build_logic_query(logic_operator, condition_list):
+        operator = None
+        if logic_operator == 'AND':
+            operator = 'all'
+        elif logic_operator == 'OR':
+            operator = 'any'
+        return {
+            'operator': operator,
+            'children': condition_list
+        }
+
+
+    def build_children_query(args_for_query):
+        children_list = []  # type: ignore
+        for key, val in args_for_query.items():
+            field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']  # type: ignore
+            operator = API_PARAM_DICT['search_arguments'][key]['operator']  # type: ignore
+            children_list += children_list_generator(field_api_name, operator, [val])
+        return children_list
+
+
+    def build_indicator_children_query(args_for_query):
+        for key, val in args_for_query.items():
+            if val:
+                field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']  # type: ignore
+                operator = API_PARAM_DICT['search_arguments'][key]['operator']  # type: ignore
+                children_list = children_list_generator(field_api_name, operator, val)
+        return children_list
+
+
+    def children_list_generator(field_name, operator, val_list):
+        query_list = []
+        for value in val_list:
+            query_list.append({
+                'field': field_name,
+                'operator': operator,
+                'value': value
+            })
+        return query_list
+
+
+    def validate_no_query_and_indicators(query, arg_list):
+        if query:
+            for arg in arg_list:
+                if arg:
+                    return_error(f'The search command can either run a search using a custom query '
+                                 f'or use the builtin arguments, but not both')
+
+
+    def validate_no_multiple_indicators_for_search(arg_list):
+        used_arg = None
+        for arg in arg_list:
+            if arg and used_arg:
+                return_error(f'The search command can receive one indicator type at a time, two were given: {used_arg}, '
+                             f'{arg}. For multiple indicator types use the custom query')
+            elif arg:
+                used_arg = arg
+        if not used_arg:
+            return_error('In order to perform a samples/sessions search, a query or an indicator must be given.')
+        return
+
+
+    ''' COMMANDS'''
+
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        query = {
+            'operator': 'all',
+            'children': [
+                {
+                    'field': 'sample.malware',
+                    'operator': 'is',
+                    'value': 1
+                }
+            ]
+        }
+
+        do_search('samples', query=query, scope='Public', err_operation='Test module failed')
+        return
+
+
+    def search_samples_command():
+        args = demisto.args()
+        file_hash = argToList(args.get('file_hash'))
+        domain = argToList(args.get('domain'))
+        ip = argToList(args.get('ip'))
+        url = argToList(args.get('url'))
+        wildfire_verdict = args.get('wildfire_verdict')
+        first_seen = argToList(args.get('first_seen'))
+        last_updated = argToList(args.get('last_updated'))
+        query = args.get('query')
+        scope = args.get('scope').capitalize()
+        max_results = args.get('max_results')
+        sort = args.get('sort')
+        order = args.get('order')
+        info = search_samples(query=query, scope=scope, size=max_results, sort=sort, order=order, file_hash=file_hash,
+                              domain=domain, ip=ip, url=url, wildfire_verdict=wildfire_verdict, first_seen=first_seen,
+                              last_updated=last_updated)
+        md = tableToMarkdown(f'Search Samples Info:', info)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': info,
+            'EntryContext': {'AutoFocus.SamplesSearch(val.AFCookie == obj.AFCookie)': info},
+            'HumanReadable': md
+        })
+
+
+    def search_sessions_command():
+        args = demisto.args()
+        file_hash = argToList(args.get('file_hash'))
+        domain = argToList(args.get('domain'))
+        ip = argToList(args.get('ip'))
+        url = argToList(args.get('url'))
+        from_time = args.get('from_time')
+        to_time = args.get('to_time')
+        query = args.get('query')
+        max_results = args.get('max_results')
+        sort = args.get('sort')
+        order = args.get('order')
+        info = search_sessions(query=query, size=max_results, sort=sort, order=order, file_hash=file_hash, domain=domain,
+                               ip=ip, url=url, from_time=from_time, to_time=to_time)
+        md = tableToMarkdown(f'Search Sessions Info:', info)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': info,
+            'EntryContext': {'AutoFocus.SessionsSearch(val.AFCookie == obj.AFCookie)': info},
+            'HumanReadable': md
+        })
+
+
+    def samples_search_results_command():
+        args = demisto.args()
+        af_cookie = args.get('af_cookie')
+        results, status = get_search_results('samples', af_cookie)
+        files = get_files_data_from_results(results)
+        if len(results) < 1:
+            md = results = 'No entries found that match the query'
+            status = 'complete'
+        else:
+            md = tableToMarkdown(f'Search Samples Results is {status}', results)
+        context = {
+            'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
+            'AutoFocus.SamplesSearch(val.AFCookie ==== obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
+            outputPaths['file']: files
+        }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': results,
+            'EntryContext': context,
+            'HumanReadable': md
+        })
+
+
+    def sessions_search_results_command():
+        args = demisto.args()
+        af_cookie = args.get('af_cookie')
+        results, status = get_search_results('sessions', af_cookie)
+        files = get_files_data_from_results(results)
+        if len(results) < 1:
+            md = results = 'No entries found that match the query'
+            status = 'complete'
+        else:
+            md = tableToMarkdown(f'Search Sessions Results is {status}', results)
+        context = {
+            'AutoFocus.SessionsResults(val.ID === obj.ID)': results,
+            'AutoFocus.SessionsSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
+            outputPaths['file']: files
+        }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': results,
+            'EntryContext': context,
+            'HumanReadable': md
+        })
+
+
+    def get_session_details_command():
+        args = demisto.args()
+        session_id = args.get('session_id')
+        result = get_session_details(session_id)
+        files = get_files_data_from_results(result)
+        md = tableToMarkdown(f'Session {session_id}:', result)
+        context = {
+            'AutoFocus.Sessions(val.ID === obj.ID)': result,
+            outputPaths['file']: files
+        }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': result,
+            'EntryContext': context,
+            'HumanReadable': md
+        })
+
+
+    def sample_analysis_command():
+        args = demisto.args()
+        sample_id = args.get('sample_id')
+        os = args.get('os')
+        filter_data = False if args.get('filter_data') == 'False' else True
+        analysis = sample_analysis(sample_id, os, filter_data)
+        context = createContext(analysis, keyTransform=string_to_context_key)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': {'ID': sample_id, 'Analysis': analysis},
+            'HumanReadable': f'### Sample Analysis results for {sample_id}:',
+            'EntryContext': {f'AutoFocus.SampleAnalysis(val.ID == obj.ID)': {'ID': sample_id, 'Analysis': context}},
+        })
+        for category_name, category_data in analysis.items():
+            print_hr_by_category(category_name, category_data)
+
+
+    def tag_details_command():
+        args = demisto.args()
+        tag_name = args.get('tag_name')
+        result = autofocus_tag_details(tag_name)
+        md = tableToMarkdown(f'Tag {tag_name} details:', result, headerTransform=string_to_table_header)
+        context = createContext(result, keyTransform=string_to_context_key)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': result,
+            'EntryContext': {'AutoFocus.Tag(val.ID == obj.ID)': context},
+            'HumanReadable': md
+        })
+
+
+    def top_tags_search_command():
+        args = demisto.args()
+        scope = args.get('scope')
+        tag_class = args.get('class')
+        private = args.get('private') == 'True'
+        public = args.get('public') == 'True'
+        commodity = args.get('commodity') == 'True'
+        unit42 = args.get('unit42') == 'True'
+        info = autofocus_top_tags_search(scope, tag_class, private, public, commodity, unit42)
+        md = tableToMarkdown(f'Top tags search Info:', info)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': info,
+            'EntryContext': {'AutoFocus.TopTagsSearch(val.AFCookie == obj.AFCookie)': info},
+            'HumanReadable': md
+        })
+
+
+    def top_tags_results_command():
+        args = demisto.args()
+        af_cookie = args.get('af_cookie')
+        results, status = get_top_tags_results(af_cookie)
+        md = tableToMarkdown(f'Search Top Tags Results is {status}:', results, headerTransform=string_to_table_header)
+        context = createContext(results, keyTransform=string_to_context_key)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': results,
+            'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context,
+                             'AutoFocus.TopTagsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
+                                                                                       'AFCookie': af_cookie}},
+            'HumanReadable': md
+        })
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+    try:
+        # Remove proxy if not set to true in params
+        handle_proxy()
+        active_command = demisto.command()
+        if active_command == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif active_command == 'autofocus-search-samples':
+            search_samples_command()
+        elif active_command == 'autofocus-search-sessions':
+            search_sessions_command()
+        elif active_command == 'autofocus-samples-search-results':
+            samples_search_results_command()
+        elif active_command == 'autofocus-sessions-search-results':
+            sessions_search_results_command()
+        elif active_command == 'autofocus-get-session-details':
+            get_session_details_command()
+        elif active_command == 'autofocus-sample-analysis':
+            sample_analysis_command()
+        elif active_command == 'autofocus-tag-details':
+            tag_details_command()
+        elif active_command == 'autofocus-top-tags-search':
+            top_tags_search_command()
+        elif active_command == 'autofocus-top-tags-results':
+            top_tags_results_command()
+
+
+    # Log exceptions
+    except Exception as e:
+        LOG(e)
+        LOG.print_log()
+        return_error(f'Unexpected error: {e}')
+  subtype: python3
+  type: python
+system: true

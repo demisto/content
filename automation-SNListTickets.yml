@@ -1,0 +1,42 @@
+args:
+- default: true
+  description: 'ServiceNow syntax: http://wiki.servicenow.com/index.php?title=Encoded_Query_Strings'
+  name: query
+- description: Property fields to include in results
+  name: fields
+comment: List tickets from ServiceNow
+commonfields:
+  id: SNListTickets
+  version: -1
+dependson:
+  must:
+  - servicenow-incidents-query
+deprecated: true
+name: SNListTickets
+runonce: false
+script: |-
+  res = []
+  dArgs = demisto.args()
+  resCmd = demisto.executeCommand("servicenow-incidents-query", dArgs)
+  try:
+      for entry in resCmd:
+          if isError(entry):
+              res = resCmd
+              break
+          else:
+              myData = demisto.get(entry, 'Contents.result')
+              if myData:
+                  myData = [{k: formatCell(row[k]) for k in row} for row in myData]
+                  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": myData})
+              else:
+                  res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                              "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"])})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- servicenow
+type: python

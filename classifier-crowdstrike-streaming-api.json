@@ -1,0 +1,63 @@
+{
+	"brandName": "crowdstrike-streaming-api",
+	"custom": false,
+	"defaultIncidentType": "",
+	"id": "crowdstrike-streaming-api",
+	"incidentSamples": null,
+	"instanceId": "",
+	"instanceName": "",
+	"isDefault": true,
+	"keyTypeMap": {
+		"DetectionSummaryEvent": "Malware"
+	},
+	"mapping": {
+		"Malware": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Dest": {
+					"complex": null,
+					"simple": "event.ComputerName"
+				},
+				"Dest NT Domain": {
+					"complex": null,
+					"simple": "event.MachineDomain"
+				},
+				"File Hash": {
+					"complex": null,
+					"simple": "event.MD5String"
+				},
+				"File Name": {
+					"complex": null,
+					"simple": "event.FileName"
+				},
+				"File Path": {
+					"complex": null,
+					"simple": "event.FilePath"
+				},
+				"User": {
+					"complex": null,
+					"simple": "event.UserName"
+				},
+				"Vendor Product": {
+					"complex": null,
+					"simple": "\"CrowdStrike\""
+				},
+				"details": {
+					"complex": null,
+					"simple": "event.DetectDescription"
+				},
+				"name": {
+					"complex": null,
+					"simple": "event.DetectName"
+				}
+			}
+		}
+	},
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": "metadata.eventType"
+	},
+	"unclassifiedCases": {},
+	"version": -1
+}

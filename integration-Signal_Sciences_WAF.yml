@@ -1,0 +1,2410 @@
+category: Network Security
+commonfields:
+  id: Signal Sciences WAF
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Email
+  name: Email
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Token
+  name: Token
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Corporation Name
+  name: corpName
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: "720"
+  display: Fetch Interval (in minutes)
+  name: fetch_interval
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: CSV list of sites to fetch from. If no sites are specified, events from
+    all corporation's sites will be fetched.
+  name: sites_to_fetch
+  required: false
+  type: 12
+description: Protect your web application using Signal Sciences.
+display: Signal Sciences WAF
+image: data:image/png;base64,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
+name: Signal Sciences WAF
+script:
+  commands:
+  - arguments:
+    - description: The site that holds the whitelist you want to get.
+      name: siteName
+      required: true
+    description: Fetches a site's whitelist, which resides on the Signal Sciences'
+      platform.
+    name: sigsci-get-whitelist
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Whitelist.ID
+      description: ID for this particular entry.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.Source
+      description: IP Address present in the whitelist.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.ExpiryDate
+      description: Expiration Timestamp.
+      type: date
+    - contextPath: SigSciences.Corp.Site.Whitelist.Note
+      description: Note associated with the tag.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.CreatedDate
+      description: The created date timestamp
+      type: date
+    - contextPath: SigSciences.Corp.Site.Whitelist.CreatedBy
+      description: The user who added this source.
+      type: string
+  - arguments:
+    - description: The site that holds the blacklist you wish to get
+      name: siteName
+      required: true
+    description: Fetches a site's blacklist, which resides on the Signal Sciences'
+      platform.
+    name: sigsci-get-blacklist
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Blacklist.ID
+      description: The ID for this entry.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.Source
+      description: The IP address on the blacklist.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.ExpiryDate
+      description: The expiration timestamp.
+      type: date
+    - contextPath: SigSciences.Corp.Site.Blacklist.Note
+      description: The note associated with the tag.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.CreatedDate
+      description: The created date timestamp
+      type: date
+    - contextPath: SigSciences.Corp.Site.Blacklist.CreatedBy
+      description: The user who added this source.
+      type: string
+  - arguments:
+    - description: The site that holds the whitelist you want to add an IP address
+        to.
+      name: siteName
+      required: true
+    - description: The IP address to add to the site's whitelist.
+      name: ip
+      required: true
+    - description: The note associated with the tag.
+      name: note
+      required: true
+    - description: The datetime for the IP address to removed from the site's whitelist
+        (in RFC3339 format). To keep the IP address on the site's whitelist indefinitely,
+        do not specify this argument.
+      name: expires
+    description: Adds an IP address to a site's whitelist, which resides the Signal
+      Sciences' platform.
+    name: sigsci-whitelist-add-ip
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Whitelist.Source
+      description: The IP address on the whitelist.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.Note
+      description: The note associated with the tag.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.ID
+      description: The ID for this entry.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.CreatedBy
+      description: The user who added this source.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.CreatedDate
+      description: The created date timestamp
+      type: date
+    - contextPath: SigSciences.Corp.Site.Whitelist.ExpiryDate
+      description: The expiration timestamp.
+      type: date
+  - arguments:
+    - description: The site that holds the blacklist you wish to add to
+      name: siteName
+      required: true
+    - description: The IP address to add to the site's blacklist.
+      name: ip
+      required: true
+    - description: The note associated with the tag.
+      name: note
+      required: true
+    - description: The datetime for the IP address to removed from the site's blacklist
+        (in RFC3339 format). To keep the IP address on the site's blacklist indefinitely,
+        do not specify this argument.
+      name: expires
+    description: Adds an IP to a site's blacklist, which resides on the Signal Sciences'
+      platform.
+    name: sigsci-blacklist-add-ip
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Blacklist.Source
+      description: The IP address on the blacklist.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.Note
+      description: The note associated with the tag.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.ID
+      description: The ID for this entry.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.CreatedBy
+      description: The user who added this source.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.CreatedDate
+      description: The created date timestamp.
+      type: date
+    - contextPath: SigSciences.Corp.Site.Blacklist.ExpiryDate
+      description: The expiration timestamp.
+      type: date
+  - arguments:
+    - description: The site that contains the whitelist you want to remove an IP address
+        from.
+      name: siteName
+      required: true
+    - description: The IP address entry to remove.
+      name: IP
+      required: true
+    description: Removes an IP address from a site's whitelist, which resides on the
+      Signal Sciences' platform.
+    name: sigsci-whitelist-remove-ip
+  - arguments:
+    - description: The site that contains the blacklist you want to remove an IP address
+        from.
+      name: siteName
+      required: true
+    - description: The IP address entry to remove.
+      name: IP
+      required: true
+    description: Removes an IP from a site's blacklist, which resides on the Signal
+      Sciences' platform.
+    name: sigsci-blacklist-remove-ip
+  - arguments: []
+    description: Returns all site names from the Signal Sciences platform.
+    name: sigsci-get-sites
+    outputs:
+    - contextPath: SigSciences.Site.Name
+      description: The site name.
+      type: string
+    - contextPath: SigSciences.Site.CreatedDate
+      description: The site creation date.
+      type: date
+  - arguments:
+    - description: The name of the site in Signal Sciences you want to add a list
+        to.
+      name: siteName
+      required: true
+    - description: The name of the list to create on Signal Sciences.
+      name: list_name
+      required: true
+    - auto: PREDEFINED
+      description: The type for the list you wish to create on Signal Sciences. Legal
+        types are IP, String, Country or Wildcard
+      name: list_type
+      predefined:
+      - IP
+      - String
+      - Country
+      - Wildcard
+      required: true
+    - description: A CSV list of values, consistent with the list's type.
+      isArray: true
+      name: entries_list
+      required: true
+    - description: Short text that describes the new list.
+      name: description
+    description: Creates a new list for a given site on the Signal Sciences platform.
+    name: sigsci-create-site-list
+    outputs:
+    - contextPath: SigSciences.Corp.Site.List.Name
+      description: The name of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Type
+      description: The type of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Entries
+      description: The entry list of the list.
+    - contextPath: SigSciences.Corp.Site.List.ID
+      description: The ID of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Description
+      description: The description of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.CreatedBy
+      description: The creator of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.CreatedDate
+      description: The creation date of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.UpdatedDate
+      description: The last update date of the list.
+      type: string
+  - arguments:
+    - description: The name of the site in Signal Sciences that the list you're searching
+        for belongs to.
+      name: siteName
+      required: true
+    - description: The ID of the list.
+      name: list_id
+      required: true
+    description: Returns all the data about a site list.
+    name: sigsci-get-site-list
+    outputs:
+    - contextPath: SigSciences.Corp.Site.List.Name
+      description: The name of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Type
+      description: The type of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Entries
+      description: The entry list of the list.
+    - contextPath: SigSciences.Corp.Site.List.ID
+      description: The ID of the list.
+    - contextPath: SigSciences.Corp.Site.List.Description
+      description: The description of the list.
+    - contextPath: SigSciences.Corp.Site.List.CreatedBy
+      description: 'The creator of the list. '
+    - contextPath: SigSciences.Corp.Site.List.CreatedDate
+      description: The creation date of the list.
+    - contextPath: SigSciences.Corp.Site.List.UpdatedDate
+      description: The last update date of the list.
+  - arguments:
+    - description: The name of the site in Signal Sciences you want to delete a list
+        from.
+      name: siteName
+      required: true
+    - description: The ID of the list in Signal Sciences to delete.
+      name: list_id
+      required: true
+    description: Deletes a site list in Signal Sciences.
+    name: sigsci-delete-site-list
+  - arguments:
+    - description: The name of the site in Signal Sciences that the list to update
+        belongs to.
+      name: siteName
+      required: true
+    - description: The ID of the list to update.
+      name: list_id
+      required: true
+    - auto: PREDEFINED
+      description: The method to use, must be "Add" or "Remove". The method will determine
+        whether the given entries are added to or removed from the list.
+      name: method
+      predefined:
+      - Add
+      - Remove
+      required: true
+    - description: A CSV list of values, consistent with the list's type.
+      isArray: true
+      name: entries_list
+      required: true
+    - description: A description for the updated list.
+      name: description
+    description: Updates a site list in Signal Sciences.
+    name: sigsci-update-site-list
+    outputs:
+    - contextPath: SigSciences.Corp.Site.List.Name
+      description: The name of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Type
+      description: The type of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Entries
+      description: The entry list of the list in Signal Sciences.
+      type: unknown
+    - contextPath: SigSciences.Corp.Site.List.ID
+      description: The ID of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Description
+      description: The description of the list in Signal Sciences. Maximum is 140
+        characters.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.CreatedBy
+      description: The creator of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.CreatedDate
+      description: The creation date of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.UpdatedDate
+      description: The last update date of the list in Signal Sciences.
+      type: string
+  - arguments:
+    - description: The name of the site to add an alert to.
+      name: siteName
+      required: true
+    - description: A human readable description of the alert. Must be between 3 and
+        25 characters.
+      name: long_name
+      required: true
+    - auto: PREDEFINED
+      description: The number of minutes of past traffic to examine. Must be 1, 10
+        or 60.
+      name: interval
+      predefined:
+      - "1"
+      - "10"
+      - "60"
+      required: true
+    - description: The name of the tag whose occurrences the alert is watching. Must
+        match an existing tag.
+      name: tag_name
+      required: true
+    - description: ' The number of occurrences of the tag in the specified interval
+        that are required to trigger the alert.'
+      name: threshold
+      required: true
+    - auto: PREDEFINED
+      description: A flag to toggle this alert ("True" or "False").
+      name: enabled
+      predefined:
+      - "True"
+      - "False"
+      required: true
+    - auto: PREDEFINED
+      description: A flag that describes what happens when the alert is triggered.
+        "info" creates an incident in the dashboard. "flagged" creates an incident
+        and blocks traffic for 24 hours.
+      name: action
+      predefined:
+      - info
+      - flagged
+      required: true
+    description: Adds a custom alert to a site in Signal Sciences.
+    name: sigsci-add-alert
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Alert.ID
+      description: The unique ID of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.SiteID
+      description: The ID of the site.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.TagName
+      description: The name of the tag whose occurrences the alert is watching.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.LongName
+      description: A short description of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.Interval
+      description: The number of minutes of past traffic to examine.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.Threshold
+      description: The number of occurrences of the tag in the specified interval
+        that are required to trigger the alert.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
+      description: ' The number of seconds that this alert is active.'
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.SkipNotifications
+      description: A flag to disable external notifications - Slack, webhooks, emails,
+        and so on.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Enabled
+      description: A flag to toggle this alert.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Action
+      description: A flag that describes what happens when the alert is triggered.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.CreatedDate
+      description: The timestamp of event (RFC3339 format).
+      type: date
+  - arguments:
+    - description: The name of the site the alert you want to get data for belongs
+        to.
+      name: siteName
+      required: true
+    - description: The ID of the alert to retrieve.
+      name: alert_id
+      required: true
+    description: Retrieves data for an alert.
+    name: sigsci-get-alert
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Alert.ID
+      description: The unique ID of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.SiteID
+      description: The ID of the site.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.TagName
+      description: The name of the tag whose occurrences the alert is watching.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.LongName
+      description: A short description of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.Interval
+      description: The number of minutes of past traffic to examine.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.Threshold
+      description: The number of occurrences of the tag in the specified interval
+        that are required to trigger the alert.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
+      description: ' The number of seconds this alert is active.'
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.SkipNotifications
+      description: A flag to disable external notifications - Slack, webhooks, emails,
+        and so on.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Enabled
+      description: A flag to toggle this alert.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Action
+      description: A flag that describes what happens when the alert is triggered.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.CreatedDate
+      description: The timestamp of the event (RFC3339 format).
+      type: date
+  - arguments:
+    - description: The name of the site to delete an alert from.
+      name: siteName
+      required: true
+    - description: The ID of the alert to delete.
+      name: alert_id
+      required: true
+    description: Deletes an alert from a given site in Signal Sciences.
+    name: sigsci-delete-alert
+  - arguments:
+    - description: The site of the alert to update.
+      name: siteName
+      required: true
+    - description: The ID of the alert to update.
+      name: alert_id
+      required: true
+    - description: The name of the tag whose occurrences the alert is watching.
+      name: tag_name
+      required: true
+    - description: A human readable description of the alert. Must be between 3 and
+        25 characters.
+      name: long_name
+      required: true
+    - auto: PREDEFINED
+      description: The number of minutes of past traffic to examine.
+      name: interval
+      predefined:
+      - "1"
+      - "10"
+      - "60"
+      required: true
+    - description: The number of occurrences of the tag in the specified interval
+        that are required to trigger the alert.
+      name: threshold
+      required: true
+    - auto: PREDEFINED
+      description: A flag to toggle this alert.
+      name: enabled
+      predefined:
+      - "True"
+      - "False"
+      required: true
+    - auto: PREDEFINED
+      description: A flag that describes what happens when the alert is triggered.
+        "info" creates an incident in the dashboard. "flagged" creates an incident
+        and blocks traffic for 24 hours.
+      name: action
+      predefined:
+      - info
+      - flagged
+      required: true
+    description: Updates the attributes of a given alert.
+    name: sigsci-update-alert
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Alert.CreatedDate
+      description: The unique ID of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.SiteID
+      description: The ID of the site.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.TagName
+      description: The name of the tag whose occurrences the alert is watching.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.LongName
+      description: A short description of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.Interval
+      description: The number of minutes of past traffic to examine.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.Threshold
+      description: The number of occurrences of the tag in the specified interval
+        that are required to trigger the alert.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
+      description: ' The number of seconds that this alert is active.'
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.SkipNotifications
+      description: A flag to disable external notifications - Slack, webhooks, emails,
+        and so on.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Enabled
+      description: A flag to toggle this alert.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Action
+      description: A flag that describes what happens when the alert is triggered.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.CreatedDate
+      description: The timestamp of event (RFC3339 format).
+      type: date
+  - arguments:
+    - description: The name of site to get alerts for.
+      name: siteName
+      required: true
+    description: Retrieves all alerts for given a site.
+    name: sigsci-get-all-alerts
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Alert.ID
+      description: The unique ID of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.SiteID
+      description: The ID of the site.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.TagName
+      description: The name of the tag whose occurrences the alert is watching.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.LongName
+      description: A short description of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.Interval
+      description: The number of minutes of past traffic to examine.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.Threshold
+      description: The number of occurrences of the tag in the specified interval
+        that are required to trigger the alert.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
+      description: ' The number of seconds this alert is active.'
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.SkipNotification
+      description: A flag to disable external notifications - Slack, webhooks, emails,
+        and so on.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Enabled
+      description: A flag to toggle this alert.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Action
+      description: A flag that describes what happens when the alert is triggered.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.CreatedDate
+      description: The timestamp of event (RFC3339 format).
+      type: date
+  - arguments:
+    - description: The name of the site to retrieve lists for.
+      name: siteName
+      required: true
+    description: Retrieves all site lists for a given site.
+    name: sigsci-get-all-site-lists
+    outputs:
+    - contextPath: SigSciences.Corp.Site.List.Name
+      description: The name of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Type
+      description: The type of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Entries
+      description: The entry list of the list in Signal Sciences.
+    - contextPath: SigSciences.Corp.Site.List.ID
+      description: The ID of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Description
+      description: The description of the list in Signal Sciences. Maximum is 140
+        characters.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.CreatedBy
+      description: The creator of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.CreatedDate
+      description: The creation date of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.UpdatedDate
+      description: The last update date of the list in Signal Sciences.
+      type: string
+  - arguments:
+    - description: A name for the new list.
+      name: list_name
+      required: true
+    - auto: PREDEFINED
+      description: The type for the new list. Legal types are "IP", "String", "Country",
+        or "Wildcard".
+      name: list_type
+      predefined:
+      - IP
+      - String
+      - Country
+      - Wildcard
+      required: true
+    - description: A CSV list of values, consistent with the list's type.
+      isArray: true
+      name: entries_list
+      required: true
+    - description: Short text that describes the new list.
+      name: description
+    description: Creates a new corp list.
+    name: sigsci-create-corp-list
+    outputs:
+    - contextPath: SigSciences.Corp.List.Name
+      description: The name of the list.
+      type: string
+    - contextPath: SigSciences.Corp.List.Type
+      description: The type of the list.
+      type: string
+    - contextPath: SigSciences.Corp.List.Entries
+      description: The entry list of the list.
+    - contextPath: SigSciences.Corp.List.ID
+      description: The ID of the list.
+      type: string
+    - contextPath: SigSciences.Corp.List.Description
+      description: The description of the list.
+      type: string
+    - contextPath: SigSciences.Corp.List.CreatedBy
+      description: The creator of the list.
+      type: string
+    - contextPath: SigSciences.Corp.List.CreatedDate
+      description: The creation date of the list.
+      type: string
+    - contextPath: SigSciences.Corp.List.UpdatedDate
+      description: The last update date of the list.
+      type: string
+  - arguments:
+    - description: The ID of the list to get data for.
+      name: list_id
+      required: true
+    description: Retrieves all data about a given corp list.
+    name: sigsci-get-corp-list
+    outputs:
+    - contextPath: SigSciences.Corp.List.Name
+      description: The name of the list.
+    - contextPath: SigSciences.Corp.List.Type
+      description: The type of the list.
+    - contextPath: SigSciences.Corp.List.Entries
+      description: The entry list of the list.
+    - contextPath: SigSciences.Corp.List.ID
+      description: The ID of the list.
+    - contextPath: SigSciences.Corp.List.Description
+      description: The description of the list.
+    - contextPath: SigSciences.Corp.List.CreatedBy
+      description: The creator of the list.
+    - contextPath: SigSciences.Corp.List.CreatedDate
+      description: The creation date of the list.
+    - contextPath: SigSciences.Corp.List.UpdatedDate
+      description: The last update date of the list.
+  - arguments:
+    - description: The ID of the list to delete.
+      name: list_id
+      required: true
+    description: Deletes a given corp list.
+    name: sigsci-delete-corp-list
+  - arguments:
+    - description: The ID of the list you wish to update
+      name: list_id
+      required: true
+    - auto: PREDEFINED
+      description: The method you wish to use - must be "Add" or "Remove". The method
+        will determine whether the entries you provide are added to the list or removed
+        from it
+      name: method
+      predefined:
+      - Add
+      - Remove
+      required: true
+    - description: A list of values, consistent with the list's type, separated by
+        commas
+      isArray: true
+      name: entries_list
+      required: true
+    - description: A description for the updated list.
+      name: description
+    description: Updates (add or delete) entries for a given corp list.
+    name: sigsci-update-corp-list
+    outputs:
+    - contextPath: SigSciences.Corp.List.Name
+      description: The name of the list.
+    - contextPath: SigSciences.Corp.List.Type
+      description: The type of the list.
+    - contextPath: SigSciences.Corp.List.Entries
+      description: The entry list of the list.
+    - contextPath: SigSciences.Corp.List.ID
+      description: The ID of the list.
+    - contextPath: SigSciences.Corp.List.Description
+      description: The description of the list.
+    - contextPath: SigSciences.Corp.List.CreatedBy
+      description: The creator of the list.
+    - contextPath: SigSciences.Corp.List.CreatedDate
+      description: The creation date of the list.
+    - contextPath: SigSciences.Corp.List.UpdatedDate
+      description: The last update date of the list.
+  - arguments: []
+    description: Retrieves data about all lists for the given corp.
+    name: sigsci-get-all-corp-lists
+    outputs:
+    - contextPath: SigSciences.Corp.List.Name
+      description: The name of the list.
+    - contextPath: SigSciences.Corp.List.Type
+      description: The type of the list.
+    - contextPath: SigSciences.Corp.List.Entries
+      description: The entry list of the list.
+    - contextPath: SigSciences.Corp.List.ID
+      description: The ID of the list.
+    - contextPath: SigSciences.Corp.List.Description
+      description: The description of the list.
+    - contextPath: SigSciences.Corp.List.CreatedBy
+      description: The creator of the list.
+    - contextPath: SigSciences.Corp.List.CreatedDate
+      description: The creation date of the list.
+    - contextPath: SigSciences.Corp.List.UpdatedDate
+      description: The last update date of the list.
+  - arguments:
+    - description: The name of the site to fetch events from.
+      name: siteName
+      required: true
+    - description: The POSIX Unix time to start.
+      name: from_time
+    - description: ' The POSIX Unix time to end. '
+      name: until_time
+    - auto: PREDEFINED
+      description: The sort order ("asc" or "desc").
+      name: sort
+      predefined:
+      - asc
+      - desc
+    - description: The ID of the first object in the set.
+      name: since_id
+    - description: ' The ID of the last object in the set. '
+      name: max_id
+    - description: The maximum number of entries to return.
+      name: limit
+    - description: The page of the results.
+      name: page
+    - auto: PREDEFINED
+      description: ' The action to filter by (''flagged'' or ''info''). '
+      name: action
+      predefined:
+      - flagged
+      - info
+    - description: The tag to filter by. Must be a valid tag name.
+      name: tag
+    - description: The ID to filter by.
+      name: ip
+    - auto: PREDEFINED
+      description: The status to filter by ("active" or "expired").
+      name: status
+      predefined:
+      - active
+      - expired
+    description: Fetches events from Signal Sciences.
+    name: sigsci-get-events
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Event.ID
+      description: The unique ID of the event.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Event.Timestamp
+      description: ' The timestamp of the event (RFC3339 format).'
+      type: date
+    - contextPath: SigSciences.Corp.Site.Event.Source
+      description: The source information, for example, "IP".
+      type: string
+    - contextPath: SigSciences.Corp.Site.Event.RemoteCountryCode
+      description: The country code.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Event.RemoteHostname
+      description: The remote hostname.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Event.UserAgents
+      description: An array of user agents.
+    - contextPath: SigSciences.Corp.Site.Event.Action
+      description: If "flagged", the IP address is flagged and subsequent malicious
+        requests will be blocked. If "info", the IP address is flagged and subsequent
+        requests will be logged.
+    - contextPath: SigSciences.Corp.Site.Event.Reasons
+      description: The reason the event was triggered.
+    - contextPath: SigSciences.Corp.Site.Event.RequestCount
+      description: The total number of requests.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Event.TagCount
+      description: The total number of tags.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Event.Window
+      description: The time window (in seconds) when the items were detected.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Event.DateExpires
+      description: The date the event expires (RFC3339 format).
+      type: string
+    - contextPath: SigSciences.Corp.Site.Event.ExpiredBy
+      description: The email address of the user that expired the event (if the event
+        is expired manually).
+      type: string
+  - arguments:
+    - description: Name of the site to get the event from
+      name: siteName
+      required: true
+    - description: The ID of the event.
+      name: event_id
+      required: true
+    description: Retrieves an event by the event ID.
+    name: sigsci-get-event-by-id
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Event.ID
+      description: The unique ID of the event.
+    - contextPath: SigSciences.Corp.Site.Event.Timestamp
+      description: ' The timestamp of the event (RFC3339 format).'
+    - contextPath: SigSciences.Corp.Site.Event.Source
+      description: Source information, for example, "IP".
+    - contextPath: SigSciences.Corp.Site.Event.RemoteCountryCode
+      description: The country code.
+    - contextPath: SigSciences.Corp.Site.Event.RemoteHostname
+      description: The remote hostname.
+    - contextPath: SigSciences.Corp.Site.Event.UserAgents
+      description: An array of user agents.
+    - contextPath: SigSciences.Corp.Site.Event.Action
+      description: If "flagged", the IP address is flagged and subsequent malicious
+        requests will be blocked. If "info", the IP address is flagged and subsequent
+        requests will be logged.
+    - contextPath: SigSciences.Corp.Site.Event.Reasons
+      description: The reason the event was triggered.
+    - contextPath: SigSciences.Corp.Site.Event.RequestCount
+      description: The total number of requests.
+    - contextPath: SigSciences.Corp.Site.Event.TagCount
+      description: The total number of tags.
+    - contextPath: SigSciences.Corp.Site.Event.Window
+      description: The time window (in seconds) when the items were detected.
+    - contextPath: SigSciences.Corp.Site.Event.DateExpires
+      description: The date the event expires (RFC3339 format).
+    - contextPath: SigSciences.Corp.Site.Event.ExpiredBy
+      description: The email address of the user that expired the event (if the event
+        is expired manually).
+  - arguments:
+    - description: The name of the site to expire an event from.
+      name: siteName
+      required: true
+    - description: The ID of the event to expire.
+      name: event_id
+      required: true
+    description: Expires a given event.
+    name: sigsci-expire-event
+  - arguments:
+    - description: The name of the site to get requests from.
+      name: siteName
+      required: true
+    - description: The page of the results. Maximum is 1000 requests.
+      name: page
+    - description: The number of entries to return.
+      name: limit
+    - description: The search query, in Signal Sciences syntax. If a query is not
+        supplied, no requests will be returned.
+      name: q
+    description: Retrieves requests from a given site according to a search query.
+    name: sigsci-get-requests
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Request.ID
+      description: The unique ID of the request.
+    - contextPath: SigSciences.Corp.Site.Request.ServerHostName
+      description: The server hostname.
+    - contextPath: SigSciences.Corp.Site.Request.RemoteIP
+      description: The remote IP address.
+    - contextPath: SigSciences.Corp.Site.Request.RemoteHostName
+      description: The remote hostname.
+    - contextPath: SigSciences.Corp.Site.Request.RemoteCountryCode
+      description: The remote country code.
+    - contextPath: SigSciences.Corp.Site.Request.UserAgent
+      description: ' The user agent of the request.'
+    - contextPath: SigSciences.Corp.Site.Request.Timestamp
+      description: The timestamp (RFC3339 format).
+    - contextPath: SigSciences.Corp.Site.Request.Method
+      description: The HTTP method, for example, "PUT".
+    - contextPath: SigSciences.Corp.Site.Request.ServerName
+      description: The server name.
+    - contextPath: SigSciences.Corp.Site.Request.Protocol
+      description: ' The HTTP protocol, for example, "HTTP/1.1" .'
+    - contextPath: SigSciences.Corp.Site.Request.Path
+      description: The path.
+    - contextPath: SigSciences.Corp.Site.Request.URI
+      description: The URI.
+    - contextPath: SigSciences.Corp.Site.Request.ResponseCode
+      description: The HTTP response code.
+    - contextPath: SigSciences.Corp.Site.Request.ResponseSize
+      description: ' The HTTP response size.'
+    - contextPath: SigSciences.Corp.Site.Request.ResponseMillis
+      description: ' The response time in millis.'
+    - contextPath: SigSciences.Corp.Site.Request.AgentResponseCode
+      description: The agent response code.
+    - contextPath: SigSciences.Corp.Site.Request.Tags
+      description: The array of relevant tags.
+  - arguments:
+    - description: The name of the site to get from
+      name: siteName
+      required: true
+    - description: The ID of the request to get.
+      name: request_id
+      required: true
+    description: Retrieves a request by request ID.
+    name: sigsci-get-request-by-id
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Request.ID
+      description: The unique ID of the request.
+    - contextPath: SigSciences.Corp.Site.Request.ServerHostName
+      description: ' Server hostname.'
+    - contextPath: SigSciences.Corp.Site.Request.RemoteIP
+      description: ' The remote IP address.'
+    - contextPath: SigSciences.Corp.Site.Request.RemoteHostName
+      description: ' The remote hostname.'
+    - contextPath: SigSciences.Corp.Site.Request.RemoteCountryCode
+      description: The remote country code.
+    - contextPath: SigSciences.Corp.Site.Request.UserAgent
+      description: The user agent of the request.
+    - contextPath: SigSciences.Corp.Site.Request.Timestamp
+      description: ' The timestamp RFC3339 date time serverHostname string.'
+    - contextPath: SigSciences.Corp.Site.Request.Method
+      description: The HTTP method, for example, "PUT".
+    - contextPath: SigSciences.Corp.Site.Request.ServerName
+      description: ' The server name.'
+    - contextPath: SigSciences.Corp.Site.Request.Protocol
+      description: ' The HTTP protocol, for example "HTTP/1.1".'
+    - contextPath: SigSciences.Corp.Site.Request.Path
+      description: The path.
+    - contextPath: SigSciences.Corp.Site.Request.URI
+      description: The URI.
+    - contextPath: SigSciences.Corp.Site.Request.ResponseCode
+      description: ' The HTTP response code.'
+    - contextPath: SigSciences.Corp.Site.Request.ResponseSize
+      description: ' The HTTP response size.'
+    - contextPath: SigSciences.Corp.Site.Request.ResponseMillis
+      description: The response time in milliseconds.
+    - contextPath: SigSciences.Corp.Site.Request.AgentResponseCode
+      description: The agent response code.
+    - contextPath: SigSciences.Corp.Site.Request.Tags
+      description: An array of relevant tags.
+  isfetch: true
+  runonce: false
+  script: |2-
+
+
+
+    ''' IMPORTS '''
+    import json
+    import requests
+
+    ''' GLOBAL VARS '''
+    ''' GLOBAL VARS '''
+    USE_SSL = not demisto.params().get('insecure', False)
+
+    EMAIL = demisto.params()['Email']
+    TOKEN = demisto.params()['Token']
+    CORPNAME = demisto.params()['corpName']
+    FETCH_INTERVAL = demisto.params()['fetch_interval']
+    SITES_TO_FETCH = demisto.params().get('sites_to_fetch', None)
+
+    SERVER_URL = 'https://dashboard.signalsciences.net/api/v0/'
+
+    '''SUFFIX ENDPOINTS'''
+    GET_SITES_SUFFIX = 'corps/{0}/sites'
+    WHITELIST_SUFFIX = 'corps/{0}/sites/{1}/whitelist'
+    BLACKLIST_SUFFIX = 'corps/{0}/sites/{1}/blacklist'
+    DELETE_WHITELIST_IP_SUFFIX = 'corps/{0}/sites/{1}/whitelist/{2}'
+    DELETE_BLACKLIST_IP_SUFFIX = 'corps/{0}/sites/{1}/blacklist/{2}'
+    SITE_CREATE_LIST_SUFFIX = 'corps/{0}/sites/{1}/lists'
+    SITE_ACCESS_LIST_SUFFIX = 'corps/{0}/sites/{1}/lists/{2}'
+    SITE_CREATE_ALERT_SUFFIX = 'corps/{0}/sites/{1}/alerts'
+    SITE_ACCESS_ALERT_SUFFIX = 'corps/{0}/sites/{1}/alerts/{2}'
+    CREATE_CORP_LIST_SUFFIX = 'corps/{0}/lists'
+    ACCESS_CORP_LIST_SUFFIX = 'corps/{0}/lists/{1}'
+    GET_EVENTS_SUFFIX = '/corps/{0}/sites/{1}/events'
+    ACCESS_EVENT_SUFFIX = '/corps/{0}/sites/{1}/events/{2}'
+    EXPIRE_EVENT_SUFFIX = '/corps/{0}/sites/{1}/events/{2}/expire'
+    GET_REQUESTS_SUFFIX = '/corps/{0}/sites/{1}/requests'
+    ACCESS_REQUEST_SUFFIX = '/corps/{0}/sites/{1}/requests/{2}'
+
+
+    '''TABLE TITLES'''
+    WHITELIST_TITLE = 'Signal Sciences - Whitelist'
+    BLACKLIST_TITLE = 'Signal Sciences - Blacklist'
+    SITES_LIST_TITLE = "Sites list"
+    ADD_IP_TO_WHITELIST_TITLE = 'Signal Sciences - Adding an IP to Whitelist'
+    ADD_IP_TO_BLACKLIST_TITLE = 'Signal Sciences - Adding an IP to Blacklist'
+    ADD_ALERT_TITLE = 'Signal Sciences - Adding a new custom alert'
+    UPDATE_LIST_TITLE = 'Signal Sciences - Updating a list'
+    ALERT_LIST_TITLE = 'Signal Sciences - Alert list'
+    LIST_OF_SITE_LISTS_TITLE = 'Signal Sciences - list of site lists'
+    LIST_OF_CORP_LISTS_TITLE = 'Signal Sciences - list of corp lists'
+    LIST_OF_EVENTS_TITLE = 'Signal Sciences - list of events'
+    LIST_OF_REQUESTS_TITLE = 'Signal Sciences - list of requests'
+    CREATE_SITE_LIST_TITLE = "Signal Sciences - creating a new site list \n\n List {0} has been successfully created"
+    CREATE_CORP_LIST_TITLE = "Signal Sciences - creating a new corp list \n\n List {0} has been successfully created"
+    DELETE_CORP_LIST_TITLE = "### Signal Sciences - deleting corp list \n\n List {0} has been successfully removed"
+    EXPIRE_EVENT_TITLE = "### Signal Sciences - expiring event \n\n Event {0} has been successfully expired"
+    WHITELIST_REMOVE_IP_TITLE = '### Signal Sciences - Removing an IP from Whitelist \n\n ' \
+                                'The IP {0} has been successfully removed from Whitelist.'
+    DELETE_SITE_LIST_TITLE = "### Signal Sciences - deleting site list \n\n The list has been succesfully removed"
+    BLACKLIST_REMOVE_IP_TITLE = '### Signal Sciences - Removing an IP from Blacklist \n\n ' \
+                                'The IP {0} has been successfully removed from Blacklist.'
+    IP_ADDED_TO_WHITELIST_TITLE = "The IP {0} has been successfully added to whitelist."
+    IP_ADDED_TO_BLACKLIST_TITLE = "The IP {0} has been successfully added to blacklist."
+
+
+    '''TABLE HEADERS'''
+    ADD_IP_HEADERS = ['Source', 'Note', 'Expiration date']
+    WHITELIST_OR_BLACKLIST_HEADERS = ['ID', 'Source', 'Expiry Date', 'Note', 'Created Date', 'Created By']
+    LIST_HEADERS = ['Name', 'ID', 'Type', 'Entries', 'Description', 'Created By', 'Created Date', 'Updated Date']
+    GET_SITE_HEADERS = ['Name', 'Created Date']
+    EVENT_HEADERS = ['ID', 'Timestamp', 'Source', 'Remote Country Code', 'Action', 'Reasons', 'Remote Hostname',
+                     'User Agents', 'Request Count', 'Tag Count', 'Window', 'Date Expires', 'Expired By']
+    REQUEST_HEADER = ['ID', 'Timestamp', 'Remote Country Code', 'Remote Hostname', 'Remote IP', 'User Agent',
+                      'Method', 'Server Name', 'Protocol', 'Path', 'URI', 'Response Code', 'Response Size',
+                      'Response Millis', 'Agent Response Code', 'Tags']
+    ALERT_HEADERS = ['ID', 'Site ID', 'Created Date', 'Tag Name', 'Action', 'Long Name', 'Interval (In Minutes)',
+                     'Threshold', 'Block Duration Seconds', 'Skip Notifications', 'Enabled']
+
+
+    '''List Types dict'''
+
+    LEGAL_SIGSCI_LIST_TYPES = {
+        'ip',
+        'country',
+        'string',
+        'wildcard'
+    }
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def camel_case_to_spaces(string_in_camel_case):
+        """Given a string in camelcase, will turn it into spaces
+
+        Args:
+            string_in_camel_case(String): the string in camel case
+
+        Returns:
+            A new string, separated by spaces and every word starts with a capital letter
+        """
+        string_with_underscores = camel_case_to_underscore(string_in_camel_case)
+        new_string_with_spaces = string_with_underscores.replace('_', ' ')
+        return new_string_with_spaces.title()
+
+
+    def dict_keys_from_camelcase_to_spaces(dict_with_camelcase_keys):
+        """Given a dict with keys in camelcase, returns a copy of it with keys in spaces (helloWorld becomes Hello World)
+
+        Args:
+            dict_with_camelcase_keys(Dictionary): the original dictionary, with keys in camelcase
+
+        Returns:
+            A new dictionary, with keys separated by spaces
+        """
+        dict_with_spaces_in_keys = {}
+        for key in dict_with_camelcase_keys:
+            key_with_spaces = camel_case_to_spaces(key)
+            dict_with_spaces_in_keys[key_with_spaces] = dict_with_camelcase_keys[key]
+        return dict_with_spaces_in_keys
+
+
+    def return_list_of_dicts_with_spaces(list_of_camelcase_dicts):
+        """Given a list of dicts, iterates over it and for each dict makes all the keys with spaces instead of camelcase
+
+        Args:
+            list_of_camelcase_dicts(List): array of dictionaries
+
+        Returns:
+            A new array of dictionaries, with keys including spaces instead of camelcase
+        """
+        dicts_with_spaces = []
+        for dict_camelcase in list_of_camelcase_dicts:
+            dict_with_spaces = dict_keys_from_camelcase_to_spaces(dict_camelcase)
+            dicts_with_spaces.append(dict_with_spaces)
+
+        return dicts_with_spaces
+
+
+    def has_api_call_failed(res):
+        """
+        Note: In SigSci, if an API call fails it returns a json with only 'message' in it.
+        """
+        if 'message' in res:
+            return True
+        return False
+
+
+    def is_error_status(status):
+        if int(status) >= 400:
+            return True
+        return False
+
+
+    def return_error_message(results_json):
+        error_message = results_json.get("message", None)
+        if error_message is None:
+            return_error("Error: An error occured")
+        return_error("Error: {0}".format(error_message))
+
+
+    def http_request(method, url, params_dict=None, data=None, use_format_instead_of_raw=False):
+        LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
+
+        headers = {
+            'Content-Type': 'application/json',
+            'x-api-user': EMAIL,
+            'x-api-token': TOKEN
+        }
+
+        try:
+            # Some commands in Signal Sciences require sending the data in raw, and some in format
+            # To send in format, we use the 'data' argument in requests. for raw, we use the 'json' argument.
+            if use_format_instead_of_raw:
+                res = requests.request(method,
+                                       url,
+                                       verify=USE_SSL,
+                                       params=params_dict,
+                                       headers=headers,
+                                       data=json.dumps(data))
+            else:
+                res = requests.request(method,
+                                       url,
+                                       verify=USE_SSL,
+                                       params=params_dict,
+                                       headers=headers,
+                                       json=data)
+
+            if is_error_status(res.status_code):
+                return_error_message(res.json())
+
+            # references to delete from whitelist/blacklist only
+            if 'whitelist/' in url or 'blacklist/' in url:
+                return {}
+            if res.status_code == 204:
+                return {}
+            res_json = res.json()
+            if has_api_call_failed(res_json):
+                return {}
+            return res_json
+
+        except Exception as e:
+            LOG(e)
+            raise (e)
+
+
+    def is_legal_list_type(list_type):
+        return list_type.lower() in LEGAL_SIGSCI_LIST_TYPES
+
+
+    def represents_int(string_var):
+        if '.' in string_var:
+            return False
+        if string_var[0] in ('-', '+'):
+            return string_var[1:].isdigit()
+        return string_var.isdigit()
+
+
+    def is_legal_interval_for_alert(interval):
+        """
+        Note: legal values for the interval on an alert are only 1, 10 or 60.
+        This function verifies the value given is compatible with this demand.
+        """
+        if not represents_int(interval):
+            return False
+        interval_int = int(interval)
+        if not (interval_int == 1 or interval_int == 10 or interval_int == 60):
+            return False
+        return True
+
+
+    def validate_list_description_length(description):
+        if description is not None:
+            if len(description) > 140:
+                return_error("Error: Description given is too long. Description must be 140 characters or shorter")
+
+
+    def validate_update_list_args(method, description):
+        if not (method == "Add" or method == "Remove"):
+            return_error("Error: Method given is illegal. Method must be 'Add' or 'Remove'")
+        validate_list_description_length(description)
+
+
+    def validate_create_list_args(list_type, description):
+        if not is_legal_list_type(list_type):
+            return_error("Error: {0} is not a legal type for a list. Legal types are IP, String, "
+                         "Country or Wildcard".format(list_type))
+        validate_list_description_length(description)
+
+
+    def validate_alert_args(siteName, long_name, tag_name, interval, threshold, enabled, action):
+        if not represents_int(threshold):
+            return_error("Error: {0} is not a valid threshold value. Threshold must be an integer".format(threshold))
+        if not is_legal_interval_for_alert(interval):
+            return_error("Error: {0} is not a valid interval value. Interval value must be 1, 10 or 60".format(interval))
+        if len(long_name) < 3 or len(long_name) > 25:
+            return_error("Error: Illegal value for long_name argument - long_name must be between 3 and 25 characters long")
+        if not (enabled.lower() == 'true' or enabled.lower() == 'false'):
+            return_error("Error: Illegal value for 'enabled' argument - value must be 'True' or 'False'")
+        if not (action == 'info' or action == 'flagged'):
+            return_error("Error: Illegal value for 'action' argument - value must be 'info' or 'flagged'")
+
+
+    def validate_get_events_args(from_time, until_time, sort, limit, page, action, ip, status):
+        if from_time is not None and not represents_int(str(from_time)):
+            return_error("Error: from_time must be an integer.")
+        if until_time is not None and not represents_int(str(until_time)):
+            return_error("Error: until_time must be an integer.")
+        if sort is not None and not (sort == "asc" or sort == "desc"):
+            return_error("Error: sort value must be 'asc' or 'desc'.")
+        if limit is not None and (not represents_int(str(limit)) or int(limit) < 0 or int(limit) > 1000):
+            return_error("Error: limit must be an integer, larger than 0 and at most 1000")
+        if action is not None and not (action == "flagged" or action == "info"):
+            return_error("Error: action value must be 'flagged' or 'info'")
+        if ip is not None and not is_ip_valid(str(ip)):
+            return_error("Error: illegal value for 'ip' argument. Must be a valid ip address")
+        if status is not None and not (status == 'active' or status == 'expired'):
+            return_error("Error: status value must be 'active' or 'expired'")
+        if page is not None and not represents_int(str(page)):
+            return_error("Error: page must be an integer.")
+
+
+    def create_get_event_data_from_args(from_time, until_time, sort, since_id, max_id,
+                                        limit, page, action, tag, ip, status):
+        get_events_request_data = {}
+        if from_time is not None:
+            get_events_request_data['from'] = int(from_time)
+        if until_time is not None:
+            get_events_request_data['until'] = int(until_time)
+        if sort is not None:
+            get_events_request_data['sort'] = sort
+        if since_id is not None:
+            get_events_request_data['since_id'] = since_id
+        if max_id is not None:
+            get_events_request_data['max_id'] = max_id
+        if limit is not None:
+            get_events_request_data['limit'] = int(limit)
+        if page is not None:
+            get_events_request_data['page'] = int(page)
+        if action is not None:
+            get_events_request_data['action'] = action
+        if tag is not None:
+            get_events_request_data['tag'] = tag
+        if ip is not None:
+            get_events_request_data['ip'] = ip
+        if status is not None:
+            get_events_request_data['status'] = status
+        return get_events_request_data
+
+
+    def event_entry_context_from_response(response_data):
+        entry_context = {
+            'ID': response_data.get('id', ''),
+            'Timestamp': response_data.get('timestamp', ''),
+            'Source': response_data.get('source', ''),
+            'Action': response_data.get('action', ''),
+            'Reasons': response_data.get('reasons', ''),
+            'RemoteCountryCode': response_data.get('remoteCountryCode', ''),
+            'RemoteHostname': response_data.get('RemoteHostname', ''),
+            'UserAgents': response_data.get('userAgents', ''),
+            'RequestCount': response_data.get('requestCount', ''),
+            'TagCount': response_data.get('tagCount', ''),
+            'Window': response_data.get('window', ''),
+            'DateExpires': response_data.get('expires', ''),
+            'ExpiredBy': response_data.get('expiredBy', ''),
+        }
+        return entry_context
+
+
+    def adjust_event_human_readable(entry_context_with_spaces, entry_context):
+        """Change keys in human readable data to match the headers.
+        """
+        entry_context_with_spaces["ID"] = entry_context.get("ID", "")
+
+
+    def validate_fetch_requests_args(page, limit):
+        if limit is not None and (not represents_int(limit) or int(limit) < 0 or int(limit) > 1000):
+            return_error("Error: limit must be an integer, larger than 0 and at most 1000")
+        if page is not None and not represents_int(page):
+            return_error("Error: page must be an integer")
+
+
+    def request_entry_context_from_response(response_data):
+        entry_context = {
+            'ID': response_data.get('id', ''),
+            'ServerHostName': response_data.get('serverHostName', ''),
+            'RemoteIP': response_data.get('remoteIP', ''),
+            'RemoteHostname': response_data.get('RemoteHostname', ''),
+            'RemoteCountryCode': response_data.get('remoteCountryCode', ''),
+            'UserAgent': response_data.get('userAgent', ''),
+            'Timestamp': response_data.get('timestamp', ''),
+            'Method': response_data.get('method', ''),
+            'ServerName': response_data.get('serverName', ''),
+            'Protocol': response_data.get('protocol', ''),
+            'Path': response_data.get('path', ''),
+            'URI': response_data.get('uri', ''),
+            'ResponseCode': response_data.get('responseCode', ''),
+            'ResponseSize': response_data.get('responseSize', ''),
+            'ResponseMillis': response_data.get('responseMillis', ''),
+            'AgentResponseCode': response_data.get('agentResponseCode', ''),
+            'Tags': response_data.get('tags', ''),
+        }
+        return entry_context
+
+
+    def adjust_request_human_readable(entry_context_with_spaces, entry_context):
+        """Change keys in human readable data to match the headers.
+        """
+        entry_context_with_spaces["ID"] = entry_context.get("ID", "")
+        entry_context_with_spaces["URI"] = entry_context.get("URI", "")
+        entry_context_with_spaces["Remote IP"] = entry_context.get("RemoteIP", "")
+
+
+    def list_entry_context_from_response(response_data):
+        entry_context = {
+            'ID': response_data.get('id', ''),
+            'Name': response_data.get('name', ''),
+            'Type': response_data.get('type', ''),
+            'Entries': response_data.get('entries', ''),
+            'Description': response_data.get('description', ''),
+            'CreatedBy': response_data.get('createdBy', ''),
+            'CreatedDate': response_data.get('created', ''),
+            'UpdatedDate': response_data.get('updated', '')
+        }
+        return entry_context
+
+
+    def adjust_list_human_readable(entry_context_with_spaces, entry_context):
+        """Change keys in human readable data to match the headers.
+        """
+        entry_context_with_spaces["ID"] = entry_context.get("ID", "")
+
+
+    def alert_entry_context_from_response(response_data):
+        entry_context = {
+            'ID': response_data.get('id', ''),
+            'LongName': response_data.get('longName', ''),
+            'SiteID': response_data.get('siteId', ''),
+            'TagName': response_data.get('tagName', ''),
+            'Interval': response_data.get('interval', ''),
+            'Threshold': response_data.get('threshold', ''),
+            'BlockDurationSeconds': response_data.get('blockDurationSeconds', ''),
+            'SkipNotifications': response_data.get('skipNotifications', ''),
+            'Enabled': response_data.get('enabled', ''),
+            'Action': response_data.get('action', ''),
+            'CreatedDate': response_data.get('created', ''),
+        }
+        return entry_context
+
+
+    def adjust_alert_human_readable(entry_context_with_spaces, entry_context):
+        """Change keys in human readable data to match the headers.
+        """
+        entry_context_with_spaces["Interval (In Minutes)"] = entry_context_with_spaces.get("Interval", "")
+        entry_context_with_spaces["ID"] = entry_context.get("ID", "")
+        entry_context_with_spaces["Site ID"] = entry_context.get("siteID", "")
+
+
+    def check_ip_is_valid(ip):
+        if not is_ip_valid(ip):
+            return_error("Error: IP argument is invalid. Please enter a valid IP address")
+
+
+    def gen_entries_data_for_update_list_request(entries_list, method):
+        """Using the recieved args, generates the data object required by the API
+        in order to update a list (site or corp alike).
+        Args:
+            entries_list (list): a list containing IP addresses
+            method (string): The method we want to apply on the entries, either 'Add' or 'Remove'.
+                States if the IPs should be added or removed to the site/corp list.
+
+        Returns:
+            dict. Contains additions and deletions list with the entries we want to act on.
+        """
+        entries = {
+            "additions": [],
+            "deletions": []
+        }  # type: Dict
+        entries_list_in_list_format = entries_list.split(',')
+        if method == "Add":
+            entries["additions"] = entries_list_in_list_format
+        else:
+            entries["deletions"] = entries_list_in_list_format
+        return entries
+
+
+    def gen_context_for_add_to_whitelist_or_blacklist(response_data):
+        ip_context = {}
+        ip_context['ID'] = response_data.get('id', '')
+        ip_context['Note'] = response_data.get('note', '')
+        ip_context['Source'] = response_data.get('source', '')
+        ip_context['CreatedBy'] = response_data.get('createdBy', '')
+        ip_context['CreatedDate'] = response_data.get('created', '')
+        ip_context['ExpiryDate'] = response_data.get('expires', '')
+        return ip_context
+
+
+    def generate_whitelist_or_blacklist_ip_context(response_data):
+        ips_contexts = []
+        for ip_data in response_data:
+            cur_ip_context = gen_context_for_add_to_whitelist_or_blacklist(ip_data)
+            ips_contexts.append(cur_ip_context)
+        return ips_contexts
+
+
+    def gen_human_readable_for_add_to_whitelist_or_blacklist(ip_context):
+        human_readable = {}
+        human_readable['Note'] = ip_context['Note']
+        human_readable['Source'] = ip_context['Source']
+        human_readable['Expiration date'] = ip_context['ExpiryDate'] if ip_context['ExpiryDate'] else "Not Set"
+        return human_readable
+
+
+    def add_ip_to_whitelist_or_blacklist(url, ip, note, expires=None):
+        check_ip_is_valid(ip)
+        data = {
+            'source': ip,
+            'note': note
+        }
+        if expires is not None:
+            data['expires'] = expires
+        res = http_request('PUT', url, data=data)
+        return res
+
+
+    def get_all_sites_in_corp():
+        get_sites_request_response = get_sites()
+        data_of_sites_in_corp = get_sites_request_response.get('data', [])
+        return data_of_sites_in_corp
+
+
+    def get_list_of_all_site_names_in_corp():
+        data_of_sites_in_corp = get_all_sites_in_corp()
+        list_of_all_sites_names_in_corp = []
+        for site_data in data_of_sites_in_corp:
+            site_name = site_data['name']
+            list_of_all_sites_names_in_corp.append(site_name)
+        return list_of_all_sites_names_in_corp
+
+
+    def get_list_of_site_names_to_fetch():
+        list_of_site_names_to_fetch = None
+        if SITES_TO_FETCH:
+            list_of_site_names_to_fetch = SITES_TO_FETCH.split(',')
+        else:
+            list_of_site_names_to_fetch = get_list_of_all_site_names_in_corp()
+        return list_of_site_names_to_fetch
+
+
+    def remove_milliseconds_from_iso(date_in_iso_format):
+        date_parts_arr = date_in_iso_format.split('.')
+        date_in_iso_without_milliseconds = date_parts_arr[0]
+        return date_in_iso_without_milliseconds
+
+
+    def get_events_from_given_sites(list_of_site_names_to_fetch, desired_from_time_in_posix):
+        events_from_given_sites = []  # type: List[Any]
+        for site_name in list_of_site_names_to_fetch:
+            fetch_from_site_response_json = get_events(siteName=site_name, from_time=desired_from_time_in_posix)
+
+            events_fetched_from_site = fetch_from_site_response_json.get('data', [])
+            events_from_given_sites.extend(events_fetched_from_site)
+        return events_from_given_sites
+
+
+    def datetime_to_posix_without_milliseconds(datetime_object):
+        timestamp_in_unix_millisecond = date_to_timestamp(datetime_object, 'datetime.datetime')
+        posix_with_ms = timestamp_in_unix_millisecond
+        posix_without_ms = str(posix_with_ms).split(',')[0]
+        return posix_without_ms
+
+
+    '''COMMANDS'''
+
+
+    def test_module():
+        try:
+            url = SERVER_URL + 'corps'
+            http_request('GET', url)
+        except Exception as e:
+            raise Exception(e.message)
+        demisto.results("ok")
+
+
+    def create_corp_list(list_name, list_type, entries_list, description=None):
+        """This method sends a request to the Signal Sciences API to create a new corp list.
+        Note:
+            Illegal entries (not compatible with the type) will result in a 404.
+            They will be handled by the http_request function.
+
+        Args:
+            list_name (string): A name for the newly created list.
+            list_type (string): The desired type for the newly created list.
+            entries_list (list): A list of entries, consistent with the given type.
+            description (string): A description for the newly created list.
+
+        Returns:
+            dict. The data returned from the Signal Sciences API in response to the request, loaded into a json.
+        """
+        validate_create_list_args(list_type, description)
+
+        url = SERVER_URL + CREATE_CORP_LIST_SUFFIX.format(CORPNAME)
+        entries_list_in_list_format = entries_list.split(',')
+        data_for_request = {
+            'name': list_name.lower(),
+            'type': list_type.lower(),
+            'entries': entries_list_in_list_format
+        }
+        if description is not None:
+            data_for_request['description'] = description
+        new_list_data = http_request('POST', url, data=data_for_request)
+        return new_list_data
+
+
+    def create_corp_list_command():
+        args = demisto.args()
+        response_data = create_corp_list(args['list_name'], args['list_type'], args['entries_list'],
+                                         args.get('description', None))
+        entry_context = list_entry_context_from_response(response_data)
+        entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+        human_readable = tableToMarkdown(CREATE_CORP_LIST_TITLE.format(args['list_name']), entry_context_with_spaces,
+                                         headers=LIST_HEADERS, removeNull=True)
+
+        adjust_list_human_readable(entry_context_with_spaces, entry_context)
+
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.List(val.ID==obj.ID)': entry_context,
+            }
+        )
+
+
+    def get_corp_list(list_id):
+        url = SERVER_URL + ACCESS_CORP_LIST_SUFFIX.format(CORPNAME, list_id)
+        list_data = http_request('GET', url)
+        return list_data
+
+
+    def get_corp_list_command():
+        args = demisto.args()
+        response_data = get_corp_list(args['list_id'])
+        entry_context = list_entry_context_from_response(response_data)
+        title = "Found data about list with ID: {0}".format(args['list_id'])
+        entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+        adjust_list_human_readable(entry_context_with_spaces, entry_context)
+        human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=LIST_HEADERS, removeNull=True)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.List(val.ID==obj.ID)': entry_context,
+            }
+        )
+
+
+    def delete_corp_list(list_id):
+        url = SERVER_URL + ACCESS_CORP_LIST_SUFFIX.format(CORPNAME, list_id)
+        list_data = http_request('DELETE', url)
+        return list_data
+
+
+    def delete_corp_list_command():
+        args = demisto.args()
+        response_data = delete_corp_list(args['list_id'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response_data,
+            'HumanReadable': DELETE_CORP_LIST_TITLE.format(args['list_id'])
+        })
+
+
+    def update_corp_list(list_id, method, entries_list, description=None):
+        validate_update_list_args(method, description)
+        entries_in_update_format = gen_entries_data_for_update_list_request(entries_list, method)
+        url = SERVER_URL + ACCESS_CORP_LIST_SUFFIX.format(CORPNAME, list_id)
+        data_for_request = {
+            'entries': entries_in_update_format
+        }
+        if description is not None:
+            data_for_request['description'] = description
+        response_data = http_request('PATCH', url, data=data_for_request)
+        return response_data
+
+
+    def update_corp_list_command():
+        args = demisto.args()
+        response_data = update_corp_list(args['list_id'], args['method'], args['entries_list'],
+                                         args.get('description', None))
+        entry_context = list_entry_context_from_response(response_data)
+        entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+        adjust_list_human_readable(entry_context_with_spaces, entry_context)
+        human_readable = tableToMarkdown(UPDATE_LIST_TITLE, entry_context_with_spaces,
+                                         headers=LIST_HEADERS, removeNull=True)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.List(val.ID==obj.ID)': entry_context,
+            }
+        )
+
+
+    def get_all_corp_lists():
+        url = SERVER_URL + CREATE_CORP_LIST_SUFFIX.format(CORPNAME)
+        response_data = http_request('GET', url)
+        return response_data
+
+
+    def get_all_corp_lists_command():
+        response_data = get_all_corp_lists()
+        list_of_corp_lists = response_data.get('data', [])
+
+        corp_lists_contexts = []
+        for corp_list_data in list_of_corp_lists:
+            cur_corp_list_context = list_entry_context_from_response(corp_list_data)
+            corp_lists_contexts.append(cur_corp_list_context)
+
+        sidedata = "Number of corp lists in corp: {0}".format(len(list_of_corp_lists))
+        corp_lists_contexts_with_spaces = return_list_of_dicts_with_spaces(corp_lists_contexts)
+
+        for i in range(len(corp_lists_contexts)):
+            adjust_list_human_readable(corp_lists_contexts_with_spaces[i], corp_lists_contexts[i])
+
+        human_readable = tableToMarkdown(LIST_OF_CORP_LISTS_TITLE, corp_lists_contexts_with_spaces, headers=LIST_HEADERS,
+                                         removeNull=True, metadata=sidedata)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.List(val.ID==obj.ID)': corp_lists_contexts,
+            }
+        )
+
+
+    def get_events(siteName, from_time=None, until_time=None, sort=None, since_id=None, max_id=None, limit=None, page=None,
+                   action=None, tag=None, ip=None, status=None):
+
+        validate_get_events_args(from_time, until_time, sort, limit, page, action, ip, status)
+        url = SERVER_URL + GET_EVENTS_SUFFIX.format(CORPNAME, siteName)
+        data_for_request = create_get_event_data_from_args(from_time, until_time, sort, since_id, max_id,
+                                                           limit, page, action, tag, ip, status)
+        events_data_response = http_request('GET', url, data=data_for_request)
+
+        return events_data_response
+
+
+    def get_events_command():
+        args = demisto.args()
+        response_data = get_events(args['siteName'], args.get('from_time', None),
+                                   args.get('until_time', None), args.get('sort', None),
+                                   args.get('since_id', None), args.get('max_id', None),
+                                   args.get('limit', None), args.get('page', None),
+                                   args.get('action', None), args.get('tag', None),
+                                   args.get('ip', None), args.get('status', None))
+
+        list_of_events = response_data.get('data', [])
+        events_contexts = []
+        for event_data in list_of_events:
+            cur_event_context = event_entry_context_from_response(event_data)
+            events_contexts.append(cur_event_context)
+
+        events_contexts_with_spaces = return_list_of_dicts_with_spaces(events_contexts)
+
+        for i in range(len(events_contexts)):
+            adjust_list_human_readable(events_contexts_with_spaces[i], events_contexts[i])
+
+        sidedata = "Number of events in site: {0}".format(len(list_of_events))
+        human_readable = tableToMarkdown(LIST_OF_EVENTS_TITLE, events_contexts_with_spaces, removeNull=True,
+                                         headers=EVENT_HEADERS, metadata=sidedata)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.Site.Event(val.ID==obj.ID)': events_contexts,
+            }
+        )
+
+
+    def get_event_by_id(siteName, event_id):
+        url = SERVER_URL + ACCESS_EVENT_SUFFIX.format(CORPNAME, siteName, event_id)
+        event_data_response = http_request('GET', url)
+        return event_data_response
+
+
+    def get_event_by_id_command():
+        args = demisto.args()
+        response_data = get_event_by_id(args['siteName'], args['event_id'])
+        entry_context = event_entry_context_from_response(response_data)
+        title = "Found data about event with ID: {0}".format(args['event_id'])
+
+        entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+        adjust_event_human_readable(entry_context_with_spaces, entry_context)
+
+        human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=EVENT_HEADERS, removeNull=True)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.Site.Event(val.ID==obj.ID)': entry_context,
+            }
+        )
+
+
+    def expire_event(siteName, event_id):
+        url = SERVER_URL + EXPIRE_EVENT_SUFFIX.format(CORPNAME, siteName, event_id)
+        event_data_response = http_request('POST', url)
+        return event_data_response
+
+
+    def expire_event_command():
+        args = demisto.args()
+        response_data = expire_event(args['siteName'], args['event_id'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response_data,
+            'HumanReadable': EXPIRE_EVENT_TITLE.format(args['event_id'])
+        })
+
+
+    def get_requests(siteName, page, limit, query):
+        url = SERVER_URL + GET_REQUESTS_SUFFIX.format(CORPNAME, siteName)
+        validate_fetch_requests_args(page, limit)
+        data_for_request = {}
+        if page is not None:
+            data_for_request['page'] = page
+        if limit is not None:
+            data_for_request['limit'] = limit
+        if query is not None:
+            data_for_request['q'] = query
+
+        requests_data_response = http_request('GET', url, data=data_for_request)
+        return requests_data_response
+
+
+    def get_requests_command():
+        args = demisto.args()
+        response_data = get_requests(args['siteName'], args.get('page', None), args.get('limit', None),
+                                     args.get('query', None))
+        list_of_requests = response_data.get('data', [])
+        requests_contexts = []
+        for request_data in list_of_requests:
+            cur_request_context = request_entry_context_from_response(request_data)
+            requests_contexts.append(cur_request_context)
+
+        requests_contexts_with_spaces = return_list_of_dicts_with_spaces(requests_contexts)
+
+        for i in range(len(requests_contexts)):
+            adjust_list_human_readable(requests_contexts_with_spaces[i], requests_contexts[i])
+
+        sidedata = "Number of requests in site: {0}".format(len(list_of_requests))
+        human_readable = tableToMarkdown(LIST_OF_REQUESTS_TITLE, requests_contexts_with_spaces, headers=REQUEST_HEADER,
+                                         removeNull=True, metadata=sidedata)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.Site.Request(val.ID==obj.ID)': requests_contexts,
+            }
+        )
+
+
+    def get_request_by_id(siteName, request_id):
+        url = SERVER_URL + ACCESS_REQUEST_SUFFIX.format(CORPNAME, siteName, request_id)
+        request_data_response = http_request('GET', url)
+        return request_data_response
+
+
+    def get_request_by_id_command():
+        args = demisto.args()
+        response_data = get_request_by_id(args['siteName'], args['request_id'])
+        entry_context = request_entry_context_from_response(response_data)
+        title = "Found data about request with ID: {0}".format(args['request_id'])
+
+        entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+        adjust_request_human_readable(entry_context_with_spaces, entry_context)
+
+        human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=REQUEST_HEADER, removeNull=True)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.Site.Request(val.ID==obj.ID)': entry_context,
+            }
+        )
+
+
+    def create_site_list(siteName, list_name, list_type, entries_list, description=None):
+        validate_create_list_args(list_type, description)
+        url = SERVER_URL + SITE_CREATE_LIST_SUFFIX.format(CORPNAME, siteName)
+        entries_list_in_list_format = entries_list.split(',')
+        data_for_request = {
+            'name': list_name.lower(),
+            'type': list_type.lower(),
+            'entries': entries_list_in_list_format
+        }
+        if description is not None:
+            data_for_request['description'] = description
+
+        new_list_data = http_request('POST', url, data=data_for_request)
+        return new_list_data
+
+
+    def create_site_list_command():
+        args = demisto.args()
+        response_data = create_site_list(args['siteName'], args['list_name'],
+                                         args['list_type'], args['entries_list'], args.get('description', None))
+        entry_context = list_entry_context_from_response(response_data)
+        entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+        adjust_list_human_readable(entry_context_with_spaces, entry_context)
+
+        human_readable = tableToMarkdown(CREATE_SITE_LIST_TITLE.format(args['list_name']), entry_context_with_spaces,
+                                         headers=LIST_HEADERS, removeNull=True)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.Site.List(val.ID==obj.ID)': entry_context,
+            }
+        )
+
+
+    def get_site_list(siteName, list_id):
+        url = SERVER_URL + SITE_ACCESS_LIST_SUFFIX.format(CORPNAME, siteName, list_id)
+        list_data = http_request('GET', url)
+        return list_data
+
+
+    def get_site_list_command():
+        args = demisto.args()
+        response_data = get_site_list(args['siteName'], args['list_id'])
+        entry_context = list_entry_context_from_response(response_data)
+        entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+        adjust_list_human_readable(entry_context_with_spaces, entry_context)
+
+        title = "Found data about list with ID: {0}".format(args['list_id'])
+        human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=LIST_HEADERS, removeNull=True)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.Site.List(val.ID==obj.ID)': entry_context,
+            }
+        )
+
+
+    def delete_site_list(siteName, list_id):
+        url = SERVER_URL + SITE_ACCESS_LIST_SUFFIX.format(CORPNAME, siteName, list_id)
+        list_data = http_request('DELETE', url)
+        return list_data
+
+
+    def delete_site_list_command():
+        args = demisto.args()
+        response_data = delete_site_list(args['siteName'], args['list_id'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response_data,
+            'HumanReadable': DELETE_SITE_LIST_TITLE.format(args['list_id'])
+        })
+
+
+    def update_site_list(siteName, list_id, method, entries_list, description=None):
+        validate_update_list_args(method, description)
+
+        entries_in_update_format = gen_entries_data_for_update_list_request(entries_list, method)
+        url = SERVER_URL + SITE_ACCESS_LIST_SUFFIX.format(CORPNAME, siteName, list_id)
+        data_for_request = {
+            'entries': entries_in_update_format
+        }
+        if description is not None:
+            data_for_request['description'] = description
+        response_data = http_request('PATCH', url, data=data_for_request)
+        return response_data
+
+
+    def update_site_list_command():
+        args = demisto.args()
+        response_data = update_site_list(args['siteName'], args['list_id'],
+                                         args['method'], args['entries_list'], args.get('description', None))
+        entry_context = list_entry_context_from_response(response_data)
+        entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+        adjust_list_human_readable(entry_context_with_spaces, entry_context)
+
+        human_readable = tableToMarkdown(UPDATE_LIST_TITLE, entry_context_with_spaces,
+                                         headers=LIST_HEADERS, removeNull=True)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.Site.List(val.ID==obj.ID)': entry_context,
+            }
+        )
+
+
+    def get_all_site_lists(siteName):
+        url = SERVER_URL + SITE_CREATE_LIST_SUFFIX.format(CORPNAME, siteName)
+        response_data = http_request('GET', url)
+        return response_data
+
+
+    def get_all_site_lists_command():
+        args = demisto.args()
+        response_data = get_all_site_lists(args['siteName'])
+        list_of_site_lists = response_data.get('data', [])
+
+        site_lists_contexts = []
+        for site_list_data in list_of_site_lists:
+            cur_site_context = list_entry_context_from_response(site_list_data)
+            site_lists_contexts.append(cur_site_context)
+
+        site_lists_contexts_with_spaces = return_list_of_dicts_with_spaces(site_lists_contexts)
+
+        for i in range(len(site_lists_contexts)):
+            adjust_list_human_readable(site_lists_contexts_with_spaces[i], site_lists_contexts[i])
+
+        sidedata = "Number of site lists in site: {0}".format(len(list_of_site_lists))
+        human_readable = tableToMarkdown(LIST_OF_SITE_LISTS_TITLE, site_lists_contexts_with_spaces, headers=LIST_HEADERS,
+                                         removeNull=True, metadata=sidedata)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.Site.List(val.ID==obj.ID)': site_lists_contexts,
+            }
+        )
+
+
+    def add_alert(siteName, long_name, tag_name, interval, threshold, enabled, action):
+        validate_alert_args(siteName, long_name, tag_name, interval, threshold, enabled, action)
+        url = SERVER_URL + SITE_CREATE_ALERT_SUFFIX.format(CORPNAME, siteName)
+        data_for_request = {
+            'tagName': tag_name,
+            'longName': long_name,
+            'interval': int(interval),
+            'threshold': int(threshold),
+            'enabled': bool(enabled),
+            'action': action
+        }
+        response_data = http_request('POST', url, data=data_for_request)
+        return response_data
+
+
+    def add_alert_command():
+        args = demisto.args()
+        response_data = add_alert(args['siteName'], args['long_name'], args['tag_name'],
+                                  args['interval'], args['threshold'], args['enabled'], args['action'])
+
+        entry_context = alert_entry_context_from_response(response_data)
+        entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+        # changing key of Interval to Interval (In Minutes) for human readable
+        adjust_alert_human_readable(entry_context_with_spaces, entry_context)
+
+        human_readable = tableToMarkdown(ADD_ALERT_TITLE, entry_context_with_spaces, headers=ALERT_HEADERS, removeNull=True)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.Site.Alert(val.ID==obj.ID)': entry_context,
+            }
+        )
+
+
+    def get_alert(siteName, alert_id):
+        url = SERVER_URL + SITE_ACCESS_ALERT_SUFFIX.format(CORPNAME, siteName, alert_id)
+        response_data = http_request('GET', url)
+        return response_data
+
+
+    def get_alert_command():
+        args = demisto.args()
+        response_data = get_alert(args['siteName'], args['alert_id'])
+        entry_context = alert_entry_context_from_response(response_data)
+        entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+
+        # changing key of Interval to Interval (In Minutes) for human readable
+        adjust_alert_human_readable(entry_context_with_spaces, entry_context)
+
+        title = "Data found for alert id: {0}".format(args['alert_id'])
+        human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=ALERT_HEADERS, removeNull=True)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.Site.Alert(val.ID==obj.ID)': entry_context,
+            }
+        )
+
+
+    def delete_alert(siteName, alert_id):
+        url = SERVER_URL + SITE_ACCESS_ALERT_SUFFIX.format(CORPNAME, siteName, alert_id)
+        response_data = http_request('DELETE', url)
+        return response_data
+
+
+    def delete_alert_command():
+        args = demisto.args()
+        response_data = delete_alert(args['siteName'], args['alert_id'])
+        title = "Alert {0} deleted succesfully".format(args['alert_id'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response_data,
+            'HumanReadable': title
+        })
+
+
+    def update_alert(siteName, alert_id, tag_name, long_name, interval, threshold, enabled, action):
+        validate_alert_args(siteName, long_name, tag_name, interval, threshold, enabled, action)
+        url = SERVER_URL + SITE_ACCESS_ALERT_SUFFIX.format(CORPNAME, siteName, alert_id)
+        data_for_request = {
+            'tagName': tag_name,
+            'longName': long_name,
+            'interval': int(interval),
+            'threshold': int(threshold),
+            'action': action,
+            'enabled': bool(enabled)
+        }
+        request_response = http_request('PATCH', url, data=data_for_request)
+        return request_response
+
+
+    def update_alert_command():
+        args = demisto.args()
+        response_data = update_alert(args['siteName'], args['alert_id'], args['tag_name'], args['long_name'],
+                                     args['interval'], args['threshold'], args['enabled'], args['action'])
+        title = "Updated alert {0}. new values:".format(args['alert_id'])
+        entry_context = alert_entry_context_from_response(response_data)
+        entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
+
+        # changing key of Interval to Interval (In Minutes) for human readable
+        adjust_alert_human_readable(entry_context_with_spaces, entry_context)
+
+        human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=ALERT_HEADERS, removeNull=True)
+        return_outputs(
+            raw_response=response_data,
+            readable_output=human_readable,
+            outputs={
+                'SigSciences.Corp.Site.Alert(val.ID==obj.ID)': entry_context,
+            }
+        )
+
+
+    def get_all_alerts(siteName):
+        url = SERVER_URL + SITE_CREATE_ALERT_SUFFIX.format(CORPNAME, siteName)
+        response_data = http_request('GET', url)
+        return response_data
+
+
+    def get_all_alerts_command():
+        args = demisto.args()
+        response_data = get_all_alerts(args['siteName'])
+        alerts_list = response_data.get('data', [])
+        alerts_contexts = []
+        for alert_data in alerts_list:
+            cur_alert_context = alert_entry_context_from_response(alert_data)
+            alerts_contexts.append(cur_alert_context)
+
+        alerts_contexts_with_spaces = return_list_of_dicts_with_spaces(alerts_contexts)
+
+        # changing key of Interval to Interval (In Minutes) for human readable in all alert contexts
+        for i in range(len(alerts_contexts)):
+            adjust_alert_human_readable(alerts_contexts_with_spaces[i], alerts_contexts[i])
+
+        sidedata = "Number of alerts in site: {0}".format(len(alerts_list))
+        return_outputs(
+            raw_response=response_data,
+            readable_output=tableToMarkdown(ALERT_LIST_TITLE, alerts_contexts_with_spaces,
+                                            headers=ALERT_HEADERS, removeNull=True, metadata=sidedata),
+            outputs={
+                'SigSciences.Corp.Site.Alert(val.ID==obj.ID)': alerts_contexts,
+            }
+        )
+
+
+    def get_whitelist(siteName):
+        url = SERVER_URL + WHITELIST_SUFFIX.format(CORPNAME, siteName)
+        site_whitelist = http_request('GET', url)
+        return site_whitelist
+
+
+    def get_whitelist_command():
+        """Get the whitelist data for siteName"""
+        args = demisto.args()
+        site_whitelist = get_whitelist(args['siteName'])
+        data = site_whitelist.get('data', [])
+        whitelist_ips_contexts = generate_whitelist_or_blacklist_ip_context(data)
+        whitelist_ips_contexts_with_spaces = return_list_of_dicts_with_spaces(whitelist_ips_contexts)
+
+        sidedata = "Number of IPs in the Whitelist {0}".format(len(data))
+        return_outputs(
+            raw_response=site_whitelist,
+            readable_output=tableToMarkdown(WHITELIST_TITLE, whitelist_ips_contexts_with_spaces,
+                                            WHITELIST_OR_BLACKLIST_HEADERS, removeNull=True, metadata=sidedata),
+            outputs={
+                'SigSciences.Corp.Site.Whitelist(val.ID==obj.ID)': whitelist_ips_contexts,
+            }
+        )
+
+
+    def get_blacklist(siteName):
+        url = SERVER_URL + BLACKLIST_SUFFIX.format(CORPNAME, siteName)
+        site_blacklist = http_request('GET', url)
+        return site_blacklist
+
+
+    def get_blacklist_command():
+        """Get blacklist data for siteName"""
+        args = demisto.args()
+        site_blacklist = get_blacklist(args['siteName'])
+        data = site_blacklist.get('data', [])
+        blacklist_ips_contexts = generate_whitelist_or_blacklist_ip_context(data)
+        blacklist_ips_contexts_with_spaces = return_list_of_dicts_with_spaces(blacklist_ips_contexts)
+
+        sidedata = "Number of IPs in the Blacklist {0}".format(len(data))
+        return_outputs(
+            raw_response=site_blacklist,
+            readable_output=tableToMarkdown(BLACKLIST_TITLE, blacklist_ips_contexts_with_spaces,
+                                            WHITELIST_OR_BLACKLIST_HEADERS, removeNull=True, metadata=sidedata),
+            outputs={
+                'SigSciences.Corp.Site.Blacklist(val.ID==obj.ID)': blacklist_ips_contexts,
+            }
+        )
+
+
+    def add_ip_to_whitelist(siteName, ip, note, expires=None):
+        url = SERVER_URL + WHITELIST_SUFFIX.format(CORPNAME, siteName)
+        res = add_ip_to_whitelist_or_blacklist(url, ip, note, expires)
+        return res
+
+
+    def add_ip_to_whitelist_command():
+        """Add an ip to the whitelist"""
+        args = demisto.args()
+        response_data = add_ip_to_whitelist(args['siteName'], args['ip'], args['note'], args.get('expires', None))
+        whitelist_ip_context = gen_context_for_add_to_whitelist_or_blacklist(response_data)
+        human_readable = gen_human_readable_for_add_to_whitelist_or_blacklist(whitelist_ip_context)
+
+        return_outputs(
+            raw_response=response_data,
+            readable_output=tableToMarkdown(ADD_IP_TO_WHITELIST_TITLE, human_readable, headers=ADD_IP_HEADERS,
+                                            removeNull=True, metadata=IP_ADDED_TO_WHITELIST_TITLE.format(args['ip'])),
+            outputs={
+                'SigSciences.Corp.Site.Whitelist(val.ID==obj.ID)': whitelist_ip_context,
+            }
+        )
+
+
+    def add_ip_to_blacklist(siteName, ip, note, expires=None):
+        url = SERVER_URL + BLACKLIST_SUFFIX.format(CORPNAME, siteName)
+        res = add_ip_to_whitelist_or_blacklist(url, ip, note, expires)
+        return res
+
+
+    def add_ip_to_blacklist_command():
+        """Add an ip to the blacklist"""
+        args = demisto.args()
+        response_data = add_ip_to_blacklist(args['siteName'], args['ip'], args['note'], args.get('expires', None))
+        blacklist_ip_context = gen_context_for_add_to_whitelist_or_blacklist(response_data)
+        human_readable = gen_human_readable_for_add_to_whitelist_or_blacklist(blacklist_ip_context)
+
+        return_outputs(
+            raw_response=response_data,
+            readable_output=tableToMarkdown(ADD_IP_TO_BLACKLIST_TITLE, human_readable,
+                                            headers=ADD_IP_HEADERS, removeNull=True,
+                                            metadata=IP_ADDED_TO_BLACKLIST_TITLE.format(args['ip'])),
+            outputs={
+                'SigSciences.Corp.Site.Blacklist(val.ID==obj.ID)': blacklist_ip_context,
+            }
+        )
+
+
+    def whitelist_remove_ip(siteName, ip):
+        check_ip_is_valid(ip)
+        site_whitelist = get_whitelist(siteName)
+        data = site_whitelist.get('data', [])
+        for item in data:
+            if item.get('source', '') == ip:
+                url = SERVER_URL + DELETE_WHITELIST_IP_SUFFIX.format(CORPNAME, siteName, item.get('id', ''))
+                res = http_request('DELETE', url)
+
+        if 'res' not in locals():
+            return_error("The IP {0} was not found on the Whitelist".format(ip))
+
+        return site_whitelist
+
+
+    def whitelist_remove_ip_command():
+        """Remove an ip from the whitelist"""
+        args = demisto.args()
+        response_data = whitelist_remove_ip(args['siteName'], args['IP'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response_data,
+            'HumanReadable': WHITELIST_REMOVE_IP_TITLE.format(args['IP']),
+        })
+
+
+    def blacklist_remove_ip(siteName, ip):
+        check_ip_is_valid(ip)
+        site_blacklist = get_blacklist(siteName)
+        data = site_blacklist.get('data', [])
+        for item in data:
+            if item.get('source', '') == ip:
+                url = SERVER_URL + DELETE_BLACKLIST_IP_SUFFIX.format(CORPNAME, siteName, item.get('id', ''))
+                res = http_request('DELETE', url)
+
+        if 'res' not in locals():
+            return_error("The IP {0} was not found on the Blacklist".format(ip))
+
+        return site_blacklist
+
+
+    def blacklist_remove_ip_command():
+        """Remove an ip from the blacklist"""
+        args = demisto.args()
+        response_data = blacklist_remove_ip(args['siteName'], args['IP'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response_data,
+            'HumanReadable': BLACKLIST_REMOVE_IP_TITLE.format(args['IP']),
+        })
+
+
+    def get_sites():
+        url = SERVER_URL + GET_SITES_SUFFIX.format(CORPNAME)
+        res = http_request('GET', url)
+        return res
+
+
+    def get_sites_command():
+        """Get the sites list"""
+        res = get_sites()
+        data = res.get('data', [])
+
+        outputs = []
+        for item in data:
+            output = {}
+            output['Name'] = item.get('name', '')
+            output['CreatedDate'] = item.get('created', '')
+
+            outputs.append(output)
+
+        outputs_with_spaces = return_list_of_dicts_with_spaces(outputs)
+
+        return_outputs(
+            raw_response=res,
+            readable_output=tableToMarkdown(SITES_LIST_TITLE, outputs_with_spaces, headers=GET_SITE_HEADERS,
+                                            removeNull=True),
+            outputs={
+                'SigSciences.Sites(val.Name==obj.Name)': outputs,
+            }
+        )
+
+
+    def fetch_incidents():
+        now_utc = datetime.utcnow()
+        most_recent_event_time = None
+
+        last_run_data = demisto.getLastRun()
+        if last_run_data:
+            last_run_time = last_run_data['time']
+        else:
+            date_time_interval_ago = now_utc - timedelta(minutes=int(FETCH_INTERVAL))
+            date_time_interval_ago_posix = datetime_to_posix_without_milliseconds(date_time_interval_ago)
+            last_run_time = date_time_interval_ago_posix
+
+        list_of_sites_to_fetch = get_list_of_site_names_to_fetch()
+        events_array = get_events_from_given_sites(list_of_sites_to_fetch, last_run_time)
+        incidents = []
+        for event in events_array:
+            event_time = event['timestamp']
+            event_time = datetime.strptime(event_time[:-1], "%Y-%m-%dT%H:%M:%S")
+            event_time = datetime_to_posix_without_milliseconds(event_time)
+            if event_time > last_run_time:
+                incidents.append({
+                    'name': str(event['id']) + " - SignalSciences",
+                    'occurred': event['timestamp'],
+                    'rawJSON': json.dumps(event)
+                })
+            if event_time > most_recent_event_time:
+                most_recent_event_time = event_time
+
+        demisto.incidents(incidents)
+        demisto.setLastRun({'time': most_recent_event_time})
+
+
+    ''' EXECUTION CODE '''
+
+    LOG('command is %s' % (demisto.command(),))
+
+    try:
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() == 'sigsci-get-whitelist':
+            get_whitelist_command()
+        elif demisto.command() == 'sigsci-get-blacklist':
+            get_blacklist_command()
+        elif demisto.command() == 'sigsci-whitelist-add-ip':
+            add_ip_to_whitelist_command()
+        elif demisto.command() == 'sigsci-blacklist-add-ip':
+            add_ip_to_blacklist_command()
+        elif demisto.command() == 'sigsci-whitelist-remove-ip':
+            whitelist_remove_ip_command()
+        elif demisto.command() == 'sigsci-blacklist-remove-ip':
+            blacklist_remove_ip_command()
+        elif demisto.command() == 'sigsci-get-sites':
+            get_sites_command()
+        elif demisto.command() == 'sigsci-create-corp-list':
+            create_corp_list_command()
+        elif demisto.command() == 'sigsci-get-corp-list':
+            get_corp_list_command()
+        elif demisto.command() == 'sigsci-delete-corp-list':
+            delete_corp_list_command()
+        elif demisto.command() == 'sigsci-update-corp-list':
+            update_corp_list_command()
+        elif demisto.command() == 'sigsci-get-all-corp-lists':
+            get_all_corp_lists_command()
+        elif demisto.command() == 'sigsci-create-site-list':
+            create_site_list_command()
+        elif demisto.command() == 'sigsci-get-site-list':
+            get_site_list_command()
+        elif demisto.command() == 'sigsci-delete-site-list':
+            delete_site_list_command()
+        elif demisto.command() == 'sigsci-update-site-list':
+            update_site_list_command()
+        elif demisto.command() == 'sigsci-get-all-site-lists':
+            get_all_site_lists_command()
+        elif demisto.command() == 'sigsci-add-alert':
+            add_alert_command()
+        elif demisto.command() == 'sigsci-get-alert':
+            get_alert_command()
+        elif demisto.command() == 'sigsci-delete-alert':
+            delete_alert_command()
+        elif demisto.command() == 'sigsci-update-alert':
+            update_alert_command()
+        elif demisto.command() == 'sigsci-get-all-alerts':
+            get_all_alerts_command()
+        elif demisto.command() == 'sigsci-get-events':
+            get_events_command()
+        elif demisto.command() == 'sigsci-expire-event':
+            expire_event_command()
+        elif demisto.command() == 'sigsci-get-event-by-id':
+            get_event_by_id_command()
+        elif demisto.command() == 'sigsci-get-requests':
+            get_requests_command()
+        elif demisto.command() == 'sigsci-get-request-by-id':
+            get_request_by_id_command()
+
+
+    except Exception as e:
+        return_error(e.message)
+  type: python
+system: true

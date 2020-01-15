@@ -1,0 +1,1274 @@
+description: Master playbook for ransomware incidents. This playbook is a manual playbook.
+id: playbook3
+inputs: []
+name: Ransomware Playbook - Manual
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6976d00a-5e1b-4a32-8f85-9c79656f82bc
+      iscommand: false
+      name: start_task
+      type: start
+      version: -1
+    taskid: 6976d00a-5e1b-4a32-8f85-9c79656f82bc
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f61f3880-e5f6-4a41-8af8-3349e3ebffff
+      iscommand: false
+      name: Engage
+      type: title
+      version: -1
+    taskid: f61f3880-e5f6-4a41-8af8-3349e3ebffff
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 'Notify appropriate people inside the organization. '
+      id: d69a6289-b692-404c-8f90-d37d72aa265c
+      iscommand: false
+      name: Notify management chain
+      version: -1
+    taskid: d69a6289-b692-404c-8f90-d37d72aa265c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 1. Make sure that there is relevant information in the incident
+        - system name, end user name and initial severity as reported.
+      id: 21cb9178-78a0-4610-801f-3bc5f808e4a2
+      iscommand: false
+      name: Initial triage
+      version: -1
+    taskid: 21cb9178-78a0-4610-801f-3bc5f808e4a2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 'Based on the end user affected, and other information assess and
+        change the severity if needed. '
+      id: cd85115e-4379-4319-853b-f518e9aa98bc
+      iscommand: false
+      name: Assess severity
+      type: regular
+      version: -1
+    taskid: cd85115e-4379-4319-853b-f518e9aa98bc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 'Invite the relevant users for investigation - malware expert and
+        network experts if needed. '
+      id: 8135a8aa-6d2c-4cf1-80c4-c5cf4bf136a8
+      iscommand: false
+      name: Assign and involve appropriate personnel
+      type: regular
+      version: -1
+    taskid: 8135a8aa-6d2c-4cf1-80c4-c5cf4bf136a8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 744fdee2-aae7-4a50-8197-9e871d0661da
+      iscommand: false
+      name: 'Investigation Step 1: Details for this incident'
+      version: -1
+    taskid: 744fdee2-aae7-4a50-8197-9e871d0661da
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: "1. Notify IT with end user details to replace device. \n2. Hopefully
+        there is back for end user data to be restored."
+      id: e882cafd-1c86-4443-8ea8-e873d3552a0f
+      iscommand: false
+      name: Notify IT about the end user details for replacing device
+      version: -1
+    taskid: e882cafd-1c86-4443-8ea8-e873d3552a0f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1185
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      Alert from Security Product:
+      - "10"
+      User reported Incident:
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 9bdc27f9-07d9-4d9a-83f4-f1cebfd918c5
+      iscommand: false
+      name: Is the incident reported by end user or an alert from SIEM (or another
+        security product)?
+      version: -1
+    taskid: 9bdc27f9-07d9-4d9a-83f4-f1cebfd918c5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1360
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      False positive:
+      - "11"
+      Real incident:
+      - "13"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        1. If a URL was flagged from the proxy logs or IDS or SIEM, check why: check for URL and IP reputation against threat feeds.
+         2. If the alert came in from a file check (mail server or web server) - check file reputation (hash) against threat feeds like Virustotal
+      id: 2438c513-4f3c-4c5a-8c2d-33fdee1b0ff0
+      iscommand: false
+      name: Is the incident real or a false positive?
+      version: -1
+    taskid: 2438c513-4f3c-4c5a-8c2d-33fdee1b0ff0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -115,
+          "y": 1549
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1fe0d3b3-bd1e-415f-84a3-fd57071bf1cd
+      iscommand: false
+      name: Mark the incident as false positive in SIEM
+      version: -1
+    taskid: 1fe0d3b3-bd1e-415f-84a3-fd57071bf1cd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 1710
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Use /investigation_close command to close the investigation.
+      id: f213bfb8-2e8d-462a-8430-ffa8afe8049c
+      iscommand: false
+      name: Close the issue in the incident management system
+      version: -1
+    taskid: f213bfb8-2e8d-462a-8430-ffa8afe8049c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 1929
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: "1. Get the source IP address from the alert and add it to investigation.\n2.
+        Get the user associated with this system from domain controller and AD "
+      id: 43ec8c44-5322-4cae-87f8-b4bbffb38fc0
+      iscommand: false
+      name: Identify the affected endpoint and user
+      version: -1
+    taskid: 43ec8c44-5322-4cae-87f8-b4bbffb38fc0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1710
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 'Call user and notify them about the incident details. '
+      id: 732dad95-6ba7-4475-8fdb-4835137f7947
+      iscommand: false
+      name: Inform user about Ransomeware
+      version: -1
+    taskid: 732dad95-6ba7-4475-8fdb-4835137f7947
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1885
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 'Ask the user to disconnect the system from network - turn wifi
+        off if needed. '
+      id: 862a44d2-5599-4282-883f-de1d9e1d063c
+      iscommand: false
+      name: Execute local containment
+      version: -1
+    taskid: 862a44d2-5599-4282-883f-de1d9e1d063c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2060
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        Take the following details from the end-user and register them into the ticket:
+         1. Name of employee
+         2. Contact details
+         3. Computer name
+         4. IP address
+
+         Is the user aware he/she clicked on a suspicious link or attachment lately?
+      id: 794e5301-9904-4b42-8ad4-9f251c794781
+      iscommand: false
+      name: Document user details in investigation
+      version: -1
+    taskid: 794e5301-9904-4b42-8ad4-9f251c794781
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1549
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        1. Did a window pop up with demanding a ransom?
+         2. Has a text file with the instructions been placed on the Desktop?
+         3. Have the file extensions been changed to .abc, .xxx or similar?
+         4. Are the files unavailable?
+         5. Is the user aware he/she clicked on a suspicious link or attachment lately?
+      id: e08042d0-b8a1-4220-8e6e-2d0a6895bd96
+      iscommand: false
+      name: Collect relevant details about incident
+      version: -1
+    taskid: e08042d0-b8a1-4220-8e6e-2d0a6895bd96
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1745
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Ask the user to disconnect the device from the network. If the
+        user connects to the network with a wifi, he/she must turn it off.
+      id: b47fff38-a785-41d6-8049-db1ae21226fa
+      iscommand: false
+      name: Execute initial containment
+      version: -1
+    taskid: b47fff38-a785-41d6-8049-db1ae21226fa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1947
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: efecb59f-31c6-4416-8e3a-a00e9deafc0f
+      iscommand: false
+      name: 'Investigation Step 2: Identify Source of Infection'
+      version: -1
+    taskid: efecb59f-31c6-4416-8e3a-a00e9deafc0f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2277
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 478d2a8f-2138-4b64-8555-54b3d1acfd75
+      iscommand: false
+      name: 'Option 1: Investigate whether the ransomeware has been delivered by email'
+      version: -1
+    taskid: 478d2a8f-2138-4b64-8555-54b3d1acfd75
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2402
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 1. Go to the SIEM 2. Filter on the email logs associated with the
+        user from the last 3 days 3. Filter again on emails where the recipient was
+        the victim 4. Remove email logs where the sender was from within your company.
+        5. Export the list of emails into a CSV file. It should only contain emails
+        sent to the victim from the Internet within the last 3 days.
+      id: 9a551e7e-0816-499f-8cfa-86d6584ea7f1
+      iscommand: false
+      name: Analyze email logs to narrow down suspicious emails
+      version: -1
+    taskid: 9a551e7e-0816-499f-8cfa-86d6584ea7f1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2555
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: "1. Send the CSV file to IT Team and ask them to retrieve the full
+        emails from the user’s inbox. Attach the cvs to the investigation as evidence.\n2.
+        Once you get the emails in a zip file, go through them to identify suspicious
+        links or attachments.\n3. Look for links that does not point to the same URL
+        displayed on the screen (e.g. <a href=”http://malware.com”>http://www.bbc.co.uk</a>)\n4.
+        Check the domain in the ‘From:’ field correspond to the topic of the email
+        (e.g. package delivery notification emails from UPS will not come from john@mypersonalblog.com)\n5.
+        Scan suspicious URLs as necessary with threat feeds like Virustotal, http://www.phishtank.com.
+        If you identify suspicious URL analyze in depth in next steps. \n"
+      id: cef1ed6a-c8e3-4b06-8ca4-4fcd15bbf067
+      iscommand: false
+      name: Collect and analyze suspicious emails
+      version: -1
+    taskid: cef1ed6a-c8e3-4b06-8ca4-4fcd15bbf067
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2730
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: "1. If you identify a suspicious URL, Download the malicious file
+        with ‘curl’\n2. Check reputation of file using virustotal and other threat
+        feeds. \n3. Do a static and dynamic analysis of files using sandbox or SIFT
+        workstation. \n4. If you find suspicious file, then upload to VT or other
+        AV vendors.\n"
+      id: 170848e4-7295-4ebf-8e7a-0c02403a710f
+      iscommand: false
+      name: Analyze suspicious URLs and files collected from emails (malware playbook)
+      version: -1
+    taskid: 170848e4-7295-4ebf-8e7a-0c02403a710f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2905
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 71148252-7dfa-442c-8d28-20cb54927a29
+      iscommand: false
+      name: 'Option 2: Investigate whether the victim’s PC has been infected by an
+        exploit kit/drive-by download'
+      version: -1
+    taskid: 71148252-7dfa-442c-8d28-20cb54927a29
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3080
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        1. Go to the SIEM
+         2. Filter on the proxy logs from the last 3 days
+         3. Filter on the username of the affected user (all users should be authenticated to the proxy)
+         4. Filter out URLs that has been categorised, you should only have uncategorized URLs on your list.
+         5. Export list to CSV
+         6. Sort the list by URLs, remove duplicates
+         7. Make sure this is attached as artifact to the investigation
+      id: a4bc2ab7-98b8-493a-8bc2-b06430cf849e
+      iscommand: false
+      name: Analyze web proxy (or web gateway) logs to find suspicious URL
+      version: -1
+    taskid: a4bc2ab7-98b8-493a-8bc2-b06430cf849e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3255
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        1. Check Reputation of all the collected URL against threat feeds like virustotal
+         2.. Search for suspicious URLs, such as:
+         IP address in the URL
+         Random characters in the hostname of the URL (e.g. http://asdheguhadaasd.com)
+         URL contains lots of random letters and/or numbers
+         WordPress sites are involved (wp-content …)
+         3. Search for requests to Tor2Web (e.g. https://3fdzgtam4qk625n6.fi/)
+         4. Weird User-Agent strings, such as
+         IE6 (e.g. Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1))
+         Programmatic libraries (e.g. python-requests/1.2.0)
+         dJava (e.g. Java/1.6.0_13)
+      id: 7c9242cc-71a0-4e72-821d-226ffd2c8921
+      iscommand: false
+      name: Analyze the URLs from previous task for malicious URL
+      version: -1
+    taskid: 7c9242cc-71a0-4e72-821d-226ffd2c8921
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3430
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: "Consider deeper analysis of the URL using sandbox like Cuckoo.
+        \nBased on the analysis here and the previous step, create the final list
+        of malicious URL.\n\n"
+      id: e37b3eef-ac20-4ee6-8d71-5edb5a62ee29
+      iscommand: false
+      name: Analyze the URL in a sandbox
+      version: -1
+    taskid: e37b3eef-ac20-4ee6-8d71-5edb5a62ee29
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3605
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: "1. Get the hash for downloaded files. \n2. Check the reputation
+        of files against threat feeds. \n\n"
+      id: b770133f-1b8d-4b29-8fc2-32ac77a2b1a0
+      iscommand: false
+      name: Get file details from web logs for downloaded files
+      version: -1
+    taskid: b770133f-1b8d-4b29-8fc2-32ac77a2b1a0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3780
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 'Take the malicious URL and files from this section and generate
+        IOC using steps in Section: Generating IoCs from URLs and Hashes'
+      id: 9fd3ac5d-71d7-4d85-8715-0a0b489ea248
+      iscommand: false
+      name: 'Go to : Generating IoCs from URLs and Hashes'
+      version: -1
+    taskid: 9fd3ac5d-71d7-4d85-8715-0a0b489ea248
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3955
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 207c8a2d-2ec5-418c-86cf-22fa818c8cb9
+      iscommand: false
+      name: Generating IoCs for URLs and Hashes
+      version: -1
+    taskid: 207c8a2d-2ec5-418c-86cf-22fa818c8cb9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4130
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: "1. Get the list of flagged URLs/hashes from the Investigation
+        Step\n2. Check the URL against threat feed (virustotal, IBM Xforce).\n3. Check
+        your SIEM for threat feeds and see if there are IOC related to the URLs. \n4.
+        Subscribe to the feed in SIEM. This will install the relevant IoCs into our
+        SIEM automatically.\n5. If none of the IoCs are on the TI feed, you need to
+        generate IoCs manually in next step\n"
+      id: 9ac4e924-5559-455c-852c-d3a67a0a27a0
+      iscommand: false
+      name: Generate IOC for malicious URL from SIEM Threat Feed
+      version: -1
+    taskid: 9ac4e924-5559-455c-852c-d3a67a0a27a0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4275
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: "1. Go to the proxy logs again\n2. Find 2-3 properties associated
+        with the flagged URL, such as:\n     The request is POST\n     The User-Agent
+        field is dodgy (Java, Python, IE6 etc.)\n     URL contains more than 128 random
+        characters\n     URL contains .php\n     URL contains lots of slashes (/)\n
+        \    URL contains WordPress related things (wp-content)\n     URL contains
+        dodgy TLDs (for instance .tk, .ru)\n\n3. Test your assumption on the proxy
+        logs in the SIEM. Use your pattern and check how many false positives and
+        true positives it produces.\n4. If the pattern is good enough, append your
+        results to the investigation. \n\n\n"
+      id: cf6fe0f5-fe53-4ba7-80c7-4d6eaf896d2a
+      iscommand: false
+      name: Generate IOC for malicious URL manually
+      version: -1
+    taskid: cf6fe0f5-fe53-4ba7-80c7-4d6eaf896d2a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4450
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: "If you find in previous steps that source was phishing email -
+        \n\n1. Find all the URLs in the email and go through the URL IOC generation
+        steps. \n2. Find all the attachments for the email and analyze the file using
+        file IOC generation steps. \n3. If these steps identify files or URL as malicious
+        - \n     extract sender, sending domain and other properties to find emails.
+        \n     use this data to block future emails."
+      id: c24a436e-71bb-48e7-89cd-8058fec1d2fb
+      iscommand: false
+      name: Generate IOC from phishing emails
+      version: -1
+    taskid: c24a436e-71bb-48e7-89cd-8058fec1d2fb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4625
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        1. Deploy a new rule to the SIEM, this will alert new infection attempts in the future
+         2. Mark the hashes collected as malicious in the SIEM and import this into IOC databases for your enterprise.
+         2. Send the patterns to IT and ask IT to block these URLs on the proxy and web gateway
+      id: a91c4be9-cf1b-40b6-861e-5cd4a620cf96
+      iscommand: false
+      name: Deploy the IoCs collected
+      version: -1
+    taskid: a91c4be9-cf1b-40b6-861e-5cd4a620cf96
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4800
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: dcccd78c-a7c6-4a21-8024-24ec6870c979
+      iscommand: false
+      name: Identify other affected devices
+      version: -1
+    taskid: dcccd78c-a7c6-4a21-8024-24ec6870c979
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4975
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: "1. Go to SIEM and search for the URL pattern from Generating IOC
+        step in the proxy logs in order to identify other computers already affected.
+        \n2. Search for hashes identified in all logs and identify systems associated.\n2.
+        If you identify other affected PCs with above two steps, create new incident.\n\n"
+      id: fe9439ce-8a68-45dc-8a4e-71a97d98072f
+      iscommand: false
+      name: Identify other systems based on URL and hashes
+      version: -1
+    taskid: fe9439ce-8a68-45dc-8a4e-71a97d98072f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5120
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 'Create new incidents based on above steps. '
+      id: e8e246cf-bf4c-47e8-89f5-4f0d1fbf0edb
+      iscommand: false
+      name: Create new incident with the affected systems
+      version: -1
+    taskid: e8e246cf-bf4c-47e8-89f5-4f0d1fbf0edb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5295
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 08e01fbf-47af-4926-8cd1-c359cfc94410
+      iscommand: false
+      name: Respond
+      version: -1
+    taskid: 08e01fbf-47af-4926-8cd1-c359cfc94410
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5470
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Notify affected user about the outcome of investigation.
+      id: 5b96fdcb-14af-434b-8c89-ebbb3b344145
+      iscommand: false
+      name: Notify affected user
+      version: -1
+    taskid: 5b96fdcb-14af-434b-8c89-ebbb3b344145
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5615
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 'Make sure that IOC deployment is in place. These are the IOC identified
+        from previous steps. '
+      id: bcc506a2-1413-43d8-8012-8c1d63f35ecc
+      iscommand: false
+      name: IOC deployment verification
+      version: -1
+    taskid: bcc506a2-1413-43d8-8012-8c1d63f35ecc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5790
+        }
+      }
+  "41":
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Remove the temporary containment measures that were placed.
+      id: b32992a7-f5e0-4b95-8dd2-5c70e938c715
+      iscommand: false
+      name: Remove temporary containment measures
+      version: -1
+    taskid: b32992a7-f5e0-4b95-8dd2-5c70e938c715
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5965
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 35c0d3b2-d9cd-460c-88be-6d7a229e9906
+      iscommand: false
+      name: Provide end-user remediation guidance and link to training
+      version: -1
+    taskid: 35c0d3b2-d9cd-460c-88be-6d7a229e9906
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6140
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "44"
+      "yes":
+      - "45"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f68ec944-041d-4288-80fd-d4593bceb52b
+      iscommand: false
+      name: Is the identified malware known? (with automated remediation steps)
+      version: -1
+    taskid: f68ec944-041d-4288-80fd-d4593bceb52b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6315
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "46"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f13d62e8-15a2-4240-8245-9537c0c7aa83
+      iscommand: false
+      name: Document manual remediation steps
+      version: -1
+    taskid: f13d62e8-15a2-4240-8245-9537c0c7aa83
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6490
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "46"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 91223da8-3e5b-432e-85d6-b05a8e614f83
+      iscommand: false
+      name: Trigger remediation scripts
+      version: -1
+    taskid: 91223da8-3e5b-432e-85d6-b05a8e614f83
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 6490
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "47"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 36ba1145-5eb5-4bc4-85f6-d5c9f4495cca
+      iscommand: false
+      name: Was remediation successful?
+      version: -1
+    taskid: 36ba1145-5eb5-4bc4-85f6-d5c9f4495cca
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6665
+        }
+      }
+  "47":
+    id: "47"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: c56d39eb-e583-4183-8b18-12e9d0547c17
+      iscommand: false
+      name: Reimage the entire system and restore from backup
+      version: -1
+    taskid: c56d39eb-e583-4183-8b18-12e9d0547c17
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6840
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_13_Real incident": 0.73
+    },
+    "paper": {
+      "dimensions": {
+        "height": 6885,
+        "width": 1910,
+        "x": -470,
+        "y": 50
+      }
+    }
+  }

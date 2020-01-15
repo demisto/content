@@ -1,0 +1,1129 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: AlienVault OTX v2
+  version: -1
+configuration:
+- defaultvalue: https://otx.alienvault.com
+  display: Server address
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: API Token
+  name: api_token
+  required: false
+  type: 4
+- defaultvalue: "2"
+  display: Indicator Threshold. The minimum number of pulses to consider the indicator
+    as malicious.
+  name: default_threshold
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Query Indicators of Compromise in AlienVault OTX.
+detaileddescription: "To get Your API Key, go to [AlienVault OTX](https://otx.alienvault.com).\nAfter
+  you login (or sign in), under Your profile settings You will find an AlienVault
+  OTX Key section.\nThis section contain Your key. \n"
+display: AlienVault OTX v2
+image: data:image/png;base64,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
+name: AlienVault OTX v2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The IP address to query.
+      name: ip
+      required: true
+    - description: If the number of pulses is bigger than the threshold, the IP address
+        is considered as malicious. If the threshold is not specified, the default
+        indicator threshold is used, which is configured in the instance settings.
+      name: threshold
+    description: Queries an IP address in AlienVault OTX.
+    name: ip
+    outputs:
+    - contextPath: IP.Address
+      description: The address of the IP.
+      type: String
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address. For example, "AS8948".
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country where the IP address is located.
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format:
+        latitude:longitude.'
+      type: String
+    - contextPath: AlienVaultOTX.IP.Reputation
+      description: The reputation of the IP address.
+      type: String
+    - contextPath: AlienVaultOTX.IP.IP
+      description: IP address
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+  - arguments:
+    - default: true
+      description: The domain to query.
+      isArray: true
+      name: domain
+      required: true
+    - description: If the number of pulses is bigger than the threshold, the domain
+        is considered as malicious. If the threshold is not specified, the default
+        indicator threshold is used, which is configured in the instance settings.
+      name: threshold
+    description: Queries a domain in AlienVault OTX.
+    name: domain
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name. For example, "google.com".
+      type: String
+    - contextPath: AlienVaultOTX.Domain.Alexa
+      description: Alexa URL for the domain data.
+      type: String
+    - contextPath: AlienVaultOTX.Domain.Whois
+      description: Whois URL for the domain data.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+  - arguments:
+    - default: true
+      description: The IP address to query.
+      name: ip
+      required: true
+    - description: If the number of pulses is bigger than the threshold, the IP address
+        is considered as malicious. If the threshold is not specified, the default
+        indicator threshold is used, which is configured in the instance settings.
+      name: threshold
+    description: Queries IPv6 in AlienVault OTX.
+    name: alienvault-search-ipv6
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address. For example, "AS8948".
+      type: String
+    - contextPath: IP.AlienVaultOTX.Reputation
+      description: The IP reputation in AlienVault OTX.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of the indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+  - arguments:
+    - default: true
+      description: The host name to query.
+      name: hostname
+      required: true
+    - description: If the number of pulses is bigger than the threshold, the host
+        name is considered as malicious. If the threshold is not specified, the default
+        indicator threshold is used, which is configured in the instance settings.
+      name: threshold
+    description: Searches for a host name in AlienVault OTX.
+    name: alienvault-search-hostname
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The hostname that is mapped to the endpoint.
+      type: String
+    - contextPath: AlienVaultOTX.Endpoint.Hostname
+      description: The hostname that is mapped to the endpoint.
+      type: String
+    - contextPath: AlienVaultOTX.Endpoint.Alexa
+      description: The Alexa URL endpoint.
+      type: String
+    - contextPath: AlienVaultOTX.Endpoint.Whois
+      description: The Whois URL endpoint.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of the indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+  - arguments:
+    - default: true
+      description: The file hash to query.
+      isArray: true
+      name: file
+      required: true
+    - description: If the number of pulses is bigger than the threshold, the file
+        is considered as malicious. If the threshold is not specified, the default
+        indicator threshold is used, which is configured in the instance settings.
+      name: threshold
+    description: Query a file in AlienVault OTX.
+    name: file
+    outputs:
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Malicious.PulseIDs
+      description: IDs of pulses which are marked as malicious.
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file (same as displayed in file entries).
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of the indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+  - arguments:
+    - default: true
+      description: The CVE to query.
+      name: cve_id
+      required: true
+    - description: If the number of pulses is bigger than the threshold, the CVE is
+        considered as malicious. If the threshold is not specified, the default indicator
+        threshold is used, which is configured in the instance settings.
+      name: threshold
+    description: Query Common Vulnerabilities and Exposures (CVE) in AlienVault OTX.
+    name: alienvault-search-cve
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE. For example, "CVE-2015-1653".
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS of the CVE. For example, "10.0".
+      type: String
+    - contextPath: CVE.Published
+      description: The timestamp of when the CVE was published.
+      type: String
+    - contextPath: CVE.Modified
+      description: The timestamp of when the CVE was last modified.
+      type: String
+    - contextPath: CVE.Description
+      description: A description of the CVE.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: 'The type of the indicator. Can be: "IPv4", "IPv6", "domain", "hostname",
+        or "url".'
+      name: indicator_type
+      predefined:
+      - IPv4
+      - IPv6
+      - domain
+      - hostname
+      - url
+      required: true
+    - description: The indicator for which to search related URLs.
+      name: indicator
+      required: true
+    description: Returns related URLs by indicator.
+    name: alienvault-get-related-urls-by-indicator
+    outputs:
+    - contextPath: AlienVaultOTX.URL.Data
+      description: The path of the related URLs.
+      type: Unknown
+  - arguments:
+    - description: The indicator for which to search for related hashes.
+      name: indicator
+    - auto: PREDEFINED
+      description: 'The type of the indicator. Can be: "IPv4", "IPv6", "domain", or
+        "hostname".'
+      name: indicator_type
+      predefined:
+      - IPv4
+      - IPv6
+      - domain
+      - hostname
+    description: Returns related hashes by indicator.
+    name: alienvault-get-related-hashes-by-indicator
+    outputs:
+    - contextPath: AlienVaultOTX.File.Hash
+      description: The path of the url.
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      description: 'The type of the indicator. Can be: "IPv4", "IPv6", "domain", or
+        "hostname".'
+      name: indicator_type
+      predefined:
+      - IPv4
+      - IPv6
+      - domain
+      - hostname
+      required: true
+    - description: The indicator for which to search URLs.
+      name: indicator
+      required: true
+    description: Returns passive DNS records by indicator.
+    name: alienvault-get-passive-dns-data-by-indicator
+    outputs:
+    - contextPath: AlienVaultOTX.PassiveDNS.Hostname
+      description: The domain value.
+      type: String
+    - contextPath: AlienVaultOTX.PassiveDNS.IP
+      description: The IP passive DNS.
+      type: String
+    - contextPath: AlienVaultOTX.PassiveDNS.Domain
+      description: The domain value.
+      type: String
+    - contextPath: AlienVaultOTX.PassiveDNS.Type
+      description: The asset type.
+      type: String
+    - contextPath: AlienVaultOTX.PassiveDNS.FirstSeen
+      description: The date first seen.
+      type: Date
+    - contextPath: AlienVaultOTX.PassiveDNS.LastSeen
+      description: The date last seen.
+      type: Date
+  - arguments:
+    - default: true
+      description: The page of the pulse to retrieve.
+      name: page
+      required: true
+    description: Searches for pulses in AlienVault OTX.
+    name: alienvault-search-pulses
+    outputs:
+    - contextPath: AlienVaultOTX.Pulses.ID
+      description: The ID of the pulse.
+      type: String
+    - contextPath: AlienVaultOTX.Pulses.Author.ID
+      description: The ID of the Author.
+      type: String
+    - contextPath: AlienVaultOTX.Pulses.Author.Username
+      description: The username of the Author.
+      type: String
+    - contextPath: AlienVaultOTX.Pulses.Count
+      description: The pulse count.
+      type: String
+    - contextPath: AlienVaultOTX.Pulses.Modified
+      description: The date of the pulse modification.
+      type: Date
+    - contextPath: AlienVaultOTX.Pulses.Name
+      description: The name of the pulse.
+      type: String
+    - contextPath: AlienVaultOTX.Pulses.Source
+      description: The source of the Pulse.
+      type: String
+    - contextPath: AlienVaultOTX.Pulses.SubscriberCount
+      description: The count of the pulse subscriber.
+      type: String
+    - contextPath: AlienVaultOTX.Pulses.Tags
+      description: The tags of the pulse.
+      type: String
+    - contextPath: AlienVaultOTX.Pulses.Description
+      description: The description of the pulse.
+      type: String
+  - arguments:
+    - default: true
+      description: The ID of the pulse.
+      name: pulse_id
+      required: true
+    description: Returns pulse details.
+    name: alienvault-get-pulse-details
+    outputs:
+    - contextPath: AlienVaultOTX.Pulses.Created
+      description: The date the pulse was created.
+      type: Date
+    - contextPath: AlienVaultOTX.Pulses.Author.Username
+      description: The author username of the pulse.
+      type: String
+    - contextPath: AlienVaultOTX.Pulses.ID
+      description: The ID of the pulse.
+      type: String
+    - contextPath: AlienVaultOTX.Pulses.Name
+      description: The name of the pulse.
+      type: String
+    - contextPath: AlienVaultOTX.Pulses.Tags
+      description: The tags of the pulse.
+      type: String
+    - contextPath: AlienVaultOTX.Pulses.TargetedCountries
+      description: The targeted countries of the pulse.
+      type: String
+    - contextPath: AlienVaultOTX.Pulses.Description
+      description: The description of the pulse.
+      type: String
+  - arguments:
+    - default: true
+      description: The URL to query.
+      isArray: true
+      name: url
+      required: true
+    - description: If the number of pulses is bigger than the threshold, the URL is
+        considered as malicious. If threshold is not specified, the default indicator
+        threshold is used, which is configured in the instance settings.
+      name: threshold
+    description: Queries a URL in AlienVault OTX.
+    name: url
+    outputs:
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: AlienVaultOTX.URL.Hostname
+      description: The host name of the URL.
+      type: String
+    - contextPath: AlienVaultOTX.URL.Domain
+      description: The domain of the URL.
+      type: String
+    - contextPath: AlienVaultOTX.URL.Alexa
+      description: The domain data for the Alexa URL.
+      type: String
+    - contextPath: AlienVaultOTX.URL.Url
+      description: Url
+      type: String
+    - contextPath: AlienVaultOTX.URL.Whois
+      description: The Whois URL for domain data.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+  dockerimage: demisto/python3:3.7.4.1150
+  runonce: false
+  script: |2-
+
+
+
+
+
+    ''' IMPORTS '''
+    from typing import Dict, Tuple, Union
+    import urllib3
+
+    # Disable insecure warnings
+    urllib3.disable_warnings()
+
+    """GLOBALS/PARAMS
+    Attributes:
+        INTEGRATION_NAME:
+            Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
+
+        INTEGRATION_COMMAND_NAME:
+            Command names should be written in all lower-case letters,
+            and each word separated with a hyphen, for example: msgraph-user.
+
+        INTEGRATION_CONTEXT_NAME:
+            Context output names should be written in camel case, for example: MSGraphUser.
+    """
+    INTEGRATION_NAME = 'AlienVault OTX v2'
+    INTEGRATION_COMMAND_NAME = 'alienvault'
+    INTEGRATION_CONTEXT_NAME = 'AlienVaultOTX'
+    DEFAULT_THRESHOLD = int(demisto.params().get('default_threshold', 2))
+    TOKEN = demisto.params().get('api_token')
+
+
+    class Client(BaseClient):
+        def test_module(self) -> Dict:
+            """Performs basic GET request to check if the API is reachable and authentication is successful.
+
+            Returns:
+                Response json
+            """
+            return self.query(section='IPv4', argument='8.8.8.8')
+
+        def query(self, section: str, argument: str = None, sub_section: str = 'general', params: dict = None) -> Dict:
+            """Query the specified kwargs.
+
+            Args:
+                section: indicator type
+                argument: indicator value
+                sub_section: sub section of api
+                params: params to send in http request
+
+            Returns:
+                Response JSON
+            """
+            # The service endpoint to request from
+            if section == 'pulses':
+                suffix = f'{section}/{argument}'
+            elif argument and sub_section:
+                suffix = f'indicators/{section}/{argument}/{sub_section}'
+            else:
+                suffix = f'{section}/{sub_section}'
+            # Send a request using our http_request wrapper
+            if sub_section == 'passive_dns':
+                return self._http_request('GET',
+                                          url_suffix=suffix,
+                                          params=params,
+                                          timeout=30)
+            return self._http_request('GET',
+                                      url_suffix=suffix,
+                                      params=params)
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def calculate_dbot_score(pulse_info: Union[dict, None]) -> float:
+        """
+        calculate DBot score for query
+        :param pulse_info: returned from general section as dictionary
+        :return: score - good (if 0), bad (if grater than default), suspicious if between
+        """
+        default_threshold = int(DEFAULT_THRESHOLD)
+        if isinstance(pulse_info, dict):
+            count = int(pulse_info.get('count', '0'))
+            if count and count >= 0:
+                if count == 0:
+                    return dbotscores['Low']
+
+                if 0 < count < default_threshold:
+                    return dbotscores['Medium']
+
+                if count >= default_threshold:
+                    return dbotscores['High']
+        return 0
+
+
+    def create_list_by_ec(list_entries: list, list_type: str) -> list:
+        def create_entry_by_ec(entry: dict) -> dict:
+            if list_type == 'passive_dns':
+                return ({
+                    'Hostname': entry.get('hostname'),
+                    'IP': entry.get('address'),
+                    'Type': entry.get('asset_type'),
+                    'FirstSeen': entry.get('first'),
+                    'LastSeen': entry.get('last')
+                })
+
+            if list_type == 'url_list':
+                return assign_params(**{
+                    'Data': entry.get('url')
+                })
+
+            if list_type == 'hash_list':
+                return assign_params(**{
+                    'Hash': entry.get('hash')
+                })
+
+            # should not get here
+            return {}
+
+        return [create_entry_by_ec(entry) for entry in list_entries]
+
+
+    def create_pulse_by_ec(entry: dict) -> dict:
+        pulse_by_ec = {
+            'ID': entry.get('id'),
+            'Author': {
+                'ID': entry.get('author', {}).get('id'),
+                'Username': entry.get('author', {}).get('username')
+            },
+            'Count': entry.get('indicator_count'),
+            'Modified': entry.get('modified_text'),
+            'Name': entry.get('name'),
+            'Source': entry.get('pulse_source'),
+            'SubscriberCount': entry.get('subscriber_count'),
+            'Tags': entry.get('tags'),
+            'Description': entry.get('description')
+        }
+        return assign_params(**pulse_by_ec)
+
+
+    ''' COMMANDS '''
+
+
+    @logger
+    def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
+        """Performs a basic GET request to check if the API is reachable and authentication is successful.
+
+        Args:
+            client: Client object with request
+            *_: Usually demisto.args()
+
+        Returns:
+            'ok' if test successful.
+
+        Raises:
+            DemistoException: If test failed.
+        """
+        results = client.test_module()
+        if 'city' in results:
+            return None, None, 'ok'
+        raise DemistoException(f'Test module failed, {results}')
+
+
+    @logger
+    def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, Dict, Union[Dict, list]]:
+        """ Enrichment for IPv4/IPv6
+
+        Args:
+            client: Client object with request
+            ip_address: ip address
+            ip_version: IPv4 or IPv6
+
+        Returns:
+            Outputs
+        """
+        query_args: list = argToList(ip_address)
+        raws: list = []
+        title = f'{INTEGRATION_NAME} - Results for ips query'
+        ip_ec: list = []
+        alienvault_ec: list = []
+        dbotscore_ec: list = []
+        for arg in query_args:
+            raw_response = client.query(section=ip_version,
+                                        argument=arg)
+            if raw_response:
+                raws.append(raw_response)
+                ip_ec.append({
+                    'Address': raw_response.get('indicator'),
+                    'ASN': raw_response.get('asn'),
+                    'Geo': {
+                        'Country': raw_response.get('country_code'),
+                        'Location': f'{raw_response.get("latitude")},{raw_response.get("longitude")}'
+                    }
+                })
+                alienvault_ec.append({
+                    'IP': {
+                        'Reputation': raw_response.get('reputation'),
+                        'IP': arg
+                    }
+                })
+                dbotscore_ec.append({
+                    'Indicator': raw_response.get('indicator'),
+                    'Score': calculate_dbot_score(raw_response.get('pulse_info', {})),
+                    'Type': arg,
+                    'Vendor': 'AlienVault OTX v2'
+                })
+        if not raws:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+        context_entry: dict = {
+            outputPaths.get("ip"): ip_ec,
+            f'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': alienvault_ec,
+            outputPaths.get("dbotscore"): dbotscore_ec
+        }
+        human_readable = tableToMarkdown(t=context_entry.get(outputPaths.get("ip")),
+                                         name=title)
+        return human_readable, context_entry, raws
+
+
+    @logger
+    def domain_command(client: Client, domain: str) -> Tuple[str, Dict, Union[Dict, list]]:
+        """Enrichment for domain
+
+        Args:
+            client: Client object with request
+            domain: domains to query
+
+        Returns:
+            Outputs
+        """
+        query_args: list = argToList(domain)
+        title = f'{INTEGRATION_NAME} - Results for Domain query'
+        raws = []
+        domain_ec = []
+        dbotscore_ec = []
+        alienvault_ec = []
+        for args in query_args:
+            raw_response = client.query(section='domain',
+                                        argument=args)
+            if raw_response:
+                raws.append(raw_response)
+                domain_ec.append({
+                    'Name': raw_response.get('indicator')
+                })
+                alienvault_ec.append({
+                    'Name': raw_response.get('indicator'),
+                    'Alexa': raw_response.get('alexa'),
+                    'Whois': raw_response.get('whois')
+                })
+                dbotscore_ec.append({
+                    'Indicator': raw_response.get('indicator'),
+                    'Score': calculate_dbot_score(raw_response.get('pulse_info')),
+                    'Type': 'domain',
+                    'Vendor': 'AlienVault OTX v2'
+                })
+        if not raws:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+        context_entry: dict = {
+            outputPaths.get("domain"): domain_ec,
+            f'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
+            f'val.Whois && val.Whois === obj.Whois)': alienvault_ec,
+            outputPaths.get("dbotscore"): dbotscore_ec
+        }
+        human_readable = tableToMarkdown(t=context_entry.get(
+            f'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
+            f'val.Whois && val.Whois === obj.Whois)'),
+            name=title)
+        return human_readable, context_entry, raws
+
+
+    @logger
+    def file_command(client: Client, file: str) -> Tuple[str, Dict, Union[Dict, list]]:
+        """Enrichment for file hash MD5/SHA1/SHA256
+
+        Args:
+            client: Client object with request
+            file: File hash MD5/SHA1/SHA256
+
+        Returns:
+            Outputs
+        """
+        query_args: list = argToList(file)
+        title = f'{INTEGRATION_NAME} - Results for File hash query'
+        raws: list = []
+        file_ec: list = []
+        dbotscore_ec: list = []
+        for args in query_args:
+            raw_response_analysis = client.query(section='file',
+                                                 argument=args,
+                                                 sub_section='analysis')
+            raw_response_general = client.query(section='file',
+                                                argument=args)
+            if raw_response_analysis and raw_response_general:
+                raws.append(raw_response_analysis)
+                raws.append(raw_response_general)
+                shortcut = raw_response_analysis.get('analysis', {}).get('info', {}).get('results', {})
+                file_ec.append({
+                    'MD5': shortcut.get('md5'),
+                    'SHA1': shortcut.get('sha1'),
+                    'SHA256': shortcut.get('sha256'),
+                    'SSDeep': shortcut.get('ssdeep'),
+                    'Size': shortcut.get('filesize'),
+                    'Type': shortcut.get('file_type'),
+                    'Malicious': {
+                        'PulseIDs': raw_response_general.get('pulse_info', {}).get('pulses')
+                    }
+                })
+                dbotscore_ec.append({
+                    'Indicator': raw_response_general.get('indicator'),
+                    'Score': calculate_dbot_score(raw_response_general.get('pulse_info', {})),
+                    'Type': 'file',
+                    'Vendor': 'AlienVault OTX v2'
+                })
+        if not raws:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+        context_entry: dict = {
+            outputPaths.get("file"): file_ec,
+            outputPaths.get("dbotscore"): dbotscore_ec
+        }
+        human_readable = tableToMarkdown(name=title,
+                                         t=context_entry.get(outputPaths.get("file")))
+
+        return human_readable, context_entry, raws
+
+
+    @logger
+    def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]:
+        """Enrichment for url
+
+        Args:
+            client: Client object with request
+            url:  url address
+
+        Returns:
+            Outputs
+        """
+        query_args: list = argToList(url)
+        raws: list = []
+        title = f'{INTEGRATION_NAME} - Results for url query'
+        url_ec: list = []
+        alienvault_ec: list = []
+        dbotscore_ec: list = []
+        for args in query_args:
+            raw_response = client.query(section='url',
+                                        argument=args)
+            if raw_response:
+                raws.append(raw_response)
+                url_ec.append({
+                    'Data': raw_response.get('indicator')
+                })
+                alienvault_ec.append({
+                    'Url': args,
+                    'Hostname': raw_response.get('hostname'),
+                    'Domain': raw_response.get('domain'),
+                    'Alexa': raw_response.get('alexa'),
+                    'Whois': raw_response.get('whois')
+                })
+                dbotscore_ec.append({
+                    'Indicator': raw_response.get('indicator'),
+                    'Score': str(calculate_dbot_score(raw_response.get('pulse_info'))),
+                    'Type': 'url',
+                    'Vendor': 'AlienVault OTX v2'
+                })
+        if not raws:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+        context_entry: dict = {
+            outputPaths.get("url"): url_ec,
+            f'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': alienvault_ec,
+            outputPaths.get("dbotscore"): dbotscore_ec
+        }
+        human_readable = tableToMarkdown(t=context_entry.get(f'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)'),
+                                         name=title)
+        return human_readable, context_entry, raws
+
+
+    @logger
+    def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[str, Dict, Dict]:
+        """Search for hostname details
+
+        Args:
+            client: Client object with request
+            hostname: hostname address
+
+        Returns:
+            Outputs
+        """
+        raw_response = client.query(section='hostname',
+                                    argument=hostname)
+        if raw_response:
+            title = f'{INTEGRATION_NAME} - Results for Hostname query'
+            context_entry: dict = {
+                'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
+                    'Hostname': raw_response.get('indicator')
+                },
+                f'AlienVaultOTX.Endpoint(val.Alexa && val.Alexa === obj.Alexa &&'
+                f'val.Whois && val.Whois === obj.Whois)': {
+                    'Hostname': raw_response.get('indicator'),
+                    'Alexa': raw_response.get('alexa'),
+                    'Whois': raw_response.get('whois')
+                },
+                outputPaths.get("dbotscore"): {
+                    'Indicator': raw_response.get('indicator'),
+                    'Score': calculate_dbot_score(raw_response.get('pulse_info')),
+                    'Type': 'hostname',
+                    'Vendor': 'AlienVault OTX v2'
+                }
+            }
+            human_readable = tableToMarkdown(name=title,
+                                             t=context_entry.get(
+                                                 f'AlienVaultOTX.Endpoint(val.Alexa && val.Alexa === obj.Alexa &&'
+                                                 f'val.Whois && val.Whois === obj.Whois)'))
+
+            return human_readable, context_entry, raw_response
+        else:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+    @logger
+    def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dict, Dict]:
+        """Get Common Vulnerabilities and Exposures by id
+
+        Args:
+            client: Client object with request
+            cve_id: CVE id
+
+        Returns:
+            Outputs
+        """
+        raw_response = client.query(section='cve',
+                                    argument=cve_id)
+        if raw_response:
+            title = f'{INTEGRATION_NAME} - Results for Hostname query'
+            context_entry: dict = {
+                outputPaths.get("cve"): {
+                    'ID': raw_response.get('indicator'),
+                    'CVSS': raw_response.get('cvss', {}).get('Score'),
+                    'Published': raw_response.get('date_created'),
+                    'Modified': raw_response.get('date_modified'),
+                    'Description': raw_response.get('description')
+                },
+                outputPaths.get("dbotscore"): {
+                    'Indicator': raw_response.get('indicator'),
+                    'Score': calculate_dbot_score(raw_response.get('pulse_info')),
+                    'Type': 'cve',
+                    'Vendor': 'AlienVault OTX v2'
+                }
+            }
+            human_readable = tableToMarkdown(t=context_entry.get(outputPaths.get("cve")),
+                                             name=title)
+
+            return human_readable, context_entry, raw_response
+        else:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+    @logger
+    def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_type: str, indicator: str)\
+            -> Tuple[str, Dict, Dict]:
+        """Get related urls by indicator (IPv4,IPv6,domain,hostname,url)
+
+        Args:
+            client: Client object with request
+            indicator_type: IPv4,IPv6,domain,hostname,url
+            indicator: indicator its self (google.com)
+
+        Returns:
+            Outputs
+        """
+        raw_response = client.query(section=indicator_type,
+                                    argument=indicator,
+                                    sub_section='url_list')
+        if raw_response:
+            title = f'{INTEGRATION_NAME} - Related url list to queried indicator'
+            context_entry: list = create_list_by_ec(list_entries=raw_response.get('url_list', {}), list_type='url_list')
+            context: dict = {
+                f'AlienVaultOTX.URL(val.URL.Data && val.URL.Data == obj.URL.Data)': context_entry
+            }
+            human_readable = tableToMarkdown(t=context_entry,
+                                             name=title)
+
+            return human_readable, context, raw_response
+        else:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+    @logger
+    def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator_type: str, indicator: str)\
+            -> Tuple[str, Dict, Dict]:
+        """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
+
+           Args:
+               client: Client object with request
+               indicator_type: IPv4,IPv6,domain,hostname
+               indicator: indicator its self (google.com)
+
+           Returns:
+               Outputs
+           """
+        raw_response = client.query(section=indicator_type,
+                                    argument=indicator,
+                                    sub_section='malware')
+        if raw_response:
+            title = f'{INTEGRATION_NAME} - Related malware list to queried indicator'
+            context_entry: dict = {
+                f'AlienVaultOTX.File(val.File.Hash && val.File.Hash == obj.File.Hash)':
+                create_list_by_ec(list_entries=raw_response.get('data', {}), list_type='hash_list')
+            }
+            human_readable = tableToMarkdown(t=context_entry.get(f'AlienVaultOTX.File(val.File.Hash && val.File.Hash \
+                                                == obj.File.Hash)'),
+                                             name=title)
+
+            return human_readable, context_entry, raw_response
+        else:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+    @logger
+    def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicator_type: str, indicator: str)\
+            -> Tuple[str, Dict, Dict]:
+        """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
+
+           Args:
+               client: Client object with request
+               indicator_type: IPv4,IPv6,domain,hostname
+               indicator: indicator its self (google.com)
+
+           Returns:
+               Outputs
+           """
+        raw_response = client.query(section=indicator_type,
+                                    argument=indicator,
+                                    sub_section='passive_dns')
+        if raw_response:
+            title = f'{INTEGRATION_NAME} - Related passive dns list to queried indicator'
+            context_entry: dict = {
+                f'AlienVaultOTX.PassiveDNS(val.PassiveDNS.Hostname && val.PassiveDNS.Hostname == obj.PassiveDNS.Hostname &&'
+                f'val.PassiveDNS.LastSeen && val.PassiveDNS.LastSeen == obj.PassiveDNS.LastSeen &&'
+                f'val.PassiveDNS.IP && val.PassiveDNS.IP == obj.PassiveDNS.IP)':
+                create_list_by_ec(list_entries=raw_response.get('passive_dns', {}), list_type='passive_dns')
+            }
+            human_readable = tableToMarkdown(t=context_entry.get(
+                f'AlienVaultOTX.PassiveDNS(val.PassiveDNS.Hostname && val.PassiveDNS.Hostname == obj.PassiveDNS.Hostname &&'
+                f'val.PassiveDNS.LastSeen && val.PassiveDNS.LastSeen == obj.PassiveDNS.LastSeen &&'
+                f'val.PassiveDNS.IP && val.PassiveDNS.IP == obj.PassiveDNS.IP)'),
+                name=title)
+            return human_readable, context_entry, raw_response
+        else:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+    @logger
+    def alienvault_search_pulses_command(client: Client, page: str) -> Tuple[str, Dict, Dict]:
+        """Get pulse page by number of the page
+
+        Args:
+            client: Client object with request
+            page: pulse page number
+
+        Returns:
+            Outputs
+        """
+        raw_response = client.query(section='search',
+                                    sub_section='pulses',
+                                    params={'page': page})
+        if raw_response:
+            title = f'{INTEGRATION_NAME} - pulse page {page}'
+            context_entry: dict = {
+                f'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID && '
+                f'val.Modified && val.Modified == obj.Modified)':
+                [create_pulse_by_ec(entry) for entry in raw_response.get('results', {})]
+            }
+            human_readable = tableToMarkdown(t=context_entry.get(
+                f'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID && '
+                f'val.Modified && val.Modified == obj.Modified)'),
+                name=title)
+
+            return human_readable, context_entry, raw_response
+        else:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+    @logger
+    def alienvault_get_pulse_details_command(client: Client, pulse_id: str) -> Tuple[str, Dict, Dict]:
+        """Get pulse by ID
+
+        Args:
+            client: Client object with request
+            pulse_id: pulse ID
+
+        Returns:
+            Outputs
+        """
+        raw_response = client.query(section='pulses',
+                                    argument=pulse_id)
+        if raw_response:
+            title = f'{INTEGRATION_NAME} - pulse id details'
+            context_entry: dict = {
+                f'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID)': {
+                    'Description': raw_response.get('description'),
+                    'Created': raw_response.get('created'),
+                    'Author': {
+                        'Username': raw_response.get('author', {}).get('username')
+                    },
+                    'ID': raw_response.get('id'),
+                    'Name': raw_response.get('name'),
+                    'Tags': raw_response.get('tags'),
+                    'TargetedCountries': raw_response.get('targeted_countries')
+                }
+            }
+            human_readable = tableToMarkdown(t=context_entry.get(
+                f'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID)'),
+                name=title)
+
+            return human_readable, context_entry, raw_response
+        else:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+
+    def main():
+        params = demisto.params()
+        base_url = urljoin(params.get('url'), '/api/v1/')
+        verify_ssl = not params.get('insecure', False)
+        proxy = params.get('proxy')
+        client = Client(
+            base_url=base_url,
+            headers={'X-OTX-API-KEY': TOKEN},
+            verify=verify_ssl,
+            proxy=proxy
+        )
+        command = demisto.command()
+        demisto.debug(f'Command being called is {command}')
+        commands = {
+            'test-module': test_module_command,
+            'ip': ip_command,
+            'domain': domain_command,
+            'file': file_command,
+            'url': url_command,
+            f'{INTEGRATION_COMMAND_NAME}-search-hostname': alienvault_search_hostname_command,
+            f'{INTEGRATION_COMMAND_NAME}-search-ipv6': ip_command,
+            f'{INTEGRATION_COMMAND_NAME}-search-cve': alienvault_search_cve_command,
+            f'{INTEGRATION_COMMAND_NAME}-get-related-urls-by-indicator': alienvault_get_related_urls_by_indicator_command,
+            f'{INTEGRATION_COMMAND_NAME}-get-related-hashes-by-indicator': alienvault_get_related_hashes_by_indicator_command,
+            f'{INTEGRATION_COMMAND_NAME}-get-passive-dns-data-by-indicator': alienvault_get_passive_dns_data_by_indicator_command,
+            f'{INTEGRATION_COMMAND_NAME}-search-pulses': alienvault_search_pulses_command,
+            f'{INTEGRATION_COMMAND_NAME}-get-pulse-details': alienvault_get_pulse_details_command
+        }
+        try:
+            if command == f'{INTEGRATION_COMMAND_NAME}-search-ipv6':
+                readable_output, outputs, raw_response = commands[command](client=client,
+                                                                           ip_address=demisto.args().get('ip'),
+                                                                           ip_version='IPv6')
+            elif command == 'ip':
+                readable_output, outputs, raw_response = commands[command](client=client,
+                                                                           ip_address=demisto.args().get('ip'),
+                                                                           ip_version='IPv4')
+            else:
+                readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
+            return_outputs(readable_output, outputs, raw_response)
+        # Log exceptions
+        except Exception as e:
+            err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+            return_error(err_msg, error=e)
+
+
+    if __name__ == 'builtins':
+        main()
+  subtype: python3
+  type: python
+system: true

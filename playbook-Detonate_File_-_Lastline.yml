@@ -1,0 +1,623 @@
+description: |-
+  Detonates a File using the Lastline sandbox.
+  Lastline supports the following File Types:
+  EXE, SYS, DLL, COM, SCR, CPL, OCX, CGI, DOC, DOTM, DOCX, DOTX, XLS, PPAM, XSLX, PPS, XLSB, PPSX, XLSM, PPSM, PPT, PPTX, PPTM, RTF, SHS, XLTM, SLDM, XLTX, SLDX, XLAM, THMX, DOCM, XAR, JTD, JTDC, PDF, SWF, GZ, 7Z, TGZ, MSI, ZIP, LZH, CAB, LZMA, APK, JAR, CLASS, JPEG, PNG, GIF, CMD, ACE, BAT, ARJ, VBS, CHM, XML, LNK, URL, MOF, HTM, OCX, HTML, POTM, EML, POTX, MSG, PS, |VB, REG, VBA, WSC, VBE, WSF, VBS, WSH
+id: Detonate File - Lastline
+inputs:
+- description: The file to detonate. File is taken from the context.
+  key: File
+  required: false
+  value:
+    complex:
+      root: File
+- description: Polling frequency - how often the polling command should run (minutes)
+  key: Interval
+  required: false
+  value:
+    simple: "1"
+- description: How much time to wait before a timeout occurs (minutes)
+  key: Timeout
+  required: false
+  value:
+    simple: "15"
+name: Detonate File - Lastline
+outputs:
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report file
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+  type: string
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+  type: number
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+  type: string
+- contextPath: InfoFile.Extension
+  description: The extension of the report file
+  type: string
+- contextPath: InfoFile.Name
+  description: The name of the report file
+  type: string
+- contextPath: InfoFile.Info
+  description: The info of the report file
+  type: string
+- contextPath: InfoFile.Size
+  description: The size of the report file
+  type: number
+- contextPath: InfoFile.Type
+  description: The type of the report file
+  type: string
+- contextPath: URL.Data
+  description: List of malicious URLs identified by Lastline analysis
+  type: string
+- contextPath: URL.Malicious.Vendor
+  description: For malicious URLs, the vendor that made the decision
+  type: string
+- contextPath: URL.Malicious.Description
+  description: For malicious URLs, the reason for the vendor to make the decision
+  type: string
+- contextPath: URL.Malicious.Score
+  description: For malicious URLs, the score from the vendor
+  type: number
+- contextPath: File.MD5
+  description: Bad hash MD5
+  type: string
+- contextPath: File.SHA1
+  description: Bad hash SHA1
+  type: string
+- contextPath: File.SHA256
+  description: Bad hash SHA256
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Score
+  description: For malicious files, the score from the vendor
+  type: number
+- contextPath: Lastline.Submission.Status
+  description: Status of the submission
+  type: string
+- contextPath: Lastline.Submission.DNSqueries
+  description: List of DNS queries done by the analysis subject
+  type: string
+- contextPath: Lastline.Submission.NetworkConnections
+  description: ist of network connections done by the analysis subject
+  type: string
+- contextPath: Lastline.Submission.DownloadedFiles
+  description: List of files that were downloaded using the Microsoft Windows file-download
+    API functions. Each element is a tuple of file-origin URL and a File element.
+  type: string
+- contextPath: Lastline.Submission.UUID
+  description: Task UUID of submitted sample
+  type: number
+- contextPath: Lastline.Submission.YaraSignatures.name
+  description: Yara signatures name
+  type: string
+- contextPath: Lastline.Submission.YaraSignatures.score
+  description: The score according to the yara signatures. from 0 to 100.
+  type: number
+- contextPath: Lastline.Submission.Process.arguments
+  description: Argument of the process
+  type: string
+- contextPath: Lastline.Submission.Process.process_id
+  description: The process ID
+  type: string
+- contextPath: Lastline.Submission.Process.executable.abs_path
+  description: Absolute path of the executable of the process
+  type: string
+- contextPath: Lastline.Submission.Process.executable.filename
+  description: Filename of the executable
+  type: string
+- contextPath: Lastline.Submission.Process.executable.yara_signature_hits
+  description: Yara signature of the executable of the process
+  type: string
+- contextPath: Lastline.Submission.Process.executable.ext_info
+  description: Executable info of the process
+  type: string
+- contextPath: Lastline.Submission.YaraSignatures.internal
+  description: True if the signature is only for internal usage
+  type: boolean
+- contextPath: File
+  description: File object
+  type: unknown
+- contextPath: File.Malicious
+  description: File Malicious object
+  type: unknown
+- contextPath: DBotScore
+  description: DBot score object
+  type: unknown
+- contextPath: Lastline.Submission
+  description: Lastline submission object
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: '-'
+      id: 2251b2ee-5743-45f5-81bf-7da8693c7b61
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 2251b2ee-5743-45f5-81bf-7da8693c7b61
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    scriptarguments:
+      Ids:
+        complex:
+          accessor: Submission.UUID
+          root: Lastline
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: uuid
+      PollingCommandName:
+        simple: lastline-check-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: Lastline.Submission(val.Status != 'Completed').UUID
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 36e16e34-4b51-4c85-8779-59527ffe8bd9
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 36e16e34-4b51-4c85-8779-59527ffe8bd9
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1245
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    scriptarguments:
+      threshold: {}
+      uuid:
+        complex:
+          accessor: Submission.UUID
+          root: Lastline
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get analysis report
+      id: 0ce1a739-c653-4186-8767-1f18d0383462
+      iscommand: true
+      name: Lastline Get Report
+      script: '|||lastline-get-report'
+      type: regular
+      version: -1
+    taskid: 0ce1a739-c653-4186-8767-1f18d0383462
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 1595
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: finished
+      id: 6185e7bf-d4ea-428f-84f3-8f69c900e8e8
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 6185e7bf-d4ea-428f-84f3-8f69c900e8e8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Lastline
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |
+        Verify that there is a valid instance of Lastline enabled.
+      id: d3ca12aa-6550-4c88-81eb-e2a97b5c51b5
+      iscommand: false
+      name: Is Lastline sandbox enabled?
+      type: condition
+      version: -1
+    taskid: d3ca12aa-6550-4c88-81eb-e2a97b5c51b5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 195
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: EntryID
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Type
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Extension
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Info
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+                root: File
+          operator: isExists
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "15"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if file type is supported.
+      id: fea8caab-2280-4b3a-81ca-0477bc5d1854
+      iscommand: false
+      name: Is File type supported?
+      type: condition
+      version: -1
+    taskid: fea8caab-2280-4b3a-81ca-0477bc5d1854
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 720
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    task:
+      brand: ""
+      description: Set the file object into context.
+      id: 880a4474-6ff0-4426-83c3-38bbf36f090e
+      iscommand: false
+      name: Set File to context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 880a4474-6ff0-4426-83c3-38bbf36f090e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 545
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.File
+          operator: isExists
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks that there is a file in the playbook’s input.
+      id: 823f4f10-b0d8-4c6b-8bc0-b7ec01897534
+      iscommand: false
+      name: Is there a File to Detonate?
+      type: condition
+      version: -1
+    taskid: 823f4f10-b0d8-4c6b-8bc0-b7ec01897534
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 370
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Submission.Status
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Lastline.Submission.Status
+                    operator: isNotEqualString
+                    right:
+                      value:
+                        simple: Completed
+                root: Lastline
+          operator: isExists
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: cec4ac98-aed7-4400-824b-2244a72dcc1a
+      iscommand: false
+      name: Filter UUIDs
+      type: condition
+      version: -1
+    taskid: cec4ac98-aed7-4400-824b-2244a72dcc1a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 1070
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    scriptarguments:
+      EntryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: inputs.File.Info
+              operator: match
+              right:
+                value:
+                  simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+            - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: inputs.File.Type
+              operator: match
+              right:
+                value:
+                  simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+            - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: inputs.File.Extension
+              operator: match
+              right:
+                value:
+                  simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+          root: inputs.File
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Upload file for analysis
+      id: 224d3a13-cd7a-405a-8241-4624625ab3d1
+      iscommand: true
+      name: Lastline Upload File
+      script: '|||lastline-upload-file'
+      type: regular
+      version: -1
+    taskid: 224d3a13-cd7a-405a-8241-4624625ab3d1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 895
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      uuid:
+        complex:
+          accessor: Submission.UUID
+          root: Lastline
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check submissions status
+      id: 457087e7-a34c-4635-86ed-0aff1ddd2c13
+      iscommand: true
+      name: Lastline Check Status
+      script: '|||lastline-check-status'
+      type: regular
+      version: -1
+    taskid: 457087e7-a34c-4635-86ed-0aff1ddd2c13
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1420
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 840,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

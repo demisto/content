@@ -1,0 +1,30 @@
+args:
+- description: Path to memory dump file on the system being used
+  name: memdump
+  required: true
+- description: System with Volatility installed to be used for the analysis
+  name: system
+  required: true
+- description: Process ID to pass to volatility as a parameter of the ldrmodules command
+  name: pid
+  required: true
+- description: Volatility profile to use
+  name: profile
+comment: Volatility script for command ldrmodules
+commonfields:
+  id: VolMalfind
+  version: -1
+name: VolMalfind
+runonce: false
+script: |-
+  var cmdline = 'malfind -p ' + args.pid;
+  var out = executeCommand('Volatility', {memdump:args.memdump, profile:args.profile, system: args.system, cmd:cmdline});
+  return out;
+scripttarget: 0
+system: true
+tags:
+- memory
+- forensics
+- volatility
+- server
+type: javascript

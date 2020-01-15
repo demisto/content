@@ -1,0 +1,154 @@
+description: Returns to the war-room a file sample correlating from a hash using one
+  or more products
+id: get_file_sample_by_hash_-_generic
+inputs:
+- description: Get file sample from MD5 input
+  key: MD5
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+- description: Get file sample from SHA256 input
+  key: SHA256
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      root: File
+name: Get File Sample By Hash - Generic
+outputs:
+- contextPath: File
+  description: File sample object
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 0131a1f1-22f0-489d-8c41-ec4a0e89369d
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 0131a1f1-22f0-489d-8c41-ec4a0e89369d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    scriptarguments:
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: true
+    task:
+      brand: ""
+      id: 366fe696-1d20-4473-87b6-d0c2ce334996
+      iscommand: false
+      name: Get File Sample By Hash - Cylance Protect
+      playbookName: Get File Sample By Hash - Cylance Protect
+      type: playbook
+      version: -1
+    taskid: 366fe696-1d20-4473-87b6-d0c2ce334996
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+    separatecontext: true
+    task:
+      brand: ""
+      id: 88fbf584-4a72-4097-86e6-3d22957bdd3e
+      iscommand: false
+      name: Get File Sample By Hash - Carbon Black Enterprise Response
+      playbookName: Get File Sample By Hash - Carbon Black Enterprise Response
+      type: playbook
+      version: -1
+    taskid: 88fbf584-4a72-4097-86e6-3d22957bdd3e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 905fca17-4fc2-4efb-8db3-322ff915dee8
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 905fca17-4fc2-4efb-8db3-322ff915dee8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

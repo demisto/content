@@ -1,0 +1,339 @@
+description: Detonates a URL using the Phish.AI integration.
+id: Detonate URL - Phish.AI
+inputs:
+- description: URL to detonate.
+  key: URL
+  required: false
+  value:
+    complex:
+      accessor: Data
+      root: URL
+- description: Polling frequency - how often the polling command should run (minutes)
+  key: Interval
+  required: false
+  value:
+    simple: "1"
+- description: How much time to wait before a timeout occurs (minutes)
+  key: Timeout
+  required: false
+  value:
+    simple: "15"
+name: Detonate URL - Phish.AI
+outputs:
+- contextPath: PhishAI.ScanID
+  description: Phish.AI scan ID
+  type: string
+- contextPath: PhishAI.Status
+  description: Scan status
+  type: string
+- contextPath: PhishAI.URL
+  description: URL address
+  type: string
+- contextPath: URL.Malicious.Vendor
+  description: For malicious URLs, the vendor that made the decision
+  type: string
+- contextPath: URL.Malicious.Description
+  description: For malicious URLs, the reason for the vendor to make the decision
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: IP.Address
+  description: IP address of the url
+  type: string
+- contextPath: IP.Geo.Country
+  description: Geo location of the url
+  type: string
+- contextPath: URL.Status
+  description: URL's Status
+  type: string
+- contextPath: URL.Data
+  description: URL's Address
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: start
+      id: d2f4d7dc-4562-4517-8d63-3539676ca81d
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d2f4d7dc-4562-4517-8d63-3539676ca81d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    scriptarguments:
+      Ids:
+        complex:
+          accessor: ScanID
+          root: PhishAI
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: scan_id
+      PollingCommandName:
+        simple: phish-ai-check-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: PhishAI(val.Status === 'in progress').ScanID
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: a9d60056-7ef8-4164-8748-f5016616e779
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: a9d60056-7ef8-4164-8748-f5016616e779
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.URL
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks that there is a URL in the playbook’s input.
+      id: 574c57f0-c341-4fb0-8576-5acd9a2ba120
+      iscommand: false
+      name: Is there a URL to detonate?
+      type: condition
+      version: -1
+    taskid: 574c57f0-c341-4fb0-8576-5acd9a2ba120
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Done
+      id: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Phish.AI
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |
+        Verify that there is a valid instance of McAfee ATD enabled.
+      id: 20e936c1-98ba-4255-8042-101aa9bcaf5a
+      iscommand: false
+      name: Is Phish.AI enabled?
+      type: condition
+      version: -1
+    taskid: 20e936c1-98ba-4255-8042-101aa9bcaf5a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    scriptarguments:
+      scan_id:
+        complex:
+          accessor: ScanID
+          root: PhishAI
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks on url's status, e.g. completed, in progress
+      id: 744dfdfb-f55d-4586-8783-addf3cd6fd12
+      iscommand: true
+      name: Get Report URL
+      script: '|||phish-ai-check-status'
+      type: regular
+      version: -1
+    taskid: 744dfdfb-f55d-4586-8783-addf3cd6fd12
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if url is phishing and get details about the brand that is
+        being phished
+      id: 46100a3a-dc92-4c08-8098-8baff8320399
+      iscommand: true
+      name: Scan URL
+      script: '|||phish-ai-scan-url'
+      type: regular
+      version: -1
+    taskid: 46100a3a-dc92-4c08-8098-8baff8320399
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_11_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

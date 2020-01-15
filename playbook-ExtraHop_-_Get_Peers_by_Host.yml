@@ -1,0 +1,410 @@
+description: Given a host, the playbook will retrieve the peer network devices that
+  communicated with that host in a given time range.  In addition to a list of peers
+  and protocols (sorted by bytes) the playbook returns a link to the ExtraHop Live
+  Activity Map to visualize the peer relationships.
+id: ExtraHop - Get Peers by Host
+inputs:
+- description: The name of the device. This searches for matches on all ExtraHop name
+    fields (DHCP, DNS, NetBIOS, Cisco Discovery Protocol, etc).
+  key: name
+  required: false
+  value: {}
+- description: The IP address of the device.
+  key: ip
+  required: false
+  value: {}
+- description: The MAC address of the device.
+  key: mac
+  required: false
+  value: {}
+- description: The beginning timestamp of the time range the playbook will use to
+    search, expressed in seconds since the epoch.
+  key: from_time
+  required: false
+  value: {}
+- description: The ending timestamp of the time range the playbook will use to search,
+    expressed in seconds since the epoch.
+  key: until_time
+  required: false
+  value: {}
+name: ExtraHop - Get Peers by Host
+outputs:
+- contextPath: ExtraHop.Device
+  description: 'Details on the host and any peer devices found. '
+  type: unknown
+- contextPath: ExtraHop.ActivityMap
+  description: The link to a visual activity map in ExtraHop.
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: bf60ce0f-ce07-4119-8d54-0ce64f1a0e00
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: bf60ce0f-ce07-4119-8d54-0ce64f1a0e00
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 2fbd50da-8e6e-4b1a-8b1f-5cf90cebc303
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 2fbd50da-8e6e-4b1a-8b1f-5cf90cebc303
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1220
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      ip_or_id:
+        simple: ${ExtraHop.Device.Id}
+      peer_role: {}
+      protocol: {}
+      query_from:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.from_time
+              operator: isNotEmpty
+          root: inputs.from_time
+          transformers:
+          - args:
+              by:
+                value:
+                  simple: "1000"
+            operator: multiply
+      query_until:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.until_time
+              operator: isNotEmpty
+          root: inputs.until_time
+          transformers:
+          - args:
+              by:
+                value:
+                  simple: "1000"
+            operator: multiply
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get the list of all of the peers that communicated with the given
+        host in the specified time range.
+      id: cf740c00-0812-4696-8dc1-33877ccf12d5
+      iscommand: true
+      name: Search for peer devices in ExtraHop Reveal(x)
+      script: '|||extrahop-get-peers'
+      type: regular
+      version: -1
+    taskid: cf740c00-0812-4696-8dc1-33877ccf12d5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 1020
+        }
+      }
+  "7":
+    continueonerror: true
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    scriptarguments:
+      active_from: {}
+      active_until: {}
+      activity: {}
+      discover_time: {}
+      ip:
+        simple: ${inputs.ip}
+      l3_only: {}
+      limit:
+        simple: "1"
+      mac:
+        simple: ${inputs.mac}
+      match_type: {}
+      name:
+        simple: ${inputs.name}
+      operator: {}
+      role: {}
+      software: {}
+      tag: {}
+      vendor: {}
+      vlan: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Search for the device within ExtraHop using the provided name,
+        IP address, and MAC address.
+      id: 1b5c7cbd-6f0c-4a82-8314-335cd0e92066
+      iscommand: true
+      name: Search for device in ExtraHop Reveal(x)
+      script: '|||extrahop-device-search'
+      type: regular
+      version: -1
+    taskid: 1b5c7cbd-6f0c-4a82-8314-335cd0e92066
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 540
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.name
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: inputs.ip
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: inputs.mac
+          operator: isNotEmpty
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if the host information required to search for peers was
+        provided.
+      id: bcd55624-cc38-49fe-8f93-f45bc97a5d4b
+      iscommand: false
+      name: Is there a host?
+      type: condition
+      version: -1
+    taskid: bcd55624-cc38-49fe-8f93-f45bc97a5d4b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 370
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtraHop.Device
+          operator: hasLength
+          right:
+            value:
+              simple: "1"
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if a device was found.
+      id: 4703272c-c182-4ecf-8e41-4705ed8d0c54
+      iscommand: false
+      name: Was a device found?
+      type: condition
+      version: -1
+    taskid: 4703272c-c182-4ecf-8e41-4705ed8d0c54
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 720
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "9"
+    note: false
+    scriptarguments:
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: brand
+              operator: isEqualString
+              right:
+                value:
+                  simple: ExtraHop v2
+          - - left:
+                iscontext: true
+                value:
+                  simple: state
+              operator: isEqualString
+              right:
+                value:
+                  simple: active
+          root: modules
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of the ExtraHop Reveal(x)
+        integration enabled.
+      id: f93ea96a-09bf-4503-8fe6-fc791422d554
+      iscommand: false
+      name: Is ExtraHop Reveal(x) enabled?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: f93ea96a-09bf-4503-8fe6-fc791422d554
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      from_time:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.from_time
+              operator: isNotEmpty
+          root: inputs.from_time
+      ip_or_id:
+        simple: ${ExtraHop.Device.Id}
+      peer_role: {}
+      protocol: {}
+      time_interval: {}
+      until_time:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.until_time
+              operator: isNotEmpty
+          root: inputs.until_time
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get a link to a live activity map for the given device in the specified
+        time range.
+      id: ed8c477b-6860-429c-8c8b-888a1ac3e1d7
+      iscommand: true
+      name: Get a link to a live activity map in ExtraHop Reveal(x)
+      script: '|||extrahop-get-activity-map'
+      type: regular
+      version: -1
+    taskid: ed8c477b-6860-429c-8c8b-888a1ac3e1d7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 1020
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_16_yes": 0.29,
+      "11_2_#default#": 0.28,
+      "11_3_yes": 0.58,
+      "15_2_#default#": 0.29,
+      "15_9_yes": 0.53,
+      "9_2_#default#": 0.24,
+      "9_7_yes": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1235,
+        "width": 1090,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

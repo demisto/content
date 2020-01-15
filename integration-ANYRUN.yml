@@ -1,0 +1,1305 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: ANYRUN
+  version: -1
+configuration:
+- defaultvalue: https://api.any.run
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: "true"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: ANY.RUN is a cloud-based sanbox with interactive access.
+display: ANY.RUN
+image: data:image/png;base64,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
+name: ANYRUN
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: "false"
+      description: If true, gets team history. If empty, gets your submitted analyses
+        history.
+      name: team
+      predefined:
+      - "true"
+      - "false"
+    - default: true
+      defaultValue: "0"
+      description: The number of analyses to skip.
+      name: skip
+      predefined:
+      - ""
+    - default: true
+      defaultValue: "25"
+      description: Limits the history retrieved/searched to the specified number of
+        executed analyses. The range is 1-100.
+      name: limit
+    - description: File name, hash, or task ID by which to filter the task history.
+      name: filter
+    description: Get analysis history.
+    name: anyrun-get-history
+    outputs:
+    - contextPath: ANYRUN.Task.Name
+      description: Task name.
+      type: String
+    - contextPath: ANYRUN.Task.Verdict
+      description: ANY.RUN verdict for the submitted file's status.
+      type: String
+    - contextPath: ANYRUN.Task.Related
+      description: ANY.RUN link to a related file.
+      type: String
+    - contextPath: ANYRUN.Task.File
+      description: ANY.RUN link to download the submitted file.
+      type: String
+    - contextPath: ANYRUN.Task.Date
+      description: The date that the file was submitted for analysis.
+      type: Date
+    - contextPath: ANYRUN.Task.Hash.MD5
+      description: MD5 hash of the submitted file.
+      type: String
+    - contextPath: ANYRUN.Task.Hash.SHA1
+      description: SHA1 hash of the submitted file.
+      type: String
+    - contextPath: ANYRUN.Task.Hash.SHA256
+      description: SHA256 hash of the submitted file.
+      type: String
+    - contextPath: ANYRUN.Task.Hash.HeadHash
+      description: Head hash of the submitted file.
+      type: String
+    - contextPath: ANYRUN.Task.Hash.SSDeep
+      description: SSDeep hash of the submitted file.
+      type: String
+  - arguments:
+    - description: Unique task ID. A task ID is returned when submitting a file or
+        URL for analysis using the `anyrun-run-analysis` command. Task IDs can also
+        be located in the `ID` field of the output of executing the `anyrun-get-history`
+        command.
+      name: task
+      required: true
+    description: Gets the report of a task created for a submitted file or URL.
+    name: anyrun-get-report
+    outputs:
+    - contextPath: ANYRUN.Task.AnalysisDate
+      description: Date and time the analysis was executed.
+      type: String
+    - contextPath: ANYRUN.Task.Behavior.Category
+      description: Category of a process behavior.
+      type: String
+    - contextPath: ANYRUN.Task.Behavior.Action
+      description: Actions performed by a process.
+      type: String
+    - contextPath: ANYRUN.Task.Behavior.ThreatLevel
+      description: Threat score associated with a process behavior.
+      type: Number
+    - contextPath: ANYRUN.Task.Behavior.ProcessUUID
+      description: Unique ID of the process whose behaviors are being profiled.
+      type: String
+    - contextPath: ANYRUN.Task.Connection.Reputation
+      description: Connection reputation.
+      type: String
+    - contextPath: ANYRUN.Task.Connection.ProcessUUID
+      description: ID of the process that created the connection.
+      type: String
+    - contextPath: ANYRUN.Task.Connection.ASN
+      description: Connection autonomous system network.
+      type: String
+    - contextPath: ANYRUN.Task.Connection.Country
+      description: Connection country.
+      type: String
+    - contextPath: ANYRUN.Task.Connection.Protocol
+      description: Connection protocol.
+      type: String
+    - contextPath: ANYRUN.Task.Connection.Port
+      description: Connection port number.
+      type: Number
+    - contextPath: ANYRUN.Task.Connection.IP
+      description: Connection IP number.
+      type: String
+    - contextPath: ANYRUN.Task.DnsRequest.Reputation
+      description: Reputation of the DNS request.
+      type: String
+    - contextPath: ANYRUN.Task.DnsRequest.IP
+      description: IP addresses associated with a DNS request.
+      type: Unknown
+    - contextPath: ANYRUN.Task.DnsRequest.Domain
+      description: Domain resolution of a DNS request.
+      type: String
+    - contextPath: ANYRUN.Task.Threat.ProcessUUID
+      description: Unique process ID from where the threat originated.
+      type: String
+    - contextPath: ANYRUN.Task.Threat.Msg
+      description: Threat message.
+      type: String
+    - contextPath: ANYRUN.Task.Threat.Class
+      description: Class of the threat.
+      type: String
+    - contextPath: ANYRUN.Task.Threat.SrcPort
+      description: Port on which the threat originated.
+      type: Number
+    - contextPath: ANYRUN.Task.Threat.DstPort
+      description: Destination port of the threat.
+      type: Number
+    - contextPath: ANYRUN.Task.Threat.SrcIP
+      description: Source IP address where the threat originated.
+      type: String
+    - contextPath: ANYRUN.Task.Threat.DstIP
+      description: Destination IP address of the threat.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.Reputation
+      description: Reputation of the HTTP request.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.Country
+      description: HTTP request country.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.ProcessUUID
+      description: ID of the process making the HTTP request.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.Body
+      description: HTTP request body parameters and details.
+      type: Unknown
+    - contextPath: ANYRUN.Task.HttpRequest.HttpCode
+      description: HTTP request response code.
+      type: Number
+    - contextPath: ANYRUN.Task.HttpRequest.Status
+      description: Status of the HTTP request.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.ProxyDetected
+      description: Whether the HTTP request was made through a proxy.
+      type: Boolean
+    - contextPath: ANYRUN.Task.HttpRequest.Port
+      description: HTTP request port.
+      type: Number
+    - contextPath: ANYRUN.Task.HttpRequest.IP
+      description: HTTP request IP address.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.URL
+      description: HTTP request URL.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.Host
+      description: HTTP request host.
+      type: String
+    - contextPath: ANYRUN.Task.HttpRequest.Method
+      description: HTTP request method type.
+      type: String
+    - contextPath: ANYRUN.Task.FileInfo
+      description: Details of the submitted file.
+      type: String
+    - contextPath: ANYRUN.Task.OS
+      description: OS of the sandbox in which the file was analyzed.
+      type: String
+    - contextPath: ANYRUN.Task.ID
+      description: The unique ID of the task.
+      type: String
+    - contextPath: ANYRUN.Task.MIME
+      description: The MIME of the file submitted for analysis.
+      type: String
+    - contextPath: ANYRUN.Task.MD5
+      description: The MD5 hash of the file submitted for analysis.
+      type: String
+    - contextPath: ANYRUN.Task.SHA1
+      description: The SHA1 hash of the file submitted for analysis.
+      type: String
+    - contextPath: ANYRUN.Task.SHA256
+      description: The SHA256 hash of the file submitted for analysis.
+      type: String
+    - contextPath: ANYRUN.Task.SSDeep
+      description: SSDeep hash of the file submitted for analysis.
+      type: String
+    - contextPath: ANYRUN.Task.Verdict
+      description: ANY.RUN verdict for the maliciousness of the submitted file or
+        URL.
+      type: String
+    - contextPath: ANYRUN.Task.Process.FileName
+      description: File name of the process.
+      type: String
+    - contextPath: ANYRUN.Task.Process.PID
+      description: Process identification number.
+      type: Number
+    - contextPath: ANYRUN.Task.Process.PPID
+      description: Parent process identification number.
+      type: Number
+    - contextPath: ANYRUN.Task.Process.ProcessUUID
+      description: Unique process ID (used by ANY.RUN).
+      type: String
+    - contextPath: ANYRUN.Task.Process.CMD
+      description: Process command.
+      type: String
+    - contextPath: ANYRUN.Task.Process.Path
+      description: Path of the executed command.
+      type: String
+    - contextPath: ANYRUN.Task.Process.User
+      description: User who executed the command.
+      type: String
+    - contextPath: ANYRUN.Task.Process.IntegrityLevel
+      description: The process integrity level.
+      type: String
+    - contextPath: ANYRUN.Task.Process.ExitCode
+      description: Process exit code.
+      type: Number
+    - contextPath: ANYRUN.Task.Process.MainProcess
+      description: Whether the process is the main process.
+      type: Boolean
+    - contextPath: ANYRUN.Task.Process.Version.Company
+      description: Company responsible for the program executed.
+      type: String
+    - contextPath: ANYRUN.Task.Process.Version.Description
+      description: Description of the type of program.
+      type: String
+    - contextPath: ANYRUN.Task.Process.Version.Version
+      description: Version of the program executed.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: Type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: String
+    - contextPath: File.Extension
+      description: Extension of the file submitted for analysis.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file submitted for analysis.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+      type: String
+    - contextPath: URL.Data
+      description: URL data.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+      type: String
+    - contextPath: ANYRUN.Task.Status
+      description: Task analysis status.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: file
+      description: Type of new task.
+      name: obj_type
+      predefined:
+      - file
+      - url
+      - remote file
+    - description: EntryID of the file to analyze.
+      name: file
+    - description: URL, used only if 'obj_type' command argument is 'url' or 'download'.
+        Permitted size is 5-512 characters long.
+      name: obj_url
+    - auto: PREDEFINED
+      default: true
+      defaultValue: "32"
+      description: Bitness of OS.
+      name: env_bitness
+      predefined:
+      - "32"
+      - "64"
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Windows 7
+      description: Version of Windows OS.
+      name: env_version
+      predefined:
+      - Windows Vista
+      - Windows 7
+      - Windows 8.1
+      - Windows 10
+    - auto: PREDEFINED
+      default: true
+      defaultValue: complete
+      description: Environment preset type.
+      name: env_type
+      predefined:
+      - complete
+      - clean
+      - office
+    - auto: PREDEFINED
+      default: true
+      defaultValue: "true"
+      description: Network connection state.
+      name: opt_network_connect
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      default: true
+      defaultValue: "false"
+      description: Heavy evasion option.
+      name: opt_kernel_heavyevasion
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      default: true
+      defaultValue: owner
+      description: Privacy settings for generated task.
+      name: opt_privacy_type
+      predefined:
+      - owner
+      - bylink
+      - public
+    description: Submit a file or url for analysis.
+    name: anyrun-run-analysis
+    outputs:
+    - contextPath: ANYRUN.Task.ID
+      description: ID of the task created to analyze the submission.
+      type: String
+  dockerimage: demisto/python3:3.7.3.221
+  runonce: false
+  script: |2-
+
+
+
+    from typing import Optional
+
+    ''' IMPORTS '''
+
+    import re
+    import os
+    import json
+    import requests
+    from base64 import b64encode
+
+    ''' GLOBAL VARS / INSTANCE CONFIGURATION '''
+
+    PARAMS = demisto.params()
+    USERNAME = PARAMS.get('credentials', {}).get('identifier', '')
+    PASSWORD = PARAMS.get('credentials', {}).get('password', '')
+    AUTH = (USERNAME + ':' + PASSWORD).encode('utf-8')
+    BASIC_AUTH = 'Basic ' + b64encode(AUTH).decode()
+    # Remove trailing slash to prevent wrong URL path to service
+    SERVER = PARAMS.get('url', '')
+    SERVER = SERVER[:-1] if (SERVER and SERVER.endswith('/')) else SERVER
+    # Service base URL
+    BASE_URL = SERVER + '/v1/'
+    # Should we use SSL
+    USE_SSL = not PARAMS.get('insecure', False)
+    PROXY = PARAMS.get('proxy', False)
+    # Headers to be sent in requests
+    HEADERS = {
+        'Authorization': BASIC_AUTH
+    }
+    # Context fields that should always be uppercase
+    ALWAYS_UPPER_CASE = {
+        'md5', 'sha1', 'sha256', 'sha512', 'pcap', 'ip',
+        'url', 'id', 'pid', 'ppid', 'uuid', 'asn', 'mime'
+    }
+    THREAT_TEXT_TO_DBOTSCORE = {
+        'no threats detected': 1,
+        'suspicious activity': 2,
+        'malicious activity': 3
+    }
+
+    ''' SETUP '''
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    # Remove proxy if not set to true in params
+    if not PROXY:
+        os.environ.pop('HTTP_PROXY', '')
+        os.environ.pop('HTTPS_PROXY', '')
+        os.environ.pop('http_proxy', '')
+        os.environ.pop('https_proxy', '')
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def underscore_to_camel_case(s):
+        """
+        Convert an underscore separated string to camel case, leaving one-word strings untouched
+
+        Parameters
+        ----------
+        s : str
+            The string to convert (e.g. heLLo_world) (required).
+
+        Returns
+        -------
+        str
+            The converted string (e.g. heLLoWorld).
+        """
+
+        if not isinstance(s, str):
+            return s
+        components = s.split('_')
+        return ''.join(x.title() if i != 0 else x for i, x in enumerate(components))
+
+
+    def make_upper(string):
+        """
+        Make argument uppercase if it is a member of 'ALWAYS_UPPER_CASE' global variable
+
+        Parameters
+        ----------
+        string : str
+            The string to check and potentially make uppercase.
+
+        Returns
+        -------
+        str
+            Uppercased string (or original string if it didn't match the criteria).
+        """
+
+        if isinstance(string, str):
+            if string.casefold() in ALWAYS_UPPER_CASE:
+                return string.upper()
+            elif string.casefold() == 'ssdeep':  # special case
+                return 'SSDeep'
+            else:
+                return string
+        else:
+            return string
+
+
+    def make_capital(string):
+        """Capitalize first letter of a string, leaving the rest of the string as is
+
+        Parameters
+        ----------
+        string : str
+            The string to capitalize (e.g. 'foRUm').
+
+        Returns
+        -------
+        str
+            The capitalized string (e.g. 'FoRUm').
+        """
+
+        if isinstance(string, str) and string:
+            return string[:1].upper() + string[1:]
+        else:
+            return string
+
+
+    def make_singular(word):
+        """Relatively naive/imperfect function to make a word singular
+
+        Parameters
+        ----------
+        word : str
+            The string to make singular (e.g. 'zebras').
+
+        Returns
+        -------
+        str
+            The string in singular form (e.e. 'zebra').
+        """
+
+        if not isinstance(word, str) or not word:
+            return word
+
+        word_as_lower = word.casefold()
+        # Not a plural
+        if not word_as_lower.endswith('s'):
+            return word
+        # Word ends in 's' and is therefore possibly plural
+        else:
+            es_endings = ('sses', 'shes', 'ches', 'xes', 'zes')
+            if word_as_lower.endswith(es_endings):
+                # Then the word was pluralized by adding 'es'
+                return word[:-2]
+            elif word_as_lower.endswith('ss'):
+                # Then it's probably not a plural, e.g. 'assess' or 'process'
+                return word
+            elif len(word) <= 2:
+                # Then it's probably not a plural, e.g. 'OS'
+                return word
+            elif word_as_lower.endswith('sis') or word_as_lower.endswith('us'):
+                # Then it's probably singular like 'analysis' and 'cactus' and 'focus'
+                return word
+            else:
+                # Assume regular noun pluralization of adding an 's'
+                return word[:-1]
+
+
+    def travel_object(obj, key_functions=[], val_functions=[]):
+        """Recursively apply functions to the keys and values of a dictionary
+
+        Parameters
+        ----------
+        obj : dict/list
+            List or dict to recurse through.
+        key_functions : list
+            Functions to apply to the keys in 'obj'.
+        val_functions : list
+            Functions to apply to the values in 'obj'
+
+        Returns
+        -------
+        list/dict
+            A list or dict in which all nested keys and values have been
+            altered by the key_functions and val_functions respectively.
+        """
+
+        def operate_on_dict(the_dict):
+            new_dict = {}
+            for key, val in the_dict.items():
+                new_key = key
+                for key_func in key_functions:
+                    new_key = key_func(new_key)
+                if isinstance(val, dict) or isinstance(val, list):
+                    new_val = travel_object(val, key_functions=key_functions, val_functions=val_functions)
+                else:
+                    new_val = val
+                    for val_func in val_functions:
+                        new_val = val_func(val)
+                new_dict[new_key] = new_val
+            return new_dict
+
+        if isinstance(obj, list):
+            new_list = []
+            for item in obj:
+                new_item = operate_on_dict(item) if isinstance(item, dict) else item
+                new_list.append(new_item)
+            return new_list
+        elif isinstance(obj, dict):
+            altered_dict = operate_on_dict(obj)
+            return altered_dict
+        else:
+            err_msg = 'Invalid type: the passed "obj" argument was not of type "dict" or "list".'
+            raise TypeError(err_msg)
+
+
+    def generate_dbotscore(response):
+        """Creates DBotScore object based on the contents of 'response' argument
+
+        Parameters
+        ----------
+        response : dict
+            Object returned by ANYRUN API call in 'get_report' function.
+
+        Returns
+        -------
+        dict
+            A DBotScore object.
+        """
+
+        analysis = response.get('data', {}).get('analysis', {})
+        main_object = analysis.get('content', {}).get('mainObject', {})
+        submission_type = main_object.get('type')
+        submission_type = 'hash' if submission_type in {'file', 'download'} else submission_type
+        threat_text = analysis.get('scores', {}).get('verdict', {}).get('threatLevelText', '').casefold()
+        if submission_type == 'hash':
+            hashes = main_object.get('hashes', {})
+            indicator = hashes.get('sha256', hashes.get('sha1', hashes.get('md5')))
+        else:
+            indicator = main_object.get('url')
+        dbot_score = {
+            "DBotScore": {
+                "Indicator": indicator,
+                "Type": submission_type,
+                "Vendor": "ANYRUN",
+                "Score": THREAT_TEXT_TO_DBOTSCORE.get(threat_text, 0)
+            }
+        }
+        return dbot_score
+
+
+    def add_malicious_key(entity, verdict):
+        """Return the entity with the additional 'Malicious' key if determined as such by ANYRUN
+
+        Parameters
+        ----------
+        entity : dict
+            File or URL object.
+        verdict : dict
+            Task analysis verdict for a detonated file or url.
+
+        Returns
+        -------
+        dict
+            The modified entity if it was malicious, otherwise the original entity.
+        """
+
+        threat_level_text = verdict.get('threatLevelText', '')
+
+        if threat_level_text.casefold() == 'malicious activity':
+            entity['Malicious'] = {
+                'Vendor': 'ANYRUN',
+                'Description': threat_level_text
+            }
+        return entity
+
+
+    def ec_file(main_object):
+        """Return File entity in Demisto format for use in entry context
+
+        Parameters
+        ----------
+        main_object : dict
+            The main object from a report's contents.
+
+        Returns
+        -------
+        dict
+            File object populated by report contents.
+        """
+
+        name = main_object.get('filename')
+        hashes = main_object.get('hashes', {})
+        md5 = hashes.get('md5')
+        sha1 = hashes.get('sha1')
+        sha256 = hashes.get('sha256')
+        ssdeep = hashes.get('ssdeep')
+        ext = main_object.get('info', {}).get('ext')
+
+        file_ec = {
+            'File': {
+                'Name': name,
+                'MD5': md5,
+                'SHA1': sha1,
+                'SHA256': sha256,
+                'SSDeep': ssdeep,
+                'Extension': ext
+            }
+        }
+        return file_ec
+
+
+    def ec_url(main_object):
+        """Return URL entity in Demisto format for use in entry context
+
+        Parameters
+        ----------
+        main_object : dict
+            The main object from a report's contents.
+
+        Returns
+        -------
+        dict
+            URL object populated by report contents.
+        """
+
+        url = main_object.get('url')
+
+        url_ec = {
+            'URL': {
+                'Data': url
+            }
+        }
+        return url_ec
+
+
+    def ec_entity(response):
+        """
+        Return URL or File entity in Demisto format for use in entry
+        context depending on data in 'response' (the report)
+
+        Parameters
+        ----------
+        response : dict
+            Object returned by ANYRUN API call in 'get_report' function.
+
+        Returns
+        -------
+        dict
+            File or URL object populated by report contents.
+        """
+
+        analysis = response.get('data', {}).get('analysis', {})
+        verdict = analysis.get('scores', {}).get('verdict', {})
+        main_object = analysis.get('content', {}).get('mainObject', {})
+        submission_type = main_object.get('type')
+        entity = None
+        if submission_type == 'url':
+            entity = ec_url(main_object)
+            entity['URL'] = add_malicious_key(entity.get('URL', {}), verdict)
+        else:
+            entity = ec_file(main_object)
+            entity['File'] = add_malicious_key(entity.get('File', {}), verdict)
+        return entity
+
+
+    def taskid_from_url(anyrun_url):
+        """Extract task ID from ANYRUN url inside a 'task' result returned by the get_history command
+
+        Parameters
+        ----------
+        anyrun_url : str
+            URL that contains an ANYRUN task ID.
+
+        Returns
+        -------
+        str
+            An ANYRUN task ID.
+        """
+
+        pattern = r'tasks/(.*?)/'
+        match = re.search(pattern, anyrun_url)
+        if match:
+            task_id = match.groups()[0]
+        else:
+            task_id = None
+        return task_id
+
+
+    def images_from_report(response):
+        """Retrieve images from an ANYRUN report
+
+        Parameters
+        ----------
+        response : dict
+            Object returned by ANYRUN API call in 'get_report' function.
+
+        Returns
+        -------
+        list
+            List of images from ANYRUN report.
+        """
+
+        data = response.get('data', {})
+        analysis = data.get('analysis', {})
+        content = analysis.get('content', {})
+        screenshots = content.get('screenshots', [])
+
+        screen_captures = []
+        for idx, shot in enumerate(screenshots):
+            screen_cap_url = shot.get('permanentUrl')
+            img_response = requests.request('GET', screen_cap_url, verify=USE_SSL)
+            stored_img = fileResult('screenshot{}.png'.format(idx), img_response.content)
+            img_entry = {
+                'Type': entryTypes['image'],
+                'ContentsFormat': formats['text'],
+                'File': stored_img['File'],
+                'FileID': stored_img['FileID'],
+                'Contents': ''
+            }
+            screen_captures.append(img_entry)
+        return screen_captures
+
+
+    def contents_from_report(response):
+        """Selectively retrieve content from an ANYRUN report
+
+        Parameters
+        ----------
+        response : dict
+            Object returned by ANYRUN API call in 'get_report' function.
+
+        Returns
+        -------
+        dict
+            Selected content from ANYRUN report.
+        """
+
+        data = response.get('data', {})
+        environment = data.get('environments', {})
+        analysis = data.get('analysis', {})
+        processes = data.get('processes', [])
+        incidents = data.get('incidents', [])
+        status = data.get('status')
+
+        # Retrieve environment info from response
+        os = environment.get('os', {}).get('title')
+
+        # Retrieve threat score + info from response
+        score = analysis.get('scores', {})
+        verdict = score.get('verdict', {})
+        threat_level_text = verdict.get('threatLevelText')
+
+        # Retrieve analysis time stuff
+        start_text = analysis.get('creationText')
+
+        # Retrieve submitted file info from response
+        content = analysis.get('content', {})
+        main_object = content.get('mainObject', {})
+        info = main_object.get('info', {})
+        mime = info.get('mime')
+        file_info = info.get('file')
+        hashes = main_object.get('hashes')
+
+        # Retrieve network details
+        network = data.get('network', {})
+        threats = network.get('threats', [])
+        connections = network.get('connections', [])
+        http_reqs = network.get('httpRequests', [])
+        dns_requests = network.get('dnsRequests', [])
+
+        reformatted_threats = []
+        for threat in threats:
+            reformatted_threat = {
+                'ProcessUUID': threat.get('process'),
+                'Message': threat.get('msg'),
+                'Class': threat.get('class'),
+                'SrcPort': threat.get('srcport'),
+                'DstPort': threat.get('dstport'),
+                'SrcIP': threat.get('srcip'),
+                'DstIP': threat.get('dstip')
+            }
+            reformatted_threats.append(reformatted_threat)
+        network['threats'] = reformatted_threats
+
+        reformatted_connections = []
+        for connection in connections:
+            reformatted_connection = {
+                'Reputation': connection.get('reputation'),
+                'ProcessUUID': connection.get('process'),
+                'ASN': connection.get('asn'),
+                'Country': connection.get('country'),
+                'Protocol': connection.get('protocol'),
+                'Port': connection.get('port'),
+                'IP': connection.get('ip')
+            }
+            reformatted_connections.append(reformatted_connection)
+        network['connections'] = reformatted_connections
+
+        reformatted_http_reqs = []
+        for http_req in http_reqs:
+            reformatted_http_req = {
+                'Reputation': http_req.get('reputation'),
+                'Country': http_req.get('country'),
+                'ProcessUUID': http_req.get('process'),
+                'Body': http_req.get('body'),
+                'HttpCode': http_req.get('httpCode'),
+                'Status': http_req.get('status'),
+                'ProxyDetected': http_req.get('proxyDetected'),
+                'Port': http_req.get('port'),
+                'IP': http_req.get('ip'),
+                'URL': http_req.get('url'),
+                'Host': http_req.get('host'),
+                'Method': http_req.get('method')
+            }
+            reformatted_http_reqs.append(reformatted_http_req)
+        network['httpRequests'] = reformatted_http_reqs
+
+        reformatted_dns_requests = []
+        for dns_request in dns_requests:
+            reformatted_dns_request = {
+                'Reputation': dns_request.get('reputation'),
+                'IP': dns_request.get('ips'),
+                'Domain': dns_request.get('domain')
+            }
+            reformatted_dns_requests.append(reformatted_dns_request)
+        network['dnsRequests'] = reformatted_dns_requests
+
+        # Retrieve process details
+        reformatted_processes = []
+        for process in processes:
+            context = process.get('context', {})
+            reformatted_process = {
+                'FileName': process.get('fileName'),
+                'PID': process.get('pid'),
+                'PPID': process.get('ppid'),
+                'ProcessUUID': process.get('uuid'),
+                'CMD': process.get('commandLine'),
+                'Path': process.get('image'),
+                'User': context.get('userName'),
+                'IntegrityLevel': context.get('integrityLevel'),
+                'ExitCode': process.get('exitCode'),
+                'MainProcess': process.get('mainProcess'),
+                'Version': process.get('versionInfo', {})
+            }
+            reformatted_processes.append(reformatted_process)
+
+        # Retrieve incident details
+        reformatted_incidents = []
+        for incident in incidents:
+            reformatted_incident = {
+                'ProcessUUID': incident.get('process'),
+                'Category': incident.get('desc'),
+                'Action': incident.get('title'),
+                'ThreatLevel': incident.get('threatLevel')
+            }
+            reformatted_incidents.append(reformatted_incident)
+
+        contents = {
+            'OS': os,
+            'AnalysisDate': start_text,
+            'Verdict': threat_level_text,
+            'MIME': mime,
+            'FileInfo': file_info,
+            'Process': reformatted_processes,
+            'Behavior': reformatted_incidents,
+            'Status': status
+        }
+        if hashes:
+            for key, val in hashes.items():
+                contents[key] = val
+        if network:
+            for key, val in network.items():
+                contents[key] = val
+
+        return contents
+
+
+    def humanreadable_from_report_contents(contents):
+        """Make the selected contents pulled from a report suitable for war room output
+
+        Parameters
+        ----------
+        contents : dict
+            Contents selected from an ANYRUN report for Demisto output.
+
+        Returns
+        -------
+        dict
+            Contents formatted so that nested dicts/lists appear nicely in a war room
+            entry.
+        """
+
+        def dict_to_string(nested_dict):
+            return json.dumps(nested_dict).lstrip('{').rstrip('}').replace('\'', '').replace('\"', '')
+
+        humanreadable_contents = {}
+        for key, val in contents.items():
+            if isinstance(val, dict):
+                humanreadable_contents[key] = dict_to_string(val)
+            elif isinstance(val, list):
+                humanreadable_vals = []
+                for item in val:
+                    if isinstance(item, dict):
+                        humanreadable_vals.append(dict_to_string(item))
+                    else:
+                        humanreadable_vals.append(item)
+                humanreadable_contents[key] = humanreadable_vals
+            else:
+                humanreadable_contents[key] = val
+        return humanreadable_contents
+
+
+    def contents_from_history(filter, response):
+        """Return desired fields from filtered response
+
+        Parameters
+        ----------
+        filter : str
+            File name (for a file analysis), URL (for a URL analysis),
+            Task ID, or hash by which to filter task history.
+        response : dict
+            Object returned by ANYRUN API call in 'get_history' function.
+
+        Returns
+        -------
+        list
+            List of Task summaries matching the filter.
+        """
+
+        # Filter response
+        tasks = response.get('data', {}).get('tasks', {})
+        desired_fields = {'related', 'verdict', 'date'}
+        filtered_tasks = []
+        for task in tasks:
+            # First fetch fields that we can filter on
+            name = task.get('name')
+            hashes = task.get('hashes')
+            file_url = task.get('file')
+            task_id = taskid_from_url(file_url)
+
+            if filter and filter not in {name, task_id, *hashes.values()}:
+                continue
+
+            # Reconstruct task dict with desired output fields if filter satisfied
+            filtered_task = {'name': name, 'id': task_id, 'file': file_url, 'hashes': hashes}
+            for field in task:
+                if field in desired_fields:
+                    filtered_task[field] = task.get(field)
+            filtered_tasks.append(filtered_task)
+
+        return filtered_tasks
+
+
+    def http_request(method, url_suffix, params=None, data=None, files=None):
+        """
+        A wrapper for requests lib to send our requests and handle requests
+        and responses better
+
+        Parameters
+        ----------
+        method : str
+            HTTP method, e.g. 'GET', 'POST' ... etc.
+        url_suffix : str
+            API endpoint.
+        params : dict
+            URL parameters.
+        data : dict
+            Data to be sent in a 'POST' request.
+        files : dict
+            File data to be sent in a 'POST' request.
+
+        Returns
+        -------
+        dict
+            Response JSON from having made the request.
+        """
+        try:
+            res = requests.request(
+                method,
+                BASE_URL + url_suffix,
+                verify=USE_SSL,
+                params=params,
+                data=data,
+                files=files,
+                headers=HEADERS
+            )
+
+            # Handle error responses gracefully
+            if res.status_code not in {200, 201}:
+                err_msg = 'Error in ANYRUN Integration API call [{}] - {}'.format(res.status_code, res.reason)
+                try:
+                    if res.json().get('error'):
+                        err_msg += '\n{}'.format(res.json().get('message'))
+                    return_error(err_msg)
+                except json.decoder.JSONDecodeError:
+                    return_error(err_msg)
+
+            return res.json()
+
+        except requests.exceptions.ConnectionError:
+            err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
+            return_error(err_msg)
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        """Performs get_history API call to verify integration is operational
+
+        Returns
+        -------
+        str
+            'ok' message.
+        """
+
+        get_history(args={'limit': 1})
+        demisto.results('ok')
+
+
+    def get_history(args={}):
+        """Make API call to ANYRUN to get analysis history
+
+        Parameters
+        ----------
+        args : dict
+            URL parameters that determine which, and how many results are
+            returned in the response.
+
+        Returns
+        -------
+        dict
+            Response JSON from ANYRUN API call.
+        """
+
+        url_suffix = 'analysis/'
+        params = args
+        response = http_request('GET', url_suffix=url_suffix, params=params)
+        return response
+
+
+    def get_history_command():
+        """Return ANYRUN task analysis history to Demisto"""
+
+        args = demisto.args()
+        filter = args.pop('filter', None)
+        response = get_history(args)
+        contents = contents_from_history(filter, response)
+
+        formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
+        formatted_contents = travel_object(contents, key_functions=formatting_funcs)
+        if contents:
+            entry_context: Optional[dict] = {
+                'ANYRUN.Task(val.ID && val.ID === obj.ID)': formatted_contents
+            }
+            title = 'Task History - Filtered By "{}"'.format(filter) if filter else 'Task History'
+            # Make Related Clickable
+            for task in formatted_contents:
+                related = task.get('Related', '')
+                task['Related'] = '[{}]({})'.format(related, related)
+            human_readable = tableToMarkdown(title, formatted_contents, removeNull=True)
+        else:
+            human_readable = 'No results found.'
+            entry_context = None
+
+        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
+
+
+    def get_report(task_id):
+        """Make API call to ANYRUN to get task report
+
+        Parameters
+        ----------
+        task_id : str
+            The unique task ID of the analysis whose report to fetch.
+
+        Returns
+        -------
+        dict
+            Response JSON from ANYRUN API call.
+        """
+
+        url_suffix = 'analysis/' + task_id
+        response = http_request('GET', url_suffix=url_suffix)
+        return response
+
+
+    def get_report_command():
+        """Return ANYRUN analysis report to Demisto"""
+        args = demisto.args()
+        task_id = args.get('task')
+        response = get_report(task_id)
+
+        images = images_from_report(response)
+        contents = contents_from_report(response)
+        formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
+        formatted_contents = travel_object(contents, key_functions=formatting_funcs)
+
+        dbot_score = generate_dbotscore(response)
+        entity = ec_entity(response)
+
+        entry_context = {
+            'ANYRUN.Task(val.ID && val.ID === obj.ID)': {
+                'ID': task_id,
+                **formatted_contents
+            },
+            **dbot_score,
+            **entity
+        }
+
+        title = 'Report for Task {}'.format(task_id)
+        human_readable_content = humanreadable_from_report_contents(formatted_contents)
+        human_readable = tableToMarkdown(title, human_readable_content, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
+        if images:
+            demisto.results(images)
+
+
+    def run_analysis(args):
+        """Make API call to ANYRUN to submit file or url for analysis
+
+        Parameters
+        ----------
+        args : dict
+            The analysis specifications and data.
+
+        Returns
+        -------
+        dict
+            Response JSON from ANYRUN API call.
+        """
+
+        try:
+            entry_id = args.pop('file', None)
+            obj_url = args.get('obj_url')
+            obj_type = args.get('obj_type')
+            if obj_type == 'remote file':
+                obj_type = 'download'
+                args['obj_type'] = 'download'
+            # In the case only a url was entered but the object type arg wasn't changed
+            if not entry_id and obj_url and obj_type == 'file':
+                args['obj_type'] = obj_type = 'url'
+            files = None
+            if obj_type == 'file':
+                cmd_res = demisto.getFilePath(entry_id)
+                file_path = cmd_res.get('path')
+                name = cmd_res.get('name')
+                files = {
+                    'file': (name, open(file_path, 'rb'))
+                }
+
+            # Format command arguments to API's parameter expectations
+            env_bitness = int(args.get('env_bitness', 32))
+            args['env_bitness'] = env_bitness
+            env_version = args.get('env_version').lower()
+            if env_version == 'windows vista':
+                args['env_version'] = 'vista'
+            elif env_version == 'windows 8.1':
+                args['env_version'] = '8.1'
+            elif env_version == 'windows 10':
+                args['env_version'] = '10'
+            else:
+                args['env_version'] = '7'
+            url_suffix = 'analysis'
+            response = http_request('POST', url_suffix, data=args, files=files)
+            return response
+        except ValueError:
+            err_msg = 'Invalid entryID - File not found for the given entryID'
+            return_error(err_msg)
+
+
+    def run_analysis_command():
+        """Submit file or URL to ANYRUN for analysis and return task ID to Demisto"""
+
+        args = demisto.args()
+        response = run_analysis(args)
+        task_id = response.get('data', {}).get('taskid')
+        title = 'Submission Successful'
+        human_readable = tableToMarkdown(title, {'Task': task_id}, removeNull=True)
+        entry_context = {'ANYRUN.Task(val.ID && val.ID === obj.ID)': {'ID': task_id}}
+        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    COMMANDS = {
+        'test-module': test_module,
+        'anyrun-get-history': get_history_command,
+        'anyrun-get-report': get_report_command,
+        'anyrun-run-analysis': run_analysis_command
+    }
+
+    ''' EXECUTION '''
+
+
+    def main():
+        """Main Execution block"""
+
+        try:
+            cmd_name = demisto.command()
+            LOG('Command being called is {}'.format(cmd_name))
+
+            if cmd_name in COMMANDS.keys():
+                COMMANDS[cmd_name]()
+
+        except Exception as e:
+            # return_error(str(e))
+            raise e
+
+
+    # python2 uses __builtin__ python3 uses builtins
+    if __name__ == '__builtin__' or __name__ == 'builtins':
+        main()
+  subtype: python3
+  type: python
+system: true

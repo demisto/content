@@ -1,0 +1,61 @@
+args:
+- default: true
+  description: Active Directory Names of the desired users
+  name: name
+- description: Enter any value to allow nested groups check as well
+  name: nestedSearch
+comment: Use Active Directory to get common groups between supplied users.
+commonfields:
+  id: ADGetCommonGroups
+  version: -1
+dependson:
+  must:
+  - ad-search
+deprecated: true
+name: ADGetCommonGroups
+runonce: false
+script: |-
+  COMMON_GROUPS_LABAL = 'CommonGroups'
+  res = []
+  resp_list = []
+
+  name_list = argToList(demisto.args()['name']) if demisto.get(demisto.args(), 'name') else ""
+  dArgs = demisto.args()
+  for name in name_list:
+      dArgs.update({'name':name})
+      resp = demisto.executeCommand('ADGetUserGroups', dArgs)
+      if isError(resp[0]):
+          res += [{ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error returned from ADGetUserGroups for {0}:\n'.format(name) + resp[0]['Contents'] }]
+      else:
+          resp_list += resp
+
+  common_groups = set()
+
+  for resp in resp_list:
+
+      user_groups = [row['name'] for row in resp['Contents']]
+      if common_groups:
+          common_groups = common_groups.intersection(user_groups)
+      else:
+          common_groups = set(user_groups)
+
+  if common_groups:
+      markdownString = '### The users common groups are:\n'
+      markdownString += "".join(['* ' + s + '\n' for s in common_groups])
+      res.append ({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdownString})
+
+      group_names = ','.join([str(s) for s in common_groups])
+      demisto.setContext(COMMON_GROUPS_LABAL, group_names)
+
+      answer = 'yes'
+  else:
+      demisto.log("\nThere are no common groups among the users\n")
+      answer = 'no'
+
+  res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : answer } )
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- active directory
+type: python

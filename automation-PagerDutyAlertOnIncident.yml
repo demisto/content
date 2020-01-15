@@ -1,0 +1,25 @@
+args:
+- description: The email address of the user alerting about the incident
+  name: author
+  required: true
+comment: Send incident details to pagerduty (useful to include in playbooks)
+commonfields:
+  id: PagerDutyAlertOnIncident
+  version: -1
+dependson:
+  must:
+  - PagerDuty-submit-event
+enabled: true
+name: PagerDutyAlertOnIncident
+runonce: false
+script: |-
+  if (incidents[0].severity == 4) {
+      return executeCommand('PagerDuty-submit-event', {description: incidents[0].details, source: args.author, summary: incidents[0].name, action: 'trigger', severity: 'critical'});
+  }
+  return 'Incident severity not high enough to wake up user' ;
+scripttarget: 0
+system: true
+tags:
+- pagerduty
+- communication
+type: javascript

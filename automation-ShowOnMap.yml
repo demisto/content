@@ -1,0 +1,43 @@
+args:
+- default: true
+  description: Latitude (e.g. 32.064622)
+  name: lat
+  required: true
+- description: Longitude (e.g. 34.774131)
+  name: lng
+  required: true
+comment: Returns a map entry with marker on the given coordinate (lat, lng).
+commonfields:
+  id: ShowOnMap
+  version: -1
+enabled: true
+name: ShowOnMap
+runonce: false
+script: |
+  var lat = parseFloat(args.lat);
+  var lng = parseFloat(args.lng);
+
+  if(isNaN(lat) || isNaN(lng)) {
+      return {
+          ContentsFormat: formats.text,
+          Type: entryTypes.error,
+          Contents: 'Invalid coordinates'
+      };
+  }
+
+  var locationObj = {
+      lat: lat,
+      lng: lng
+  };
+
+  return {
+      // type
+      Type: entryTypes.map,
+       // contents
+      ContentsFormat: formats.json, Contents: locationObj
+  };
+scripttarget: 0
+system: true
+tags:
+- Utility
+type: javascript

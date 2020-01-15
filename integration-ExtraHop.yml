@@ -1,0 +1,1086 @@
+category: Network Security
+commonfields:
+  id: ExtraHop
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: API Key for instance
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: URL for the instance
+  name: url
+  required: true
+  type: 0
+- defaultvalue: "false"
+  display: Trust any certificate (Not Secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Use System Proxy
+  name: proxy
+  required: false
+  type: 8
+description: ExtraHop performs real-time stream analysis of the packets that carry
+  data across a network.
+detaileddescription: |
+  ExtraHop performs real-time stream analysis of the packets that carry data across a network.
+display: ExtraHop
+image: data:image/png;base64,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
+name: ExtraHop
+script:
+  commands:
+  - arguments: []
+    description: Get alerts from ExtraHop
+    name: extrahop-get-alert-rules
+    outputs:
+    - contextPath: Extrahop.Alert.Operator
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions.
+      type: String
+    - contextPath: Extrahop.Alert.FieldName
+      description: The name of the monitored metric.
+      type: String
+    - contextPath: Extrahop.Alert.NotifySnmp
+      description: 'Indicates whether to send an SNMP trap when an alert is generated. '
+      type: Boolean
+    - contextPath: Extrahop.Alert.Operand
+      description: The value to compare against alert conditions.
+      type: String
+    - contextPath: Extrahop.Alert.IntervalLength
+      description: The length of the alert interval, expressed in seconds.
+      type: Number
+    - contextPath: Extrahop.Alert.Author
+      description: 'The name of the user that created the alert. '
+      type: String
+    - contextPath: Extrahop.Alert.Name
+      description: The unique, friendly name for the alert.
+      type: String
+    - contextPath: Extrahop.Alert.FieldName2
+      description: The second monitored metric when applying a ratio.
+      type: String
+    - contextPath: Extrahop.Alert.RefireInterval
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
+      type: Number
+    - contextPath: Extrahop.Alert.ModTime
+      description: 'The time of the most recent update, expressed in milliseconds
+        since the epoch. '
+      type: Number
+    - contextPath: Extrahop.Alert.Units
+      description: The interval in which to evaluate the alert condition.
+      type: String
+    - contextPath: Extrahop.Alert.ApplyAll
+      description: Indicates whether the alert is assigned to all available data sources.
+      type: Boolean
+    - contextPath: Extrahop.Alert.Type
+      description: The type of alert.
+      type: String
+    - contextPath: Extrahop.Alert.FieldOp
+      description: The type of comparison between the "field_name" and "field_name2"
+        fields when applying a ratio.
+      type: String
+    - contextPath: Extrahop.Alert.Id
+      description: The unique identifier for the alert.
+      type: Number
+    - contextPath: Extrahop.Alert.Disabled
+      description: Indicates whether the alert is disabled.
+      type: Boolean
+    - contextPath: Extrahop.Alert.Description
+      description: An optional description for the alert.
+      type: String
+    - contextPath: Extrahop.Alert.Severity
+      description: The severity level of the alert.
+      type: Number
+    - contextPath: Extrahop.Alert.StatName
+      description: The statistic name for the alert.
+      type: String
+  - arguments:
+    - description: The name of the field in the record to filter.
+      name: field
+    - description: The value that the query attempts to match.
+      name: value
+    - description: The compare method applied when matching the operand value against
+        the field contents.
+      name: operator
+      required: true
+    - description: The beginning timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A negative value specifies that
+        the search will begin with records created at a time in the past. For example,
+        specify -600000ms to begin the search with records created 10 minutes before
+        the time of the request.
+      name: query_from
+      required: true
+    - defaultValue: "20"
+      description: The maximum number of entries to return.
+      name: limit
+    description: Queries records from ExtraHop.
+    name: extrahop-query
+    outputs:
+    - contextPath: ExtraHop.Query.Id
+      description: The ID of the queried item.
+      type: String
+    - contextPath: ExtraHop.Query.Index
+      description: The index of the queried item.
+      type: String
+    - contextPath: ExtraHop.Query.Sort
+      description: The sort type for the queried item.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.roundTripTime
+      description: The roundtrip time of the item.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.processingTime
+      description: The processing time of the item.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.method
+      description: The method of the item.
+      type: String
+    - contextPath: ExtraHop.Query.Source.serverZeroWnd
+      description: The Server Zero Wnd.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.server.type
+      description: The type of item found.
+      type: String
+    - contextPath: ExtraHop.Query.Source.server.value
+      description: The ID of server found.
+      type: String
+    - contextPath: ExtraHop.Query.Source.serverPort
+      description: The port of item.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.reqTimeToLastByte
+      description: The time to Last Byte.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.isSQLi
+      description: Whether it is SQLi.
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.isRspCompressed
+      description: Whether the response is compressed.
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.rspTimeToFirstHeader
+      description: The response time of the first header.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.reqL2Bytes
+      description: Request L2 Bytes.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.isRspChunked
+      description: Whether the response is chunked.
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.query
+      description: The query of the item.
+      type: String
+    - contextPath: ExtraHop.Query.Source.host
+      description: The host of item.
+      type: String
+    - contextPath: ExtraHop.Query.Source.rspPkts
+      description: The number of response packets found.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.flowId
+      description: The flow ID.
+      type: String
+    - contextPath: ExtraHop.Query.Source.rspVersion
+      description: The response version.
+      type: String
+    - contextPath: ExtraHop.Query.Source.isRspAborted
+      description: Whether the response was aborted.
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.client.type
+      description: The type of client.
+      type: String
+    - contextPath: ExtraHop.Query.Source.client.value
+      description: The ID of client.
+      type: String
+    - contextPath: ExtraHop.Query.Source.uri
+      description: The URI of the item.
+      type: String
+    - contextPath: ExtraHop.Query.Source.clientPort
+      description: The client port.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.reqBytes
+      description: The request size (in bytes).
+      type: Number
+    - contextPath: ExtraHop.Query.Source.isXSS
+      description: Whether it is XSS.
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.reqRTO
+      description: The request RTO.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.rspSize
+      description: The response size.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.ex.isSuspicious
+      description: Whether it is suspicious?
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.contentType
+      description: The content type.
+      type: String
+    - contextPath: ExtraHop.Query.Source.serverAddr.type
+      description: The server address type.
+      type: String
+    - contextPath: ExtraHop.Query.Source.serverAddr.value
+      description: The server address value.
+      type: String
+    - contextPath: ExtraHop.Query.Source.rspTimeToLastByte
+      description: The response time to last byte.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.rspTimeToFirstPayload
+      description: The response time to first payload.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.timestamp
+      description: The timestamp of the item.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.rspL2Bytes
+      description: The Response L2 Bytes.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.reqPkts
+      description: The request packets.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.isPipelined
+      description: Whether it is pipelined?
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.clientZeroWnd
+      description: Client Zero Wnd
+      type: Number
+    - contextPath: ExtraHop.Query.Source.isReqAborted
+      description: Whether the request was aborted.
+      type: Boolean
+    - contextPath: ExtraHop.Query.Source.clientAddr.type
+      description: The client address type.
+      type: String
+    - contextPath: ExtraHop.Query.Source.clientAddr.value
+      description: The client address value.
+      type: String
+    - contextPath: ExtraHop.Query.Source.rspBytes
+      description: The response bytes.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.rspRTO
+      description: The response RTO.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.statusCode
+      description: The status code.
+      type: Number
+    - contextPath: ExtraHop.Query.Source.reqSize
+      description: The request size.
+      type: Number
+    - contextPath: ExtraHop.Query.Type
+      description: The type of query.
+      type: String
+  - arguments:
+    - description: The beginning timestamp for the request. Returns only devices active
+        after this time. Time is expressed in milliseconds since the epoch.
+      name: active_from
+    - description: The ending timestamp for the request.
+      name: active_until
+    - auto: PREDEFINED
+      defaultValue: any
+      description: Indicates the field to search.
+      name: search_type
+      predefined:
+      - any
+      - name
+      - discovery_id
+      - ip address
+      - mac address
+      - vendor
+      - type
+      - tag
+      - activity
+      - node
+      - vlan
+      required: true
+    - defaultValue: "10"
+      description: The maximum number of devices to return.
+      name: limit
+    description: View Devices from ExtraHop
+    name: extrahop-devices
+    outputs:
+    - contextPath: ExtraHop.Device.Macaddr
+      description: The MAC Address of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DeviceClass
+      description: The class of the device.
+      type: String
+    - contextPath: ExtraHop.Device.UserModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Device.AutoRole
+      description: The role given automatically to the device.
+      type: String
+    - contextPath: ExtraHop.Device.ParentId
+      description: The ID of the parent device.
+      type: Number
+    - contextPath: ExtraHop.Device.Vendor
+      description: The device vendor.
+      type: String
+    - contextPath: ExtraHop.Device.AnalysisLevel
+      description: The analysis level of the device.
+      type: Number
+    - contextPath: ExtraHop.Device.DiscoveryId
+      description: The ID given by Discovery appliance.
+      type: String
+    - contextPath: ExtraHop.Device.DefaultName
+      description: The default name of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DisplayName
+      description: The display name of device.
+      type: String
+    - contextPath: ExtraHop.Device.OnWatchlist
+      description: Whether the device is whitelisted.
+      type: Boolean
+    - contextPath: ExtraHop.Device.ModTime
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
+      type: Number
+    - contextPath: ExtraHop.Device.IsL3
+      description: Indicates whether the device is an L3 device.
+      type: Boolean
+    - contextPath: ExtraHop.Device.ExtrahopId
+      description: The ID given by ExtraHop.
+      type: String
+    - contextPath: ExtraHop.Device.Role
+      description: The role of the device.
+      type: String
+    - contextPath: ExtraHop.Device.DiscoverTime
+      description: The time that the device was discovered.
+      type: Number
+    - contextPath: ExtraHop.Device.Id
+      description: The ID of the device.
+      type: Number
+    - contextPath: ExtraHop.Device.Ipaddr4
+      description: The IPv4 address of the device.
+      type: String
+    - contextPath: ExtraHop.Device.Analysis
+      description: The analysis level of the device.
+      type: String
+    - contextPath: ExtraHop.Device.Vlanid
+      description: The ID of VLan.
+      type: Number
+  - arguments:
+    - description: The IDs of the resources to assign.
+      isArray: true
+      name: add
+    - description: The IDs of the resources to unassign.
+      isArray: true
+      name: remove
+    description: Modifies a whitelist from ExtraHop.
+    name: extrahop-whitelist-modify
+  - arguments: []
+    description: Retrieves the whitelist from ExtraHop.
+    name: extrahop-whitelist-retrieve
+    outputs:
+    - contextPath: Extrahop.Device.Macaddr
+      description: 'The MAC address for this device. '
+      type: String
+    - contextPath: Extrahop.Device.DeviceClass
+      description: 'The class of this device. '
+      type: String
+    - contextPath: Extrahop.Device.UserModTime
+      description: 'The time of the most recent update made by the user, expressed
+        in milliseconds since the epoch. '
+      type: Number
+    - contextPath: Extrahop.Device.AutoRole
+      description: 'The role automatically detected by the ExtraHop. '
+      type: String
+    - contextPath: Extrahop.Device.ParentId
+      description: 'The unique identifier for the parent device object. '
+      type: Number
+    - contextPath: Extrahop.Device.Vendor
+      description: The name of the vendor that created the device.
+      type: String
+    - contextPath: Extrahop.Device.AnalysisLevel
+      description: (Deprecated) Replaced by the analysis field.
+      type: Number
+    - contextPath: Extrahop.Device.DiscoveryId
+      description: The unique identifier for the device, which is displayed as part
+        of the device URL in the ExtraHop Web UI.
+      type: String
+    - contextPath: Extrahop.Device.DefaultName
+      description: The default name for this device.
+      type: String
+    - contextPath: Extrahop.Device.DisplayName
+      description: 'The display name chosen based on the running configuration settings. '
+      type: String
+    - contextPath: Extrahop.Device.OnWatchlist
+      description: Indicates whether the device is on the watchlist.
+      type: Boolean
+    - contextPath: Extrahop.Device.ModTime
+      description: 'The time of the most recent update, expressed in milliseconds
+        since the epoch. '
+      type: Number
+    - contextPath: Extrahop.Device.IsL3
+      description: 'Indicates whether the device is an L3 device. '
+      type: Boolean
+    - contextPath: Extrahop.Device.ExtrahopId
+      description: (Deprecated) Use the discover_id field instead.
+      type: String
+    - contextPath: Extrahop.Device.Role
+      description: 'The role of the device. '
+      type: String
+    - contextPath: Extrahop.Device.DiscoverTime
+      description: 'The time when the device was first discovered on the network,
+        expressed in milliseconds since the epoch. '
+      type: Number
+    - contextPath: Extrahop.Device.Id
+      description: The unique identifier for the device, which is displayed as the
+        API ID on the device page in the ExtraHop Web UI .
+      type: Number
+    - contextPath: Extrahop.Device.Ipaddr4
+      description: The IPv4 address for this device.
+      type: String
+    - contextPath: Extrahop.Device.DhcpName
+      description: 'The DHCP name for this device. '
+      type: String
+    - contextPath: Extrahop.Device.Analysis
+      description: 'The analysis level of the device. '
+      type: String
+    - contextPath: Extrahop.Device.Vlanid
+      description: The unique identifier for the VLAN this device is associated with.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      description: Indicates whether the alert is assigned to all available data sources.
+      name: apply_all
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    - auto: PREDEFINED
+      description: Indicates whether the alert is disabled.
+      name: disabled
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    - description: The unique, friendly name for the alert.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: Indicates whether to send an SNMP trap when an alert is generated.
+      name: notify_snmp
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    - auto: PREDEFINED
+      description: 'The time interval in which alert conditions are monitored, expressed
+        in seconds. '
+      name: refire_interval
+      predefined:
+      - "300"
+      - "600"
+      - "900"
+      - "1800"
+      - "3600"
+      - "7200"
+      - "14400"
+      required: true
+    - description: 'The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3,
+        4, 5, 6, 7'
+      name: severity
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of alert. '
+      name: type
+      predefined:
+      - detection
+      - threshold
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts. '
+      name: object_type
+      predefined:
+      - application
+      - device
+    - description: The list of monitored protocols. Only applicable to detection alerts.
+      name: protocols
+    - description: The name of the monitored metric. Only applicable to threshold
+        alerts.
+      name: field_name
+    - description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
+      name: field_name2
+    - description: The statistic name for the alert. Only applicable to threshold
+        alerts.
+      name: stat_name
+    - auto: PREDEFINED
+      description: "The interval in which to evaluate the alert condition. Only applicable
+        to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\",
+        \"1 min\", \"1 hr\""
+      name: units
+      predefined:
+      - none
+      - period
+      - 1 sec
+      - 1 min
+      - 1 hr
+    - auto: PREDEFINED
+      defaultValue: "30"
+      description: "The length of the alert interval, expressed in seconds. Only applicable
+        to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200,
+        1800"
+      name: interval_length
+      predefined:
+      - "30"
+      - "60"
+      - "120"
+      - "300"
+      - "600"
+      - "900"
+      - "1200"
+      - "1800"
+    - description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
+      name: operand
+    - auto: PREDEFINED
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
+      name: operator
+      predefined:
+      - ==
+      - '>'
+      - <
+      - '>='
+      - <=
+    - auto: PREDEFINED
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
+      name: field_op
+      predefined:
+      - /
+      - "null"
+    - description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
+      name: param
+    - description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
+      name: param2
+    description: Adds an alert to ExtraHop.
+    name: extrahop-add-alert-rule
+  - arguments:
+    - description: The unique identifier for the alert.
+      name: alert_id
+      required: true
+    - auto: PREDEFINED
+      description: Indicates whether the alert is assigned to all available data sources.
+      name: apply_all
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    - auto: PREDEFINED
+      description: Indicates whether the alert is disabled.
+      name: disabled
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    - description: The unique, friendly name for the alert.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: Indicates whether to send an SNMP trap when an alert is generated.
+      name: notify_snmp
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    - description: The name of the monitored metric. Only applicable to threshold
+        alerts.
+      name: field_name
+    - description: The statistic name for the alert. Only applicable to threshold
+        alerts.
+      name: stat_name
+    - auto: PREDEFINED
+      description: The interval in which to evaluate the alert condition. Only applicable
+        to threshold alerts.
+      name: units
+      predefined:
+      - none
+      - period
+      - 1 sec
+      - 1 min
+      - 1 hr
+    - auto: PREDEFINED
+      description: The length of the alert interval, expressed in seconds. Only applicable
+        to threshold alerts.
+      name: interval_length
+      predefined:
+      - "30"
+      - "60"
+      - "120"
+      - "300"
+      - "600"
+      - "900"
+      - "1200"
+      - "1800"
+    - description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
+      name: operand
+    - auto: PREDEFINED
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
+      name: refire_interval
+      predefined:
+      - "300"
+      - "600"
+      - "900"
+      - "1800"
+      - "3600"
+      - "7200"
+      - "14400"
+      required: true
+    - auto: PREDEFINED
+      description: The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps.
+      name: severity
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      required: true
+    - auto: PREDEFINED
+      description: The type of alert.
+      name: type
+      predefined:
+      - detection
+      - threshold
+      required: true
+    - auto: PREDEFINED
+      description: The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts.
+      name: object_type
+      predefined:
+      - application
+      - device
+    - description: The list of monitored protocols. Only applicable to detection alerts.
+      name: protocols
+    - auto: PREDEFINED
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
+      name: operator
+      predefined:
+      - ==
+      - '>'
+      - <
+      - '>='
+      - <=
+    - description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
+      name: field_name2
+    - auto: PREDEFINED
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
+      name: field_op
+      predefined:
+      - /
+      - "null"
+    - description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
+      name: param
+    - description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
+      name: param2
+    description: Modifies an alert in ExtraHop.
+    name: extrahop-modify-alert-rule
+  dockerimage: demisto/python3:3.7.2.200
+  runonce: false
+  script: |2-
+
+
+
+
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    from distutils.util import strtobool
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    APIKEY = demisto.params().get('apikey')
+    SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
+        demisto.params()['url']
+    USE_SSL = not demisto.params().get('insecure', False)
+    BASE_URL = SERVER + '/api/v1/'
+    HEADERS = {
+        'Accept': 'application/json',
+        'Authorization': 'ExtraHop apikey={key}'.format(key=APIKEY)
+    }
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    # 'response' is a container for paginated results
+    response = []
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_request(method, url_suffix, data=None, payload=None):
+        data = json.dumps(data)
+        try:
+            res = requests.request(
+                method,
+                BASE_URL + url_suffix,
+                verify=USE_SSL,
+                data=data,
+                headers=HEADERS,
+                params=payload
+            )
+        except requests.exceptions.RequestException:  # This is the correct syntax
+            return_error('Failed to connect to - {url} - Please check the URL'.format(url=BASE_URL))
+        # Handle error responses gracefully
+        if res.status_code == 204:
+            return demisto.results('Successful Modification')
+        elif res.status_code not in {200, 204, 201}:
+            return_error('Error in API call to ExtraHop {code} - {reason}'.format(code=res.status_code, reason=res.reason))
+        return res
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        """
+        Performs basic get request to check ExtraHop version
+        """
+        test_result = http_request('GET', 'extrahop')
+        return test_result
+
+
+    def get_alerts():
+        res_raw = http_request('GET', 'alerts')
+        res = res_raw.json()
+        return res
+
+
+    def paginate(can_paginate, cursor):
+        while can_paginate is True:
+            body = {
+                "cursor": cursor,
+                "context_ttl": 400000
+            }
+            res_raw = http_request('POST', 'records/cursor', body)
+            res = res_raw.json()
+            response.append(res)
+            if 'cursor' in res:
+                paginate(True, res['cursor'])
+            else:
+                break
+            return response
+
+
+    def query_records(field, value, operator, query_from, limit):
+        data = {
+            "filter": {
+                "field": str(field),
+                "operand": str(value),
+                "operator": str(operator)
+            },
+            "from": int(query_from),
+            "limit": int(limit)
+        }
+        res_raw = http_request('POST', 'records/search', data)
+        res = res_raw.json()
+        response.append(res)
+        if 'cursor' in res:
+            response.append(paginate(True, res['cursor']))
+        return response
+
+
+    def devices():
+        active_from = demisto.args().get('active_from')
+        active_until = demisto.args().get('active_until')
+        search_type = demisto.args().get('search_type')
+        limit = demisto.args().get('limit')
+        payload = {}
+        if active_from:
+            payload['active_from'] = active_from
+        if active_until:
+            payload['active_until'] = active_until
+        if limit:
+            payload['limit'] = limit
+        payload['search_type'] = search_type
+        res_raw = http_request('GET', 'devices', data=None, payload=payload)
+        res = res_raw.json()
+        return res
+
+
+    def format_alerts(alerts):
+        hr = ''
+        ec = {
+            "ExtraHop": {
+                "Alert": []
+            }
+        }  # type: dict
+        for alert in alerts:
+            hr += tableToMarkdown('Found Alert', alert, headerTransform=string_to_table_header, removeNull=True)
+            ec['ExtraHop']['Alert'].append(createContext(alert, keyTransform=string_to_context_key, removeNull=True))
+        if len(alerts) == 0:
+            demisto.results('No results were found')
+        else:
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['markdown'],
+                'Contents': alerts,
+                'HumanReadable': hr,
+                'EntryContext': ec
+            })
+
+
+    def format_device_results(data):
+        hr_table = []
+        ec = {
+            "ExtraHop": {
+                "Device": []
+            }
+        }  # type: dict
+        for device in data:
+            hr = {}
+            if 'id' in device:
+                hr['ID'] = device.get('id')
+            if 'display_name' in device:
+                hr['Display Name'] = device.get('display_name')
+            if 'ipaddr4' in device:
+                hr['IP Address'] = device.get('ipaddr4')
+            if 'macaddr' in device:
+                hr['MAC Address'] = device.get('macaddr')
+            if 'vendor' in device:
+                hr['Vendor'] = device.get('vendor')
+            hr_table.append(hr)
+            ec['ExtraHop']['Device'].append(createContext(device, keyTransform=string_to_context_key, removeNull=True))
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': data,
+            'HumanReadable': tableToMarkdown('Devices Found', hr_table),
+            'EntryContext': ec
+        })
+
+
+    def whitelist_modify(add, remove):
+        assignments = {}
+        if add:
+            add_items = add.split(',')
+            add_items = list(map(int, add_items))
+            assignments['assign'] = add_items
+        if remove:
+            remove_items = remove.split(',')
+            remove_items = list(map(int, remove_items))
+            assignments['unassign'] = remove_items
+        res = http_request('POST', 'whitelist/devices', data=assignments)
+        return res
+
+
+    def whitelist_retrieve():
+        res_raw = http_request('GET', 'whitelist/devices')
+        res = res_raw.json()
+        return res
+
+
+    def add_alert(apply_all, disabled, name, notify_snmp, refire_interval, severity, alert_type, object_type,
+                  protocols, field_name, stat_name, units, interval_length, operand, operator, field_name2, field_op,
+                  param, param2, alert_id=None):
+        data = {
+            "apply_all": apply_all,
+            "disabled": disabled,
+            "name": name,
+            "notify_snmp": notify_snmp,
+            "refire_interval": int(refire_interval),
+            "severity": int(severity),
+            "type": alert_type
+        }
+        if alert_type == 'detection':
+            data['object_type'] = object_type
+            data['protocols'] = [str(protocols)]
+        elif alert_type == 'threshold':
+            data['field_name'] = field_name
+            data['stat_name'] = stat_name
+            data['units'] = units
+            data['interval_length'] = int(interval_length)
+            data['operand'] = operand
+            data['operator'] = operator
+            if demisto.args().get('field_name2'):
+                data['field_name2'] = field_name2
+            if demisto.args().get('field_op'):
+                data['field_op'] = field_op
+            if demisto.args().get('param'):
+                data['param'] = param
+            if demisto.args().get('param2'):
+                data['param2'] = param2
+        if alert_id:
+            method = 'PATCH'
+            url_suffix = 'alerts/{alert_id}'.format(alert_id=alert_id)
+        else:
+            method = 'POST'
+            url_suffix = 'alerts'
+        data = json.dumps(data)
+        try:
+            res = requests.request(
+                method,
+                BASE_URL + url_suffix,
+                verify=USE_SSL,
+                data=data,
+                headers=HEADERS
+            )
+        except requests.exceptions.RequestException:  # This is the correct syntax
+            return_error('Failed to connect to - {url} - Please check the URL'.format(url=BASE_URL))
+        # Handle error responses gracefully
+        if res.status_code == 204:
+            return demisto.results('Successful Modification')
+        if res.status_code == 400:
+            resp = res.json()
+            return_error('Error in request format - {message}'.format(message=resp['error_message']))
+        if res.status_code == 201:
+            return demisto.results('Alert successfully added')
+        elif res.status_code not in {200, 204, 201}:
+            return_error('Error in API call to ExtraHop {code} - {reason}'.format(code=res.status_code, reason=res.reason))
+        return res
+
+
+    def add_alert_command():
+        apply_all = bool(strtobool(demisto.args().get('apply_all', False)))
+        disabled = bool(strtobool(demisto.args().get('disabled', False)))
+        name = demisto.args().get('name')
+        notify_snmp = bool(strtobool(demisto.args().get('notify_snmp', False)))
+        field_name = demisto.args().get('field_name')
+        stat_name = demisto.args().get('stat_name')
+        units = demisto.args().get('units')
+        interval_length = demisto.args().get('interval_length')
+        operand = demisto.args().get('operand')
+        refire_interval = demisto.args().get('refire_interval')
+        severity = demisto.args().get('severity')
+        alert_type = demisto.args().get('type')
+        object_type = demisto.args().get('object_type')
+        protocols = demisto.args().get('protocols')
+        operator = demisto.args().get('operator')
+        field_name2 = demisto.args().get('field_name2')
+        field_op = demisto.args().get('field_op')
+        param = demisto.args().get('param')
+        param2 = demisto.args().get('param2')
+        add_alert(apply_all, disabled, name, notify_snmp, refire_interval, severity, alert_type, object_type,
+                  protocols, field_name, stat_name, units, interval_length, operand, operator, field_name2, field_op,
+                  param, param2)
+
+
+    def modify_alert_command():
+        alert_id = demisto.args().get('alert_id')
+        apply_all = bool(strtobool(demisto.args().get('apply_all', False)))
+        disabled = bool(strtobool(demisto.args().get('disabled', False)))
+        name = demisto.args().get('name')
+        notify_snmp = bool(strtobool(demisto.args().get('notify_snmp', False)))
+        field_name = demisto.args().get('field_name')
+        stat_name = demisto.args().get('stat_name')
+        units = demisto.args().get('units')
+        interval_length = demisto.args().get('interval_length')
+        operand = demisto.args().get('operand')
+        refire_interval = demisto.args().get('refire_interval')
+        severity = demisto.args().get('severity')
+        alert_type = demisto.args().get('type')
+        object_type = demisto.args().get('object_type')
+        protocols = demisto.args().get('protocols')
+        operator = demisto.args().get('operator')
+        field_name2 = demisto.args().get('field_name2')
+        field_op = demisto.args().get('field_op')
+        param = demisto.args().get('param')
+        param2 = demisto.args().get('param2')
+        add_alert(apply_all, disabled, name, notify_snmp, refire_interval, severity, alert_type, object_type,
+                  protocols, field_name, stat_name, units, interval_length, operand, operator, field_name2, field_op,
+                  param, param2, alert_id)
+
+
+    def get_alerts_command():
+        res = get_alerts()
+        format_alerts(res)
+
+
+    def whitelist_modify_command():
+        add = demisto.args().get('add')
+        remove = demisto.args().get('remove')
+        whitelist_modify(add, remove)
+
+
+    def query_records_command():
+        field = demisto.args().get('field')
+        value = demisto.args().get('value')
+        operator = demisto.args().get('operator')
+        query_from = demisto.args().get('query_from')
+        limit = demisto.args().get('limit')
+        res = query_records(field, value, operator, query_from, limit)
+        source = res[0]['records']
+        hr = ''
+        ec = {
+            "ExtraHop": {
+                "Query": []
+            }
+        }  # type: dict
+        for record in source:
+            hr += tableToMarkdown('Incident result for ID {id}'.format(id=record['_id']), record['_source'])
+            ec['ExtraHop']['Query'].append(createContext(record, keyTransform=string_to_context_key, removeNull=True))
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': source,
+            'HumanReadable': hr,
+            'EntryContext': createContext(ec, removeNull=True)
+        })
+
+
+    def whitelist_retrieve_command():
+        res = whitelist_retrieve()
+        if len(res) == 0:
+            demisto.results('No devices found in whitelist')
+        elif len(res) > 0:
+            format_device_results(res)
+
+
+    def devices_command():
+        found_devices = devices()
+        format_device_results(found_devices)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+    LOG('Command being called is {command}'.format(command=demisto.command()))
+    try:
+        if demisto.command() == 'test-module':
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() == 'extrahop-get-alert-rules':
+            get_alerts_command()
+        elif demisto.command() == 'extrahop-query':
+            query_records_command()
+        elif demisto.command() == 'extrahop-devices':
+            devices_command()
+        elif demisto.command() == 'extrahop-whitelist-modify':
+            whitelist_modify_command()
+        elif demisto.command() == 'extrahop-whitelist-retrieve':
+            whitelist_retrieve_command()
+        elif demisto.command() == 'extrahop-add-alert-rule':
+            add_alert_command()
+        elif demisto.command() == 'extrahop-modify-alert-rule':
+            modify_alert_command()
+
+    # Log exceptions
+    except Exception as e:
+        LOG(str(e))
+        LOG.print_log()
+        raise
+  subtype: python3
+  type: python
+system: true

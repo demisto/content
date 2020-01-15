@@ -1,0 +1,950 @@
+description: |-
+  Deprecated: We recommend using Phishing investigation - Generic playbook instead.
+  This is an automated playbook to investigate suspected Phishing attempts.
+  It picks up the required information from the incident metadata as created by the mail listener.
+  Labels:
+  - Email/from: Email address of the user targeted by the suspected phishing attempt, who reported the email by forwarding it
+  - Email: the to recipients
+  - Email/cc: the cc recipients
+  - Email/format: the format of the email - text / html / etc.
+  - Email/html: the html body
+  - Email/text: the text body
+  - Email/subject: subject of the email
+  - Email/attachments: list of attachments
+  - Email/headers: the headers for the email
+id: playbook5
+inputs:
+- description: The domains for the company to try and match closeness of sender. Comma
+    separated.
+  key: CompanyDomains
+  required: false
+  value:
+    simple: company.com
+name: Phishing Playbook - Automated
+outputs: []
+starttaskid: "0"
+system: true
+tags:
+- Phishing
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: ea4fb28a-8a76-4708-80c2-28f936d8bf94
+      iscommand: false
+      name: start_task
+      type: start
+      version: -1
+    taskid: ea4fb28a-8a76-4708-80c2-28f936d8bf94
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "94"
+      - "99"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: ea731eb3-f592-42f3-892a-6a7d48c42e4d
+      iscommand: false
+      name: Triage and Engage
+      type: title
+      version: -1
+    taskid: ea731eb3-f592-42f3-892a-6a7d48c42e4d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: "Hi ${Account=val.DisplayName || val.Email.Address},\nWe've received
+          your email and are investigating.\nPlease do not touch the email until further
+          notice.\n\nCordially, \n  Your friendly neighborhood security team"
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      subject:
+        simple: 'Re: Phishing Investigation - ${incident.name}'
+      to:
+        simple: ${incident.labels.Email/from}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Send an auto-response to the target telling them we are on it
+      id: 2e0a1bd6-0e9a-4906-843c-e4652ed671f2
+      iscommand: false
+      name: Auto-respond to acknowledge receipt
+      scriptName: SendEmail
+      type: regular
+      version: -1
+    taskid: 2e0a1bd6-0e9a-4906-843c-e4652ed671f2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    scriptarguments:
+      text:
+        simple: ${Email}
+    separatecontext: false
+    task:
+      brand: ""
+      id: b2b1f385-7cff-427a-8882-2c18875c9a2e
+      iscommand: false
+      name: Extract IP Addresses from email
+      scriptName: ExtractIP
+      type: regular
+      version: -1
+    taskid: b2b1f385-7cff-427a-8882-2c18875c9a2e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 690
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "72"
+    note: false
+    scriptarguments:
+      text:
+        simple: ${Email}
+    separatecontext: false
+    task:
+      brand: ""
+      id: a846334e-5ccc-4d95-8244-d57ec36d6e2f
+      iscommand: false
+      name: Extract URLs from email
+      scriptName: ExtractURL
+      type: regular
+      version: -1
+    taskid: a846334e-5ccc-4d95-8244-d57ec36d6e2f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 865
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "42"
+    note: false
+    scriptarguments:
+      data:
+        simple: ${urls}
+    separatecontext: false
+    task:
+      brand: ""
+      id: c752c128-ee8f-4f94-877a-39bdb10a7d40
+      iscommand: false
+      name: Is the attachment malicious according to Sandbox report?
+      type: condition
+      version: -1
+    taskid: c752c128-ee8f-4f94-877a-39bdb10a7d40
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1710
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 4440a41f-7d53-4a52-86bb-85b49b6722b4
+      iscommand: false
+      name: 'Manual Investigation Step 1: Initial Inspection'
+      type: title
+      version: -1
+    taskid: 4440a41f-7d53-4a52-86bb-85b49b6722b4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1885
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "89"
+    note: false
+    results:
+    - LevenshteinDistance
+    scriptarguments:
+      distance: {}
+      domain:
+        simple: ${inputs.CompanyDomains}
+      sender:
+        simple: ${incident.labels.Email/from}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if the sender is trying to confuse the user with a domain
+        that is very close to one of our own email domains
+      id: 7f2d8700-472f-4cfa-87e4-97681e5309fa
+      iscommand: false
+      name: Check sender domain distance
+      scriptName: CheckSenderDomainDistance
+      type: regular
+      version: -1
+    taskid: 7f2d8700-472f-4cfa-87e4-97681e5309fa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 2030
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Since automatic triage did not find anything wrong, please inspect
+        it manually and see if something stands out
+      id: 5778ac35-8936-4170-8cf6-8cc09c98a300
+      iscommand: false
+      name: Manually inspect the email for anything suspicious
+      type: regular
+      version: -1
+    taskid: 5778ac35-8936-4170-8cf6-8cc09c98a300
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 2380
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 'Invite the relevant users for investigation - malware expert and
+        network experts if needed. '
+      id: 5445acdd-df36-403e-8635-a0cbc3bd3f04
+      iscommand: false
+      name: Assign and involve appropriate personnel
+      type: regular
+      version: -1
+    taskid: 5445acdd-df36-403e-8635-a0cbc3bd3f04
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 2555
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 'Based on the end user affected, and other information assess and
+        change the severity if needed. '
+      id: e76cfd73-35f3-4065-8e59-c37e365cd06c
+      iscommand: false
+      name: Assess severity
+      type: regular
+      version: -1
+    taskid: e76cfd73-35f3-4065-8e59-c37e365cd06c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 2730
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 3e30e515-bb4e-4b65-8d8c-a21a1e380126
+      iscommand: false
+      name: 'Manual Investigation Step 2: Deeper Inspection'
+      type: title
+      version: -1
+    taskid: 3e30e515-bb4e-4b65-8d8c-a21a1e380126
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 2905
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "42"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        See if the URL text versus the hostname shown are different by hovering
+         over the link. Also carefully inspected the URL for spelling spoofing which
+         is typically a sign of phishing email.
+      id: cceb5cd4-a661-434d-87d8-24b9988877c4
+      iscommand: false
+      name: Check if the hostname in urls is being misrepresented?
+      type: condition
+      version: -1
+    taskid: cceb5cd4-a661-434d-87d8-24b9988877c4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 3050
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "46"
+    note: false
+    scriptarguments:
+      key:
+        simple: responseRequired
+      value:
+        simple: "yes"
+    separatecontext: false
+    task:
+      brand: ""
+      id: 103b416e-75c9-4628-8b32-0dbab7b0f7a8
+      iscommand: false
+      name: Response
+      type: title
+      version: -1
+    taskid: 103b416e-75c9-4628-8b32-0dbab7b0f7a8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 3240
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    scriptarguments:
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hi ${Account=val.DisplayName || val.Email.Address},
+          We've concluded that the email you forwarded to us is safe.
+          Thank you for your alertness and your participation in keeping our organization secure.
+          Cordially,
+            Your security team
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      subject:
+        simple: 'Re: Phishing Investigation - ${incident.name}'
+      to:
+        simple: ${incident.labels.Email/from}
+    separatecontext: false
+    task:
+      brand: ""
+      id: aafb8c0f-765a-4bbb-81c9-b1435b795f2e
+      iscommand: false
+      name: Send email to user notifying them this email is safe
+      scriptName: SendEmail
+      type: regular
+      version: -1
+    taskid: aafb8c0f-765a-4bbb-81c9-b1435b795f2e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3225
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      notes:
+        simple: Concluded that this email is safe and sent a response to user notifying
+          them that they may proceed normally.
+      reason:
+        simple: Safe
+    separatecontext: false
+    task:
+      brand: ""
+      id: abf517ab-27b6-49a9-853d-41e56650a92a
+      iscommand: false
+      name: Close the phishing investigation
+      scriptName: CloseInvestigation
+      type: regular
+      version: -1
+    taskid: abf517ab-27b6-49a9-853d-41e56650a92a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "102"
+    note: false
+    scriptarguments:
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hi ${Account=val.DisplayName || val.Email.Address},
+          We've concluded that the email you forwarded to us is malicious. We've taken steps to blacklist the sender and quarantine the email. Good job on detecting and forwarding it to us!
+
+          All the best,
+            Your security team
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      subject:
+        simple: 'Re: Phishing Investigation - ${incident.name}'
+      to:
+        simple: ${incident.labels.Email/from}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 8a9ba010-09e1-4aa6-810f-859ae66768e6
+      iscommand: false
+      name: Send email to user notifying them it's a malicious email
+      scriptName: SendEmail
+      type: regular
+      version: -1
+    taskid: 8a9ba010-09e1-4aa6-810f-859ae66768e6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 3400
+        }
+      }
+  "55":
+    id: "55"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "91"
+      "yes":
+      - "101"
+    note: false
+    scriptarguments:
+      key:
+        simple: AttachmentMD5
+      value:
+        simple: ${File(!(val.Type.toLowerCase().indexOf('composite document file v2
+          document') >= 0 || val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 ||
+          val.Extension == 'eml' && val.Type.toLowerCase().indexOf('ascii') >= 0 &&
+          val.Type.toLowerCase().indexOf('crlf') >= 0)).EntryID}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 9892f321-ad3e-45ed-8abe-a4f29f29068a
+      iscommand: false
+      name: Did we find an attachment inside the email and extract its hash?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 9892f321-ad3e-45ed-8abe-a4f29f29068a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 3750
+        }
+      }
+  "63":
+    id: "63"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "91"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Investigate the results of the execution
+      id: 7b2f5045-5c2e-4db3-895b-f3cd8d51ef20
+      iscommand: false
+      name: Investigate further
+      type: regular
+      version: -1
+    taskid: 7b2f5045-5c2e-4db3-895b-f3cd8d51ef20
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4100
+        }
+      }
+  "71":
+    id: "71"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 75e0739e-4f37-4859-8ae2-857be0d57d6c
+      iscommand: false
+      name: Extract indicators
+      type: title
+      version: -1
+    taskid: 75e0739e-4f37-4859-8ae2-857be0d57d6c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 530
+        }
+      }
+  "72":
+    id: "72"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "97"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 03606952-f504-44b2-8371-5a548e395048
+      iscommand: false
+      name: Check indicators
+      type: title
+      version: -1
+    taskid: 03606952-f504-44b2-8371-5a548e395048
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1040
+        }
+      }
+  "81":
+    id: "81"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "100"
+      "yes":
+      - "42"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 5359d876-c7b6-495c-8249-fd87d30d5663
+      iscommand: false
+      name: Was any malicious indicator found?
+      scriptName: IsMaliciousIndicatorFound
+      type: condition
+      version: -1
+    taskid: 5359d876-c7b6-495c-8249-fd87d30d5663
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1360
+        }
+      }
+  "89":
+    id: "89"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "31"
+      "yes":
+      - "42"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${LevenshteinDistance(val > 0 && val < 3}
+    separatecontext: false
+    task:
+      brand: ""
+      id: a2f77d09-4dc1-431a-8d7f-538f3b285e56
+      iscommand: false
+      name: Is the distance really small
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: a2f77d09-4dc1-431a-8d7f-538f3b285e56
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 2205
+        }
+      }
+  "91":
+    id: "91"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 2e785868-8ecb-47b8-8123-66e817a31f57
+      iscommand: false
+      name: Review all results and decide should we close investigation
+      type: regular
+      version: -1
+    taskid: 2e785868-8ecb-47b8-8123-66e817a31f57
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 4275
+        }
+      }
+  "94":
+    id: "94"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "98"
+    note: false
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Account.Email.Address
+      value:
+        simple: ${incident.labels.Email/from}
+    separatecontext: false
+    task:
+      brand: ""
+      id: bff69be5-924f-4eda-8264-83e9c2246ab6
+      iscommand: false
+      name: Store the sending account
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: bff69be5-924f-4eda-8264-83e9c2246ab6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+  "97":
+    id: "97"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "81"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 286c067d-78e0-4d90-8107-eec5625b4b82
+      iscommand: false
+      name: ""
+      playbookName: Enrichment Playbook
+      type: playbook
+      version: -1
+    taskid: 286c067d-78e0-4d90-8107-eec5625b4b82
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1185
+        }
+      }
+  "98":
+    id: "98"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6104b475-bee7-42aa-87c4-07c6e433a350
+      iscommand: false
+      name: ""
+      playbookName: Account Enrichment
+      type: playbook
+      version: -1
+    taskid: 6104b475-bee7-42aa-87c4-07c6e433a350
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "99":
+    id: "99"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "71"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: abdcdddf-7b08-4c4a-8f29-842890ee1351
+      iscommand: false
+      name: ""
+      playbookName: Process Email
+      type: playbook
+      version: -1
+    taskid: abdcdddf-7b08-4c4a-8f29-842890ee1351
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 340
+        }
+      }
+  "100":
+    id: "100"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 27922299-5a0b-4525-8465-7c2efd9503b5
+      iscommand: false
+      name: ""
+      playbookName: Detonate File - Generic
+      type: playbook
+      version: -1
+    taskid: 27922299-5a0b-4525-8465-7c2efd9503b5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1535
+        }
+      }
+  "101":
+    id: "101"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "63"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 16dd2965-30b6-47dc-80bf-48f322e21e9c
+      iscommand: false
+      name: ""
+      playbookName: Hunt for bad IOCs
+      type: playbook
+      version: -1
+    taskid: 16dd2965-30b6-47dc-80bf-48f322e21e9c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3925
+        }
+      }
+  "102":
+    id: "102"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "55"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        - Find all mailboxes containing the malicious email
+        - Delete the emails from mailboxes
+      id: c932dac2-0738-4b68-8c30-1b27aa0dcda8
+      iscommand: false
+      name: Search for the malicious email in other mailboxes
+      type: regular
+      version: -1
+    taskid: c932dac2-0738-4b68-8c30-1b27aa0dcda8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 3575
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "23_28_#default#": 0.81,
+      "23_42_yes": 0.1,
+      "36_42_yes": 0.11
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4320,
+        "width": 942.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

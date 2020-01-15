@@ -1,0 +1,53 @@
+args:
+- default: true
+  description: '[string] Existing incident id. '
+  name: incidentId
+  required: true
+- description: '[array of strings] List of event ids separated by comma [,] must not
+    include spaces in it. In order to get list of events you can use nw-get-events.
+    Example: "23,12,3"'
+  name: eventList
+  required: true
+- description: '[string] Short summary of the alert which will be attached to incident'
+  name: alertSummary
+  required: true
+- description: '[number] Severity of the incident. Example: 50'
+  name: severity
+  required: true
+- description: '[number] The id of the device/component (Concentrator, Log Decoder,
+    Packet Decoder, etc.) from which the events are. You can view the list of devices
+    by executing the command nw-get-components'
+  name: deviceId
+  required: true
+- description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
+    device/component id. It can be received by running nw-get-component command. If
+    this argument is not filled/passed, the script will automatically get the first
+    device of type INCIDENT_MANAGEMENT from the SA server.'
+  name: incidentManagementId
+comment: This command will add new events to an existing NetWitness SA incident
+commonfields:
+  id: NetwitnessSAAddEventsToIncident
+  version: -1
+dependson:
+  must:
+  - nw-add-events-to-incident
+name: NetwitnessSAAddEventsToIncident
+runonce: false
+script: |
+  resp = demisto.executeCommand("nw-add-events-to-incident", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- RSA NetWitness Security Analytics
+type: python

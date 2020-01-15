@@ -1,0 +1,26 @@
+args:
+- default: true
+  description: The value to print to war room, if you want to print a value stored
+    in context, value should be in format ${key}, where key is the name of context
+    key
+  name: value
+  required: true
+comment: Prints text to war room (Markdown supported)
+commonfields:
+  id: Print
+  version: -1
+enabled: true
+name: Print
+runonce: false
+script: |
+  return {
+      HumanReadableFormat: formats.markdown,
+      Type: entryTypes.note,
+      Contents: args.value,
+      HumanReadable: args.value
+  };
+scripttarget: 0
+system: true
+tags:
+- Utility
+type: javascript

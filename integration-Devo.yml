@@ -1,0 +1,243 @@
+category: Analytics & SIEM
+commonfields:
+  id: Devo
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL (e.g https://api-us.logtrust.com/)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: API key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: API secret
+  name: api_secret
+  required: true
+  type: 4
+- defaultvalue: "false"
+  display: Trust any certificate (unsecure)
+  name: unsecure
+  required: false
+  type: 8
+- defaultvalue: "true"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Query data from Devo
+detaileddescription: Accessing the Devo API requires administrator privileges.
+display: Devo
+image: data:image/png;base64,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
+name: Devo
+script:
+  commands:
+  - arguments:
+    - description: A LINQ query to launch. The body must have a query or queryId parameter.
+      name: query
+    - description: A query Id to launch. The body must have a query or queryId parameter.
+      name: queryId
+    - description: 'The start date as a UTC timestamp in the following format: 2012-03-01T10:00:00Z'
+      name: from
+      required: true
+    - description: 'The end date as a UTC timestamp in the following format: 2012-03-01T10:00:00Z,
+        set to the current time by default.'
+      name: to
+    - description: Skip the first X elements of the query.
+      name: skip
+    - defaultValue: "30"
+      description: Limit the results of the query. The query will stop after returning
+        the first X elements of the query or reaching its end.
+      name: limit
+    - defaultValue: "true"
+      description: Whether to write results to context or not
+      name: writeToContext
+    description: Perform a query.
+    name: devo-query
+    outputs:
+    - contextPath: Devo.Results
+      description: The query results
+  runonce: false
+  script: |-
+    ''' IMPORTS '''
+    import re
+    import requests
+    import json
+    import time
+    import hmac
+    import hashlib
+    from datetime import datetime
+    from collections import Counter
+    import socket, struct
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' GLOBAL VARS '''
+    API_KEY = demisto.params()['api_key']
+    API_SECRET = demisto.params()['api_secret']
+    VERIFY_SSL = not demisto.params().get('unsecure', False)
+
+
+    def get_server_url():
+        url = demisto.params()['url']
+        url = re.sub('/[\/]+$/', '', url)
+        url = re.sub('\/$', '', url)
+        return url
+
+    SERVER_URL = get_server_url() + '/search'
+
+    ''' HELPER FUNCTIONS '''
+    def get_api_sign(timestamp, body):
+        message = API_KEY
+        if body:
+            message += json.dumps(body)
+        message += str(timestamp)
+        sign = hmac.new(API_SECRET.encode("utf-8"), message.encode("utf-8"), hashlib.sha256)
+
+        return sign.hexdigest()
+
+
+    def get_headers(body=''):
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        timestamp = int(round(time.time() * 1000))
+
+        headers['x-logtrust-apikey'] = API_KEY
+        headers['x-logtrust-timestamp'] = str(timestamp)
+        headers['x-logtrust-sign'] = get_api_sign(timestamp, body)
+
+        return headers
+
+
+    def send_request(path, headers=get_headers(), method='get', body=None, params=None):
+        body = body if body is not None else {}
+        params = params if params is not None else {}
+        url = '{}/{}'.format(SERVER_URL, path)
+
+        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=VERIFY_SSL)
+
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Got status code {} with url {} with body {} with headers {}'.format(str(res.status_code), url, res.content, str(res.headers)))
+
+        try:
+            return res.json()
+        except:
+            return res.content
+
+
+    def get_timestamp_in_seconds(timestamp):
+        dt = datetime.strptime(timestamp,'%Y-%m-%dT%H:%M:%SZ').timetuple()
+        return int(time.mktime(dt))
+
+
+    ''' FUNCTIONS '''
+    def query_command():
+        query = demisto.args().get('query')
+        query_id = demisto.args().get('queryId')
+        timestamp_from = demisto.args()['from']
+        timestamp_to = demisto.args().get('to', datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'))
+        skip = demisto.args().get('skip')
+        limit = demisto.args().get('limit')
+        write_context = demisto.args()['writeToContext'].lower()
+
+
+        if (not query and not query_id) or (query and query_id):
+            raise ValueError('Query or query id must be specified')
+
+        res = do_query(query, query_id, timestamp_from, timestamp_to, skip, limit)
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown']
+        }
+
+        if 'object' not in res or not res['object'] or len(res['object']) == 0:
+            entry['HumanReadable'] = 'No results found'
+            return entry
+
+        results = []
+        for result in res['object']:
+            if 'eventdate' in result:
+                result['eventdate'] = datetime.fromtimestamp(result['eventdate'] / 1000).strftime('%Y-%m-%dT%H:%M:%SZ')
+            # temporary
+            if 'srcIp' in result:
+                try:
+                    decimal_ip = int(result['srcIp'])
+                    # Convert decimal IP to IP
+                    result['srcIp'] = socket.inet_ntoa(struct.pack('!L', int(decimal_ip))) if decimal_ip else ''
+                except:
+                    pass
+            results.append(result)
+
+        # remove duplicates and add a count of them instead
+        unique_results = [dict(t + (('eventcount', c),)) for t, c in Counter(tuple(r.items()) for r in results).items()]
+
+        headers = res['object'][0].keys()
+        if 'eventdate' in headers:
+            # set event date as first column
+            headers.remove('eventdate')
+            headers = ['eventdate'] + headers
+        if 'eventcount' not in headers:
+            headers.append('eventcount')
+
+        md = tableToMarkdown('Devo query results', unique_results, headers, removeNull=True)
+
+        entry['HumanReadable'] = md
+        if write_context == 'true':
+            entry['EntryContext'] = {
+                'Devo.Results' : createContext(unique_results, removeNull=True)
+            }
+
+        return entry
+
+
+    def do_query(query, query_id, timestamp_from, timestamp_to, skip, limit):
+        query_body = {
+            'from': get_timestamp_in_seconds(timestamp_from)
+        }
+
+        if query:
+            query_body['query'] = query
+        elif query_id:
+            query_body['queryId'] = query_id
+
+        if timestamp_to:
+            query_body['to'] = get_timestamp_in_seconds(timestamp_to)
+        if skip:
+            query_body['skip'] = skip
+        if limit:
+            query_body['limit'] = limit
+
+        path = 'query'
+        headers = get_headers(query_body)
+
+        return send_request(path, headers, 'post', query_body)
+
+
+    ''' EXECUTION CODE '''
+    try:
+        if demisto.command() == 'test-module':
+            path = 'system/ping'
+            send_request(path)
+            demisto.results('ok')
+        elif demisto.command() == 'devo-query':
+            demisto.results(query_command())
+    except Exception as e:
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e.message)
+  type: python
+system: true

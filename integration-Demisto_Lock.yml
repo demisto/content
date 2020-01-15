@@ -1,0 +1,154 @@
+category: Utilities
+commonfields:
+  id: Demisto Lock
+  version: -1
+configuration:
+- defaultvalue: "600"
+  display: Default timeout (seconds) for wait on locks to be released
+  name: timeout
+  required: true
+  type: 0
+description: Locking mechanism that prevents concurrent execution of different tasks
+detaileddescription: "The Demisto Locking integration allows prevention of concurrent
+  execution of scripts or commands, using a wait-lock-release flow (mutex). \nUse
+  the lock name argument to support multiple locks in different flows."
+display: Demisto Lock
+image: data:image/png;base64,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
+name: Demisto Lock
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Name of lock. When omitted, name is set to Default
+      name: name
+    - description: Additional information to provide for the lock instance
+      name: info
+    - defaultValue: "600"
+      description: Timeout (seconds) for wait on lock to be freed
+      name: timeout
+    description: Get a lock. If the lock is already in use - will wait until it is
+      released or until timeout is reached
+    name: demisto-lock-get
+  - arguments:
+    - default: true
+      description: Name of lock to release. When omitted, name is set to Default
+      name: name
+    description: Release a lock
+    name: demisto-lock-release
+  - arguments:
+    - default: true
+      description: Specific lock to show info for. If not specified, shows info for
+        all locks
+      name: name
+    description: Show information on locks
+    name: demisto-lock-info
+  - arguments: []
+    description: Release all locks
+    name: demisto-lock-release-all
+  runonce: false
+  script: |
+    function guid() {
+      function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+          .toString(16)
+          .substring(1);
+      }
+      return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+    }
+
+    function setLock(guid, info) {
+        var integrationContext = getIntegrationContext() || {};
+        integrationContext[lockName] = {guid: guid, info: info};
+        setIntegrationContext(integrationContext);
+    }
+    function getLock() {
+        var integrationContext = getIntegrationContext() || {};
+        if (!integrationContext[lockName]) {
+            integrationContext[lockName] = {};
+        }
+        return integrationContext[lockName];
+    }
+
+    var lockName = args.name || 'Default';
+
+    switch (command) {
+        case 'test-module':
+            return 'ok';
+
+        case 'demisto-lock-get':
+            var lockTimeout = args.timeout || params.timeout;
+            var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
+            lockInfo += (args.info) ? ' Additional info: ' + args.info :'';
+
+            var guid = guid();
+            var time = 0;
+            var lock = getLock();
+
+            while (lock.guid !== guid && time++ < lockTimeout) {
+                wait(1);
+                lock = getLock();
+                if (lock.guid === guid) {
+                    continue;
+                }
+                if (!lock.guid) {
+                    setLock(guid, lockInfo);
+                }
+            }
+
+            if (lock.guid === guid) {
+                var md = '### Demisto Locking Mechanism\n';
+                md += 'Lock acquired successfully\n';
+                md += 'GUID: ' + guid;
+                return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
+            } else {
+                var md = 'Timeout waiting for lock\n';
+                md += 'Lock name: ' + lockName + '\n';
+                md += 'Lock info: ' + lock.info + '\n';
+                return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: md };
+            }
+            break;
+
+        case 'demisto-lock-release':
+            integrationContext = getIntegrationContext();
+            integrationContext[lockName] = {};
+            setIntegrationContext(integrationContext);
+
+            var md = '### Demisto Locking Mechanism\n';
+            md += 'Lock released successfully';
+            return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
+
+        case 'demisto-lock-release-all':
+            setIntegrationContext({});
+
+            var md = '### Demisto Locking Mechanism\n';
+            md += 'All locks released successfully';
+            return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
+
+        case 'demisto-lock-info':
+            integrationContext = getIntegrationContext();
+            var obj = [];
+
+            var res;
+            var md = '### Demisto Locking Mechanism\n';
+            var locks = (lockName === 'Default') ? Object.keys(integrationContext) : [lockName];
+
+            locks.forEach(function(lock){
+                md += 'Lock name: ' + lock + ' - ';
+                if (integrationContext[lock] && integrationContext[lock].guid) {
+                    md += 'Locked.\n';
+                    md += '- GUID: ' + integrationContext[lock].guid + '\n';
+                    md += '- Info: ' + integrationContext[lock].info + '\n\n';
+                    obj.push({lock: lock, state: integrationContext[lock]});
+                } else {
+                    md += 'Not locked\n\n';
+                }
+
+            });
+            return { ContentsFormat: formats.json, Type: entryTypes.note, Contents: obj, HumanReadable: md } ;
+
+        default:
+            var md = 'Unknown command ' + command;
+            return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: md };
+    }
+  type: javascript
+system: true

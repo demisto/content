@@ -1,0 +1,105 @@
+args:
+- default: true
+  description: One or more IP addresses to be blocked (comma-separated)
+  name: ip
+  required: true
+- description: Whether to block traffic "to" or "from" the IPs, or "both". Default
+    is "both".
+  name: direction
+- description: Base name for added rules inside checkpoint db
+  name: rulename
+- description: Base name for added ip/hosts inside checkpoint db
+  name: ipname
+comment: Block one or more IP addresses using Checkpoint Firewall.
+commonfields:
+  id: CPBlockIP
+  version: -1
+dependson:
+  must:
+  - checkpoint
+deprecated: true
+enabled: true
+name: CPBlockIP
+runonce: false
+script: |-
+  from time import sleep
+  def runCheck(cmd, args):
+      err = []
+      r = demisto.executeCommand(cmd, args)
+      if isError(r[0]):
+          myErrorText = 'Encountered error while running command ' + cmd + ' with args ' + str(args)
+          err.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : myErrorText } )
+          err += r
+          return err
+      else:
+          return r
+
+  def doPublish():
+      demisto.executeCommand("checkpoint", {'command': 'publish'})
+
+
+  DEBUGMODE = demisto.get(demisto.args(), 'dbg')
+  res = []
+  dbg = []
+  ips = argToList(demisto.args()['ip'])
+  direction = demisto.get(demisto.args(), 'direction')
+  if not direction:
+      direction = 'both'
+
+  if not demisto.get(demisto.args(), 'rulename'):
+      demisto.args()['rulename'] = 'ip' + demisto.args()['ip'] + ' blocked in direction ' + direction
+
+  if not demisto.get(demisto.args(), 'ipname'):
+      demisto.args()['ipname'] = demisto.args()['ip'] + ' . ' + direction
+
+  i = 1
+  blocked = []
+  if not ips:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'No IP addresses specified.' } )
+  else:
+      for ip in ips:
+          #name = '-'.join([demisto.args()['ipname'], ip])
+          ruleName = demisto.args()['rulename'] + '-' + str(i)
+          dbg += runCheck("checkpoint", {'command': 'add-host', 'name': ip, 'ip-address': ip})
+          doPublish()
+          if direction in ['both', 'from']:
+              dbg += runCheck("checkpoint", {'command': 'add-access-rule',
+                                                           'name': ruleName + '-from-' + ip,
+                                                           'position': '1',
+                                                           'layer': 'Network',
+                                                           'source': ip,
+                                                           'destination': 'ANY',
+                                                           'service': 'any',
+                                                           'action': 'drop'
+                                                           })
+              doPublish()
+          if direction in ['both', 'to']:
+              dbg += runCheck("checkpoint", {'command': 'add-access-rule',
+                                                           'name': ruleName + '-to-' + ip,
+                                                           'position': '1',
+                                                           'layer': 'Network',
+                                                           'source': 'ANY',
+                                                           'destination': ip,
+                                                           'service': 'any',
+                                                           'action': 'drop'
+                                                           })
+              doPublish()
+          blocked.append(ip)
+          i += 1
+      alreadyBlocked = demisto.get(demisto.context(), 'BlockedIPs')
+      if alreadyBlocked:
+          demisto.setContext('BlockedIPs', alreadyBlocked + ',' + ','.join(blocked))
+      else:
+          demisto.setContext('BlockedIPs', ','.join(blocked))
+      res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : "Blocked IP addresses " + ', '.join(blocked) })
+  if DEBUGMODE:
+      demisto.results(res + dbg)
+  else:
+      demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- checkpoint
+- firewall
+- response
+type: python

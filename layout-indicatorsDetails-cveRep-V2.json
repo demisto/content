@@ -1,0 +1,142 @@
+{
+	"TypeName": "",
+	"id": "cveRep",
+	"kind": "indicatorsDetails",
+	"name": "",
+	"sortValues": null,
+	"system": true,
+	"tabs": [
+		{
+			"id": "default-main",
+			"name": "Info",
+			"sections": [
+				{
+					"h": 2,
+					"i": "default-main-reputationSources",
+					"moved": false,
+					"name": "Reputation",
+					"static": false,
+					"type": "reputationSources",
+					"w": 2,
+					"x": 1,
+					"y": 0
+				},
+				{
+					"h": 2,
+					"i": "default-main-relatedIncidents",
+					"moved": false,
+					"name": "Related Incidents",
+					"static": false,
+					"type": "relatedIncidents",
+					"w": 2,
+					"x": 1,
+					"y": 2
+				},
+				{
+					"displayType": "ROW",
+					"h": 2,
+					"i": "default-main-indicatorTimeline",
+					"items": [
+						{
+							"endCol": 2,
+							"fieldId": "firstseen",
+							"height": 24,
+							"id": "indicator-first-seen",
+							"index": 0,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "lastseen",
+							"height": 24,
+							"id": "indicator-last-seen",
+							"index": 1,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "modified",
+							"height": 24,
+							"id": "6c11f3d0-b1df-11e9-b8c7-15ca72216f6a",
+							"index": 2,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "published",
+							"height": 24,
+							"id": "753f3210-b1df-11e9-b8c7-15ca72216f6a",
+							"index": 3,
+							"startCol": 0
+						}
+					],
+					"moved": false,
+					"name": "Timeline",
+					"static": false,
+					"type": "indicatorTimeline",
+					"w": 1,
+					"x": 0,
+					"y": 2
+				},
+				{
+					"displayType": "ROW",
+					"h": 2,
+					"i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+					"items": [
+						{
+							"dropEffect": "move",
+							"endCol": 2,
+							"fieldId": "source",
+							"height": 24,
+							"id": "indicator-source",
+							"index": 0,
+							"listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "cvedescription",
+							"height": 24,
+							"id": "44fc9ca0-b1df-11e9-b8c7-15ca72216f6a",
+							"index": 1,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "cvss",
+							"height": 24,
+							"id": "45c40b50-b1df-11e9-b8c7-15ca72216f6a",
+							"index": 2,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "indicatortype",
+							"height": 24,
+							"id": "indicator-type",
+							"index": 3,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "comment",
+							"height": 48,
+							"id": "indicator-comment",
+							"index": 5,
+							"startCol": 0
+						}
+					],
+					"moved": false,
+					"name": "CVE Info",
+					"static": false,
+					"w": 1,
+					"x": 0,
+					"y": 0
+				}
+			],
+			"type": "custom"
+		}
+	],
+	"typeId": "cveRep",
+	"version": -1
+}

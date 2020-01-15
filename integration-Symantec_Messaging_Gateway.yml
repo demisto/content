@@ -1,0 +1,573 @@
+category: Email Gateway
+commonfields:
+  id: Symantec Messaging Gateway
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL (e.g. https://192.168.0.1:20013)
+  name: server
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: "true"
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Symantec Messaging Gateway protects against spam, malware, targeted attacks
+  and provides advanced content filtering, data loss prevention, and email encryption.
+display: Symantec Messaging Gateway
+image: data:image/png;base64,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
+name: Symantec Messaging Gateway
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Email address to block
+      name: email
+      required: true
+    description: Adds email address to the Local Bad Sender Domains.
+    execution: true
+    name: smg-block-email
+    outputs:
+    - contextPath: Email.Address
+      description: Email address that was blocked
+      type: string
+    - contextPath: Email.Blocked
+      description: True if blocked, False if unblocked
+      type: boolean
+  - arguments:
+    - default: true
+      description: Email address to unblock
+      name: email
+      required: true
+    description: Removes email address from the Local Bad Sender Domains.
+    execution: true
+    name: smg-unblock-email
+    outputs:
+    - contextPath: Email.Address
+      description: Email address that was unblocked
+      type: string
+    - contextPath: Email.Blocked
+      description: True if blocked, False if unblocked
+      type: boolean
+  - arguments:
+    - default: true
+      description: Domain to block
+      name: domain
+      required: true
+    description: Adds domain to the Local Bad Sender Domains group.
+    execution: true
+    name: smg-block-domain
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name that was blocked
+      type: string
+    - contextPath: Domain.Blocked
+      description: True if blocked, False if unblocked
+      type: boolean
+  - arguments:
+    - default: true
+      description: IP address to block
+      name: ip
+      required: true
+    description: Adds IP address to the Local Bad Sender IPs  group.
+    execution: true
+    name: smg-block-ip
+    outputs:
+    - contextPath: IP.Address
+      description: IP address that was blocked
+      type: string
+    - contextPath: IP.Blocked
+      description: True if blocked, False if unblocked
+      type: boolean
+  - arguments:
+    - default: true
+      description: IP address to unblock
+      name: ip
+      required: true
+    description: Removes IP address from the Local Bad Sender IPs  group.
+    execution: true
+    name: smg-unblock-ip
+  - arguments:
+    - default: true
+      description: Domain to unblock
+      name: domain
+      required: true
+    description: Removes domain from the Local Bad Sender Domains group.
+    execution: true
+    name: smg-unblock-domain
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name that was unblocked
+      type: string
+    - contextPath: Domain.Blocked
+      description: True if blocked, False if unblocked
+      type: boolean
+  - arguments: []
+    description: Returns a list of all blocked email addresses.
+    name: smg-get-blocked-domains
+  - arguments: []
+    description: Returns a list of all blocked IP addresses.
+    name: smg-get-blocked-ips
+  dockerimage: demisto/bs4
+  runonce: false
+  script: |-
+    import requests
+    import os
+    from bs4 import BeautifulSoup
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+    SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+    USERNAME=demisto.params()['credentials']['identifier']
+    PASSWORD=demisto.params()['credentials']['password']
+    BASE_URL = SERVER + '/brightmail/'
+    USE_SSL = not demisto.params().get('insecure', False)
+    COOKIES = {}
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    BAD_DOMAINS_EMAILS_GROUP = 'Local Bad Sender Domains'
+    BAD_IPS_GROUP = 'Local Bad Sender IPs'
+
+    ''' HELPER FUNCTIONS '''
+    def http_request(method, url_suffix, cookies=COOKIES, data=None, headers=None):
+        LOG('running request with url=%s\tdata=%s\theaders=%s' % (BASE_URL + url_suffix,
+            data, headers))
+        try:
+            res = requests.request(
+                method,
+                BASE_URL + url_suffix,
+                verify=USE_SSL,
+                data=data,
+                headers=headers,
+                cookies=cookies
+            )
+
+            if res.status_code not in (200, 204):
+                raise Exception('Your request failed with the following error: ' + res.reason)
+        except Exception, e:
+            LOG(e)
+            raise
+        return res
+
+    def login():
+        login_do_url = 'viewLogin.do'
+        login_do_response = http_request('get', login_do_url, cookies=None)
+        login_jsession = login_do_response.cookies.get_dict()['JSESSIONID']
+
+        soup = BeautifulSoup(login_do_response.content, "lxml")
+        hidden_tags = soup.find_all("input", type="hidden") # Parse <input type=hidden>
+        for tag in hidden_tags:
+            name = tag.attrs.get('name', None)
+            if name == 'lastlogin':
+                last_login = tag.attrs['value']
+        cookies = {
+            'JSESSIONID': login_jsession
+        }
+        data = {
+            'lastlogin': last_login,
+            'username': USERNAME,
+            'password': PASSWORD
+        }
+        login_url = 'login.do'
+        login_response = http_request('post', login_url, cookies=cookies, data=data)
+
+        #if JSESSIONID doesn't exist - creds may be invalid
+        if 'JSESSIONID' not in login_response.cookies:
+            return_error('Failed to login. Username or password may be invalid')
+
+        jsession = login_response.cookies.get_dict()['JSESSIONID']
+
+        # Add Jsession ID to the cookies
+        COOKIES['JSESSIONID'] = jsession
+
+        # Get Token
+        login_do_url = 'admin/backup/backupNow.do'
+        login_do_response = http_request('get', login_do_url)
+        soup = BeautifulSoup(login_do_response.content, "lxml")
+        hidden_tags = soup.find_all("input", type="hidden") # Parse <input type=hidden>
+        for tag in hidden_tags:
+            name = tag.attrs.get('name', None)
+            if name == 'symantec.brightmail.key.TOKEN':
+                token = tag.attrs['value']
+                return token
+
+    def get_selected_sender_groups(group):
+        '''
+        Gets bad group name, i.e. Local Bad Sender Domains, and returns the bad group identifer, i.e. 1|3
+        The identifier is needed in any sent query related to the bad group
+        '''
+        cmd_url = 'reputation/sender-group/viewSenderGroups.do?view=badSenders'
+        groups = http_request('get', cmd_url)
+        soup = BeautifulSoup(groups.content, 'lxml')
+
+        tds_group_names_array = soup.find_all('td') # Parse <td>
+        for td in tds_group_names_array:
+            a_href = td.find('a') # Parse <a>
+            if a_href:
+                href_string = a_href.string # Extracts the string from the <a>string</a> tags
+                checked_group = ' '.join(href_string.split()) # Removes whitespaces from string
+                if checked_group == group:
+                    previous_td = td.previous_sibling.previous_sibling
+                    input_tag = previous_td.find('input') # Parse <input> tags
+                    if input_tag:
+                        group_number = input_tag['value']
+                        return group_number
+
+    def block_request(ioc, selected_sender_groups):
+        cmd_url = 'reputation/sender-group/saveSender.do'
+        data = {
+            'pageReuseFor': 'add',
+            'selectedSenderGroups': selected_sender_groups,
+            'view': 'badSenders',
+            'symantec.brightmail.key.TOKEN': TOKEN,
+            'addEditSenders': ioc
+        }
+        response = http_request('post', cmd_url, data=data)
+        # Check if given domain/email address is valid and is not already blocked
+        soup = BeautifulSoup(response.content, 'lxml')
+        # Look for the error message
+        error = soup.find('div','errorMessageText')
+        if error: # Error occured
+            error_message = ' '.join(error.text.split())# Removes whitespaces from string
+            return error_message
+
+    def unblock_request(selected_group_member, selected_sender_groups):
+        cmd_url = 'reputation/sender-group/deleteSender.do'
+        data = {
+            'selectedSenderGroups': selected_sender_groups,
+            'view': 'badSenders',
+            'symantec.brightmail.key.TOKEN': TOKEN,
+            'selectedGroupMembers': int(selected_group_member)
+        }
+        response = http_request('post', cmd_url, data=data)
+
+    def get_blocked_request(sender_group):
+        selected_sender_groups = get_selected_sender_groups(sender_group)
+        cmd_url = 'reputation/sender-group/viewSenderGroup.do'
+        data = {
+            'selectedSenderGroups': selected_sender_groups,
+            'view': 'badSenders',
+            'symantec.brightmail.key.TOKEN': TOKEN
+        }
+        blocked = http_request('post', cmd_url, data=data)
+        return blocked
+
+    def get_next_page(selected_sender_groups):
+        '''
+        Gets next page in bad list
+        '''
+        cmd_url = 'reputation/sender-group/viewNextPage.do'
+        data = {
+            'selectedSenderGroups': selected_sender_groups,
+            'view': 'badSenders',
+            'symantec.brightmail.key.TOKEN': TOKEN
+        }
+        next_page = http_request('post', cmd_url, data=data)
+        return next_page
+
+    ''' FUNCTIONS '''
+    def get_blocked_domains():
+        selected_sender_groups = get_selected_sender_groups(BAD_DOMAINS_EMAILS_GROUP)
+        blocked_domains = get_blocked_request(BAD_DOMAINS_EMAILS_GROUP)
+        hr='### SMG Blocked domains:\n'
+        soup = BeautifulSoup(blocked_domains.content, 'lxml')
+        # Handles pagination of Local Bad Sender Domains
+        pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
+        for i in range(len(pages)): # Loop through all pages of blocked IP address
+            tds_array = soup.find_all('td', 'paddingL3') # Parse <td>
+            for td in tds_array:
+                a = td.find('a') # Parse <a>
+                if a:
+                    s = str(a.find_next_sibling(text=True)) # Get domain
+                    hr += '- ' + ''.join(s.split()) + '\n' # Removes whitespaces from string
+            # Get next page
+            next_page = get_next_page(selected_sender_groups)
+            soup = BeautifulSoup(next_page.content, 'lxml')
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': hr,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr
+        }
+        return entry
+
+    def get_blocked_ips():
+        selected_sender_groups = get_selected_sender_groups(BAD_IPS_GROUP)
+        blocked_emails = get_blocked_request(BAD_IPS_GROUP)
+        hr='### SMG Blocked IP addresses:\n'
+        soup = BeautifulSoup(blocked_emails.content, 'lxml')
+        # Handles pagination of Local Bad Sender IPs
+        pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
+        for i in range(len(pages)): # Loop through all pages of blocked IP address
+            tds_array = soup.find_all('td', 'paddingL3') # Parse <td>
+            for td in tds_array:
+                a = td.find('a') # Parse <a>
+                if a:
+                    s = str(a.find_next_sibling(text=True)) # Get IP address
+                    hr += '- ' + ''.join(s.split()) + '\n' # Removes whitespaces from string
+            # Get next page
+            next_page = get_next_page(selected_sender_groups)
+            soup = BeautifulSoup(next_page.content, 'lxml')
+
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': hr,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr
+        }
+        return entry
+
+    def block_email(email):
+        selected_sender_groups = get_selected_sender_groups(BAD_DOMAINS_EMAILS_GROUP)
+        error_message = block_request(email, selected_sender_groups)
+        if error_message:
+            return error_message
+        context = {
+            'Address': email,
+            'Blocked': True
+        }
+        ec = {
+            'Email(val.Address && val.Address === obj.Address)': context
+        }
+        message = 'Email address ' + email + ' was blocked successfully.'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': message,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': message,
+            'EntryContext': ec
+        }
+        return entry
+
+    def unblock_email(email):
+        selected_sender_groups = get_selected_sender_groups(BAD_DOMAINS_EMAILS_GROUP)
+        blocked_emails = get_blocked_request(BAD_DOMAINS_EMAILS_GROUP)
+        # Email member number is required in order to send it in the unblock query
+        soup = BeautifulSoup(blocked_emails.content, 'lxml')
+        # Handles pagination of Local Bad Sender Domains
+        pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
+        for i in range(len(pages)): # Loop through all pages of blocked email addresses
+            tds_array = soup.find_all('td', 'paddingL3') # Parse <td>
+            for td in tds_array:
+                a = td.find('a') # Parse <a>
+                if a:
+                    s = str(a.find_next_sibling(text=True)) # Get checked email address
+                    checked_email = ''.join(s.split()) # Removes whitespaces from string
+                    if checked_email == email:
+                        href = a['href'] # Get <a href=...>
+                        comma_index = href.find(',') # Get comma sign index in string
+                        selected_group_member = a['href'][comma_index+1:-2] # Get email member number
+                        break
+            # Get next page
+            next_page = get_next_page(selected_sender_groups)
+            soup = BeautifulSoup(next_page.content, 'lxml')
+
+        if not 'selected_group_member' in locals():
+            return 'Could not find given email address in ' + BAD_DOMAINS_EMAILS_GROUP
+
+        unblock_request(selected_group_member, selected_sender_groups)
+        context = {
+            'Address': email,
+            'Blocked': False
+        }
+        ec = {
+            'Email(val.Address && val.Address === obj.Address)': context
+        }
+        message = 'Email address ' + email + ' was unblocked successfully.'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': message,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': message,
+            'EntryContext': ec
+        }
+        return entry
+
+    def block_domain(domain):
+        selected_sender_groups = get_selected_sender_groups(BAD_DOMAINS_EMAILS_GROUP)
+        error_message = block_request(domain, selected_sender_groups)
+        if error_message:
+            return error_message
+        context = {
+            'Name': domain,
+            'Blocked': True
+        }
+        ec = {
+            'Domain(val.Name && val.Name === obj.Name)': context
+        }
+        message = 'Domain ' + domain + ' was blocked successfully.'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': message,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': message,
+            'EntryContext': ec
+        }
+        return entry
+
+    def unblock_domain(domain):
+        selected_sender_groups = get_selected_sender_groups(BAD_DOMAINS_EMAILS_GROUP)
+        blocked_domains = get_blocked_request(BAD_DOMAINS_EMAILS_GROUP)
+        # Domain member number is required in order to send it in the unblock query
+        soup = BeautifulSoup(blocked_domains.content, 'lxml')
+        # Handles pagination of Local Bad Sender Domains
+        pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
+        for i in range(len(pages)): # Loop through all pages of blocked domains
+            tds_array = soup.find_all('td', 'paddingL3') # Parse <td>
+            for td in tds_array:
+                a = td.find('a') # Parse <a>
+                if a:
+                    s = str(a.find_next_sibling(text=True)) # Get checked domain
+                    checked_domain = ''.join(s.split()) # Removed whitespaces from string
+                    if checked_domain == domain:
+                        href = a['href'] # Get <a href=...>
+                        comma_index = href.find(',') # Get comma sign index in string
+                        selected_group_member = a['href'][comma_index+1:-2] # Get domain member number
+                        break
+            # Get next page
+            next_page = get_next_page(selected_sender_groups)
+            soup = BeautifulSoup(next_page.content, 'lxml')
+
+        if not 'selected_group_member' in locals():
+            return 'Could not find given domain in ' + BAD_DOMAINS_EMAILS_GROUP
+
+        unblock_request(selected_group_member, selected_sender_groups)
+        context = {
+            'Name': domain,
+            'Blocked': False
+        }
+        ec = {
+            'Domain(val.Name && val.Name === obj.Name)': context
+        }
+        message = 'Domain ' + domain + ' was unblocked successfully.'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': message,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': message,
+            'EntryContext': ec
+        }
+        return entry
+
+    def block_ip(ip):
+        selected_sender_groups = get_selected_sender_groups(BAD_IPS_GROUP)
+        error_message = block_request(ip, selected_sender_groups)
+        if error_message:
+            return error_message
+        context = {
+            'Address': ip,
+            'Blocked': True
+        }
+        ec = {
+            'IP(val.Address && val.Address === obj.Address)': context
+        }
+        message = 'IP address ' + ip + ' was blocked successfully.'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': message,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': message,
+            'EntryContext': ec
+        }
+        return entry
+
+    def unblock_ip(ip):
+        selected_sender_groups = get_selected_sender_groups(BAD_IPS_GROUP)
+        blocked_ips =  get_blocked_request(BAD_IPS_GROUP)
+        # Domain member number is required in order to send it in the unblock query
+        soup = BeautifulSoup(blocked_ips.content, 'lxml')
+        # Handles pagination of Local Bad Sender IPs
+        pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
+        for i in range(len(pages)): # Loop through all pages of blocked IP address
+            tds_array = soup.find_all('td', 'paddingL3') # Parse <td>
+            for td in tds_array:
+                a = td.find('a') # Parse <a>
+                if a:
+                    s = str(a.find_next_sibling(text=True)) # Get checked IP address
+                    checked_ip = ''.join(s.split()) # Removed whitespaces from string
+                    if checked_ip == ip:
+                        href = a['href'] # Get <a href=...>
+                        comma_index = href.find(',') # Get comma sign index in string
+                        selected_group_member = a['href'][comma_index+1:-2] # Get IP member number
+                        break
+            next_page = get_next_page(selected_sender_groups)
+            soup = BeautifulSoup(next_page.content, 'lxml')
+
+        if not 'selected_group_member' in locals():
+            return 'Could not find given IP address in ' + BAD_IPS_GROUP
+
+        unblock_request(selected_group_member, selected_sender_groups)
+        context = {
+            'Address': ip,
+            'Blocked': False
+        }
+        ec = {
+            'IP(val.Address && val.Address === obj.Address)': context
+        }
+        message = 'IP address ' + ip + ' was unblocked successfully.'
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': message,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': message,
+            'EntryContext': ec
+        }
+        return entry
+
+    ''' EXECUTION CODE '''
+    TOKEN = login()
+
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() == 'test-module':
+            # Checks authentication and connectivity in login() function
+            demisto.results('ok')
+        elif demisto.command() == 'smg-block-email':
+            #demisto.results(get_selected_sender_groups())
+            demisto.results(block_email(demisto.args()['email']))
+        elif demisto.command() == 'smg-unblock-email':
+            demisto.results(unblock_email(demisto.args()['email']))
+        elif demisto.command() == 'smg-block-domain':
+            demisto.results(block_domain(demisto.args()['domain']))
+        elif demisto.command() == 'smg-block-ip':
+            demisto.results(block_ip(demisto.args()['ip']))
+        elif demisto.command() == 'smg-unblock-ip':
+            demisto.results(unblock_ip(demisto.args()['ip']))
+        elif demisto.command() == 'smg-unblock-domain':
+            demisto.results(unblock_domain(demisto.args()['domain']))
+        elif demisto.command() == 'smg-get-blocked-domains':
+            demisto.results(get_blocked_domains())
+        elif demisto.command() == 'smg-get-blocked-ips':
+            demisto.results(get_blocked_ips())
+    except Exception, e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+  type: python
+system: true

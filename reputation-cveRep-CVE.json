@@ -1,0 +1,98 @@
+{
+	"contextPath": "",
+	"contextValue": "",
+	"defaultMapping": {
+		"cvedescription": {
+			"complex": {
+				"accessor": "CVEDescription",
+				"filters": [],
+				"root": "CVE",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"cvss": {
+			"complex": {
+				"accessor": "CVSS",
+				"filters": [],
+				"root": "CVE",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"id": {
+			"complex": {
+				"accessor": "ID",
+				"filters": [],
+				"root": "CVE",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "toUpperCase"
+					},
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"modified": {
+			"complex": {
+				"accessor": "Modified",
+				"filters": [],
+				"root": "CVE",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"published": {
+			"complex": {
+				"accessor": "Published",
+				"filters": [],
+				"root": "CVE",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		}
+	},
+	"details": "CVE",
+	"disabled": false,
+	"enhancementScriptNames": [],
+	"excludedBrands": [],
+	"file": false,
+	"fileHashesPriority": null,
+	"formatScript": "",
+	"id": "cveRep",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "",
+	"reputationCommand": "",
+	"reputationScriptName": "",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

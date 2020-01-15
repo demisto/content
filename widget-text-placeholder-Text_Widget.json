@@ -1,0 +1,29 @@
+{
+	"category": "utility",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": null,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "text-placeholder",
+	"isPredefined": true,
+	"name": "Text Widget",
+	"params": {
+		"text": "Place your text here.."
+	},
+	"query": "",
+	"size": 0,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "text"
+}

@@ -1,0 +1,35 @@
+args:
+- default: true
+  description: Username in Okta to deactivate
+  name: username
+  required: true
+comment: Deactivate user
+commonfields:
+  id: OktaDeactivateUser
+  version: -1
+dependson:
+  must:
+  - okta-deactivate-user
+deprecated: true
+enabled: true
+name: OktaDeactivateUser
+runonce: false
+script: |2
+
+  resp = demisto.executeCommand("okta-deactivate-user", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- okta
+type: python

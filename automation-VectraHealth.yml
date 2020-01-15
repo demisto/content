@@ -1,0 +1,33 @@
+args:
+- description: the path to query
+  name: path
+comment: The health configuration can be used to retrieve system health statistics
+  such as subnet counts, traffic bandwidth, headend and sensor information
+commonfields:
+  id: VectraHealth
+  version: -1
+dependson:
+  must:
+  - vec-health
+deprecated: true
+name: VectraHealth
+runonce: false
+script: |2
+
+  resp = demisto.executeCommand("vec-health", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.results")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- Vectra
+type: python

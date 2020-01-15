@@ -1,0 +1,92 @@
+args:
+- default: true
+  description: 'Timestamp of the start time of the event end, Example: 1401451200000,
+    or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+  name: start
+- description: 'Timestamp of the end of the event, Example: 1401451500000, or ISO
+    8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+  name: end
+- description: the sensor id or a comma-separated list of sensor ids
+  name: sensorId
+  required: true
+- description: Search for observations in every kill chain stage (true false)
+  name: hasKillChain
+- description: Filter by killchain stage (Methodology Recon Delivery Exploit Beacon
+    CnC Fortification Data_Theft)
+  name: killChainStage
+- description: Try to return at least this many results per page
+  name: minLimit
+- description: Do not return more than this many results
+  name: maxLimit
+- description: Filter by observation type (ids http iprep urlrep protocol file )
+  name: type
+- description: Filter observations by IP address in the src/dst fields
+  name: ip
+- description: Filter by Low, Medium, or High threats (NONE LOW MEDIUM HIGH)
+  name: threatLevel
+- description: Filter by threat category (ExploitsAndAttacks DenialOfService Malware
+    Scanning Botnets Phishing Suspicious MaliciousHost APT Misc Unknown)
+  name: threatCategory
+- description: 'Filter by threat signature (find observations of the same type of
+    threat) - Example: 69020504'
+  name: signatureId
+- description: Include observation records (true or false)
+  name: expandDetails
+- description: Return results sorted by descending timestamp (default = true)
+  name: reverseOrder
+- description: An identifier to fetch the next page in the result set
+  name: nextPage
+comment: Query for ProtectWise observations. Supports a comma-separated list of sensor
+  IDs - will query each sensor with the given parameters.
+commonfields:
+  id: PWObservations
+  version: -1
+dependson:
+  must:
+  - ProtectWise|||observation-search
+deprecated: true
+name: PWObservations
+runonce: false
+script: |
+  from datetime import datetime, timedelta
+  res = []
+  dArgs = demisto.args()
+  dArgs["using-brand"] = "ProtectWise"
+  if not demisto.get(dArgs, 'end'):
+      dArgs['end'] = FormatIso8601(datetime.now())
+  # Default to past 24 hrs if start datetime is not provided
+  if not demisto.get(dArgs, 'start'):
+      dArgs['start'] = FormatIso8601(datetime.now() - timedelta(hours=24))
+
+  sensorList = argToList(demisto.get(dArgs, 'sensorId'))
+  for sensorId in sensorList:
+      dArgs['sensorId'] = sensorId
+      resSearch = demisto.executeCommand("observation-search", dArgs)
+      try:
+          for entry in resSearch:
+              if isError(entry):
+                  res = resSearch
+                  break
+              else:
+                  if demisto.get(entry, 'Contents.count') == 0:
+                      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": "No results found."})
+                  else:
+                      myData = demisto.get(entry, 'Contents.observations')
+                      if myData:
+                          for row in myData:
+                              for k in row:
+                                  row[k] = formatCell(row[k])
+                          appendContext('pwobservations', [ob['id'] for ob in myData])
+                          res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": myData})
+                      else:
+                          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                      "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"], indent = 4)})
+      except Exception as ex:
+          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                      "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resSearch)})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- protectwise
+type: python

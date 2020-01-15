@@ -1,0 +1,42 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"Vulnerability"
+	],
+	"breachScript": "",
+	"caseInsensitive": false,
+	"cliName": "bugtraq",
+	"closeForm": false,
+	"columns": null,
+	"content": true,
+	"defaultRows": null,
+	"description": "",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_bugtraq",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "Bugtraq",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": null,
+	"sla": 0,
+	"sortValues": null,
+	"system": false,
+	"systemAssociatedTypes": [
+		"Vulnerability"
+	],
+	"threshold": 0,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}

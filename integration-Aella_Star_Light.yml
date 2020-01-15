@@ -1,0 +1,440 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Aella Star Light
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL (e.g. https://starlight.companyname.com:8889)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: User name
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: "15"
+  display: Fetching interval in minutes (default is 15, minimum is 15 )
+  name: fetch_interval
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: The specific security event to look for. Default is all events
+  name: event_name
+  required: false
+  type: 0
+- defaultvalue: "50"
+  display: Security event severity threshold, between 0-100
+  name: severity
+  required: false
+  type: 0
+- defaultvalue: "true"
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Aella Star Light Integration
+display: Aella Star Light
+image: data:image/png;base64,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
+name: Aella Star Light
+script:
+  commands:
+  - arguments:
+    - description: event id from the Star Light incident
+      name: event_id
+      required: true
+    description: Query the details for a specific Start Light event
+    name: aella-get-event
+    outputs:
+    - contextPath: Aella.Event.event_name
+      description: The event name
+      type: string
+    - contextPath: Aella.Event.severity
+      description: The severity score
+      type: string
+    - contextPath: Aella.Event.dstip
+      description: The Destination IP
+      type: string
+    - contextPath: Aella.Event.srcip
+      description: The source IP
+      type: string
+    - contextPath: Aella.Event.tenantid
+      description: The tenant ID
+      type: string
+    - contextPath: Aella.Event.srcip_reputation
+      description: The source IP reputation
+      type: string
+    - contextPath: Aella.Event.dstip_reputation
+      description: The destination IP reputation
+      type: string
+    - contextPath: Aella.Event.dstip_geo
+      description: The destination IP geo location
+    - contextPath: Aella.Event.srcip_geo
+      description: The source  IP geo location
+  isfetch: true
+  runonce: false
+  script: |-
+    import requests
+    import json
+    import time
+    import datetime
+    import os
+
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    from requests.packages.urllib3.exceptions import InsecureRequestWarning
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' GLOBAL VARS '''
+    URL = demisto.getParam('url') + '/aellaelastic'
+    USERNAME = demisto.getParam('credentials')['identifier']
+    PASSWORD = demisto.getParam('credentials')['password']
+    FETCH_INTERVAL = demisto.getParam('fetch_interval')
+    VALIDATE_CERT = not demisto.params().get('insecure', True)
+
+    ''' HELPER FUNCTIONS '''
+    def make_rest_call(end_point, username, password, action_result,
+        headers={}, params=None,
+        data=None, method='get'):
+        headers.update({'Accept': 'application/json'})
+        headers.update({'Content-Type': 'application/json'})
+
+        resp_json = None
+        request_func = getattr(requests, method)
+        if (not request_func):
+            action_result['status']='Unsupported method {}'.format(method)
+            return
+        try:
+            r = request_func(end_point, auth=(username, password),
+                data=json.dumps(data) if data else None,
+                headers=headers,
+                verify=VALIDATE_CERT,params=params)
+        except Exception as e:
+            action_result['status']='Server REST API exception {}'.format(e)
+            return
+
+        if r is not None:
+            action_result['r_text']=r.text
+            action_result['headers']=r.headers
+            action_result['r_status_code']=r.status_code
+
+        try:
+            resp_json = r.json()
+        except Exception as e:
+            action_result['status']='Json parse error {}'.format(
+                r.text.replace('{', ' ').replace('}', ' '))
+            return
+
+        if (200 <= r.status_code <= 399):
+            action_result['status'] = 'Success'
+        else:
+            action_result['status'] = 'Failed'
+
+        action_result['data'] = resp_json
+        return
+
+    ''' FUNCTIONS '''
+    def fetch_incidents_command():
+        fetch_interval = demisto.getParam('fetch_interval')
+        if fetch_interval is None:
+            fetch_interval = 15 * 60 # 15 minutes
+        else:
+            try:
+                fetch_interval = int(fetch_interval) * 60
+                if fetch_interval < 15 * 60:
+                    # Min is 15 minutes
+                    fetch_interval = 15 * 60
+            except:
+                fetch_interval = 15 * 60
+
+        cur_t = time.time()
+
+        checkTime = cur_t - fetch_interval
+
+        event = demisto.getParam('event_name')
+        if event is None:
+            event = '*'
+
+        score = demisto.getParam('severity')
+        if score:
+            try:
+                score = int(score)
+                if score < 0 or score > 100:
+                    score = 50
+            except:
+                score = 50
+        else:
+            # Default score
+            score = 50
+
+        index_str = 'aella-ser*'
+
+        query_str = 'event_name:{}  AND severity:>{}'.format(event, score)
+
+        ts_str = str(long(checkTime * 1000))
+
+        query_json = { 'query':
+            { 'bool':
+                { 'must':
+                    [ { 'query_string':
+                        {
+                          'query': query_str,
+                          'analyze_wildcard': True
+                        }
+                      },
+                      { 'range':
+                         { 'timestamp':
+                             { 'gt': ts_str }
+                         }
+                      }
+                    ]
+                }
+            }
+        }
+        end_point = URL + '/{0}/{1}/_search'.format(index_str, 'amsg')
+
+        action_result = {}
+        make_rest_call(end_point,
+            USERNAME, PASSWORD, action_result, data=query_json
+        )
+
+        if action_result['status'] == 'Success':
+            demisto.info('Poll incidents ok')
+            data = action_result.get('data')
+            if not isinstance(data, dict):
+                demisto.error('Data returned in wrong format {}'.format(data))
+                demisto.incidents([])
+                return
+            hits = data.get('hits', {}).get('hits', [])
+            incidents = []
+
+            try:
+                cached_event = demisto.getLastRun().get("cached_event", {})
+            except:
+                cached_event = {}
+
+            new_cached_event = {}
+
+            for hit in hits:
+                source = hit.get('_source', None)
+                if not source:
+                    continue
+                event_name = source.get('event_name', None)
+                try:
+                    event_severity = int(source.get('severity', None))
+                    if event_severity > 75:
+                        severity = 3
+                    elif event_severity > 50:
+                        severity = 2
+                    else:
+                        severity = 1
+                except:
+                    severity = 0
+
+                if not event_name:
+                    continue
+                eid = hit['_id']
+
+                new_cached_event[eid] = True
+                if cached_event.get(eid, False):
+                    continue
+
+                sdi = '{}_{}'.format(event_name, eid)
+                incident = {
+                    'name' : sdi,
+                    'severity' : severity,
+                    'rawJSON':json.dumps({  'name':sdi,
+                                            'label':'Starlight event',
+                                            'aella_eid': eid,
+                                            'aella_event':event_name,
+                                            'event_severity': event_severity
+                                        })
+                }
+                incidents.append(incident)
+            demisto.info('Incidents is {}'.format(incidents))
+            demisto.setLastRun({'cached_event': new_cached_event})
+            demisto.incidents(incidents)
+
+        else:
+            demisto.info('Poll incidents failed {}'.format(action_result))
+            demisto.incidents([])
+
+    def aella_get_event_command():
+        demisto.info('Aella started get-event with {}'.format(demisto.args()['event_id']))
+        event_id = demisto.args()['event_id']
+        query_json = { 'query': { 'match': { '_id': event_id } } }
+        end_point = URL + '/{0}/{1}/_search'.format('aella-ser*', 'amsg')
+
+        action_result = {}
+        make_rest_call(end_point,
+            USERNAME, PASSWORD, action_result, data=query_json
+        )
+        if action_result['status'] == 'Success':
+            demisto.info('Run Query is successful')
+            response = action_result.get('data')
+            timed_out = response.get('timed_out', False)
+            hits = response.get('hits', {}).get('hits', [])
+            source = {}
+            dbot_scores = []
+            if len(hits) == 0:
+                demisto.info('Get event got empty result')
+            for item in hits:
+                index = item.get('_index', '')
+                source = item.get('_source', {})
+                if index:
+                    source['_index'] = index
+                    source['timed_out'] = timed_out
+                    demisto.debug('This is my run_query result aellaEvent {}'.format(source))
+
+                    # Check url reputation
+                    url_str = source.get('url', '')
+                    if url_str:
+                        url_reputation = source.get('url_reputation', '')
+                        if url_reputation and url_reputation != 'Good':
+                            dbot_score = {
+                                'Vendor' : 'Aella Data',
+                                'Indicator' : url_str,
+                                'Type' : 'url',
+                                'Score' : 3,
+                                'Malicious' : {
+                                    'Vendor' : 'Aella Data',
+                                    'Detections' : 'URL reputation {0}'.format(url_reputation),
+                                    'URL' : url_str
+                                }
+                            }
+                        else:
+                            dbot_score = {
+                                'Vendor' : 'Aella Data',
+                                'Indicator' : url_str,
+                                'Type' : 'url',
+                                'Malicious' : None
+                            }
+                            if url_reputation is None:
+                                # Unknonw
+                                dbot_score['Score'] = 0
+                            else:
+                                # Good
+                                dbot_score['Score'] = 1
+                        dbot_scores.append(dbot_score)
+
+                    # Check src ip reputation
+                    srcip_str = source.get('srcip', '')
+                    if srcip_str:
+                        srcip_reputation = source.get('srcip_reputation', '')
+                        if srcip_reputation and srcip_reputation != 'Good':
+                            dbot_score = {
+                                'Vendor' : 'Aella Data',
+                                'Indicator' : srcip_str,
+                                'Type' : 'ip',
+                                'Score' : 3,
+                                'Malicious' : {
+                                    'Vendor' : 'Aella Data',
+                                    'Detections' : 'Source IP reputation {0}'.format(srcip_reputation),
+                                    'IP' : srcip_str
+                                }
+                            }
+                        else:
+                            dbot_score = {
+                                'Vendor' : 'Aella Data',
+                                'Indicator' : srcip_str,
+                                'Type' : 'ip',
+                                'Malicious' : None
+                            }
+                            if srcip_reputation is None:
+                                # Unknonw
+                                dbot_score['Score'] = 0
+                            else:
+                                # Good
+                                dbot_score['Score'] = 1
+                        dbot_scores.append(dbot_score)
+
+                    # Check dst ip reputation
+                    dstip_str = source.get('dstip', '')
+                    if dstip_str:
+                        dstip_reputation = source.get('dstip_reputation', '')
+                        if dstip_reputation and dstip_reputation != 'Good':
+                            dbot_score = {
+                                'Vendor' : 'Aella Data',
+                                'Indicator' : dstip_str,
+                                'Type' : 'ip',
+                                'Score' : 3,
+                                'Malicious' : {
+                                    'Vendor' : 'Aella Data',
+                                    'Detections' : 'Destination IP reputation {0}'.format(dstip_reputation),
+                                    'IP' : dstip_str
+                                }
+                            }
+                        else:
+                            dbot_score = {
+                                'Vendor' : 'Aella Data',
+                                'Indicator' : dstip_str,
+                                'Type' : 'ip',
+                                'Malicious' : None
+                            }
+                            if dstip_reputation is None:
+                                # Unknonw
+                                dbot_score['Score'] = 0
+                            else:
+                                # Good
+                                dbot_score['Score'] = 1
+                        dbot_scores.append(dbot_score)
+
+                break
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': source,
+                'HumanReadable': tableToMarkdown('Aella Star Light Event <{0}>'.format(event_id), source),
+                'EntryContext': {
+                    'Aella.Event(val._id==obj._id)': source,
+                    'DBotScore' : createContext(dbot_scores, removeNull=True),
+                }
+            })
+        else:
+            demisto.info('Get event failed {}'.format(action_result))
+            demisto.results(return_error('Failed to get event'))
+
+    ''' EXECUTION CODE '''
+    demisto.info('Command is {}'.format(demisto.command()))
+
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        action_result = {}
+        make_rest_call(URL + '/_cluster/health',
+            USERNAME, PASSWORD, action_result
+            )
+
+        if action_result['status'] == 'Success':
+            demisto.results('ok')
+        else:
+            demisto.results('failed')
+
+    if demisto.command() == 'fetch-incidents':
+        fetch_incidents_command()
+
+    if demisto.command() == 'aella-get-event':
+        aella_get_event_command()
+  type: python
+system: true

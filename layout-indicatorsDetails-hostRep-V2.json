@@ -1,0 +1,220 @@
+{
+	"TypeName": "",
+	"id": "hostRep",
+	"kind": "indicatorsDetails",
+	"name": "",
+	"sortValues": null,
+	"system": true,
+	"tabs": [
+		{
+			"id": "default-main",
+			"name": "Info",
+			"sections": [
+				{
+					"h": 2,
+					"i": "reputationSources",
+					"moved": false,
+					"name": "Reputation",
+					"static": false,
+					"type": "reputationSources",
+					"w": 2,
+					"x": 1,
+					"y": 0
+				},
+				{
+					"h": 3,
+					"i": "relatedIncidents",
+					"moved": false,
+					"name": "Related Incidents",
+					"static": false,
+					"type": "relatedIncidents",
+					"w": 2,
+					"x": 1,
+					"y": 2
+				},
+				{
+					"displayType": "ROW",
+					"h": 1,
+					"i": "indicatorTimeline",
+					"items": [
+						{
+							"endCol": 2,
+							"fieldId": "firstseen",
+							"height": 24,
+							"id": "indicator-first-seen",
+							"index": 0,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "lastseen",
+							"height": 24,
+							"id": "indicator-last-seen",
+							"index": 1,
+							"startCol": 0
+						}
+					],
+					"moved": false,
+					"name": "Timeline",
+					"static": false,
+					"type": "indicatorTimeline",
+					"w": 1,
+					"x": 0,
+					"y": 4
+				},
+				{
+					"displayType": "ROW",
+					"h": 4,
+					"i": "e2c8c970-a09d-11e9-8956-390f602b039a",
+					"items": [
+						{
+							"endCol": 2,
+							"fieldId": "indicatortype",
+							"height": 24,
+							"id": "indicator-type",
+							"index": 0,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "source",
+							"height": 24,
+							"id": "indicator-source",
+							"index": 1,
+							"startCol": 0
+						},
+						{
+							"dropEffect": "move",
+							"endCol": 2,
+							"fieldId": "internal",
+							"height": 24,
+							"id": "9769dcd0-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 2,
+							"listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
+							"startCol": 0
+						},
+						{
+							"dropEffect": "move",
+							"endCol": 2,
+							"fieldId": "id",
+							"height": 24,
+							"id": "9456a960-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 3,
+							"listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
+							"startCol": 0
+						},
+						{
+							"dropEffect": "move",
+							"endCol": 2,
+							"fieldId": "ipaddress",
+							"height": 24,
+							"id": "9d3b9400-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 4,
+							"listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "macaddress",
+							"height": 24,
+							"id": "a087ffe0-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 5,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "biosversion",
+							"height": 24,
+							"id": "8b1260b0-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 6,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "devicemodel",
+							"height": 24,
+							"id": "8dfa8c80-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 7,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "dhcpserver",
+							"height": 24,
+							"id": "8f6b5a90-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 8,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "domainname",
+							"height": 24,
+							"id": "91024e40-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 9,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "memory",
+							"height": 24,
+							"id": "a2a73660-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 10,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "operatingsystem",
+							"height": 24,
+							"id": "a51d6680-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 11,
+							"startCol": 0
+						},
+						{
+							"dropEffect": "move",
+							"endCol": 2,
+							"fieldId": "operatingsystemversion",
+							"height": 24,
+							"id": "a7db26f0-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 12,
+							"listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "processor",
+							"height": 24,
+							"id": "ad0ea250-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 13,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "processors",
+							"height": 24,
+							"id": "aea37320-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 14,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "comment",
+							"height": 48,
+							"id": "indicator-comment",
+							"index": 15,
+							"startCol": 0
+						}
+					],
+					"moved": false,
+					"name": "Host Info",
+					"static": false,
+					"w": 1,
+					"x": 0,
+					"y": 0
+				}
+			],
+			"type": "custom"
+		}
+	],
+	"typeId": "hostRep",
+	"version": -1
+}

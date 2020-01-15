@@ -1,0 +1,95 @@
+args:
+- default: true
+  description: 'Timestamp of the start time of the event end, Example: 1401451200000,
+    or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+  name: start
+- description: 'Timestamp of the end of the event, Example: 1401451500000, or ISO
+    8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00s'
+  name: end
+- description: Try to return at least this many results per page
+  name: minLimit
+- description: Do not return more than this many results
+  name: maxLimit
+- description: Filter by events that are affected by a specific IP address
+  name: ip
+- description: Filter by one or more event types (MaliciousFlow/KillChainEscalation/MaliciousConversation)
+  name: eventType
+- description: (true or false) Include observation records
+  name: expandDetails
+- description: Filter by killchain stage (Methodology Recon Delivery Exploit Beacon
+    CnC Fortification Data_Theft)
+  name: killChainStage
+- description: An identifier to fetch the next page in the result set
+  name: nextPage
+- description: Filter by Realtime or Retrospective
+  name: observationStage
+- description: Return results sorted by descending timestamp (default = true)
+  name: reverseOrder
+- description: Filter by threat category (ExploitsAndAttacks DenialOfService Malware
+    Scanning Botnets Phishing Suspicious MaliciousHost APT Misc Unknown)
+  name: threatCategory
+- description: Filter by Low, Medium, or High threats (NONE LOW MEDIUM HIGH)
+  name: threatLevel
+comment: Retrieve events from ProtectWise. If query does not include a time range
+  - default to the last 24 hrs.
+commonfields:
+  id: PWFindEvents
+  version: -1
+dependson:
+  must:
+  - ProtectWise|||search
+deprecated: true
+name: PWFindEvents
+runonce: false
+script: |
+  from datetime import datetime, timedelta
+  res = []
+  events = []
+  found = []
+  dArgs = demisto.args()
+  dArgs["using-brand"] = "ProtectWise"
+  if not demisto.get(dArgs, 'end'):
+      dArgs['end'] = FormatIso8601(datetime.now())
+  # Default to past 24 hrs if start datetime is not provided
+  if not demisto.get(dArgs, 'start'):
+      dArgs['start'] = FormatIso8601(datetime.now() - timedelta(hours=24))
+  if demisto.get(dArgs, 'ip'):
+      ips = argToList(dArgs.pop('ip'))
+
+  for ip in ips:
+      dArgs['ip'] = ip
+      resSearch = demisto.executeCommand("search", dArgs)
+      try:
+          for entry in resSearch:
+              if isError(entry):
+                  res = resSearch
+                  break
+              else:
+                  if demisto.get(entry, 'Contents.count') > 0:
+                      myData = demisto.get(entry, 'Contents.events')
+                      if myData:
+                          found.append(ip)
+                          for row in myData:
+                              for k in row:
+                                  row[k] = formatCell(row[k])
+                          events += myData
+                      else:
+                          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                      "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"], indent=4)})
+      except Exception as ex:
+          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                      "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resSearch)})
+
+  if events:
+      appendContext("found_ips", ','.join(found), dedup=True)
+      demisto.setContext('pwevents', [ev['id'] for ev in events])
+      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": events})
+  else:
+      demisto.setContext('pwevents', '')
+      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": 'No results.'})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- protectwise
+type: python

@@ -1,0 +1,26 @@
+args:
+- default: true
+  description: The ID of the client
+  name: client_id
+  required: true
+- description: Starting offset
+  name: offset
+- description: Max number of flows to fetch
+  name: count
+comment: Lists flows launched on a given client
+commonfields:
+  id: GrrGetFlows
+  version: -1
+dependson:
+  must:
+  - grr_get_flows
+name: GrrGetFlows
+runonce: false
+script: |2
+
+  demisto.results(demisto.executeCommand("grr_get_flows", demisto.args()))
+scripttarget: 0
+system: true
+tags:
+- GRR
+type: python

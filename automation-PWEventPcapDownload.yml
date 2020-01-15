@@ -1,0 +1,53 @@
+args:
+- default: true
+  description: Event ID(s) separated by commas
+  name: eventId
+  required: true
+- description: Optionally provide a filename for the download
+  name: filename
+- description: Download <burstsize> files every time, and wait <waitms> milliseconds
+    each time. Defaults are 10 files and 500ms.
+  name: burstsize
+- description: Download <burstsize> files every time, and wait <waitms> milliseconds
+    each time. Defaults are 10 files and 500ms.
+  name: waitms
+comment: Download PCAPs related to the requested events. Supports rate throttling.
+commonfields:
+  id: PWEventPcapDownload
+  version: -1
+dependson:
+  must:
+  - ProtectWise|||event-pcap-download
+name: PWEventPcapDownload
+runonce: false
+script: |
+  from time import sleep
+  res = []
+  dArgs = demisto.args()
+  burstSize = demisto.get(dArgs, 'burstsize')
+  burstSize = int(burstSize) if burstSize else 10
+  remaining = burstSize
+  waitSeconds = demisto.get(dArgs, 'waitms')
+  waitSeconds = float(waitSeconds) / 1000.0 if waitSeconds else 0.5
+  dArgs["using-brand"] = "ProtectWise"
+  eventIDs = argToList(demisto.get(dArgs, 'eventId'))
+  for eid in eventIDs:
+      dArgs['eventId'] = eid
+      dArgs['filename'] = eid + '.pcap'
+      if remaining:
+          remaining -= 1
+      else:
+          sleep(waitSeconds)
+          remaining = burstSize
+      resCmd = demisto.executeCommand("event-pcap-download", dArgs)
+      try:
+         res += resCmd
+      except Exception as ex:
+          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                      "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- protectwise
+type: python

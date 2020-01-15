@@ -1,0 +1,639 @@
+category: Analytics & SIEM
+commonfields:
+  id: Looker
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: API URL and port (e.g., https://example.looker.com:19999)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: API3 Client ID
+  name: client_id
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: API3 Client Secret
+  name: client_secret
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the Looker integration to query an explore, save queries as looks,
+  run looks, and fetch look results as incidents.
+detaileddescription: "#### Generate an API3 key for a Looker user:\n1. Log in to the
+  looker web interface with an account that is permitted to manage users.\n2. At the
+  top of the page, click on the \"Admin\" drop down and select \"Users\"\n3. Select
+  the user you would like to generate the API3 key for.\n4. Go to \"API3 Keys\" and
+  select \"Edit Keys\"\n5. Click on \"New API3 Key\"\n\n#### Get a look ID:\n**Usages:**
+  \n- \"Look name or ID to fetch incidents from\" integration parameter\n- Look ID
+  command arguments\n- Uniquely identify a Look (the name is not unique).\n\n**Option
+  A:** Looker Web Interface\n1. Click on the desired look.\n2. Look at the URL - it
+  should end with a number - that is the ID of the look.\n\n**Option B:** Demisto
+  commands\n1. Configure looker without fetching incidents or filling in the parameter.\n2.
+  Run looker-search-queries or looker-search-looks\n3. The ID will be part of the
+  results (among other look details).\n\n#### Get model and view names from an explore's
+  URL:\n1. Navigate to the desired explore.\n2. The URL will be formatted like so:
+  `https://<looker server>/explore/<model>/<view>`\n\n#### Get a field's SQL name
+  (for command arguments):\n1. Navigate to the desired explore.\n2. Click on the desired
+  field.\n3. In the \"DATA\" tab, Click on \"SQL\".\n\nYou will see the field name
+  in the following format: \"object_name.field_name\"\n"
+display: Looker
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAAFtRJREFUeAHtXAl8VNW5P8u9d2ZCdgKyg2BFjbJFikttKVIgQCBRoz+tT6nVbiq7BfqzNlaLYIEYi114/l6l9ecWC1kEJPQJLq1lCaAVClRJhFCWACFkm5l7lvc/QyYMIYQBo6avOTDcM/ee853vfPv3nTsQ0tE6KNBBgQ4KdFCgnVKAtlO8Qmhlk2ze49obL7M0eUAT6RBBli75YNae9oxze8ONtTeETuOjad+0r17LlCrUWo2iml5LOCuYlvbLEafHdPTORwHrfAO+rOdT+j3ukTL+TsLUP/cHam/tKp04x+ddDEZPA053ncIrh/14qK+b4NZoIlhPSkk5s5z1v9z84KEvC+/2tm671eAkEU8V1bEgWGX+jpygU+utV0Sv0Fy/rYmm2ak5zqxhsd+SxNno0JjljuXMtyzvH5UMrps6fOHN7Y3QXxY+7ZbBFRW9glSJ1ZTwcbOGLVmiO+snGaO5XLEDlFBiNFpryyOpej0o6p+oF/WZQeVfRDTpZwk7b9YNi/p+WURtT+vy9oRMJC47Sb7ubV9THt8pvgxmeRxlJAUavDh368yCg2k9fD5H3+1Q+yeKqqW5W2c9v/HQut1fjx+1UTlc25Z3jHCDB/52cN2mSJj/if1264MNM/IrchtIBXkNXfMJtTwyizxc/azFElhvmztd/G59XPjZidhEf5yq3ySla1HCeofv/ydf262Jbo0pJ2ICUmtZ7hf1H1KPXRoe66k+6CNUf40zW2hKPw3f/0++RpUH5+TknCEI+K4+f6Jp+tCgRf08zL6MWIIo5SvL3frgx43r0px+uQnHEvTlnKsfUkpPEkk3aqZu4MT6rtRqj+NYE57eOLXiXHhG7gl9jXHm8/+uRcXgsRmTt5qdm+BGa/1pvM+5Iz8/P/g5UYPOSc3r7XrUzwD/FqyZSChFKixOasbWMSJ/urh09q6RJMe6Nq1TGtHWcot5BgI1cEgLVwS2U6ZmYMx758CPjs/MHCxd/RTj9BJC2BGp5O9L3ih89Rzj/61vR+WDGWVDzS6hKUQIlVBbWxuVYFwEZejsQb/qF7Tc123mDFNaEqmCfjBBWtTyCSVjuCNrv5f2O3tZ6ffdDaVk07wrlt4Y8DWMZNzuTkRgv/bxd5e8P/t4a2uDuXHYzCDGeA9IxQH0u7Y2/t/5WVQMVuqURTYMhjK5n9eGZ/Ra4hVW8DEHzHVlsI4QtcAV9HVfjCWJKwdoP/0AZmN0DKlJnz3oDw8s+vCeuqd2PXQM+PzpQnCChsMQcSGlJIwxjW9fgMu5EAzbbmxUDG675VqFRHUi7UeJyoJABWBy83K3zn4yPCOH5JQdGxpzo0Xt39nErgk4R27As3Xh5x3XlilwRvDU8pAv5i58Krc8oj8hPEFq1w8GvxK5MhhszPQBBAGHKKMOFTQ18nlHv2UKtBsGdyFXaUEk+BoOZu3mGOsGFRDGRzR/0PH93BRoNwzOJ7cr7Xo/1kRVc2p7tQreGYn299JyYmKIMwEFjL5SuUFqq48in3f0W6ZAe/LBmh1X+1RXssJm7DtU0qkzhi6ptyXLr4lvOGId6iRJgtvTYrZC7Xlboor/a8tb6rgbSYEvhMEj0tPjU7zxPZV0k6UMaMfrraxl7OCG/PzaSGRyK2b6p6f85ucuaRiMMqRJk54QRMz11Ts7dYL4rqfOs7jB5yfcoitzNn+/YfqQ3EROfT2kbkhiTEk47qMxQh5c9OEjiMC/sGZSxjPcRlpamp3St28KE6IbnsXgU089noOH9+49VlpaetFZyJgxYzo5cXE9UPVJEdI6HuchB1CPOIOGzXf9uTE4OzubVwWD37QUvYcofZNwA92RZXkYs4gblPVeLfenT8p8S0r9YsmqwrA26me2//DTaal5WcITQKGD3UIpT7QYHxyQgYWyc90diX9pePTIsPj+s4YtekkSfYPSdZcYuEpT7SGqXnJWPnPYM+skFy/lbZ69ufmGL+Z7OgRUWZ5x8Gd3mvwK6SJVmhwhXL8cqK7egCYM3FETJ/Z0qDMR6d0t2pWDtWadEVRYYL9Q/uCxlJ59tqV377lCMLJqXVHRv1rCZczEyXfYlpUOiUkUUnxEAuR3Ph8hAcnvJlTd5gbEQOTvEBpRUBdg8wFjS0twwvc+DwbTUZmZ/Wsbgr+wKLsNR3xcEYV9hpuph0GqKRkIOg1ERPydcRmTlztU/6yoqOgwRum8HdP24XL/7K8uelIH7cuCtAFDrb2uYiKHzNHT6IKgVE6Cw+0+yJdNiQ1/tfnbiVKWCg6kasGn4Jjx90Htf+pX235SGV79Qq+jR2cnaCv4bUbpLwA78dQ+aB1T7nzlOFsNc6+/PtsXn+JmQABmohZ+LbDhIZ0ORTgGOW3hROwS9MYRxkdzrTePm5S1yH+yajXmo5BzumGNq7DZCfikWIrFC1vvC2hyL+V0OLJ1O1RNNHGmhBgB6OmZLfdCKLT86KLusrGZmcMdSVZRzu4w0m6KJGCyKXGadgJVhWoN/FBggKVBfUFrL+PWA66mheOzsi4/vSrVizY9UrZ4+/R1CaX1bwFCCgvwV2cOX3x9Xunc/dDaqUIFNyPoMlWLEyhTngRYAkYQgQoYgrVEaP9DNvG+PGN4bv/TcKPvfW3ChCTuDUzBGk8BfqJCYQTXaqXc5TIxPm9tfv5xMyY+RUw1Z9U44BgBXE4dwWrqh+Wq0Er9A/f2Q/j8Bj/0LWQC1wPNPG980o9Gjx6dcAZGVAsJwgjXxXR1JYRjISaN0EoiNGEECmH2qJBMKEaFAdlqa1MGj87KGkgleQlIDITpNYwFL/V+cCAHYnydS+TV2N412PQ3lNKLYMIqgTORQkLP+XDl6hfHZ2cbv9XUzIt3NcNiB4N1L2KD4yG5z0wdkndZxdb3ywj33kq1vI4qdjXX3kEQl9Gukksh1kctABZK2JSxrxNXPT/vpme7NAGNojN27NjkWOrcTxl/EpoSDyNk9lMFQv8PFcF5JX/8Y53xiZ24fR/IPh2M62EUC4w7DP78N67jtM8ZjLr9EEt1GkypGAdGLcOAI0a7Mb4XFHCm7Yu9Z+TIkd4zUTIDQn+7gZlGUDn2ZOAuR/H2buHKmySxH+G6284z5539rc1MtPG51Q3uYhTwB4SYyyFeUq32Wb5pBQWvlDdbej++vzchK2u5FHQp4+QbUii4ZzZE+d0FJCfnPnxC5cMuqcO7wMDPh7kfYMyxh3uvUMR/Vz7Jf5xszjdwzCfcPkVB5O2qtMQXiVZL4LtvQP3atrk1wl/rPgZhmxpyEOHR57iOzMhIoZo/gJcMfgot8hlLiH0dhcF53ibqieI1a+pDU7mTDubeq6nqZhiCthWWY0Gg9mRxM9MLP0LenjJlysZDx45tINSaC40ehLAB75Gxe5yYuDI8f8MAOKMZmFAA4L2eK/2z8nJn444dF3bI02YaXO13Mzgj6ac0l+DETpdQGfyvFpgb3oNatXLlR9Jfexcs6vtGk5VQNpzprWM3bxtlBqE27XO8bCIjbIyrBPbKAq70lwRigs+GgTS/gsEir3TapoD0fwfM2cLBJVe5MfBpt80ZmpvWfHzz7wioujiaPwgr9FiYuXA3R2Cel3brnPB4cXFxiLnp6ZkDmGVNwpirjQBAY/+ON07mv1lY+Hoz5jYt8cILL/jjvN7XUPpeCNO7O6SlSg2jFptkArmmgSaoQDPmmCqyHbScu2pV4XsXylwDo20YbM6LtXoYKGGjQF+Rg8yiM9asWXPSLNJaW7du3SG8GjsDtvwkiGT8ixdg7jdzrASRQBSbAuaExBjutgx+bu5v3ptX1RpM4KFdq7wMkew8aEkN9A94sQSXqqzW5t08adIlijnTOaM/AeO8Ic1l7BCOE3P79Og23zAoPF9ydR3wGoGTNvNyYDVs7qs6UP+mIUB4TEtXpDXSx+lqrSkOSFQ9YEC2+QiXsZ4tjDfR6fKARfbgWatwW5gbutUmDP7Wli0DQMLr4VdN8OQCqVdXr1xpkIqmqaqqIx+aDTcGXnAb9Mabbhnbndj2AMQTaQg6iMV5LYj+J7yTFT70bxX2stJlbtB1tyHyLOYgIU6OvBCi4Q8PnZ9CLNiMiAb50fC53S3CZgKHH2MdBPVG2kgF1l6Q4HV+uWzZsqb8FdrmQSQ1CPvtZ8Bg75skI+tLSkqiyr8LCgpOQFjXg7fbzHz49QEW9V5q8mfzPdSMEit9BDhv31BQcF5FaZx11qVNfDDefByGOMAHnwucdBD/FJ61Uis3PB4PQkZSqKicAkYbkU7yuexKTfgApDxeYarUmtQxzla3AuasR3X+YJ0nxrMGDLsLSo1Mg3ejzHspghVl6Gca/BtoSFK4452qCZ2FHZxKcfAM9qiBIF83Whca3PhPg2XFeSnvA2PlwHwaGL0A7/6xEzNvjxzXal/qZMwLBX6QpU5cqyt83bq9H55jrBbwOo7z92rcC8Uj4WcXcm0bBmsywBCs0TxXUQ+PSsvCiMJnyfT0yf9EsaIG+4oPmS3tuRTGrleIzIhiFJHHCbM/Cc+J5lpXfpWbnFyG+jY3ZjoOouMlQnankh0Mz1dSdQElf4A4PgWqxBs1N0RSsL4/TNLU9MzMD9YUFDSt7RO2F1Yg2Si5EQ/geyVMNVKaMNQoruAeBC88H33S16HUVL2aGsBdNGPDQNrERMPPmRfUQw1I1UnOT0WZ4ZtRXPHLoxoQOmTiDMmQPMUjru5kpmqkW2BQbRI50RAFqKYh+WQnUOMnAbchBBJunXASghmCiwfQUi9sbHcIk42vCG5hFqV6D1dQH6MpHYI3QGYiS3DCgAPUDwtNmr4DhpHDC2sYb1wS53iLDNU9uPKuTKMY18atjTSYnSa8Jl7UYC8YUZhiB+IamheyBJoFYQJPBTVQbYST3hoR20TUaOiQg0EnJIIlvGYJVTFMgGk+840UY2BDWmt4ROluqNI8RN27berJg00fraVO4BYbX9sgNgLcH8y6eLFeUVRcAdHYeCGpfIdJ8g4ABMytC24I0+CC/iFs+zjKfm3aomJwyB8YAp2jIffbZ0INY63wA7EkO6h7Y+iRcww/+3Z2NiO1/r7U4glmGfhhhaokqj/QI6NWVMPS8GT4OxNpHj0bwDnupEJjbdYHbE0wcADWryUKDRHNaB9WwQJsJ0LWOWvfWLEqNTXb6dUv8AwKKNeAaZdg3T4Quh+mT568ZU1h4U7Og35FfPCNxtYgD6P07zaRzxUXF0WPWwQOkd2xkzIjv37mflQmGn4mMi05yxihULENUaowKoKSi9dletyFYDaystLGIcE4VIpg+iAuUjZYTO2QTO5S6hRcm/E4xF+jLgTuCTshBspxM0wg9omal5BVwrE+wQmVMbHhJpmmW6GFM9YWrVhlbpp8M8D0RkjXUkwzphpD2NVCkdkZGRkxJ2Jja/GW5wEwXhgGgyCpgtoDwwDb0zU6BhP9nPEVjS3ZQhQZ/mKuld26/QOXD8AgU192sOG7JyGnjBzTSp/GxCRBQ+jdp9IsnARTujXWji1XQbYHNnWXKVagLBYLRbvz4aHRlRxNiRMetD9wuV2AR1CzIOBuP7Tx3YM2tUObMdoLM3wYevhSSVHRukgcNxQXHw0o+hqsyBqMMRFRLMqfo4Xi976fn4/TD/Z3aO6/zByAH4Zo+3qTPkXCaK0/NuOWYdDWH4+flPU0Xkt+8uZTdfio+NEa3ObPogLINNlsokXzQWDQOUj4NyIBlSJHhDVdZkIjXFG+5QOCmi0w5cvIcS31QZQ4qNBCFBe6G/MMJuDwRC83qYlLrONgwcuIUM3aSGd5KlzfY9nZr50Xbs+0IV2Zok9gTlfz0iSEr0ZxXoQS5xleDvBhmVVTASMSxxOH95UpyvKgqfshIbAsqhdM1HcnTMhME1JvAi02GyeC4kwy3tnO1ty5OXL+ufrjx9/SF1LxIPaFd7P5I5xbtyFRN/XoRtxAiDZqUTFYe6zN0K7jIL4htLnMhz+6KhIHD5MvokxZiprtqZIjY9/GkeHSzMzMxMhxEX06amJ2T/xA8LcgfqYpcaKkjqKRfjdQU73CjPv1jgfriEtfcbX8EHVlHB7IGFjxKT337n96TtqChAhYTV2UKtnUIU9/hWrfcwhSx2MOeMLxWxexPqnhxNtNAyM6ECyI5tnNHM7bMrgFNvpZmGkJYTAifCV80SzWOX6vFGI106zMMBka/lWI9rz0jMwxrQn2tyZN6qGYfBBScSsEj+FNfYGzoz/Lkyf3no3BZ78TVZC1dsWKg0jiX4K0PYRNATd2ORLTd8ZNmPw6ItRS8OaT4uKVb2VkZU3HKVchCJsMabcRNH3PL9WIsRMn/QZu8K0G2z5sVVVxu1NSTy0D8NPu98Hcyxvr18hO1D7GnZkRtVxdoaor+ujYuRDtl7BuooSpBsMeDip6w6whS34bcOQ7qi6msqsdtE5S1bcaZ6lIOu6DVg0IMdccJxK5C4b/0Rz8zhgka5GZ5yLlqlWrqlB3XqltPQIVmNsQVcegDDtSnqj9JhWeAukE+yMKR5mWxMPyfA1CsKzGH3x57MSJr8T7fHtgiRoMwyv9/iSvZjchorsfcoL/sUCbkqyxiO8KIV7Dnlt9M+Nc+J3vflQMNkAEU08ilh8FX3yVeWEcatyZWRwMgvl0xXsY8lZNVdXfPDFx9+G05Hm47BRzQoRxQyEYy9Cv84jgUeJF3CPdFJilGARQsEyIj1FegIUoh4G6d01x/s5IpM2Pv6f0y1nfOTH2Ic2tZy3Kk80xIKPWdSDQCEuoWuI0HEdIa6LZLvDXXlTTjLYjoLfMj9QAT/xgyQdzoi2dRi4f6sfG2uVVNe5ztq2HYZX+YHJ3bPsu5fg/hj37NVIbB3R4AJqeCAvXFzn7XCR2PzrZENwP/3qsuj7o8VD8DwSMdQVAx7g6YwYha1tQpswtWV1k6BfRzLO2MdNRmWiz8v/ibQuYoskIojaAYUbyQj4Z38015DsghWLt6uI3gBtOWehfUVrERkwQEvJTeNuC9oUZQ0BFwFy4PgTN0GAccOs3YaAz1q4qfDdil03dF8pz/Pvc2nycg94O2mzGi3fgLaJt5DzQnjhotoHbG7e8pm4NqTLFA/hVtVIKN3vJ1jl/awKGjjkqxwXlbdQxgAXGt0qHUKlS1G7DNnIx3jVxM/5MxOcu7fHU+S06H75lHrRzV4hxgI5n8RiXCty+zjmD9tNewN0xBMG9BmBfBBymr3mj0BwTNvrekHlBSQCUgUvCTegBROUztPMGK5GwP9m9+/jQwde87HflR+AqXBHSBFSYYJo++GTP7nD9WX+8Z1dF/769X6Xc2ov5CSB8MnYMITYMD3Ect+gxbHI9bjx2tHvXnHdffvFQ5FrN+zsrN8iNh0vKrkse8ycI2j6smQi2JCEx84BgjXANTXQlRGctotpHa+muhb/evvCMvBdw6cDUK5OghchxNXCnZTjb/Avw39F8zcjve/fuDVw68CuHYPLMYj7IdDVyZ8GE3vfnooI9mL9lwBWXr8UxBhSBxEIAESPgBX004GpYiJ+0kkPY/Z8hhL8Q9Sy35M2VuyPXMP3+A6+4HBNQo8YJldK7sdeST/bsuej8+jNJh/kJ5o4dOzyVlZWu0d7myDZ+pxMm3Hopck+kLCwl9LoaxREcU3tLCgv3n2POeW9nk9d4r2EVl0Jw+oN4yfBpEgJ1UDk1ZbnvP3rgfAAM7uEx6Bt7GLVNjJhr9q+bH0aYXNmvdU9L2ij46Hj8vyJBROqVLqX7kj2eo83Hh/FovDLAb7qFfpN2N93s6HRQoIMCHRTooEAHBToo0EGBDgp0UKCDAh0U6KDAxVLg/wBpN1DRe8mhPQAAAABJRU5ErkJggg==
+name: Looker
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: ID of the look. Can be found in the look's URL, or by running the
+        'looker-search-looks' command.
+      name: id
+    - description: Fields to return.
+      isArray: true
+      name: fields
+    - description: Name of the look.
+      name: name
+    - defaultValue: "50"
+      description: Maximum number of looks to return (0 for looker-determined limit).
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: json
+      description: Format of the result.
+      name: result_format
+      predefined:
+      - json
+      - csv
+      required: true
+    description: Runs a saved look and returns the results in the specified format.
+    name: looker-run-look
+    outputs:
+    - contextPath: LookerResults.LookID
+      description: Look ID.
+      type: Number
+    - contextPath: LookerResults.Results
+      description: Look results.
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Match look name.
+      name: name
+    - description: Filter results by a particular space.
+      name: space_id
+    - description: Filter by dashboards created by a particular user.
+      name: user_id
+    - defaultValue: "50"
+      description: Maximum number of looks to return (0 for looker-determined limit).
+      name: limit
+      predefined:
+      - ""
+    description: Retrieves saved looks that match the search criteria.
+    name: looker-search-looks
+    outputs:
+    - contextPath: Looker.Look.ID
+      description: Look ID.
+      type: Number
+    - contextPath: Looker.Look.Name
+      description: Look name.
+      type: String
+    - contextPath: Looker.Look.SpaceID
+      description: ID of the space that contains the look.
+      type: Number
+    - contextPath: Looker.Look.SpaceName
+      description: Name of the space that contains the look.
+      type: String
+    - contextPath: Looker.Look.LastUpdated
+      description: The time that the look was last updated.
+      type: Date
+  - arguments:
+    - description: Name of the model. Can be found in the explore's URL.
+      name: model
+      required: true
+    - description: Name of the view or explore. Can be found in the explore's URL.
+      name: view
+      required: true
+    - description: 'List of fields to display. (Field name format: "object_name.field_name")'
+      isArray: true
+      name: fields
+    - description: 'Filters for the query, passed as a semicolon-separated list with
+        the format: "field name=filter value;..." (Field name format: "object_name.field_name").'
+      isArray: true
+      name: filters
+    - description: 'List of pivots. (Field name format: "object_name.field_name")'
+      isArray: true
+      name: pivots
+    - description: 'Sorting for the query results. (Field name format: "object_name.field_name").'
+      isArray: true
+      name: sorts
+    - defaultValue: "50"
+      description: Maximum number of looks to return (0 for looker-determined limit).
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: json
+      description: Format of the results.
+      name: result_format
+      predefined:
+      - json
+      - csv
+      required: true
+    description: Runs a query by defining it in the command arguments, rather than
+      a saved query in looker.
+    name: looker-run-inline-query
+    outputs:
+    - contextPath: LookerResults.InlineQuery
+      description: Inline query results.
+      type: Unknown
+  - arguments:
+    - description: Name of the model. Can be found in the explore's URL.
+      name: model
+      required: true
+    - description: Name of the view or explore. Can be found in the explore's URL.
+      name: view
+      required: true
+    - description: 'List of fields to display. (Field name format: "object_name.field_name").'
+      isArray: true
+      name: fields
+    - description: 'Filters for the query, passed as a semicolon-separated list with
+        the format: "field name=filter value;..." (Field name format: "object_name.field_name").'
+      isArray: true
+      name: filters
+    - description: 'List of pivots. (Field name format: "object_name.field_name").'
+      isArray: true
+      name: pivots
+    - description: 'Sorting for the query results. (Field name format: "object_name.field_name").'
+      isArray: true
+      name: sorts
+    - description: Title of the look.
+      name: look_title
+      required: true
+    - description: Description of the look.
+      name: look_description
+    - description: ID of the space that will contain the look
+      name: look_space_id
+      required: true
+    description: Creates a look from a query.
+    name: looker-create-look
+    outputs:
+    - contextPath: Looker.Look.ID
+      description: Look ID.
+      type: Number
+    - contextPath: Looker.Look.Name
+      description: Look name.
+      type: String
+    - contextPath: Looker.Look.SpaceID
+      description: ID of the space that contains the look.
+      type: Number
+    - contextPath: Looker.Look.SpaceName
+      description: Name of the space that contains the look.
+      type: String
+    - contextPath: Looker.Look.LastUpdated
+      description: The time that the look was last updated.
+      type: Date
+  dockerimage: demisto/python3:3.7.3.221
+  runonce: false
+  script: |2-
+
+
+
+    ''' IMPORTS '''
+
+    from typing import Dict
+    import requests
+    import traceback
+    import json
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+
+    ''' CONSTANTS '''
+    LAST_RUN_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+    DEFAULT_RESULTS_LIMIT = 50
+    MAX_TIMEOUT_MINUTES = 5
+
+
+    ''' GLOBALS/PARAMS '''
+    SESSION_VALIDITY_THRESHOLD = timedelta(minutes=MAX_TIMEOUT_MINUTES)
+    CLIENT_ID = demisto.params().get('client_id')
+    CLIENT_SECRET = demisto.params().get('client_secret')
+    # Remove trailing slash to prevent wrong URL path to service
+    SERVER = demisto.params()['url'][:-1] if (demisto.params()['url']
+                                              and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+    # Should we use SSL
+    USE_SSL = not demisto.params().get('unsecure', False)
+    # How many time before the first fetch to retrieve incidents
+    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    # Service base URL
+    BASE_URL = SERVER + '/api/3.0'
+    # Request headers (preparation)
+    HEADERS: Dict[str, str] = {}
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def verify_url(url):
+        # validate url parameter format, extract port
+        try:
+            server, port = url.rsplit(':', 1)
+            assert 0 < int(port) < 65536
+
+        except (ValueError, AssertionError):
+            raise ValueError("Incorrect URL format. Use the following format: https://example.looker.com:19999\n"
+                             "The default port for Looker API is 19999.")
+
+
+    def http_request(method, url_suffix, params=None, data=None, response_type='json'):
+        # A wrapper for requests lib to send our requests and handle requests and responses better
+        res = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            verify=USE_SSL,
+            params=params,
+            data=data,
+            headers=HEADERS
+        )
+
+        # Handle error responses gracefully
+        if res.status_code not in {200}:
+            error_message = f'Error in API call to Looker [{res.status_code}] - {res.reason}'
+
+            # Try to get detailed errors from looker json response
+            if res.status_code in (400, 422):
+                try:
+                    error_json = res.json()
+                    error_message += f"\n{error_json['message']}"
+
+                    if res.status_code == 422:
+                        validation_error_message = ""
+                        for validation_error in error_json['errors']:
+                            validation_error_message += f"\n{validation_error['field']} {validation_error['message']}"
+                        error_message += validation_error_message
+                except (KeyError, ValueError):
+                    pass
+
+            raise requests.exceptions.HTTPError(error_message)
+
+        # Return by expected type
+        if response_type != 'json':
+            return res.content
+
+        res_obj = res.json()
+
+        # Handle non-http type error messages from looker
+        if isinstance(res_obj, list) and len(res_obj) == 1 and \
+                isinstance(res_obj[0], dict) and 'looker_error' in res_obj[0]:
+            raise Exception(res_obj[0]['looker_error'])
+
+        return res_obj
+
+
+    def get_new_token(client_id, client_secret):
+        data = {
+            'client_id': client_id,
+            'client_secret': client_secret
+        }
+
+        try:
+            response_json = http_request('POST', '/login', data=data)
+
+            return {
+                'token': response_json['access_token'],
+                'expires': datetime.utcnow().timestamp() + response_json['expires_in']
+            }
+
+        except requests.exceptions.HTTPError as ex:
+            if '[404]' in str(ex):
+                raise Exception("Got 404 from server - check 'API3 Client ID' and 'API3 Client Secret' fields "
+                                "in the instance configuration.")
+            raise
+
+
+    def get_session_token(client_id, client_secret):
+        ic = demisto.getIntegrationContext()
+
+        if client_id not in ic or 'expires' not in ic[client_id] \
+                or datetime.fromtimestamp(ic[client_id]['expires']) < datetime.utcnow() + SESSION_VALIDITY_THRESHOLD:
+            ic[client_id] = get_new_token(client_id, client_secret)
+            if demisto.command() != 'test-module':
+                demisto.setIntegrationContext(ic)
+
+        return 'token {}'.format(ic[client_id]['token'])
+
+
+    def get_limit():
+        try:
+            limit = int(demisto.args().get('limit', DEFAULT_RESULTS_LIMIT))
+            return None if limit == 0 else limit
+
+        except ValueError:
+            raise ValueError("limit must be a number")
+
+
+    def get_look_id_from_name(name):
+        looks = search_looks({'title': name})
+        if len(looks) < 1:
+            raise Exception(f'No Look found with the name {name}.')
+        if len(looks) > 1:
+            raise Exception(f'There is more than one Look with the name "{name}".'
+                            f"\nUse look ID instead - It can be found in the Look's URL or by running looker-search-looks")
+
+        return looks[0]['ID']
+
+
+    def full_path_headers(src_data, base_path):
+        def to_full_path(k):
+            return f"{base_path}.{k}"
+
+        def full_path_headers_for_dict(src):
+            if not isinstance(src, dict):
+                return src
+
+            return {to_full_path(k): v for k, v in src.items()}
+
+        if not isinstance(src_data, list):
+            src_data = [src_data]
+
+        return [full_path_headers_for_dict(x) for x in src_data]
+
+
+    def parse_filters_arg(filters_arg_value):
+        error_message = "'filters' argument format is invalid.\n"
+
+        filters_list = argToList(filters_arg_value, ';')
+        filters_list = [elem for elem in [x.strip() for x in filters_list] if elem]  # Remove empty elems
+        if not filters_list:
+            return
+
+        filters = {}
+        filters_and_indices_list = zip(range(len(filters_list)), filters_list)  # Track element index for error messages
+        for i, elem in filters_and_indices_list:
+            try:
+                k, v = elem.split('=', 1)
+                k = k.strip()
+                if not k:
+                    raise ValueError(f"{error_message}Filter in position {i+1}: field is empty.")
+                v = v.strip()
+                if not v:
+                    raise ValueError(f"{error_message}Filter in position {i+1} ({k}): value is empty.")
+                filters[k] = v
+            except ValueError:
+                raise ValueError(f"{error_message}Filter in position {i+1} is missing '=' separator")
+
+        return filters
+
+
+    def get_entries_for_search_results(contents, look_id=None, result_format='json', look_name=''):
+        entries = []
+        if result_format == 'json':
+            camelized = camelize(contents, delim='_')
+            formatted_contents = replace_in_keys(camelized)
+            if not isinstance(formatted_contents, list):
+                formatted_contents = [formatted_contents]
+
+            if look_id:
+                context = {
+                    'LookerResults(val.LookID && val.LookID === obj.LookID)': {
+                        'LookID': int(look_id),
+                        'Results': formatted_contents
+                    }
+                }
+                hr_title = f'Results for look "{look_name}"' if look_name else f'Results for look #{look_id}'
+                full_path_header_content = full_path_headers(formatted_contents, 'LookerResults.Results')
+            else:
+                context = {'LookerResults.InlineQuery': formatted_contents}
+                hr_title = 'Inline Query Results'
+                full_path_header_content = full_path_headers(formatted_contents, 'LookerResults.InlineQuery')
+
+            entries.append({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': contents,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(hr_title, full_path_header_content, removeNull=True),
+                'EntryContext': context
+            })
+
+            if contents:
+                entries.append(  # type: ignore
+                    'This command has dynamic output keys.\n'  # type: ignore
+                    'To access them in the context, copy the key\'s path from the column header in the results table.'
+                )
+
+        elif result_format == 'csv':
+            entries.append(fileResult('look_result.csv' if look_id else 'inline_query_result.csv', contents,
+                                      entryTypes['entryInfoFile']))
+
+        return entries
+
+
+    def get_query_args(demisto_args):
+        str_args = ('model', 'view')
+        list_args = ('fields', 'pivots', 'sorts')
+        args_dict = {k: argToList(demisto_args[k]) for k in list_args if k in demisto_args}  # Parse list-type arguments
+        args_dict.update({k: demisto_args[k] for k in str_args})  # Add string-type arguments
+        filters = parse_filters_arg(demisto_args.get('filters'))  # Handle special argument
+        if filters:
+            args_dict['filters'] = filters
+
+        return args_dict
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        """
+        Performs basic get request to check connectivity and authentication
+        """
+        http_request('GET', '/user')
+
+
+    def run_look_command():
+        look_id = demisto.args().get('id')
+        look_name = demisto.args().get('name')
+        if not any((look_id, look_name)):
+            raise Exception('Provide Look id or name.')
+        if look_name and not look_id:
+            look_id = get_look_id_from_name(look_name)
+
+        result_format = demisto.args()['result_format']
+        limit = get_limit()
+        fields = argToList(demisto.args().get('result_format'))
+
+        contents = run_look(look_id, result_format, limit, fields)
+
+        demisto.results(get_entries_for_search_results(contents, look_id, result_format, look_name))
+
+
+    def run_look(look_id, result_format, limit, fields):
+        endpoint_url = f'/looks/{look_id}/run/{result_format}'
+        params = {}
+        if limit:
+            params['limit'] = limit
+        if fields:
+            params['fields'] = fields
+        return http_request('GET', endpoint_url, params=params, response_type=result_format)
+
+
+    def search_looks_command():
+        command_args = ('space_id', 'user_id')  # Possible command arguments
+        args_dict = {k: demisto.args()[k] for k in command_args if k in demisto.args()}  # Get args that were passed
+
+        # Arguments with special logic
+        args_dict['limit'] = get_limit()
+        if 'name' in demisto.args():
+            args_dict['title'] = demisto.args()['name']
+
+        contents = search_looks(args_dict)
+        context = {f'Looker.Look(val.ID && val.ID === {look["ID"]})': look for look in contents}
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(f'Look search results', contents, removeNull=True),
+            'EntryContext': context
+        })
+
+
+    def search_looks(args):
+        endpoint_url = '/looks/search'
+        params = {k: v for k, v in args.items() if v}
+        params['fields'] = 'id, title, space, updated_at'
+        response = http_request('GET', endpoint_url, params=params)
+
+        if not isinstance(response, list):
+            response = [response]
+
+        return [
+            {
+                'ID': look['id'],
+                'Name': look['title'],
+                'SpaceID': look['space']['id'],
+                'SpaceName': look['space']['name'],
+                'LastUpdated': look['updated_at'].replace('+00:00', 'Z')
+            } for look in response
+        ]
+
+
+    def run_inline_query_command():
+        result_format = demisto.args()['result_format']
+        args_dict = get_query_args(demisto.args())
+
+        args_dict['limit'] = get_limit()
+
+        contents = run_inline_query(result_format, args_dict)
+
+        demisto.results(get_entries_for_search_results(contents, result_format=result_format))
+
+
+    def run_inline_query(result_format, args_dict):
+        return http_request(
+            method='POST',
+            url_suffix=f'/queries/run/{result_format}',
+            data=json.dumps(args_dict),
+            response_type=result_format
+        )
+
+
+    def create_look_command():
+        space_id = demisto.args()['look_space_id']
+        try:
+            space_id = int(space_id)
+        except ValueError:
+            raise ValueError(f'space_id: invalid number: {space_id}')
+
+        look_title = demisto.args()['look_title']
+        look_description = demisto.args().get('look_description')
+        args_dict = get_query_args(demisto.args())
+
+        create_query_response = create_query(args_dict)
+        query_id = create_query_response['id']
+
+        contents = create_look(query_id, space_id, look_title, look_description)
+
+        context = {f'Looker.Look(val.ID && val.ID === {contents["ID"]})': contents}
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(f'Look "{look_title}" created successfully', contents, removeNull=True),
+            'EntryContext': context
+        })
+
+
+    def create_query(args_dict):
+        return http_request(method='POST', url_suffix='/queries', data=json.dumps(args_dict))
+
+
+    def create_look(query_id, space_id, look_title, look_description=""):
+        data = {
+            'title': look_title,
+            'query_id': query_id,
+            'space_id': space_id
+        }
+        if look_description:
+            data['look_description'] = look_description
+
+        look = http_request(method='POST', url_suffix='/looks', data=json.dumps(data))
+
+        return {
+            'ID': look['id'],
+            'Name': look['title'],
+            'SpaceID': look['space']['id'],
+            'SpaceName': look['space']['name'],
+            'LastUpdated': look['updated_at'].replace('+00:00', 'Z')
+        }
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+
+    def main():
+        LOG('Command being called is %s' % (demisto.command()))
+        try:
+            handle_proxy()
+            verify_url(SERVER)
+            HEADERS['Authorization'] = get_session_token(CLIENT_ID, CLIENT_SECRET)
+
+            if demisto.command() == 'test-module':
+                test_module()
+                demisto.results('ok')
+            elif demisto.command() == 'looker-run-look':
+                run_look_command()
+            elif demisto.command() == 'looker-search-looks':
+                search_looks_command()
+            elif demisto.command() == 'looker-run-inline-query':
+                run_inline_query_command()
+            elif demisto.command() == 'looker-create-look':
+                create_look_command()
+
+        # Log exceptions
+        except Exception as e:
+            LOG(e)
+            LOG(traceback.format_exc())
+            LOG.print_log()
+            if demisto.command() == 'test-module':
+                demisto.results(e)
+            else:
+                return_error(str(e))
+
+
+    # python2 uses __builtin__ python3 uses builtins
+    if __name__ == "__builtin__" or __name__ == "builtins":
+        main()
+  subtype: python3
+  type: python
+system: true

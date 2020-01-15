@@ -1,0 +1,370 @@
+description: Run a compliance search in Exchange Server 2016, and delete the results.
+id: Exchange 2016 Search and Delete
+inputs:
+- description: Query for finding mail messages
+  key: Query
+  required: true
+  value: {}
+name: Exchange 2016 Search and Delete
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: start
+      id: 54ef50e9-fe1c-4750-8c0c-0f23d1adcc2f
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 54ef50e9-fe1c-4750-8c0c-0f23d1adcc2f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.Query
+    separatecontext: false
+    task:
+      brand: ""
+      description: Initiates a compliance search.
+      id: 7039555d-70e8-4c48-8629-9b8377054fe1
+      iscommand: true
+      name: Start compliance search
+      script: '|||exchange2016-start-compliance-search'
+      type: regular
+      version: -1
+    taskid: 7039555d-70e8-4c48-8629-9b8377054fe1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      Ids:
+        complex:
+          accessor: ComplianceSearch.Name
+          root: EWS
+      Interval:
+        simple: "15"
+      PollingCommandArgName:
+        simple: search-name
+      PollingCommandName:
+        simple: exchange2016-get-compliance-search
+      Timeout:
+        simple: "10080"
+      dt:
+        simple: EWS.ComplianceSearch(val.Status === 'InProgress' || val.Status ===
+          'Starting').Name
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 4bca699e-9654-4bd2-8b5f-56d98abb4714
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 4bca699e-9654-4bd2-8b5f-56d98abb4714
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    scriptarguments:
+      search-name:
+        complex:
+          accessor: ComplianceSearch.Name
+          root: EWS
+    separatecontext: false
+    task:
+      brand: ""
+      description: Gets the status and results of a compliance search.
+      id: 5b175cb9-d3f6-4b54-8eac-7f64b17abc6e
+      iscommand: true
+      name: Get compliance search
+      script: '|||exchange2016-get-compliance-search'
+      type: regular
+      version: -1
+    taskid: 5b175cb9-d3f6-4b54-8eac-7f64b17abc6e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      Purge:
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Purge Compliance Search Results?
+      id: ba34205c-fc58-4017-8377-cffd6187b25a
+      iscommand: false
+      name: Purge compliance search results?
+      type: condition
+      version: -1
+    taskid: ba34205c-fc58-4017-8377-cffd6187b25a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      search-name:
+        complex:
+          accessor: ComplianceSearch.Name
+          root: EWS
+    separatecontext: false
+    task:
+      brand: ""
+      description: Purges the results found during the compliance search.
+      id: b05fb387-956b-4bd3-8250-ece9ec819df4
+      iscommand: true
+      name: Purge compliance search results
+      script: '|||exchange2016-purge-compliance-search-results'
+      type: regular
+      version: -1
+    taskid: b05fb387-956b-4bd3-8250-ece9ec819df4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Done
+      id: 5558f163-14fa-47e2-824f-a59ee77f6f05
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 5558f163-14fa-47e2-824f-a59ee77f6f05
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      Ids:
+        complex:
+          accessor: ComplianceSearch.Name
+          root: EWS
+      Interval:
+        simple: "15"
+      PollingCommandArgName:
+        simple: search-name
+      PollingCommandName:
+        simple: exchange2016-get-compliance-search-purge-status
+      Timeout:
+        simple: "1440"
+      dt:
+        simple: EWS.ComplianceSearch(val.Status === 'Purging').Name
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 127a2261-119e-43d2-8e3d-14b73f72516c
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 127a2261-119e-43d2-8e3d-14b73f72516c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      search-name:
+        complex:
+          accessor: ComplianceSearch.Name
+          root: EWS
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks the status of the purge operation on the compliance search.
+      id: d183b55d-38f2-4768-86f5-b4a935db4086
+      iscommand: true
+      name: Get compliance search purge status
+      script: '|||exchange2016-get-compliance-search-purge-status'
+      type: regular
+      version: -1
+    taskid: d183b55d-38f2-4768-86f5-b4a935db4086
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    scriptarguments:
+      search-name:
+        complex:
+          accessor: ComplianceSearch.Name
+          root: EWS
+    separatecontext: false
+    task:
+      brand: ""
+      description: Removes the compliance search from the Exchange Server.
+      id: a17e54ba-09c7-4ec7-8350-3d64035b7eea
+      iscommand: true
+      name: Remove compliance search
+      script: '|||exchange2016-remove-compliance-search'
+      type: regular
+      version: -1
+    taskid: a17e54ba-09c7-4ec7-8350-3d64035b7eea
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_Purge": 0.57,
+      "4_9_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

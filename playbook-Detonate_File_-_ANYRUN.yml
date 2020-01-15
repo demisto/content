@@ -1,0 +1,516 @@
+description: |-
+  Detonates one or more files using the ANYRUN sandbox integration.
+  Returns relevant reports to the War Room and file reputations to the context data.
+  All file types are supported.
+id: Detonate File - ANYRUN
+inputs:
+- description: File object of the file to detonate. The File is taken from the context.
+  key: File
+  required: false
+  value:
+    complex:
+      root: File
+- description: Duration for executing the pooling (in minutes)
+  key: Interval
+  required: false
+  value:
+    simple: "1"
+- description: The duration after which to stop pooling and to resume the playbook
+    (in minutes)
+  key: Timeout
+  required: false
+  value:
+    simple: "15"
+name: Detonate File - ANYRUN
+outputs:
+- contextPath: ANYRUN.Task.AnalysisDate
+  description: Date and time the analysis was executed.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.Category
+  description: Category of a process behavior.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.Action
+  description: Actions performed by a process.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.ThreatLevel
+  description: Threat score associated with a process behavior.
+  type: Number
+- contextPath: ANYRUN.Task.Behavior.ProcessUUID
+  description: Unique ID of the process whose behaviors are being profiled.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Reputation
+  description: Connection reputation.
+  type: String
+- contextPath: ANYRUN.Task.Connection.ProcessUUID
+  description: ID of the process that created the connection.
+  type: String
+- contextPath: ANYRUN.Task.Connection.ASN
+  description: Connection autonomous system network.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Country
+  description: Connection country.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Protocol
+  description: Connection protocol.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Port
+  description: Connection port number.
+  type: Number
+- contextPath: ANYRUN.Task.Connection.IP
+  description: Connection IP number.
+  type: String
+- contextPath: ANYRUN.Task.DnsRequest.Reputation
+  description: Reputation of the DNS request.
+  type: String
+- contextPath: ANYRUN.Task.DnsRequest.IP
+  description: IP addresses associated with a DNS request.
+  type: Unknown
+- contextPath: ANYRUN.Task.DnsRequest.Domain
+  description: Domain resolution of a DNS request.
+  type: String
+- contextPath: ANYRUN.Task.Threat.ProcessUUID
+  description: Unique process ID from where the threat originated.
+  type: String
+- contextPath: ANYRUN.Task.Threat.Msg
+  description: Threat message.
+  type: String
+- contextPath: ANYRUN.Task.Threat.Class
+  description: Class of the threat.
+  type: String
+- contextPath: ANYRUN.Task.Threat.SrcPort
+  description: Port on which the threat originated.
+  type: Number
+- contextPath: ANYRUN.Task.Threat.DstPort
+  description: Destination port of the threat.
+  type: Number
+- contextPath: ANYRUN.Task.Threat.SrcIP
+  description: Source IP address where the threat originated.
+  type: String
+- contextPath: ANYRUN.Task.Threat.DstIP
+  description: Destination IP address of the threat.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Reputation
+  description: Reputation of the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Country
+  description: HTTP request country.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.ProcessUUID
+  description: ID of the process making the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Body
+  description: HTTP request body parameters and details.
+  type: Unknown
+- contextPath: ANYRUN.Task.HttpRequest.HttpCode
+  description: HTTP request response code.
+  type: Number
+- contextPath: ANYRUN.Task.HttpRequest.Status
+  description: Status of the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.ProxyDetected
+  description: Whether the HTTP request was made through a proxy.
+  type: Boolean
+- contextPath: ANYRUN.Task.HttpRequest.Port
+  description: HTTP request port.
+  type: Number
+- contextPath: ANYRUN.Task.HttpRequest.IP
+  description: HTTP request IP address.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.URL
+  description: HTTP request URL.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Host
+  description: HTTP request host.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Method
+  description: HTTP request method type.
+  type: String
+- contextPath: ANYRUN.Task.FileInfo
+  description: Details of the submitted file.
+  type: String
+- contextPath: ANYRUN.Task.OS
+  description: OS of the sandbox in which the file was analyzed.
+  type: String
+- contextPath: ANYRUN.Task.ID
+  description: The unique ID of the task.
+  type: String
+- contextPath: ANYRUN.Task.MIME
+  description: The MIME of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.MD5
+  description: The MD5 hash of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.SHA1
+  description: The SHA1 hash of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.SHA256
+  description: The SHA256 hash of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.SSDeep
+  description: SSDeep hash of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.Verdict
+  description: ANY.RUN verdict for the maliciousness of the submitted file or URL.
+  type: String
+- contextPath: ANYRUN.Task.Process.FileName
+  description: File name of the process.
+  type: String
+- contextPath: ANYRUN.Task.Process.PID
+  description: Process identification number.
+  type: Number
+- contextPath: ANYRUN.Task.Process.PPID
+  description: Parent process identification number.
+  type: Number
+- contextPath: ANYRUN.Task.Process.ProcessUUID
+  description: Unique process ID (used by ANY.RUN).
+  type: String
+- contextPath: ANYRUN.Task.Process.CMD
+  description: Process command.
+  type: String
+- contextPath: ANYRUN.Task.Process.Path
+  description: Path of the executed command.
+  type: String
+- contextPath: ANYRUN.Task.Process.User
+  description: User who executed the command.
+  type: String
+- contextPath: ANYRUN.Task.Process.IntegrityLevel
+  description: The process integrity level.
+  type: String
+- contextPath: ANYRUN.Task.Process.ExitCode
+  description: Process exit code.
+  type: Number
+- contextPath: ANYRUN.Task.Process.MainProcess
+  description: Whether the process is the main process.
+  type: Boolean
+- contextPath: ANYRUN.Task.Process.Version.Company
+  description: Company responsible for the program executed.
+  type: String
+- contextPath: ANYRUN.Task.Process.Version.Description
+  description: Description of the type of program.
+  type: String
+- contextPath: ANYRUN.Task.Process.Version.Version
+  description: Version of the program executed.
+  type: String
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: String
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: Number
+- contextPath: DBotScore.Type
+  description: Type of indicator.
+  type: String
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: String
+- contextPath: File.Extension
+  description: Extension of the file submitted for analysis.
+  type: String
+- contextPath: File.Name
+  description: The name of the file submitted for analysis.
+  type: String
+- contextPath: File.MD5
+  description: MD5 hash of the file submitted for analysis.
+  type: String
+- contextPath: File.SHA1
+  description: SHA1 hash of the file submitted for analysis.
+  type: String
+- contextPath: File.SHA256
+  description: SHA256 hash of the file submitted for analysis.
+  type: String
+- contextPath: File.SSDeep
+  description: SSDeep hash of the file submitted for analysis.
+  type: String
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision.
+  type: String
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason that the vendor made the decision.
+  type: String
+- contextPath: ANYRUN.Task.Status
+  description: Task analysis status.
+  type: String
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Detonates a file using ANYRUN
+      id: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      env_bitness: {}
+      env_type: {}
+      env_version: {}
+      file:
+        complex:
+          accessor: EntryID
+          root: inputs.File
+      obj_type: {}
+      obj_url: {}
+      opt_kernel_heavyevasion: {}
+      opt_network_connect: {}
+      opt_privacy_type: {}
+    separatecontext: false
+    task:
+      brand: ANYRUN
+      description: Submit a file or url for analysis.
+      id: 5ad0fc44-886e-47e0-8d7d-ff6edae126dd
+      iscommand: true
+      name: ANYRUN Submit File for Analysis
+      script: ANYRUN|||anyrun-run-analysis
+      type: regular
+      version: -1
+    taskid: 5ad0fc44-886e-47e0-8d7d-ff6edae126dd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      Ids:
+        complex:
+          accessor: Task.ID
+          root: ANYRUN
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: task
+      PollingCommandName:
+        simple: anyrun-get-report
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: ANYRUN.Task(val.Status !== 'done').ID
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 0f91df59-058c-43e3-8338-4f6220de8cec
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 0f91df59-058c-43e3-8338-4f6220de8cec
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Detonates a file using ANYRUN
+      id: 93fac7de-168e-4b60-8172-1d0d8cc46702
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 93fac7de-168e-4b60-8172-1d0d8cc46702
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: EntryID
+                root: inputs.File
+          operator: isExists
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Look for files to detonate
+      id: ae212064-acba-4bbf-8356-36fa72a109aa
+      iscommand: false
+      name: Is there a File to detonate?
+      type: condition
+      version: -1
+    taskid: ae212064-acba-4bbf-8356-36fa72a109aa
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ANYRUN
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if integration instance is enabled
+      id: 93ed41bd-5396-498b-88e6-6576a6497e5e
+      iscommand: false
+      name: Is ANY.RUN sandbox enabled?
+      type: condition
+      version: -1
+    taskid: 93ed41bd-5396-498b-88e6-6576a6497e5e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    scriptarguments:
+      task:
+        complex:
+          accessor: Task.ID
+          root: ANYRUN
+    separatecontext: false
+    task:
+      brand: ANYRUN
+      description: Get the report for a task created for a submitted file or url.
+      id: bf26e230-eb55-4b32-8031-5da5dd851921
+      iscommand: true
+      name: ANYRUN Get Report
+      script: ANYRUN|||anyrun-get-report
+      type: regular
+      version: -1
+    taskid: bf26e230-eb55-4b32-8031-5da5dd851921
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

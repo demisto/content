@@ -1,0 +1,37 @@
+args:
+- description: (Optional) only retrieve a specific field
+  name: field
+- default: true
+  description: IP address to query. E.g. !ip 1.1.1.1
+  name: ip
+  required: true
+comment: Query ipinfo.io regarding an IP address. Returns a table, or if a specific
+  field is selected, just the value for that field as a string.
+commonfields:
+  id: IPInfoQuery
+  version: -1
+dependson:
+  must:
+  - ipinfo_field
+deprecated: true
+name: IPInfoQuery
+runonce: false
+script: |+
+  field = demisto.get(demisto.args(), 'field')
+  if field:
+      demisto.results(demisto.executeCommand("ipinfo_field", demisto.args()))
+  else:
+      dArgs = demisto.args()
+      dArgs['using-brand'] = 'ipinfo'
+      resp = demisto.executeCommand("ip", dArgs)
+      if isError(resp[0]):
+          demisto.results(resp)
+      else:
+          demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': flattenRow(resp[0]['Contents']) } )
+
+
+scripttarget: 0
+system: true
+tags:
+- ipinfo
+type: python

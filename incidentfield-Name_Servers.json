@@ -1,0 +1,43 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"Domain"
+	],
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "nameservers",
+	"closeForm": false,
+	"columns": null,
+	"content": true,
+	"defaultRows": null,
+	"description": "",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"group": 2,
+	"hidden": false,
+	"id": "indicator_nameservers",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "Name Servers",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": [
+		"",
+		""
+	],
+	"sla": 0,
+	"sortValues": null,
+	"system": false,
+	"systemAssociatedTypes": null,
+	"threshold": 72,
+	"type": "multiSelect",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}

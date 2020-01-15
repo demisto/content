@@ -1,0 +1,65 @@
+args:
+- description: List Name of Base64 item (need to be a single file in list)
+  name: listname
+  required: true
+- description: Optional Warroom Output Filename (default filename is list name)
+  name: filename
+- auto: PREDEFINED
+  defaultValue: "no"
+  description: Is data compressed (zip format)?
+  name: isZipFile
+  predefined:
+  - "yes"
+  - "no"
+comment: Converts Base64 file in a list to a binary file and upload to warroom
+commonfields:
+  id: Base64ListToFile
+  version: -1
+enabled: true
+name: Base64ListToFile
+outputs:
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+- contextPath: File.EntryID
+  description: EntryID of the file (only in case of report type=json)
+runonce: false
+script: |-
+  import base64
+  import zlib
+
+
+  # Output file name
+  if 'filename' in demisto.args():
+      outfilename = demisto.args()['filename']
+  else:
+      outfilename = demisto.args()['listname']
+
+  # get the list
+  res = demisto.executeCommand('getList', {'listName': demisto.args()['listname']})
+  res = res[0]
+  if isError(res):
+    return_error("error reading list %s from demisto" % demisto.args()['listname'])
+
+  # convert base64 file to binary file
+  bin_file = base64.decodestring(res['Contents'])
+  if demisto.args()['isZipFile'] == 'yes':
+      bin_file = zlib.decompress(bin_file)
+
+  # output file to warroom
+  demisto.results(fileResult(outfilename, bin_file))
+scripttarget: 0
+system: true
+tags:
+- list
+- Utility
+type: python

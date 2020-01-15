@@ -1,0 +1,138 @@
+args:
+- default: true
+  description: File /EntryID to detonate
+  name: file
+  required: true
+- description: The FireEye profiles to use (comma separated)
+  name: profiles
+  required: true
+- defaultValue: "0"
+  description: Specify live or sandbox analysis mode. 0—Sandbox, analyze suspected
+    malware objects in a closed, protected environment. 1 —Live, analyze suspected
+    malware objects live within the MAS Multivector Virtual Execution (MVX) analysis
+    engine.
+  name: analysistype
+- defaultValue: "1"
+  description: Specifies whether to determine the file target based on an internal
+    determination rather than browsing to the target location. 0—No 1—Yes
+  name: prefetch
+comment: Detonate File or URL through FireEye
+commonfields:
+  id: FireEyeDetonateFile
+  version: -1
+dependson:
+  must:
+  - fe-submit
+  - fe-submit-result
+  - fe-submit-status
+enabled: true
+name: FireEyeDetonateFile
+runonce: false
+script: |+
+  import json
+  from time import sleep
+
+  res = []
+  timeout = 960
+  interval = 10
+
+  file = demisto.get(demisto.args(),'file')
+
+  feDone = False
+  feSubmissionKeys = {}
+
+  #profiles = ['win10x64','win7-sp1','win7x64-sp1','winxp-sp3']
+  profiles = argToList(demisto.args()['profiles'])
+
+  analysistype = demisto.args().get('analysistype', 0)
+  prefetch = demisto.args().get('prefetch', 1)
+
+  ### Make sure fireeye available
+  if demisto.executeCommand('IsIntegrationAvailable',{'brandname': 'fireeye'})[0]['Contents'] != 'yes':
+      feDone = True
+
+  ### Upload file and get submission_key
+  if not feDone:
+      bArgs = {'analysistype': analysistype,
+              'application':'0',
+              'force':"true",
+              'prefetch': prefetch,
+              'priority':"1",
+              'timeout':"180",
+              'upload':file}
+
+      for profile in profiles:
+          bArgs['profiles'] = profile
+          resp = demisto.executeCommand('fe-submit', bArgs)
+          if isError(resp[0]):
+              demisto.results(resp)
+              sys.exit(0)
+          else:
+              feSubmissionKey = demisto.get(resp[0],'Contents')
+              if isinstance(feSubmissionKey, str):
+                  feSubmissionKey = json.loads(feSubmissionKey)
+              feSubmissionKeys[profile] = demisto.get(feSubmissionKey[0],'ID')
+  else:
+      demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'FireEye: Integration not available.' } )
+      sys.exit(0)
+
+  ############ Poll stage ############
+  status = None
+  sec = 0
+  stauses = {}
+  while sec < timeout and feSubmissionKeys:
+      if not feDone:
+          status = "Done"
+          ######## Get status
+          for profile in profiles:
+              resp = demisto.executeCommand('fe-submit-status',{'submission_Key':feSubmissionKeys[profile]})
+              if isError(resp[0]):
+                  demisto.results(resp)
+                  sys.exit(0)
+
+              stauses[profile] = demisto.get(resp[0],'Contents.submissionStatus')
+              if stauses[profile] in ["In Progress"]:
+                  status = "In Progress"
+
+          ##### find status
+          if status in ["In Progress"]:
+              sec += interval
+              sleep(interval)
+              ### continue loop
+          else:
+              ## loop done failed
+              feDone = True
+      else:
+          break
+
+
+  ############ Get results ############
+  if not feDone:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not retrieve results from FireEye (may be due to timeout).' } )
+
+  for profile in profiles:
+      status = stauses[profile]
+      if status in ["Done"]:
+          resp = demisto.executeCommand('fe-submit-result ',{'submission_Key':feSubmissionKeys[profile]})
+          if isError(resp[0]):
+              demisto.results(resp)
+          else:
+              data = demisto.get(resp[0], "Contents.alerts.alert")
+              if data:
+                  data = data if isinstance(data, list) else [data]
+                  data = [{k: formatCell(row[k]).replace("\n","<br>") for k in row} for row in data]
+                  data = tblToMd(profile,data)
+                  demisto.results({"ContentsFormat": formats["markdown"], "Type": entryTypes["note"], "Contents": data} )
+              else:
+                  demisto.results("No results.")
+      else:
+          demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'FireEye: Failed to detonate file {0}, exit status = {1}'.format(file,status) })
+
+scripttarget: 0
+system: true
+tags:
+- fireeye
+- file
+- enhancement
+timeout: 960ns
+type: python

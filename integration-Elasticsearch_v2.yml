@@ -1,0 +1,828 @@
+category: Database
+commonfields:
+  id: Elasticsearch v2
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Username for server login
+  name: credentials
+  required: false
+  type: 9
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Index from which to fetch incidents (CSV)
+  name: fetch_index
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Query by which to fetch incidents (Lucene syntax)
+  name: fetch_query
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Index time field (for sorting sort and limiting data)
+  name: fetch_time_field
+  required: false
+  type: 0
+- defaultvalue: Simple-Date
+  display: Time field type
+  name: time_method
+  options:
+  - Simple-Date
+  - Timestamp-Seconds
+  - Timestamp-Milliseconds
+  required: false
+  type: 15
+- defaultvalue: '%Y-%m-%dT%H:%M:%SZ'
+  display: Time format as kept in Elasticsearch
+  name: fetch_time_format
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: "50"
+  display: The maximum number of results to return per fetch
+  name: fetch_size
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: "Search and analyze Data in Real Time. \n Supports version 6 and up."
+detaileddescription: "The Elasticsearch v2 integration supports Elasticsearch 6.0.0
+  and later.\n\nStrings are queried using the Lucene syntax. For more information
+  about the Lucene syntax, see: https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax\n\nFor
+  further information about request response fields, see: https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#request-body-search-explain\n\nFor
+  further information about type mapping, see: https://www.elastic.co/guide/en/elasticsearch/reference/7.x/mapping.html#mapping-type\n\nThe
+  types of time-fields supported are:\n    \n   - **Simple-Date** - A simple date
+  string. Requires inserting the format in which the field is saved. For more info
+  about time formatting ,see: http://strftime.org/\n   - **Timestamp-Second** - A
+  number referring to seconds since epoch (midnight, 1 January 1970). For example:
+  '1572164838'.\n   - **Timestamp-Milliseconds** - A number referring to milliseconds
+  since epoch (midnight, 1 January 1970). For example: '1572164838123'.\n\nNote: Not
+  all fields can be sorted in Elasticsearch. The fields are used to sort the results
+  table.  The supported result types are boolean, numeric, date, and keyword fields.\n"
+display: Elasticsearch v2
+image: data:image/png;base64,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
+name: Elasticsearch v2
+script:
+  commands:
+  - arguments:
+    - description: The index in which to perform a search.
+      name: index
+      required: true
+    - description: The string to query. Strings are queried using Lucene syntax.
+      name: query
+      predefined:
+      - ""
+      required: true
+    - description: A comma-separated list of the fields of a document to fetch. Leaving
+        the fields empty fetches the entire document.
+      isArray: true
+      name: fields
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Calculates an explanation of a score for a query. Default is "false".
+        For example, "value:1.6943597".
+      name: explain
+      predefined:
+      - "true"
+      - "false"
+    - defaultValue: "0"
+      description: The page number from which to start a search. The default is "0".
+      name: page
+    - defaultValue: "100"
+      description: The number of documents displayed per page. Can be an integer between
+        "1" and "10,000". The default is "100".
+      name: size
+    - description: The field by which to sort the results table. The supported result
+        types are boolean, numeric, date, and keyword fields. Keyword fields require
+        the doc_values parameter to be set to "true" from the Elasticsearch server.
+      name: sort-field
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      defaultValue: asc
+      description: The order by which to sort the results table. The results tables
+        can only be sorted if a sort-field is defined.
+      name: sort-order
+      predefined:
+      - asc
+      - desc
+    description: Queries an index.
+    name: es-search
+    outputs:
+    - contextPath: Elasticsearch.Search.Results._index
+      description: The index to which the document belongs.
+      type: String
+    - contextPath: Elasticsearch.Search.Results._id
+      description: The ID of the document.
+      type: String
+    - contextPath: Elasticsearch.Search.Results._type
+      description: The mapping type of the document.
+      type: String
+    - contextPath: Elasticsearch.Search.max_score
+      description: The maximum relevance score of a query.
+      type: Number
+    - contextPath: Elasticsearch.Search.Query
+      description: The query performed in the search.
+      type: String
+    - contextPath: Elasticsearch.Search.total.value
+      description: The number of search results.
+      type: Number
+    - contextPath: Elasticsearch.Search.Results._score
+      description: The relevance score of the search result.
+      type: Number
+    - contextPath: Elasticsearch.Search.Index
+      description: The index in which the search was performed.
+      type: String
+    - contextPath: Elasticsearch.Search.Server
+      description: The server on which the search was performed.
+      type: String
+    - contextPath: Elasticsearch.Search.timed_out
+      description: Whether the search stopped due to a time out.
+      type: Boolean
+    - contextPath: Elasticsearch.Search.took
+      description: The time in milliseconds taken for the search to complete.
+      type: Number
+    - contextPath: Elasticsearch.Search.Page
+      description: The page number from which the search started.
+      type: Number
+    - contextPath: Elasticsearch.Search.Size
+      description: The maximum number of scores that a search can return.
+      type: Number
+  - arguments:
+    - description: The index in which to perform a search.
+      name: index
+      required: true
+    - description: The string to query. Strings are queried using the Lucene syntax.
+      name: query
+      predefined:
+      - ""
+      required: true
+    - description: A comma-separated list of the fields of a document to fetch. If
+        empty, fetches the entire document.
+      isArray: true
+      name: fields
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Calculates an explanation of a score for a query. Default is "false".
+        For example, "value:1.6943597".
+      name: explain
+      predefined:
+      - "true"
+      - "false"
+    - defaultValue: "0"
+      description: The page number from which to start a search. The default is "0".
+      name: page
+    - defaultValue: "100"
+      description: The number of documents displayed per page. Can be an integer between
+        "1" and "10,000". The default is "100".
+      name: size
+    - description: The field by which to sort the results table. The supported result
+        types are boolean, numeric, date, and keyword fields. Keyword fields require
+        the doc_values parameter to be set to "true" from the Elasticsearch server.
+      name: sort-field
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      defaultValue: asc
+      description: The order by which to sort the results table. The results tables
+        can only be sorted if a sort-field is defined.
+      name: sort-order
+      predefined:
+      - asc
+      - desc
+    description: Searches an index.
+    name: search
+    outputs:
+    - contextPath: Elasticsearch.Search.Results._index
+      description: The index to which the document belongs.
+      type: String
+    - contextPath: Elasticsearch.Search.Results._id
+      description: The ID of the document.
+      type: String
+    - contextPath: Elasticsearch.Search.Results._type
+      description: The mapping type of the document.
+      type: String
+    - contextPath: Elasticsearch.Search.max_score
+      description: The maximum relevance score of a query.
+      type: Number
+    - contextPath: Elasticsearch.Search.Query
+      description: The query performed in the search.
+      type: String
+    - contextPath: Elasticsearch.Search.total.value
+      description: The number of search results.
+      type: Number
+    - contextPath: Elasticsearch.Search.Results._score
+      description: The relevance score of the search result.
+      type: Number
+    - contextPath: Elasticsearch.Search.Index
+      description: The index in which the search was performed.
+      type: String
+    - contextPath: Elasticsearch.Search.Server
+      description: The server on which the search was performed.
+      type: String
+    - contextPath: Elasticsearch.Search.timed_out
+      description: Whether the search stopped due to a time out.
+      type: Boolean
+    - contextPath: Elasticsearch.Search.took
+      description: The time in milliseconds taken for the search to complete.
+      type: Number
+    - contextPath: Elasticsearch.Search.Page
+      description: The page number from which the search started.
+      type: Number
+    - contextPath: Elasticsearch.Search.Size
+      description: The maximum number of scores that a search can return.
+      type: Number
+  dockerimage: demisto/elasticsearch:1.0.0.1795
+  isfetch: true
+  runonce: false
+  script: |2-
+
+
+
+
+    '''IMPORTS'''
+    from typing import List
+    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
+    from elasticsearch_dsl import Search
+    from elasticsearch_dsl.query import QueryString
+    from datetime import datetime
+    import json
+    import requests
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    SERVER = demisto.params().get('url', '').rstrip('/')
+    USERNAME = demisto.params().get('credentials', {}).get('identifier')
+    PASSWORD = demisto.params().get('credentials', {}).get('password')
+    PROXY = demisto.params().get('proxy')
+    HTTP_ERRORS = {
+        400: '400 Bad Request - Incorrect or invalid parameters',
+        401: '401 Unauthorized - Incorrect or invalid username or password',
+        403: '403 Forbidden - The account does not support performing this task',
+        404: '404 Not Found - Elasticsearch server was not found',
+        408: '408 Timeout - Check port number or Elasticsearch server credentials',
+        410: '410 Gone - Elasticsearch server no longer exists in the service',
+        500: '500 Internal Server Error - Internal error',
+        503: '503 Service Unavailable'
+    }
+
+
+    '''VARIABLES FOR FETCH INCIDENTS'''
+    TIME_FIELD = demisto.params().get('fetch_time_field', '')
+    TIME_FORMAT = demisto.params().get('fetch_time_format', '')
+    FETCH_INDEX = demisto.params().get('fetch_index', '')
+    FETCH_QUERY = demisto.params().get('fetch_query', '')
+    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    FETCH_SIZE = int(demisto.params().get('fetch_size', 50))
+    INSECURE = not demisto.params().get('insecure', False)
+    TIME_METHOD = demisto.params().get('time_method', 'Simple-Date')
+
+    # if timestamp than set the format to iso.
+    if 'Timestamp' in TIME_METHOD:
+        TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+
+
+    def get_timestamp_first_fetch(last_fetch):
+        """Gets the last fetch time as a datetime and converts it to the relevant timestamp format.
+
+        Args:
+            last_fetch(datetime): A datetime object setting up the last fetch time
+
+        Returns:
+            (num).The formatted timestamp
+        """
+        # this theorticly shouldn't happen but just in case
+        if str(last_fetch).isdigit():
+            return int(last_fetch)
+
+        if TIME_METHOD == 'Timestamp-Seconds':
+            return int(last_fetch.timestamp())
+
+        elif TIME_METHOD == 'Timestamp-Milliseconds':
+            return int(last_fetch.timestamp() * 1000)
+
+
+    def timestamp_to_date(timestamp_string):
+        """Converts a timestamp string to a datetime object.
+
+        Args:
+            timestamp_string(string): A string with a timestamp in it.
+
+        Returns:
+            (datetime).represented by the timestamp in the format '%Y-%m-%d %H:%M:%S.%f'
+        """
+        # find timestamp in form of more than seconds since epoch: 1572164838000
+        if TIME_METHOD == 'Timestamp-Milliseconds':
+            timestamp_number = float(int(timestamp_string) / 1000)
+
+        # find timestamp in form of seconds since epoch: 1572164838
+        elif TIME_METHOD == 'Timestamp-Seconds':
+            timestamp_number = float(timestamp_string)
+
+        # convert timestamp (a floating point number representing time since epoch) to datetime
+        return datetime.utcfromtimestamp(timestamp_number)
+
+
+    def elasticsearch_builder():
+        """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
+        if USERNAME:
+            if PROXY:
+                return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                                     http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
+
+            else:
+                return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                                     http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
+
+        else:
+            if PROXY:
+                return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                                     verify_certs=INSECURE, proxies=handle_proxy())
+
+            else:
+                return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE)
+
+
+    def get_hit_table(hit):
+        """Create context for a single hit in the search.
+
+        Args:
+            hit(Dict): a dictionary representing a single hit in the search.
+
+        Returns:
+            (dict).The hit context.
+            (list).the headers of the hit.
+        """
+        table_context = {
+            '_index': hit.get('_index'),
+            '_id': hit.get('_id'),
+            '_type': hit.get('_type'),
+            '_score': hit.get('_score'),
+        }
+        headers = ['_index', '_id', '_type', '_score']
+        if hit.get('_source') is not None:
+            for source_field in hit.get('_source').keys():
+                table_context[str(source_field)] = hit.get('_source').get(str(source_field))
+                headers.append(source_field)
+
+        return table_context, headers
+
+
+    def results_to_context(index, query, base_page, size, total_dict, response):
+        """Creates context for the full results of a search.
+
+        Args:
+            index(str): the index in which the search was made.
+            query(str): the query of the search.
+            base_page(int): the base page from which the search is made.
+            size(int): the amount of results to return.
+            total_dict(dict): a dictionary containing the info about thenumber of total results found
+            response(Dict): the raw response of the results.
+
+        Returns:
+            (dict).The full context for the search results.
+            (list).The metadata headers of the search.
+            (list).the context for the hits.
+            (list).the headers of the hits.
+        """
+        search_context = {
+            'Server': SERVER,
+            'Index': index,
+            'Query': query,
+            'Page': base_page,
+            'Size': size,
+            'total': total_dict,
+            'max_score': response.get('hits').get('max_score'),
+            'took': response.get('took'),
+            'timed_out': response.get('timed_out')
+        }
+
+        hit_headers = []  # type: List
+        hit_tables = []
+        if total_dict.get('value') > 0:
+            for hit in response.get('hits').get('hits'):
+                single_hit_table, single_header = get_hit_table(hit)
+                hit_tables.append(single_hit_table)
+                hit_headers = list(set(single_header + hit_headers) - {'_id', '_type', '_index', '_score'})
+            hit_headers = ['_id', '_index', '_type', '_score'] + hit_headers
+
+        search_context['Results'] = response.get('hits').get('hits')
+        meta_headers = ['Query', 'took', 'timed_out', 'total', 'max_score', 'Server', 'Page', 'Size']
+        return search_context, meta_headers, hit_tables, hit_headers
+
+
+    def get_total_results(response_dict):
+        """Creates a dictionary with all for the number of total results found
+
+        Args:
+            response_dict(dict): the raw response from elastic search.
+
+        Returns:
+            (dict).The total results info for the context.
+            (num).The number of total results.
+        """
+        total_results = response_dict.get('hits', {}).get('total')
+        if not str(total_results).isdigit():
+            # if in version 7 - total number of hits has value field
+            total_results = total_results.get('value')
+            total_dict = response_dict.get('hits').get('total')
+
+        else:
+            total_dict = {
+                'value': total_results,
+            }
+
+        return total_dict, total_results
+
+
+    def search_command():
+        """Performs a search in Elasticsearch."""
+        index = demisto.args().get('index')
+        query = demisto.args().get('query')
+        fields = demisto.args().get('fields')  # fields to display
+        explain = 'true' == demisto.args().get('explain')
+        base_page = int(demisto.args().get('page'))
+        size = int(demisto.args().get('size'))
+        sort_field = demisto.args().get('sort-field')
+        sort_order = demisto.args().get('sort-order')
+
+        es = elasticsearch_builder()
+
+        que = QueryString(query=query)
+        search = Search(using=es, index=index).query(que)[base_page:base_page + size]
+        if explain:
+            # if 'explain parameter is set to 'true' - adds explanation section to search results
+            search = search.extra(explain=True)
+
+        if fields is not None:
+            fields = fields.split(',')
+            search = search.source(fields)
+
+        if sort_field is not None:
+            search = search.sort({sort_field: {'order': sort_order}})
+
+        response = search.execute().to_dict()
+
+        total_dict, total_results = get_total_results(response)
+        search_context, meta_headers, hit_tables, hit_headers = results_to_context(index, query, base_page,
+                                                                                   size, total_dict, response)
+        search_human_readable = tableToMarkdown('Search Metadata:', search_context, meta_headers, removeNull=True)
+        hits_human_readable = tableToMarkdown('Hits:', hit_tables, hit_headers, removeNull=True)
+        total_human_readable = search_human_readable + '\n' + hits_human_readable
+        full_context = {
+            'Elasticsearch.Search(val.Query == obj.Query && val.Index == obj.Index '
+            '&& val.Server == obj.Server && val.Page == obj.Page && val.Size == obj.Size)': search_context
+        }
+
+        return_outputs(total_human_readable, full_context, response)
+
+
+    def fetch_params_check():
+        """If is_fetch is ticked, this function checks that all the necessary parameters for the fetch are entered."""
+        str_error = []  # type:List
+        if TIME_FIELD == '' or TIME_FIELD is None:
+            str_error.append("Index time field is not configured.")
+
+        if FETCH_INDEX == '' or FETCH_INDEX is None:
+            str_error.append("Index is not configured.")
+
+        if FETCH_QUERY == '' or FETCH_QUERY is None:
+            str_error.append("Query by which to fetch incidents is not configured.")
+
+        if (TIME_FORMAT == '' or TIME_FORMAT is None) and TIME_METHOD == 'Simple-Date':
+            str_error.append("Time format is not configured.")
+
+        if len(str_error) > 0:
+            return_error("Got the following errors in test:\nFetches incidents is enabled.\n" + '\n'.join(str_error))
+
+
+    def test_general_query(es):
+        """Test executing query in fetch index.
+
+        Notes:
+            if is_fetch it ticked, this function runs a generay query to Elasticsearch just to make sure we get a response
+            from the FETCH_INDEX.
+
+        Args:
+            es(Elasticsearch): an Elasticsearch object to which we run the test.
+        """
+        try:
+            query = QueryString(query='*')
+            search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
+            response = search.execute().to_dict()
+            _, total_results = get_total_results(response)
+
+        except NotFoundError as e:
+            return_error("Fetch incidents test failed.\nError message: {}.".format(str(e).split(',')[2][2:-1]))
+
+
+    def test_time_field_query(es):
+        """Test executing query of fetch time field.
+
+        Notes:
+            if is_fetch is ticked, this function checks if the entered TIME_FIELD returns results.
+
+        Args:
+            es(Elasticsearch): an Elasticsearch object to which we run the test.
+
+        Returns:
+            (dict).The results of the query if they are returned.
+        """
+        query = QueryString(query=TIME_FIELD + ':*')
+        search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
+        response = search.execute().to_dict()
+        _, total_results = get_total_results(response)
+
+        if total_results == 0:
+            # failed in getting the TIME_FIELD
+            return_error("Fetch incidents test failed.\nDate field value incorrect [{}].".format(TIME_FIELD))
+
+        else:
+            return response
+
+
+    def test_fetch_query(es):
+        """Test executing fetch query.
+
+        Notes:
+            if is_fetch is ticked, this function checks if the FETCH_QUERY returns results.
+
+        Args:
+            es(Elasticsearch): an Elasticsearch object to which we run the test.
+
+        Returns:
+            (dict).The results of the query if they are returned.
+        """
+        query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
+        search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
+        response = search.execute().to_dict()
+        _, total_results = get_total_results(response)
+
+        if total_results > 0:
+            return response
+
+        else:
+            # failed to get the TIME_FIELD with the FETCH_QUERY
+            # this can happen and not be an error if the FETCH_QUERY doesn't have results yet.
+            # Thus this does not return an error message
+            return None
+
+
+    def test_timestamp_format(timestamp):
+        """if is_fetch is ticked and the TIME_METHOD chosen is a type of timestamp - this function checks that
+            the timestamp is in the correct format.
+
+        Args:
+            timestamp(sting): a timestamp string.
+        """
+        timestamp_in_seconds_len = len(str(int(time.time())))
+
+        if TIME_METHOD == 'Timestamp-Seconds':
+            if not timestamp.isdigit():
+                return_error(f"The time field does not contain a standard timestamp.\nFetched: {timestamp}")
+
+            elif len(timestamp) > timestamp_in_seconds_len:
+                return_error(f"Fetched timestamp is not in seconds since epoch.\nFetched: {timestamp}")
+
+        elif TIME_METHOD == 'Timestamp-Milliseconds':
+            if not timestamp.isdigit():
+                return_error(f"The timestamp fetched is not in milliseconds.\nFetched: {timestamp}")
+
+            elif len(timestamp) <= timestamp_in_seconds_len:
+                return_error(f"Fetched timestamp is not in milliseconds since epoch.\nFetched: {timestamp}")
+
+
+    def test_func():
+        headers = {
+            'Content-Type': "application/json"
+        }
+
+        try:
+            if USERNAME:
+                res = requests.get(SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE, headers=headers)
+
+            else:
+                res = requests.get(SERVER, verify=INSECURE, headers=headers)
+
+            if res.status_code >= 400:
+                try:
+                    res.raise_for_status()
+
+                except requests.exceptions.HTTPError as e:
+                    if HTTP_ERRORS.get(res.status_code) is not None:
+                        # if it is a known http error - get the message form the preset messages
+                        return_error("Failed to connect. "
+                                     "The following error occurred: {}".format(HTTP_ERRORS.get(res.status_code)))
+
+                    else:
+                        # if it is unknown error - get the message from the error itself
+                        return_error("Failed to connect. The following error occurred: {}".format(str(e)))
+
+        except requests.exceptions.RequestException as e:
+            return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
+
+        if demisto.params().get('isFetch'):
+            # check the existence of all necessary fields for fetch
+            fetch_params_check()
+
+            try:
+                # build general Elasticsearch class
+                es = elasticsearch_builder()
+
+                # test if FETCH_INDEX exists
+                test_general_query(es)
+
+                # test if TIME_FIELD in index exists
+                response = test_time_field_query(es)
+
+                # try to get response from FETCH_QUERY - if exists check the time field from that query
+                temp = test_fetch_query(es)
+                if temp:
+                    response = temp
+
+                # get the value in the time field
+                hit_date = str(response.get('hits', {}).get('hits')[0].get('_source').get(str(TIME_FIELD)))
+
+                # if not a timestamp test the conversion to datetime object
+                if 'Timestamp' not in TIME_METHOD:
+                    datetime.strptime(hit_date, TIME_FORMAT)
+
+                # test timestamp format and conversion to date
+                else:
+                    test_timestamp_format(hit_date)
+                    timestamp_to_date(hit_date)
+
+            except ValueError as e:
+                return_error("Inserted time format is incorrect.\n" + str(e) + '\n' + TIME_FIELD + ' fetched: ' + hit_date)
+
+        demisto.results('ok')
+
+
+    def incident_label_maker(source):
+        """Creates labels for the created incident.
+
+        Args:
+            source(dict): the _source fields of a hit.
+
+        Returns:
+            (list).The labels.
+        """
+        labels = []
+        for field in source.keys():
+            labels.append({'type': str(field), 'value': str(source.get(field))})
+
+        return labels
+
+
+    def results_to_incidents_timestamp(response, last_fetch):
+        """Converts the current results into incidents.
+
+        Args:
+            response(dict): the raw search results from Elasticsearch.
+            last_fetch(num): the date or timestamp of the last fetch before this fetch
+            - this will hold the last date of the incident brought by this fetch.
+
+        Returns:
+            (list).The incidents.
+            (num).The date of the last incident brought by this fetch.
+        """
+        current_fetch = last_fetch
+        incidents = []
+        for hit in response.get('hits', {}).get('hits'):
+            if hit.get('_source') is not None and hit.get('_source').get(str(TIME_FIELD)) is not None:
+                # if timestamp convert to iso format date and save the timestamp
+                hit_date = timestamp_to_date(str(hit.get('_source')[str(TIME_FIELD)]))
+                hit_timestamp = int(hit.get('_source')[str(TIME_FIELD)])
+
+                if hit_timestamp > last_fetch:
+                    last_fetch = hit_timestamp
+
+                # avoid duplication due to weak time query
+                if hit_timestamp > current_fetch:
+                    inc = {
+                        'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
+                        'rawJSON': json.dumps(hit),
+                        'labels': incident_label_maker(hit.get('_source')),
+                        'occurred': hit_date.isoformat() + 'Z'
+                    }
+                    incidents.append(inc)
+
+        return incidents, last_fetch
+
+
+    def results_to_incidents_datetime(response, last_fetch):
+        """Converts the current results into incidents.
+
+        Args:
+            response(dict): the raw search results from Elasticsearch.
+            last_fetch(datetime): the date or timestamp of the last fetch before this fetch
+            - this will hold the last date of the incident brought by this fetch.
+
+        Returns:
+            (list).The incidents.
+            (datetime).The date of the last incident brought by this fetch.
+        """
+        current_fetch = last_fetch
+        incidents = []
+        for hit in response.get('hits', {}).get('hits'):
+            if hit.get('_source') is not None and hit.get('_source').get(str(TIME_FIELD)) is not None:
+                hit_date = datetime.strptime(str(hit.get('_source')[str(TIME_FIELD)]), TIME_FORMAT)
+
+                if hit_date > last_fetch:
+                    last_fetch = hit_date
+
+                # avoid duplication due to weak time query
+                if hit_date > current_fetch:
+                    inc = {
+                        'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
+                        'rawJSON': json.dumps(hit),
+                        'labels': incident_label_maker(hit.get('_source')),
+                        'occurred': hit_date.isoformat() + 'Z'
+                    }
+                    incidents.append(inc)
+
+        return incidents, last_fetch
+
+
+    def fetch_incidents():
+        last_run = demisto.getLastRun()
+        last_fetch = last_run.get('time')
+
+        # handle first time fetch
+        if last_fetch is None:
+            last_fetch, _ = parse_date_range(date_range=FETCH_TIME, date_format=TIME_FORMAT, utc=False, to_timestamp=False)
+            last_fetch = datetime.strptime(str(last_fetch), TIME_FORMAT)
+
+            # if timestamp: get the last fetch to the correct format of timestamp
+            if 'Timestamp' in TIME_METHOD:
+                last_fetch = get_timestamp_first_fetch(last_fetch)
+
+        # if method is simple date - convert the date string to datetime
+        elif 'Simple-Date' == TIME_METHOD:
+            last_fetch = datetime.strptime(last_fetch, TIME_FORMAT)
+
+        es = elasticsearch_builder()
+
+        query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
+        search = Search(using=es, index=FETCH_INDEX).filter({'range': {TIME_FIELD: {'gt': last_fetch}}})
+        search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
+        response = search.execute().to_dict()
+        _, total_results = get_total_results(response)
+
+        incidents = []  # type: List
+
+        if total_results > 0:
+            if 'Timestamp' in TIME_METHOD:
+                incidents, last_fetch = results_to_incidents_timestamp(response, last_fetch)
+                demisto.setLastRun({'time': last_fetch})
+
+            else:
+                incidents, last_fetch = results_to_incidents_datetime(response, last_fetch)
+                demisto.setLastRun({'time': datetime.strftime(last_fetch, TIME_FORMAT)})
+
+            demisto.info('extract {} incidents'.format(len(incidents)))
+
+        demisto.incidents(incidents)
+
+
+    try:
+        LOG('command is %s' % (demisto.command(),))
+        if demisto.command() == 'test-module':
+            test_func()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() in ['search', 'es-search']:
+            search_command()
+    except Exception as e:
+        return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
+  subtype: python3
+  type: python
+system: true

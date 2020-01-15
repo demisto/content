@@ -1,0 +1,367 @@
+description: Hunt for endpoint activity involving hash IOCs, using Carbon Black Protection.
+id: search_endpoints_by_hash_-_carbon_black_protection
+inputs:
+- description: The MD5 Hash to hunt for
+  key: Hash
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+name: Search Endpoints By Hash - Carbon Black Protection
+outputs:
+- contextPath: Endpoint.Hostname
+  description: The device hostname
+  type: string
+- contextPath: Endpoint
+  description: The endpoint
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 9b42ebf8-2133-4457-83ed-1d281ed7887f
+      iscommand: false
+      name: start_task
+      type: start
+      version: -1
+    taskid: 9b42ebf8-2133-4457-83ed-1d281ed7887f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      extend-context:
+        simple: ComputerId=computerId
+      md5:
+        complex:
+          root: inputs.Hash
+    separatecontext: false
+    task:
+      brand: ""
+      description: Searching The file catalog for the hashes
+      id: 0891cd8c-8331-42ee-80d8-ec78652b7ad2
+      iscommand: false
+      name: Search hashes in the file catalog
+      scriptName: CBPCatalogFindHash
+      type: regular
+      version: -1
+    taskid: 0891cd8c-8331-42ee-80d8-ec78652b7ad2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -471,
+          "y": 608
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    scriptarguments:
+      extend-context:
+        simple: ComputerId=computerId
+      hash:
+        complex:
+          root: inputs.Hash
+    separatecontext: false
+    task:
+      brand: ""
+      description: If the hashes have been approved or blocked in the past, they will
+        be in existing rules. It is useful to see whether the hash was in some blacklist
+        or whitelist or a person marked them as such, possibly with a comment explaining
+        their reasons.
+      id: 255f2625-68d4-4475-81a2-663da89a39d6
+      iscommand: false
+      name: Check if the hashes are included in any rules
+      scriptName: CBPFindRule
+      type: regular
+      version: -1
+    taskid: 255f2625-68d4-4475-81a2-663da89a39d6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -471,
+          "y": 774
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: carbonblackprotection
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "12"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${modules(val.brand == 'carbonblackprotection' && val.state == 'active')}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Is Carbon Black Protection enabled?
+      id: 02afb0d8-e0fd-424d-83c6-44a15204351f
+      iscommand: false
+      name: Is Carbon Black Protection enabled?
+      type: condition
+      version: -1
+    taskid: 02afb0d8-e0fd-424d-83c6-44a15204351f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Done
+      id: e5069a6c-2c37-4f0d-8a7b-571fdd1aa9ac
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: e5069a6c-2c37-4f0d-8a7b-571fdd1aa9ac
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1594
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Hash
+          operator: isExists
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "8"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${File.MD5}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Do we have files to hunt?
+      id: 57f5bcda-24a1-4387-8566-94fa8eed1155
+      iscommand: false
+      name: Do we have files to hunt?
+      type: condition
+      version: -1
+    taskid: 57f5bcda-24a1-4387-8566-94fa8eed1155
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -179,
+          "y": 364
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    scriptarguments:
+      extend-context: {}
+      headers: {}
+      id:
+        complex:
+          root: ComputerId
+    separatecontext: false
+    task:
+      brand: carbonblackprotection
+      description: Get hostname and workgroup
+      id: 0174e70d-e14f-47cc-8c65-0b36c142ae52
+      iscommand: true
+      name: Get hostname and workgroup
+      script: carbonblackprotection|||cbp-computer-get
+      type: regular
+      version: -1
+    taskid: 0174e70d-e14f-47cc-8c65-0b36c142ae52
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -693,
+          "y": 1272
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: Endpoint.Hostname
+      value:
+        complex:
+          accessor: Hostname
+          root: Endpoint
+          transformers:
+          - args:
+              regex:
+                value:
+                  simple: .*\\(.*)
+              replaceWith:
+                value:
+                  simple: $1
+            operator: replaceMatch
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get hostname
+      id: accc2606-97d8-45e7-8382-8fa3a8799240
+      iscommand: false
+      name: Get hostname
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: accc2606-97d8-45e7-8382-8fa3a8799240
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -693,
+          "y": 1426
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "13"
+    note: false
+    scriptarguments:
+      extend-context: {}
+      value:
+        complex:
+          root: ComputerId
+    separatecontext: false
+    task:
+      brand: ""
+      description: Any endpoints found?
+      id: cecaea78-7661-4243-8f10-3f1a4aa38668
+      iscommand: false
+      name: Any endpoints found?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: cecaea78-7661-4243-8f10-3f1a4aa38668
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -471,
+          "y": 936
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_#default#": 0.15,
+      "10_12_yes": 0.67,
+      "12_11_#default#": 0.1,
+      "12_8_yes": 0.39,
+      "15_11_#default#": 0.14,
+      "15_13_yes": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1609,
+        "width": 1123,
+        "x": -693,
+        "y": 50
+      }
+    }
+  }

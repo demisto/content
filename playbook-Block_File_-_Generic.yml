@@ -1,0 +1,113 @@
+description: A generic playbook for blocking files from running on endpoints. This
+  playbook currently supports Carbon Black Enterprise Response.
+id: block_file_-_generic
+inputs:
+- description: The MD5 hash of the file you want to block.
+  key: MD5
+  required: false
+  value:
+    simple: ${File.MD5}
+name: Block File - Generic
+outputs:
+- contextPath: CbResponse.BlockedHashes.LastBlock.Time
+  description: Last block time
+- contextPath: CbResponse.BlockedHashes.LastBlock.Hostname
+  description: Last block hostname
+- contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
+  description: Last block sensor ID
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 49ac9316-5f77-48f9-8d21-9f05c335c2e4
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 49ac9316-5f77-48f9-8d21-9f05c335c2e4
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+    separatecontext: true
+    task:
+      brand: ""
+      id: e3fbf02a-78a1-4329-837e-a6116bcf92af
+      iscommand: false
+      name: Block File - Carbon Black Response
+      playbookName: Block File - Carbon Black Response
+      type: playbook
+      version: -1
+    taskid: e3fbf02a-78a1-4329-837e-a6116bcf92af
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: fceba42b-c11f-4521-8b0a-f86d410adc0e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: fceba42b-c11f-4521-8b0a-f86d410adc0e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }

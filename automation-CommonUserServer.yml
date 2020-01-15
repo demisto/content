@@ -1,0 +1,13 @@
+comment: Common user defined code that will be merged into each server script when
+  it runs
+commonfields:
+  id: CommonUserServer
+  version: -1
+name: CommonUserServer
+runonce: false
+script: ""
+scripttarget: 0
+tags:
+- infra
+- server
+type: javascript

@@ -1,0 +1,88 @@
+args:
+- description: Name for the rule to be configured
+  name: ruleName
+- description: Usually not required as ruleName is sufficient. Direct XPath to the
+    rule entry to be modified.
+  name: xpath
+- description: Source IP address
+  name: srcIP
+- description: Destination IP address
+  name: dstIP
+- description: Yes/No - whether to negate the source IP address (match all except
+    the specified address)
+  name: negateSrc
+- description: Yes/No - whether to negate the destination IP address (match all except
+    the specified address)
+  name: negateDst
+- description: Action for the rule
+  name: action
+- description: Service for the rule
+  name: service
+- description: Yes/No - whether to disable the rule
+  name: disable
+- description: Application for the rule
+  name: application
+- description: Source user for the rule
+  name: srcUser
+- description: '"From" value for the rule'
+  name: from
+- description: '"To" value for the rule'
+  name: to
+- description: Value for the "disable-server-response-inspection" option
+  name: disableServerResponseInspection
+- description: Rule description
+  name: description
+comment: Set panorama configuration
+commonfields:
+  id: PanoramaConfig
+  version: -1
+dependson:
+  must:
+  - panorama
+deprecated: true
+name: PanoramaConfig
+runonce: false
+script: |-
+  function AddArgumentOpen(arg, fieldName, member) {
+      if (arg) {
+          if (member) {
+              return '<'+fieldName+'><member>' + arg+ '</member></'+fieldName+'>';
+          } else {
+              return '<'+fieldName+'>' + arg + '</'+fieldName+'>';
+          }
+      }
+      return '';
+  }
+  function AddArgumentYesNo(arg, fieldName) {
+      if (arg  !== undefined) {
+              return '<'+fieldName+'>' + (arg ? 'yes' : 'no') + '</'+fieldName+'>';
+          }
+      return '';
+  }
+  var req = {
+          type: 'config',
+          action: 'set',
+          key: 'keyvalue',
+          xpath: args.xpath || '/config/devices/entry/vsys/entry/rulebase/security/rules/entry[@name=\'' + args.ruleName +'\']',
+          element: AddArgumentOpen(args.action, 'action') +
+          AddArgumentOpen(args.description, 'description') +
+              AddArgumentOpen(args.srcIP, 'source', true) +
+              AddArgumentOpen(args.dstIP, 'destination', true) +
+              AddArgumentOpen(args.application, 'application', true) +
+              AddArgumentOpen(args.srcUser, 'source-user', true) +
+              AddArgumentOpen(args.from, 'from', true) +
+              AddArgumentOpen(args.to, 'to', true) +
+              AddArgumentOpen(args.service, 'service', true) +
+              AddArgumentYesNo(args.negateSrc, 'negate-source') +
+              AddArgumentYesNo(args.negateDst, 'negate-destination') +
+              AddArgumentYesNo(args.disable, 'disabled') +
+              AddArgumentYesNo(args.disableServerResponseInspection, 'disable-server-response-inspection')
+      };
+  var raw = executeCommand('panorama', req);
+  return raw[0].Contents.response['-status'];
+scripttarget: 0
+system: true
+tags:
+- panorama
+- firewall
+type: javascript

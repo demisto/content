@@ -1,0 +1,446 @@
+description: |-
+  Detonates one or more files using BitDam integration.
+  Returns verdict to the War Room and file reputations to the context data.
+  Supported file types are mainly PDF & microsoft office software/
+id: Detonate File - BitDam
+inputs:
+- description: File object of the file to detonate. The File is taken from the context.
+  key: File
+  required: false
+  value:
+    complex:
+      root: File
+- description: Duration for executing the pooling (in minutes)
+  key: Interval
+  required: false
+  value:
+    simple: "1"
+- description: The duration after which to stop pooling and to resume the playbook
+    (in minutes)
+  key: Timeout
+  required: false
+  value:
+    simple: "10"
+name: Detonate File - BitDam
+outputs:
+- contextPath: BitDam.Analysis.ID
+  description: Sample ID
+  type: string
+- contextPath: DBotScore.Vendor
+  description: 'The name of the vendor: BitDam'
+  type: string
+- contextPath: BitDam.Analysis.Verdict
+  description: Analysis Verdict
+  type: string
+- contextPath: BitDam.Analysis.Status
+  description: Analysis Status
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The name of the sample file or URL
+- contextPath: DBotScore.Type
+  description: '''file'' for file samples'
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: cf22dcbc-af9c-42fa-8963-205d412e6965
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: cf22dcbc-af9c-42fa-8963-205d412e6965
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      Ids:
+        complex:
+          accessor: FileScan.SHA1
+          root: BitDam
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: idValue
+      PollingCommandName:
+        simple: bitdam-get-verdict
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: BitDam.Analysis(val.Status !== 'DONE').ID
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 19ace356-7eb1-491e-8b42-9d755950312c
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 19ace356-7eb1-491e-8b42-9d755950312c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1070
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: aa6d7b50-e89e-4046-8245-91d4e430544d
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: aa6d7b50-e89e-4046-8245-91d4e430544d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: EntryID
+                root: inputs.File
+          operator: isExists
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "9"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Look for files to detonate
+      id: 840243b7-07df-471e-8cab-7dc8080ce28c
+      iscommand: false
+      name: Is there a File to scan?
+      type: condition
+      version: -1
+    taskid: 840243b7-07df-471e-8cab-7dc8080ce28c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: BitDam
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if integration instance is enabled
+      id: 03079660-b680-41d1-847d-4d667e3bc404
+      iscommand: false
+      name: Is BitDam enabled?
+      type: condition
+      version: -1
+    taskid: 03079660-b680-41d1-847d-4d667e3bc404
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    scriptarguments:
+      idType: {}
+      idValue:
+        simple: ${BitDam.FileScan.SHA1}
+    separatecontext: false
+    task:
+      brand: ""
+      description: '-'
+      id: 2610cf49-d119-4065-861c-c7b3a5ffd0c8
+      iscommand: true
+      name: BitDam Get Verdict
+      script: '|||bitdam-get-verdict'
+      type: regular
+      version: -1
+    taskid: 2610cf49-d119-4065-861c-c7b3a5ffd0c8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1245
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    task:
+      brand: ""
+      id: 5f4539b9-bf85-42e5-8892-f12714a02869
+      iscommand: false
+      name: Set file to context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 5f4539b9-bf85-42e5-8892-f12714a02869
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: EntryID
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Type
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:PDF|DOT|DOCX|DOCM|DOTX|DOTM|RTF|XLS|XLT|XLSX|XLSM|XLTX|XLTM|XLSB|XLAM|CSV|PPT|PPTX|PPTM|POTX|POTM|PPAM|PPSX|PPSM|PPS)\b
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Extension
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:PDF|DOT|DOCX|DOCM|DOTX|DOTM|RTF|XLS|XLT|XLSX|XLSM|XLTX|XLTM|XLSB|XLAM|CSV|PPT|PPTX|PPTM|POTX|POTM|PPAM|PPSX|PPSM|PPS)\b
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Info
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:PDF|DOT|DOCX|DOCM|DOTX|DOTM|RTF|XLS|XLT|XLSX|XLSM|XLTX|XLTM|XLSB|XLAM|CSV|PPT|PPTX|PPTM|POTX|POTM|PPAM|PPSX|PPSM|PPS)\b
+                root: File
+          operator: isExists
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 699619cb-33c2-4b32-88ef-ba0844c2cddf
+      iscommand: false
+      name: Is File type supported?
+      type: condition
+      version: -1
+    taskid: 699619cb-33c2-4b32-88ef-ba0844c2cddf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      entryId:
+        complex:
+          accessor: EntryID
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: inputs.File.Info
+              operator: match
+              right:
+                value:
+                  simple: .*(?:PDF|DOT|DOCX|DOCM|DOTX|DOTM|RTF|XLS|XLT|XLSX|XLSM|XLTX|XLTM|XLSB|XLAM|CSV|PPT|PPTX|PPTM|POTX|POTM|PPAM|PPSX|PPSM|PPS)\b
+            - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: inputs.File.Type
+              operator: match
+              right:
+                value:
+                  simple: .*(?:PDF|DOT|DOCX|DOCM|DOTX|DOTM|RTF|XLS|XLT|XLSX|XLSM|XLTX|XLTM|XLSB|XLAM|CSV|PPT|PPTX|PPTM|POTX|POTM|PPAM|PPSX|PPSM|PPS)\b
+            - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: inputs.File.Extension
+              operator: match
+              right:
+                value:
+                  simple: .*(?:PDF|DOT|DOCX|DOCM|DOTX|DOTM|RTF|XLS|XLT|XLSX|XLSM|XLTX|XLTM|XLSB|XLAM|CSV|PPT|PPTX|PPTM|POTX|POTM|PPAM|PPSX|PPSM|PPS)\b
+          root: inputs.File
+    separatecontext: false
+    task:
+      brand: ""
+      description: Upload a file sample to BitDam's service
+      id: 5e010413-b8e7-4562-8fc6-cddc2168851f
+      iscommand: true
+      name: BItDam Upload File
+      script: '|||bitdam-upload-file'
+      type: regular
+      version: -1
+    taskid: 5e010413-b8e7-4562-8fc6-cddc2168851f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_12_yes": 0.89
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 717.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

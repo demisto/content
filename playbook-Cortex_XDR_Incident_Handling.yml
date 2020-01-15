@@ -1,0 +1,632 @@
+description: "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR
+  incident. \nThe playbook syncs and updates new XDR alerts that construct the incident.
+  It enriches indicators using Threat Intelligence integrations and Palo Alto Networks
+  AutoFocus. The incident's severity is then updated based on the indicators reputation
+  and an analyst is assigned for manual investigation. If chosen, automated remediation
+  with Palo Alto Networks FireWall is initiated. After a manual review by the SOC
+  analyst, the XDR incident is closed automatically.\n\n*** Note - The XDRSyncScript
+  used by this playbook sets data in the XDR incident fields that were released to
+  content from the Demisto server version 5.0.0.\nFor Demisto versions under 5.0.0,
+  please follow the 'Palo Alto Networks Cortex XDR' documentation to upload the new
+  fields manually."
+id: Cortex XDR Incident Handling
+inputs: []
+name: Cortex XDR Incident Handling
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: cf0f3047-b5fe-4108-8c46-964de2733708
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: cf0f3047-b5fe-4108-8c46-964de2733708
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": -250
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    scriptarguments:
+      alert_count: {}
+      assigned_user_mail: {}
+      assigned_user_pretty_name: {}
+      description: {}
+      first: {}
+      high_severity_alert_count: {}
+      host_count: {}
+      incident_id:
+        simple: ${incident.xdrincidentid}
+      interval:
+        simple: "5"
+      low_severity_alert_count: {}
+      med_severity_alert_count: {}
+      notes: {}
+      playbook_to_run: {}
+      resolve_comment: {}
+      severity: {}
+      status: {}
+      user_count: {}
+      verbose: {}
+      xdr_alerts: {}
+      xdr_file_artifacts: {}
+      xdr_incident_from_previous_run: {}
+      xdr_incident_markdown_field: {}
+      xdr_network_artifacts: {}
+      xdr_url: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: This script compares the Demisto and XDR incidents and updates
+        both incidents, respectively. This script always uses xdr-get-incident-extra-data
+        and outputs the whole incident JSON to the context. If the incident in XDR
+        is updated, the Demisto incident is updated accordingly and the playbook will
+        rerun. If incident in Demisto is updated, the script executes xdr-update-incident
+        and updates the incident in XDR.
+      id: 41f6acc5-4a08-47d9-8886-ea034c4f1a74
+      iscommand: false
+      name: Perform XDR Alerts Sync with Incident
+      scriptName: XDRSyncScript
+      type: regular
+      version: -1
+    taskid: 41f6acc5-4a08-47d9-8886-ea034c4f1a74
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": -85
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    scriptarguments:
+      assigned_user_mail: {}
+      assigned_user_pretty_name: {}
+      incident_id:
+        simple: ${incident.xdrincidentid}
+      manual_severity: {}
+      resolve_comment:
+        simple: Some comment here
+      status:
+        simple: RESOLVED_THREAT_HANDLED
+      unassign_user: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Updates one or more fields of a specified incident. Missing fields
+        are ignored. To remove the assignment for an incident, pass a null value in
+        assignee email argument.
+      id: 60199b0b-4582-43d8-869c-7e7df70fb86b
+      iscommand: true
+      name: Close XDR incident
+      script: '|||xdr-update-incident'
+      type: regular
+      version: -1
+    taskid: 60199b0b-4582-43d8-869c-7e7df70fb86b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 1860
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d2a748f4-da16-4e04-8103-21dc350805d8
+      iscommand: false
+      name: File Analysis
+      type: title
+      version: -1
+    taskid: d2a748f4-da16-4e04-8103-21dc350805d8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 110
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Incident.file_artifacts.file_sha256
+                root: PaloAltoNetworksXDR
+                transformers:
+                - operator: uniq
+          operator: isExists
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "31"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 54f287fd-2090-4c41-877a-5c65d3a8e14c
+      iscommand: false
+      name: Are there files to analyze?
+      type: condition
+      version: -1
+    taskid: 54f287fd-2090-4c41-877a-5c65d3a8e14c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 270
+        }
+      }
+  "15":
+    continueonerror: true
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    scriptarguments:
+      coverage: {}
+      filter_data: {}
+      id:
+        complex:
+          accessor: xdrfileartifacts.filesha256
+          root: incident
+          transformers:
+          - operator: uniq
+      os: {}
+      platforms: {}
+      sample_id:
+        complex:
+          accessor: xdrfileartifacts.filesha256
+          root: incident
+          transformers:
+          - operator: uniq
+      sections: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Retrieve the sample analysis
+      id: ba8deeb8-0175-4c9f-80ce-e8b974389599
+      iscommand: true
+      name: Perform file analysis with AutoFocus
+      script: '|||autofocus-sample-analysis'
+      type: regular
+      version: -1
+    taskid: ba8deeb8-0175-4c9f-80ce-e8b974389599
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 610
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Perform manual investigation of the XDR incident. Enter the Cortex
+        XDR Incident page through the `XDR URL` incident field. Analyze the indicent
+        alerts, and perform the necessary remediation steps.
+      id: d6741055-dd11-4b6d-83b7-4f14c74a1a84
+      iscommand: false
+      name: Analyst Manual Investigation
+      type: regular
+      version: -1
+    taskid: d6741055-dd11-4b6d-83b7-4f14c74a1a84
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 970
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: c8f9a306-df9e-4e6a-8ec1-c977e3a161ec
+      iscommand: false
+      name: Analyst Manual Remediation
+      type: regular
+      version: -1
+    taskid: c8f9a306-df9e-4e6a-8ec1-c977e3a161ec
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 1510
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "23"
+      "Yes":
+      - "34"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 2674bdee-3758-44f5-8570-738344346001
+      iscommand: false
+      name: Would you like to perform auto- remediation?
+      type: condition
+      version: -1
+    taskid: 2674bdee-3758-44f5-8570-738344346001
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 1340
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 314be321-8954-4f44-86a0-ed6db9e8f06a
+      iscommand: false
+      name: Analyst Manual Review
+      type: regular
+      version: -1
+    taskid: 314be321-8954-4f44-86a0-ed6db9e8f06a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 1680
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+      mndadone: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: a7718bb0-0711-4523-873e-c00f4e1d8f2f
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: a7718bb0-0711-4523-873e-c00f4e1d8f2f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 2050
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    scriptarguments:
+      taskID:
+        simple: ${XDRSyncScriptTaskID}
+    separatecontext: false
+    task:
+      brand: ""
+      description: This stops the scheduled task whose ID is given in the taskID argument.
+      id: 9c2fb0df-e6c0-4759-8d23-07bf26cdfad9
+      iscommand: false
+      name: Stop XDR Alert Sync with Incident
+      scriptName: StopScheduledTask
+      type: regular
+      version: -1
+    taskid: 9c2fb0df-e6c0-4759-8d23-07bf26cdfad9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 1160
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 7afb43bf-64bd-44e2-85e9-fb9b2cdf90dd
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 7afb43bf-64bd-44e2-85e9-fb9b2cdf90dd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 2230
+        }
+      }
+  "31":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Autofocus
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AutoFocus V2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "15"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 0750ec9c-2e33-441a-8e8d-2e6631ae068c
+      iscommand: false
+      name: Is AutoFocus Integration enabled?
+      type: condition
+      version: -1
+    taskid: 0750ec9c-2e33-441a-8e8d-2e6631ae068c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 440
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "False"
+      CustomURLCategory: {}
+      DAG: {}
+      EDLServerIP: {}
+      IP:
+        complex:
+          accessor: Address
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: IP.Malicious
+              operator: isExists
+          root: IP
+          transformers:
+          - operator: uniq
+      IPListName: {}
+      LogForwarding: {}
+      Miner: {}
+      StaticAddressGroup: {}
+      URL:
+        complex:
+          accessor: Data
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: URL.Malicious
+              operator: isExists
+          root: URL
+          transformers:
+          - operator: uniq
+      URLListName: {}
+    separatecontext: true
+    task:
+      brand: ""
+      description: This Playbook performs malicious IOC remediation using Palo Alto
+        Networks integrations.
+      id: 43205164-baac-4609-8456-8360d7a02269
+      iscommand: false
+      name: Palo Alto Networks - Malware Remediation
+      playbookName: Palo Alto Networks - Malware Remediation
+      type: playbook
+      version: -1
+    taskid: 43205164-baac-4609-8456-8360d7a02269
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 1510
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      id: 5cad4ba7-6c85-4f82-8ed3-734fd059eb25
+      iscommand: false
+      name: Calculate Severity - Standard
+      playbookName: Calculate Severity - Standard
+      type: playbook
+      version: -1
+    taskid: 5cad4ba7-6c85-4f82-8ed3-734fd059eb25
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 780
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_31_yes": 0.6,
+      "12_38_#default#": 0.71,
+      "31_15_yes": 0.66,
+      "31_38_#default#": 0.3
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2545,
+        "width": 1300,
+        "x": 440,
+        "y": -250
+      }
+    }
+  }

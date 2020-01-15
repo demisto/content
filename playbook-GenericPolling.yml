@@ -1,0 +1,259 @@
+description: |-
+  Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+  This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+  The remote action should have the following structure:
+
+  1. Initiate the operation.
+  2. Poll to check if the operation completed.
+  3. (optional) Get the results of the operation.
+id: GenericPolling
+inputs:
+- description: List of IDs to poll
+  key: Ids
+  required: true
+  value: {}
+- description: Name of the polling command to run
+  key: PollingCommandName
+  required: true
+  value: {}
+- description: Argument name of the polling command.
+  key: PollingCommandArgName
+  required: true
+  value:
+    simple: ids
+- description: Frequency that the polling command will run (minutes).
+  key: Interval
+  required: true
+  value:
+    simple: "1"
+- description: Amount of time to poll before declaring a timeout and resuming the
+    playbook (in minutes).
+  key: Timeout
+  required: true
+  value:
+    simple: "10"
+- description: 'DT filter for polling IDs. Polling will stop when no results are returned.
+    Use single quotes, for example: WildFire.Report(val.Status!==''Success'').SHA256.'
+  key: dt
+  required: true
+  value: {}
+- description: 'Names of additional arguments for the polling command, for example:
+    (arg1,arg2,...).'
+  key: AdditionalPollingCommandArgNames
+  required: false
+  value: {}
+- description: 'Values of the additional arguments for the polling command, for example:
+    (value1,value2,...).'
+  key: AdditionalPollingCommandArgValues
+  required: false
+  value: {}
+name: GenericPolling
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: '-'
+      id: c644af04-2cd7-4462-83e3-5f55bc12aa73
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: c644af04-2cd7-4462-83e3-5f55bc12aa73
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        simple: ${inputs.AdditionalPollingCommandArgNames}
+      additionalPollingCommandArgValues:
+        simple: ${inputs.AdditionalPollingCommandArgValues}
+      dt:
+        simple: ${inputs.dt}
+      ids:
+        simple: ${inputs.Ids}
+      interval:
+        simple: ${inputs.Interval}
+      playbookId:
+        simple: ${currentPlaybookID}
+      pollingCommand:
+        simple: ${inputs.PollingCommandName}
+      pollingCommandArgName:
+        simple: ${inputs.PollingCommandArgName}
+      tag: {}
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Schedule Polling Task
+      id: c202a667-b138-4635-819f-56a7396cc7f8
+      iscommand: false
+      name: Schedule Polling Task
+      scriptName: ScheduleGenericPolling
+      type: regular
+      version: -1
+    taskid: c202a667-b138-4635-819f-56a7396cc7f8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "YES":
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: This task will complete automatically when polling is complete.
+      id: 156abdbe-586e-4241-8ae6-364fe3d9d76a
+      iscommand: false
+      name: Waiting for polling to complete (Automated Task)
+      tags:
+      - polling
+      type: condition
+      version: -1
+    taskid: 156abdbe-586e-4241-8ae6-364fe3d9d76a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        simple: ${inputs.AdditionalPollingCommandArgNames}
+      additionalPollingCommandArgValues:
+        simple: ${inputs.AdditionalPollingCommandArgValues}
+      ids:
+        simple: ${inputs.Ids}
+      pollingCommand:
+        simple: ${inputs.PollingCommandName}
+      pollingCommandArgName:
+        simple: ${inputs.PollingCommandArgName}
+    separatecontext: false
+    task:
+      brand: ""
+      description: RunPollingCommand
+      id: bc152ecc-4c23-4296-844a-d21b32be0ec3
+      iscommand: false
+      name: RunPollingCommand
+      scriptName: RunPollingCommand
+      type: regular
+      version: -1
+    taskid: bc152ecc-4c23-4296-844a-d21b32be0ec3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Done
+      id: 778e1007-f7ea-4ff6-89c4-cffc067165c4
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 778e1007-f7ea-4ff6-89c4-cffc067165c4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 740
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      message:
+        simple: GenericPollingScheduledTask encountered an error.
+    separatecontext: false
+    task:
+      brand: ""
+      description: Scheduled Task Failed
+      id: 62b13486-ae6a-49c1-8988-16765f35f1cc
+      iscommand: false
+      name: Scheduled Task Failed
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 62b13486-ae6a-49c1-8988-16765f35f1cc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 725
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_5_YES": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 770,
+        "width": 830,
+        "x": -170,
+        "y": 50
+      }
+    }
+  }

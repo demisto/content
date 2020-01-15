@@ -1,0 +1,18 @@
+comment: Holds the logic to choose the ePO repositories to operate on when executing
+  the containing playbook. In the simple default script provided, the instance name
+  is picked manually.
+commonfields:
+  id: EPODetermineRepository
+  version: -1
+deprecated: true
+name: EPODetermineRepository
+runonce: false
+script: |
+  epoInstance = 'epo1'
+  demisto.setContext('repo', epoInstance)
+  demisto.results('Using repository: ' + epoInstance)
+scripttarget: 0
+system: true
+tags:
+- epo
+type: python

@@ -1,0 +1,30 @@
+comment: Get the list of Alerts from Carbon Black Enterprise Response. Supports the
+  same arguments as the cb-alerts command.
+commonfields:
+  id: CBAlerts
+  version: -1
+dependson:
+  must:
+  - cb-alert
+name: CBAlerts
+runonce: false
+script: |-
+  # args: same as cb-alert
+  res = []
+  resCmd1 = demisto.executeCommand("cb-alert", demisto.args())
+  for entry in resCmd1:
+      if isError(entry):
+          res.append(entry)
+      else:
+          matches = entry["Contents"]["results"]
+          if matches:
+              formattedMatches = [{ k: json.dumps(m[k]) if type(m[k])==dict else m[k] for k in m } for m in matches]
+              res.append(  { "Type" : entryTypes["note"], "ContentsFormat" : formats["table"], "Contents" : formattedMatches } )
+          else:
+              res.append(  { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : "No matches." } )
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- carbon-black
+type: python

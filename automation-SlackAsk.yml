@@ -1,0 +1,203 @@
+args:
+- description: The Slack user to which to send the message. Can be either an email
+    address or a Slack user name.
+  name: user
+- description: The Slack channel to which to send the message.
+  name: channel
+- description: The message to send to the user or channel.
+  name: message
+  required: true
+- defaultValue: Yes#green
+  description: The first reply option. The default is "Yes" with a green button. To
+    change the color of the button, add the pound sign (#) followed by the name of
+    the new color (green, red, or black). The default color is "green". For example,
+    "Yes#green".
+  name: option1
+- defaultValue: No#red
+  description: The second reply option. The default is "No" with a red button. To
+    change the button color, add the pound sign (#) followed by the name of the new
+    color (green, red, or black). The default color is "red". For example, "No#red".
+  name: option2
+- description: The task to close with the reply. If empty, then no playbook tasks
+    will be closed.
+  name: task
+- description: Tag to add to email reply entries.
+  name: replyEntriesTag
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Indicates whether to use one-time entitlement or persistent entitlement.
+  name: persistent
+  predefined:
+  - "true"
+  - "false"
+- auto: PREDEFINED
+  defaultValue: buttons
+  description: How the user should response to the question.
+  name: responseType
+  predefined:
+  - buttons
+  - thread
+- description: A comma-separated list of additional options in the format of "option#color",
+    for example, "maybe#red". The default color is "black".
+  name: additionalOptions
+- defaultValue: Thank you for your response.
+  description: The reply to send to the user.
+  name: reply
+- defaultValue: 1 day
+  description: Time until the question expires. For example - 1 day. When it expires,
+    a default response is sent.
+  name: lifetime
+- defaultValue: NoReponse
+  description: Default response in case the question expires.
+  name: defaultResponse
+comment: Sends a message (question) to either user (in a direct message) or to a channel.
+  The message includes predefined reply options. The response can also close a task
+  (might be conditional) in a playbook.
+commonfields:
+  id: SlackAsk
+  version: -1
+dependson:
+  must:
+  - send-notification
+dockerimage: demisto/python3:3.7.4.1900
+enabled: true
+name: SlackAsk
+runonce: false
+script: |2-
+
+
+
+  import dateparser
+
+  STYLES_DICT = {
+      'black': '',
+      'green': 'primary',
+      'red': 'danger'
+  }
+
+  DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+
+  def create_blocks(text: str, entitlement: str, options: list, reply: str) -> list:
+      value = json.dumps({
+          'entitlement': entitlement,
+          'reply': reply
+      })
+      blocks: list = [{
+          'type': 'section',
+          'text': {
+              'type': 'mrkdwn',
+              'text': text
+          }
+      }]
+
+      elements = []
+      for option in options:
+          element = {
+              'type': 'button',
+              'text': {
+                  'type': 'plain_text',
+                  'emoji': True,
+                  'text': option['text']
+              },
+              'value': value
+          }
+          if 'style' in option:
+              element['style'] = option['style']
+          elements.append(element)
+      if elements:
+          actions = {
+              'type': 'actions',
+              'elements': elements
+          }
+          blocks.append(actions)
+
+      return blocks
+
+
+  def main():
+      res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistent'),
+                                                      'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag')})
+      if isError(res[0]):
+          demisto.results(res)
+          sys.exit(0)
+      entitlement = demisto.get(res[0], 'Contents')
+      option1 = demisto.get(demisto.args(), 'option1')
+      option2 = demisto.get(demisto.args(), 'option2')
+      extra_options = argToList(demisto.args().get('additionalOptions', ''))
+      reply = demisto.get(demisto.args(), 'reply')
+      response_type = demisto.get(demisto.args(), 'responseType')
+      lifetime = demisto.get(demisto.args(), 'lifetime')
+      try:
+          expiry = datetime.strftime(dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'}),
+                                     DATE_FORMAT)
+      except Exception:
+          expiry = datetime.strftime(dateparser.parse('in 1 day', settings={'TIMEZONE': 'UTC'}),
+                                     DATE_FORMAT)
+      default_response = demisto.get(demisto.args(), 'defaultResponse')
+
+      entitlement_string = entitlement + '@' + demisto.investigation()['id']
+      if demisto.get(demisto.args(), 'task'):
+          entitlement_string += '|' + demisto.get(demisto.args(), 'task')
+
+      args = {
+          'ignoreAddURL': 'true'
+      }
+      user_options = [option1, option2]
+      options = []
+      if extra_options:
+          user_options += extra_options
+      if response_type == 'thread':
+          for option in user_options:
+              options.append(option.split('#')[0])
+          string_options = ' or '.join(list(map(lambda o: '`{}`'.format(o), options)))
+          message = '{} - Please reply to this thread with {}.'.format(demisto.args()['message'], string_options)
+          args['message'] = json.dumps({
+              'message': message,
+              'entitlement': entitlement_string,
+              'reply': reply,
+              'expiry': expiry,
+              'default_response': default_response
+          })
+      else:
+          for option in user_options:
+              option = option.split('#')
+              button = {
+                  'text': option[0]
+              }
+              if len(option) > 1:
+                  style = STYLES_DICT.get(option[1])
+                  if style:
+                      button['style'] = style
+              options.append(button)
+          blocks = json.dumps(create_blocks(demisto.args()['message'], entitlement_string, options, reply))
+          args['blocks'] = json.dumps({
+              'blocks': blocks,
+              'entitlement': entitlement_string,
+              'reply': reply,
+              'expiry': expiry,
+              'default_response': default_response
+          })
+          args['message'] = demisto.args()['message']
+
+      to = demisto.get(demisto.args(), 'user')
+      channel = demisto.get(demisto.args(), 'channel')
+
+      if to:
+          args['to'] = to
+      elif channel:
+          args['channel'] = channel
+      else:
+          return_error('Either a user or a channel must be provided.')
+
+      demisto.results(demisto.executeCommand('send-notification', args))
+
+
+  if __name__ in ('__builtin__', 'builtins', '__main__'):
+      main()
+scripttarget: 0
+subtype: python3
+system: true
+tags:
+- slack
+type: python

@@ -1,0 +1,32 @@
+{
+	"category": "",
+	"dataType": "indicators",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "indicators-activity-type",
+	"isPredefined": true,
+	"name": "Indicators Activity by Type",
+	"params": {
+		"groupBy": [
+			"calculatedTime(d)",
+			"type"
+		]
+	},
+	"query": "",
+	"size": 0,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "line"
+}

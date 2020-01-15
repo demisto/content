@@ -1,0 +1,23 @@
+args:
+- default: true
+  description: The hash value to approve.
+  name: hash
+  required: true
+comment: Approve/whitelist a hash in CBEP/Bit9.
+commonfields:
+  id: CBPApproveHash
+  version: -1
+dependson:
+  must:
+  - cbp-fileRule-update
+name: CBPApproveHash
+runonce: false
+script: |-
+  CBP_HASH_APPROVED = '2'
+  demisto.results(demisto.executeCommand("cbp-fileRule-update", {"fileState": CBP_HASH_APPROVED,"hash": demisto.args()["hash"]}))
+scripttarget: 0
+system: true
+tags:
+- carbon-black-protection
+- bit9
+type: python

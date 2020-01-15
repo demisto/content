@@ -1,0 +1,426 @@
+beta: true
+category: Messaging
+commonfields:
+  id: MailListener - POP3 Beta
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL (e.g. example.com)
+  name: server
+  required: true
+  type: 0
+- defaultvalue: "995"
+  display: Port
+  name: port
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Email
+  name: email
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Password
+  name: password
+  required: true
+  type: 4
+- defaultvalue: "True"
+  display: Use SSL connection
+  name: ssl
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Listen to a mailbox, enable incident triggering via e-mail
+detaileddescription: |
+  Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
+display: MailListener - POP3 (Beta)
+image: data:image/png;base64,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
+name: MailListener - POP3 Beta
+script:
+  isfetch: true
+  runonce: false
+  script: |2-
+
+
+
+
+
+    import poplib
+    import base64
+    import quopri
+    from email.parser import Parser
+    from htmlentitydefs import name2codepoint
+    from HTMLParser import HTMLParser, HTMLParseError
+
+
+    ''' GLOBALS/PARAMS '''
+    SERVER = demisto.params().get('server', '')
+    EMAIL = demisto.params().get('email', '')
+    PASSWORD = demisto.params().get('password', '')
+    PORT = int(demisto.params().get('port', '995'))
+    SSL = demisto.params().get('ssl')
+    FETCH_TIME = demisto.params().get('fetch_time', '7 days')
+
+    # pop3 server connection object.
+    pop3_server_conn = None  # type: ignore
+
+    TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
+
+    def connect_pop3_server():
+        global pop3_server_conn
+
+        if pop3_server_conn is None:
+            if SSL:
+                pop3_server_conn = poplib.POP3_SSL(SERVER, PORT)  # type: ignore
+            else:
+                pop3_server_conn = poplib.POP3(SERVER, PORT)  # type: ignore
+
+            pop3_server_conn.getwelcome()  # type: ignore
+            pop3_server_conn.user(EMAIL)  # type: ignore
+            pop3_server_conn.pass_(PASSWORD)  # type: ignore
+
+
+    def close_pop3_server_connection():
+        global pop3_server_conn
+        if pop3_server_conn is not None:
+            pop3_server_conn.quit()
+            pop3_server_conn = None
+
+
+    def get_user_emails():
+        _, mails_list, _ = pop3_server_conn.list()  # type: ignore
+
+        mails = []
+        index = ''
+
+        for mail in mails_list:
+            try:
+                index = mail.split(' ')[0]
+                (resp_message, lines, octets) = pop3_server_conn.retr(index)  # type: ignore
+                msg_content = unicode(b'\r\n'.join(lines), errors='ignore').encode("utf-8")
+                msg = Parser().parsestr(msg_content)
+                msg['index'] = index
+                mails.append(msg)
+            except Exception as e:
+                demisto.error("Failed to get email with index " + index + 'from the server.')
+                raise e
+
+        return mails
+
+
+    def get_attachment_name(headers):
+        name = headers.get('content-description', '')
+
+        if re.match(r'^.+\..{3,5}$', name):
+            return name
+
+        content_disposition = headers.get('content-disposition', '')
+
+        if content_disposition:
+            m = re.search('filename="(.*?)"', content_disposition)
+            if m:
+                name = m.group(1)
+
+        if re.match('^.+\..{3,5}$', name):
+            return name
+
+        extension = re.match(r'.*[\\/]([\d\w]{2,4}).*', headers.get('content-type', 'txt')).group(1)  # type: ignore
+
+        return name + '.' + extension
+
+
+    def parse_base64(text):
+        if re.match("^=?.*?=$", text):
+            res = re.search('=\?.*?\?[A-Z]{1}\?(.*?)\?=', text, re.IGNORECASE)
+            if res:
+                res = res.group(1)
+                return base64.b64decode(res)  # type: ignore
+        return text
+
+
+    class TextExtractHtmlParser(HTMLParser):
+        def __init__(self):
+            HTMLParser.__init__(self)
+            self._texts = []  # type: list
+            self._ignore = False
+
+        def handle_starttag(self, tag, attrs):
+            if tag in ('p', 'br') and not self._ignore:
+                self._texts.append('\n')
+            elif tag in ('script', 'style'):
+                self._ignore = True
+
+        def handle_startendtag(self, tag, attrs):
+            if tag in ('br', 'tr') and not self._ignore:
+                self._texts.append('\n')
+
+        def handle_endtag(self, tag):
+            if tag in ('p', 'tr'):
+                self._texts.append('\n')
+            elif tag in ('script', 'style'):
+                self._ignore = False
+
+        def handle_data(self, data):
+            if data and not self._ignore:
+                stripped = data.strip()
+                if stripped:
+                    self._texts.append(re.sub(r'\s+', ' ', stripped))
+
+        def handle_entityref(self, name):
+            if not self._ignore and name in name2codepoint:
+                self._texts.append(unichr(name2codepoint[name]))
+
+        def handle_charref(self, name):
+            if not self._ignore:
+                if name.startswith('x'):
+                    c = unichr(int(name[1:], 16))
+                else:
+                    c = unichr(int(name))
+                self._texts.append(c)
+
+        def get_text(self):
+            return "".join(self._texts)
+
+
+    def html_to_text(html):
+        parser = TextExtractHtmlParser()
+        try:
+            parser.feed(html)
+            parser.close()
+        except HTMLParseError:
+            pass
+        return parser.get_text()
+
+
+    def get_email_context(email_data):
+        context_headers = email_data._headers
+        context_headers = [{'Name': v[0], 'Value': v[1]}
+                           for v in context_headers]
+        headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
+
+        context = {
+            'Mailbox': EMAIL,
+            'ID': email_data.get('Message-ID', 'None'),
+            'Labels': ', '.join(email_data.get('labelIds', '')),
+            'Headers': context_headers,
+            'Format': headers.get('content-type', '').split(';')[0],
+            'Subject': parse_base64(headers.get('subject')),
+            'Body': email_data._payload,
+            'From': headers.get('from'),
+            'To': headers.get('to'),
+            'Cc': headers.get('cc', []),
+            'Bcc': headers.get('bcc', []),
+            'Date': headers.get('date', ''),
+            'Html': None,
+        }
+
+        if 'text/html' in context['Format']:
+            context['Html'] = context['Body']
+            context['Body'] = html_to_text(context['Body'])
+
+        if 'multipart' in context['Format']:
+            context['Body'], context['Html'], context['Attachments'] = parse_mail_parts(email_data._payload)
+            context['Attachment Names'] = ', '.join(
+                [attachment['Name'] for attachment in context['Attachments']])
+
+        raw = dict(email_data)
+        raw['Body'] = context['Body']
+        context['RawData'] = json.dumps(raw)
+        return context, headers
+
+
+    def parse_mail_parts(parts):
+        body = unicode("", "utf-8")
+        html = unicode("", "utf-8")
+
+        attachments = []  # type: ignore
+        for part in parts:
+            context_headers = part._headers
+            context_headers = [{'Name': v[0], 'Value': v[1]}
+                               for v in context_headers]
+            headers = dict([(h['Name'].lower(), h['Value']) for h in context_headers])
+
+            content_type = headers.get('content-type', 'text/plain')
+
+            is_attachment = headers.get('content-disposition', '').startswith('attachment')\
+                or headers.get('x-attachment-id') or "image" in content_type
+
+            if 'multipart' in content_type or isinstance(part._payload, list):
+                part_body, part_html, part_attachments = parse_mail_parts(part._payload)
+                body += part_body
+                html += part_html
+                attachments.extend(part_attachments)
+            elif not is_attachment:
+                if headers.get('content-transfer-encoding') == 'base64':
+                    text = base64.b64decode(part._payload).decode('utf-8')
+                elif headers.get('content-transfer-encoding') == 'quoted-printable':
+                    decoded_string = quopri.decodestring(part._payload)
+                    text = unicode(decoded_string, "utf-8")
+                else:
+                    text = quopri.decodestring(part._payload)
+
+                if not isinstance(text, unicode):
+                    text = text.decode('unicode-escape')
+
+                if 'text/html' in content_type:
+                    html += text
+                else:
+                    body += text
+
+            else:
+                attachments.append({
+                    'ID': headers.get('x-attachment-id', 'None'),
+                    'Name': get_attachment_name(headers),
+                    'Data': part._payload
+                })
+
+        return body, html, attachments
+
+
+    def parse_time(t):
+        base_time, _, _, _, _ = TIME_REGEX.findall(t)[0]
+        return datetime.strptime(base_time, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
+
+
+    def create_incident_labels(parsed_msg, headers):
+        labels = [
+            {'type': 'Email/ID', 'value': parsed_msg['ID']},
+            {'type': 'Email/subject', 'value': parsed_msg['Subject']},
+            {'type': 'Email/text', 'value': parsed_msg['Body']},
+            {'type': 'Email/from', 'value': parsed_msg['From']},
+            {'type': 'Email/html', 'value': parsed_msg['Html']},
+        ]
+        labels.extend([{'type': 'Email/to', 'value': to}
+                       for to in headers.get('To', '').split(',')])
+        labels.extend([{'type': 'Email/cc', 'value': cc}
+                       for cc in headers.get('Cc', '').split(',')])
+        labels.extend([{'type': 'Email/bcc', 'value': bcc}
+                       for bcc in headers.get('Bcc', '').split(',')])
+        for key, val in headers.items():
+            labels.append({'type': 'Email/Header/' + key, 'value': val})
+
+        return labels
+
+
+    @logger
+    def mail_to_incident(msg):
+        parsed_msg, headers = get_email_context(msg)
+
+        file_names = []
+        for attachment in parsed_msg.get('Attachments', []):
+            file_data = base64.urlsafe_b64decode(attachment['Data'].encode('ascii'))
+
+            # save the attachment
+            file_result = fileResult(attachment['Name'], file_data)
+
+            # check for error
+            if file_result['Type'] == entryTypes['error']:
+                demisto.error(file_result['Contents'])
+                raise Exception(file_result['Contents'])
+
+            file_names.append({
+                'path': file_result['FileID'],
+                'name': attachment['Name'],
+            })
+
+        return {
+            'name': parsed_msg['Subject'],
+            'details': parsed_msg['Body'],
+            'labels': create_incident_labels(parsed_msg, headers),
+            'occurred': parse_time(parsed_msg['Date']),
+            'attachment': file_names,
+            'rawJSON': parsed_msg['RawData']
+        }
+
+
+    def fetch_incidents():
+        last_run = demisto.getLastRun()
+        last_fetch = last_run.get('time')
+
+        # handle first time fetch
+        if last_fetch is None:
+            last_fetch, _ = parse_date_range(FETCH_TIME, date_format=DATE_FORMAT)
+
+        last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
+        current_fetch = last_fetch
+
+        incidents = []
+        messages = get_user_emails()
+
+        for msg in messages:
+            try:
+                incident = mail_to_incident(msg)
+            except Exception as e:
+                demisto.error("failed to create incident from email, index = {}, subject = {}, date = {}".format(
+                    msg['index'], msg['subject'], msg['date']))
+                raise e
+
+            temp_date = datetime.strptime(
+                incident['occurred'], DATE_FORMAT)
+
+            # update last run
+            if temp_date > last_fetch:
+                last_fetch = temp_date + timedelta(seconds=1)
+
+            # avoid duplication due to weak time query
+            if temp_date > current_fetch:
+                incidents.append(incident)
+
+        demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
+
+        return demisto.incidents(incidents)
+
+
+    def test_module():
+        resp_message, _, _ = pop3_server_conn.list()  # type: ignore
+        if "OK" in resp_message:
+            demisto.results('ok')
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+
+    def main():
+        try:
+            handle_proxy()
+            connect_pop3_server()
+            if demisto.command() == 'test-module':
+                # This is the call made when pressing the integration test button.
+                test_module()
+            if demisto.command() == 'fetch-incidents':
+                fetch_incidents()
+                sys.exit(0)
+        except Exception as e:
+            LOG(str(e))
+            LOG.print_log()
+            raise e
+        finally:
+            close_pop3_server_connection()
+
+
+    # python2 uses __builtin__ python3 uses builtins
+    if __name__ == "__builtin__" or __name__ == "builtins":
+        main()
+  type: python
+system: true

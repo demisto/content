@@ -1,0 +1,1513 @@
+category: Network Security
+commonfields:
+  id: Symantec Management Center
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL (e.g. https://192.168.0.1:8082)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Symantec Management Center provides a unified management environment
+  for the Symantec Security Platform portfolio of products.
+display: Symantec Management Center
+image: data:image/png;base64,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
+name: Symantec Management Center
+script:
+  commands:
+  - arguments:
+    - description: 'Filter the query filter parameter by the OS build number, for
+        example: "GT 227900". '
+      isArray: true
+      name: build
+    - description: 'Filter the query filter parameter by description, for example:
+        "CONTAINS" desc".'
+      name: description
+    - description: 'Filter the query filter parameter by model, for example: "EQ VSWG-SE".'
+      name: model
+    - description: 'Filter the query filter parameter by name, for example: "STARTSWITH
+        CAS". '
+      name: name
+    - description: 'Filter the query filter parameter by OS version, for example:
+        "LT 2.3".'
+      name: os_version
+    - description: 'Filter the query filter parameter by platform, for example: "CONTAINS
+        CAS". '
+      name: platform
+    - description: 'Filter the query filter parameter by device type, for example:
+        "cas". '
+      name: type
+    - defaultValue: "10"
+      description: Maximum number of results to return.
+      name: limit
+    description: Lists all devices in Symantec MC.
+    name: symantec-mc-list-devices
+    outputs:
+    - contextPath: SymantecMC.Device.UUID
+      description: Device UUID.
+      type: String
+    - contextPath: SymantecMC.Device.Name
+      description: Device name.
+      type: String
+    - contextPath: SymantecMC.Device.LastChanged
+      description: Device last changed date.
+      type: Date
+    - contextPath: SymantecMC.Device.Type
+      description: Device type.
+      type: String
+    - contextPath: SymantecMC.Device.Host
+      description: Device host address.
+      type: String
+  - arguments:
+    - default: true
+      description: Device UUID. Run the symantec-mc-list-devices command to get the
+        UUID.
+      name: uuid
+      required: true
+    description: Gets device information from Symantec MC.
+    name: symantec-mc-get-device
+    outputs:
+    - contextPath: SymantecMC.Device.UUID
+      description: Device UUID.
+      type: String
+    - contextPath: SymantecMC.Device.Name
+      description: Device name.
+      type: String
+    - contextPath: SymantecMC.Device.LastChanged
+      description: Device last changed date.
+      type: String
+    - contextPath: SymantecMC.Device.LastChangedBy
+      description: User that last changed the device.
+      type: String
+    - contextPath: SymantecMC.Device.Description
+      description: Device description.
+      type: String
+    - contextPath: SymantecMC.Device.Model
+      description: Device model.
+      type: String
+    - contextPath: SymantecMC.Device..Platform
+      description: Device platform
+      type: String
+    - contextPath: SymantecMC.Device.Type
+      description: Device type.
+      type: String
+    - contextPath: SymantecMC.Device.OSVersion
+      description: Device OS version.
+      type: String
+    - contextPath: SymantecMC.Device.Build
+      description: Device build number.
+      type: Number
+    - contextPath: SymantecMC.Device.SerialNumber
+      description: Device serial number.
+      type: Number
+    - contextPath: SymantecMC.Device.Host
+      description: Device host address.
+      type: String
+    - contextPath: SymantecMC.Device.ManagementStatus
+      description: Device management status.
+      type: String
+    - contextPath: SymantecMC.Device.DeploymentStatus
+      description: Device deployment status.
+      type: String
+  - arguments:
+    - default: true
+      description: Device UUID. Run the symantec-mc-list-devices command to get the
+        UUID.
+      name: uuid
+      required: true
+    description: Gets health information for a device.
+    name: symantec-mc-get-device-health
+    outputs:
+    - contextPath: SymantecMC.Device.UUID
+      description: Device UUID.
+      type: String
+    - contextPath: SymantecMC.Device.Name
+      description: Device name.
+      type: String
+    - contextPath: SymantecMC.Device.Health.Category
+      description: Device health category.
+      type: String
+    - contextPath: SymantecMC.Device.Health.Name
+      description: Device health name.
+      type: String
+    - contextPath: SymantecMC.Device.Health.State
+      description: Device health state.
+      type: String
+    - contextPath: SymantecMC.Device.Health.Message
+      description: Device health message.
+      type: String
+    - contextPath: SymantecMC.Device.Health.Status
+      description: Device health status.
+      type: String
+  - arguments:
+    - default: true
+      description: Device UUID. Run the symantec-mc-list-devices command to get the
+        UUID.
+      name: uuid
+      required: true
+    description: Gets license information for a device in Symantec MC.
+    name: symantec-mc-get-device-license
+    outputs:
+    - contextPath: SymantecMC.Device.UUID
+      description: Device UUID.
+      type: String
+    - contextPath: SymantecMC.Device.Name
+      description: Device name.
+      type: String
+    - contextPath: SymantecMC.Device.Type
+      description: Device type.
+      type: String
+    - contextPath: SymantecMC.Device.LicenseStatus
+      description: Device license status.
+      type: String
+    - contextPath: SymantecMC.Device.LicenseComponent.Name
+      description: Device license component name.
+      type: String
+    - contextPath: SymantecMC.Device.LicenseComponent.ActivationDate
+      description: Device license component activation date.
+      type: Date
+    - contextPath: SymantecMC.Device.LicenseComponent.ExpirationDate
+      description: Device license component expiration date
+      type: Date
+    - contextPath: SymantecMC.Device.LicenseComponent.Validity
+      description: Device license component validity.
+      type: String
+  - arguments:
+    - default: true
+      description: Device UUID. Run the symantec-mc-list-devices command to get the
+        UUID.
+      name: uuid
+      required: true
+    description: Gets the status of a device.
+    name: symantec-mc-get-device-status
+    outputs:
+    - contextPath: SymantecMC.Device.UUID
+      description: Device UUID.
+      type: String
+    - contextPath: SymantecMC.Device.Name
+      description: Device name.
+      type: String
+    - contextPath: SymantecMC.Device.CheckDate
+      description: Device check date.
+      type: Date
+    - contextPath: SymantecMC.Device.StartDate
+      description: Device start date.
+      type: Date
+    - contextPath: SymantecMC.Device.MonitorState
+      description: Device monitor state.
+      type: String
+    - contextPath: SymantecMC.Device.Warnings
+      description: Device warning count.
+      type: Number
+    - contextPath: SymantecMC.Device.Errors
+      description: Device error count.
+      type: Number
+  - arguments:
+    - description: Filter the query filter parameter by content type of policy, e.g.,
+        "ENDSWITH URL"
+      name: content_type
+    - description: 'Filter the query filter parameter by description, for example:
+        "CONTAINS desc."'
+      name: description
+    - description: 'Filter the query filter parameter by name, for example: "STARTSWITH
+        my_list". '
+      name: name
+    - description: 'Filter the query filter parameter by referenceId, for example:
+        "EQ my_list". '
+      name: reference_id
+    - auto: PREDEFINED
+      description: Parameter to filter, based on whether the policy is shared or not
+        shared.
+      name: shared
+      predefined:
+      - "true"
+      - "false"
+    - description: Filter the query filter parameter by tenant, e.g., "EQ TENANT_EXTERNAL_ID"
+      name: tenant
+    - defaultValue: "10"
+      description: Limit the number of results returned
+      name: limit
+    description: List policies in Symantec MC.
+    name: symantec-mc-list-policies
+    outputs:
+    - contextPath: SymantecMC.Policy.UUID
+      description: Policy UUID.
+      type: String
+    - contextPath: SymantecMC.Policy.Name
+      description: Policy name.
+      type: String
+    - contextPath: SymantecMC.Policy.ContentType
+      description: Policy content type.
+      type: String
+    - contextPath: SymantecMC.Policy.Author
+      description: Policy author.
+      type: String
+    - contextPath: SymantecMC.Policy.Shared
+      description: Policy shared.
+      type: Boolean
+    - contextPath: SymantecMC.Policy.ReferenceID
+      description: Policy reference ID
+      type: String
+    - contextPath: SymantecMC.Policy.Tenant
+      description: Policy tenant.
+      type: String
+    - contextPath: SymantecMC.ReplaceVariables
+      description: Policy replace variables.
+      type: Boolean
+  - arguments:
+    - default: true
+      description: Device UUID. Run the symantec-mc-list-devices command to get the
+        UUID.
+      name: uuid
+    - description: The policy name
+      name: name
+    description: Gets information for a policy.
+    name: symantec-mc-get-policy
+    outputs:
+    - contextPath: SymantecMC.Policy.Name
+      description: Policy name.
+      type: String
+    - contextPath: SymantecMC.Policy.SchemaVersion
+      description: Policy content schema version.
+      type: Number
+    - contextPath: SymantecMC.Policy.RevisionInfo.Number
+      description: Policy content revision number.
+      type: Number
+    - contextPath: SymantecMC.Policy.RevisionInfo.Description
+      description: Policy content revision description.
+      type: String
+    - contextPath: SymantecMC.Policy.RevisionInfo.Author
+      description: Policy content revision author.
+      type: String
+    - contextPath: SymantecMC.Policy.RevisionInfo.Date
+      description: Policy content revision date.
+      type: Date
+    - contextPath: SymantecMC.Policy.IP.Address
+      description: Policy IP address.
+      type: String
+    - contextPath: SymantecMC.Policy.IP.Description
+      description: Policy IP description.
+      type: String
+    - contextPath: SymantecMC.Policy.IP.Enabled
+      description: Policy IP enabled.
+      type: Boolean
+    - contextPath: SymantecMC.Policy.URL.Address
+      description: Policy URL address.
+      type: String
+    - contextPath: SymantecMC.Policy.URL.Description
+      description: Policy URL description.
+      type: String
+    - contextPath: SymantecMC.Policy.URL.Enabled
+      description: Policy URL enabled.
+      type: Boolean
+    - contextPath: SymantecMC.Policy.Category.Name
+      description: Policy category name.
+      type: String
+    - contextPath: SymantecMC.Policy.UUID
+      description: Policy UUID.
+      type: String
+    - contextPath: SymantecMC.Policy.Description
+      description: Policy Description.
+      type: String
+    - contextPath: SymantecMC.Policy.ReferenceID
+      description: Policy reference ID.
+      type: String
+  - arguments:
+    - description: Policy name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: Policy content type.
+      name: content_type
+      predefined:
+      - URL_LIST
+      - IP_LIST
+      - CATEGORY_LIST
+      required: true
+    - description: Policy description.
+      name: description
+    - description: Policy reference ID.
+      name: reference_id
+    - description: UUID of the tenant associated with this policy. Run the symantec-mc-list-tenants
+        command to get the tenant UUID.
+      name: tenant
+    - auto: PREDEFINED
+      defaultValue: "true"
+      description: Share policy
+      name: shared
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: Replace variables supported
+      name: replace_variables
+      predefined:
+      - "true"
+      - "false"
+    description: Creates a policy in Symantec MC.
+    name: symantec-mc-create-policy
+    outputs:
+    - contextPath: SymantecMC.Policy.UUID
+      description: Policy UUID.
+      type: String
+    - contextPath: SymantecMC.Policy.Name
+      description: Policy name.
+      type: String
+    - contextPath: SymantecMC.Policy.ContentType
+      description: Policy content type.
+      type: String
+    - contextPath: SymantecMC.Policy.Author
+      description: Policy author.
+      type: String
+  - arguments:
+    - default: true
+      description: Policy UUID. Run the symantec-mc-list-policies command to get the
+        UUID.
+      name: uuid
+      required: true
+    - description: New name of the policy.
+      name: name
+    - description: New description of the policy.
+      name: description
+    - description: New reference ID of the policy.
+      name: reference_id
+    - auto: PREDEFINED
+      description: Replace variables in the policy.
+      name: replace_variables
+      predefined:
+      - "true"
+      - "false"
+    description: Updates the metadata for a policy in Symantec MC.
+    name: symantec-mc-update-policy
+    outputs:
+    - contextPath: SymantecMC.Policy.UUID
+      description: Policy UUID.
+      type: String
+    - contextPath: SymantecMC.Policy.Name
+      description: Policy name.
+      type: String
+  - arguments:
+    - default: true
+      description: Policy UUID. Run the symantec-mc-list-policies command to get the
+        UUID.
+      name: uuid
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Set to "true" to force the policy object to be removed even if
+        it is referenced by another policy.
+      name: force
+      predefined:
+      - "true"
+      - "false"
+    description: Deletes a policy in Symantec MC.
+    execution: true
+    name: symantec-mc-delete-policy
+  - arguments:
+    - defaultValue: "10"
+      description: Maximum number of results to return.
+      name: limit
+    description: List tenants in Symantec MC.
+    name: symantec-mc-list-tenants
+    outputs:
+    - contextPath: SymantecMC.Tenant.UUID
+      description: Tenant UUID.
+      type: String
+    - contextPath: SymantecMC.Tenant.Name
+      description: Tenant name.
+      type: String
+    - contextPath: SymantecMC.Tenant.ExternalID
+      description: Tenant external ID.
+      type: String
+    - contextPath: SymantecMC.Tenant.Description
+      description: Tenant description.
+      type: String
+    - contextPath: SymantecMC.Tenant.System
+      description: Whether the system is a tenant.
+      type: Boolean
+  - arguments:
+    - description: Policy UUID. Run the symantec-mc-list-policies command to get the
+        UUID.
+      name: uuid
+    - description: The policy name to add content to.
+      name: name
+    - auto: PREDEFINED
+      description: Policy content type
+      name: content_type
+      predefined:
+      - URL_LIST
+      - IP_LIST
+      - CATEGORY_LIST
+      required: true
+    - description: Description of the policy change.
+      name: change_description
+      required: true
+    - description: The version of the schema for this content. This value will correspond
+        to the format of the content. Run the symantec-mc-get-policy command to get
+        the schema vesion.
+      name: schema_version
+    - description: 'CSV list of IP addresses to add, for example: "1.2.3.4, 8.8.8.8".'
+      isArray: true
+      name: ip
+    - description: 'CSV list of URLs to add, for example: "www.google.com, www.github.com".'
+      isArray: true
+      name: url
+    - description: 'CSV list of category names to add, for example: "Job Search/Careers,
+        Content Servers".'
+      isArray: true
+      name: category
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Relevant for URL and IP.
+      name: enabled
+      predefined:
+      - "true"
+      - "false"
+    - description: Content description.
+      name: description
+    description: Adds content to a policy in Symantec MC. Can be IPs, URLs, or category
+      names.
+    name: symantec-mc-add-policy-content
+  - arguments:
+    - description: Policy UUID. Run the symantec-mc-list-policies command to get the
+        UUID.
+      name: uuid
+    - description: The policy name to add content to.
+      name: name
+    - auto: PREDEFINED
+      description: Policy content type.
+      name: content_type
+      predefined:
+      - URL_LIST
+      - IP_LIST
+      - CATEGORY_LIST
+      required: true
+    - description: Description of the policy change.
+      name: change_description
+      required: true
+    - description: The version of the schema for this content. This value will correspond
+        to the format of the content. Run the symantec-mc-get-policy command to get
+        the schema version.
+      name: schema_version
+    - description: 'CSV list of IP addresses to delete, for example: "1.2.3.4, 8.8.8.8".'
+      isArray: true
+      name: ip
+    - description: 'CSV list of URLs to delete, for example: "www.google.com, www.github.com".'
+      isArray: true
+      name: url
+    - description: 'CSV list of category names to delete, for example: "Job Search/Careers,
+        Content Servers".'
+      isArray: true
+      name: category
+    description: Deletes content from a policy in Symantec MC.
+    name: symantec-mc-delete-policy-content
+  dockerimage: demisto/python3:3.7.3.221
+  runonce: false
+  script: |2-
+
+
+
+
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    from distutils.util import strtobool
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    USERNAME = demisto.params().get('credentials').get('identifier')
+    PASSWORD = demisto.params().get('credentials').get('password')
+    SERVER = (demisto.params()['url'][:-1]
+              if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url'])
+    BASE_URL = SERVER + '/api/'
+    USE_SSL = not demisto.params().get('insecure', False)
+    HEADERS = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+    URL_LIST_TYPE = 'URL_LIST'
+    IP_LIST_TYPE = 'IP_LIST'
+    CATEGORY_LIST_TYPE = 'CATEGORY_LIST'
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_request(method, path, params=None, data=None):
+        """
+        Sends an HTTP request using the provided arguments
+        :param method: HTTP method
+        :param path: URL path
+        :param params: URL query params
+        :param data: Request body
+        :return: JSON response (or the response itself if not serializable)
+        """
+        params = params if params is not None else {}
+        data = data if data is not None else {}
+        res = None
+
+        try:
+            res = requests.request(
+                method,
+                BASE_URL + path,
+                auth=(USERNAME, PASSWORD),
+                verify=USE_SSL,
+                params=params,
+                data=json.dumps(data, sort_keys=True),
+                headers=HEADERS)
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
+                requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
+            return return_error('Could not connect to Symantec MC: {}'.format(str(e)))
+
+        if res.status_code < 200 or res.status_code > 300:
+            status = res.status_code
+            message = res.reason
+            details = ''
+            if res.status_code == 500:
+                details = details + '\nA possible cause is that multiple requests were made simultaneously.'
+            try:
+                error_json = res.json()
+                message = error_json.get('statusMessage')
+                details = error_json.get('message')
+            except Exception:
+                pass
+            return_error('Error in API call to Symantec MC, status code: {}, reason: {}, details: {}'
+                         .format(status, message, details))
+
+        try:
+            return res.json()
+        except Exception:
+            if res.status_code == 204:
+                return res
+            return_error('Failed parsing the response from Symantec MC API: {}'.format(res.content))
+
+
+    def verify_policy_content(content_type, ips, categories, urls):
+        if ((content_type == IP_LIST_TYPE and not ips)
+                or (content_type == URL_LIST_TYPE and not urls)
+                or (content_type == CATEGORY_LIST_TYPE and not categories)):
+            return_error('Incorrect content provided for the type {}'.format(content_type))
+        if ((content_type == IP_LIST_TYPE and (urls or categories))
+                or (content_type == URL_LIST_TYPE and (ips or categories))
+                or (content_type == CATEGORY_LIST_TYPE and (ips or urls))):
+            return_error('More than one content type was provided for the type {}'.format(content_type))
+
+
+    def get_policy_uuid(uuid, name):
+        if not uuid:
+            if not name:
+                return_error('Either a policy UUID or name must be provided')
+            name_query = 'EQ ' + name
+            policy = list_policies_request(name=name_query)
+            if not policy or len(policy) == 0:
+                return_error('Policy not found')
+            if len(policy) > 1:
+                return_error('Found more than one policy for the provided name')
+            uuid = policy[0].get('uuid')
+            if not uuid:
+                return_error('Policy not found')
+
+        return uuid
+
+
+    ''' FUNCTIONS '''
+
+
+    def test_module():
+        """
+        Performs basic get request to get system info
+        """
+        http_request('GET', 'system/info')
+        demisto.results('ok')
+
+
+    def list_devices_command():
+        """
+        List devices in Symantec MC using provided query filters
+        """
+
+        contents = []
+        context = {}
+        build = demisto.args().get('build')
+        description = demisto.args().get('description')
+        model = demisto.args().get('model')
+        name = demisto.args().get('name')
+        os_version = demisto.args().get('os_version')
+        platform = demisto.args().get('platform')
+        device_type = demisto.args().get('type')
+        limit = int(demisto.args().get('limit', 10))
+
+        devices = list_devices_request(build, description, model, name, os_version, platform, device_type)
+
+        if devices:
+            if limit:
+                devices = devices[:limit]
+
+            for device in devices:
+                contents.append({
+                    'UUID': device.get('uuid'),
+                    'Name': device.get('name'),
+                    'LastChanged': device.get('lastChanged'),
+                    'Host': device.get('host'),
+                    'Type': device.get('type')
+                })
+            headers = ['UUID', 'Name', 'LastChanged', 'Host', 'Type']
+            human_readable = tableToMarkdown('Symantec Management Center Devices', contents,
+                                             removeNull=True, headers=headers, headerTransform=pascalToSpace)
+            context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(contents, removeNull=True)
+        else:
+            human_readable = 'No devices found'
+
+        return_outputs(human_readable, context, devices)
+
+
+    def list_devices_request(build, description, model, name, os_version, platform, device_type):
+        """
+        Get devices from Symantec MC
+        :param build: Device build number query
+        :param description: Device description query
+        :param model: Device model query
+        :param name: Device name query
+        :param os_version: Device OS version query
+        :param platform: Device platform query
+        :param device_type: Device type
+        :return: List of Symantec MC devices
+        """
+
+        path = 'devices'
+        params = {}
+
+        if build:
+            params['build'] = build
+        if description:
+            params['description'] = description
+        if model:
+            params['model'] = model
+        if name:
+            params['name'] = name
+        if os_version:
+            params['osVersion'] = os_version
+        if platform:
+            params['platform'] = platform
+        if device_type:
+            params['type'] = device_type
+
+        response = http_request('GET', path, params)
+        return response
+
+
+    def get_device_command():
+        """
+        Command to get information for a specified device
+        :return: An entry with the device data
+        """
+        uuid = demisto.args()['uuid']
+        content: dict = {}
+        context: dict = {}
+
+        device = get_device_request(uuid)
+        if device:
+            content = {
+                'UUID': device.get('uuid'),
+                'Name': device.get('name'),
+                'LastChanged': device.get('lastChanged'),
+                'LastChangedBy': device.get('lastChangedBy'),
+                'Description': device.get('description'),
+                'Model': device.get('model'),
+                'Platform': device.get('platform'),
+                'Type': device.get('type'),
+                'OSVersion': device.get('osVersion'),
+                'Build': device.get('build'),
+                'SerialNumber': device.get('serialNumber'),
+                'Host': device.get('host'),
+                'ManagementStatus': device.get('managementStatus'),
+                'DeploymentStatus': device.get('deploymentStatus')
+            }
+
+            context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(content, removeNull=True)
+
+        headers = ['UUID', 'Name', 'LastChanged', 'LastChangedBy', 'Description',
+                   'Model', 'Platform', 'Host', 'Type', 'OSVersion', 'Build', 'SerialNumber',
+                   'ManagementStatus', 'DeploymentStatus']
+
+        return_outputs(tableToMarkdown('Symantec Management Center Device', content,
+                                       removeNull=True, headers=headers, headerTransform=pascalToSpace), context, device)
+
+
+    def get_device_request(uuid):
+        """
+        Return data for a specified device
+        :param uuid: The device UUID
+        :return: The device data
+        """
+        path = 'devices/' + uuid
+
+        response = http_request('GET', path)
+
+        return response
+
+
+    def get_device_health_command():
+        """
+            Command to get health information for a specified device
+            :return: An entry with the device data and health
+            """
+        uuid = demisto.args()['uuid']
+        health_content = []
+        human_readable = ''
+        context = {}
+
+        device_health = get_device_health_request(uuid)
+        if device_health:
+            device_content = {
+                'UUID': device_health.get('uuid'),
+                'Name': device_health.get('name')
+            }
+
+            if device_health.get('health'):
+                if not isinstance(device_health['health'], list):
+                    device_health['health'] = [device_health['health']]
+                for health in device_health['health']:
+                    health_content.append({
+                        'Category': health.get('category'),
+                        'Name': health.get('name'),
+                        'State': health.get('state'),
+                        'Message': health.get('message'),
+                        'Status': health.get('status')
+                    })
+
+            device_headers = ['UUID', 'Name']
+            content = device_content
+            human_readable = tableToMarkdown('Symantec Management Center Device', device_content,
+                                             removeNull=True, headers=device_headers, headerTransform=pascalToSpace)
+            if health_content:
+                health_headers = ['Category', 'Name', 'State', 'Message', 'Status']
+                human_readable += tableToMarkdown('Device Health', health_content,
+                                                  removeNull=True, headers=health_headers, headerTransform=pascalToSpace)
+                content['Health'] = health_content
+            else:
+                human_readable += '\n\nNo health details found for this device\n'
+
+            context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(content, removeNull=True)
+
+        return_outputs(human_readable, context, device_health)
+
+
+    def get_device_health_request(uuid):
+        """
+        Return health for a specified device
+        :param uuid: The device UUID
+        :return: The device health data
+        """
+        path = 'devices/' + uuid + '/health'
+
+        response = http_request('GET', path)
+
+        return response
+
+
+    def get_device_license_command():
+        """
+        Command to get license information for a specified device
+        :return: An entry with the device data and license information
+        """
+        uuid = demisto.args()['uuid']
+        license_content = []
+        human_readable = ''
+        context = {}
+
+        device_license = get_device_license_request(uuid)
+        if device_license:
+
+            if not isinstance(device_license['components'], list):
+                device_license['components'] = [device_license['components']]
+
+            device_content = {
+                'UUID': device_license.get('uuid'),
+                'Name': device_license.get('name'),
+                'Type': device_license.get('deviceType'),
+                'LicenseStatus': device_license.get('licenseStatus')
+            }
+
+            for component in device_license['components']:
+                license_content.append({
+                    'Name': component.get('componentName'),
+                    'ActivationDate': component.get('activationDate'),
+                    'ExpirationDate': component.get('expirationDate'),
+                    'Validity': component.get('validity')
+                })
+
+            device_headers = ['UUID', 'Name', 'Type', 'LicenseStatus']
+            content = device_content
+            human_readable = tableToMarkdown('Symantec Management Center Device', device_content,
+                                             removeNull=True, headers=device_headers, headerTransform=pascalToSpace)
+            if license_content:
+                license_headers = ['Name', 'ActivationDate', 'ExpirationDate', 'Validity']
+                human_readable += tableToMarkdown('License Components', license_content,
+                                                  removeNull=True, headers=license_headers, headerTransform=pascalToSpace)
+                content['LicenseComponent'] = license_content
+
+            context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(content, removeNull=True)
+
+        return_outputs(human_readable, context, device_license)
+
+
+    def get_device_license_request(uuid):
+        """
+        Return the license for a specified device
+        :param uuid: The device UUID
+        :return: The device license data
+        """
+        path = 'devices/' + uuid + '/license'
+
+        response = http_request('GET', path)
+
+        return response
+
+
+    def get_device_status_command():
+        """
+        Command to get the status for a specified device
+        :return: An entry with the device status data
+        """
+        uuid = demisto.args()['uuid']
+        content: dict = {}
+        context: dict = {}
+
+        device = get_device_status_request(uuid)
+        if device:
+            content = {
+                'UUID': device.get('uuid'),
+                'Name': device.get('name'),
+                'CheckDate': device.get('checkDate'),
+                'StartDate': device.get('startDate'),
+                'MonitorState': device.get('monitorState'),
+                'Warnings': len(device.get('warnings', [])),
+                'Errors': len(device.get('errors', []))
+            }
+
+            context['SymantecMC.Device(val.UUID && val.UUID === obj.UUID)'] = createContext(content, removeNull=True)
+
+        headers = ['UUID', 'Name', 'CheckDate', 'StartDate', 'MonitorState', 'Warnings', 'Errors']
+
+        return_outputs(tableToMarkdown('Symantec Management Center Device Status', content,
+                                       removeNull=True, headers=headers, headerTransform=pascalToSpace), context, device)
+
+
+    def get_device_status_request(uuid):
+        """
+        Return data for a specified device status
+        :param uuid: The device UUID
+        :return: The device status data
+        """
+        path = 'devices/' + uuid + '/status'
+
+        response = http_request('GET', path)
+
+        return response
+
+
+    def list_policies_command():
+        """
+        List policies in Symantec MC using provided query filters
+        """
+
+        contents = []
+        context = {}
+        content_type = demisto.args().get('content_type')
+        description = demisto.args().get('description')
+        name = demisto.args().get('name')
+        reference_id = demisto.args().get('reference_id')
+        shared = demisto.args().get('shared')
+        tenant = demisto.args().get('tenant')
+        limit = int(demisto.args().get('limit', 10))
+
+        policies = list_policies_request(content_type, description, name, reference_id, shared, tenant)
+
+        if policies:
+            if limit:
+                policies = policies[:limit]
+
+            for policy in policies:
+                contents.append({
+                    'UUID': policy.get('uuid'),
+                    'Name': policy.get('name'),
+                    'ContentType': policy.get('contentType'),
+                    'Author': policy.get('author'),
+                    'Shared': policy.get('shared'),
+                    'ReferenceID': policy.get('referenceId'),
+                    'Tenant': policy.get('tenant'),
+                    'ReplaceVariables': policy.get('replaceVariables')
+                })
+            headers = ['UUID', 'Name', 'ContentType', 'Author', 'Shared', 'ReferenceID', 'Tenant', 'ReplaceVariables']
+            human_readable = tableToMarkdown('Symantec Management Center Policies', contents,
+                                             removeNull=True, headers=headers, headerTransform=pascalToSpace)
+            context['SymantecMC.Policy(val.UUID && val.UUID === obj.UUID)'] = createContext(contents, removeNull=True)
+        else:
+            human_readable = 'No policies found'
+
+        return_outputs(human_readable, context, policies)
+
+
+    def list_policies_request(content_type=None, description=None, name=None, reference_id=None, shared=None, tenant=None):
+        """
+        Get policies in Symantec MC
+        :param content_type: Policy content type query
+        :param description: Policy description query
+        :param name: Policy name query
+        :param reference_id: Policy reference ID query
+        :param shared: Policy shared query
+        :param tenant: Policy tenant query
+        :return: List of policies in Symantec MC
+        """
+        path = 'policies'
+        params = {}
+
+        if content_type:
+            params['contentType'] = content_type
+        if description:
+            params['description'] = description
+        if name:
+            params['name'] = name
+        if reference_id:
+            params['referenceId'] = reference_id
+        if shared:
+            params['shared'] = shared
+        if tenant:
+            params['tenant'] = tenant
+
+        response = http_request('GET', path, params)
+        return response
+
+
+    def get_policy_command():
+        """
+        Command to get information for a specified policy including it's contents
+        :return: An entry with the policy data
+        """
+        uuid = demisto.args().get('uuid')
+        name = demisto.args().get('name')
+        policy_content_data: dict = {}
+        revision_content: dict = {}
+        policy_content_content = []
+        content_title = ''
+        human_readable = ''
+        content_headers: list = []
+        content_key = ''
+        context: dict = {}
+
+        if not name and not uuid:
+            return_error('Either a UUID or a name must be provided')
+
+        uuid = get_policy_uuid(uuid, name)
+
+        policy = get_policy_request(uuid)
+        if policy:
+            policy_content = {
+                'UUID': policy.get('uuid'),
+                'Name': policy.get('name'),
+                'Description': policy.get('description'),
+                'ContentType': policy.get('contentType'),
+                'ReferenceID': policy.get('referenceId')
+            }
+            policy_content_data = get_policy_content_request(uuid)
+
+            if policy_content_data and policy_content_data.get('revisionInfo'):
+                policy_content['SchemaVersion'] = policy_content_data.get('schemaVersion')
+                revision_content = {
+                    'Number': policy_content_data['revisionInfo'].get('revisionNumber'),
+                    'Description': policy_content_data['revisionInfo'].get('revisionDescription'),
+                    'Author': policy_content_data['revisionInfo'].get('author'),
+                    'Date': policy_content_data['revisionInfo'].get('revisionDate')
+                }
+
+            if policy.get('contentType') == URL_LIST_TYPE:
+                content_title = 'URL List'
+                content_headers = ['Address', 'Description', 'Enabled']
+                content_key = 'URL'
+                urls = policy_content_data.get('content', {}).get('urls', [])
+                for url in urls:
+                    policy_content_content.append({
+                        'Address': url.get('url'),
+                        'Description': url.get('description'),
+                        'Enabled': url.get('enabled')
+                    })
+            elif policy.get('contentType') == IP_LIST_TYPE:
+                content_title = 'IP List'
+                content_headers = ['Address', 'Description', 'Enabled']
+                content_key = 'IP'
+                ips = policy_content_data.get('content', {}).get('ipAddresses', [])
+                for ip in ips:
+                    policy_content_content.append({
+                        'Address': ip.get('ipAddress'),
+                        'Description': ip.get('description'),
+                        'Enabled': ip.get('enabled')
+                    })
+            elif policy.get('contentType') == CATEGORY_LIST_TYPE:
+                content_title = 'Category List'
+                content_headers = ['Name']
+                content_key = 'Category'
+                categories = policy_content_data.get('content', {}).get('categories', [])
+                for category in categories:
+                    policy_content_content.append({
+                        'Name': category.get('categoryName')
+                    })
+
+            policy_headers = ['UUID', 'Name', 'SchemaVersion', 'ReferenceID', 'Description', 'ContentType']
+            human_readable = tableToMarkdown('Symantec Management Center Policy', policy_content,
+                                             removeNull=True, headers=policy_headers, headerTransform=pascalToSpace)
+            content = policy_content
+            if revision_content:
+                revision_headers = ['Number', 'Description', 'Author', 'Date']
+                content['RevisionInfo'] = revision_content
+                human_readable += tableToMarkdown('Revision Information', revision_content,
+                                                  removeNull=True, headers=revision_headers, headerTransform=pascalToSpace)
+
+            if policy_content_content:
+                content[content_key] = policy_content_content
+                human_readable += tableToMarkdown(content_title, policy_content_content,
+                                                  removeNull=True, headers=content_headers, headerTransform=pascalToSpace)
+
+            context['SymantecMC.Policy(val.UUID && val.UUID === obj.UUID)'] = createContext(content, removeNull=True)
+
+        policy.update(policy_content_data)
+        return_outputs(human_readable, context, policy)
+
+
+    def get_policy_request(uuid):
+        """
+        Return data for a specified policy
+        :param uuid: The policy UUID
+        :return: The policy data
+        """
+        path = 'policies/' + uuid
+
+        response = http_request('GET', path)
+
+        return response
+
+
+    def get_policy_content_request(uuid):
+        """
+        Return content data for a specified policy
+        :param uuid: The policy UUID
+        :return: The policy content data
+        """
+        path = 'policies/' + uuid + '/content'
+
+        response = http_request('GET', path)
+
+        return response
+
+
+    def create_policy_command():
+        """
+            Command to create a new policy in Symantec MC
+            :return: An entry with the new policy data
+        """
+        name = demisto.args()['name']
+        content_type = demisto.args()['content_type']
+        description = demisto.args().get('description')
+        reference_id = demisto.args().get('reference_id')
+        tenant = demisto.args().get('tenant')
+        shared = demisto.args().get('shared')
+        replace_variables = demisto.args().get('replace_variables')
+
+        content: dict = {}
+        context: dict = {}
+
+        policy = create_policy_request(name, content_type, description, reference_id, tenant, shared, replace_variables)
+        if policy:
+            content = {
+                'UUID': policy.get('uuid'),
+                'Name': policy.get('name'),
+                'ContentType': policy.get('contentType'),
+                'Author': policy.get('author')
+            }
+
+            context['SymantecMC.Policy(val.UUID && val.UUID === obj.UUID)'] = createContext(content, removeNull=True)
+
+        headers = ['UUID', 'Name', 'ContentType', 'Author']
+
+        return_outputs(tableToMarkdown('Policy created successfully', content,
+                                       removeNull=True, headers=headers, headerTransform=pascalToSpace), context, policy)
+
+
+    def create_policy_request(name, content_type, description, reference_id, tenant, shared, replace_variables):
+        """
+        Creates a policy in Symantec MC using the provided arguments
+        :param name: Policy name
+        :param content_type: Policy content type
+        :param description: Policy description
+        :param reference_id: Policy reference ID
+        :param tenant: Policy tenant
+        :param shared: Policy shared
+        :param replace_variables: Policy replace variables
+        :return: The created policy data
+        """
+        path = 'policies'
+
+        body = {
+            'name': name,
+            'contentType': content_type
+        }
+
+        if description:
+            body['description'] = description
+        if reference_id:
+            body['referenceId'] = reference_id
+        if tenant:
+            body['tenant'] = tenant
+        if shared:
+            body['shared'] = shared
+        if replace_variables:
+            body['replaceVariables'] = replace_variables
+
+        response = http_request('POST', path, data=body)
+        return response
+
+
+    def update_policy_command():
+        """
+            Command to update an existing policy in Symantec MC
+            :return: An entry with the policy data
+        """
+        uuid = demisto.args()['uuid']
+        name = demisto.args().get('name')
+        description = demisto.args().get('description')
+        reference_id = demisto.args().get('reference_id')
+        replace_variables = demisto.args().get('replace_variables')
+
+        content: dict = {}
+        context: dict = {}
+
+        policy = update_policy_request(uuid, name, description, reference_id, replace_variables)
+        if policy:
+            content = {
+                'UUID': policy.get('uuid'),
+                'Name': policy.get('name'),
+                'ContentType': policy.get('contentType'),
+                'Author': policy.get('author')
+            }
+
+            context['SymantecMC.Policy(val.UUID && val.UUID === obj.UUID)'] = createContext(content, removeNull=True)
+
+        headers = ['UUID', 'Name', 'ContentType', 'Author']
+
+        return_outputs(tableToMarkdown('Policy updated successfully', content,
+                                       removeNull=True, headers=headers, headerTransform=pascalToSpace), context, policy)
+
+
+    def update_policy_request(uuid, name, description, reference_id, replace_variables):
+        """
+        Updates a policy in Symantec MC using the provided arguments
+        :param uuid: Policy UUID
+        :param name: New policy name
+        :param description: New policy description
+        :param reference_id: New policy reference ID
+        :param replace_variables: New policy replace variables
+        :return: The updated policy data
+        """
+        path = 'policies/' + uuid
+
+        body = {}
+
+        if name:
+            body['name'] = name
+        if description:
+            body['description'] = description
+        if reference_id:
+            body['referenceId'] = reference_id
+        if replace_variables:
+            body['replaceVariables'] = replace_variables
+
+        response = http_request('PUT', path, data=body)
+        return response
+
+
+    def delete_policy_command():
+        """
+            Command to delete an existing policy in Symantec MC
+            :return: An entry indicating whether the deletion was successful
+        """
+        uuid = demisto.args()['uuid']
+        force = demisto.args().get('force')
+
+        delete_policy_request(uuid, force)
+        return_outputs('Policy deleted successfully', {}, {})
+
+
+    def delete_policy_request(uuid, force):
+        """
+        Deletes a policy in Symantec MC using the provided arguments
+        :param uuid: Policy UUID
+        :param force: Force policy delete
+        :return: The deletion response
+        """
+        path = 'policies/' + uuid
+
+        response = http_request('DELETE', path, data=force)
+        return response
+
+
+    def add_policy_content_command():
+        """
+            Command to add content to an existing policy in Symantec MC
+            :return: An entry indicating whether the addition was successful
+        """
+        uuid = demisto.args().get('uuid')
+        name = demisto.args().get('name')
+        content_type = demisto.args()['content_type']
+        change_description = demisto.args()['change_description']
+        schema_version = demisto.args().get('schema_version')
+        ips = argToList(demisto.args().get('ip', []))
+        urls = argToList(demisto.args().get('url', []))
+        categories = argToList(demisto.args().get('category', []))
+        enabled = demisto.args().get('enabled')
+        description = demisto.args().get('description')
+
+        verify_policy_content(content_type, ips, categories, urls)
+
+        uuid = get_policy_uuid(uuid, name)
+
+        if content_type == IP_LIST_TYPE:
+            add_policy_content_request(uuid, content_type, change_description, schema_version,
+                                       ips=ips, enabled=enabled, description=description)
+        elif content_type == URL_LIST_TYPE:
+            add_policy_content_request(uuid, content_type, change_description, schema_version,
+                                       urls=urls, enabled=enabled, description=description)
+        elif content_type == CATEGORY_LIST_TYPE:
+            add_policy_content_request(uuid, content_type, change_description, schema_version,
+                                       categories=categories)
+
+        return_outputs('Successfully added content to the policy', {}, {})
+
+
+    def add_policy_content_request(uuid, content_type, change_description, schema_version,
+                                   ips=None, urls=None, categories=None, enabled=None, description=''):
+        """
+        Add content to a specified policy using the provided arguments
+        :param uuid: Policy UUID
+        :param content_type: Policy content type
+        :param change_description: Policy update change description
+        :param schema_version: Policy schema version
+        :param ips: IPs to add to the content
+        :param urls: URLs to add to the content
+        :param categories: Category names to add to the content
+        :param enabled:  Policy content enabled
+        :param description: Policy content description
+        :return: Content update response
+        """
+        path = 'policies/' + uuid + '/content'
+
+        body = {
+            'contentType': content_type,
+            'changeDescription': change_description
+        }
+
+        if schema_version:
+            body['schemaVersion'] = schema_version
+
+        content = get_policy_content_request(uuid)
+        if not content or 'content' not in content:
+            return_error('Could not update policy content - failed retrieving the current content')
+
+        if ips:
+            if 'ipAddresses' not in content['content']:
+                content['content']['ipAddresses'] = []
+            content['content']['ipAddresses'] += [{
+                'ipAddress': ip,
+                'description': description,
+                'enabled': bool(strtobool(enabled))
+            } for ip in ips]
+        elif urls:
+            if 'urls' not in content['content']:
+                content['content']['urls'] = []
+            content['content']['urls'] += [{
+                'url': url,
+                'description': description,
+                'enabled': bool(strtobool(enabled))
+            } for url in urls]
+        elif categories:
+            if 'categories' not in content['content']:
+                content['content']['categories'] = []
+            content['content']['categories'] += [{
+                'categoryName': category,
+            } for category in categories]
+
+        body['content'] = content['content']
+        response = http_request('POST', path, data=body)
+
+        return response
+
+
+    def delete_policy_content_command():
+        """
+            Command to delete content from an existing policy in Symantec MC
+            :return: An entry indicating whether the deletion was successful
+        """
+        uuid = demisto.args().get('uuid')
+        name = demisto.args().get('name')
+        content_type = demisto.args()['content_type']
+        change_description = demisto.args()['change_description']
+        schema_version = demisto.args().get('schema_version')
+        ips = argToList(demisto.args().get('ip', []))
+        urls = argToList(demisto.args().get('url', []))
+        categories = argToList(demisto.args().get('category', []))
+
+        verify_policy_content(content_type, ips, categories, urls)
+
+        uuid = get_policy_uuid(uuid, name)
+
+        if content_type == IP_LIST_TYPE:
+            delete_policy_content_request(uuid, content_type, change_description, schema_version, ips=ips)
+        elif content_type == URL_LIST_TYPE:
+            delete_policy_content_request(uuid, content_type, change_description, schema_version, urls=urls)
+        elif content_type == CATEGORY_LIST_TYPE:
+            delete_policy_content_request(uuid, content_type, change_description, schema_version, categories=categories)
+
+        return_outputs('Successfully deleted content from the policy', {}, {})
+
+
+    def delete_policy_content_request(uuid, content_type, change_description, schema_version,
+                                      ips=None, urls=None, categories=None):
+        """
+        Add content to a specified policy using the provided arguments
+        :param uuid: Policy UUID
+        :param content_type: Policy content type
+        :param change_description: Policy update change description
+        :param schema_version: Policy schema version
+        :param ips: IPs to delete from the content
+        :param urls: URLs to delete from the content
+        :param categories: Category names to delete from the content
+        :return: Content update response
+        """
+        path = 'policies/' + uuid + '/content'
+
+        body = {
+            'contentType': content_type,
+            'changeDescription': change_description
+        }
+
+        if schema_version:
+            body['schemaVersion'] = schema_version
+
+        content = get_policy_content_request(uuid)
+        if not content or 'content' not in content:
+            return_error('Could not update policy content - failed retrieving the current content')
+
+        if ips:
+            if 'ipAddresses' in content['content']:
+                ips_to_keep = [ip for ip in content['content']['ipAddresses'] if ip['ipAddress'] not in ips]
+                content['content']['ipAddresses'] = ips_to_keep
+        elif urls:
+            if 'urls' in content['content']:
+                urls_to_keep = [url for url in content['content']['urls'] if url['url'] not in urls]
+                content['content']['urls'] = urls_to_keep
+        elif categories:
+            if 'categories' in content['content']:
+                categories_to_keep = [category for category in content['content']['categories']
+                                      if category['categoryName'] not in categories]
+                content['content']['categories'] = categories_to_keep
+
+        body['content'] = content['content']
+        response = http_request('POST', path, data=body)
+
+        return response
+
+
+    def list_tenants_command():
+        """
+        List tenants in Symantec MC
+        """
+
+        contents = []
+        context = {}
+        limit = int(demisto.args().get('limit', 10))
+
+        tenants = list_tenants_request()
+
+        if tenants:
+            if limit:
+                tenants = tenants[:limit]
+
+            for tenant in tenants:
+                contents.append({
+                    'UUID': tenant.get('uuid'),
+                    'Name': tenant.get('name'),
+                    'ExternalID': tenant.get('externalId'),
+                    'Description': tenant.get('description'),
+                    'System': tenant.get('system')
+                })
+            headers = ['UUID', 'Name', 'ExternalID', 'Description', 'System']
+            human_readable = tableToMarkdown('Symantec Management Center Tenants', contents,
+                                             removeNull=True, headers=headers, headerTransform=pascalToSpace)
+            context['SymantecMC.Tenant(val.UUID && val.UUID === obj.UUID)'] = createContext(contents, removeNull=True)
+        else:
+            human_readable = 'No tenants found'
+
+        return_outputs(human_readable, context, tenants)
+
+
+    def list_tenants_request():
+        """
+        Get devices from Symantec MC
+        :return: List of Symantec MC tenants
+        """
+
+        path = 'tenants'
+        params: dict = {}
+
+        response = http_request('GET', path, params)
+        return response
+
+
+    ''' COMMANDS '''
+    LOG('Command being called is ' + demisto.command())
+    handle_proxy()
+
+    COMMAND_DICTIONARY = {
+        'test-module': test_module,
+        'symantec-mc-list-devices': list_devices_command,
+        'symantec-mc-get-device': get_device_command,
+        'symantec-mc-get-device-health': get_device_health_command,
+        'symantec-mc-get-device-license': get_device_license_command,
+        'symantec-mc-get-device-status': get_device_status_command,
+        'symantec-mc-list-policies': list_policies_command,
+        'symantec-mc-get-policy': get_policy_command,
+        'symantec-mc-create-policy': create_policy_command,
+        'symantec-mc-update-policy': update_policy_command,
+        'symantec-mc-delete-policy': delete_policy_command,
+        'symantec-mc-add-policy-content': add_policy_content_command,
+        'symantec-mc-delete-policy-content': delete_policy_content_command,
+        'symantec-mc-list-tenants': list_tenants_command
+    }
+
+    try:
+        command_func = COMMAND_DICTIONARY[demisto.command()]
+        command_func()
+    except Exception as e:
+        LOG(str(e))
+        LOG.print_log()
+        return_error(str(e))
+  subtype: python3
+  type: python
+system: true

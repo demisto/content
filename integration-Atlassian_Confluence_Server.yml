@@ -1,0 +1,724 @@
+category: Utilities
+commonfields:
+  id: Atlassian Confluence Server
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL (e.g. http://1.2.3.4:8090)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+description: Atlassian Confluence Server API
+display: Atlassian Confluence Server
+image: data:image/png;base64,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
+name: Atlassian Confluence Server
+script:
+  commands:
+  - arguments:
+    - description: 'Space name, for example: "Test Space".'
+      name: name
+      required: true
+    - description: A description for the space.
+      name: description
+      required: true
+    - description: Space key, which will be used as input when creating or updating
+        child components from a space.
+      name: key
+      required: true
+    description: Creates a new Confluence space.
+    name: confluence-create-space
+    outputs:
+    - contextPath: Confluence.Space.ID
+      description: Space ID.
+      type: String
+    - contextPath: Confluence.Space.Key
+      description: Space key.
+      type: String
+    - contextPath: Confluence.Space.Name
+      description: Space name.
+      type: String
+  - arguments:
+    - description: Confluence page title.
+      name: title
+      required: true
+    - auto: PREDEFINED
+      defaultValue: page
+      description: Confluence content type. Can be "page" or "blogpost".
+      name: type
+      predefined:
+      - page
+      - blogpost
+      required: true
+    - description: Space key to add content to a specific space.
+      name: space
+      required: true
+    - description: Confluence page body to add.
+      name: body
+    description: Creates Confluence content for a given space.
+    name: confluence-create-content
+    outputs:
+    - contextPath: Confluence.Content.ID
+      description: Page content ID.
+      type: String
+    - contextPath: Confluence.Content.Title
+      description: Content title.
+      type: String
+    - contextPath: Confluence.Content.Type
+      description: Content type.
+      type: String
+    - contextPath: Confluence.Content.Body
+      description: Content body.
+      type: String
+  - arguments:
+    - defaultValue: "25"
+      description: Maximum number of spaces to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Filter the returned list of spaces by type. Can be "global" or
+        "personal".
+      name: type
+      predefined:
+      - global
+      - personal
+    - auto: PREDEFINED
+      description: Filter the returned list of spaces by status. Can be "current"
+        or "archived".
+      name: status
+      predefined:
+      - current
+      - archived
+    description: Returns a list of all Confluence spaces.
+    name: confluence-list-spaces
+    outputs:
+    - contextPath: Confluence.Space.ID
+      description: Space ID.
+      type: String
+    - contextPath: Confluence.Space.Key
+      description: Space key.
+      type: String
+    - contextPath: Confluence.Space.Name
+      description: Space name.
+      type: String
+  - arguments:
+    - description: Space key.
+      name: key
+      required: true
+    - description: Content title.
+      name: title
+      required: true
+    description: Returns Confluence content by space key and title.
+    name: confluence-get-content
+    outputs:
+    - contextPath: Confluence.Content.ID
+      description: Content ID.
+      type: String
+    - contextPath: Confluence.Content.Title
+      description: Content title.
+      type: String
+    - contextPath: Confluence.Content.Type
+      description: Content type.
+      type: String
+    - contextPath: Confluence.Content.Version
+      description: Content version.
+      type: String
+    - contextPath: Confluence.Content.Body
+      description: Content body.
+      type: String
+  - arguments:
+    - description: Content ID
+      name: id
+      required: true
+    description: Deletes Confluence content.
+    execution: true
+    name: confluence-delete-content
+    outputs:
+    - contextPath: Confluence.Content.Result
+      description: Content delete result.
+      type: String
+    - contextPath: Confluence.Content.ID
+      description: Content ID deleted.
+      type: String
+  - arguments:
+    - description: Page ID used to find and update the page.
+      name: pageid
+      required: true
+    - description: The version number, extracted from a content search. The integration
+        will increment by 1.
+      name: currentversion
+      required: true
+    - description: Title of the page to update.
+      name: title
+      required: true
+    - auto: PREDEFINED
+      defaultValue: page
+      description: Content type. Can be "page" or "blogpost".
+      name: type
+      predefined:
+      - page
+      - blogpost
+      required: true
+    - description: Space key to update.
+      name: space
+      required: true
+    - description: Content body to replace (overwrite) existing content of a Confluence
+        page.
+      name: body
+    description: Update (overwrite) the existing content of a Confluence page with
+      new content.
+    execution: true
+    name: confluence-update-content
+    outputs:
+    - contextPath: Confluence.Content.ID
+      description: Content ID.
+      type: String
+    - contextPath: Confluence.Content.Title
+      description: Content title.
+      type: String
+    - contextPath: Confluence.Content.Type
+      description: Content type.
+      type: String
+    - contextPath: Confluence.Content.Body
+      description: Content body.
+      type: String
+  - arguments:
+    - description: 'A CQL query string to use to locate content, for example: "space
+        = DEV order by created".'
+      name: cql
+      required: true
+    - description: The context in which to execute a CQL search. The context is the
+        JSON serialized form of SearchContext.
+      name: cqlcontext
+    - defaultValue: version
+      description: A CSV list of properties to expand on the content.
+      name: expand
+    - description: The start point of the collection to return.
+      name: start
+    - defaultValue: "25"
+      description: Maximum number of items to return. This can be restricted by fixed
+        system limits. Default is 25.
+      name: limit
+    description: Fetches a list of content using the Confluence Query Language (CQL).
+      For more information about CQL syntax, see https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/
+    name: confluence-search-content
+    outputs:
+    - contextPath: Confluence.Content.ID
+      description: Content ID.
+      type: String
+    - contextPath: Confluence.Content.Title
+      description: Content title.
+      type: String
+    - contextPath: Confluence.Content.Type
+      description: Content type.
+      type: String
+    - contextPath: Confluence.Content.Version
+      description: Content version.
+      type: String
+  runonce: false
+  script: |2-
+
+
+
+
+    '''IMPORTS'''
+    import requests
+    import json
+
+    requests.packages.urllib3.disable_warnings()
+
+    """
+    GLOBAL VARIABLES
+    """
+
+    SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
+    BASE_URL = SERVER + '/rest/api'
+    VERIFY_CERTIFICATE = not demisto.params().get('unsecure', False)
+
+    # Support Credentials
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    HEADERS = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+
+    """
+    Helper Functions
+    """
+
+
+    def http_request(method, full_url, data=None, params=None, is_test=False):
+        try:
+            res = requests.request(
+                method,
+                full_url,
+                verify=VERIFY_CERTIFICATE,
+                auth=(USERNAME, PASSWORD),
+                data=data,
+                headers=HEADERS,
+                params=params
+            )
+        except requests.exceptions.RequestException:  # This is the correct syntax
+            return_error('Failed to connect to - {} - Please check the URL'.format(full_url))
+
+        # Handle error responses gracefully
+        if res.status_code < 200 or res.status_code >= 400:
+            if is_test:
+                return res
+
+            return_error('Failed to execute command.\nURL: {}, Status Code: {}\nResponse: {}'.format(full_url,
+                                                                                                     res.status_code,
+                                                                                                     res.text))
+
+        if is_test:
+            return res
+        try:
+            return res.json()
+
+        except ValueError as err:
+            return_error('Failed to parse response from service, received the following error:\n{}'.format(str(err)))
+
+
+    """
+    Confluence Commands
+    """
+
+
+    def update_content(page_id, content_title, space_key, content_body, content_type, content_version):
+        content_data = {}
+        # Populate the content_data dictionary
+        content_data['type'] = content_type
+        if space_key is not None:
+            content_data['space'] = {"key": space_key}
+        if content_title is not None:
+            content_data['title'] = content_title
+
+        content_data['body'] = {
+            "storage": {
+                "value": content_body,
+                "representation": "storage"
+            }
+        }
+        content_data['version'] = {
+            "number": content_version
+        }
+
+        full_url = BASE_URL + '/content/' + page_id
+
+        res = http_request('PUT', full_url, json.dumps(content_data))
+
+        return res
+
+
+    def update_content_command():
+        """
+        Confluence Update Content method
+        """
+
+        page_id = demisto.args().get('pageid')
+        content_title = demisto.args().get('title')
+        space_key = demisto.args().get('space')
+        content_body = demisto.args().get('body')
+        content_type = demisto.args().get('type')
+        content_version = int(demisto.args().get('currentversion')) + 1
+
+        raw_content = update_content(page_id, content_title, space_key, content_body, content_type, content_version)
+        content = {
+            "ID": page_id,
+            "Title": content_title,
+            "Type": content_type,
+            "Body": content_body
+        }
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('Updated Content', content, ['ID', 'Title', 'Type', 'Body'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_content,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Content(val.ID == obj.ID)': content
+            }
+        })
+
+
+    def create_content(content_type, content_title, space_key, content_body):
+        content_data = {
+            "type": content_type,
+            "space": {
+                "key": space_key
+            },
+            "title": content_title,
+            "body": {
+                "storage": {
+                    "value": content_body,
+                    "representation": "storage"
+                }
+            }
+        }
+
+        full_url = BASE_URL + '/content'
+
+        res = http_request('POST', full_url, json.dumps(content_data))
+
+        return res
+
+
+    def create_content_command():
+        """
+        Confluence Create Content method
+        """
+        content_type = demisto.args().get('type')
+        content_title = demisto.args().get('title')
+        space_key = demisto.args().get('space')
+        content_body = demisto.args().get('body')
+
+        raw_content = create_content(content_type, content_title, space_key, content_body)
+
+        content = {
+            "ID": raw_content['id'],
+            "Title": content_title,
+            "Type": content_type,
+            "Body": content_body
+        }
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('New Content', content, ['ID', 'Title', 'Type', 'Body'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_content,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Content(val.ID == obj.ID)': content
+            }
+        })
+
+
+    def create_space(space_description, space_key, space_name):
+        space_data = {
+            "type": "global",
+            "description": {
+                "plain": {
+                    "value": space_description,
+                    "representation": "plain"
+                }
+            },
+            "name": space_name,
+            "key": space_key
+        }
+
+        full_url = BASE_URL + '/space'
+
+        res = http_request('POST', full_url, json.dumps(space_data))
+
+        return res
+
+
+    def create_space_command():
+        """
+        Confluence Create Space method
+        """
+        space_description = demisto.args().get('description')
+        space_key = demisto.args().get('key')
+        space_name = demisto.args().get('name')
+
+        raw_space = create_space(space_description, space_key, space_name)
+
+        space = {
+            "ID": raw_space['id'],
+            "Key": raw_space['key'],
+            "Name": raw_space['name']
+        }
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('Space created successfully', space, ['ID', 'Key', 'Name'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_space,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Space(val.ID == obj.ID)': space
+            }
+        })
+
+
+    def get_content(key, title):
+        params = {
+            "title": title,
+            "spaceKey": key,
+            "expand": "body.view,version"
+        }
+
+        full_url = BASE_URL + '/content'
+
+        res = http_request('GET', full_url, None, params)
+
+        return res
+
+
+    def get_content_command():
+        """
+        Confluence Get Content method
+        """
+        space_key = demisto.args().get('key')
+        content_title = demisto.args().get('title')
+        raw_content = get_content(space_key, content_title)
+
+        content_list = []
+        for obj in raw_content['results']:
+            content = {
+                "ID": obj['id'],
+                "Title": obj['title'],
+                "Type": obj['type']
+            }
+            if obj.get('version') is not None:
+                content["Version"] = obj['version']['number']
+            if obj.get('body') is not None:
+                content["Body"] = obj['body']['view']['value']
+
+            content_list.append(content)
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('Content', content_list, ['ID', 'Title', 'Type', 'Version', 'Body'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_content,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Content(val.ID == obj.ID)': content_list
+            }
+        })
+
+
+    def search_content(cql, cql_context, expand, start, limit):
+        params = {
+            'limit': limit,
+            'cql': cql
+        }
+        if cql_context is not None:
+            params['cqlcontext'] = cql_context
+
+        if expand is not None:
+            params['expand'] = expand
+
+        if start is not None:
+            params['start'] = start
+
+        full_url = BASE_URL + '/content/search'
+
+        res = http_request('GET', full_url, None, params)
+
+        return res
+
+
+    def search_content_command():
+        """
+        Confluence Search Content method
+        Reference:  https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/
+        """
+
+        cql = demisto.args().get('cql')
+        cql_context = demisto.args().get('cqlcontext')
+        expand = demisto.args().get('expand')
+        start = demisto.args().get('start')
+        limit = demisto.args().get('limit')
+
+        raw_search = search_content(cql, cql_context, expand, start, limit)
+
+        searches = []
+        for result in raw_search['results']:
+            search = {}
+
+            search['ID'] = result['id']
+            search['Title'] = result['title']
+            search['Type'] = result['type']
+            if result.get('version') is not None:
+                search['Version'] = result['version']['number']
+
+            searches.append(search)
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('Content Search', searches, ['ID', 'Title', 'Type', 'Version'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': raw_search,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Content(val.ID == obj.ID)': searches
+            }
+        })
+
+
+    def list_spaces(limit, status, space_type):
+        full_url = BASE_URL + '/space'
+
+        params = {
+            'limit': limit
+        }
+
+        if status:
+            params['status'] = status
+
+        if space_type:
+            params['type'] = space_type
+
+        res = http_request('GET', full_url, params=params)
+
+        return res
+
+
+    def list_spaces_command():
+        """
+        Confluence list Spaces method
+        """
+        limit = demisto.args().get('limit', 25)
+        status = demisto.args().get('status')
+        space_type = demisto.args().get('type')
+        space_list = list_spaces(limit, status, space_type)
+
+        spaces = []
+        for raw_space in space_list['results']:
+            space = {}
+
+            space['ID'] = raw_space['id']
+            space['Key'] = raw_space['key']
+            space['Name'] = raw_space['name']
+
+            spaces.append(space)
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('Spaces', spaces, ['ID', 'Key', 'Name'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': space_list,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Space(val.ID == obj.ID)': spaces
+            }
+        })
+
+
+    def delete_content(content_id):
+
+        full_url = BASE_URL + '/content/' + content_id
+        http_request('DELETE', full_url, is_test=True)
+        result = {
+            "Results": "Successfully Deleted Content ID " + content_id,
+            "ID": content_id
+        }
+        return result
+
+
+    def delete_content_command():
+        """
+        Confluence Delete Content Spaces method
+        """
+
+        content_id = demisto.args().get('id')
+
+        deleted_content = delete_content(content_id)
+
+        # create markdown table string from context
+        # the outputs must be array in order the tableToMarkdown to work
+        # headers must be array of strings (which column should appear in the table)
+        md = tableToMarkdown('Content', deleted_content, ['ID', 'Results'])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': deleted_content,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Confluence.Content(val.ID == obj.ID)': deleted_content
+            }
+        })
+
+
+    def test():
+        full_url = BASE_URL + '/user/current'
+        res = http_request('GET', full_url, is_test=True)
+
+        if not res:
+            return_error('Test failed. \nCheck URL and Username/Password.\nURL: {}, Status Code: {}, Response: {}'.format(
+                full_url, res.status_code, res.text))
+
+        demisto.results('ok')
+
+
+    """
+    CODE EXECUTION STARTS HERE
+
+    demisto.command() returns the name of the command which executed now
+    """
+    LOG('Confluence integration is executing the command %s' % (demisto.command(), ))
+    try:
+        handle_proxy()
+        if demisto.command() == 'test-module':
+            """
+            demisto.command() will return 'test-module' when the Test button in integration page clicked
+            """
+            test()
+
+        elif demisto.command() == 'confluence-create-space':
+            create_space_command()
+
+        elif demisto.command() == 'confluence-create-content':
+            create_content_command()
+
+        elif demisto.command() == 'confluence-get-content':
+            get_content_command()
+
+        elif demisto.command() == 'confluence-list-spaces':
+            list_spaces_command()
+
+        elif demisto.command() == 'confluence-delete-content':
+            delete_content_command()
+
+        elif demisto.command() == 'confluence-update-content':
+            update_content_command()
+
+        elif demisto.command() == 'confluence-search-content':
+            search_content_command()
+
+    except Exception as e:
+        return_error(str(e))
+  type: python
+system: true

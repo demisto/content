@@ -1,0 +1,43 @@
+args:
+- default: true
+  description: The Scan ID (use command list-scans to get possible scan ID's)
+  name: scanId
+  required: true
+- description: The history_id of the historical data that should be returned.
+  name: historyId
+- description: The numerical id of the host to retrieve
+  name: hostId
+  required: true
+comment: |
+  Display information about a host within the given scan. The numerical host ID can be retrieved using NessusScanDetails "hosts" section
+commonfields:
+  id: NessusHostDetails
+  version: -1
+dependson:
+  must:
+  - Nessus|||scan-host-details
+deprecated: true
+name: NessusHostDetails
+runonce: false
+script: |
+  res = []
+
+  dArgs = demisto.args()
+  resCmd1 = demisto.executeCommand("scan-host-details", dArgs)
+  try:
+      for entry in resCmd1:
+          if isError(entry):
+              res = resCmd1
+              break
+          else:
+              mdResult = sectionsToMarkdown(resCmd1[0]['Contents'])
+              res.append({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': mdResult})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd1)})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- nessus
+type: python

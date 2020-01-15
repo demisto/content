@@ -1,0 +1,132 @@
+{
+	"TypeName": "",
+	"id": "emailRep",
+	"kind": "indicatorsDetails",
+	"name": "",
+	"sortValues": null,
+	"system": true,
+	"tabs": [
+		{
+			"id": "default-main",
+			"name": "Info",
+			"sections": [
+				{
+					"h": 2,
+					"i": "reputationSources",
+					"moved": false,
+					"name": "Reputation",
+					"static": false,
+					"type": "reputationSources",
+					"w": 2,
+					"x": 1,
+					"y": 0
+				},
+				{
+					"h": 2,
+					"i": "relatedIncidents",
+					"moved": false,
+					"name": "Related Incidents",
+					"static": false,
+					"type": "relatedIncidents",
+					"w": 2,
+					"x": 1,
+					"y": 2
+				},
+				{
+					"displayType": "ROW",
+					"h": 2,
+					"i": "indicatorTimeline",
+					"items": [
+						{
+							"endCol": 2,
+							"fieldId": "firstseen",
+							"height": 24,
+							"id": "indicator-first-seen",
+							"index": 0,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "lastseen",
+							"height": 24,
+							"id": "indicator-last-seen",
+							"index": 1,
+							"startCol": 0
+						}
+					],
+					"moved": false,
+					"name": "Timeline",
+					"static": false,
+					"type": "indicatorTimeline",
+					"w": 1,
+					"x": 0,
+					"y": 2
+				},
+				{
+					"displayType": "ROW",
+					"h": 2,
+					"i": "e2c8c970-a09d-11e9-8956-390f602b039a",
+					"items": [
+						{
+							"endCol": 2,
+							"fieldId": "indicatortype",
+							"height": 24,
+							"id": "indicator-type",
+							"index": 0,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "emailaddress",
+							"height": 24,
+							"id": "4cee05a0-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 1,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "source",
+							"height": 24,
+							"id": "indicator-source",
+							"index": 2,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "domainname",
+							"height": 24,
+							"id": "49f18e80-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 3,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "internal",
+							"height": 24,
+							"id": "50d2b9e0-b9d9-11e9-aeb8-096452ab8d25",
+							"index": 4,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "comment",
+							"height": 48,
+							"id": "indicator-comment",
+							"index": 5,
+							"startCol": 0
+						}
+					],
+					"moved": false,
+					"name": "Email Address Info",
+					"static": false,
+					"w": 1,
+					"x": 0,
+					"y": 0
+				}
+			],
+			"type": "custom"
+		}
+	],
+	"typeId": "emailRep",
+	"version": -1
+}

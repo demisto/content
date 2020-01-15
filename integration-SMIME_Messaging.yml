@@ -1,0 +1,332 @@
+category: Utilities
+commonfields:
+  id: SMIME Messaging
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Public Key
+  name: public_key
+  required: true
+  type: 12
+- defaultvalue: ""
+  display: Private Key
+  name: private_key
+  required: true
+  type: 14
+description: Use the S/MIME (Secure Multipurpose Internet Mail Extensions) integration
+  to send and receive secure MIME data.
+display: SMIME Messaging
+image: data:image/png;base64,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
+name: SMIME Messaging
+script:
+  commands:
+  - arguments:
+    - description: The message body to send.
+      name: message_body
+      required: true
+    description: Retrieves items from the service.
+    name: smime-sign-email
+    outputs:
+    - contextPath: SMIME.Signed.Message
+      description: The signed message body.
+      type: String
+    - contextPath: SMIME.Signed.Headers
+      description: The S/MIME signing headers.
+      type: String
+  - arguments:
+    - description: The message body to encrypt.
+      name: message
+      required: true
+    description: Encrypts an email message with S/MIME protocol by using a public
+      RSA certificate.
+    name: smime-encrypt-email-body
+    outputs:
+    - contextPath: SMIME.Encrypted.Message
+      description: The encrypted message.
+      type: String
+    - contextPath: SMIME.Encrypted.Headers
+      description: The encryption headers.
+      type: String
+  - arguments:
+    - description: The signed email with .p7 extension.
+      name: signed_message
+      required: true
+    description: Verifies the signature.
+    name: smime-verify-sign
+  - arguments:
+    - description: The encrypted message with .p7 extension.
+      name: encrypt_message
+      required: true
+    description: Decrypts the message body.
+    name: smime-decrypt-email-body
+    outputs:
+    - contextPath: SMIME.Decrypted.Message
+      description: The decrypted message.
+      type: String
+  - arguments:
+    - description: The message body to encrypt and sign.
+      name: message
+      required: true
+    description: Encrypts and signs an email message with S/MIME protocol by using
+      a public RSA certificate.
+    name: smime-sign-and-encrypt
+    outputs:
+    - contextPath: SMIME.SignedAndEncrypted.Message
+      description: The raw message to send.
+      type: String
+  dockerimage: demisto/m2crypto:1.0.0.1850
+  runonce: false
+  script: |2-
+
+
+
+
+    ''' IMPORTS '''
+
+    from M2Crypto import BIO, SMIME, X509
+    from typing import Dict
+    from tempfile import NamedTemporaryFile
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def makebuf(text):
+        return BIO.MemoryBuffer(text)
+
+
+    class Client:
+        def __init__(self, private_key, public_key):
+            self.smime = SMIME.SMIME()
+
+            public_key_file = NamedTemporaryFile(delete=False)
+            public_key_file.write(bytes(public_key, 'utf-8'))
+            self.public_key_file = public_key_file.name
+            public_key_file.close()
+
+            private_key_file = NamedTemporaryFile(delete=False)
+            private_key_file.write(bytes(private_key, 'utf-8'))
+            self.private_key_file = private_key_file.name
+            private_key_file.close()
+
+
+    ''' COMMANDS '''
+
+
+    def sign_email(client: Client, args: Dict):
+        """
+        send a S/MIME-signed message via SMTP.
+        """
+        message_body = args.get('message_body', '')
+        buf = makebuf(message_body.encode())
+
+        client.smime.load_key(client.private_key_file, client.public_key_file)
+        p7 = client.smime.sign(buf, SMIME.PKCS7_DETACHED)
+
+        buf = makebuf(message_body.encode())
+
+        out = BIO.MemoryBuffer()
+
+        client.smime.write(out, p7, buf, SMIME.PKCS7_TEXT)
+        signed = out.read().decode('utf-8')
+        signed_message = signed.split('\n\n')
+        headers = signed_message[0].replace(': ', '=').replace('\n', ',')
+        context = {
+            'SMIME.Signed': {
+                'Message': signed,
+                'Headers': headers
+            }
+        }
+
+        return signed, context
+
+
+    def encrypt_email_body(client: Client, args: Dict):
+        """ generate an S/MIME-encrypted message
+
+        Args:
+            client: Client
+            args: Dict
+
+        """
+        message_body = args.get('message', '').encode('utf-8')
+        buf = makebuf(message_body)
+
+        x509 = X509.load_cert(client.public_key_file)
+        sk = X509.X509_Stack()
+        sk.push(x509)
+        client.smime.set_x509_stack(sk)
+        client.smime.set_cipher(SMIME.Cipher('des_ede3_cbc'))
+        p7 = client.smime.encrypt(buf)
+        out = BIO.MemoryBuffer()
+
+        client.smime.write(out, p7)
+        encrypted_message = out.read().decode('utf-8')
+        message = encrypted_message.split('\n\n')
+        headers = message[0]
+        new_headers = headers.replace(': ', '=').replace('\n', ',')
+
+        entry_context = {
+            'SMIME.Encrypted': {
+                'Message': encrypted_message,
+                'Headers': new_headers
+            }
+        }
+        return encrypted_message, entry_context
+
+
+    def verify(client: Client, args: Dict):
+        """ Verify the signature
+
+        Args:
+            client: Client
+            args: Dict
+
+        """
+        signed_message = demisto.getFilePath(args.get('signed_message'))
+
+        x509 = X509.load_cert(client.public_key_file)
+        sk = X509.X509_Stack()
+        sk.push(x509)
+        client.smime.set_x509_stack(sk)
+
+        st = X509.X509_Store()
+        st.load_info(client.public_key_file)
+        client.smime.set_x509_store(st)
+
+        p7, data = SMIME.smime_load_pkcs7(signed_message['path'])
+        v = client.smime.verify(p7, data, flags=SMIME.PKCS7_NOVERIFY)
+
+        human_readable = f'The signature verified\n\n{v}'
+        return human_readable, {}
+
+
+    def decrypt_email_body(client: Client, args: Dict, file_path=None):
+        """ Decrypt the message
+
+        Args:
+            client: Client
+            args: Dict
+            file_path: relevant for the test module
+        """
+        if file_path:
+            encrypt_message = file_path
+        else:
+            encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
+
+        client.smime.load_key(client.private_key_file, client.public_key_file)
+
+        p7, data = SMIME.smime_load_pkcs7(encrypt_message['path'])
+
+        out = client.smime.decrypt(p7).decode('utf-8')
+        entry_context = {
+            'SMIME.Decrypted': {
+                'Message': out
+            }
+        }
+        human_readable = f'The decrypted message is: \n{out}'
+
+        return human_readable, entry_context
+
+
+    def sign_and_encrypt(client: Client, args: Dict):
+
+        message = args.get('message', '').encode('utf-8')
+        msg_bio = BIO.MemoryBuffer(message)
+        sign = client.private_key_file
+        encrypt = client.public_key_file
+
+        if sign:
+            client.smime.load_key(client.private_key_file, client.public_key_file)
+            if encrypt:
+                p7 = client.smime.sign(msg_bio, flags=SMIME.PKCS7_TEXT)
+            else:
+                p7 = client.smime.sign(msg_bio, flags=SMIME.PKCS7_TEXT | SMIME.PKCS7_DETACHED)
+            msg_bio = BIO.MemoryBuffer(message)  # Recreate coz sign() has consumed it.
+
+        if encrypt:
+            x509 = X509.load_cert(client.public_key_file)
+            sk = X509.X509_Stack()
+            sk.push(x509)
+            client.smime.set_x509_stack(sk)
+
+            client.smime.set_cipher(SMIME.Cipher('des_ede3_cbc'))
+            tmp_bio = BIO.MemoryBuffer()
+            if sign:
+                client.smime.write(tmp_bio, p7)
+            else:
+                tmp_bio.write(message)
+            p7 = client.smime.encrypt(tmp_bio)
+
+        out = BIO.MemoryBuffer()
+        if encrypt:
+            client.smime.write(out, p7)
+        else:
+            if sign:
+                client.smime.write(out, p7, msg_bio, SMIME.PKCS7_TEXT)
+            else:
+                out.write('\r\n')
+                out.write(message)
+
+        msg = out.read().decode('utf-8')
+        entry_context = {
+            'SMIME.SignedAndEncrypted': {
+                'Message': msg
+            }
+        }
+
+        return msg, entry_context
+
+
+    def test_module(client, *_):
+        message_body = 'testing'
+        try:
+            encrypt_message = encrypt_email_body(client, {'message': message_body})
+            if encrypt_message:
+                test_file = NamedTemporaryFile(delete=False)
+                test_file.write(bytes(encrypt_message[0], 'utf-8'))
+                test_file.close()
+                decrypt_message = decrypt_email_body(client, {}, file_path={'path': test_file.name})
+                if decrypt_message:
+                    demisto.results('ok')
+        except Exception:
+            return_error('Verify that you provided valid keys.')
+        finally:
+            os.unlink(test_file.name)
+
+
+    def main():
+
+        public_key: str = demisto.params().get('public_key', '')
+        private_key: str = demisto.params().get('private_key', '')
+
+        client = Client(private_key, public_key)
+        LOG(f'Command being called is {demisto.command()}')
+        commands = {
+            'test-module': test_module,
+            'smime-sign-email': sign_email,
+            'smime-encrypt-email-body': encrypt_email_body,
+            'smime-verify-sign': verify,
+            'smime-decrypt-email-body': decrypt_email_body,
+            'smime-sign-and-encrypt': sign_and_encrypt
+        }
+        try:
+            command = demisto.command()
+            if command in commands:
+                return_outputs(*commands[command](client, demisto.args()))  # type: ignore
+
+        except Exception as e:
+            return_error(str(e))
+
+        finally:
+            if client.private_key_file:
+                os.unlink(client.private_key_file)
+            if client.public_key_file:
+                os.unlink(client.public_key_file)
+
+
+    if __name__ in ['__main__', 'builtin', 'builtins']:
+        main()
+  subtype: python3
+  type: python
+system: true

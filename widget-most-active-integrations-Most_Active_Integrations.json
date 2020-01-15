@@ -1,0 +1,31 @@
+{
+	"category": "others",
+	"dataType": "entries",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "most-active-integrations",
+	"isPredefined": true,
+	"name": "Most Active Integrations",
+	"params": {
+		"groupBy": [
+			"brand"
+		]
+	},
+	"query": "-brand:Builtin and -brand:Service and -brand:none and -category:text",
+	"size": 5,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "bar"
+}

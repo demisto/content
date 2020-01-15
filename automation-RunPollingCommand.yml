@@ -1,0 +1,40 @@
+args:
+- description: List of IDs to poll
+  name: ids
+  required: true
+- description: Name of the polling command to run
+  name: pollingCommand
+  required: true
+- defaultValue: ids
+  description: Name of the argument of the polling command
+  name: pollingCommandArgName
+  required: true
+- description: Commas separated arguments of the polling command
+  name: additionalPollingCommandArgNames
+- description: Commas separated arguments values of the polling command
+  name: additionalPollingCommandArgValues
+comment: Runs a specified polling command one time. This is useful for initiating
+  a local playbook context before running a polling scheduled task.
+commonfields:
+  id: RunPollingCommand
+  version: -1
+enabled: true
+name: RunPollingCommand
+runonce: false
+script: |-
+  ids = demisto.getArg('ids')
+  if not isinstance(ids, list):
+      ids = [ids]
+  for i, val in enumerate(ids):
+      ids[i] = str(ids[i])
+
+  args_names = map(unicode.strip, demisto.getArg('additionalPollingCommandArgNames').split(','))
+  args_values = map(unicode.strip, demisto.getArg('additionalPollingCommandArgValues').split(','))
+
+  args = dict(zip(args_names, args_values))
+  args[demisto.getArg('pollingCommandArgName')] = ','.join(argToList(ids))
+  demisto.results(demisto.executeCommand(demisto.getArg('pollingCommand'), args))
+scripttarget: 0
+system: true
+tags: []
+type: python

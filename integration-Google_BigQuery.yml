@@ -1,0 +1,304 @@
+category: Database
+commonfields:
+  id: Google BigQuery
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Google service account JSON (a credentials JSON generated from Google API
+    Manager or from GCP console)
+  name: google_service_creds
+  required: true
+  type: 4
+description: Integration for Google BigQuery, a data warehouse for querying and analyzing
+  large databases. In all commands, for any argument not specified, the BigQuery default
+  value for that argument will be applied.
+display: Google BigQuery
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAAEsJJREFUeAHtWgl4VEW2PnWX7s7SECCAbIoOooJvXMYd8bkwzjiKiAoq6HPEJSJPGRUSAhIuQnZUwAVEEUdGdGAUcYNxQx103J8KOjxQxAiihISEJL3dpd5/btLQCVk6oWXe99En3597b92qU1Vnq1PVlyhJSQkkJZCUQFICSQkkJZCUQFICSQkkJZCUQFICSQkcOhIQiZ7q8PnyDFWhMbYj+4G301H+iipM4TjvpXVR/vz0tWJPR/kc6u0SquA/zLeuEYryhK4JH8kEiFYhCgXs97p61eHLbhO7E8DxkGOhJWrGVz9Y17tGivs1IXx2xE4UW/KmqkOqQtYUMMxJGNNDiBF8JDFU43jv0XTlMMdOnHJ5ZDLikCKU20Y8GP6PxIz00OKSkBA94qHI6bbU1iokU6RMRGxurARFV8kM2y+cVqVeYRiiw+s6uPYCjgMyAR7oDmADUAUcDDocnejAFiDxgmpmBges4FHLpVq33Vqje7Vhjmk100UCioQgKRSpSmfEqju0lzrA0YM2fwCGAiZQAXD06g7woJ8FPgd+aRqPDroAxUBiQ10LIz/gNTj0U2S0qmnDpKvcX8goERVUVRFmxJk96Sn51pz/EnUtzKe5YlbklcCZwBvAuwB7LBt3T4DLy4GDQazUg6LY6GQOaA3+4xKZ4dhkqPAw3hHBz34xSMsk3aP/elOldWt08HFeB6PeWQArdxXA2ThbIod6DtHPA9uBpsRen9q0MObZh/uUmOemt9w2HgdiPoxfhOIZQIsdV+6JTNS9noGOGWmxTkJfwJpsklNGPRpcsSIrpSxO3ieiHns8e26U2LC90YeYaxD3acDvgOMBXi93Aq8DGwEmXr8vAgYAbNnbgNXADwBTP4CXg75AANgE9ACeA6Ley8aVAVwCDATY4L4GXgbaE51QvXXqsIJHPiQHmrb1J9GOrNnCtCxM0WmI5ArEg/yJcDASF0koWPd4MgNBykODm+JqRNQZ9WoaEG3CSpoAoHdXuCx4Vu4SYCRwNPAmwN5+BnALsBBgJd4MsBHwe7bscwGOKvMAVhzXDQFrAPbi8wCuH/V2nj177PUALxGvApwHjABY6U8AnCckhDqkYIxQXGKFZuoeX4Zj8lzYkFsmnGqR5Qjqnyno+D4K9c6or7+tUtL67Q6VVTjkwUgUN9S3zId1Ia0IKYpy7ciHzSdXTtDXtVa74V01rv0AP8AKY2IvYQXxQFjggwGuw4odBKwAorzX4z4bGAL8L8CZ+ALgXwDTt8Bk4DSAFcxKfQTg8M/ExnU1wP0w2cAA4FfAswAnfGcAXM4Rg9vzmBNCEGv76cr55gUKiVHSCjc0jo59f1585tEtTdANZ2t0wSB2mMbE3rz6S5ueet+impB0PbpxjcZPUjqk6ro3Eo7k3/LoJ8MWZZ3SlrV/Dg6nA0OBFxu4NQ3ZHMZ3AqwgVvp2IEpcl5XABtIVYK/9CYjSLtzwUWoXgAXBCi0HosSKZuVFieukA1x2fkMhG8tCYFvDc8Iu7VawsUT6PqkKFWgej+pYLSuWR2hiCr0zFJo1Une99p+bw/Ta+iB9v8t29yj9u2t00YkpdPEJHhrUW6G8FyJUWSdJayNkO2YYSvacszNw7Fh08yT31Qp9hXf/BH7bUOcfuFYBrEgO1b8H2KM4NP4IcLjkzJqFzcZzNNAfeBfYDPD6zN76GsACOBlgPq83PLMxnQR8DLBFn9pwxcUlnh33w8bEhsH91gL9gROADUCsQeCx48STbBeNmBeaQKr3IWlxaG6ZeOYKpjLnKg8N6KHQfa/soRc/rXPDsNbgyLweM40+M43GD/PTF2UWTXvedOu0NTBF1cmyrC3+1Mjpz2R1Yi9qjTx4eTFwNsBKY4/kLroDLOiXAVY8ExsC12UvZW88EmAvXAxw6LwSYD7fA2wM/J498M8AT/t6gMP8FsALcB+s1AcBTs74OR+4sAGs7CDwK+A74HGgdeGiQrzUIOr4ql/7aF2vYEQsVYT0E0JlaxSCGIefqNGFx2v0xDu19Mx7NZTuVYiVa9q8nRLkQ/xQ8fzplgj5UxQ6f7CPvt8Zom8QLHVVtMaepLRJ9fi6hMOOs2lN/putVq73iI2osx5gpbFi2Is/A14A+F2UWDHfACwbrvch8CLAXsbEymTvZqNhRbwNrAbYcNhkPwfY4HgtZSPg+scBHwBsNFsBNhjug+/ZCLif94FXgOi6h9sDp9al2IT/8AcC81VPyu2OyQbXOtnQ/9wxXuqG1eb6BeUUNiU8EzOBcsed56ed1Tat+iRAXl0Q181IU+jJ8d1p4/YIZT9TRWmpaCjY8Fsmgfe2I2q8Op353H97v2q55kF70wM9XQ6sAzjUMo0BBgNFABvXQSX4UHx09cOBfrUReZ202cA4ErVMnDh1ThV0eDeFPvo2RNUBh1I9fAyCeIh/vznSS1t2WlBOAJ4IV4Eey/fYUK5JA3t5KN0jKRSqI48vjUQrmTV7seZN9VtmMAus72h5RAftTV1DTzfiWgb4AFb6SuCgKxd9umsDX9ukMIkjVFXNIOxF2yJWWhoCGG99dtc68F6HzjzaSyVjurpZcgTJGXsyG4qOOuzZDhrVBOu3S/g9GSuATVYYUbGNpYAcnKBJeWxbYzpI71nBjwNPA6xg9uIHgXeBfwvF7cF+jcqqInY1vrTozEJtjVhhNVideB3u2RnuCUVyCD66p+4qk9vyr04+hOdHxmXS0+tq6KXPAtTVr1AwIsmEATAPVi4rWfOyJ/OSyEbRmLAnJkdx96eNXzQ8Tc3P75nu83WOhCUGEnHSdH375MmTXU8zDENxdN9vlRTPx8Zdd1U2y6BJIdqkWykpfbxCWHYg8D2eef2MJX7+pAGx5f+We5Z+XPQUjgYRLZ8WKked1omVsyco6dudNg3q64GSVSorN6kOv+3ujbiow6E51aPQ9+UWHZGp0TG9ddqwLYK2NurVezjve61wnZtU1Se++/rmNdiKhGp1oS3aV9r4ThNaMdb4tZKclfjJ4qWALT7Jyy+awLUqKip07OcnIh3v37jV/k9sDHmFxTnCl/aRatOLliVfFb70D/Jml47cv/b/n5K4PZiHnOKn/Nrq4OWaph0mnaaG23hSnDit+dKiuy/y0rhzO1Hxqt3YKlW5CmbFMnAuRbOfr8T2KEyzRncjDzLn1f9T5+5fYrnVK5k9Ob2RJwsNp39m3YIVt6esj60fe4/w7Xci1v11HmWhajtoYf0OTB4xCgtfMXJzt06bff/NemBPebRNbkFBNy95u5GIRFQtXdgyGDSys39y9JS7FSnGw+xuSlXpwyrb9nhJuUgIZ1FefnHVvdNy1sIIOhF10gyjPhogSomCgnk9MjNTKrOysjjLJtTxkcd/OEWUnYZxJ2fyNGr5cnVwWVkXY9KkXYZR3NvUcJSj22avjIzyaDu3bUnJYZ00rfquu+5qO8vlBqB2KfjZG9N+HDG3ppAU3zxqQ8HIbGntRovOPU6jEaekwSsdWvJ2tXsWPeel3RRGGK4J2PTVtjBNHp5BFxyfQp9+F6Z1G4NuQuZmX/VjdP9zSLdCULKPlQy/431wJLDV11mWxlTb7xaBAi1FzZyGsHzLo4+u7FVRVawqCqyDDc38q+Lzs0d/kVdQdLOqaNfA28vJUYcgodyJ5GB2aWnp32tMZzws71Yjd/IbMZ38BcodiKg0CWVrLd17Iz5NGIB7N0JMnjwnNbWr89yOisAtKPvamF10Djqcrgin0vE6mUZ+0WPGtCnPHr15c6ZD+mPTC4rfQJ4z1LHsz5CCnLSjsuottFsIUH7+3J4RK7x6jx3miLGVy+KhuEN0lNlRvdMfQ9b6KR80uAkQJ0HNQKCMUfpqCGHXpuuG+unxrJ409mw/dfOr1LerRjec15kW39qTRp6a7mbXx/TSaehxKRQI77/Wcv+cNVuhGnTHiZ7gPfWsFeP8e70vOsbYqxTChtBOyZtdOHJmYcmo3hXV8+DVK7888shNy+E52I+n8Ra2sLCwCzz0bkXYE4wpk69CJ9m2Y1UYU3Oe32Pb/cFTobD2USxvvlekXIPLAA7hCimaUPDBYQxhuUq1bFUaDz+cLhXxACw8P8/lr4yHhAxEkD6OokQgrDNUSZk9MvxjEA0KFak8D/GNZb7MLizMS2GsP3PUiWHf5m27FfzAaBH0Cppm247T2haGe+YwXBtyaPpzAVq6LoA9sUJZwzpTydhMKhqTSTee14nScPix4PVqmvgk9srw6hlXdKP/HJziZt5QKbjEgpXsIJE38QlP3bru3tSlbc6QhAXVnI9k7E4o+w6MeQgyuC2jGhpimYC9qDIMj5bQNpL/bfwKwv8Zng/lYx624sUwnECK6YZZLosSfkjhfaPy1VeDhITlgF0j6+QSTXNMu7r6BNhkVwits1FQfJmjmMcoivDrivkbKNiC8mpMr7p4b0jOSH0Z4+lCeuqJ3BdSySvA+y/RfuO9tlvBzPhvE9Nek7b5nNAaGWuzffK5MifdS9836aZFuyh3WTnNfXU3PfDKbsp5upxuXLiDlr9fTRvKgni3i6qRYM0c1Y2O7et1T7waKxgiRzw0QU6k9p5FWWI/gTcdBKKI1wyb98ETz4FnDtUc/UIsjeO//ua7kaNHj3b3fJCvOiMnZwfarglJdZVRWFwAgRvobJ7LT5M78UuX5o8I3tM2IqGrR0GHNStWuLzwWZprkbF1FMtSJT6KwB4BexBFOQ1nAWcIRzkLBzlP4PBrY2owqGNewXBt7d611ZgwoRZj+Dvmf3V+fn4vzLyPV+n0SizjeO61eCo1rYPByKserpkRjIQvhGd0rg+ZTWvte+bMmbPlsPTRx9/Vkm1xIiXcs2o+kkyB26AKffNTiPKW76Lfn5BOP1ZG8KNDI2dwGQrNQzIcWrb6nsPf2ddDm3d7M8Jp0/7084z84j3w0H7RVo7jfpMiodEfpI2THEW8LUz50Ewj+0euMyM7e/uMopINUqMpeLw52m5SaWmaMJ1JiAx8kMHk4J6PKF1Kz7S7kSN6uQ9SbkWsqBVmcPpMw4DJ7yOjtLSHNKXw6Ng3xpCjyKeEIx4MS20cgsMHuVNvi/7cGVOr9dsOKZhZ/nWC/1+XPlA9X6ip06Xjbitb7wmGzb/3pqelc3jFEsfOt28+rEreF2/eEaaNSLz4kIQNI5aEghQmEqpIVW0jtry1ewhc1TzaKCO/uI9bT1NOlbZzmCL0Vby+QdEpCH3RSDZA0TU/kpxfk0+cbMwq/MyYnvsaG/SskpKJ+LZhpVFU+g7U+C54YbmmC3BeUxFSaW79GNR/wCMnzCyecx14VjrSvhxT8Gmq5TWmTv06r6DkLUVPfcEoKFmEtZrXhmN8Ci2uNk3pJS3FbKLgWTk5X+YVFO+CmCbiW1I+Am03RSfW7obcoLuf5iKT3ayobCexa2VL92y4OL3ypCI6IUnbL5ohrceIOANvqlxUhkg9nNTMeSH3yK3ucxz/sI79DRnzNxhRH6ikDwS1Tveo5xq5d27h5lhaF2uk75heWHiSQ7ITpP6WI+QOvNhJqrg3b3bxWK43PTt7M4UD50Bhy7DM9oCCrpKOrJ05Nfvikpwc9xhy1tTJH6qk/BHvT0b7IeC3EJ+DTqKI6m6HlEgAx6nOMiyow9DvMNTZFQqFgt5IhEPzIqi8safAsBAh14BH5Y9lW/hHj3ZTEx9pd3u67L7Ka6XmXSqcCMbbPuIDDMfdbrU9DM7aTcvc0FcLnvVEzrEJP9edkV+yGPJcj7W6wRsRmguKZsHUMmZOzbm96cyMoqLDke+9iZEvGTTgqOLoet603oE+YzlZgPjy0725OTM7wqvDITra2Zh+XZ5Zuq3qBny+c3795zvRN21fdRxBNheu92sJKTrITDTp3PNLKJf7g0d9hrzgGqOw5GtbimpEkhOxURipKPLW/caDAmPKlDJ4/RiF1HGbNv3QG0U/NFevg2Xi3qKiQaTopzuWdaZlmxd3kE/7Djqa62T0aGFfPr96Gn58X4sU0SfbOKduykP3pOHAohZbH+RBzcZlRGYcjyKKvXTTwI9ffrUpgwQ9K2ZogaOl7lI1cRlSYR1hcbtU5Fgo8ouWupiVm/sx3jESTo6jDNdUJIKKvC5/6j3bO9pB27ExTs7D76tciLU1K57fivdniVMqTryaUbJ73ixFnaaaQ16eclSLwt6fZ7KEJXBASVasCLuk+maZZujn+BOu2EQMhwkI1/x5B0IlsO+PdCS5jrkwqdxYacd/nzAP5i4vva/6WqGqizVNx2a10VYvrhGxWl1PxhYKG3tEbI1/+P8gXdUuWTm1L39HlaR2SiChCua+R82rPNsR3qscO9IbS2p7E2skUw72unUYl8TxnfgQ+5Yly3KPaPcGv51ySFZPSiApgaQEkhJISiApgaQEkhJISiApgaQEkhI4NCTwf/i3Z8aVcrU9AAAAAElFTkSuQmCC
+name: Google BigQuery
+script:
+  commands:
+  - arguments:
+    - description: A query string (in BigQuery query syntax). For more information
+        about the standard syntax, see the BigQuery documentation - https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax.
+      name: query
+      required: true
+    - description: The geographic location where the job should run. Required for
+        locations other than US and EU.
+      name: location
+    - auto: PREDEFINED
+      description: Allow query results tables larger than 128 MB compressed (legacy
+        SQL only)
+      name: allow_large_results
+      predefined:
+      - "True"
+      - "False"
+    - description: A string of the fully-qualified dataset ID in standard SQL format.
+        The value must include a project ID and dataset ID, separated by periods.
+      name: default_dataset
+    - description: The table to which the results are written. Default value is "None".
+      name: destination_table
+    - description: Custom encryption configuration for the destination table.
+      name: kms_key_name
+    - auto: PREDEFINED
+      description: If "true," BigQuery doesn't run the job. Instead, if the query
+        is valid, BigQuery returns statistics about the job, such as how many bytes
+        would be processed. If the query is invalid, an error is returned. The default
+        value is "false".
+      name: dry_run
+      predefined:
+      - "True"
+      - "False"
+    - auto: PREDEFINED
+      description: Priority of the query (“INTERACTIVE” or “BATCH”). A query set as
+        INTERACTIVE will be run on-demand, at the next possible time. A query set
+        as BATCH will start as soon as idle resources are available, and changed to
+        INTERACTIVE priority if it wasn’t started within 24 hours. The default value
+        is “INTERACTIVE”.
+      name: priority
+      predefined:
+      - BATCH
+      - INTERACTIVE
+    - auto: PREDEFINED
+      description: Whether to look for the query results in the cache.
+      name: use_query_cache
+      predefined:
+      - "True"
+      - "False"
+    - auto: PREDEFINED
+      description: Whether to use legacy SQL syntax.
+      name: use_legacy_sql
+      predefined:
+      - "True"
+      - "False"
+    - description: The ID of the job. The ID must contain only letters (a-z, A-Z),
+        numbers (0-9), underscores (_), or dashes (-). The maximum length is 1,024
+        characters.
+      name: job_id
+    - auto: PREDEFINED
+      description: Specifies the action that occurs if the destination table already
+        exists.
+      name: write_disposition
+      predefined:
+      - WRITE_EMPTY
+      - WRITE_TRUNCATE
+      - WRITE_APPEND
+    description: Performs a query on BigQuery.
+    name: bigquery-query
+    outputs:
+    - contextPath: BigQuery.Query
+      description: The query performed.
+      type: String
+    - contextPath: BigQuery.Row
+      description: The table rows the given query returned.
+      type: Unknown
+  dockerimage: demisto/bigquery:1.0.0.239
+  runonce: false
+  script: |2-
+
+
+
+    """ IMPORTS """
+
+    import os
+    import json
+    import requests
+    from google.cloud import bigquery
+
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+
+    ''' GLOBALS/PARAMS '''
+
+    TEST_QUERY = ('SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013` '
+                  'WHERE state = "TX" '
+                  'LIMIT 100')
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def represents_bool(string_var):
+        return string_var.lower() == 'false' or string_var.lower() == 'true'
+
+
+    def str_to_bool(str_representing_bool):
+        return str_representing_bool.lower() == "true"
+
+
+    def bool_arg_set_to_true(arg):
+        return arg and str_to_bool(arg)
+
+
+    def start_and_return_bigquery_client(google_service_creds_json_string):
+        cur_directory_path = os.getcwd()
+        creds_file_name = '{0}.json'.format(demisto.uniqueFile())
+        path_to_save_creds_file = os.path.join(cur_directory_path, creds_file_name)
+        with open(path_to_save_creds_file, "w") as creds_file:
+            json.dump(json.loads(google_service_creds_json_string), creds_file)
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path_to_save_creds_file
+            creds_file.close()
+        bigquery_client = bigquery.Client()
+        return bigquery_client
+
+
+    def validate_args_for_query_job_config(allow_large_results, priority, use_query_cache, use_legacy_sql, dry_run,
+                                           destination_table, write_disposition):
+        if allow_large_results and not represents_bool(allow_large_results):
+            return_error("Error: allow_large_results must have a boolean value.")
+        if bool_arg_set_to_true(allow_large_results) and not destination_table:
+            return_error("Error: allow_large_results could only be set to True if a destination table is provided as well.")
+        if bool_arg_set_to_true(allow_large_results) and not bool_arg_set_to_true(use_legacy_sql):
+            return_error("Error: allow_large_results could be set to True only if use_legacy_sql is set to True.")
+        if use_query_cache and not represents_bool(use_query_cache):
+            return_error("Error: use_query_cache must have a boolean value.")
+        if bool_arg_set_to_true(use_query_cache) and destination_table:
+            return_error("Error: use_query_cache cannot be set to True if a destination_table is set")
+        if use_legacy_sql and not represents_bool(use_legacy_sql):
+            return_error("Error: use_legacy_sql must have a boolean value.")
+        if dry_run and not represents_bool(dry_run):
+            return_error("Error: dry_run must have a boolean value.")
+        if priority and not (priority == 'INTERACTIVE' or priority == 'BATCH'):
+            return_error("Error: priority must have a value of INTERACTIVE or BATCH.")
+        if write_disposition and not (write_disposition == 'WRITE_TRUNCATE' or write_disposition == 'WRITE_APPEND'
+                                      or write_disposition == 'WRITE_EMPTY'):
+            return_error("Error: write_disposition must have a value of WRITE_TRUNCATE, WRITE_APPEND or WRITE_EMPTY.")
+
+
+    def build_query_job_config(allow_large_results, default_dataset_string, destination_table, dry_run, priority,
+                               use_query_cache, use_legacy_sql, kms_key_name, write_disposition):
+        validate_args_for_query_job_config(allow_large_results, priority, use_query_cache, use_legacy_sql, dry_run,
+                                           destination_table, write_disposition)
+        query_job_config = bigquery.QueryJobConfig()
+        if allow_large_results:
+            query_job_config.allow_large_results = str_to_bool(allow_large_results)
+        if default_dataset_string:
+            query_job_config.default_dataset = default_dataset_string
+        if destination_table:
+            query_job_config.destination = destination_table
+        if kms_key_name:
+            query_job_config.destination_encryption_configuration = bigquery.table.EncryptionConfiguration(kms_key_name)
+        if dry_run:
+            query_job_config.dry_run = str_to_bool(dry_run)
+        if use_legacy_sql:
+            query_job_config.use_legacy_sql = str_to_bool(use_legacy_sql)
+        if use_query_cache:
+            query_job_config.use_query_cache = str_to_bool(use_query_cache)
+        if priority:
+            query_job_config.priority = priority
+        if write_disposition:
+            query_job_config.write_disposition = write_disposition
+
+        return query_job_config
+
+
+    def convert_to_string_if_datetime(object_that_may_be_datetime):
+        if isinstance(object_that_may_be_datetime, datetime):
+            return object_that_may_be_datetime.strftime("%m/%d/%Y %H:%M:%S")
+        else:
+            return object_that_may_be_datetime
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def query(query_string, project_id, location, allow_large_results, default_dataset, destination, kms_key_name, dry_run,
+              priority, use_query_cache, use_legacy_sql,
+              google_service_creds, job_id, write_disposition):
+        bigquery_client = start_and_return_bigquery_client(google_service_creds)
+        job_config = build_query_job_config(allow_large_results, default_dataset, destination, dry_run, priority,
+                                            use_query_cache, use_legacy_sql, kms_key_name, write_disposition)
+        query_job = bigquery_client.query(query=query_string, job_config=job_config, location=location,
+                                          job_id=job_id, project=project_id)
+        if not (dry_run and str_to_bool(dry_run)):
+            query_results = query_job.result()
+            return query_results
+        else:
+            # if dry run is activated, the results (number of bytes the query will process) are returned in the job itself
+            return query_job
+
+
+    def query_command():
+        args = demisto.args()
+        query_to_run = args['query']
+        project_id = args.get('project_id', None)
+        location = args.get('location', None)
+        allow_large_results = args.get('allow_large_results', None)
+        default_dataset = args.get('default_dataset', None)
+        destination_table = args.get('destination_table', None)
+        kms_key_name = args.get('kms_key_name', None)
+        dry_run = args.get('dry_run', None)
+        priority = args.get('priority', None)
+        use_query_cache = args.get('use_query_cache', None)
+        use_legacy_sql = args.get('use_legacy_sql', None)
+        google_service_creds = demisto.params()['google_service_creds']
+        job_id = args.get('job_id', None)
+        write_disposition = args.get('write_disposition', None)
+        query_results = query(query_to_run, project_id, location, allow_large_results, default_dataset,
+                              destination_table, kms_key_name, dry_run, priority, use_query_cache, use_legacy_sql,
+                              google_service_creds, job_id, write_disposition)
+
+        context = {}
+        rows_contexts = []
+        human_readable = 'No results found.'
+        if dry_run and str_to_bool(dry_run):
+            human_readable = '### Dry run results: \n This query will process {0} ' \
+                             'bytes'.format(query_results.total_bytes_processed)
+
+        else:
+
+            for row in query_results:
+                row_context = {underscoreToCamelCase(k): convert_to_string_if_datetime(v) for k, v in row.items()}
+                rows_contexts.append(row_context)
+
+            if rows_contexts:
+
+                context['BigQuery(val.Query && val.Query == obj.Query)'] = {
+                    'Query': args['query'],
+                    'Row': rows_contexts
+                }
+                title = 'BigQuery Query Results'
+                human_readable = tableToMarkdown(title, rows_contexts, removeNull=True)
+
+        return_outputs(
+            readable_output=human_readable,
+            outputs=context,
+            raw_response=rows_contexts
+        )
+
+
+    def test_module():
+        """
+        Perform basic get request to get item samples
+        """
+        try:
+            bigquery_client = start_and_return_bigquery_client(demisto.params()['google_service_creds'])
+            query_job = bigquery_client.query(TEST_QUERY)
+            query_results = query_job.result()
+            results_rows_iterator = iter(query_results)
+            next(results_rows_iterator)
+            demisto.results("ok")
+        except Exception as ex:
+            return_error("Authentication error: credentials JSON provided is invalid.\n Exception recieved:"
+                         "{}".format(ex))
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+    try:
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'bigquery-query':
+            query_command()
+
+
+    except Exception as e:
+        LOG(str(e))
+        LOG.print_log()
+        raise
+  subtype: python3
+  type: python
+system: true

@@ -1,0 +1,201 @@
+category: Messaging
+commonfields:
+  id: SecurityAdvisor
+  version: -1
+configuration:
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: https://www.securityadvisor.io/
+  display: API Endpoint URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: API Key
+  name: apikey
+  required: false
+  type: 4
+description: Contextual coaching and awareness for end users
+detaileddescription: |
+  ## Integration Parameters
+
+  ### API Endpoint URL
+  Always set to https://www.securityadvisor.io/.
+
+  ### API Key
+  This is your personal API key or access token. To obtain it, log in to your account at https://www.securityadvisor.io and under your profile section click **Personal Access Token**.
+display: SecurityAdvisor
+image: data:image/png;base64,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
+name: SecurityAdvisor
+script:
+  commands:
+  - arguments:
+    - description: user email address
+      name: user
+      required: true
+    - auto: PREDEFINED
+      default: true
+      defaultValue: phishing
+      description: coaching context
+      name: context
+      predefined:
+      - phishing
+      - spam
+      - malware
+      - ransomware
+    description: sends contextual message to single user
+    name: coach-end-user
+    outputs:
+    - contextPath: SecurityAdvisor.CoachUser.Message
+      description: Response for single user coaching
+      type: string
+  runonce: false
+  script: |2-
+
+
+    ''' IMPORTS '''
+    import requests
+    import json
+    import collections
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' CONSTANTS '''
+    URL_SUFFIX_COACH_USER = 'apis/coachuser/'
+
+
+    # Allows nested keys to be accesible
+    def makehash():
+        return collections.defaultdict(makehash)
+
+
+    '''MAIN FUNCTIONS'''
+
+
+    class Client(BaseClient):
+        """
+        Calls SecurityAdvisor API and returns results
+        """
+
+        def http_request_coachuser(self, data):
+            """
+            calls coach user api
+            """
+            response_data_json = self._http_request(
+                method='POST',
+                url_suffix=URL_SUFFIX_COACH_USER,
+                json_data=data,
+                data=data,
+            )
+            return response_data_json
+
+
+    def coach_end_user_command(client, args):
+        """
+        Returns Coaching status of user
+
+        Args:
+            client: SecurityAdvisor client
+            args: all command arguments
+
+        Returns:
+            json version of coaching status for user
+            readable_output: This will be presented in Warroom - should be in markdown syntax - human readable
+            outputs: Dictionary/JSON - saved in incident context in order to be used as input for other tasks in the
+                     playbook
+            raw_response: Used for debugging/troubleshooting purposes - will be shown only if the command executed with
+                          raw-response=true
+        """
+        user = args.get('user')
+        context = args.get('context')
+        data = json.dumps({"username": user, "context": context})
+        result = client.http_request_coachuser(data)
+
+        contxt = makehash()
+        contxt['user'] = user
+        contxt['context'] = context
+        contxt['message'] = result['message']
+        contxt['coaching_status'] = result['coaching_status']
+        contxt['coaching_score'] = result['coaching_score']
+        contxt['coaching_date'] = result['coaching_date']
+        outputs = ({
+            'SecurityAdvisor.CoachUser(val.user == obj.user && val.context == obj.context)': contxt,
+        })
+
+        readable_output = tableToMarkdown("Coaching Status", [contxt])
+
+        return (
+            readable_output,
+            outputs,
+            result  # raw response - the original response
+        )
+
+
+    def test_module(client):
+        """Test Module when testing integration"""
+        data = json.dumps({
+            "username": "track@securityadvisor.io",
+            "context": "malware"
+        })
+        client.http_request_coachuser(data)
+
+        return 'ok'
+
+
+    ''' EXECUTION '''
+
+
+    def main():
+        """
+        PARSE AND VALIDATE INTEGRATION PARAMS
+        """
+        base_url = demisto.params().get('url', 'https://www.securityadvisor.io/')
+        proxy = demisto.params().get('proxy')
+        api_key = demisto.params().get('apikey')
+        verify_certificate = not demisto.params().get('insecure', False)
+        if not demisto.params().get('proxy', False):
+            try:
+                del os.environ['HTTP_PROXY']
+                del os.environ['HTTPS_PROXY']
+                del os.environ['http_proxy']
+                del os.environ['https_proxy']
+            except KeyError:
+                pass
+        LOG('Command being called is %s' % (demisto.command()))
+
+        try:
+            headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': 'Token ' + api_key
+            }
+            client = Client(
+                base_url=base_url,
+                verify=verify_certificate,
+                headers=headers,
+                proxy=proxy)
+            if demisto.command() == 'coach-end-user':
+                return_outputs(*coach_end_user_command(client, demisto.args()))
+            elif demisto.command() == 'test-module':
+                test_module(client)
+                demisto.results('ok')
+        # Log exceptions
+        except Exception as e:
+            return_error('Failed to execute %s command. Error: %s' %
+                         (demisto.command(), str(e)))
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+  subtype: python3
+  type: python
+system: true

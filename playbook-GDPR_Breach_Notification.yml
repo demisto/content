@@ -1,0 +1,1576 @@
+description: |-
+  This playbook triggers by a GDPR breach incident, and then performs the required tasks that are detailed in GDPR Article 33.
+  The General Data Protection Regulation (the GDPR) is a regulation in EU law on data protection and privacy of individuals. The GDPR introduces the requirement for a personal data breach to be notified to the competent national supervisory authority and in certain cases, to communicate the breach to the individuals whose personal data have been affected by the breach.
+  ***Disclaimer: This playbook does not ensure compliance to the GDPR regulation. Before using this playbook, we advise consulting with the relevant authority, and adjusting it to the organization's needs.
+id: GDPR Breach Notification
+inputs: []
+name: GDPR Breach Notification
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 9f52fb66-6378-4f4a-869f-570560e9450b
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 9f52fb66-6378-4f4a-869f-570560e9450b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 210
+        }
+      }
+  "1":
+    form:
+      description: Suspected GDPR data breach was found in your organization
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: In your assessment, does the breach involve the personal data of
+            living individuals?
+        options:
+        - "Yes"
+        - "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: If the answer is 'Yes', please proceed and fill out the following
+          questions. In that case the breach will be documented.
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: How likely is it that the breach will result in a risk to individuals?
+        options:
+        - Likely
+        - Unlikely
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Risk - The resulting risk of the impact of the breach on individuals.
+          When assessing the risk to individuals as a result of a breach, the controller
+          should consider the specific circumstances of the breach, including the
+          severity of the potential impact and the likelihood of this occurring. If
+          the answer is 'Likely' to result in a risk to individuals, please process
+          to fill out the next question, and the section regarding the information
+          for the breach report.
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: In your assessment, is there a high risk to individuals rights and
+            freedoms?
+        options:
+        - "Yes"
+        - "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: High Risk - This risk exists when the breach may lead to physical,
+          material or non-material damage for the individuals whose data have been
+          breached. Examples of such damage are discrimination, identity theft or
+          fraud, financial loss and damage to reputation. When the breach involves
+          personal data that reveals racial or ethnic origin, political opinion, religion
+          or philosophical beliefs, or trade union membership, or includes genetic
+          data, data concerning health, or criminal convictions and offences or related
+          security measures, such damage should be considered likely to occur.If the
+          answer is 'Yes', you need to notify the affected subjects (persons) about
+          the data breach.
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: Company Name
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "4"
+        label: ""
+        labelarg:
+          simple: Company Address
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "5"
+        label: ""
+        labelarg:
+          simple: Company Postal Code
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "6"
+        label: ""
+        labelarg:
+          simple: Company City
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "7"
+        label: ""
+        labelarg:
+          simple: Company Country
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "8"
+        label: ""
+        labelarg:
+          simple: Contact Name
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "9"
+        label: ""
+        labelarg:
+          simple: Contact Position
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "10"
+        label: ""
+        labelarg:
+          simple: Contact Address
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "11"
+        label: ""
+        labelarg:
+          simple: Contact Postal Code
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "12"
+        label: ""
+        labelarg:
+          simple: Contact City
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "13"
+        label: ""
+        labelarg:
+          simple: Contact Country
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "14"
+        label: ""
+        labelarg:
+          simple: Contact E-mail address
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "15"
+        label: ""
+        labelarg:
+          simple: Contact Telephone no.
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "16"
+        label: ""
+        labelarg:
+          simple: Organization Size - number of employees
+        options:
+        - ""
+        - 1-9
+        - 10-49
+        - 50-249
+        - 250 - 749
+        - 750-1000
+        - '> 1000'
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: multiSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "17"
+        label: ""
+        labelarg:
+          simple: Size - turnover
+        options:
+        - ""
+        - under 2 million euro
+        - under 10 million euro
+        - under 50 million euro
+        - over 50 million euro
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "18"
+        label: ""
+        labelarg:
+          simple: Country where business has its main establishment
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: '"main establishment means: as regards a controller with establishments
+          in more than one Member State, the place of its central administration in
+          the Union, unless the decisions on the purposes and means of the processing
+          of personal data are taken in another establishment of the controller in
+          the Union and the latter establishment has the power to have such decisions
+          implemented, in which case the establishment having taken such decisions
+          is to be considered to be the main establishment, as regards a processor
+          with establishments in more than one Member State, the place of its central
+          administration in the Union, or, if the processor has no central administration
+          in the Union, the establishment of the processor in the Union where the
+          main processing activities in the context of the activities of an establishment
+          of the processor take place to the extent that the processor is subject
+          to specific obligations under this Regulation" - GDPR Art. 4'
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "19"
+        label: ""
+        labelarg:
+          simple: Are you aware of the cause of the breach?
+        options:
+        - ""
+        - Malicious attack - internal
+        - Malicious attack - external
+        - Accident (system failure)
+        - Negligence (human error)
+        - Other
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: multiSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "20"
+        label: ""
+        labelarg:
+          simple: If a result of a malicious attack, what caused the breach?
+        options:
+        - ""
+        - Unknown vulnerability
+        - Cryptolockers
+        - Fire reconnaissance
+        - Phishing
+        - Distributed denial of service
+        - Malware
+        - Social engineering
+        - Blackmail
+        - Other
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: multiSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "21"
+        label: ""
+        labelarg:
+          simple: What is the likely impact of the breach?
+        options:
+        - ""
+        - Data publication
+        - Data theft
+        - Identity theft or fraud
+        - Loss of data
+        - Loss of confidentiality of personal data
+        - Property damage
+        - Direct financial loss
+        - Business interruption
+        - Liability issues
+        - Damage to the reputation
+        - Other
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: '"A data protection impact assessment (...) shall in particular be
+          required in the case of: (a) a systematic and extensive evaluation of personal
+          aspects relating to natural persons which is based on automated processing,
+          including profiling, and on which decisions are based that produce legal
+          effects concerning the natural person or similarly significantly affect
+          the natural person; (b) processing on a large scale of special categories
+          of data referred to in Article 9(1), or of personal data relating to criminal
+          convictions and offences referred to in Article 10; or (c) a systematic
+          monitoring of a publicly accessible area on a large scale. - GDPR Art. 35'
+        type: multiSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "22"
+        label: ""
+        labelarg:
+          simple: Have the data breached been subject to a Data Protection Impact
+            Assessment (DPIA)?
+        options:
+        - ""
+        - "Yes"
+        - "No"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "23"
+        label: ""
+        labelarg:
+          simple: What type of IT support does the company have?
+        options:
+        - ""
+        - Internal
+        - External
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "24"
+        label: ""
+        labelarg:
+          simple: |-
+            What measures have been taken to mitigate the adverse effects of the
+            breach?
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: '"(d) describe the measures taken or proposed to be taken by the
+          controller to address the personal data breach, including, where appropriate,
+          measures to mitigate its possible adverse effects." - GDPR Art. 33'
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "25"
+        label: ""
+        labelarg:
+          simple: Does the company have insurance for this type of the breach?
+        options:
+        - ""
+        - "Yes"
+        - "No"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "26"
+        label: ""
+        labelarg:
+          simple: Additional information that is relevant to the case
+        options: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: longText
+      sender: Your SOC team
+      title: Suspected GDPR data breach
+      totalanswers: 0
+    id: "1"
+    ignoreworker: false
+    message:
+      bcc: null
+      body:
+        simple: "Hello,\nA suspected data breach has occurred in your organization,
+          and requires your attention.\n\nData breach details:\n\nCompany: ${incident.companyname}\nCountry:
+          ${incident.countrywherethebreachtookplace}\nDate/Time: ${incident.datetimeofthebreach}\nAffected
+          data type: ${incident.affecteddata}\nApprox. # of affected data subjects:
+          ${incident.approximatenumberofaffecteddatasubjects}\nData encryption status:
+          ${incident.dataencryptionstatus}\nWhere data is hosted: ${incident.whereisdatahosted}\nApprox.
+          # of affected data records: ${incident.affectedindividualscontactinformation.0.approximatenumberofdatarecordsbreached}\nSuspected
+          cause of the breach: ${incident.possiblecauseofthebreach}\nIf the cause
+          is malicious, specific cause might have been: ${incident.maliciouscauseifthecauseisamaliciousattack}\nRefer
+          to Article 33 GDPR for more information on the notification process: https://gdpr-info.eu/art-33-gdpr/
+          \n\nPlease complete the following form to continue the data breach investigation.
+          \n"
+      cc: null
+      format: ""
+      methods:
+      - email
+      replyOptions:
+      - "Yes"
+      - "No"
+      subject:
+        simple: Suspected Data Breach in your organization
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.dpoemailaddress}
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 4d042443-509f-4e97-8504-fd6d52171444
+      iscommand: false
+      name: Notify DPO of suspected data breach
+      type: collection
+      version: -1
+    taskid: 4d042443-509f-4e97-8504-fd6d52171444
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 370
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Suspected GDPR data breach.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    defaultassigneecomplex:
+      simple: ${Suspected GDPR data breach.Answers.0}
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 66ad9306-e86d-467e-83bc-6c745c4d56ef
+      iscommand: false
+      name: DPO confirmed a breach happened
+      type: condition
+      version: -1
+    taskid: 66ad9306-e86d-467e-83bc-6c745c4d56ef
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 545
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Suspected GDPR data breach.Answers.1
+          operator: isEqualString
+          right:
+            value:
+              simple: Likely
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 57e06932-cacb-4749-80d9-033400e4462a
+      iscommand: false
+      name: The breach is likely to result in a risk to individuals
+      type: condition
+      version: -1
+    taskid: 57e06932-cacb-4749-80d9-033400e4462a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": 880
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: daca1250-72a6-4885-87f3-a0c6fb6fd066
+      iscommand: false
+      name: Breach documentation process
+      type: title
+      version: -1
+    taskid: daca1250-72a6-4885-87f3-a0c6fb6fd066
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1145,
+          "y": 720
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 24f42185-5a48-4578-8536-5273e6a6ea93
+      iscommand: false
+      name: No breach has occurred
+      type: title
+      version: -1
+    taskid: 24f42185-5a48-4578-8536-5273e6a6ea93
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2395
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f0cfdc41-8bd1-4437-8f5f-b4cf5dfd1768
+      iscommand: false
+      name: Breach report process
+      type: title
+      version: -1
+    taskid: f0cfdc41-8bd1-4437-8f5f-b4cf5dfd1768
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1472.5,
+          "y": 1040
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name: {}
+      type:
+        simple: docx
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        A script that automatically generates an investigation summary report. The script can also be used
+        in a post-processing workflow.
+      id: b179ce1d-07e6-4381-8799-7ec819c5ed4c
+      iscommand: false
+      name: Generate breach report
+      scriptName: GenerateInvestigationSummaryReport
+      type: regular
+      version: -1
+    taskid: b179ce1d-07e6-4381-8799-7ec819c5ed4c
+    timertriggers:
+    - action: start
+      fieldname: gdprnotifyauthorities
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1180
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Suspected GDPR data breach.Answers.2
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "28"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 22545bce-a43f-4f41-8bb8-3b4f4465ee1c
+      iscommand: false
+      name: 'The breach poses a high risk to individuals '
+      type: condition
+      version: -1
+    taskid: 22545bce-a43f-4f41-8bb8-3b4f4465ee1c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2110,
+          "y": 1715
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    scriptarguments:
+      value:
+        simple: The breach was reported and is documented in Demisto.
+    separatecontext: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: aa3b5159-9eeb-49b7-88d8-f7fcfc17ae80
+      iscommand: false
+      name: Breach is documented in Demisto
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: aa3b5159-9eeb-49b7-88d8-f7fcfc17ae80
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1472.5,
+          "y": 2735
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 558e7237-1588-474f-8b4c-214a68bea922
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 558e7237-1588-474f-8b4c-214a68bea922
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 3070
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    scriptarguments:
+      "1": {}
+      1longtexttest: {}
+      "2": {}
+      "3": {}
+      "4": {}
+      "5": {}
+      "6": {}
+      "7": {}
+      "8": {}
+      "9": {}
+      addLabels: {}
+      address: {}
+      adgroupname: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividuals: {}
+      affectedindividualscontactinformation: {}
+      ainsensitive: {}
+      alertlevel: {}
+      alexhide: {}
+      amarkdownsection: {}
+      analyststatusreportclosedincidents: {}
+      anothernumberpleasejusttomakesure: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      arcsightcaseid: {}
+      asensitive: {}
+      assetid: {}
+      attach: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      awsinstancename: {}
+      backupowner: {}
+      blah: {}
+      bool1: {}
+      bool2: {}
+      booleansummary: {}
+      booleantest: {}
+      boolfield: {}
+      booltest: {}
+      breachedhosts: {}
+      bugtraq: {}
+      casenumber: {}
+      ccipaddress: {}
+      champion: {}
+      city:
+        simple: ${Suspected GDPR data breach.Answers.12}
+      cleanname: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress:
+        simple: ${Company Address}
+      companycity:
+        simple: ${Suspected GDPR data breach.Answers.6}
+      companycountry:
+        simple: ${Suspected GDPR data breach.Answers.7}
+      companyhasinsuranceforthebreach:
+        simple: ${Suspected GDPR data breach.Answers.25}
+      companyname:
+        simple: ${Suspected GDPR data breach.Questions.3}
+      companypostalcode:
+        simple: ${Suspected GDPR data breach.Answers.5}
+      compliance: {}
+      constvalue: {}
+      contactaddress:
+        simple: ${Suspected GDPR data breach.Answers.10}
+      contactname:
+        simple: ${Suspected GDPR data breach.Answers.8}
+      contentlanguage: {}
+      country:
+        simple: ${Suspected GDPR data breach.Answers.13}
+      countrywherebusinesshasitsmainestablishment:
+        simple: ${Suspected GDPR data breach.Answers.18}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      customdatefields: {}
+      customfield: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      date2: {}
+      datepicker: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      default: {}
+      deleteEmptyField: {}
+      department: {}
+      departmentadmin: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details:
+        simple: ${Suspected GDPR data breach.Questions.26}
+      docsgrid: {}
+      doorlocked: {}
+      doornumber: {}
+      dooropenedat: {}
+      dpoemailaddress:
+        simple: ${Suspected GDPR data breach.Answers.14}
+      dstip: {}
+      duration: {}
+      edennum: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfrombark: {}
+      emailimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailtag: {}
+      emailtag2: {}
+      emailto: {}
+      emailtobark: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      enisacategory: {}
+      entered: {}
+      entree: {}
+      escalationdate: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      field1: {}
+      field2: {}
+      field3: {}
+      field4: {}
+      fieldone: {}
+      fieldtwo: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      fwlogs: {}
+      gatenumber: {}
+      gridtest: {}
+      hadassingleselectmandatory: {}
+      hadastest: {}
+      hadastry: {}
+      hadastrytoggle: {}
+      hadastrytogglenew: {}
+      hash: {}
+      hjhj: {}
+      host: {}
+      htmltypefield: {}
+      id: {}
+      important: {}
+      incidentactions: {}
+      infectedhost: {}
+      intelblockcomment: {}
+      intelblockurl: {}
+      internalemail: {}
+      internalusage: {}
+      isthedatasubjecttodpia:
+        simple: ${Suspected GDPR data breach.Answers.22}
+      itaytestfield: {}
+      jiraticketid: {}
+      killchain: {}
+      labels: {}
+      likelyimpact:
+        simple: ${Suspected GDPR data breach.Answers.21}
+      linkincident: {}
+      lob: {}
+      longtextone: {}
+      longtexttoo: {}
+      lotsofoptions: {}
+      mailbody: {}
+      maliciouscause:
+        simple: ${Suspected GDPR data breach.Answers.22}
+      maliciouscauseifthecauseisamaliciousattack:
+        simple: ${Suspected GDPR data breach.Answers.20}
+      malwarefamily: {}
+      measurestomitigate:
+        simple: ${Suspected GDPR data breach.Answers.24}
+      mitigated: {}
+      mttd: {}
+      multilinetext: {}
+      multiselect: {}
+      mydate: {}
+      myname: {}
+      myseverity: {}
+      name: {}
+      newboolhadas: {}
+      newmarkdownfield: {}
+      newtextfield: {}
+      nikeactionstaken: {}
+      noasmultiselectinthenoatypeincident: {}
+      noastable: {}
+      noatext: {}
+      numberplease: {}
+      objecttype: {}
+      occurred: {}
+      organizationname:
+        complex:
+          accessor: Answers.3}
+          root: ${Suspected GDPR data breach
+      originalhtml: {}
+      oriwithspace: {}
+      otheractions: {}
+      owner: {}
+      phase: {}
+      phishingsender: {}
+      phishingsenderdomain: {}
+      position:
+        simple: ${Suspected GDPR data breach.Answers.9}
+      possiblecauseofthebreach:
+        simple: ${Suspected GDPR data breach.Answers.19}
+      postalcode:
+        simple: ${Suspected GDPR data breach.Answers.11}
+      priority: {}
+      qradaroffenceid: {}
+      queues: {}
+      relatedincidentssummary: {}
+      replacePlaybook: {}
+      replyto: {}
+      reporteduser: {}
+      reporttable: {}
+      riskmitigationactionrequirements: {}
+      riskscore: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sdyhtrgsfd: {}
+      sectorofaffectedparty: {}
+      selectcustomer: {}
+      selector: {}
+      sender: {}
+      sensitive: {}
+      sensorinstalled: {}
+      severity: {}
+      shift: {}
+      shiftnotes: {}
+      shrikitable: {}
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees:
+        simple: ${Suspected GDPR data breach.Answers.16}
+      sizeturnover:
+        simple: ${Suspected GDPR data breach.Answers.17}
+      sla: {}
+      slaField: {}
+      source: {}
+      sourceip: {}
+      sourceip1: {}
+      spf: {}
+      src: {}
+      srcip: {}
+      srcntdomain: {}
+      srcuser: {}
+      subcat: {}
+      subcategory: {}
+      summary: {}
+      systems: {}
+      table: {}
+      targethostname: {}
+      team: {}
+      telefield: {}
+      telephoneno:
+        simple: ${Suspected GDPR data breach.Answers.15}
+      teleselect: {}
+      test: {}
+      test111: {}
+      testassociationdumpme: {}
+      testfield: {}
+      testguy: {}
+      testhtml: {}
+      testing123: {}
+      testinggrid: {}
+      thecauseofthebreach:
+        simple: ${Suspected GDPR data breach.Answers.21}
+      thisismysuperlongfield: {}
+      tier2owner: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      timetomitigate: {}
+      timetotriage: {}
+      tldr: {}
+      tlp: {}
+      todolist: {}
+      type: {}
+      uniquefiled: {}
+      user: {}
+      useremail: {}
+      userinformation: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vip: {}
+      vulnerabilitycategory: {}
+      vulnerabilitytable: {}
+      vvvv: {}
+      whereisdatahosted: {}
+      windowlocation: {}
+      windowupgrade: {}
+      windowupgraded: {}
+      zattachmentsgeneric: {}
+      zmaltegoimage: {}
+      zvtfirstseen: {}
+      zvtother: {}
+      zvtvendorcount: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 17a3040a-4af9-43b7-88b0-2c67547deb1d
+      iscommand: true
+      name: Update DPO Answers to incident
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 17a3040a-4af9-43b7-88b0-2c67547deb1d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 2490
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    scriptarguments:
+      attachIDs:
+        simple: ${Report.FileID}
+      attachNames:
+        simple: ${Report.Name}
+      bcc: {}
+      body:
+        simple: Attached is a Data Breach report according to the GDPR, from ${incident.companyname}.
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: ${incident.companycountry} - GDPR Data Breach Report
+      to:
+        simple: ${GDPR.Authority.Email}
+      transientFile: {}
+      transientFileContent: {}
+    separatecontext: false
+    task:
+      brand: ""
+      id: a3a32547-671f-421f-8c1e-da7f6263daa3
+      iscommand: true
+      name: Send information report to local supervisory authorities
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: a3a32547-671f-421f-8c1e-da7f6263daa3
+    timertriggers:
+    - action: stop
+      fieldname: gdprnotifyauthorities
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 2225
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    scriptarguments:
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hello,
+          We have discovered that your personal data has been compromised, and may be at high risk.
+
+          The nature of the data breached:
+          Data type: ${incident.affecteddatatype}
+          Data encryption status: ${incident.dataencryptionstatus}
+          Data is hosted at: ${incident.whereisdatahosted}
+
+          The likely consequences might be:
+          ${incident.likelyimpact}
+
+          The steps we have taken to mitigate the breach:
+          ${incident.measurestomitigate}
+
+          For more information, you can contact:
+          Contact Name: ${incident.contactname}
+          Contact Position: ${incident.position}
+          Contact Address: ${incident.contactaddress}
+          Contact Postal Code: ${incident.postalcode}
+          Contact City: ${incident.city}
+          Contact Country: ${incident.country}
+          Contact E-mail Address: ${incident.dpoemailaddress}
+          Contact Tel: ${incident.telephoneno}
+
+          We apologize for any inconvenience you might have experienced.
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: Notification - Your data has been compromised
+      to:
+        simple: ${incident.affectedindividualscontactinformation.emailaddress}
+      transientFile: {}
+      transientFileContent: {}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 7432dcf3-4ea8-43bd-8a61-bd91bc6a4d8f
+      iscommand: true
+      name: Notify Individuals
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 7432dcf3-4ea8-43bd-8a61-bd91bc6a4d8f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2110,
+          "y": 2270
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: dc4bbf9f-9f4c-4221-86aa-7d97f182c65e
+      iscommand: false
+      name: DPO updates report
+      type: title
+      version: -1
+    taskid: dc4bbf9f-9f4c-4221-86aa-7d97f182c65e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 1915
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: manual task - ask user to send new report
+      id: fe520e8a-1a1a-40cb-84d8-271f13093c3c
+      iscommand: false
+      name: Get new report from DPO
+      type: regular
+      version: -1
+    taskid: fe520e8a-1a1a-40cb-84d8-271f13093c3c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 2085
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 703ee51d-4b71-480d-82c4-8eabcde3ee77
+      iscommand: false
+      name: Contact authorities
+      type: title
+      version: -1
+    taskid: 703ee51d-4b71-480d-82c4-8eabcde3ee77
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 1900
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    scriptarguments:
+      country:
+        simple: ${incident.companycountry}
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        GDPR Data Protection Supervisory Authority Listing.
+
+        "'supervisory authority' means an independent public authority which is established by a Member State pursuant
+         to Article 51;
+
+        'supervisory authority concerned' means a supervisory authority which is concerned by the processing of
+        personal data because:
+        (a) the controller or processor is established on the territory of the Member State of that supervisory authority;
+        (b) data subjects residing in the Member State of that supervisory authority are substantially affected or likely to be substantially affected by the processing; or
+        (c) a complaint has been lodged with that supervisory authority;"
+
+        GDPR - Art. 4 - https://gdpr-info.eu/art-4-gdpr/
+      id: f1ffbfe2-fcd1-45df-818e-c7f206d48a98
+      iscommand: false
+      name: Get Authority Contact details
+      scriptName: GDPRContactAuthorities
+      type: regular
+      version: -1
+    taskid: f1ffbfe2-fcd1-45df-818e-c7f206d48a98
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1505
+        }
+      }
+  "35":
+    defaultassigneecomplex:
+      simple: admin
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "19"
+      "Yes":
+      - "25"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get admin's final approval to send the report to the authorities.
+      id: f84f85f8-98ef-4b5d-89b6-1344e8c1815c
+      iscommand: false
+      name: Get admin approval - manual
+      type: condition
+      version: -1
+    taskid: f84f85f8-98ef-4b5d-89b6-1344e8c1815c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 2035
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    scriptarguments:
+      attachIDs:
+        simple: ${Report.FileID}
+      attachNames:
+        simple: ${Report.Name}
+      bcc: {}
+      body:
+        simple: This is the data breach report generated from Demisto.
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: Generated data breach report from Demisto
+      to:
+        simple: ${incident.dpoemailaddress}
+      transientFile: {}
+      transientFileContent: {}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1e63f1b1-99cd-45e4-88f8-ab49072c7777
+      iscommand: true
+      name: Send report to DPO approval
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 1e63f1b1-99cd-45e4-88f8-ab49072c7777
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1350
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    message:
+      bcc: null
+      body:
+        simple: |-
+          Hello,
+
+          Please specify if you approve sending the data breach report to the authorities.
+
+          Approve sending the data breach report generated from Demisto, click Yes.
+
+          Decline sending the data breach report generated from Demisto, click No.
+          If you decline sending the report, please generate a new report and forward it to your SOC team.
+      cc: null
+      format: ""
+      methods:
+      - email
+      replyOptions:
+      - "Yes"
+      - "No"
+      subject:
+        simple: 'Data Breach report approval '
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.dpoemailaddress}
+    nexttasks:
+      "No":
+      - "29"
+      "Yes":
+      - "33"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1f9453ad-30f6-4478-8ab0-3c7d6fcb3477
+      iscommand: false
+      name: Get DPO Approval for the report
+      type: condition
+      version: -1
+    taskid: 1f9453ad-30f6-4478-8ab0-3c7d6fcb3477
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1690
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      id: 805610b5-b97b-429b-8c6b-4f3dd46546c1
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 805610b5-b97b-429b-8c6b-4f3dd46546c1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 2910
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2925,
+        "width": 2440,
+        "x": 50,
+        "y": 210
+      }
+    }
+  }

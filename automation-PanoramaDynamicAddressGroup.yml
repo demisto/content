@@ -1,0 +1,50 @@
+args:
+- auto: PREDEFINED
+  default: true
+  description: Action type - register or unregister
+  name: type
+  predefined:
+  - register
+  - unregister
+  required: true
+- description: IP address to be modified
+  name: ip
+  required: true
+- description: Group GUID to be modified
+  name: guid
+  required: true
+- description: Name of output file
+  name: fileName
+comment: Register/Unregister to address group with Panorama
+commonfields:
+  id: PanoramaDynamicAddressGroup
+  version: -1
+deprecated: true
+enabled: true
+name: PanoramaDynamicAddressGroup
+runonce: false
+script: |-
+  var req =
+  '<uid-message>\
+       <version>1.0</version>\
+       <type>update</type>\
+       <payload>\
+           <'+args.type+'>\
+               <entry ip="'+args.ip+'">\
+                   <tag>\
+                      <member>'+args.guid+'</member>\
+                   </tag>\
+               </entry>\
+           </'+args.type+'>\
+       </payload>\
+  </uid-message>';
+
+  return {Type: 3,
+        FileID: saveFile(req),
+        File: args.fileName ? args.fileName : 'Dynamic Address Group Mapping.xml',
+        Contents: args.fileName
+  };
+scripttarget: 0
+system: true
+tags: []
+type: javascript

@@ -1,0 +1,454 @@
+category: Endpoint
+commonfields:
+  id: AMP
+  version: -1
+configuration:
+- defaultvalue: https://api.amp.cisco.com
+  display: Server URL (e.g. https://api.amp.cisco.com)
+  name: server
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Client ID
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ""
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+description: Uses CISCO AMP Endpoint
+detaileddescription: To learn how to generate a Client ID and API Key, which are required
+  for this integration, see the [Cisco AMP documentation.]( https://www.cisco.com/c/en/us/support/docs/security/amp-endpoints/201121-Overview-of-the-Cisco-AMP-for-Endpoints.html#anc1).
+display: Cisco AMP
+image: data:image/png;base64,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
+name: AMP
+script:
+  commands:
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: Filter results by hostname.
+      name: hostname
+    - description: Filter results by internal IP address.
+      name: internal_ip
+    - description: Filter results by external IP address.
+      name: external_ip
+    - description: Filter results by group GUID.
+      name: group_guid
+    description: Returns a list of computers on which agents are deployed. You can
+      use filters (arguments) to narrow the search.
+    name: amp_get_computers
+  - arguments:
+    - default: true
+      description: The connector GUID for which to return information.
+      name: connector_guid
+      required: true
+    description: Returns information for the specified computer.
+    name: amp_get_computer_by_connector
+  - arguments:
+    - description: The IP address, SHA256 hash, or URL.
+      name: q
+    - description: Maximum number of results to return.
+      name: limit
+    - default: true
+      description: The connector GUID.
+      name: connector_guid
+      required: true
+    description: Returns a list of all activities associated with a particular computer.
+      This is analogous to the Device Trajectory on the FireAMP Console. Use the Q
+      argument to search for an IP address, SHA256 hash, or URL.
+    name: amp_get_computer_trajectory
+  - arguments:
+    - description: The IP address, SHA256 hash, or URL.
+      name: q
+    - description: Maximum number of results to return.
+      name: limit
+    - default: true
+      description: The connector GUID.
+      name: connector_guid
+      required: true
+    deprecated: true
+    description: Returns a list of all activities associated with a particular computer.
+      This is analogous to the Device Trajectory on the FireAMP Console. Use the Q
+      argument to search for an IP address, SHA256 hash, or URL.
+    name: amp_get_computer_trajctory
+  - arguments:
+    - default: true
+      description: The connector GUID.
+      name: connector_guid
+      required: true
+    - description: The group GUID.
+      name: group_guid
+      required: true
+    description: Moves a computer to a group with the corresponding connector_guid
+      and group_guid, respectively.
+    name: amp_move_computer
+  - arguments:
+    - default: true
+      description: An IPv4 address, SHA256 hash, filename, or URL fragment.
+      name: q
+      required: true
+    - description: Maximum number of results to return.
+      name: limit
+    - description: offset
+      name: offset
+    description: This endpoint enables you to search all computers across your organization
+      for any events or activities associated with a file or network operation, and
+      returns computers that match the specified criteria. You can then query the
+      /computers/{connector-guid}/trajectory endpoint for specific details.
+    name: amp_get_computer_activity
+  - arguments:
+    - default: true
+      description: An IPv4 address, SHA256 hash, filename, or URL fragment.
+      name: q
+      required: true
+    - description: Maximum number of results to return.
+      name: limit
+    - description: offset
+      name: offset
+    deprecated: true
+    description: This endpoint enables you to search all computers across your organization
+      for any events or activities associated with a file or network operation, and
+      returns computers that match the specified criteria. You can then query the
+      /computers/{connector-guid}/trajectory endpoint for specific details.
+    name: amp_get_computer_actvity
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The connector GUID.
+      name: connector_guid
+    - description: The group GUID.
+      name: group_guid
+    - description: The detected SHA256 hash.
+      name: detection_sha256
+    - description: The application SHA256.
+      name: application_sha256
+    - description: The event type.
+      name: event_type
+    - description: The offset.
+      name: offset
+    - description: The start date for the query, in ISO8601 format.
+      name: start_date
+    description: A general query interface for events. This is analogous to the Events
+      view on the FireAMP Console.
+    name: amp_get_events
+  - arguments: []
+    description: Events are identified and filtered by a unique ID. This endpoint
+      provides a human readable name and short description of each event (by ID).
+    name: amp_get_event_types
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The offset.
+      name: offset
+    - description: Name of the file.
+      name: name
+    description: Returns a list of application blocking file lists. You can filter
+      this list by name
+    name: amp_get_application_blocking
+  - arguments:
+    - default: true
+      description: Retrieves information about a particular file_list.
+      name: file_list_guid
+      required: true
+    description: Returns a particular file list for application blocking or simple
+      custom detection. You need to specify the file_list_guid argument to retrieve
+      information about a particular file_list.
+    name: amp_get_file_list_by_guid
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The offset.
+      name: offset
+    - description: Name of the detection.
+      name: name
+    description: Returns a list of simple custom detection file lists. You can filter
+      this list by detection name.
+    name: amp_get_simple_custom_detections
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The offset.
+      name: offset
+    - default: true
+      description: Retrieves information about a particular file_list.
+      name: file_list_guid
+      required: true
+    description: Returns a list of items for a particular file_list. You need to specify
+      the file_list_guid argument to retrieve these items.
+    name: amp_get_file_list_files
+  - arguments:
+    - default: true
+      description: Retrieves information about a particular file_list.
+      name: file_list_guid
+      required: true
+    - description: SHA256 hash.
+      name: sha256
+      required: true
+    description: Returns a particular item for a given file_list. You need to specify
+      the sha256 argument and the file_list_guid argument to retrieve an item.
+    name: amp_get_file_list_files_by_sha
+  - arguments:
+    - default: true
+      description: Retrieves information about a particular file_list.
+      name: file_list_guid
+      required: true
+    - description: SHA256 hash.
+      name: sha256
+      required: true
+    - description: Description of the SHA256 hash.
+      name: description
+    description: Adds a SHA256 hash to a file list, using file_list_guid.
+    name: amp_set_file_list_files_by_sha
+  - arguments:
+    - default: true
+      description: The file_list_guid to retrieve information about a particular file_list
+      name: file_list_guid
+      required: true
+    - description: SHA256 hash.
+      name: sha256
+      required: true
+    description: Deletes an item from a file_list using the SHA256 hash and file_list_guid.
+    name: amp_delete_file_list_files_by_sha
+  - arguments:
+    - description: amount of results
+      name: limit
+    - description: name of the group
+      name: name
+    description: Returns basic information about groups in your organization. You
+      can map group names to GUIDs for filtering on the events endpoint.
+    name: amp_get_groups
+  - arguments:
+    - default: true
+      description: The particular group guid
+      name: group_guid
+      required: true
+    description: Returns a particular group
+    name: amp_get_group
+  - arguments:
+    - default: true
+      description: The group GUID.
+      name: group_guid
+      required: true
+    - description: The Linux policy guide.
+      name: linux_policy_guid
+    - description: The Android policy guide.
+      name: android_policy_guid
+    - description: The Mac policy guide.
+      name: mac_policy_guid
+    - description: The Windows policy guide.
+      name: windows_policy_guid
+    description: Sets a security policy to a group of endpoints.
+    name: amp_set_group_policy
+  - arguments:
+    - description: Maximum number of results to return.
+      name: limit
+    - description: The offset.
+      name: offset
+    - description: The policy name.
+      name: name
+    - description: The policy product.
+      name: product
+    description: Returns a list of policies. You can filter this list by name and
+      product.
+    name: amp_get_policies
+  - arguments:
+    - default: true
+      description: The policy GUID.
+      name: policy_guid
+      required: true
+    description: Retrieves information about a particular policy, based on policy_guid.
+    name: amp_get_policy
+  - arguments: []
+    description: Fetches a list of versions.
+    name: amp_get_version
+  runonce: false
+  script: |-
+    var username = params.credentials.identifier;
+    var password = params.credentials.password;
+    var server = params.server;
+    var insecure = params.insecure;
+
+    var fixArgs = function(command, args) {
+        var newArgs = {};
+        if (args) {
+            var keys = Object.keys(args);
+            for (var i = 0; i<keys.length; i++) {
+                if (i !== 0) {
+                    query += '&';
+                }
+                newArgs[fixBracketsArgs(command, keys[i])] = args[keys[i]];
+            }
+        }
+        return newArgs;
+    };
+
+    var sendRequest = function(method, url, queryName, body) {
+        var res = http(
+                url,
+                {
+                    Method: method,
+                    Username: username,
+                    Password: password,
+                    Body: body,
+                    Headers: {
+                        'accept': ['application/json'],
+                        'content-type': ['application/json'],
+                    },
+                },
+                insecure
+            );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        return res.Body;
+    }
+
+    var methodDict = {
+        'amp_get_computers': 'GET',
+        'amp_get_computer_by_connector': 'GET',
+        'amp_get_computer_trajctory': 'GET',
+        'amp_move_computer': 'PATCH',
+        'amp_get_computer_actvity': 'GET',
+        'amp_get_events': 'GET',
+        'amp_get_event_types': 'GET',
+        'amp_get_application_blocking': 'GET',
+        'amp_get_file_list_by_guid': 'GET',
+        'amp_get_simple_custom_detections': 'GET',
+        'amp_get_file_list_files': 'GET',
+        'amp_get_file_list_files_by_sha': 'GET',
+        'amp_set_file_list_files_by_sha': 'POST',
+        'amp_delete_file_list_files_by_sha': 'DELETE',
+        'amp_get_groups': 'GET',
+        'amp_get_group': 'GET',
+        'amp_set_group_policy': 'PATCH',
+        'amp_get_policies': 'GET',
+        'amp_get_policy': 'GET',
+        'amp_get_version': 'GET',
+    }
+
+    var urlDict = {
+        'amp_get_computers': '/v1/computers',
+        'amp_get_computer_by_connector': '/v1/computers',
+        'amp_get_computer_trajctory': '/v1/computers',
+        'amp_move_computer': '/v1/computers',
+        'amp_get_computer_actvity': '/v1/computers/activity',
+        'amp_get_events': '/v1/events',
+        'amp_get_event_types': '/v1/event_types',
+        'amp_get_application_blocking': '/v1/file_lists/application_blocking',
+        'amp_get_file_list_by_guid': '/v1/file_lists',
+        'amp_get_simple_custom_detections': '/v1/file_lists/simple_custom_detections',
+        'amp_get_file_list_files': '/v1/file_lists',
+        'amp_get_file_list_files_by_sha': '/v1/file_lists',
+        'amp_set_file_list_files_by_sha': '/v1/file_lists',
+        'amp_delete_file_list_files_by_sha': '/v1/file_lists',
+        'amp_get_groups': '/v1/groups',
+        'amp_get_group': '/v1/groups',
+        'amp_set_group_policy': '/v1/groups',
+        'amp_get_policies': '/v1/policies',
+        'amp_get_policy': '/v1/policies',
+        'amp_get_version': '/v1/version',
+    }
+
+    var getURL = function(command, args) {
+        var base = urlDict[command];
+        switch (command) {
+            case 'amp_get_computer_by_connector':
+                base += '/' + args['connector_guid'];
+                delete args['connector_guid'];
+                break;
+            case 'amp_get_computer_trajctory':
+                base += '/' + args['connector_guid'] + '/trajectory';
+                delete args['connector_guid'];
+                break;
+            case 'amp_get_file_list_by_guid':
+                base += '/' + args['file_list_guid'];
+                delete args['file_list_guid'];
+                break;
+            case 'amp_get_file_list_files':
+                base += '/' + args['file_list_guid'] + '/files';
+                delete args['file_list_guid'];
+                break;
+            case 'amp_set_file_list_files_by_sha':
+            case 'amp_get_file_list_files_by_sha':
+            case 'amp_delete_file_list_files_by_sha':
+                base += '/' + args['file_list_guid'] + '/files/' + args['sha256'];
+                delete args['file_list_guid'];
+                delete args['sha256'];
+                break;
+            case 'amp_get_group':
+            case 'amp_set_group_policy':
+                base += '/' + args['group_guid'];
+                delete args['group_guid'];
+                break;
+            case 'amp_get_policy':
+                base += '/' + args['policy_guid'];
+                delete args['policy_guid'];
+                break;
+        }
+        return base
+    }
+
+    var bracketsArgs = [
+        'group_guid',
+        'hostname',
+        'connector_guid',
+        'event_type',
+        'name',
+        'product'
+        ];
+
+    var fixBracketsArgs = function(command, arg) {
+        if (bracketsArgs.indexOf(arg) !== -1) {
+            if (command !== 'amp_get_groups') {
+                return arg + '[]';
+            }
+        }
+        return arg;
+    }
+
+    var encodeBody = function(args) {
+        if (args) {
+            return JSON.stringify(args);
+        }
+        return undefined;
+    }
+
+    function exeCommand(command, cmdArgs) {
+        var method = methodDict[command];
+        var url = getURL(command, cmdArgs);
+        var query = '';
+        var body = '';
+        if (method === 'GET') {
+            query = encodeToURLQuery(fixArgs(command, cmdArgs));
+        } else {
+            body = encodeBody(cmdArgs);
+        }
+        var res = sendRequest(
+            method,
+            server + url + query,
+            urlDict[command],
+            body
+        );
+        return res;
+    }
+
+    // Fixing commands names
+    if (command === 'amp_get_computer_trajectory'){
+      command = 'amp_get_computer_trajctory';
+    }
+    else if (command === 'amp_get_computer_activity'){
+      command = 'amp_get_computer_actvity';
+    }
+    switch (command) {
+        case 'test-module':
+            exeCommand('amp_get_version', args);
+            // successful response
+            return 'ok';
+        default:
+            return exeCommand(command, args);
+    }
+  type: javascript
+system: true

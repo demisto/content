@@ -1,0 +1,37 @@
+args:
+- description: The HTML to display
+  name: html
+  required: true
+- auto: PREDEFINED
+  description: Should the entry be marked as a note?
+  name: markAsNote
+  predefined:
+  - "true"
+  - "false"
+- description: Add a header text to the output
+  name: header
+comment: Display HTML in the War Room.
+commonfields:
+  id: DisplayHTML
+  version: -1
+name: DisplayHTML
+runonce: false
+script: |
+  html = demisto.args().get("html")
+  note = demisto.args().get("markAsNote")
+  header = demisto.args().get("header")
+
+  note = True if note and note.lower() == "true" else False
+  if header:
+      html = "<h1>{0}</h1></br>{1}".format(header,html)
+
+  demisto.results( {
+      'ContentsFormat': formats['html'],
+      'Type': entryTypes['note'],
+      'Contents': html,
+      'Note': note
+  } )
+scripttarget: 0
+system: true
+tags: []
+type: python

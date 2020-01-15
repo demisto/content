@@ -1,0 +1,68 @@
+args:
+- description: Text to match against, e.g., The quick brown fox.
+  name: value
+  required: true
+- description: Regex pattern to search (in Python), e.g., (The)\s(quick).*(fox).
+  name: regex
+  required: true
+- description: A comma-separate list of capture groups to return, given in integers.
+    If not provided, all capture groups will be returned.
+  name: groups
+- description: Key names to map to capture group items, ordered by capture groups.
+    Number of keys should be the same as number of groups (Comma-separated values
+    supported) e.g., article,noun.
+  name: keys
+comment: "Extraction of elements which are contained in all the subgroups of the match
+  to the pattern.\nFor example, extracting from the string \"The quick brown fox\"
+  the object `{\"article\":\"The\",\"noun\":quick\"}`\n(See arguments descriptions
+  for more details) "
+commonfields:
+  id: RegexGroups
+  version: -1
+dockerimage: demisto/python3:3.7.5.3066
+enabled: true
+name: RegexGroups
+runonce: false
+script: |2-
+
+
+  match_target = demisto.args()['value']
+  regex_pattern = re.compile(r'{}'.format(demisto.args()['regex']))
+  capture_groups = demisto.args().get('groups')
+  dict_keys = demisto.args().get('keys')
+
+  if capture_groups:
+      capture_groups = capture_groups.split(',')
+      # Validating groups input to be integers
+      if not all(x.isdigit() for x in capture_groups):
+          raise ValueError('Error: groups must be integers')
+
+  if dict_keys:
+      dict_keys = dict_keys.split(',')
+
+  pattern_match = re.search(regex_pattern, match_target)
+  matches = []
+  if pattern_match:
+      for i in pattern_match.groups():
+          matches.append(i)
+
+  if capture_groups:
+      for j in capture_groups:
+          if len(matches) - 1 < int(j):
+              raise ValueError('Error: Regex group (' + j + ') out of range')
+      matches = [matches[int(x)] for x in capture_groups]
+
+  if dict_keys:
+      if len(dict_keys) != len(matches):
+          raise ValueError('Error: Number of keys does not match number of items')
+      else:
+          dict_matches = dict(zip(dict_keys, matches))
+          demisto.results(dict_matches)
+  else:
+      demisto.results(matches)
+scripttarget: 0
+system: true
+tags:
+- transformer
+- string
+type: python

@@ -1,0 +1,281 @@
+{
+	"createdBy": "DBot",
+	"cronView": false,
+	"dashboard": null,
+	"decoder": {
+		"incident.activated": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.closed": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.created": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.dueDate": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.occurred": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.reminder": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.severity.0": {
+			"type": "string",
+			"value": "Unknown"
+		},
+		"incident.severity.0.5": {
+			"type": "string",
+			"value": "Informational"
+		},
+		"incident.severity.1": {
+			"type": "string",
+			"value": "Low"
+		},
+		"incident.severity.2": {
+			"type": "string",
+			"value": "Medium"
+		},
+		"incident.severity.3": {
+			"type": "string",
+			"value": "High"
+		},
+		"incident.severity.4": {
+			"type": "string",
+			"value": "Critical"
+		},
+		"incident.status.0": {
+			"type": "string",
+			"value": "Pending"
+		},
+		"incident.status.1": {
+			"type": "string",
+			"value": "Active"
+		},
+		"incident.status.2": {
+			"type": "string",
+			"value": "Closed"
+		},
+		"incident.status.3": {
+			"type": "string",
+			"value": "Closed"
+		},
+		"incident.status.4": {
+			"type": "string",
+			"value": "On Hold"
+		},
+		"investigation.closed": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"investigation.created": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"investigation.status.0": {
+			"type": "string",
+			"value": "Active"
+		},
+		"investigation.status.1": {
+			"type": "string",
+			"value": "Done"
+		},
+		"investigation.type.0": {
+			"type": "string",
+			"value": "Standard"
+		},
+		"investigation.type.1": {
+			"type": "string",
+			"value": "Restricted"
+		},
+		"investigation.type.9": {
+			"type": "string",
+			"value": "Playground"
+		}
+	},
+	"description": "Daily summary of all current open incidents (CSV format).",
+	"disableHeader": false,
+	"endingDate": "0001-01-01T00:00:00Z",
+	"id": "csvDailyIncidentReport",
+	"latestReportName": "",
+	"latestReportTime": "0001-01-01T00:00:00Z",
+	"latestReportUsername": "",
+	"latestScheduledReportTime": "0001-01-01T00:00:00Z",
+	"locked": false,
+	"name": "Daily incidents",
+	"nextScheduledTime": "0001-01-01T00:00:00Z",
+	"orientation": "",
+	"paperSize": "",
+	"recipients": [],
+	"recurrent": false,
+	"reportType": "",
+	"runOnce": false,
+	"runningUser": "",
+	"scheduled": false,
+	"sections": [
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Daily Incidents",
+			"layout": {
+				"columnPos": 1,
+				"rowPos": 1,
+				"style": {
+					"fontSize": 28,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "header"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"columnPos": 1,
+				"format": "MMMM Do YYYY, h:mm:ss a z",
+				"rowPos": 2,
+				"style": {
+					"color": "gray",
+					"fontSize": 13,
+					"fontStyle": "italic",
+					"marginBottom:": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "date"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Total incidents: {0}",
+			"layout": {
+				"columnPos": 1,
+				"rowPos": 3,
+				"sectionStyle": {
+					"width": 200
+				},
+				"style": {
+					"fontSize": 18,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": {
+					"totalOnly": true
+				},
+				"type": "incident"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Last day incidents: {0}",
+			"layout": {
+				"columnPos": 2,
+				"rowPos": 3,
+				"style": {
+					"fontSize": 18,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": {
+					"andOp": true,
+					"notStatus": [
+						2,
+						3
+					],
+					"period": {
+						"by": "hour",
+						"field": "created",
+						"fromValue": 24,
+						"toValue": 0
+					},
+					"totalOnly": true
+				},
+				"type": "incident"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"classes": "striped stackable small very compact",
+				"columnPos": 1,
+				"rowPos": 4,
+				"tableColumns": [
+					"id",
+					"name",
+					"occurred",
+					"created",
+					"type",
+					"owner",
+					"severity",
+					"status",
+					"phase",
+					"dueDate",
+					"details"
+				]
+			},
+			"query": {
+				"filter": {
+					"andOp": true,
+					"notStatus": [
+						2,
+						3
+					]
+				},
+				"type": "incident"
+			},
+			"titleStyle": null,
+			"type": "table"
+		}
+	],
+	"sensitive": false,
+	"sortValues": null,
+	"startDate": "0001-01-01T00:00:00Z",
+	"system": true,
+	"times": 0,
+	"timezoneOffset": 0,
+	"type": "csv",
+	"userAPIKey": "",
+	"userAPIKeyID": "",
+	"version": -1
+}

@@ -1,0 +1,103 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"ExtraHop Detection"
+	],
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "participants",
+	"closeForm": false,
+	"columns": [
+		{
+			"displayName": "Role",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "role",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "IP Address",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "ipaddress",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "MAC Address",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "macaddress",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "DNS Name",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "dnsname",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 111
+		},
+		{
+			"displayName": "External",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "external",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "boolean",
+			"width": 150
+		}
+	],
+	"content": true,
+	"defaultRows": [
+		{}
+	],
+	"description": "List of participant objects associated with the ExtraHop Reveal(x) detection",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_participants",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "Participants",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": [],
+	"sla": 0,
+	"sortValues": null,
+	"system": false,
+	"systemAssociatedTypes": null,
+	"threshold": 72,
+	"type": "grid",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}

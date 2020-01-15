@@ -1,0 +1,26 @@
+{
+	"contextPath": "",
+	"contextValue": "",
+	"defaultMapping": null,
+	"details": "Registry Path Reputation",
+	"disabled": false,
+	"enhancementScriptNames": [
+		"RegCollectValues",
+		"CBEvents"
+	],
+	"excludedBrands": null,
+	"file": false,
+	"fileHashesPriority": null,
+	"formatScript": "",
+	"id": "registryRep",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "((?i)hk((EY_(CLASSES_ROOT|PERFORMANCE_DATA|LOCAL_MACHINE|CURRENT_(CONFIG|USER)|USERS))|LM|CR|CU|U|CC|PD))\\\\[\\\\\\w\\}\\{\\.\\-\\ \\*]+",
+	"reputationCommand": "",
+	"reputationScriptName": "RegPathReputationBasicLists",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

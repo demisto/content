@@ -1,0 +1,57 @@
+args:
+- default: true
+  description: domain to discover
+  name: domain
+  required: true
+comment: aquatone-discover will find the targets nameservers and shuffle DNS lookups
+  between them. Should a lookup fail on the target domains nameservers, aquatone-discover
+  will fall back to using Google public DNS servers to maximize discovery.
+commonfields:
+  id: AquatoneDiscover
+  version: -1
+dockerimage: demisto/aquatone
+enabled: true
+name: AquatoneDiscover
+outputs:
+- contextPath: Aquatone.discover
+  description: find the targets nameservers and shuffle DNS lookups between them
+runonce: true
+script: |-
+  from subprocess import Popen, PIPE, STDOUT
+  import subprocess
+  import time
+
+  domain = demisto.args()['domain']
+  stderr = {}
+  cmd = 'aquatone-discover --domain '+domain
+
+  p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+  stdout, stderr = p.communicate()
+  if p.returncode>0:
+      demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],"Contents": stdout+stderr})
+  else:
+      res = stdout
+      cmd = 'cat /root/aquatone/'+domain+'/hosts.json'
+      p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+      stdout, stderr = p.communicate()
+      if p.returncode>0:
+          demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],"Contents": stdout+stderr})
+      else:
+          hosts = stdout
+          hosts_json = json.loads(hosts)
+
+          ec = {'Aquatone.discover': hosts_json}
+          entry_result = {
+              'Type': entryTypes['note'],
+              'ContentsFormat': formats['json'],
+              'Contents': hosts_json,
+              'HumanReadable':res,
+              'ReadableContentsFormat': formats['markdown'],
+              'EntryContext': ec
+          }
+          demisto.results(entry_result)
+scripttarget: 0
+system: true
+tags: []
+timeout: 1h0m0s
+type: python

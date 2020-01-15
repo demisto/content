@@ -1,0 +1,27 @@
+args:
+- description: The string to evaluate
+  name: str
+  required: true
+comment: Returns the length of  the string passed as argument
+commonfields:
+  id: StringLength
+  version: -1
+enabled: true
+name: StringLength
+outputs:
+- contextPath: StringLength.Result
+  description: The length of the string passed as argument
+runonce: false
+script: |
+  setContext('StringLength.Result', args.str.length);
+  return {
+      Type: entryTypes.note,
+      Contents: args.str.length,
+      ContentsFormat: formats.txt
+
+  };
+scripttarget: 0
+system: true
+tags:
+- Utility
+type: javascript

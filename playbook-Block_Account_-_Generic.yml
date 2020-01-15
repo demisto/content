@@ -1,0 +1,228 @@
+description: |-
+  This playbook blocks malicious usernames using all integrations that you have enabled.
+
+  Supported integrations for this playbook:
+  * Active Directory
+id: block_account_-_generic
+inputs:
+- description: Array of malicious usernames to block.
+  key: Username
+  required: false
+  value: {}
+name: Block Account - Generic
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: b95110b7-ba18-42a5-87ad-c5d37915401c
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: b95110b7-ba18-42a5-87ad-c5d37915401c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1808d949-f921-4957-8796-7bbedd822ad9
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 1808d949-f921-4957-8796-7bbedd822ad9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 870
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 0b958771-7e06-4239-899f-f7d133be6938
+      iscommand: false
+      name: Block accounts
+      type: title
+      version: -1
+    taskid: 0b958771-7e06-4239-899f-f7d133be6938
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 380
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Username
+          operator: isExists
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that the playbook input includes at least one username to
+        block.
+      id: 2c5a17dd-e019-4e20-8f5b-4333678a26e0
+      iscommand: false
+      name: Is there a username to block?
+      type: condition
+      version: -1
+    taskid: 2c5a17dd-e019-4e20-8f5b-4333678a26e0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: activedir
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |
+        Verify that there is a valid instance of Active Directory enabled.
+      id: 5da07472-33bb-451d-8562-365e05f456ec
+      iscommand: false
+      name: Is Active Directory enabled?
+      type: condition
+      version: -1
+    taskid: 5da07472-33bb-451d-8562-365e05f456ec
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      base-dn: {}
+      username:
+        complex:
+          root: inputs.Username
+    separatecontext: false
+    task:
+      brand: activedir
+      description: Disable the account using Active Directory.
+      id: c8b9285e-4d21-4070-89b6-33c611531812
+      iscommand: true
+      name: Disable account in active directory
+      script: activedir|||ad-disable-account
+      type: regular
+      version: -1
+    taskid: c8b9285e-4d21-4070-89b6-33c611531812
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 690
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 885,
+        "width": 745,
+        "x": -90,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,202 @@
+description: Run a Tenable.io scan
+id: Tenable.io Scan
+inputs:
+- description: ID of the tenable scan to run
+  key: scan-id
+  required: true
+  value: {}
+- description: Alternative targets list to the scan's configured targets
+  key: targets
+  required: false
+  value: {}
+name: Tenable.io Scan
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: edc11302-141f-49c1-84f2-51825c1d1077
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: edc11302-141f-49c1-84f2-51825c1d1077
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      scanId:
+        complex:
+          root: inputs.scan-id
+      scanTargets:
+        complex:
+          root: inputs.targets
+    separatecontext: false
+    task:
+      brand: ""
+      description: Lauch a scan with existing or custom targets. (You can specify
+        custom targets in the arguements of this command.)
+      id: 31641027-ac88-46a3-8324-1c70cb265545
+      iscommand: true
+      name: tenable-io-launch-scan
+      script: '|||tenable-io-launch-scan'
+      type: regular
+      version: -1
+    taskid: 31641027-ac88-46a3-8324-1c70cb265545
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      Ids:
+        simple: ${TenableIO.Scan.Id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: scanId
+      PollingCommandName:
+        simple: tenable-io-get-scan-status
+      Timeout:
+        simple: "60"
+      dt:
+        simple: TenableIO.Scan(val.Status == 'pending' || val.Status == 'running').Id
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 990ff4bf-b662-4e14-83fb-b6654144a57c
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 990ff4bf-b662-4e14-83fb-b6654144a57c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    scriptarguments:
+      scanId:
+        complex:
+          root: inputs.scan-id
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check the status of a specific scan using its ID.
+      id: eb82b29d-6d43-4599-8953-19272e99be00
+      iscommand: true
+      name: tenable-io-get-scan-status
+      script: '|||tenable-io-get-scan-status'
+      type: regular
+      version: -1
+    taskid: eb82b29d-6d43-4599-8953-19272e99be00
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      detailed:
+        simple: "yes"
+      info:
+        simple: "yes"
+      scanId:
+        complex:
+          root: inputs.scan-id
+    separatecontext: false
+    task:
+      brand: ""
+      description: Retrive scan-report for the given scan.
+      id: 6e67b464-dd8f-4479-8ad7-017bf2c3aef1
+      iscommand: true
+      name: tenable-io-get-scan-report
+      script: '|||tenable-io-get-scan-report'
+      type: regular
+      version: -1
+    taskid: 6e67b464-dd8f-4479-8ad7-017bf2c3aef1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,494 @@
+description: Calculates the incident severity level according to the methodology of
+  a 3rd-party integration.
+id: calculate_severity_-_3rd-party_integrations
+inputs:
+- description: Qualys Vulnerability Severity score (1-5).
+  key: QualysSeverity
+  required: false
+  value:
+    complex:
+      accessor: Severity
+      root: Qualys
+- description: ' Nexpose Vulnerability Severity score (Moderate, Severe, Critical).'
+  key: NexposeSeverity
+  required: false
+  value:
+    complex:
+      accessor: Asset.Vulnerability.Severity
+      root: Nexpose
+name: Calculate Severity - 3rd-party integrations
+outputs:
+- contextPath: Severity
+  description: The output severity
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+      - "26"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 3eded69b-617e-4212-86b7-2537474285f3
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 3eded69b-617e-4212-86b7-2537474285f3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 50
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: high
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Set the severity level to High.
+      id: 5f92bc72-085f-4c03-8404-82f83dac6c62
+      iscommand: false
+      name: Set severity to "High"
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 5f92bc72-085f-4c03-8404-82f83dac6c62
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 507.5,
+          "y": 730
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 483350d5-ab17-44cd-87b3-0e2360ce3577
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 483350d5-ab17-44cd-87b3-0e2360ce3577
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 1004
+        }
+      }
+  "21":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.QualysSeverity
+          operator: isExists
+      label: "yes"
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "22"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if there is a “QualysSeverity” in the playbook inputs.
+      id: a91ad8e7-d063-4466-8137-711519c902f2
+      iscommand: false
+      name: Is there a Qualys severity?
+      type: condition
+      version: -1
+    taskid: a91ad8e7-d063-4466-8137-711519c902f2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1247.5,
+          "y": 340
+        }
+      }
+  "22":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: inputs.QualysSeverity
+                    operator: greaterThanOrEqual
+                    right:
+                      value:
+                        simple: "4"
+                root: inputs.QualysSeverity
+          operator: isExists
+      label: HIGH
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: inputs.QualysSeverity
+                    operator: greaterThanOrEqual
+                    right:
+                      value:
+                        simple: "2"
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: inputs.QualysSeverity
+                    operator: lessThan
+                    right:
+                      value:
+                        simple: "4"
+                root: inputs.QualysSeverity
+          operator: isExists
+      label: MEDIUM
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: inputs.QualysSeverity
+                    operator: lessThan
+                    right:
+                      value:
+                        simple: "2"
+                root: inputs.QualysSeverity
+          operator: isExists
+      label: LOW
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      HIGH:
+      - "6"
+      LOW:
+      - "24"
+      MEDIUM:
+      - "23"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        Severity level is assigned according to:
+
+        * High = 4+
+        * Medium = 2-3
+        * Low = 1
+      id: 52fae7c2-b907-4877-8a6a-ed1fbf0ad988
+      iscommand: false
+      name: Assign severity level based on Qualys vulnerability score
+      type: condition
+      version: -1
+    taskid: 52fae7c2-b907-4877-8a6a-ed1fbf0ad988
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1247.5,
+          "y": 513
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: medium
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Set the severity level to Medium.
+      id: 89c78898-8fef-4807-8a3d-1c4f042c4eb2
+      iscommand: false
+      name: Set severity to "Medium"
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 89c78898-8fef-4807-8a3d-1c4f042c4eb2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 730
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: low
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Set the severity level to Low.
+      id: 84f71501-bcb9-481c-85d5-2efa59f1c1a4
+      iscommand: false
+      name: Set severity to "Low"
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 84f71501-bcb9-481c-85d5-2efa59f1c1a4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1554,
+          "y": 730
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1487586f-f1f8-4136-8d7e-444a34750493
+      iscommand: false
+      name: Calculate using Qualys Vulnerability Management
+      type: title
+      version: -1
+    taskid: 1487586f-f1f8-4136-8d7e-444a34750493
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1247.5,
+          "y": 195
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: aa7b1201-afbc-4d7b-89f5-e21011257699
+      iscommand: false
+      name: Calculate using Nexpose Vulnerability Management
+      type: title
+      version: -1
+    taskid: aa7b1201-afbc-4d7b-89f5-e21011257699
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 195
+        }
+      }
+  "27":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.NexposeSeverity
+          operator: isExists
+      label: "yes"
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "28"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if there is a “NexposeSeverity” in the playbook inputs.
+      id: 9712ee01-9cb9-4dfa-80b3-aa3beadf990c
+      iscommand: false
+      name: Is there a Nexpose severity?
+      type: condition
+      version: -1
+    taskid: 9712ee01-9cb9-4dfa-80b3-aa3beadf990c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 340
+        }
+      }
+  "28":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: inputs.NexposeSeverity
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Critical
+                root: inputs.NexposeSeverity
+          operator: isExists
+      label: HIGH
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: inputs.NexposeSeverity
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Severe
+                root: inputs.NexposeSeverity
+          operator: isExists
+      label: MEDIUM
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: inputs.NexposeSeverity
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Moderate
+                root: inputs.NexposeSeverity
+          operator: isExists
+      label: LOW
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      HIGH:
+      - "6"
+      LOW:
+      - "24"
+      MEDIUM:
+      - "23"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        Severity level is assigned according to:
+
+        * High = Critical
+        * Medium = Severe
+        * Low = Moderate
+      id: d5f43287-75c2-4799-8374-95677a68c876
+      iscommand: false
+      name: Assign severity level based on Nexpose vulnerability score
+      type: condition
+      version: -1
+    taskid: d5f43287-75c2-4799-8374-95677a68c876
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 529
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1019,
+        "width": 1426.5,
+        "x": 507.5,
+        "y": 50
+      }
+    }
+  }

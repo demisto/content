@@ -1,0 +1,206 @@
+{
+	"id": "Access",
+	"kind": "edit",
+	"name": "",
+	"sections": [
+		{
+			"description": "",
+			"fields": [
+				{
+					"fieldId": "incident_name",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_occurred",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_reminder",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_owner",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_roles",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_type",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_severity",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_playbookid",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_labels",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_phase",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_details",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_attachment",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				}
+			],
+			"id": "",
+			"isVisible": true,
+			"modified": "0001-01-01T00:00:00Z",
+			"name": "Basic Information",
+			"query": null,
+			"queryType": "",
+			"readOnly": false,
+			"sortValues": null,
+			"type": "",
+			"version": 0
+		},
+		{
+			"description": "",
+			"fields": [
+				{
+					"fieldId": "incident_app",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_src",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_srcntdomain",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_srcuser",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_dest",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_destntdomain",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_duration",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				}
+			],
+			"id": "",
+			"isVisible": true,
+			"modified": "0001-01-01T00:00:00Z",
+			"name": "Access Info",
+			"query": null,
+			"queryType": "",
+			"readOnly": false,
+			"sortValues": null,
+			"type": "",
+			"version": 0
+		},
+		{
+			"description": "",
+			"id": "",
+			"isVisible": true,
+			"modified": "0001-01-01T00:00:00Z",
+			"name": "Custom Fields",
+			"query": null,
+			"queryType": "",
+			"readOnly": false,
+			"sortValues": null,
+			"type": "",
+			"version": 0
+		}
+	],
+	"sortValues": null,
+	"system": true,
+	"typeId": "Access",
+	"version": -1
+}

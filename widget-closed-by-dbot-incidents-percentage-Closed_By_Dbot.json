@@ -1,0 +1,40 @@
+{
+	"category": "",
+	"dataType": "scripts",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "",
+			"byTo": "",
+			"field": "",
+			"fromValue": null,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"description": "Showing percentage of incidents handled and closed by DBot, without an owner being assigned to, across all incidents in the provided period",
+	"id": "closed-by-dbot-incidents-percentage",
+	"isPredefined": true,
+	"name": "Closed By Dbot",
+	"params": {
+		"colors": {
+			"isEnabled": true,
+			"items": {
+				"#00CD33": {
+					"value": -1
+				}
+			},
+			"type": "above"
+		},
+		"currencySign": "%",
+		"signAlignment": "right"
+	},
+	"query": "DBotClosedIncidentsPercentage",
+	"size": 0,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "number"
+}

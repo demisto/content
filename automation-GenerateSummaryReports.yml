@@ -1,0 +1,65 @@
+args:
+- defaultValue: Investigation Summary
+  description: Name of the report to generate.
+  name: name
+- defaultValue: pdf
+  description: Report type to generate.
+  name: type
+- description: Incident IDs for which to generate.
+  isArray: true
+  name: ids
+  required: true
+comment: Generate report summaries for the passed incidents.
+commonfields:
+  id: GenerateSummaryReports
+  version: -1
+enabled: true
+name: GenerateSummaryReports
+outputs:
+- contextPath: SummaryReports.IncidentID
+  description: Incident ID of each generated report.
+  type: number
+- contextPath: SummaryReports.ReportName
+  description: The report name.
+  type: string
+- contextPath: SummaryReports.File
+  description: File name of the report file.
+  type: string
+- contextPath: SummaryReports.FileID
+  description: File ID of the generated report.
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: |
+  var res = [];
+  var ids = argToList(args.ids);
+  if(!Array.isArray(ids)) {
+      ids = [ids]; //single element case
+  }
+  ids = ids.filter(function(value, index, self) { // make sure array is unique
+      return self.indexOf(value) === index;
+  });
+  var ec = {SummaryReports: []};
+  ids.forEach(function(id) {
+      var reportEntries =  executeCommand("generateSummaryReport", {name: args.name, type: args.type, incidentId: id});
+      res = res.concat(reportEntries);
+      if(reportEntries[0] && reportEntries[0].File) {
+          ec.SummaryReports.push({IncidentID: id, ReportName: args.name, File: reportEntries[0].File, FileID: reportEntries[0].FileID})
+      }
+      wait(1); //required to avoid generated file name conflicts
+  });
+  if(ec.SummaryReports.length > 0) {
+      res.push({
+          Type: entryTypes.note,
+          Contents: ec,
+          ContentsFormat: formats.json,
+          HumanReadable: tableToMarkdown("Summary Reports", ec.SummaryReports),
+          EntryContext: ec
+      });
+  }
+  return res;
+scripttarget: 0
+system: true
+tags:
+- Utility
+type: javascript

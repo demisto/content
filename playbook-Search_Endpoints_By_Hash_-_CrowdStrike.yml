@@ -1,0 +1,538 @@
+description: Hunt for endpoint activity involving hash and domain IOCs, using Crowdstrike
+  Falcon Host
+id: search_endpoints_by_hash_-_crowdstrike
+inputs:
+- description: MD5 Hash
+  key: MD5Hash
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+- description: SHA1 Hash
+  key: SHA1Hash
+  required: false
+  value:
+    complex:
+      accessor: SHA1
+      root: File
+- description: SHA256 Hash
+  key: SHA256Hash
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      root: File
+name: Search Endpoints By Hash - CrowdStrike
+outputs:
+- contextPath: Endpoint.Hostname
+  description: Device hostname
+  type: string
+- contextPath: Endpoint
+  description: The endpoint
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 64d3d099-e3f0-45ae-8898-c4530cf996b9
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 64d3d099-e3f0-45ae-8898-c4530cf996b9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 50
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.MD5Hash
+          operator: isExists
+      label: "yes"
+    continueonerror: true
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "6"
+    note: false
+    scriptarguments:
+      value:
+        complex:
+          accessor: MD5
+          root: File
+    separatecontext: false
+    task:
+      brand: ""
+      description: Are there MD5s to hunt?
+      id: 5ad90257-ab46-4ecb-8b1b-668a94bb6522
+      iscommand: false
+      name: Are there MD5s to hunt?
+      type: condition
+      version: -1
+    taskid: 5ad90257-ab46-4ecb-8b1b-668a94bb6522
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 499,
+          "y": 515
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.SHA1Hash
+          operator: isExists
+      label: "yes"
+    continueonerror: true
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    note: false
+    scriptarguments:
+      value:
+        complex:
+          accessor: SHA1
+          root: File
+    separatecontext: false
+    task:
+      brand: ""
+      description: Are there SHA1s to hunt?
+      id: ce042e73-548a-4394-888e-0e36fa98bc92
+      iscommand: false
+      name: Are there SHA1s to hunt?
+      type: condition
+      version: -1
+    taskid: ce042e73-548a-4394-888e-0e36fa98bc92
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 515
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.SHA256Hash
+          operator: isExists
+      label: "yes"
+    continueonerror: true
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    note: false
+    scriptarguments:
+      value:
+        complex:
+          accessor: SHA256
+          root: File
+    separatecontext: false
+    task:
+      brand: ""
+      description: Are there SHA256s to hunt?
+      id: f3cd5ec3-a5d3-41fe-8d5b-3810cf9c8788
+      iscommand: false
+      name: Are there SHA256s to hunt?
+      type: condition
+      version: -1
+    taskid: f3cd5ec3-a5d3-41fe-8d5b-3810cf9c8788
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1402,
+          "y": 515
+        }
+      }
+  "6":
+    continueonerror: true
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      type:
+        simple: md5
+      value:
+        complex:
+          root: inputs.MD5Hash
+    separatecontext: false
+    task:
+      brand: FalconHost
+      description: Returns a list of device IDs on which an indicator ran
+      id: 83fcfd0c-232e-415d-8aa5-3a06601c78e1
+      iscommand: true
+      name: Hunt for devices running MD5
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      version: -1
+    taskid: 83fcfd0c-232e-415d-8aa5-3a06601c78e1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 556.5,
+          "y": 690
+        }
+      }
+  "7":
+    continueonerror: true
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      type:
+        simple: sha1
+      value:
+        complex:
+          root: inputs.SHA1Hash
+    separatecontext: false
+    task:
+      brand: FalconHost
+      description: Returns a list of device IDs on which an indicator ran
+      id: c25bd508-049f-4f6d-882d-f8c69723bbd3
+      iscommand: true
+      name: Hunt for devices accessing SHA1
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      version: -1
+    taskid: c25bd508-049f-4f6d-882d-f8c69723bbd3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1022,
+          "y": 690
+        }
+      }
+  "8":
+    continueonerror: true
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      type:
+        simple: sha256
+      value:
+        complex:
+          root: inputs.SHA256Hash
+    separatecontext: false
+    task:
+      brand: FalconHost
+      description: Returns a list of device IDs on which an indicator ran
+      id: 9dae770a-ec96-4d85-8af0-92dbd79060ac
+      iscommand: true
+      name: Hunt for devices accessing SHA256
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      version: -1
+    taskid: 9dae770a-ec96-4d85-8af0-92dbd79060ac
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 690
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 461f7122-3239-492d-8a80-d4a37a18c645
+      iscommand: false
+      name: Get device details
+      type: title
+      version: -1
+    taskid: 461f7122-3239-492d-8a80-d4a37a18c645
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 894
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: FalconHostDevices
+          operator: isExists
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "18"
+    note: false
+    scriptarguments:
+      value:
+        complex:
+          root: FalconHostDevices
+    separatecontext: false
+    task:
+      brand: ""
+      description: Found any devices?
+      id: a4f4efd7-61d9-4103-88e3-036e3f76632b
+      iscommand: false
+      name: Found any devices?
+      type: condition
+      version: -1
+    taskid: a4f4efd7-61d9-4103-88e3-036e3f76632b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 1013
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 0be18d12-04e5-4109-89ff-b8f917d9bc38
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 0be18d12-04e5-4109-89ff-b8f917d9bc38
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 1391
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: FalconHost
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "17"
+    note: false
+    scriptarguments:
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: modules.brand
+              operator: isEqualString
+              right:
+                value:
+                  simple: FalconHost
+          - - left:
+                iscontext: true
+                value:
+                  simple: modules.state
+              operator: isEqualString
+              right:
+                value:
+                  simple: active
+          root: modules
+    separatecontext: false
+    task:
+      brand: ""
+      description: Is FalconHost enabled?
+      id: 1fbb2b6e-5cb6-42b2-8c64-0c6d8f474e9a
+      iscommand: false
+      name: Is FalconHost enabled?
+      type: condition
+      version: -1
+    taskid: 1fbb2b6e-5cb6-42b2-8c64-0c6d8f474e9a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 195
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 78d65ffe-90ed-4323-83dd-76ac86842582
+      iscommand: false
+      name: Hunt for indicators
+      type: title
+      version: -1
+    taskid: 78d65ffe-90ed-4323-83dd-76ac86842582
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 370
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    scriptarguments:
+      extend-context:
+        simple: Endpoint.Hostname=resources.hostname
+      ids:
+        complex:
+          root: FalconHostDevices
+    separatecontext: false
+    task:
+      brand: FalconHost
+      description: Get device hostnames
+      id: e51b7b8e-235f-4003-8ce9-0183d5ab8df5
+      iscommand: true
+      name: Get device hostnames
+      script: FalconHost|||cs-device-details
+      type: regular
+      version: -1
+    taskid: e51b7b8e-235f-4003-8ce9-0183d5ab8df5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 599,
+          "y": 1232
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_15_#default#": 0.71,
+      "14_18_yes": 0.54,
+      "16_15_#default#": 0.1,
+      "2_6_yes": 0.54,
+      "2_9_#default#": 0.27,
+      "3_7_yes": 0.52,
+      "3_9_#default#": 0.31,
+      "4_8_yes": 0.56,
+      "4_9_#default#": 0.14
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1406,
+        "width": 1393.5,
+        "x": 499,
+        "y": 50
+      }
+    }
+  }

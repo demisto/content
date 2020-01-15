@@ -1,0 +1,31 @@
+{
+	"category": "",
+	"dataType": "indicators",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "indicators-bad-activity",
+	"isPredefined": true,
+	"name": "Bad Indicators Activity",
+	"params": {
+		"groupBy": [
+			"calculatedTime"
+		]
+	},
+	"query": "reputation:bad",
+	"size": 1000,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "line"
+}

@@ -1,0 +1,31 @@
+{
+	"category": "others",
+	"dataType": "entries",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "investigation-activity",
+	"isPredefined": true,
+	"name": "Investigation Activity Timeline",
+	"params": {
+		"groupBy": [
+			"created"
+		]
+	},
+	"query": "",
+	"size": 5,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "line"
+}

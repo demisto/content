@@ -1,0 +1,61 @@
+args:
+- default: true
+  description: ElasticSearch query to execute
+  name: query
+  required: true
+- description: Index to check (supports wildcards). Default is *.
+  name: index
+- description: What fields should be included. DO NOT SET IF YOU WANT ALL FIELDS!
+  name: fields
+comment: |-
+  Deprecated. Use the Elasticsearch v2 integration instead.
+
+  Runs an Elasticsearch query and displays results in a table.
+commonfields:
+  id: ElasticSearchDisplay
+  version: -1
+dependson:
+  must:
+  - elasticsearch|||search
+deprecated: true
+enabled: true
+name: ElasticSearchDisplay
+runonce: false
+script: |-
+  var index = args.index ? args.index : '*';
+  var query = args.query;
+  var params = {'using-brand': 'elasticsearch', query: query, index: index};
+  if (args.fields) {
+      params.fields = args.fields;
+  } else {
+      params.fields = 'text';
+  }
+  var res = executeCommand('search', params);
+  if (res && res.length > 0 && res[0].Type !== entryTypes.error) {
+      var collectFields = function(f) {
+          if (fields[f] && fields[f].length && fields[f].length > 0) {
+              hit[f] = fields[f][0];
+          }
+      };
+      var hits = res[0].Contents.hits;
+      var results = {Type: entryTypes.note, ContentsFormat: formats.table, Contents: []};
+      for (var i=0; i<hits.length; i++) {
+          var hit = {};
+          var fields = hits[i].fields;
+          if (fields) {
+              Object.keys(fields).forEach(collectFields);
+              results.Contents.push(hit);
+          } else if (hits[i]._source) {
+              results.Contents.push({source: hits[i]._source});
+          } else {
+              results.Contents.push({ID: hits[i]._id, data: 'No fields found'});
+          }
+      }
+      return results;
+  }
+  return res;
+scripttarget: 0
+system: true
+tags:
+- Elasticsearch
+type: javascript

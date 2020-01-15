@@ -1,0 +1,119 @@
+category: Analytics & SIEM
+commonfields:
+  id: Sample Incident Generator
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: "30"
+  display: 'Fetch incidents  every X minutes '
+  name: runEveryXMinutes
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Generate random incidents per given parameter
+display: Sample Incident Generator
+image: data:image/png;base64,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
+name: Sample Incident Generator
+script:
+  isfetch: true
+  runonce: false
+  script: |-
+    function buildIncident(incidentType) {
+        var incident = {
+            severity: getSeverity(),
+            type: incidentType,
+            phase: '1. Triage',
+            labels: [{'type': 'sample', 'value': 'sample value'}],
+            details: "Issue Details",
+        };
+
+        switch (incidentType) {
+            case 'Unclassified':
+                break;
+            case 'Malware':
+                incident.details = "Detected Incident with malicious on files on system sample-laptop.";
+                incident.labels = [{'type':'md5', 'value':'7BF2B57F2A205768755C07F238FB32CC'},
+                    {'type':'user', 'value':'Jeni Russo'},
+                    {'type':'system', 'value':'sample-laptop'},
+                    {'type':'md5','value':'8495400F199AC77853C53B5A3F278F3E'}];
+                break;
+            case 'Phishing':
+                incident.details = 'Hi, got this in my inbox today. \n \
+                From: somerandomemail@nodomain.net \n \
+                Sent: Sunday, January 24, 2016 19:43 \n \
+                To: Bob<bob@demisto.int>; \n \
+                Subject: Cloud Services Invoice \n \
+                Dear customer, \n \
+                Thank you for signing up for Acme Creative Cloud Service. \
+                You can download latest invoice at http://www.kloshpro.com/js/db/b/db/d/9/dropbx.z/document.html \n \
+                Attached is the copy of your invoice. \n \
+                Invoice \n \
+                Thank you for your purchase. \n \
+                 \n \
+                Thank You, \n \
+                The Acme Team \n \
+                Acme Creative Cloud Service';
+                incident.labels = [{'type':'IP Address', 'value':'195.22.26.248'}, {'type':'IP Address', 'value':'107.161.186.90'}, {'type':'md5', 'value':'775A0631FB8229B2AA3D7621427085AD'}, {'type':'user', 'value':'Jeni Russo'}];
+                break;
+        }
+        return incident;
+    }
+
+
+    switch (command) {
+        case 'test-module':
+            return 'ok';
+        case 'fetch-incidents':
+            var incidents = [];
+            last = getLastRun();
+            if (!last || !last.lastMinuteCount) {
+                last = {'lastMinuteCount': 0};
+            }
+            var lastMinuteCount = last.lastMinuteCount;
+            var numOfIncidentsPerMin = 5;
+            var runEvery = parseInt(params['runEveryXMinutes'], 10) || 1 ;
+            last = {'lastMinuteCount': lastMinuteCount+1};
+            setLastRun(last);
+            if (lastMinuteCount % runEvery === 0) {
+                for (var i = 0; i < numOfIncidentsPerMin; i++) {
+                    //Incident details, other field can be added as json
+                    var incidentType = getIncidentType();
+                    var incident = buildIncident(incidentType);
+                    incident.name = 'Sample Incident - ' + incidentType;
+                    incident.rawJSON = JSON.stringify(incident);
+                    incidents.push(incident);
+                }
+            }
+            return JSON.stringify(incidents);
+        default:
+            return 'nothing to see here';
+    }
+
+
+    function getIncidentType (number) {
+        var num = number || Math.floor(Math.random() * 3) + 1;
+        switch (num) {
+            case 1:
+                return 'Unclassified';
+            case 2:
+                return 'Malware';
+            case 3:
+                return 'Phishing';
+            default:
+                return '';
+        }
+    }
+
+    function getSeverity (number) {
+        return number || Math.floor(Math.random() * 5);
+    }
+  type: javascript
+system: true

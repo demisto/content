@@ -1,0 +1,21 @@
+args:
+- default: true
+  description: The key to set
+  name: key
+  required: true
+- description: The value to set
+  name: value
+  required: true
+comment: Sets key/value pair in incident's context
+commonfields:
+  id: SetContext
+  version: -1
+deprecated: true
+name: SetContext
+runonce: false
+script: demisto.setContext(demisto.args()['key'], demisto.args()['value'])
+scripttarget: 0
+system: true
+tags:
+- Utility
+type: python

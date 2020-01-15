@@ -1,0 +1,46 @@
+args:
+- default: true
+  description: Email address to look up. If omitted, will instead extract with regular
+    expression from the fullmail argument, where the phishing email should be provided.
+  name: email
+- description: Raw email text to regex the sender from
+  name: fullmail
+comment: For phishing incidents, check the sender of the email via Pipl search
+commonfields:
+  id: CheckSender
+  version: -1
+dependson:
+  must:
+  - pipl-search
+name: CheckSender
+runonce: false
+script: |-
+  import re
+  email = ''
+  if 'email' in demisto.args():
+      email = demisto.args()['email']
+  else:
+      sender = re.search(r".*From\w*:.*\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b", demisto.incidents()[0]['details'], re.I)
+      if sender:
+          email = sender.group(1)
+  if email:
+      resp = demisto.executeCommand('pipl-search', {'email': email})
+
+      if isError(resp[0]):
+          demisto.results(resp)
+      else:
+          data = demisto.get(resp[0], "Contents")
+          if data:
+              data = data if isinstance(data, list) else [data]
+              data = [{k: formatCell(row[k]) for k in row} for row in data]
+              demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+          else:
+              demisto.results("No results.")
+  else:
+      demisto.results('Could not find the sender data')
+scripttarget: 0
+system: true
+tags:
+- server
+- phishing
+type: python

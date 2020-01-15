@@ -1,0 +1,43 @@
+args:
+- description: 'The input url '
+  name: value
+  required: true
+comment: |-
+  Converts
+  https:%2F%2Fexample.com
+  into
+  https://example.com
+commonfields:
+  id: URLDecode
+  version: -1
+dockerimage: python:3
+enabled: true
+name: URLDecode
+outputs:
+- contextPath: DecodedURL
+  description: Parsed url as key/value
+  type: string
+runonce: false
+script: |-
+  from urllib.parse import unquote
+
+  value = demisto.args()["value"]
+  processed_value = unquote(value)
+
+  eContext = {
+      'DecodedURL': processed_value
+      }
+
+  entry = {'Type' : entryTypes['note'],
+      'Contents': eContext,
+      'ContentsFormat' : formats['json'],
+      'HumanReadable': processed_value,
+      'ReadableContentsFormat' : formats['markdown'],
+      'EntryContext' : eContext}
+
+  demisto.results(entry)
+scripttarget: 0
+system: true
+tags:
+- transformer
+type: python

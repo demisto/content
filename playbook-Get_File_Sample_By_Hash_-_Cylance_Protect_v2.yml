@@ -1,0 +1,213 @@
+description: This playbook returns a file sample to the war-room given the file's
+  SHA256 hash, using Cylance Protect v2 integration.
+id: Get File Sample By Hash - Cylance Protect v2
+inputs:
+- description: ""
+  key: SHA256
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      root: File
+- description: |-
+    Specifies whether the downloaded file will be unzipped. The command default is 'no'.
+    Yes - unzip automatically
+    No - will not unzip
+  key: unzip
+  required: false
+  value: {}
+name: Get File Sample By Hash - Cylance Protect v2
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: cfa6c853-3dae-449f-810e-8a0303dda6b0
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: cfa6c853-3dae-449f-810e-8a0303dda6b0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Cylance Protect v2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: a23dc210-7967-4632-81a5-ca345c80f56b
+      iscommand: false
+      name: Is Cylance Protect v2 enabled?
+      type: condition
+      version: -1
+    taskid: a23dc210-7967-4632-81a5-ca345c80f56b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d346aafe-2acb-49f6-81ae-dc461600d941
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: d346aafe-2acb-49f6-81ae-dc461600d941
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 710
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.SHA256
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d3cb43ee-f52d-4112-8a87-4202337b4d29
+      iscommand: false
+      name: Is there a file to download?
+      type: condition
+      version: -1
+    taskid: d3cb43ee-f52d-4112-8a87-4202337b4d29
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      sha256:
+        complex:
+          root: inputs.SHA256
+      threshold: {}
+      unzip:
+        complex:
+          root: inputs.unzip
+          transformers:
+          - operator: toLowerCase
+    separatecontext: false
+    task:
+      brand: Cylance Protect v2
+      description: Downloads the threat (file) attached to a specific SHA256 hash.
+      id: dfadf1e2-5822-4eb8-8050-a244ba71ee6f
+      iscommand: true
+      name: Cylance Protect - download threat
+      script: Cylance Protect v2|||cylance-protect-download-threat
+      type: regular
+      version: -1
+    taskid: dfadf1e2-5822-4eb8-8050-a244ba71ee6f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 540
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.28,
+      "3_2_#default#": 0.35,
+      "3_4_yes": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 725,
+        "width": 1030,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

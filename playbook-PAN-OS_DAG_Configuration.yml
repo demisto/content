@@ -1,0 +1,505 @@
+description: "This playbook utilizes the Dynamic Address Group (DAG) capability of
+  PAN-OS.\nDAG enables analysts to create a rule one time, where the group is the
+  source/destination, and adds IP addresses dynamically without the need to commit
+  the configuration every time.\n\nThe playbook checks if the given tag already exists.
+  If the tag exists, then the IP address is added to the tag.\n\nIf the tag does not
+  exist, a new address group is created with the given tag and a matching rule, and
+  the configuration is committed. \n"
+id: PAN-OS DAG Configuration
+inputs:
+- description: The name of the tag to add to PAN-OS.
+  key: tag_name
+  required: true
+  value:
+    simple: DavidTag5
+- description: The list of the IP addresses to block.
+  key: ip_list
+  required: true
+  value:
+    simple: 192.168.1.12
+- description: The name of the group that will be created if the tag does not exist.
+  key: address_group_name
+  required: true
+  value:
+    simple: DavidAG5
+- description: The name of the rule to update, or the name of the rule that will be
+    created.
+  key: rule_name
+  required: false
+  value:
+    simple: meshi-rule
+- description: Whether the rule will be committed automatically.
+  key: auto_commit
+  required: false
+  value:
+    simple: "Yes"
+- description: The server address to which to forward logs.
+  key: log-forwarding-object-name
+  required: false
+  value: {}
+- description: |-
+    The position of the rule in the ruleset. Valid values are:
+      * Top
+      * Bottom
+      * Before
+      * After
+  key: rule-position
+  required: true
+  value:
+    simple: before
+- description: If the rule-position that is chosen is before or after, specify the
+    rule name to which it is related.
+  key: relative-rule-name
+  required: false
+  value:
+    simple: pan-os-edl-test-edl-rule
+- description: Determines if the rule is inbound or outbound.
+  key: inbound-or-outbound-rule
+  required: false
+  value:
+    simple: outbound
+- description: |-
+    The action that will be defined in the rule. Valid values are:
+    * allow
+    * deny
+    * drop
+  key: action-type
+  required: false
+  value:
+    simple: drop
+- description: Determines whether the rule is a pre-rulebase or post-rulebase rule,
+    according to the rule structure. Exists only in panorama!
+  key: pre-post-rulebase
+  required: true
+  value:
+    simple: pre-rulebase
+- description: the device group for which to return results. for panorama only!
+  key: device-group
+  required: false
+  value: {}
+name: PAN-OS DAG Configuration
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 5ee527a7-506f-4f02-88c0-c8a2701138cd
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 5ee527a7-506f-4f02-88c0-c8a2701138cd
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 60
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of PAN-OS enabled.
+      id: e016bd2c-ae83-4cd4-878b-097fd9462b86
+      iscommand: false
+      name: Is PAN-OS integration enabled?
+      type: condition
+      version: -1
+    taskid: e016bd2c-ae83-4cd4-878b-097fd9462b86
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Lists all address groups in PAN-OS.
+      id: 6abdb166-ece1-4eaf-8b41-f184c1f80352
+      iscommand: true
+      name: List Address Groups
+      script: '|||panorama-list-address-groups'
+      type: regular
+      version: -1
+    taskid: 6abdb166-ece1-4eaf-8b41-f184c1f80352
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 370
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: AddressGroups.Match
+                root: Panorama
+                transformers:
+                - operator: Stringify
+                - args:
+                    separator:
+                      value:
+                        simple: ' '
+                  operator: join
+          operator: containsString
+          right:
+            iscontext: true
+            value:
+              simple: inputs.tag_name
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if the given tag exists in the address groups.
+      id: bede9976-ff25-47e4-8cfa-ba1ae6fca7de
+      iscommand: false
+      name: Check if tag exists in address groups
+      type: condition
+      version: -1
+    taskid: bede9976-ff25-47e4-8cfa-ba1ae6fca7de
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 535
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    scriptarguments:
+      IPs:
+        simple: ${inputs.ip_list}
+      persistent: {}
+      tag:
+        simple: ${inputs.tag_name}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Registers IP addresses to a tag.
+      id: 08979ffd-bc11-4816-8464-78d1a3850280
+      iscommand: true
+      name: Register IP address to a tag
+      script: '|||panorama-register-ip-tag'
+      type: regular
+      version: -1
+    taskid: 08979ffd-bc11-4816-8464-78d1a3850280
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1400
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 7686cb45-06bb-4891-8aeb-8ff9b29f1fbf
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 7686cb45-06bb-4891-8aeb-8ff9b29f1fbf
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 1580
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    scriptarguments:
+      addresses: {}
+      description: {}
+      match:
+        simple: ${inputs.tag_name}
+      name:
+        simple: ${inputs.address_group_name}
+      type:
+        simple: dynamic
+    separatecontext: false
+    task:
+      brand: ""
+      description: Creates an address group. Can be "static" or "dynamic".
+      id: 4fe7d7db-5a12-4db3-8e42-b97a9c615044
+      iscommand: true
+      name: Create Address Group
+      script: '|||panorama-create-address-group'
+      type: regular
+      version: -1
+    taskid: 4fe7d7db-5a12-4db3-8e42-b97a9c615044
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 720
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Allows the analyst to manually commit the changes. This will be
+        operational if auto-commit is "false".
+      id: ec9cdad5-afdf-46c8-8255-c3e6091753b5
+      iscommand: false
+      name: Manually commit
+      type: regular
+      version: -1
+    taskid: ec9cdad5-afdf-46c8-8255-c3e6091753b5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1230
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
+        as Panorama, it also pushes the Policies to the specified Device Group in
+        the instance.
+      id: 26ba4584-16ba-48c3-8566-0a044ed15c60
+      iscommand: false
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      version: -1
+    taskid: 26ba4584-16ba-48c3-8566-0a044ed15c60
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 1230
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "16"
+    note: false
+    results:
+    - AreValuesEqual
+    scriptarguments:
+      left:
+        simple: ${inputs.auto_commit}
+      right:
+        simple: "Yes"
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if the values provided in arguments are equal. If either
+        of the arguments are missing, "no" is returned.
+      id: 9c646c84-8ba3-4f49-8028-17e466d6f10e
+      iscommand: false
+      name: Is auto-commit defined?
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: 9c646c84-8ba3-4f49-8028-17e466d6f10e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 1060
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    scriptarguments:
+      action-type:
+        complex:
+          root: inputs.action-type
+      device-group:
+        complex:
+          root: inputs.device-group
+      element-to-add:
+        complex:
+          root: inputs.address_group_name
+      inbound-or-outbound-rule:
+        complex:
+          root: inputs.inbound-or-outbound-rule
+      log-forwarding-object-name:
+        complex:
+          root: inputs.log-forwarding-object-name
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre-post-rulebase
+      relative-rule-name:
+        complex:
+          root: inputs.relative-rule-name
+      rule-position:
+        complex:
+          root: inputs.rule-position
+      rule_name:
+        complex:
+          root: inputs.rule_name
+    separatecontext: true
+    task:
+      brand: ""
+      id: b00ee451-174f-413c-8abb-8ade578bb706
+      iscommand: false
+      name: PAN-OS - Create Or Edit Rule
+      playbookName: PAN-OS - Create Or Edit Rule
+      type: playbook
+      version: -1
+    taskid: b00ee451-174f-413c-8abb-8ade578bb706
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 890
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "17_15_#default#": 0.54,
+      "17_16_yes": 0.58,
+      "1_5_#default#": 0.1,
+      "3_4_yes": 0.4,
+      "3_6_#default#": 0.65
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1585,
+        "width": 1400,
+        "x": 50,
+        "y": 60
+      }
+    }
+  }

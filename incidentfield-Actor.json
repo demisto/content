@@ -1,0 +1,43 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"File"
+	],
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "actor",
+	"closeForm": false,
+	"columns": null,
+	"content": true,
+	"defaultRows": null,
+	"description": "",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"group": 2,
+	"hidden": false,
+	"id": "indicator_actor",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "Actor",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": [
+		"",
+		""
+	],
+	"sla": 0,
+	"sortValues": null,
+	"system": false,
+	"systemAssociatedTypes": null,
+	"threshold": 72,
+	"type": "multiSelect",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}

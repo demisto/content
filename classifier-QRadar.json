@@ -1,0 +1,73 @@
+{
+	"brandName": "QRadar",
+	"custom": false,
+	"defaultIncidentType": "",
+	"id": "QRadar",
+	"incidentSamples": null,
+	"instanceId": "",
+	"instanceName": "",
+	"isDefault": true,
+	"keyTypeMap": {
+		"SIM User Authentication": "Access",
+		"User Login Failure": "Access"
+	},
+	"mapping": {
+		"Access": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Dest NT Domain": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "destination_networks",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": null
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Src NT Domain": {
+					"complex": null,
+					"simple": "source_network"
+				},
+				"Src User": {
+					"complex": null,
+					"simple": "offense_source"
+				},
+				"details": {
+					"complex": null,
+					"simple": "description"
+				},
+				"occurred": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "start_time",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": "categories.[0]"
+	},
+	"unclassifiedCases": null,
+	"version": -1
+}

@@ -1,0 +1,49 @@
+args:
+- description: 'If query provided all other parameters ignored. Query should contain
+    page, limit, start, sort and filter, joined by &, For example: page=1&start=0&limit=100&sort=[{"property":"created","direction":"DESC"}]&filter=[{"property":"created","value":[851171984031,1482323984031]}]'
+  name: query
+- description: The default is 1. Indicates the page number of incidents
+  name: page
+- description: The default is 0. Indicates the start index of incident in page
+  name: start
+- description: The default is 100. Limits the number of incidents per page
+  name: limit
+- description: 'By default sorts by "created" field in "DESC" order. Example: "[{"property":"created","direction":"DESC"}]"'
+  name: sort
+- description: 'By default filters by "created" from 1996 to this date. Example: "[{"property":"id",
+    "value":"INC-21"}]"'
+  name: filter
+- description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT
+    device/component id. It can be received by running nw-get-component command. If
+    this argument is not filled/passed, the script will automatically get the first
+    device of type INCIDENT_MANAGEMENT from the SA server.'
+  name: incidentManagementId
+comment: List NetWitness SA incidents. Filtering and sorting the list is also supported
+  (see optional arguments).
+commonfields:
+  id: NetwitnessSAListIncidents
+  version: -1
+dependson:
+  must:
+  - nw-list-incidents
+name: NetwitnessSAListIncidents
+runonce: false
+script: |
+  resp = demisto.executeCommand("nw-list-incidents", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.incidents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          formatTimeColumns(data,  ['lastUpdated', 'firstAlertTime', 'created'])
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- RSA NetWitness Security Analytics
+type: python

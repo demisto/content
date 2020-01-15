@@ -1,0 +1,32 @@
+{
+	"category": "",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 30,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"description": "The detection SLA status of all incidents that their severity was determined. The widget takes into account incidents from the last 30 days by default, and inherits new time range when the dashboard time changes.",
+	"id": "detection-sla-by-status",
+	"isPredefined": true,
+	"name": "Detection SLA by Status",
+	"params": {
+		"groupBy": [
+			"detectionsla.slaStatus"
+		]
+	},
+	"query": "-category:job and -detectionsla.runStatus:idle",
+	"size": 0,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "pie"
+}

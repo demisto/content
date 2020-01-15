@@ -1,0 +1,208 @@
+description: |-
+  Returns a file sample to the war-room from a path on an endpoint using Demisto Dissolvable Agent (D2)
+
+  Input:
+  * Credentials - credentials to use when trying to deploy Demisto Dissolvable Agent (D2)  (default: Admin)
+  * ${Endpoint.Hostname} - deploy agent on target endpoint
+  * ${File.Path} - file's path to collect
+id: get_file_sample_from_path_-_d2
+inputs:
+- description: Name of the credential set from Demisto Settings -> Integrations ->
+    Credentials
+  key: Credentials
+  required: false
+  value:
+    simple: Admin
+- description: Endpoint hostname
+  key: Hostname
+  required: false
+  value:
+    simple: ${Endpoint.Hostname}
+- description: The file path
+  key: Path
+  required: false
+  value:
+    simple: ${File.Path}
+name: Get File Sample From Path - D2
+outputs:
+- contextPath: File
+  description: The file to sample.
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 62c65b41-e6f2-42d5-8abf-a3c971ae42b0
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 62c65b41-e6f2-42d5-8abf-a3c971ae42b0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "3":
+    continueonerror: true
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    scriptarguments:
+      arch: {}
+      credentialSet:
+        simple: ${inputs.Credentials}
+      dmbPort: {}
+      host:
+        simple: ${inputs.Hostname}
+      name:
+        simple: ${inputs.Hostname}
+      os:
+        simple: windows
+      password: {}
+      sshPort: {}
+      username: {}
+      workgroup: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Add the relevant endpoint to the System
+      id: a5a0b6b9-bd4d-42e6-8e96-5a5daeb0d5a5
+      iscommand: false
+      name: Add the endpoint as a System to this incident
+      scriptName: IncidentAddSystem
+      type: regular
+      version: -1
+    taskid: a5a0b6b9-bd4d-42e6-8e96-5a5daeb0d5a5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Hostname
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Path
+          operator: isExists
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "3"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${Endpoint.Hostname}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if there is hostname and file path to get.
+      id: ba4872a3-3460-470f-81cd-14afaacd29d8
+      iscommand: false
+      name: Does Hostname and filepath exists?
+      type: condition
+      version: -1
+    taskid: ba4872a3-3460-470f-81cd-14afaacd29d8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    scriptarguments:
+      filepath:
+        simple: ${inputs.Path}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 9f3aab69-b584-4929-815c-0579eb307807
+      iscommand: false
+      name: d2 agent - Collect file from endpoint
+      scriptName: FetchFileD2
+      type: regular
+      version: -1
+    taskid: 9f3aab69-b584-4929-815c-0579eb307807
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 642cf7ac-e922-4379-8656-55c1eb4de929
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 642cf7ac-e922-4379-8656-55c1eb4de929
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

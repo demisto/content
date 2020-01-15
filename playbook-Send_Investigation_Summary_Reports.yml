@@ -1,0 +1,381 @@
+description: 'This playbook iterates over closed incidents, generates a summary report
+  for each closed incident, and emails the reports to specified users. '
+id: Send Investigation Summary Reports
+inputs:
+- description: Email address to mail the report to.
+  key: MailTo
+  required: true
+  value: {}
+- description: Reports to generate.
+  key: ReportName
+  required: false
+  value:
+    simple: Investigation Summary
+- description: Type of report
+  key: ReportType
+  required: false
+  value:
+    simple: pdf
+- description: Query used to search for incidents. Default query will search for all
+    incidents closed within the last hour.
+  key: IncidentSearchQuery
+  required: false
+  value:
+    simple: -category:job status:closed closed:>="1 hour ago"
+name: Send Investigation Summary Reports
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: efefff28-b722-4f90-86cf-da4636ecf7f6
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: efefff28-b722-4f90-86cf-da4636ecf7f6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      details: {}
+      fromclosedate: {}
+      fromdate: {}
+      fromduedate: {}
+      id: {}
+      level: {}
+      name: {}
+      notstatus: {}
+      owner: {}
+      page: {}
+      query:
+        simple: ${inputs.IncidentSearchQuery}
+      reason: {}
+      size: {}
+      sort: {}
+      status: {}
+      toclosedate: {}
+      todate: {}
+      toduedate: {}
+      type: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Searches Demisto incidents to identify closed incidents.
+      id: 22f91f1b-ad02-4439-85de-444c9cc9165c
+      iscommand: false
+      name: Find Closed Incidents
+      scriptName: SearchIncidents
+      type: regular
+      version: -1
+    taskid: 22f91f1b-ad02-4439-85de-444c9cc9165c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      ids:
+        simple: ${foundIncidents(!val.labels || val.labels.filter(function(v) { return  v.type
+          == 'ReportSent'}).length == 0).id}
+      name:
+        simple: ${inputs.ReportName}
+      type:
+        simple: ${inputs.ReportType}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Generates report summaries for the passed incidents.
+      id: b28d0033-ac09-4d02-84fc-c6d363d80f51
+      iscommand: false
+      name: Generate Summary Report
+      scriptName: GenerateSummaryReports
+      type: regular
+      version: -1
+    taskid: b28d0033-ac09-4d02-84fc-c6d363d80f51
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 560
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs:
+        simple: ${InfoFile.EntryID}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: Please find attached summary reports for recently closed incidents.
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: Demisto Incident Summary Report
+      templateParams: {}
+      to:
+        simple: ${inputs.MailTo}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Send an email
+      id: d7525c1a-713e-446c-89d3-f43963155023
+      iscommand: true
+      name: Email Reports
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: d7525c1a-713e-446c-89d3-f43963155023
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 770
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      addLabels:
+        simple: '[{"ReportSent":"true"}]'
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id:
+        simple: ${foundIncidents.id}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      roles: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      type: {}
+      user: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 93763170-619f-46dc-8b98-4036b015019d
+      iscommand: true
+      name: Set Report Done Label
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 93763170-619f-46dc-8b98-4036b015019d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1000
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: a5d10443-87fb-403d-893a-05723bbc93c5
+      iscommand: false
+      name: Complete
+      type: title
+      version: -1
+    taskid: a5d10443-87fb-403d-893a-05723bbc93c5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1180
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "4"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${foundIncidents(!val.labels || val.labels.filter(function(v) { return  v.type
+          == 'ReportSent'}).length == 0).id}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there are any incidents without the ReportSent label.
+        Note that the same DT of this task is used in the "Generate Summary Report"
+        task.
+      id: 58e69d68-ff03-4356-8b8f-d61f60346c81
+      iscommand: false
+      name: Are there relevant closed incidents?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 58e69d68-ff03-4356-8b8f-d61f60346c81
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 365
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1195,
+        "width": 830,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }

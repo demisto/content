@@ -1,0 +1,35 @@
+args:
+- default: true
+  description: The value to check if exists - can handle arrays as well
+  isArray: true
+  name: value
+comment: Check if a given value is true. Will return 'no' otherwise
+commonfields:
+  id: IsTrue
+  version: -1
+enabled: true
+name: IsTrue
+outputs:
+- contextPath: "yes"
+  description: if value is True (either has object or string True/true)
+- contextPath: "no"
+  description: if  value is not True (either has object or string True/true)
+runonce: false
+script: |
+  if (typeof args.value === 'string' || args.value instanceof String) {
+      if (args.value === 'true' || args.value === 'True') {
+          return 'yes';
+      }
+      return 'no';
+  }
+  var val = Boolean(args.value);
+  if (val) {
+      return 'yes';
+  }
+  return 'no';
+scripttarget: 0
+system: true
+tags:
+- Utility
+- Condition
+type: javascript

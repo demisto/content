@@ -1,0 +1,28 @@
+args:
+- default: true
+  description: Reason for closing the investigation
+  name: reason
+- description: Free text where you can add notes for closing the investigation.
+  name: notes
+comment: Close an investigation
+commonfields:
+  id: CloseInvestigation
+  version: -1
+deprecated: true
+name: CloseInvestigation
+runonce: false
+script: |-
+  var dArgs = {};
+  if (args.reason) {
+      dArgs.closeReason = args.reason;
+  }
+  if (args.notes) {
+      dArgs.closeNotes = args.notes;
+  }
+  return executeCommand('closeInvestigation', dArgs);
+scripttarget: 0
+system: true
+tags:
+- server
+- management
+type: javascript

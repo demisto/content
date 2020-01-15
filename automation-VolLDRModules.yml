@@ -1,0 +1,27 @@
+args:
+- description: Path to memory dump file on the system being used
+  name: memdump
+  required: true
+- description: System with Volatility installed to be used for the analysis
+  name: system
+  required: true
+- description: Volatility profile to use
+  name: profile
+comment: Volatility script for command ldrmodules
+commonfields:
+  id: VolLDRModules
+  version: -1
+name: VolLDRModules
+runonce: false
+script: |-
+  var cmdline = 'ldrmodules';
+  var out = executeCommand('Volatility', {memdump:args.memdump, profile:args.profile, system: args.system, cmd:cmdline});
+  return out;
+scripttarget: 0
+system: true
+tags:
+- memory
+- forensics
+- volatility
+- server
+type: javascript

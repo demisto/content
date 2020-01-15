@@ -1,0 +1,250 @@
+description: Generic playbook to collect data from endpoints for IR purposes. Will
+  use whichever integrations are configured and available.
+id: Endpoint data collection
+inputs:
+- description: ""
+  key: UseD2
+  required: false
+  value:
+    simple: "False"
+- description: ""
+  key: Hostname
+  required: false
+  value: {}
+name: Endpoint data collection
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 5c790e9c-edcd-4ad9-8a35-05451eb582df
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 5c790e9c-edcd-4ad9-8a35-05451eb582df
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    note: false
+    results:
+    - AreValuesEqual
+    scriptarguments:
+      left:
+        simple: ${inputs.UseD2}
+      right:
+        simple: "True"
+    separatecontext: false
+    task:
+      brand: ""
+      id: b2c6a043-bedf-40e9-8b34-064891fa6597
+      iscommand: false
+      name: Use D2 agent?
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: b2c6a043-bedf-40e9-8b34-064891fa6597
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      Credentials:
+        simple: Admin
+      Host:
+        simple: ${inputs.Hostname}
+      OS:
+        simple: windows
+      Path: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        Uses Demisto's d2 agent to collect data from an endpoint for IR purposes.
+
+        Input:
+        * Hostname (default: ${Endpoint.Hostname})
+        * OS (default: windows)
+        * Credentials (default: Admin)
+        * Path (default: None)
+      id: 8c9dec86-a668-4e3e-8824-075fe18330ac
+      iscommand: false
+      name: D2 - Endpoint data collection
+      playbookName: D2 - Endpoint data collection
+      type: playbook
+      version: -1
+    taskid: 8c9dec86-a668-4e3e-8824-075fe18330ac
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: dbfc8aa8-e3e8-4b03-8a20-2dc0edf62cae
+      iscommand: false
+      name: EDR products
+      type: title
+      version: -1
+    taskid: dbfc8aa8-e3e8-4b03-8a20-2dc0edf62cae
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: a726afff-a81d-4588-865c-f8085a6f41c2
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: a726afff-a81d-4588-865c-f8085a6f41c2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      Hostname:
+        simple: ${inputs.Hostname}
+    separatecontext: true
+    task:
+      brand: ""
+      id: e70f5c75-4cb1-430c-8660-b01ad288ddec
+      iscommand: false
+      name: MAR - Endpoint data collection
+      playbookName: MAR - Endpoint data collection
+      type: playbook
+      version: -1
+    taskid: 3359e593-8218-4132-8a69-d48fc9aa78a7
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      Hostname:
+        simple: ${inputs.Hostname}
+    separatecontext: true
+    task:
+      brand: ""
+      id: 121a30fb-c5ea-41d3-86db-e9753c08ada7
+      iscommand: false
+      name: Sentinel One - Endpoint data collection
+      playbookName: Sentinel One - Endpoint data collection
+      type: playbook
+      version: -1
+    taskid: 121a30fb-c5ea-41d3-86db-e9753c08ada7
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 515
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 1290,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

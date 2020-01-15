@@ -1,0 +1,48 @@
+args:
+- default: true
+  description: Observation ID
+  name: id
+  required: true
+- description: the sensor id or comma-separated list of ids
+  name: sensorId
+  required: true
+comment: Display details about the specified ProtectWise Observation.
+commonfields:
+  id: PWObservationDetails
+  version: -1
+dependson:
+  must:
+  - pw-observation-get
+deprecated: true
+name: PWObservationDetails
+runonce: false
+script: |
+  res = []
+  dArgs = demisto.args()
+  dArgs["using-brand"] = "ProtectWise"
+  dArgs['sensorId'] = demisto.get(dArgs, 'sensorId')
+
+  resCmd = demisto.executeCommand("pw-observation-get", dArgs)
+  try:
+      for entry in resCmd:
+          if isError(entry):
+              res = resCmd
+              break
+          else:
+              myData = demisto.get(entry, 'Contents')
+              if myData and isinstance(myData, dict):
+                  for field in myData:
+                      myData[field] = formatCell(myData[field])
+                  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": myData})
+              else:
+                  res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                              "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"], indent = 4)})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- protectwise
+type: python

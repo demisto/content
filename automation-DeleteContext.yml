@@ -1,0 +1,141 @@
+args:
+- default: true
+  description: The key to delete from the context
+  name: key
+- auto: PREDEFINED
+  description: If you choose yes - all context will be deleted
+  name: all
+  predefined:
+  - "yes"
+  - "no"
+- auto: PREDEFINED
+  description: Specify "yes" if the context key is inside of a sub-playbook. Use **auto**
+    to delete either from the sub-playbook context (if the playbook is called as a
+    sub-playbook) or from the global context (if the playbook is the top playbook).
+  name: subplaybook
+  predefined:
+  - "yes"
+  - "no"
+  - auto
+- description: Context keys to keep when deleting all context. Supports comma separated
+    values and nested objects, e.g. URL.Data,IP.Address
+  name: keysToKeep
+- description: index to delete in case 'key' argument was specified
+  name: index
+comment: Delete field from context
+commonfields:
+  id: DeleteContext
+  version: -1
+enabled: true
+name: DeleteContext
+runonce: false
+script: |
+  function errorEntry(text) {
+      return  {
+          ContentsFormat: formats.text,
+          Type: entryTypes.error,
+          Contents: text
+      };
+  }
+
+  var fieldsToDelete;
+  var shouldDeleteAll = (args.all === 'yes');
+  var isSubPlaybookKey = (args.subplaybook === 'yes');
+  if (args.subplaybook === 'auto') {
+      var res = executeCommand('Print', { value: 'id=${currentPlaybookID}' });
+      if (res && res[0].Contents && res[0].Contents.startsWith('id=')) {
+         var idArr = res[0].Contents.split('=');
+         if (idArr.length === 2 && idArr[1]) {
+             isSubPlaybookKey = true;
+         }
+      }
+  }
+  if (!shouldDeleteAll && !args.key) {
+      return {Contents: 'You must specify key or all=yes',
+                      ContentsFormat: formats.text,
+                      Type: entryTypes.error};
+  }
+  if (shouldDeleteAll) {
+      var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',').map(function(item) { return item.trim(); }) : [];
+      var keysToKeepObj = {};
+      var value;
+      for (var i = 0; i < keysToKeep.length; i++) {
+          value = dq(invContext, keysToKeep[i]);
+          if (value) {
+              keysToKeepObj[keysToKeep[i]] = value;
+          }
+      }
+      fieldsToDelete = Object.keys(invContext);
+
+      // delete each field in context
+      var errorsStr = "";
+      for (var i = 0; i < fieldsToDelete.length; i++) {
+          var result = executeCommand('delContext', {key: fieldsToDelete[i]});
+          if(!result || result.type === entryTypes.error) {
+              errorsStr = errorsStr + "\n" + result.Contents;
+          }
+      }
+      var message;
+      if (errorsStr) {
+          message = "Context cleared with the folloing errors:" + errorsStr;
+      } else {
+          message = "Context cleared";
+      }
+      return {
+          Type: entryTypes.note,
+          Contents: message,
+          ContentsFormat: formats.json,
+          HumanReadable: message,
+          ReadableContentsFormat: formats.markdown,
+          EntryContext: keysToKeepObj
+      };
+  } else if (args.index !== undefined) {
+      // delete key in a specific index
+      var index = parseInt(args.index);
+      if (isNaN(index)) {
+          return errorEntry("Invalid index " + args.index)
+      }
+      var contextVal = invContext[args.key];
+      if (!contextVal) {
+          return "Key [" + args.key + "] was not found.";
+      }
+      if (!Array.isArray(contextVal)) {
+          contextVal = [contextVal];
+      }
+
+      if (index < 0 || index >= contextVal.length) {
+          return errorEntry("Index out of range " + args.index)
+      }
+
+      // splice is not supported currently
+      var newArr = [];
+      for (var i = 0; i < contextVal.length; i++) {
+          if (i !== index) {
+              newArr.push(contextVal[i])
+          }
+      }
+
+      if (newArr.length === 0) {
+          var key = args.key;
+          if (isSubPlaybookKey) {
+            key = 'subplaybook-${currentPlaybookID}.' + key;
+          }
+          executeCommand('delContext', { key: key });
+      } else {
+          setContext(args.key, newArr);
+      }
+
+      return "Successfully deleted index " + index + " from key " + args.key;
+  } else {
+      var key = args.key;
+      if (isSubPlaybookKey) {
+        key = 'subplaybook-${currentPlaybookID}.' + key;
+      }
+      return executeCommand('delContext', {key: key});
+  }
+scripttarget: 0
+sensitive: true
+system: true
+tags:
+- Utility
+type: javascript

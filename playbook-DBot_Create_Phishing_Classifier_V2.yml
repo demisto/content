@@ -1,0 +1,395 @@
+description: Create a phishing classifier using machine learning technique, based
+  on email content.
+id: DBot Create Phishing Classifier V2
+inputs:
+- description: The model name to store in the system.
+  key: modelName
+  required: false
+  value:
+    simple: phishing_model
+- description: A comma-separated list of incident fields names with the email body
+    or html body. You can also use "|" if you want to choose the first non-empty value
+    from a list of fields.
+  key: emailTextKey
+  required: false
+  value:
+    simple: emailbody|emailbodyhtml|details
+- description: A comma-separated list of incident fields names with the email subject.
+    You can also use "|" if you want to choose the first non-empty value from a list
+    of fields.
+  key: emailSubjectKey
+  required: false
+  value:
+    simple: emailsubject|name
+- description: The field name with the email tag. Supports a comma-separated list,
+    the first non-empty value will be taken.
+  key: emailTagKey
+  required: false
+  value:
+    simple: emailclassification
+- description: 'A comma-separated list of email tags values and mapping. The script
+    considers only the tags specified in this field. You can map label to another
+    value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email
+    tag: malicious, credentials harvesting, inner communitcation, external legit email,
+    unclassified. While training, we want to ignore "unclassified" tag, and refer
+    to "credentials harvesting" as "malicious" too. Also, we want to     merge "inner
+    communitcation" and "external legit email" to one tag called "non-malicious".
+    The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
+    external legit email:non-malicious'
+  key: phishingLabels
+  required: false
+  value:
+    simple: '*'
+- description: The incidents query to fetch the training data for the model.
+  key: incidentsQuery
+  required: false
+  value: {}
+- description: The maximum number of incidents to fetch.
+  key: maxIncidentsToFetchOnTraining
+  required: false
+  value:
+    simple: "3000"
+- description: If non-empty, hash every word with this seed.
+  key: hashSeed
+  required: false
+  value: {}
+- description: The name of demisto list contains historical data training samples
+    for the model.
+  key: historicalDataFileListName
+  required: false
+  value: {}
+- description: Whether to override the existing model if a model with the same name
+    exists. Default is "false".
+  key: overrideModel
+  required: false
+  value:
+    simple: "true"
+- description: A common-separatetd list of incident types by which to filter.
+  key: incidentTypes
+  required: false
+  value:
+    simple: Phishing
+- description: Remove emails with similarity greater then this threshold, range 0-1,
+    where 1 is completly identical.
+  key: dedupThreshold
+  required: false
+  value:
+    simple: "0.99"
+- description: Sample text of which the total number words are less than or equal
+    to this number will be ignored.
+  key: removeShortTextThreshold
+  required: false
+  value:
+    simple: "15"
+- description: The model target accuracy, between 0 and 1.
+  key: modelTargetAccuracy
+  required: false
+  value:
+    simple: "0.8"
+- description: The files output format, choose between json \ pickle.
+  key: outputFormat
+  required: false
+  value:
+    simple: pickle
+name: DBot Create Phishing Classifier V2
+outputs:
+- contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.f1-score
+  description: F1 score (0-1)
+  type: number
+- contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.precision
+  description: Precision score (0-1)
+  type: number
+- contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.recall
+  description: Rrecision score (0-1)
+  type: number
+- contextPath: DBotPhishingClassifier.ModelName
+  description: Model name in Demisto
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f96785c7-7d04-4f99-8da3-929501848239
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: f96785c7-7d04-4f99-8da3-929501848239
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: a9333d16-a1b0-4f04-8ce6-f13e0da7ebea
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: a9333d16-a1b0-4f04-8ce6-f13e0da7ebea
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    scriptarguments:
+      NonEmptyFields:
+        simple: ${inputs.emailTagKey}
+      fromDate: {}
+      incidentTypes:
+        simple: ${inputs.incidentTypes}
+      includeContext:
+        simple: "false"
+      limit:
+        simple: ${inputs.maxIncidentsToFetchOnTraining}
+      outputFormat:
+        simple: ${inputs.outputFormat}
+      query:
+        simple: ${inputs.incidentsQuery}
+      timeField:
+        simple: created
+      toDate: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Gets a list of incident objects and the associated incident outputs
+        that match the specified query and filters. The results are returned in a
+        structured data file.
+      id: 5e19ea89-ccf7-40c8-811b-f683ba5ac94a
+      iscommand: false
+      name: Get Incidents
+      scriptName: GetIncidentsByQuery
+      type: regular
+      version: -1
+    taskid: 5e19ea89-ccf7-40c8-811b-f683ba5ac94a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    scriptarguments:
+      cleanHTML:
+        simple: "true"
+      dedupThreshold:
+        simple: ${inputs.dedupThreshold}
+      hashSeed:
+        simple: ${inputs.hashData}
+      input:
+        simple: ${lastCompletedTaskEntries}
+      inputType:
+        simple: ${GetIncidentsByQuery.FileFormat}
+      outputFormat:
+        simple: ${inputs.outputFormat}
+      preProcessType:
+        simple: nlp
+      removeShortTextThreshold:
+        simple: ${inputs.removeShortTextThreshold}
+      textFields:
+        simple: ${inputs.emailSubjectKey},${inputs.emailTextKey}
+      whitelistFields:
+        simple: ${inputs.emailTagKey}
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        Pre-process text data for the machine learning text classifier.
+        The pre-process normalize the text:
+        - Remove HTML tags
+        - Convert every word to it's root (goes -> go)
+        - Remove sample text of which the total number words are less than or equal to a threshold
+        - Remove emails with similarity greater then some threshold.
+      id: fc975c48-a318-4c51-86ab-f80d6957f6fc
+      iscommand: false
+      name: Pre-process file
+      scriptName: DBotPreProcessTextData
+      type: regular
+      version: -1
+    taskid: fc975c48-a318-4c51-86ab-f80d6957f6fc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      input:
+        simple: ${DBotPreProcessTextData.Filename},${inputs.historicalDataFileListName}
+      inputType:
+        complex:
+          accessor: FileFormat
+          root: DBotPreProcessTextData
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: _filename
+            operator: concat
+      keywordMinScore: {}
+      maxBelowThreshold: {}
+      modelName:
+        simple: ${inputs.modelName}
+      overrideExistingModel:
+        simple: ${inputs.overrideModel}
+      phishingLabels:
+        simple: ${inputs.phishingLabels}
+      storeModel: {}
+      tagField:
+        simple: ${inputs.emailTagKey}
+      targetAccuracy:
+        simple: ${inputs.modelTargetAccuracy}
+      textField:
+        simple: ${DBotPreProcessTextData.TextFieldProcessed}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Train the machine learning text classifier.
+      id: f42d000f-11f8-43a8-8c65-f7fba092c75a
+      iscommand: false
+      name: Train Model
+      scriptName: DBotTrainTextClassifierV2
+      type: regular
+      version: -1
+    taskid: f42d000f-11f8-43a8-8c65-f7fba092c75a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.historicalDataFileListName
+          operator: isNotEmpty
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "13"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if we have input with historical data file - usually from
+        external source, or data we used to have in Demisto.
+      id: 0ee35628-0387-4595-84f8-17968fdabcdc
+      iscommand: false
+      name: Historical data exist?
+      type: condition
+      version: -1
+    taskid: 0ee35628-0387-4595-84f8-17968fdabcdc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    scriptarguments:
+      filename: {}
+      isZipFile:
+        simple: "no"
+      listname:
+        simple: ${inputs.historicalDataFileListName}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Converts Base64 file in a list to a binary file and upload to WarRoom.
+      id: 7174d475-f61d-440b-80c7-dfe59c635595
+      iscommand: false
+      name: Get Historical File
+      scriptName: Base64ListToFile
+      type: regular
+      version: -1
+    taskid: 7174d475-f61d-440b-80c7-dfe59c635595
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 650,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

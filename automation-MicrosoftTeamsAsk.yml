@@ -1,0 +1,102 @@
+args:
+- description: Question (message) to send to the specified team member or channel.
+  name: message
+  required: true
+- auto: PREDEFINED
+  description: Indicates whether to use one-time entitlement or persistent entitlement.
+  name: persistent
+  predefined:
+  - "true"
+  - "false"
+- defaultValue: "yes"
+  description: First reply option.
+  name: option1
+- defaultValue: "no"
+  description: Second reply option.
+  name: option2
+- description: A CSV list of additional options (in case more than 2 options are required).
+  name: additional_options
+- default: true
+  description: Team member to which to send the question.
+  name: team_member
+- description: Task ID of the playbook task to close with the reply. If not provided,
+    no playbook task will be closed.
+  name: task_id
+- description: Channel to which to send the question.
+  name: channel
+comment: Send a team member or channel a question with predefined response options
+  on Microsoft Teams. The response can be used to close a task (might be conditional)
+  in a playbook.
+commonfields:
+  id: MicrosoftTeamsAsk
+  version: -1
+dependson:
+  must:
+  - Microsoft Teams|||send-notification
+dockerimage: demisto/python3:3.7.4.1150
+name: MicrosoftTeamsAsk
+runonce: false
+script: |2-
+
+
+
+
+
+  def main():
+      script_arguments: dict = demisto.args()
+
+      team_member: str = script_arguments.get('team_member', '')
+      channel: str = script_arguments.get('channel', '')
+
+      if not (team_member or channel):
+          raise ValueError('Either team member or channel must be provided.')
+
+      if team_member and channel:
+          raise ValueError('Either team member or channel should be provided, not both.')
+
+      persistent: bool = script_arguments.get('persistent', '') == 'true'
+      response: list = demisto.executeCommand('addEntitlement', {'persistent': persistent})
+      if isError(response[0]):
+          demisto.results(response)
+          return
+
+      entitlement: str = response[0]['Contents']
+      investigation_id: str = demisto.investigation()['id']
+      task_id: str = script_arguments.get('task_id', '')
+      message_text: str = script_arguments.get('message', '')
+
+      first_option: str = script_arguments.get('option1', '')
+      second_option: str = script_arguments.get('option2', '')
+      options: list = [first_option, second_option]
+      additional_options: list = argToList(script_arguments.get('additional_options'))
+      options.extend(additional_options)
+
+      message: dict = {
+          'message_text': message_text,
+          'options': options,
+          'entitlement': entitlement,
+          'investigation_id': investigation_id,
+          'task_id': task_id
+      }
+
+      command_arguments: dict = {
+          'message': json.dumps(message),
+          'using-brand': 'Microsoft Teams'
+      }
+
+      if channel:
+          command_arguments['channel'] = channel
+      elif team_member:
+          command_arguments['team_member'] = team_member
+
+      demisto.results(demisto.executeCommand('send-notification', command_arguments))
+
+
+  if __name__ == 'builtins':
+      main()
+scripttarget: 0
+subtype: python3
+system: true
+tags:
+- microsoftteams
+type: python

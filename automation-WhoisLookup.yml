@@ -1,0 +1,35 @@
+args:
+- default: true
+  description: Domains to do WHOIS lookup on (comma-separated)
+  name: domains
+  required: true
+comment: Do WHOIS lookup on multiple domains
+commonfields:
+  id: WhoisLookup
+  version: -1
+dependson:
+  must:
+  - whois
+deprecated: true
+name: WhoisLookup
+runonce: false
+script: |-
+  domains = argToList( demisto.args()['domains'] )
+  res= []
+  for d in domains:
+      whoisResults = demisto.executeCommand( 'whois', { 'query': d })
+      if isError(whoisResults[0]):
+          res.append(whoisResults)
+      else:
+          whoisText = whoisResults[0]['Contents']
+          res.append( { "Type" : entryTypes["note"],
+                      "ContentsFormat" : formats["text"],
+                      "Contents" : whoisText
+                      })
+
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- whois
+type: python

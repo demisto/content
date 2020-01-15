@@ -1,0 +1,51 @@
+args:
+- default: true
+  description: The host's name
+  name: name
+- description: The new comment to set for the host
+  name: comment
+  required: true
+- description: The host's IP
+  name: ip
+comment: Change a host comment in LightCyber Magna.
+commonfields:
+  id: LCMSetHostComment
+  version: -1
+dependson:
+  must:
+  - lcm-set-host-comment
+name: LCMSetHostComment
+runonce: false
+script: |+
+  import re
+  ID_REGEX = r'Id: ([a-zA-Z0-9\-]+)'
+
+  dArgs = demisto.args()
+  resp = demisto.executeCommand("LCMHosts", dArgs)
+  if isError(resp[0]):
+      demisto.results(resp)
+  elif  resp[0]['Contents'] == 'No results.':
+      demisto.results('Host not found in LightCyber.')
+  else:
+      #demisto.log(str(resp))
+      hosts = resp[0]['Contents']
+      if isinstance(hosts, list) and len(hosts) == 1 :
+          reMatch = re.search(ID_REGEX, hosts[0]['HostId'], re.I)
+          if reMatch and len(reMatch.groups()) > 0:
+              hostID = reMatch.group(1)
+          if hostID:
+              resp = demisto.executeCommand("lcm-set-host-comment", {'id': hostID, 'comment': dArgs['comment']})
+              if isError(resp[0]) or resp[0]['Contents'] != 'No result returned':
+                  demisto.results(resp)
+              else:
+                  demisto.results('Done')
+          else:
+              demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not extract host ID.' } )
+      else:
+          demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Results weren\'t a single host: ' + str(resp)[:3000] } )
+
+scripttarget: 0
+system: true
+tags:
+- lightcyber
+type: python

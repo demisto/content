@@ -1,0 +1,1682 @@
+category: Network Security
+commonfields:
+  id: Incapsula
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: API ID
+  name: apiid
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: API key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: "true"
+  display: User system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Uses incapsula to manage sites and IPs
+display: Imperva Incapsula
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAcCAYAAACqAXueAAAIHUlEQVR4Ae3ZA4wk3dfH8bPmuzvWM55ZjWce27Zt27Zt27aftW3btsY67zf/nCQnlXSvmdnkk51bt3h/dU91V4vYv3t7pB2EMXgMJWgO2bU18I3DoaYek/A8jkM6mkEa7LoBHwYNoQIT8SIOQRvI7qMh4KBZeBdnoANaQzZVYdLR7RCLFmiKGESbphDTGFG2PMb6Wvj17e//g5g2gX6/TiO3P4A2mlpfLGLQEuI0s+Wxtl57a0dA0MqWyc5C7I9NDdirxmy8jZMRsQkB/wzFWSjBGqxAKU6CmOOw1vpWIw8XowIrUWWW40UInrT+1dZXCcXnaItpWIUyVGM9RqAD3oPiA4hzF9T6G9v65ZiHNByIS3e3gIMW4Rtc/NDg5AxIKBy3JxQXYl+o8y7EdIc6RbgaiuV4Hd+iCorj8RQUs/AOPsAXuALRFrziN7yMKa59KNTC7wRBDBa4458ERQ0Ur6A1MnbzgE3PNL2/X+pDhx12UHZe9LGvuJLr9XAB7wPFetSgHGnIhWKVURTiKiiGu/I5GYob8DgUvbEXDsZhyEK8C/hwCB6GYiKaYygUd0LcDdXD+idCcYUFX4dCyM4a8JHQreWhwSmLrvugUwz7vrIg8X8DsfdGBtzHle7H3Ex8EaODAWMt/sUYKCqQg2ehqEUpyqD4FO3dzbIAU1AOxeMQ3Aq1oJu5anMCzoPiXzTBN1C8vzMHHI2XsQC6qe7rnar3903VBwem1D0yLLnnNe90ztor+4hO+XHHLLeLP2IjA+6NEtTgI6zHDMRbEMGA16E7uuJb7AfBa1D8aiG0s2CbItHN4I/wJhTlriS3xHhXthV/ohVmoRbfo9ooFiNmZwzYBx2JK9EVK8KV4Pv6pOpDg1LWPTggZdKdf2b+dNOXHW674uWc/U88b5+4kvQjT8uLOWapXbgvhV5vKC7C/lAMgeAF9HIlVzATimJcA8UoiGfegGIRfsHv6IbbEY21gfP6F4qfIeZaqKnH3jgKihF4CF/iQyyG4r6dOmCPZ2gUs/Ic9EUt9IEBKbWU3zH390l9+dYfso8/797CiBPO2Td6705HHFKUfNR9edHH9M+NOLa0IOEYG5iwAT+FATgMnSzQlyHIwl/4Eq3QGB+gBzJxLPrjdTSCBFxj6/6LvuiDYXgYrfEduqMYgs74Ez2xt5vFH6APnnTP6gE4CuJcin74BC13iYC9G7/okMMMPeuq17t0OeumkqTDDj0ouzjtyDNzIo79Jjfy2LkFccdoQYIPFOEDDs+Htv012rw+68cuFXBRylEtkINbKLv/EupyPhmrzdKNYwE32P4BN4MERCCXT7/nMivfwwzUIxjalgYciQTEu/No45Yl2DritEKCaR3i3LPQCWkh1mmOZJOCBD/rTEt3HoC9RYN4pi0y0BmZaBPinKMgTpTrawlBO7esBSSMaKQgGaloGwz4L5yKTrgOv2EpaqFb0RGQgN9Qg1UocG+Lat1bpmGBizwf1ajBVRDTHs9hifXXoRLzcBvEuRz1KEU5FiMD4pzo3oStwhqsxDhcBHFuxCJUod7+n49PILgA1bb8L4jTCxXWdzoEr6MWlTgOEkJTDEY1SqF4KxjwcigqodtIDfIgAT2hphiCh6ABl0LMZVBzg7vjh0BNPapd+w6I8487rzoo7oI4p0NDcfu8HGpqsdbtszsEV0BNX4gzAmrOheADqDkFEsLhgTFWLESsD3gpdBv7ERLme3C9C/jBQFCKFciCWNjBgJ+Amsk4FMk4Co+hPcTEYIn7jjwGikmBSnEa1MzF3ngGauahjQWm5l4IuuBZ7APBlVDTB+IMh5pzfMDmZEgI30CxDu/7cdmeAU9F6mYEvA5doeYLCC6BmmsgmAY1x0LCOCuw/WuufVyIgCdDUAI1qxCJv6GmP/bxN8o2DNjfqBNRhPVQfL09Ai7FM4iAbOYMPhqDXTsH57j2FUhy5bgMaZAwukHN/jjUtX8OEfBSPIEpUDMUgiNRA3UW48ptHPBRUPNa4MXRIsRuq4Dn4R10hpjNDfggnODan+Jc174cqaiFYj1SICHkodLNwHx0wQooZqK1DziENTgJYk7FOFRAnac2IuBh/hm8CQG/DTVXoym+hprLtnbAw3A+WkHMlgZ8TGAQat0nb8VVaInlULMnJISXoKYG642fgcf7gE05BqM7nkUSxDOZ+ClQxaIDVWcQxDTDRKg5Ixiwu5G8pMA1l5oqqBmwNQIuR29ciKYQs1UCdoN9HOqhqIOa6yH4BWp+QjYSkYlTkYlmmA4NB1+5WalmQojra41HcDzS0QoHo9qNT2Lg2b3C1onGxe56KpHjAzbXIBHZ6Ig2uBoaDuqx7+YGvAavoCNkC/QI+zXJAjavQANugKAIlcHZ6WbmkciBmpU4CsXIx1WB2RCP46FmYoiAW2IGFFVYh2qo+RJivoeaOpSjHmpehfiATS1qjOJb9Iaaz5CDvVAQ6Pt4UwOehVeRBdkK/nKDWgjBPe7CjoGYPTAPVSj1n6LNaRhpfX4gFyMXNwVmuTgRmOrCuQaHos6MCBFwU/waOGY9VrrfncWk459Aaa3BUryCZhDzlhuXClSaWkzAMvdy5EiIc70bv1EbG3B/nLENfiVJQCbS0dwNdiYy0AriJNrydGSiHcRpjBTsjf3QEW3dcyvTREAC4l1/Alohw+yBRpAgWx6HYhyAAkRCQoi0dQ9EF3d+Xowbl6As15eKJsGqggyTFi7gUnTFGW4nu5QG7lWlsxLPIB2y62sI+GZMwXQ8hxTI7qHB/wMT53LV1sHDIQAAAABJRU5ErkJggg==
+name: Incapsula
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: 'Email address. For example: "joe@example.com".'
+      name: email
+      required: true
+    - description: The newly created account's parent id. If not specified, the invoking
+        account will be assigned as the parent.
+      name: parent_id
+    - description: 'The account owner''s name. For example: ''John Doe''.'
+      name: user_name
+    - description: An identifier of the plan to assign to the new account. For example,
+        ent100 for the Enterprise 100 plan.
+      name: plan_id
+    - description: Customer specific identifier for this operation.
+      name: ref_id
+    - description: Account name.
+      name: account_name
+    - description: Available only for Enterprise Plan customers that purchased the
+        Logs Integration SKU. Sets the log reporting level for the site. Options are
+        “full”, “security”, “none” and "default"
+      name: log_level
+    - description: Available only for Enterprise Plan customers that purchased the
+        Logs Integration SKU. Numeric identifier of the account that purchased the
+        logs integration SKU and which collects the logs. If not specified, operation
+        will be performed on the account identified by the authentication parameters
+      name: logs_account_id
+    description: Use this operation to add a new account that should be managed by
+      the account of the API client (the parent account). The new account will be
+      configured according to the preferences set for the parent account by Incapsula.
+      Depending on these preferences, an activation e-mail will be sent to the specified
+      e-mail address. The user responds to the activation e-mail, selects a password,
+      and can then log directly into the Incapsula console. The same e-mail address
+      can also be used to send system notifications to the account. The new account
+      is identified by a numeric value as provided by Incapsula in the response in
+      the field account_id.
+    name: incap-add-managed-account
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters.
+      name: account_id
+    - description: |-
+        The number of objects to return in the response.
+        Default: 50
+        Maximum: 100
+      name: page_size
+    - description: 'The page to return starting from 0. Default: 0'
+      name: page_num
+    description: Use this operation to get the list of accounts that are managed by
+      account of the API client (the parent account).
+    name: incap-list-managed-accounts
+  - arguments:
+    - default: true
+      description: The name of the sub account.
+      name: sub_account_name
+      required: true
+    - description: The newly created account's parent id. If not specified, the invoking
+        account will be assigned as the parent.
+      name: parent_id
+    - description: 'The account owner''s name. For example: ''John Doe''.'
+      name: user_name
+    - description: Customer specific identifier for this operation.
+      name: ref_id
+    - description: Available only for Enterprise Plan customers that purchased the
+        Logs Integration SKU. Sets the log reporting level for the site. Options are
+        “full”, “security”, “none” and "default"
+      name: log_level
+    - description: Available only for Enterprise Plan customers that purchased the
+        Logs Integration SKU. Numeric identifier of the account that purchased the
+        logs integration SKU and which collects the logs. If not specified, operation
+        will be performed on the account identified by the authentication parameters
+      name: logs_account_id
+    description: Use this operation to add a new sub account to be managed by the
+      account of the API client (the parent account).
+    name: incap-add-subaccount
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters.
+      name: account_id
+    - description: |-
+        The number of objects to return in the response.
+        Default: 50
+        Maximum: 100
+      name: page_size
+    - description: 'The page to return starting from 0. Default: 0'
+      name: page_num
+    description: Use this operation to get a list of sub accounts that are managed
+      by the account of the API client (the parent account).
+    name: incap-list-subaccounts
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters.
+      name: account_id
+    description: Use this operation to get information about the account of the API
+      client or one of its managed accounts.
+    name: incap-get-account-status
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters.
+      name: account_id
+    - auto: PREDEFINED
+      description: |-
+        Name of the configuration parameter to set.
+        Possible values: name | email | plan_id | error_page_template | support_all_tls_versions
+      name: param
+      predefined:
+      - name
+      - email
+      - plan_id
+      - error_page_template
+      - support_all_tls_versions
+      required: true
+    - description: |-
+        According to the configuration paramater used.
+        For name - the updated name, for e-mail - the updated e-mail address.
+        For plan_id - a plan id.
+        For error_page_template - a Base64 encoded template for an error page.
+        For log_level - Available only for Enterprise Plan customers that purchased the Logs Integration SKU. Sets the log reporting level for the site. Possible values: full, security, none, default
+        For support_all_tls_versions - Use this operation to allow sites in the account to support all TLS versions for connectivity between clients (visitors) and the Incapsula service. When this option is set, you can then enable the option per site to support all TLS versions. Possible values: true, false. Note: To remain PCI-compliant, do not enable this option.
+      name: value
+      required: true
+    description: Use this operation to change the configuration of the account of
+      the API client or one of its managed accounts.
+    name: incap-modify-account-configuration
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters.
+      name: account_id
+    - auto: PREDEFINED
+      description: |-
+        Sets the log reporting level for the site.
+        Possible values: full, security, none, default
+        Available only for Enterprise Plan customers that purchased the Log Integration SKU.
+      name: log_level
+      predefined:
+      - full
+      - security
+      - none
+      - default
+      - support_all_tls_versions
+      required: true
+    description: Use this operation to change the account log configuration.
+    name: incap-set-account-log-level
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on.
+      name: account_id
+      required: true
+    - description: S3 bucket name.
+      name: bucket_name
+      required: true
+    - description: S3 access key.
+      name: access_key
+      required: true
+    - description: 3 secret key.
+      name: secret_key
+      required: true
+    - auto: PREDEFINED
+      description: 'Save this configuration if the test connection was successful.
+        Default value: false'
+      name: save_on_success
+      predefined:
+      - "true"
+      - "false"
+    description: Use this operation to check that a connection can be created with
+      your Amazon S3 bucket.
+    name: incap-test-account-s3-connection
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on.
+      name: account_id
+      required: true
+    - description: The IP address of your SFTP server.
+      name: host
+      required: true
+    - description: A user name that will be used to log in to the SFTP server.
+      name: user_name
+      required: true
+    - description: A corresponding password for the user account used to log in to
+        the SFTP server.
+      name: password
+      required: true
+    - description: The path to the directory on the SFTP server.
+      name: destination_folder
+      required: true
+    - auto: PREDEFINED
+      description: 'Save this configuration if the test connection was successful.
+        Default value: false'
+      name: save_on_success
+      predefined:
+      - "true"
+      - "false"
+    description: Use this operation to check that a connection can be created with
+      your SFTP storage.
+    name: incap-test-account-sftp-connection
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on.
+      name: account_id
+      required: true
+    - description: S3 bucket name.
+      name: bucket_name
+      required: true
+    - description: S3 access key.
+      name: access_key
+      required: true
+    - description: 3 secret key.
+      name: secret_key
+      required: true
+    description: Use this operation to configure your Amazon cloud storage. Once configured,
+      Incapsula logs will be uploaded to the selected location.
+    name: incap-set-account-s3-log-storage
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on.
+      name: account_id
+      required: true
+    - description: The IP address of your SFTP server.
+      name: host
+      required: true
+    - description: A user name that will be used to log in to the SFTP server.
+      name: user_name
+      required: true
+    - description: A corresponding password for the user account used to log in to
+        the SFTP server.
+      name: password
+      required: true
+    - description: The path to the directory on the SFTP server.
+      name: destination_folder
+      required: true
+    description: Use this operation to configure your SFTP server storage. Once configured,
+      Incapsula logs will be uploaded to the selected location.
+    name: incap-set-account-sftp-log-storage
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on.
+      name: account_id
+      required: true
+    description: Use this operation to have your logs saved on Incapsula servers.
+      Once configured, the logs can be retrieved by API calls.
+    name: incap-set-account-default-log-storage
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters.
+      name: account_id
+    description: |-
+      Tokens are used instead of user/password based authentication to log in to the Incapsula management console.  Use this operation to generate a token for an account. The token is valid for 15 minutes.
+      In order to use the token, the user must use the following link:  https://my.incapsula.com/?token={generated_token}
+    name: incap-get-account-login-token
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on.
+      name: account_id
+    description: Use this operation to delete an account.
+    name: incap-delete-managed-account
+  - arguments:
+    - default: true
+      description: Numeric identifier of the sub account to operate on.
+      name: sub_account_id
+      required: true
+    description: Use this operation to delete a sub account.
+    name: incap-delete-subaccount
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters.
+      name: account_id
+    - description: Time range to fetch data for. For a detailed description, see https://docs.incapsula.com/Content/API/api.htm
+      name: time_range
+    - description: Start date in milliseconds since 1970. For a detailed description,
+        see https://docs.incapsula.com/Content/API/api.htm
+      name: start
+    - description: End date in milliseconds since 1970. For a detailed description,
+        see https://docs.incapsula.com/Content/API/api.htm
+      name: end
+    - description: The api key of the event type, such as audit.account_login.
+      name: type
+    - description: |-
+        The number of objects to return in the response.
+        Default: 50.
+        Maximum: 100
+      name: page_size
+    - description: 'The page to return starting from 0. Default: 0.'
+      name: page_num
+    description: Use this operation to get audit events for an account.
+    name: incap-get-account-audit-events
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on.
+      name: account_id
+      required: true
+    - auto: PREDEFINED
+      description: The data region to use.
+      name: data_storage_region
+      predefined:
+      - APAC
+      - EU
+      - US
+      - DEFAULT
+    description: Use this operation to set the default data region of the account
+      for newly created sites.
+    name: incap-set-account-default-data-storage-region
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on.
+      name: account_id
+      required: true
+    description: Use this operation to get the default data region of the account.
+    name: incap-get-account-default-data-storage-region
+  - arguments:
+    - default: true
+      description: 'The domain name of the site. For example: www.example.com, hello.example.com,
+        example.com'
+      name: domain
+      required: true
+    - description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters
+      name: account_id
+    - description: Customer specific identifier for this operation
+      name: ref_id
+    - description: If this value is "false", end users will not get emails about the
+        add site process such as "DNS instructions" and "SSL setup"
+      name: send_site_setup_emails
+    - description: Manually set the web server IP/cname. This option is only available
+        for specific accounts. Please contact support for more details
+      name: site_ip
+    - description: If this value is "true", manually set the site to support SSL.
+        This option is only available for sites with manually configured IP/cname
+        and for specific accounts. Please contact support for more details
+      name: force_ssl
+    - description: Available only for Enterprise Plan customers that purchased the
+        Logs Integration SKU. Sets the log reporting level for the site. Options are
+        “full”, “security”, “none” and "default"
+      name: log_level
+    - description: Available only for Enterprise Plan customers that purchased the
+        Logs Integration SKU. Numeric identifier of the account that purchased the
+        logs integration SKU and which collects the logs. If not specified, operation
+        will be performed on the account identified by the authentication parameters
+      name: logs_account_id
+    description: Add a new site to an account. If the site already exists, its status
+      is returned
+    name: incap-add-site
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: 'List of tests to run on site before returning its status. A comma
+        separated list of one of: domain_validation, services, dns'
+      name: tests
+    description: Use this operation to get the status of a site
+    name: incap-get-site-status
+  - arguments:
+    - description: 'The domain name of the site. For example: www.example.com, hello.example.com,
+        example.com'
+      name: domain
+    description: Use this operation to get the list of email addresses that can be
+      used when adding an SSL site
+    name: incap-get-domain-approver-email
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: Name of configuration parameter to set
+      name: param
+      required: true
+    - description: According to the param value
+      name: value
+      required: true
+    description: Use this operation to change one of the basic configuration settings
+      of the site. To watch param table, visit https://my.incapsula.com/api/docs/v1/sites#modifySiteConfig
+    name: incap-modify-site-configuration
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: Available only for Enterprise Plan customers that purchased the
+        Logs Integration SKU. Sets the log reporting level for the site. Options are
+        “full”, “security”, “none” and "default"
+      name: log_level
+    description: Use this operation to change the site log configuration
+    name: incap-modify-site-log-level
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    - auto: PREDEFINED
+      description: 'Support all TLS versions. Default value: false'
+      name: support_all_tls_versions
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    description: Use this operation to support all TLS versions for the site for connectivity
+      between clients (visitors) and the Incapsula service. To remain PCI-compliant,
+      do not enable this option.
+    name: incap-modify-site-tls-support
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: ID of the security rule to change. For possible values see the
+        security section in the Get Site Status API call
+      name: rule_id
+      required: true
+    - description: 'Whether or not to block bad bots. One of: true, false'
+      name: block_bad_bots
+    - description: 'Whether or not to send a challenge to clients that are suspected
+        to be bad bots (CAPTCHA for example). One of: true, false'
+      name: challenge_suspected_bots
+    - description: 'One of the following: off (security measures are disabled even
+        if site is under a DDoS attack), auto (security measures will be activated
+        automatically when the system suspects site is under a DDoS attack), on (security
+        measures are enabled even if site is not under a DDoS attack). The syntax
+        is as follows: api.threats.ddos.activation_mode.( e.g. for "off", use "api.threats.ddos.activation_mode.off"
+        )'
+      name: activation_mode
+    - description: 'The action that should be taken when a threat is detected, for
+        example: api.threats.action.block_ip. Different actions are allowed per different
+        threats, e.g. backdoors may only be quarantined, ignored or trigger an alert.
+        For possible values see below'
+      name: security_rule_action
+    - description: A comma seperated list of encoded URLs to be kept in quarantine
+      name: quarantined_urls
+    - description: Consider site to be under DDoS if the request rate is above this
+        threshold. The valid values are 10, 20, 50, 100, 200, 500, 750, 1000, 2000,
+        3000, 4000, 5000
+      name: ddos_traffic_threshold
+    description: Use this operation to change the security configuration of a site
+    name: incap-modify-site-scurity-config
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: 'The id of the acl, e.g api.acl.blacklisted_ips. One of: api.acl.blacklisted_countries,
+        api.acl.blacklisted_urls, api.acl.blacklisted_ips, api.acl.whitelisted_ips'
+      name: rule_id
+      required: true
+    - description: A comma separated list of resource paths. For example, /home and
+        /admin/index.html are resource paths, however http://www.example.com/home
+        is not. Each URL should be encoded separately using percent encoding as specified
+        by RFC 3986 (http://tools.ietf.org/html/rfc3986#section-2.1). An empty URL
+        list will remove all URLs
+      name: urls
+    - description: 'A comma seperated list of url patterns, one of: contains | equals
+        | prefix | suffix | not_equals | not_contain | not_prefix | not_suffix. The
+        patterns should be in accordance with the matching urls sent by the urls parameter'
+      name: url_patterns
+    - description: A comma seperated list of country codes
+      name: countries
+    - description: A comma seperated list of continent codes
+      name: continents
+    - description: 'A comma seperated list of IPs or IP ranges, e.g: 192.168.1.1,
+        192.168.1.1-192.168.1.100 or 192.168.1.1/24'
+      name: ips
+    description: Use this operation to change the ACL configuration of a site. To
+      modify the configuration for a specific ACL rule, its values are required, as
+      documented below. To delete an entire ACL list, send an empty string as the
+      list values
+    name: incap-modify-site-acl-config
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: The id of the rule (either a security or an acl rule), e.g api.acl.blacklisted_ips.
+        See other examples below
+      name: rule_id
+      required: true
+    - description: The id (an integer) of the whitelist to be set. This field is optional
+        - in case no id is supplied, a new whitelist will be created
+      name: whitelist_id
+    - description: An optional boolean parameter, in case it is set to "true" and
+        a whitelist id is sent, then the whitelist will be deleted
+      name: delete_whitelist
+    - description: A comma separated list of resource paths. For example, /home and
+        /admin/index.html are resource paths, however http://www.example.com/home
+        is not. Each URL should be encoded separately using percent encoding as specified
+        by RFC 3986 (http://tools.ietf.org/html/rfc3986#section-2.1). An empty URL
+        list will remove all URLs
+      name: urls
+    - description: A comma seperated list of country codes
+      name: countries
+    - description: A comma seperated list of continent codes
+      name: continents
+    - description: 'A comma seperated list of IPs or IP ranges, e.g: 192.168.1.1,
+        192.168.1.1-192.168.1.100 or 192.168.1.1/24'
+      name: ips
+    - description: A comma seperated list of client application types
+      name: client_app_types
+    - description: A comma seperated list of client application ids
+      name: client_apps
+    - description: A comma seperated list of encoded user agents
+      name: parameters
+    - description: A comma seperated list of encoded user agents
+      name: user_agents
+    description: Use this operation to set whitelists to security rules or ACLs. To
+      update an existing whitelist, send its ID in the id parameter. If the id parameter
+      does not exist a new whitelist will be created
+    name: incap-modify-site-wl-config
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    description: Delete the site
+    name: incap-delete-site
+  - arguments:
+    - description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters
+      name: account_id
+    - description: The number of objects to return in the response. Defaults to 50
+      name: page_size
+    - description: The page to return starting from 0. Default to 0
+      name: page_num
+    description: List sites for an account
+    name: incap-list-sites
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: 'The report to get, one of: pci-compliance'
+      name: report
+      required: true
+    - description: 'The format to get the report in, one of: pdf | html'
+      name: format
+      required: true
+    - description: Time range to fetch data for. See the introduction of the API documentation
+        for a detailed description
+      name: time_range
+      required: true
+    - description: Start date in milliseconds since 1970. See the introduction of
+        the API documentation for a detailed description
+      name: start
+    - description: End date in milliseconds since 1970. See the introduction of the
+        API documentation for a detailed description
+      name: end
+    description: Use this operation to get a report for a site. Reports are sent using
+      Base64 encoding
+    name: incap-get-site-report
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    description: Use this operation to list all the HTML Injection rules.
+    name: incap-get-site-html-injection-rules
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    - description: The URL where the content is injected.
+      name: url
+      required: true
+    - auto: PREDEFINED
+      description: 'The url pattern. One of: contains | not_contains | equals | not_equals
+        | prefix | suffix | not_prefix | not_suffix'
+      name: url_pattern
+      predefined:
+      - contains
+      - not_contains
+      - equals
+      - not_equals
+      - prefix
+      - suffix
+      - not_prefix
+      - not_suffix
+      required: true
+    - auto: PREDEFINED
+      description: The location of the injection inside the URL ('head' or 'body_end').
+      name: location
+      predefined:
+      - head
+      - body_end
+      required: true
+    - description: The injected HTML snippet, Base64-encoded.
+      name: content
+    description: Use this operation to add a new HTML injection rule or to replace
+      an existing rule.
+    name: incap-add-site-html-injection-rule
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    - description: The URL where the content is injected.
+      name: url
+      required: true
+    - auto: PREDEFINED
+      description: 'The url pattern. One of: contains | not_contains | equals | not_equals
+        | prefix | suffix | not_prefix | not_suffix'
+      name: url_pattern
+      predefined:
+      - contains
+      - not_contains
+      - equals
+      - not_equals
+      - prefix
+      - suffix
+      - not_prefix
+      - not_suffix
+      required: true
+    - auto: PREDEFINED
+      description: The location of the injection inside the URL ('head' or 'body_end').
+      name: location
+      predefined:
+      - head
+      - body_end
+      required: true
+    - auto: PREDEFINED
+      description: 'Whether or not to delete existing HTML content.  Possible values:
+        true/false'
+      name: delete_content
+      predefined:
+      - "true"
+      - "false"
+    description: Use this operation to removes an existing HTML injection rule. To
+      confirm the removal, set the parameter delete_content to true.
+    name: incap-delete-site-html-injection-rule
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    - description: 'Email address. For example: joe@example.com'
+      name: email
+    - description: The legal name of your organization. This should not be abbreviated
+        or include suffixes such as Inc., Corp., or LLC.
+      name: organization
+    - description: The division of your organization handling the certificate. For
+        example, "IT Department".
+      name: organization_unit
+    - description: The two-letter ISO code for the country where your organization
+        is located.
+      name: country
+    - description: The state/region where your organization is located. This should
+        not be abbreviated.
+      name: state
+    - description: The city where your organization is located.
+      name: city
+    description: Use this operation to create a certificate signing request (CSR)
+      for your site
+    name: incap-create-new-csr
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate o
+      name: site_id
+      required: true
+    - description: The new certificate
+      name: certificate
+      required: true
+    - description: The private key of the certificate in base64 format. Optional in
+        case of PFX certificate file format
+      name: private_key
+    - description: The passphrase used to protect your SSL certificate
+      name: passphrase
+    description: 'Use this operation to upload custom certificate for your site. The
+      following SSL certificate file formats are supported: PFX, PEM, CER'
+    name: incap-upload-certificate
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    description: Use this operation to remove custom certificate
+    name: incap-remove-custom-integration
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    - description: The numeric identifier of the account which the site will be moved
+        to.
+      name: destination_account_id
+      required: true
+    description: Use this operation to move a site from one account to another. You
+      can move a site from a master account to one of its sub accounts, or from one
+      sub account to another.
+    name: incap-move-site
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    description: |-
+      Check site’s associated SANs for CAA compliance. If a given SAN is compliant, its SSL domain validation status is updated accordingly.
+      This operation returns an updated list of the site’s associated SANs that are not compliant. An empty list indicates that all SANs are compliant.
+    name: incap-check-compliance
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    - auto: PREDEFINED
+      description: The data region to use.
+      name: data_storage_region
+      predefined:
+      - APAC
+      - EU
+      - US
+      required: true
+    description: Use this operation to set the site's data storage region.
+    name: incap-set-site-data-storage-region
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    description: Use this operation to get the site's data storage region.
+    name: incap-get-site-data-storage-region
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      description: A boolean parameter. If it is set to "true", the data storage region
+        for each new site will be based on the geolocation of the origin server.
+      name: override_site_regions_by_geo
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    - description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters.
+      name: account_id
+    description: Use this operation to set the data storage region for each new site
+      based on the geolocation of the origin server.
+    name: incap-set-site-data-storage-region-geo-override
+  - arguments:
+    - description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters.
+      name: account_id
+    description: Use this operation to check if the data storage region for each new
+      site is based on the geolocation of the origin server.
+    name: incap-get-site-data-storage-region-geo-override
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: 'The pattern of the resource to be purged from the cache. For example:
+        (1) Resource_name - resources that contain Resource_name will be purged, (2)
+        ^Resource_name - resources that start with Resource_name will be purged, and
+        (3) Resource_name$ - resources that end with Resource_name will be purged'
+      name: purge_pattern
+    description: ' Use this operation to purge all cached content on our proxy servers
+      for a specific site. Our Proxy servers keep cached content of your sites in
+      order to accelerate page load times for your users. When you want this cached
+      content to be refreshed (for example, after making adjustments in your site)
+      you can use this API call. In order to purge the entire cached content for this
+      site just use the API call with no parameters. If you want to purge a specific
+      resource add the resource name as parameter'
+    name: incap-purge-site-cache
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: 'disable | static_only | static_and_dynamic | aggressive : default
+        Static_Only'
+      name: cache_mode
+      required: true
+    - description: 'Profile dynamic pages and cache duration, pass number followed
+        by "_" and one of: hr | min | sec | days | weeks: default: 5_min'
+      name: dynamic_cache_duration
+    - description: 'Cache resource duration, pass number followed by "_" and one of:
+        hr | min | sec | days | weeks: default: 1_hr'
+      name: aggressive_cache_duration
+    description: Use this operation to edit basic site caching settings
+    name: incap-modify-cache-mode
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: Comma seperated list of URLs where the resource is located
+      name: resource_url
+    - description: 'Comma seperated list of pattern, one of: contains | equals | prefix
+        | suffix | not_equals | not_contains | not_prefix | not_suffix'
+      name: resource_pattern
+    - description: Should purge all cached resources on site
+      name: should_purge_all_site_resources
+    description: Use this operation to purge site resources
+    name: incap-purge-resources
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: Comma seperated list of always cache resources url
+      name: always_cache_resource_url
+    - description: 'Comma seperated list of always cache resources pattern, one of:
+        contains | equals | prefix | suffix | not_equals | not_contains | not_prefix
+        | not_suffix'
+      name: always_cache_resource_pattern
+    - description: 'Duration that resources will be in cache, pass number followed
+        by "_" and one of: hr | min | sec | days | weeks. Either provide a comma seperated
+        list of duration expressions, matching the number of always cache rules, or
+        a single duration expression to be used for all always cache rules'
+      name: always_cache_resource_duration
+    - description: Comma seperated list of never cache resources url
+      name: never_cache_resource_url
+    - description: Comma seperated list of cached headers seperated with comma
+      name: never_cahce_resource_pattern
+    - description: An optional boolean parameter, in case it is set to "true", the
+        site's always cache rules will be cleared
+      name: clear_always_cache_rules
+    - description: An optional boolean parameter, in case it is set to "true", the
+        site's never cache rules will be cleared
+      name: clear_never_cache_rules
+    - description: An optional boolean parameter, in case it is set to "true", the
+        site's cache headers rules will be cleared
+      name: clear_cache_headers_rules
+    description: Use this operation to set-up advanced caching rules
+    name: incap-modify-caching-rules
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: Name of configuration parameter to set
+      name: param
+    - description: According to the param value
+      name: value
+    description: Use this operation to modify advanced caching settings. For more
+      information, https://my.incapsula.com/api/docs/v1/sites#modifyAdvancedCachingSettings
+    name: incap-set-advanced-caching-settings
+  - arguments:
+    - default: true
+      description: The hostname to purge from cache
+      name: host_name
+      required: true
+    description: Use this operation to purge the hostname from the cache. This API
+      is for customers who use the same CNAME provided by Incapsula for multiple hostnames
+      and would like to change the CNAME for a particular hostname. Purging the hostname
+      is required for the CNAME change to take effect
+    name: incap-purge-hostname-from-cache
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    description: Use this operation to get a URL that enables debug headers on a specific
+      site.
+    name: incap-site-get-xray-link
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    - description: Rule ID.
+      name: rule_id
+      required: true
+    description: Use this operation to list revisions of a rule (Delivery Rules or
+      IncapRules).
+    name: incap-list-site-rule-revisions
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    - description: Rule name.
+      name: name
+    - auto: PREDEFINED
+      description: Rule action.
+      name: action
+      predefined:
+      - RULE_ACTION_REDIRECT
+      - RULE_ACTION_REWRITE_URL
+      - RULE_ACTION_REWRITE_HEADER
+      - RULE_ACTION_REWRITE_COOKIE
+      - RULE_ACTION_DELETE_HEADER
+      - RULE_ACTION_DELETE_COOKIE
+      - RULE_ACTION_FORWARD_TO_DC
+      - RULE_ACTION_ALERT
+      - RULE_ACTION_BLOCK
+      - RULE_ACTION_BLOCK_USER
+      - RULE_ACTION_BLOCK_IP
+      - RULE_ACTION_RETRY
+      - RULE_ACTION_INTRUSIVE_HTML
+      - RULE_ACTION_CAPTCHA
+    - description: |-
+        Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs.incapsula.com/Content/IncapRules/syntax-guide.htm
+        The filter may contain up to 400 characters.
+      name: filter
+    - auto: PREDEFINED
+      description: Redirect rule's response code.
+      name: response_code
+      predefined:
+      - "301"
+      - "302"
+      - "303"
+      - "307"
+      - "308"
+    - description: Protocol
+      name: protocol
+    - description: Add cookie or header if it doesn't exist (Rewrite cookie rule only)
+      name: add_missing
+    - description: |-
+        The pattern to rewrite.
+        RULE_ACTION_REWRITE_URL - The URL to rewrite.
+        RULE_ACTION_REWRITE_HEADER - The header value to rewrite.
+        RULE_ACTION_REWRITE_COOKIE - The cookie value to rewrite.
+      name: from
+    - description: |-
+        The pattern to change to.
+        RULE_ACTION_REWRITE_URL - The URL to change to.
+        RULE_ACTION_REWRITE_HEADER - The header value to change to.
+        RULE_ACTION_REWRITE_COOKIE - The cookie value to change to.
+      name: to
+    - description: Name of cookie or header to rewrite. Applies only for RULE_ACTION_REWRITE_COOKIE
+        and RULE_ACTION_REWRITE_HEADER.
+      name: rewrite_name
+    - description: Data center to forward request to. Applies only for RULE_ACTION_FORWARD_TO_DC.
+      name: dc_id
+    - description: Make rule apply only for IP address the API request was sent from.
+      name: is_test_mode
+    - auto: PREDEFINED
+      description: Data center load balancing algorithm
+      name: lb_algorithm
+      predefined:
+      - LB_LEAST_PENDING_REQUESTS
+      - LB_LEAST_OPEN_CONNECTIONS
+      - LB_SOURCE_IP_HASH
+      - RANDOM
+    description: Use this operation to add a rule (Delivery Rules or IncapRules).
+    name: incap-add-site-rule
+  - arguments:
+    - default: true
+      description: Rule ID.
+      name: rule_id
+      required: true
+    - description: Rule name.
+      name: name
+    - auto: PREDEFINED
+      description: Rule action.
+      name: action
+      predefined:
+      - RULE_ACTION_REDIRECT
+      - RULE_ACTION_REWRITE_URL
+      - RULE_ACTION_REWRITE_HEADER
+      - RULE_ACTION_REWRITE_COOKIE
+      - RULE_ACTION_DELETE_HEADER
+      - RULE_ACTION_DELETE_COOKIE
+      - RULE_ACTION_FORWARD_TO_DC
+      - RULE_ACTION_ALERT
+      - RULE_ACTION_BLOCK
+      - RULE_ACTION_BLOCK_USER
+      - RULE_ACTION_BLOCK_IP
+      - RULE_ACTION_RETRY
+      - RULE_ACTION_INTRUSIVE_HTML
+      - RULE_ACTION_CAPTCHA
+    - description: |-
+        Rule will trigger only a request that matches this filter. For more details on filter guidelines, see https://docs.incapsula.com/Content/IncapRules/syntax-guide.htm
+        The filter may contain up to 400 characters.
+      name: filter
+    - auto: PREDEFINED
+      description: Redirect rule's response code.
+      name: response_code
+      predefined:
+      - "301"
+      - "302"
+      - "303"
+      - "307"
+      - "308"
+    - description: Protocol
+      name: protocol
+    - description: Add cookie or header if it doesn't exist (Rewrite cookie rule only)
+      name: add_missing
+    - description: |-
+        The pattern to rewrite.
+        RULE_ACTION_REWRITE_URL - The URL to rewrite.
+        RULE_ACTION_REWRITE_HEADER - The header value to rewrite.
+        RULE_ACTION_REWRITE_COOKIE - The cookie value to rewrite.
+      name: from
+    - description: |-
+        The pattern to change to.
+        RULE_ACTION_REWRITE_URL - The URL to change to.
+        RULE_ACTION_REWRITE_HEADER - The header value to change to.
+        RULE_ACTION_REWRITE_COOKIE - The cookie value to change to.
+      name: to
+    - description: Name of cookie or header to rewrite. Applies only for RULE_ACTION_REWRITE_COOKIE
+        and RULE_ACTION_REWRITE_HEADER.
+      name: rewrite_name
+    - description: Data center to forward request to. Applies only for RULE_ACTION_FORWARD_TO_DC.
+      name: dc_id
+    - description: Make rule apply only for IP address the API request was sent from.
+      name: is_test_mode
+    - auto: PREDEFINED
+      description: Data center load balancing algorithm
+      name: lb_algorithm
+      predefined:
+      - LB_LEAST_PENDING_REQUESTS
+      - LB_LEAST_OPEN_CONNECTIONS
+      - LB_SOURCE_IP_HASH
+      - RANDOM
+    description: Use this operation to edit an existing rule (Delivery Rules or IncapRules).
+    name: incap-edit-site-rule
+  - arguments:
+    - default: true
+      description: Rule ID.
+      name: rule_id
+      required: true
+    - description: Rule name.
+      name: name
+    - auto: PREDEFINED
+      description: When true, the rule will be enabled. Set to false to disable.
+      name: enable
+      predefined:
+      - "true"
+      - "false"
+    description: Use this operation to enable or disable a rule (Delivery Rules or
+      IncapRules).
+    name: incap-enable-site-rule
+  - arguments:
+    - default: true
+      description: Rule ID.
+      name: rule_id
+      required: true
+    - description: When true, the rule will be enabled. Set to false to disable.
+      name: name
+    description: Use this operation to delete a rule (Delivery Rules or IncapRules).
+    name: incap-delete-site-rule
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    - auto: PREDEFINED
+      description: Whether or not delivery rules should be included. Defaults to "Yes".
+      name: include_ad_rules
+      predefined:
+      - "Yes"
+      - "No"
+    - auto: PREDEFINED
+      description: Whether or not security rules be included. Defaults to "Yes".
+      name: include_incap_rules
+      predefined:
+      - "Yes"
+      - "No"
+    - description: |-
+        The number of objects to return in the response.
+        Default is 50.
+        Maximum: 100
+      name: page_size
+    - description: The page to return starting from 0. Default is 0.
+      name: page_num
+    description: Use this operation to list rules (Delivery Rules and IncapRules)
+      for a given site.
+    name: incap-list-site-rules
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    - description: Rule ID.
+      name: rule_id
+      required: true
+    - description: ID of the revision to revert to. Revision ID can be found using
+        !incap-list-site-rule-revisions.
+      name: revision_id
+      required: true
+    description: Revert a rule (Delivery Rule or IncapRule) using an existing revision.
+    name: incap-revert-site-rule
+  - arguments:
+    - default: true
+      description: Rule ID.
+      name: rule_id
+      required: true
+    - description: New priority for the selected rule.
+      name: priority
+      required: true
+    description: Use this operation to change a Delivery Rule's priority.
+    name: incap-set-site-rule-priority
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: The new data center's name.
+      name: name
+      required: true
+    - description: 'The server''s address. Possible values: IP, CNAME'
+      name: server_address
+      required: true
+    - auto: PREDEFINED
+      description: Enables the data center
+      name: is_enabled
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: The data center will be available for specific resources (Forward
+        Delivery Rules).
+      name: is_content
+      predefined:
+      - "true"
+      - "false"
+    description: Use this operation to add a data center to a site.
+    name: incap-add-site-datacenter
+  - arguments:
+    - default: true
+      description: The data center's ID.
+      name: dc_id
+      required: true
+    - description: The new data center's name.
+      name: name
+    - auto: PREDEFINED
+      description: Enables the data center
+      name: is_enabled
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: Defines the data center as standby for failover.
+      name: is_standby
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: The data center will be available for specific resources (Forward
+        Delivery Rules).
+      name: is_content
+      predefined:
+      - "true"
+      - "false"
+    description: Use this operation to edit a site's data center.
+    name: incap-edit-site-datacenter
+  - arguments:
+    - default: true
+      description: The data center's ID.
+      name: dc_id
+      required: true
+    description: Use this operation to delete a site's data center.
+    name: incap-delete-site-datacenter
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on.
+      name: site_id
+      required: true
+    description: Use this operation to list a site's data centers including the data
+      centers' servers.
+    name: incap-list-site-datacenters
+  - arguments:
+    - default: true
+      description: The data center's ID.
+      name: dc_id
+      required: true
+    - description: 'The server''s address. Possible values: IP, CNAME'
+      name: server_address
+      required: true
+    - description: The new data center's name.
+      name: name
+    - auto: PREDEFINED
+      description: Set the server as Active (P0) or Standby (P1) (Boolean).
+      name: is_standby
+      predefined:
+      - "true"
+      - "false"
+    description: Use this operation to add a server to a data center.
+    name: incap-add-site-datacenter-server
+  - arguments:
+    - default: true
+      description: Server ID.
+      name: server_id
+      required: true
+    - description: 'The server''s address. Possible values: IP, CNAME'
+      name: server_address
+      required: true
+    - description: The new data center's name.
+      name: name
+    - auto: PREDEFINED
+      description: Enable or disable the server (Boolean).
+      name: is_enabled
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: Set the server as Active (P0) or Standby (P1) (Boolean).
+      name: is_standby
+      predefined:
+      - "true"
+      - "false"
+    description: Use this operation to add a server to a data center.
+    name: incap-edit-site-datacenter-server
+  - arguments:
+    - default: true
+      description: Server ID.
+      name: server_id
+      required: true
+    description: Use this operation to delete a data center's server.
+    name: incap-delete-site-datacenter-server
+  - arguments:
+    - description: Numeric identifier of the account to fetch data for. If not specified,
+        data will be fetched for all site of the account identified by the authentication
+        parameters
+      name: account_id
+    - default: true
+      description: Time range to fetch data for. See https://my.incapsula.com/api/docs/v1#timeRange
+      name: time_range
+      required: true
+    - description: Start date in milliseconds since 1970. See the introduction of
+        the API documentation for a detailed description
+      name: start
+    - description: End date in milliseconds since 1970. See the introduction of the
+        API documentation for a detailed description
+      name: end
+    - description: 'Numeric identifier of the site to fetch data for. Multiple sites
+        can be specified in a comma separated list. For example: 123,124,125.'
+      name: site_id
+    - description: Statistics to fetch, see options at https://my.incapsula.com/api/docs/v1/data#getStats
+      name: stats
+      required: true
+    - description: Time interval in milliseconds between data points for time series
+        stats. Default is 86400000 (1 day) for a range of less than 30 days and 259200000
+        (3 days) for a range of less than 90 days
+      name: granularity
+    description: Use this operation to get site statistics for one or more sites.
+      This operation may return multiple statistics, as specified in the stats parameter
+    name: incap-get-statistics
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: Time range to fetch data for. Default is last_7_days
+      name: time_range
+    - description: Start date in milliseconds since 1970. See the introduction of
+        the API documentation for a detailed description
+      name: start
+    - description: End date in milliseconds since 1970. See the introduction of the
+        API documentation for a detailed description
+      name: end
+    - description: The number of objects to return in the response. Defaults to 10
+      name: page_size
+    - description: 'Filter the sessions that were handled according to the security-related
+        specifications. Multiple values are supported, e.g.: "api.threats.action.block_ip,
+        api.threats.sql_injection"'
+      name: page_num
+    - description: Filter the sessions coming from the specified country
+      name: country
+    - description: Filter the sessions coming from the specified IP
+      name: ip
+    - description: Comma separated list of visit IDs to load
+      name: visit_id
+    - description: 'Whether or not to list visits that did not end and that may still
+        be updated. One of: true | false. Default: true'
+      name: list_live_visits
+    description: Use this operation to get a log of recent visits to a website. The
+      visits are fetched in reverse chronological order, starting with the most recent
+      visit. Not all visits are recorded - only visits with abnormal activity are
+      recorded e.g. violation of security rules, visits from black-listed IPs/Countries,
+      etc. A visit may still be updated even after it was retrieved. To avoid retrieving
+      such visits and to retrieve only visits that will no longer be updated use the
+      list_live_visits parameter
+    name: incap-get-visits
+  - arguments:
+    - default: true
+      description: The Logs Collector configuration identifier
+      name: config_id
+      required: true
+    - description: The public key file(2048bit) in base64 format (without password
+        protection)
+      name: public_key
+      required: true
+    description: Organizations that purchased the Security Logs Integration SKU can
+      download security events created for their account and archive or push those
+      events into their SIEM solution
+    name: incap-upload-public-key
+  - arguments:
+    - default: true
+      description: The Logs Collector configuration identifier
+      name: config_id
+      required: true
+    - description: The new configuration status of the Logs Collector. Values can
+        be ACTIVE or SUSPENDED
+      name: logs_config_new_status
+      required: true
+    description: Available only for Enterprise Plan customers that purchased the Security
+      Logs Integration SKU.  Use this operation to change the status of the Logs Collector
+      configuration
+    name: incap-change-logs-collector-configuration
+  - arguments:
+    - description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters.
+      name: account_id
+    - description: Specific Protected IP or IP range. For example, 1.1.1.0/24.
+      name: ip_prefix
+    - auto: PREDEFINED
+      description: 'Specific traffic. One of: Total, Passed, Blocked.'
+      name: traffic
+      predefined:
+      - Total
+      - Passed
+      - Blocked
+    - description: 'A comma separated list of specific traffic types. Any of: UDP,
+        TCP, DNS, DNS_RESPONSE, ICMP, SYN, FRAG, LARGE_SYN, NTP, NETFLOW, SSDP, GENERAL.
+        Cannot be used together with the pop parameter.'
+      name: traffic_type
+    - description: 'A comma separated list of specific PoP names. For example: iad,
+        tko. Cannot be used together with the traffic_type parameter. For the list
+        of PoP codes and locations, see https://docs.incapsula.com/Content/read-more/pops.htm'
+      name: pop
+    - description: The start date in milliseconds, since 1970. For a detailed description,
+        see https://docs.incapsula.com/Content/API/api.htm
+      name: start
+    - description: The end date in milliseconds, since 1970. For a detailed description,
+        see https://docs.incapsula.com/Content/API/api.htm
+      name: end
+    description: Use this operation to get Infrastructure Protection statistics for
+      an account or IP range.
+    name: incap-get-infra-protection-statistics
+  - arguments:
+    - description: Numeric identifier of the account to operate on. If not specified,
+        operation will be performed on the account identified by the authentication
+        parameters.
+      name: account_id
+    - description: 'A comma separated list of specific event types. Any of: GRE_TUNNEL_UP,
+        GRE_TUNNEL_DOWN, ORIGIN_CONNECTION_GRE_UP, ORIGIN_CONNECTION_GRE_DOWN, ORIGIN_CONNECTION_ECX_UP,
+        ORIGIN_CONNECTION_ECX_DOWN, ORIGIN_CONNECTION_CROSS_CONNECT_UP, ORIGIN_CONNECTION_CROSS_CONNECT_DOWN,
+        DDOS_START_IP_RANGE, DDOS_STOP_IP_RANGE, DDOS_QUIET_TIME_IP_RANGE, EXPORTER_NO_DATA,
+        EXPORTER_BAD_DATA, EXPORTER_GOOD_DATA, MONITORING_CRITICAL_ATTACK, PROTECTED_IP_STATUS_UP,
+        PROTECTED_IP_STATUS_DOWN, PER_IP_DDOS_START_IP_RANGE.'
+      name: event_type
+    - description: Specific Protected IP or IP range. For example, 1.1.1.0/24.
+      name: ip_prefix
+    - description: |-
+        The number of objects to return in the response.
+        Default: 50
+        Maximum: 100
+      name: page_size
+    - description: 'The page to return starting from 0. Default: 0'
+      name: page_num
+    - description: The start date in milliseconds, since 1970. For a detailed description,
+        see https://docs.incapsula.com/Content/API/api.htm
+      name: start
+    - description: The end date in milliseconds, since 1970. For a detailed description,
+        see https://docs.incapsula.com/Content/API/api.htm
+      name: end
+    description: Use this operation to get Infrastructure Protection event information
+      for an account.
+    name: incap-get-infra-protection-events
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on
+      name: account_id
+      required: true
+    - description: 'E-mail address, for example: "joe@example.com"'
+      name: email
+      required: true
+    - description: 'Example: John Smith'
+      name: name
+    - description: 'Phone number, country code - number, for example: "1-8662507659"'
+      name: phone
+    - description: Whether or not to skip E-Mail address verificaion
+      name: is_email_verified
+    - description: Whether or not to skip phone address verificaion
+      name: is_phone_verified
+    - description: Whether or not to send activation E-Mail to user
+      name: should_send_activation_email
+    description: Use this operation to add Login Protect user for site
+    name: incap-add-login-protect
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on
+      name: account_id
+      required: true
+    - description: 'E-mail address, for example: "joe@example.com"'
+      name: email
+      required: true
+    - description: 'Example: John Smith'
+      name: name
+    - description: 'Phone number, country code - number, for example: "1-8662507659"'
+      name: phone
+    - description: Whether or not to skip E-Mail address verificaion
+      name: is_email_verified
+    - description: Whether or not to skip phone address verificaion
+      name: is_phone_verified
+    - description: Whether or not to send activation E-Mail to user
+      name: should_send_activation_email
+    description: Use this operation to edit Login Protect user's settings
+    name: incap-edit-login-protect
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on
+      name: account_id
+      required: true
+    description: Use this operation to get the account's login protect user list
+    name: incap-get-login-protect
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on
+      name: account_id
+      required: true
+    - description: 'E-mail address, for example: "joe@example.com"'
+      name: email
+      required: true
+    description: Use this operation to remove login protect user from account's user
+      list
+    name: incap-remove-login-protect
+  - arguments:
+    - default: true
+      description: Numeric identifier of the account to operate on
+      name: account_id
+      required: true
+    - description: 'E-mail address, for example: "joe@example.com"'
+      name: email
+    - description: Text that will be sent in SMS
+      name: sms_text
+    description: Use this operation to send SMS to login protect user
+    name: incap-send-sms-to-user
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: Pass true to enable login protect on site, and false to disable
+        it. Default is true
+      name: enabled
+    - description: Comma seperated E-Mail list to set login protect users for the
+        site, if the list is empty all users will be allowed to access the site using
+        Login Protect
+      name: specific_users_list
+    - description: Pass true to send notification on successful login using login
+        protect. Default is false
+      name: send_lp_notifications
+    - description: Pass true to allow all login protect users to access the site.
+        If you choose to allow only spesific list of users to access the site using
+        Login Protect set this to false, and add the list to specific_user_list. Default
+        value is true
+      name: allow_all_users
+    - description: Comma seperated list of allowed authentication methods sms | email
+        | ga
+      name: authentication_methods
+    - description: A comma separated list of resource paths. For example, /home and
+        /admin/index.html are resource paths, however http://www.example.com/home
+        is not. Each URL should be encoded separately using percent encoding as specified
+        by RFC 3986 (http://tools.ietf.org/html/rfc3986#section-2.1). An empty URL
+        list will remove all URLs
+      name: urls
+    - description: 'A comma seperated list of url patterns, one of: contains | equals
+        | prefix | suffix | not_equals | not_contain | not_prefix | not_suffix. The
+        patterns should be in accordance with the matching urls sent by the urls parameter'
+      name: url_patterns
+    description: Use this operation to change Login Protect settings for site
+    name: incap-modify-login-protect
+  - arguments:
+    - default: true
+      description: Numeric identifier of the site to operate on
+      name: site_id
+      required: true
+    - description: Protect admin areas of joomla | wordpress | phpBB
+      name: protected_app
+    description: Use this operation to configure Login Protect on wordpress | joomla
+      | phpbb admin areas
+    name: incap-configure-app
+  - arguments: []
+    description: Use this operation to get the updated list of Incapsula IP ranges
+    name: incap-get-ip-ranges
+  - arguments: []
+    description: Use this operation to retrieve a list of all text messages that may
+      be part of API responses
+    name: incap-get-texts
+  - arguments: []
+    description: Use this operation to retrieve a list of all the countries and continents
+      codes
+    name: incap-get-geo-info
+  - arguments: []
+    description: Use this operation to retrieve a list of all the client applications
+    name: incap-get-app-info
+  runonce: false
+  script: |-
+    var apiid = params.apiid;
+    var apikey = params.apikey;
+    var base = 'https://my.incapsula.com';
+    var proxy = params.proxy;
+
+    var sendRequest = function(url, body, queryName) {
+        var res = http(
+                url,
+                {
+                    Method: 'POST',
+                    Body: body,
+                    Headers: {'content-type': ['application/x-www-form-urlencoded']},
+                },
+                true,
+                proxy
+            );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        var response = JSON.parse(res.Body);
+
+        if (parseInt(response.res)) {
+            throw 'Got error response from incapsula for ' + queryName + '\nerror code: ' + response.res +'\nmessage: ' + response['res_message'] + '\ndebug info: ' + JSON.stringify(response['debug_info']);
+        }
+        return response;
+    }
+
+    var urlDict = {
+        /*
+            Account Management
+         */
+        'incap-add-managed-account': '/api/prov/v1/accounts/add',
+        'incap-list-managed-accounts': '/api/prov/v1/accounts/list',
+        'incap-add-subaccount': '/api/prov/v1/subaccounts/add',
+        'incap-list-subaccounts': '/api/prov/v1/accounts/listSubAccounts',
+        'incap-get-account-status': '/api/prov/v1/account',
+        'incap-modify-account-configuration': '/api/prov/v1/accounts/configure',
+        'incap-set-account-log-level': '/api/prov/v1/accounts/setlog',
+        'incap-test-account-s3-connection': '/api/prov/v1/accounts/testS3Connection',
+        'incap-test-account-sftp-connection': '/api/prov/v1/accounts/testSftpConnection',
+        'incap-set-account-s3-log-storage': '/api/prov/v1/accounts/setAmazonSiemStorage',
+        'incap-set-account-sftp-log-storage': '/api/prov/v1/accounts/setSftpSiemStorage',
+        'incap-set-account-default-log-storage': '/api/prov/v1/accounts/setDefaultSiemStorage',
+        'incap-get-account-login-token': '/api/prov/v1/accounts/gettoken',
+        'incap-delete-managed-account': '/api/prov/v1/accounts/delete',
+        'incap-delete-subaccount': '/api/prov/v1/subaccounts/delete',
+        'incap-get-account-audit-events': '/api/prov/v1/accounts/audit',
+        'incap-set-account-default-data-storage-region': '/api/prov/v1/accounts/data-privacy/set-region-default',
+        'incap-get-account-default-data-storage-region': '/api/prov/v1/accounts/data-privacy/show',
+        /*
+            Site Management - Site Configuration
+         */
+        'incap-add-site':'/api/prov/v1/sites/add',
+        'incap-get-site-status': '/api/prov/v1/sites/status',
+        'incap-get-domain-approver-email':'/api/prov/v1/domain/emails',
+        'incap-modify-site-configuration':'/api/prov/v1/sites/configure',
+        'incap-modify-site-log-level':'/api/prov/v1/sites/setlog',
+        'incap-modify-site-tls-support': '/api/prov/v1/sites/tls',
+        'incap-modify-site-scurity-config':'/api/prov/v1/sites/configure/security',
+        'incap-modify-site-acl-config':'/api/prov/v1/sites/configure/acl',
+        'incap-modify-site-wl-config':'/api/prov/v1/sites/configure/whitelists',
+        'incap-delete-site':'/api/prov/v1/sites/delete',
+        'incap-list-sites':'/api/prov/v1/sites/list',
+        'incap-get-site-report':'/api/prov/v1/sites/report',
+        'incap-get-site-html-injection-rules': '/api/prov/v1/sites/htmlinjections',
+        'incap-add-site-html-injection-rule': '/api/prov/v1/sites/configure/htmlInjections',
+        'incap-delete-site-html-injection-rule': '/api/prov/v1/sites/configure/htmlInjections',
+        'incap-create-new-csr': '/api/prov/v1/sites/customCertificate/csr',
+        'incap-upload-certificate':'/api/prov/v1/sites/customCertificate/upload',
+        'incap-remove-custom-integration':'/api/prov/v1/sites/customCertificate/remove',
+        'incap-move-site': '/api/prov/v1/sites/moveSite',
+        'incap-check-compliance': '/api/prov/v1/caa/check-compliance',
+        'incap-set-site-data-storage-region': '/api/prov/v1/sites/data-privacy/region-change',
+        'incap-get-site-data-storage-region': '/api/prov/v1/sites/data-privacy/show',
+        'incap-set-site-data-storage-region-geo-override': '/api/prov/v1/sites/data-privacy/override-by-geo',
+        'incap-get-site-data-storage-region-geo-override': '/api/prov/v1/sites/data-privacy/show-override-by-geo',
+        /*
+            Site Management - Caching
+        */
+        'incap-purge-site-cache':'/api/prov/v1/sites/cache/purge',
+        'incap-modify-cache-mode':'/api/prov/v1/sites/performance/cache-mode',
+        'incap-purge-resources':'/api/prov/v1/sites/performance/purge',
+        'incap-modify-caching-rules':'/api/prov/v1/sites/performance/caching-rules',
+        'incap-set-advanced-caching-settings':'/api/prov/v1/sites/performance/advanced',
+        'incap-purge-hostname-from-cache':'/api/prov/v1/sites/hostname/purge',
+        'incap-site-get-xray-link': '/api/prov/v1/sites/xray/get-link',
+        /*
+            Site Management - Rules
+         */
+        'incap-list-site-rule-revisions': '/api/prov/v1/sites/incapRules/revisions',
+        'incap-add-site-rule': '/api/prov/v1/sites/incapRules/add',
+        'incap-edit-site-rule': '/api/prov/v1/sites/incapRules/edit',
+        'incap-enable-site-rule': '/api/prov/v1/sites/incapRules/enableDisable',
+        'incap-delete-site-rule': '/api/prov/v1/sites/incapRules/delete',
+        'incap-list-site-rules': '/api/prov/v1/sites/incapRules/list',
+        'incap-revert-site-rule': '/api/prov/v1/sites/incapRules/revert',
+        'incap-set-site-rule-priority': '/api/prov/v1/sites/incapRules/priority/set',
+        /*
+            Site Management - Data Centers
+         */
+        'incap-add-site-datacenter':'/api/prov/v1/sites/dataCenters/add',
+        'incap-edit-site-datacenter':'/api/prov/v1/sites/dataCenters/edit',
+        'incap-delete-site-datacenter':'/api/prov/v1/sites/dataCenters/delete',
+        'incap-list-site-datacenters':'/api/prov/v1/sites/dataCenters/list',
+        'incap-add-site-datacenter-server':'/api/prov/v1/sites/dataCenters/servers/add',
+        'incap-edit-site-datacenter-server':'/api/prov/v1/sites/dataCenters/servers/edit',
+        'incap-delete-site-datacenter-server':'/api/prov/v1/sites/dataCenters/servers/delete',
+        /*
+            Traffic Statistics and Details
+         */
+        'incap-get-statistics':'/api/stats/v1',
+        'incap-get-visits':'/api/visits/v1',
+        'incap-upload-public-key': '/api/logscollector/upload/publickey',
+        'incap-change-logs-collector-configuration':'/api/logscollector/change/status',
+        'incap-get-infra-protection-statistics': '/api/v1/infra/stats',
+        'incap-get-infra-protection-events': '/api/v1/infra/events',
+        /*
+            Login Protect
+         */
+        'incap-add-login-protect':'/api/prov/v1/sites/lp/add-user',
+        'incap-edit-login-protect':'/api/prov/v1/sites/lp/edit-user',
+        'incap-get-login-protect':'/api/prov/v1/sites/lp/users',
+        'incap-remove-login-protect':'/api/prov/v1/sites/lp/remove',
+        'incap-send-sms-to-user':'/api/prov/v1/sites/lp/send-sms',
+        'incap-modify-login-protect':'/api/prov/v1/sites/lp/configure',
+        'incap-configure-app':'/api/prov/v1/sites/lp/configure-app',
+        /*
+            Integration
+         */
+        'incap-get-ip-ranges': '/api/integration/v1/ips',
+        'incap-get-texts':'/api/integration/v1/texts',
+        'incap-get-geo-info':'/api/integration/v1/geo',
+        'incap-get-app-info':'/api/integration/v1/clapps',
+        /*
+            Infrastructure Protection Test Alerts
+         */
+        'incap-test-alert-ddos-start': '/api/v1/infra-protect/test-alerts/ddos/start',
+        'incap-test-alert-ddos-stop': '/api/v1/infra-protect/test-alerts/ddos/stop',
+        'incap-test-alert-connection-up': '/api/v1/infra-protect/test-alerts/connection/up',
+        'incap-test-alert-connection-down': '/api/v1/infra-protect/test-alerts/connection/down',
+        'incap-test-alert-ip-protection-status-up': '/api/v1/infra-protect/test-alerts/ip-protection-status/up',
+        'incap-test-alert-ip-protection-status-down': '/api/v1/infra-protect/test-alerts/ip-protection-status/down',
+        'incap-test-alert-netflow-monitoring-start': '/api/v1/infra-protect/test-alerts/monitoring/start',
+        'incap-test-alert-netflow-monitoring-stop': '/api/v1/infra-protect/test-alerts/monitoring/stop',
+        'incap-test-alert-bad-data-monitoring': '/api/v1/infra-protect/test-alerts/monitoring/bad-data',
+        'incap-test-alert-attack-monitoring-start': '/api/v1/infra-protect/test-alerts/monitoring/attack-start'
+    }
+
+    args['api_id'] = apiid;
+    args['api_key'] = apikey;
+    switch (command) {
+        case 'test-module':
+            var res = sendRequest(base + urlDict['incap-get-texts'], encodeToURLQuery(args).substr(1), 'test');
+            if (res) {
+                return 'ok';
+            }
+            return 'not cool';
+        default:
+            return sendRequest(base + urlDict[command], encodeToURLQuery(args).substr(1), urlDict[command]);
+    }
+  type: javascript
+system: true

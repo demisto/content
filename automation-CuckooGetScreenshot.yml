@@ -1,0 +1,23 @@
+args:
+- default: true
+  description: ID of the task that generated the screenshot
+  name: id
+  required: true
+- description: (optional) - numerical identifier of a single screenshot (e.g. 0001,
+    0002)
+  name: screenshot
+comment: Detonate the file in Cuckoo sandbox.
+commonfields:
+  id: CuckooGetScreenshot
+  version: -1
+dependson:
+  must:
+  - cuckoo-task-screenshot
+name: CuckooGetScreenshot
+runonce: false
+script: demisto.results(demisto.executeCommand("cuckoo-task-screenshot", demisto.args()))
+scripttarget: 0
+system: true
+tags:
+- cuckoo
+type: python

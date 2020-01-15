@@ -1,0 +1,66 @@
+{
+	"contextPath": "",
+	"contextValue": "",
+	"defaultMapping": {
+		"path": {
+			"complex": {
+				"accessor": "Path",
+				"filters": [],
+				"root": "RegistryKey",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"registrykeyname": {
+			"complex": {
+				"accessor": "Name",
+				"filters": [],
+				"root": "RegistryKey",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"registryvalue": {
+			"complex": {
+				"accessor": "Value",
+				"filters": [],
+				"root": "RegistryKey",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		}
+	},
+	"details": "Registry Key",
+	"disabled": false,
+	"enhancementScriptNames": [],
+	"excludedBrands": [],
+	"file": false,
+	"fileHashesPriority": null,
+	"formatScript": "",
+	"id": "registryKey",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "",
+	"reputationCommand": "",
+	"reputationScriptName": "",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

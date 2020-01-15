@@ -1,0 +1,25 @@
+{
+	"contextPath": "CVE(val.ID \u0026\u0026 val.ID === obj.ID)",
+	"contextValue": "ID",
+	"defaultMapping": null,
+	"details": "CVE CVSS Score",
+	"disabled": false,
+	"enhancementScriptNames": [
+		"cveSearch"
+	],
+	"excludedBrands": null,
+	"file": false,
+	"fileHashesPriority": null,
+	"formatScript": "",
+	"id": "cveScore",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "CVE-\\d{4}-\\d{4,7}",
+	"reputationCommand": "",
+	"reputationScriptName": "cveReputation",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

@@ -1,0 +1,293 @@
+description: |-
+  Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
+
+  Input:
+  * Hash (default, takes all deferent hashes from context)
+
+  Output:
+  * All agents that files with "Hash" has been executed on (TIE)
+  * Enrich Agents info from ePO
+id: TIE - IOC Hunt
+inputs:
+- description: |-
+    The Hash to hunt (Could be MD5,SHA1,SHA256).
+    Default is set to all hashes
+  key: Hash
+  required: false
+  value:
+    simple: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a,
+      b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
+name: TIE - IOC Hunt
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: b79d975a-a6dc-4a66-8515-c8f4177b0a40
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: b79d975a-a6dc-4a66-8515-c8f4177b0a40
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    note: false
+    scriptarguments:
+      left: {}
+      right: {}
+      value:
+        simple: ${modules(val.brand=="McAfee Threat Intelligence Exchange")}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1bf80041-9e03-4daf-861c-a709df537687
+      iscommand: false
+      name: Is TIE enabled?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 1bf80041-9e03-4daf-861c-a709df537687
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    note: false
+    scriptarguments:
+      left: {}
+      right: {}
+      value:
+        simple: ${modules(val.brand=="epo")}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 992f05a8-3c0e-43bc-8f68-b40d2a9542e9
+      iscommand: false
+      name: Is ePO enabled?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 992f05a8-3c0e-43bc-8f68-b40d2a9542e9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1080
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    scriptarguments:
+      file:
+        simple: ${inputs.Hash}
+    separatecontext: false
+    task:
+      brand: McAfee Threat Intelligence Exchange
+      id: c906e63c-45c5-4540-8f42-b74db1943725
+      iscommand: true
+      name: List all agents that the Hash has been executed on
+      script: McAfee Threat Intelligence Exchange|||tie-file-references
+      type: regular
+      version: -1
+    taskid: c906e63c-45c5-4540-8f42-b74db1943725
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 519
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: c283821d-46ac-4b77-8728-9bc136f0c729
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: c283821d-46ac-4b77-8728-9bc136f0c729
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 135,
+          "y": 1492
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "8"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${File.References.AgentGuid}
+    separatecontext: false
+    task:
+      brand: ""
+      id: adfc3709-ca91-4ac0-8c2b-179c44d30403
+      iscommand: false
+      name: Did we find any relevant agents?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: adfc3709-ca91-4ac0-8c2b-179c44d30403
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 703
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    scriptarguments:
+      searchText:
+        simple: ${File.References.AgentGuid}
+      taskID: {}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6b8b1d0c-fae5-4779-83a2-9b0e5edbd983
+      iscommand: false
+      name: Get Agent info from ePO
+      scriptName: EPOFindSystem
+      type: regular
+      version: -1
+    taskid: 6b8b1d0c-fae5-4779-83a2-9b0e5edbd983
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1326
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: a08baee9-a402-4bc8-8cae-77c4c144d889
+      iscommand: false
+      name: Hunt HASH in TIE
+      type: title
+      version: -1
+    taskid: a08baee9-a402-4bc8-8cae-77c4c144d889
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1df1aefe-fce4-4fb8-80e0-3fbef311f772
+      iscommand: false
+      name: Enrich in ePO
+      type: title
+      version: -1
+    taskid: 1df1aefe-fce4-4fb8-80e0-3fbef311f772
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 956
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_4_#default#": 0.1,
+      "2_4_#default#": 0.17,
+      "5_4_#default#": 0.11
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1507,
+        "width": 675,
+        "x": 135,
+        "y": 50
+      }
+    }
+  }

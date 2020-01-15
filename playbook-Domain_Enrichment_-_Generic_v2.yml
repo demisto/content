@@ -1,0 +1,316 @@
+description: |-
+  Enrich domains using one or more integrations.
+  Domain enrichment includes:
+  * Threat information
+id: Domain Enrichment - Generic v2
+inputs:
+- description: The domain name to enrich.
+  key: Domain
+  required: false
+  value:
+    complex:
+      accessor: Name
+      root: Domain
+      transformers:
+      - operator: uniq
+name: Domain Enrichment - Generic v2
+outputs:
+- contextPath: Domain
+  description: The domain objects.
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, and Vendor.
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 3f6b8522-c653-4608-800d-f7da232392fb
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 3f6b8522-c653-4608-800d-f7da232392fb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 41
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Domain
+          operator: isExists
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "26"
+      - "30"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether the playbook's input contains at least one domain
+        name to enrich.
+      id: b0ff1fa7-e741-4cb0-8fb6-98929d4d6e7d
+      iscommand: false
+      name: Is there a domain to enrich?
+      type: condition
+      version: -1
+    taskid: b0ff1fa7-e741-4cb0-8fb6-98929d4d6e7d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 171
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f6da103d-6baa-4afb-8b7d-65740714dcf2
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: f6da103d-6baa-4afb-8b7d-65740714dcf2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 765
+        }
+      }
+  "26":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VirusTotal - Private API
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of the Virus Total Private
+        API integration enabled. enabled.
+      id: 3ab86896-10aa-45be-83cf-7dcca9b6aa92
+      iscommand: false
+      name: Is VirusTotal Private API enabled?
+      type: condition
+      version: -1
+    taskid: 3ab86896-10aa-45be-83cf-7dcca9b6aa92
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 578.5,
+          "y": 365
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+      fullResponse: {}
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: VirusTotal - Private API
+      description: Gets a VirusTotal report for the specified domain.
+      id: a30a5504-f8f1-41cc-8dcb-bb0b2a940bc3
+      iscommand: true
+      name: Get VirusTotal report for domains
+      script: VirusTotal - Private API|||vt-private-get-domain-report
+      type: regular
+      version: -1
+    taskid: a30a5504-f8f1-41cc-8dcb-bb0b2a940bc3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 578.5,
+          "y": 580
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    task:
+      brand: ""
+      description: Gets the category of the domain as found in Cisco Umbrella Investigation
+        records.
+      id: 369e9301-a4f9-415f-8c45-902304453296
+      iscommand: true
+      name: Get domain category
+      script: '|||umbrella-domain-categorization'
+      type: regular
+      version: -1
+    taskid: 369e9301-a4f9-415f-8c45-902304453296
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 580
+        }
+      }
+  "30":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Cisco Umbrella Investigate
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "29"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of the Cisco Umbrella Investigate
+        integration enabled. enabled.
+      id: 29cca13b-1b82-4db3-8463-2a4f537546d0
+      iscommand: false
+      name: Is Cisco Umbrella Investigate enabled?
+      type: condition
+      version: -1
+    taskid: 29cca13b-1b82-4db3-8463-2a4f537546d0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 365
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_24_#default#": 0.18,
+      "26_24_#default#": 0.55,
+      "26_28_yes": 0.61,
+      "30_24_#default#": 0.57,
+      "30_29_yes": 0.58
+    },
+    "paper": {
+      "dimensions": {
+        "height": 789,
+        "width": 968.5,
+        "x": -10,
+        "y": 41
+      }
+    }
+  }

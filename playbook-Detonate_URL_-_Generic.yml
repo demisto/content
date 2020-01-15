@@ -1,0 +1,696 @@
+description: Detonate URL through active integrations that support URL detonation
+id: detonate_url_-_generic
+inputs:
+- description: URL object of url to be detonated.
+  key: URL
+  required: false
+  value:
+    complex:
+      root: URL
+name: Detonate URL - Generic
+outputs:
+- contextPath: File
+  description: The File's object
+  type: unknown
+- contextPath: File.Name
+  description: Filename
+  type: string
+- contextPath: File.Size
+  description: File size
+  type: number
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 of the file
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 of the file
+  type: string
+- contextPath: File.MD5
+  description: MD5 of the file
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: Joe.Analysis.WebID
+  description: Web ID
+  type: string
+- contextPath: Joe.Analysis.Status
+  description: Analysis Status
+  type: string
+- contextPath: Joe.Analysis.Comments
+  description: Analysis Comments
+  type: string
+- contextPath: Joe.Analysis.Time
+  description: Submitted Time
+  type: date
+- contextPath: Joe.Analysis.Runs
+  description: Sub-Analysis Information
+  type: unknown
+- contextPath: Joe.Analysis.Result
+  description: Analysis Results
+  type: string
+- contextPath: Joe.Analysis.Errors
+  description: Raised errors during sampling
+  type: unknown
+- contextPath: Joe.Analysis.Systems
+  description: Analysis OS
+  type: unknown
+- contextPath: Joe.Analysis.MD5
+  description: MD5 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SHA1
+  description: SHA1 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SHA256
+  description: SHA256 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SampleName
+  description: Sample Data, could be a file name or URL
+  type: string
+- contextPath: InfoFile.Name
+  description: FileName
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the sample
+  type: string
+- contextPath: InfoFile.Size
+  description: File Size
+  type: number
+- contextPath: InfoFile.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: InfoFile.Info
+  description: Basic information of the file
+  type: string
+- contextPath: Sample.State
+  description: The sample state
+  type: string
+- contextPath: Sample.ID
+  description: The sample ID
+  type: string
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: InfoFile
+  description: The report file's object
+  type: unknown
+- contextPath: Cuckoo.Task.Category
+  description: Category of task
+- contextPath: Cuckoo.Task.Machine
+  description: Machine of task
+- contextPath: Cuckoo.Task.Errors
+  description: Errors of task
+- contextPath: Cuckoo.Task.Target
+  description: Target of task
+- contextPath: Cuckoo.Task.Package
+  description: Package of task
+- contextPath: Cuckoo.Task.SampleID
+  description: Sample ID of task
+- contextPath: Cuckoo.Task.Guest
+  description: Task guest
+- contextPath: Cuckoo.Task.Custom
+  description: Custom values of task
+- contextPath: Cuckoo.Task.Owner
+  description: Task owner
+- contextPath: Cuckoo.Task.Priority
+  description: Priority of task
+- contextPath: Cuckoo.Task.Platform
+  description: Platform of task
+- contextPath: Cuckoo.Task.Options
+  description: Task options
+- contextPath: Cuckoo.Task.Status
+  description: Task status
+- contextPath: Cuckoo.Task.EnforceTimeout
+  description: Is timeout of task enforced
+- contextPath: Cuckoo.Task.Timeout
+  description: Task timeout
+- contextPath: Cuckoo.Task.Memory
+  description: Task memory
+- contextPath: Cuckoo.Task.Tags
+  description: Task tags
+- contextPath: Cuckoo.Task.ID
+  description: ID of task
+- contextPath: Cuckoo.Task.AddedOn
+  description: Date on which the task was added
+- contextPath: Cuckoo.Task.CompletedOn
+  description: Date on which the task was completed
+- contextPath: Cuckoo.Task.Score
+  description: Reported score of the the task
+- contextPath: Cuckoo.Task.Monitor
+  description: Monitor of the reported task
+- contextPath: ANYRUN.Task.AnalysisDate
+  description: Date and time the analysis was executed.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.Category
+  description: Category of a process behavior.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.Action
+  description: Actions performed by a process.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.ThreatLevel
+  description: Threat score associated with a process behavior.
+  type: Number
+- contextPath: ANYRUN.Task.Behavior.ProcessUUID
+  description: Unique ID of the process whose behaviors are being profiled.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Reputation
+  description: Connection reputation.
+  type: String
+- contextPath: ANYRUN.Task.Connection.ProcessUUID
+  description: ID of the process that created the connection.
+  type: String
+- contextPath: ANYRUN.Task.Connection.ASN
+  description: Connection autonomous system network.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Country
+  description: Connection country.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Protocol
+  description: Connection protocol.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Port
+  description: Connection port number.
+  type: Number
+- contextPath: ANYRUN.Task.Connection.IP
+  description: Connection IP number.
+  type: String
+- contextPath: ANYRUN.Task.DnsRequest.Reputation
+  description: Reputation of the DNS request.
+  type: String
+- contextPath: ANYRUN.Task.DnsRequest.IP
+  description: IP addresses associated with a DNS request.
+  type: Unknown
+- contextPath: ANYRUN.Task.DnsRequest.Domain
+  description: Domain resolution of a DNS request.
+  type: String
+- contextPath: ANYRUN.Task.Threat.ProcessUUID
+  description: Unique process ID from where the threat originated.
+  type: String
+- contextPath: ANYRUN.Task.Threat.Msg
+  description: Threat message.
+  type: String
+- contextPath: ANYRUN.Task.Threat.Class
+  description: Class of the threat.
+  type: String
+- contextPath: ANYRUN.Task.Threat.SrcPort
+  description: Port on which the threat originated.
+  type: Number
+- contextPath: ANYRUN.Task.Threat.DstPort
+  description: Destination port of the threat.
+  type: Number
+- contextPath: ANYRUN.Task.Threat.SrcIP
+  description: Source IP address where the threat originated.
+  type: String
+- contextPath: ANYRUN.Task.Threat.DstIP
+  description: Destination IP address of the threat.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Reputation
+  description: Reputation of the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Country
+  description: HTTP request country.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.ProcessUUID
+  description: ID of the process making the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Body
+  description: HTTP request body parameters and details.
+  type: Unknown
+- contextPath: ANYRUN.Task.HttpRequest.HttpCode
+  description: HTTP request response code.
+  type: Number
+- contextPath: ANYRUN.Task.HttpRequest.Status
+  description: Status of the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.ProxyDetected
+  description: Whether the HTTP request was made through a proxy.
+  type: Boolean
+- contextPath: ANYRUN.Task.HttpRequest.Port
+  description: HTTP request port.
+  type: Number
+- contextPath: ANYRUN.Task.HttpRequest.IP
+  description: HTTP request IP address.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.URL
+  description: HTTP request URL.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Host
+  description: HTTP request host.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Method
+  description: HTTP request method type.
+  type: String
+- contextPath: ANYRUN.Task.FileInfo
+  description: Details of the submitted file.
+  type: String
+- contextPath: ANYRUN.Task.OS
+  description: OS of the sandbox in which the file was analyzed.
+  type: String
+- contextPath: ANYRUN.Task.ID
+  description: The unique ID of the task.
+  type: String
+- contextPath: ANYRUN.Task.MIME
+  description: The MIME of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.Verdict
+  description: ANY.RUN verdict for the maliciousness of the submitted file or URL.
+  type: String
+- contextPath: ANYRUN.Task.Process.FileName
+  description: File name of the process.
+  type: String
+- contextPath: ANYRUN.Task.Process.PID
+  description: Process identification number.
+  type: Number
+- contextPath: ANYRUN.Task.Process.PPID
+  description: Parent process identification number.
+  type: Number
+- contextPath: ANYRUN.Task.Process.ProcessUUID
+  description: Unique process ID (used by ANY.RUN).
+  type: String
+- contextPath: ANYRUN.Task.Process.CMD
+  description: Process command.
+  type: String
+- contextPath: ANYRUN.Task.Process.Path
+  description: Path of the executed command.
+  type: String
+- contextPath: ANYRUN.Task.Process.User
+  description: User who executed the command.
+  type: String
+- contextPath: ANYRUN.Task.Process.IntegrityLevel
+  description: The process integrity level.
+  type: String
+- contextPath: ANYRUN.Task.Process.ExitCode
+  description: Process exit code.
+  type: Number
+- contextPath: ANYRUN.Task.Process.MainProcess
+  description: Whether the process is the main process.
+  type: Boolean
+- contextPath: ANYRUN.Task.Process.Version.Company
+  description: Company responsible for the program executed.
+  type: String
+- contextPath: ANYRUN.Task.Process.Version.Description
+  description: Description of the type of program.
+  type: String
+- contextPath: ANYRUN.Task.Process.Version.Version
+  description: Version of the program executed.
+  type: String
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: String
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: Number
+- contextPath: DBotScore.Type
+  description: Type of indicator.
+  type: String
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: String
+- contextPath: URL.Data
+  description: URL data.
+  type: String
+- contextPath: URL.Malicious.Vendor
+  description: For malicious URLs, the vendor that made the decision.
+  type: String
+- contextPath: URL.Malicious.Description
+  description: For malicious URLs, the reason for the vendor to make the decision.
+  type: String
+- contextPath: ANYRUN.Task.Status
+  description: Task analysis status.
+  type: String
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+      - "13"
+      - "12"
+      - "14"
+      - "15"
+      - "16"
+      - "17"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Playbook start point
+      id: 32fe7da3-a280-49c6-83d4-6cb1fb474458
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 32fe7da3-a280-49c6-83d4-6cb1fb474458
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Done
+      id: 40c6a1c6-dce9-4a0b-87b8-fec50f7933ae
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 40c6a1c6-dce9-4a0b-87b8-fec50f7933ae
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      FileName:
+        simple: file-detonated-via-demisto
+      Interval:
+        simple: "1"
+      OS: {}
+      OSVersion: {}
+      Private: {}
+      Source: {}
+      Tags: {}
+      Timeout:
+        simple: "15"
+      URL:
+        complex:
+          accessor: Data
+          root: inputs.URL
+      VM: {}
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonate one or more URLs using the Threat Grid integration. This
+        playbook returns relevant reports to the War Room and URL reputations to the
+        context data.
+      id: 7902e341-c29c-4037-8e6a-6c2289d3806e
+      iscommand: false
+      name: Detonate URL - ThreatGrid
+      playbookName: Detonate URL - ThreatGrid
+      type: playbook
+      version: -1
+    taskid: 7902e341-c29c-4037-8e6a-6c2289d3806e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      URL:
+        complex:
+          accessor: Data
+          root: inputs.URL
+      interval:
+        simple: "1"
+      timeout:
+        simple: "15"
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonates a URL using the McAfee Advanced Threat Defense sandbox
+        integration.
+      id: 7119396c-ac89-473c-82fa-c634c25788d6
+      iscommand: false
+      name: Detonate URL - McAfee ATD
+      playbookName: Detonate URL - McAfee ATD
+      type: playbook
+      version: -1
+    taskid: 7119396c-ac89-473c-82fa-c634c25788d6
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      URL:
+        complex:
+          accessor: Data
+          root: inputs.URL
+      comments: {}
+      internet-access:
+        simple: "True"
+      interval:
+        simple: "1"
+      report-file-type:
+        simple: html
+      systems: {}
+      timeout:
+        simple: "15"
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Detonates one or more URLs using the Joe Security sandbox integration.
+        Returns relevant reports to the War Room and url reputations to the context data.
+      id: 7a53b305-64ef-47c4-85f7-8ff702cb4209
+      iscommand: false
+      name: Detonate URL - JoeSecurity
+      playbookName: Detonate URL - JoeSecurity
+      type: playbook
+      version: -1
+    taskid: 7a53b305-64ef-47c4-85f7-8ff702cb4209
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      EnvironmentID:
+        simple: "100"
+      Interval:
+        simple: "5"
+      Timeout:
+        simple: "30"
+      URL:
+        complex:
+          accessor: Data
+          root: inputs.URL
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonate one or more files using the Wildfire integration. This
+        playbook returns relevant reports to the War Room and file reputations to
+        the context data.
+      id: 2555400f-2fd3-4bdc-82e4-3e5be8948952
+      iscommand: false
+      name: Detonate URL - CrowdStrike
+      playbookName: Detonate URL - CrowdStrike
+      type: playbook
+      version: -1
+    taskid: 2555400f-2fd3-4bdc-82e4-3e5be8948952
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+      URL:
+        complex:
+          accessor: Data
+          root: inputs.URL
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonates a URL using the Lastline sandbox integration.
+      id: 4e47aa4e-bef0-4566-8aae-b249bdf06ce0
+      iscommand: false
+      name: Detonate URL - Lastline
+      playbookName: Detonate URL - Lastline
+      type: playbook
+      version: -1
+    taskid: 4e47aa4e-bef0-4566-8aae-b249bdf06ce0
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      URL:
+        complex:
+          accessor: Data
+          root: inputs.URL
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonates a file using Cuckoo sandbox
+      id: 317e29bb-856f-4081-8fdd-f4a189d01c90
+      iscommand: false
+      name: Detonate URL - Cuckoo
+      playbookName: Detonate URL - Cuckoo
+      type: playbook
+      version: -1
+    taskid: 317e29bb-856f-4081-8fdd-f4a189d01c90
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 195
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonates a URL using ANYRUN sandbox
+      id: a2cbc7cf-2d9e-4eda-87e9-909b88265839
+      iscommand: false
+      name: Detonate URL - ANYRUN
+      playbookName: Detonate URL - ANYRUN
+      type: playbook
+      version: -1
+    taskid: a2cbc7cf-2d9e-4eda-87e9-909b88265839
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 2960,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

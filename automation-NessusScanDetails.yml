@@ -1,0 +1,45 @@
+args:
+- default: true
+  description: The Scan ID as it appears in Scan List (e.g. 6)
+  name: scanId
+  required: true
+- description: Section to show. Default is "info". Available sections are "comphosts",
+    "compliance",     "filters", "history", "hosts", "info", "notes", "remediations",
+    "vulnerabilities"
+  name: section
+comment: Show information about the specified scan.
+commonfields:
+  id: NessusScanDetails
+  version: -1
+dependson:
+  must:
+  - Nessus|||scan-details
+deprecated: true
+name: NessusScanDetails
+runonce: false
+script: |
+  from time import ctime
+  res = []
+  dArgs = demisto.args()
+  section = demisto.get(dArgs, 'section') if 'section' in dArgs else 'info'
+  resCmd = demisto.executeCommand("scan-details", dArgs)
+  try:
+      for entry in resCmd:
+          if isError(entry):
+              res = resCmd
+              break
+          else:
+              info = demisto.get(entry, 'Contents.'+section)
+              if isinstance(info, dict):
+                  info = [info]
+              info = [{k: formatCell(row[k]) for k in row} for row in info]
+              res.append({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': info})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- nessus
+type: python

@@ -1,0 +1,159 @@
+description: Deprecated- We recommend using Default playbook instead. Enrich data
+  with reputation from the incident. Data is extracted to the standard locations like
+  File, URL, IP.
+id: Incident Enrichment
+inputs: []
+name: Incident Enrichment
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 37175990-2deb-4a44-8cdf-468f12cc97e3
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 37175990-2deb-4a44-8cdf-468f12cc97e3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    scriptarguments:
+      text:
+        simple: ${incident}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 285982a4-a0f0-44b9-8730-79b07de3cb70
+      iscommand: false
+      name: Collect hashes from the incident
+      scriptName: ExtractHash
+      type: regular
+      version: -1
+    taskid: 285982a4-a0f0-44b9-8730-79b07de3cb70
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    scriptarguments:
+      text:
+        simple: ${incident}
+    separatecontext: false
+    task:
+      brand: ""
+      id: de780391-3d5e-452d-8da0-53075cc3770d
+      iscommand: false
+      name: Collect IPs from the incident
+      scriptName: ExtractIP
+      type: regular
+      version: -1
+    taskid: de780391-3d5e-452d-8da0-53075cc3770d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    scriptarguments:
+      text:
+        simple: ${incident}
+    separatecontext: false
+    task:
+      brand: ""
+      id: cccb4d19-7cc7-46ee-85bd-4283b03ba932
+      iscommand: false
+      name: Collect URLs from the incident
+      scriptName: ExtractURL
+      type: regular
+      version: -1
+    taskid: cccb4d19-7cc7-46ee-85bd-4283b03ba932
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: cb6e468c-f551-41d4-82c5-25891ed171d7
+      iscommand: false
+      name: ""
+      playbookName: Enrichment Playbook
+      type: playbook
+      version: -1
+    taskid: cb6e468c-f551-41d4-82c5-25891ed171d7
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

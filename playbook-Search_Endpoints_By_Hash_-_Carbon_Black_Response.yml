@@ -1,0 +1,307 @@
+description: Hunt for malicious indicators using Carbon Black
+id: search_endpoints_by_hash_-_carbon_black_response
+inputs:
+- description: MD5 Hash
+  key: Hash
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+name: Search Endpoints By Hash - Carbon Black Response
+outputs:
+- contextPath: Endpoint.Hostname
+  description: The device hostname
+  type: string
+- contextPath: Endpoint
+  description: The endpoint
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Playbook start point
+      id: edc8b672-13e8-48fa-87c9-594118876ac4
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: edc8b672-13e8-48fa-87c9-594118876ac4
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    results:
+    - found_file_locations
+    scriptarguments:
+      md5:
+        complex:
+          accessor: Hash
+          root: inputs
+    separatecontext: false
+    task:
+      brand: ""
+      description: Search Carbon Black for the specified MD5 hash(es)
+      id: ad7dff09-2373-43ba-8a87-645fa98ca5cb
+      iscommand: false
+      name: Hunt MD5 Hash
+      scriptName: CBFindHash
+      type: regular
+      version: -1
+    taskid: ad7dff09-2373-43ba-8a87-645fa98ca5cb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 362,
+          "y": 632
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: carbonblack
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${modules(val.brand == 'carbonblack' && val.state == 'active')}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Is Carbon Black enabled?
+      id: 31e80780-a121-4f17-8c64-2880e9ea0a20
+      iscommand: false
+      name: Is Carbon Black enabled?
+      type: condition
+      version: -1
+    taskid: 31e80780-a121-4f17-8c64-2880e9ea0a20
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Done
+      id: 108ba97d-b9da-4162-808d-025b5f6b7986
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 108ba97d-b9da-4162-808d-025b5f6b7986
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Hash
+                root: inputs
+          operator: isExists
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    note: false
+    scriptarguments:
+      value:
+        complex:
+          accessor: Hash
+          root: inputs
+    separatecontext: false
+    task:
+      brand: ""
+      description: Do we have files to hunt?
+      id: 4dc64cf1-acb2-47b5-87c8-88e0e90e6c11
+      iscommand: false
+      name: Do we have files to hunt?
+      type: condition
+      version: -1
+    taskid: 4dc64cf1-acb2-47b5-87c8-88e0e90e6c11
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 356,
+          "y": 371
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: Endpoint.Hostname
+      value:
+        complex:
+          root: found_file_locations
+          transformers:
+          - args:
+              regex:
+                value:
+                  simple: '{".*": \[".*", "(.*)"]}'
+              replaceWith:
+                value:
+                  simple: $1
+            operator: replaceMatch
+    separatecontext: false
+    task:
+      brand: ""
+      description: Set hostname
+      id: 09e186f8-7d8d-4f32-84f8-5960a2e943af
+      iscommand: false
+      name: Set hostname
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 09e186f8-7d8d-4f32-84f8-5960a2e943af
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 362,
+          "y": 1045
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: found_file_locations
+          operator: isExists
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    note: false
+    scriptarguments:
+      left: {}
+      right: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify found file locations
+      id: a9c71d9b-8bec-42db-8c65-a4d047770eac
+      iscommand: false
+      name: Verify found file locations
+      type: condition
+      version: -1
+    taskid: a9c71d9b-8bec-42db-8c65-a4d047770eac
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 362,
+          "y": 790
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_#default#": 0.15,
+      "2_4_yes": 0.5,
+      "4_1_yes": 0.69,
+      "4_3_#default#": 0.32,
+      "6_3_#default#": 0.6,
+      "6_5_yes": 0.7
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1230,
+        "width": 692,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

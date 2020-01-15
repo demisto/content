@@ -1,0 +1,94 @@
+comment: "Getting all devices data from server, if a device haven't been accessed
+  to in over two months (and is still managed), the script will send the corresponding
+  user a warning mail.\nIf it's haven't been accessed to in over three months, the
+  script will revoke the device credentials and notify the user by mail  "
+commonfields:
+  id: ImpSfRevokeUnaccessedDevices
+  version: -1
+dependson:
+  must:
+  - ImpSfSetEndpointStatus
+  - ImpSfListEndpoints
+name: ImpSfRevokeUnaccessedDevices
+runonce: false
+script: |
+  import json
+  import time
+  import datetime
+
+  TWO_MONTH_MILLISECOND   = 5259492
+  THREE_MONTH_MILLISECOND = 7889238
+
+  SKYFENCE_WARNING = 'SkyFence Warning'
+  MAIL_TWO_MONTH = '''
+  Dear user,
+
+  Your account hasn't been activated in more than two months,
+  if you won't activate it soon, it'll be deactivated
+
+  --DBot
+  '''
+
+  MAIL_THREE_MONTH = '''
+  Dear user,
+
+  Your account hasn't been activated in more than three months,
+  it's now deactivated
+
+  please contect you support team
+
+  --DBot
+  '''
+  current_timestamp = time.time()
+  warned_users = []
+  revoked_users = []
+  error_users = []
+
+  res = []
+
+  #send a mail to user
+  def SendMail(to, subject, body,):
+      resp = demisto.executeCommand("SendEmail", {'to':to, 'subject':subject, 'body':body})
+
+      if isError(resp[0]):
+          demisto.results(resp)
+
+
+  resp = demisto.executeCommand("ImpSfListEndpoints", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+
+      for user in data:
+          timestamp = float(user['last_updated']) / 1000.0
+          account = json.loads(user['accounts'])[0]
+          endpoint_status = user['endpoint_status']
+          if endpoint_status == 'managed':
+              #check if over three month passed
+              if timestamp and ((current_timestamp - timestamp) - THREE_MONTH_MILLISECOND) > 0:
+                  resp = demisto.executeCommand("ImpSfSetEndpointStatus", {'endpointId':user['endpoint_id'], 'action':'revoke'})
+                  if isError(resp):
+                      error_users.append({"user_data":user,"user_error":resp})
+                  else:
+                      SendMail(account['account_id'], SKYFENCE_WARNING, MAIL_THREE_MONTH)
+                      revoked_users.append(user)
+              #check if over two month passed
+              elif timestamp and ((current_timestamp - timestamp) - TWO_MONTH_MILLISECOND) > 0:
+                  SendMail(account['account_id'], SKYFENCE_WARNING, MAIL_TWO_MONTH)
+                  warned_users.append(user)
+
+      markdownString = '# Results\n'
+      markdownString += tblToMd("Revoked Users", revoked_users)
+      markdownString += tblToMd("Warned Users", warned_users)
+      markdownString += tblToMd("Error Users", error_users)
+
+      res.append({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdownString})
+
+      demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- Imperva Skyfence
+type: python

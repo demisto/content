@@ -1,0 +1,1407 @@
+category: Case Management
+commonfields:
+  id: Cherwell
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: 'URL (example: https://my.domain.com)'
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ""
+  display: Client id
+  name: client_id
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: incident
+  display: 'CSV list of objects to fetch. The default is incident, for example: incident,problem,service)'
+  name: objects_to_fetch
+  required: false
+  type: 0
+- defaultvalue: "30"
+  display: Max results to fetch (defualt is 30)
+  name: max_results
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Advanced Query to fetch (see integration detailed instructions)
+  name: query_string
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Fetch attachments (include attachements in fetch process)
+  name: fetch_attachments
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Cloud-based IT service management solution
+detaileddescription: "Integration with Cherwell Service Management. You can create,
+  read update, and delete business objects, together with \nattachments and relations
+  operations. \n\nIn order to create, query, get, update, delete, and link business
+  objects, we recommend duplicating Cherwell example \nscripts and edit them using
+  the instructions within each script. \n\nTo use an advanced query when fetching
+  incidents, add your query in the advanced query parameter. \nThe  query should be
+  a CSV list of filters, such that each filter is of the form: \n`[\"FieldName\",\"Operator\",\"Value\"]`
+  and operator is one of: 'eq'=equal, 'gt'=grater-than, 'lt'=less-than, 'contains',
+  \n'startwith'. nSpecial characters should be escaped. Example: \n`[[\"CreatedDateTime\",\"gt\",\"4/10/2019
+  3:10:12 PM\"],[\"Priority\",\"eq\",\"1\"]]` \nNOTE: If received multiple filters
+  for the same field name, an 'OR' operation between the filters will be performed,
+  \nif the field names are different an 'AND' operation will be performed.\n"
+display: Cherwell
+image: data:image/png;base64,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
+name: Cherwell
+script:
+  commands:
+  - arguments:
+    - description: ' Business object type, for example: "Incident". '
+      name: type
+      required: true
+    - description: |-
+        Data JSON containing the relevant fields and their values, for example:
+        {"title": "some value"}).
+      name: json
+      required: true
+    description: Creates a business object.
+    name: cherwell-create-business-object
+    outputs:
+    - contextPath: Cherwell.BusinessObjects.RecordId
+      description: 'Business object record ID. '
+      type: String
+    - contextPath: Cherwell.BusinessObjects.PublicId
+      description: 'Business object public ID. '
+      type: String
+  - arguments:
+    - description: ' Business object type, for example: "Incident". '
+      name: type
+      required: true
+    - description: Data JSON containing the relevant fields and their values.
+      name: json
+      required: true
+    - description: Public ID or record ID.
+      name: id_value
+      required: true
+    - auto: PREDEFINED
+      description: Type of ID.
+      name: id_type
+      predefined:
+      - public_id
+      - record_id
+      required: true
+    description: Update a business object with the specified fields.
+    name: cherwell-update-business-object
+    outputs:
+    - contextPath: Cherwell.BusinessObjects.RecordId
+      description: 'Business object record ID. '
+      type: String
+    - contextPath: Cherwell.BusinessObjects.PublicId
+      description: 'Business object public ID. '
+      type: Unknown
+  - arguments:
+    - description: ' Business object type, for example: "Incident". '
+      name: type
+      required: true
+    - description: Public ID or record ID.
+      name: id_value
+      required: true
+    - auto: PREDEFINED
+      description: Type of ID.
+      name: id_type
+      predefined:
+      - public_id
+      - record_id
+      required: true
+    description: Deletes a given business object.
+    name: cherwell-delete-business-object
+  - arguments:
+    - description: ' Business object type, for example: "Incident". '
+      name: type
+      required: true
+    - description: Public ID or record ID.
+      name: id_value
+      required: true
+    - auto: PREDEFINED
+      description: Type of ID.
+      name: id_type
+      predefined:
+      - record_id
+      - public_id
+      required: true
+    description: Gets a business object by an ID.
+    name: cherwell-get-business-object
+  - arguments:
+    - description: ' Business object type, for example: "Incident". '
+      name: type
+      required: true
+    - auto: PREDEFINED
+      description: Type of ID.
+      name: id_type
+      predefined:
+      - public_id
+      - record_id
+      required: true
+    - description: Public ID or record ID.
+      name: id_value
+      required: true
+    description: Downloads imported attachements from a specified business object.
+    name: cherwell-download-attachments
+    outputs:
+    - contextPath: File
+      description: File result entries.
+      type: Unknown
+  - arguments:
+    - description: ' Business object type, for example: "Incident". '
+      name: type
+      required: true
+    - auto: PREDEFINED
+      description: Type of ID.
+      name: id_type
+      predefined:
+      - record_id
+      - public_id
+      required: true
+    - description: Public ID or record ID.
+      name: id_value
+      required: true
+    - description: File entry ID.
+      name: file_entry_id
+      required: true
+    description: Uploads an attachment to a specified business object.
+    name: cherwell-upload-attachment
+    outputs:
+    - contextPath: Cherwell.UploadedAttachments.AttachmentFileId
+      description: AttachmentFileId to use to get information about the attachment.
+        attachment
+      type: String
+    - contextPath: Cherwell.UploadedAttachments.BusinessObjectType
+      description: ' Business object type, for example: "Incident". '
+      type: String
+    - contextPath: Cherwell.UploadedAttachments.PublicId
+      description: 'Public ID. '
+      type: String
+    - contextPath: Cherwell.UploadedAttachments.RecordId
+      description: Record ID.
+      type: String
+  - arguments:
+    - description: Parent business object type name.
+      name: parent_type
+      required: true
+    - description: Parent business object record ID.
+      name: parent_record_id
+      required: true
+    - description: Child business object type name.
+      name: child_type
+      required: true
+    - description: Child business object record ID.
+      name: child_record_id
+      required: true
+    - description: Relationship ID.
+      name: relationship_id
+      required: true
+    description: Links business objects that are related.
+    name: cherwell-link-business-objects
+  - arguments:
+    - description: Parent business object type name.
+      name: parent_type
+      required: true
+    - description: Parent business object record ID.
+      name: parent_record_id
+      required: true
+    - description: Child business object type name.
+      name: child_type
+      required: true
+    - description: Child business object record ID.
+      name: child_record_id
+      required: true
+    - description: Relationship ID.
+      name: relationship_id
+      required: true
+    description: Unlinks business objects that are linked and related.
+    name: cherwell-unlink-business-objects
+  - arguments:
+    - description: ' Business object type, for example: "Incident". '
+      name: type
+      required: true
+    - auto: PREDEFINED
+      description: Type of ID.
+      name: id_type
+      predefined:
+      - record_id
+      - public_id
+      required: true
+    - description: Public ID or record ID.
+      name: id_value
+      required: true
+    - auto: PREDEFINED
+      description: Type of attachment.
+      name: attachment_type
+      predefined:
+      - linked
+      - imported
+      - url
+      required: true
+    description: Gets information for business object attachments.
+    name: cherwell-get-attachments-info
+    outputs:
+    - contextPath: Cherwell.AttachmentsInfo.AttachmentFiledId
+      description: Attachment field ID.
+      type: String
+    - contextPath: Cherwell.AttachmentsInfo.FileName
+      description: File name.
+      type: String
+    - contextPath: Cherwell.AttachmentsInfo.AttachmentId
+      description: Attachment ID.
+      type: String
+    - contextPath: Cherwell.AttachmentsInfo.BusinessObjectType
+      description: ' Business object type, for example: "Incident". '
+      type: String
+    - contextPath: Cherwell.AttachmentsInfo.BusinessObjectPublicId
+      description: Business object public ID.
+      type: String
+    - contextPath: Cherwell.AttachmentsInfo.BusinessObjectRecordId
+      description: Business object record ID.
+      type: String
+  - arguments:
+    - description: ' Business object type, for example: "Incident". '
+      name: type
+      required: true
+    - auto: PREDEFINED
+      description: Type of ID.
+      name: id_type
+      predefined:
+      - record_id
+      - public_id
+      required: true
+    - description: Public ID or record ID.
+      name: id_value
+      required: true
+    - description: Attachment ID to reomve.
+      name: attachment_id
+      required: true
+    description: Remove the attachment from the specified business object.
+    name: cherwell-remove-attachment
+  - arguments:
+    - description: ' Business object type, for example: "Incident". '
+      name: type
+      required: true
+    - description: "The query to run. A CSV list of filters such that each filter
+        is of the form: [\"field_name\",\"operator\",\"value\"] and operator is one
+        of: 'eq'=equal, 'gt'=grater-than, 'lt'=less-than, 'contains', 'startwith'.
+        Special characters should be escaped.\nExample: `[[\"CreatedDateTime\":\"gt\":\"4/10/2019
+        3:10:12 PM\"][\"Priority\",\"eq\",\"1\"]]`. \nNOTE: If multiple filters are
+        received for the same field name, an 'OR' operation between the filters will
+        be performed, if the field names are different an 'AND' operation will be
+        performed."
+      name: query
+      required: true
+    - defaultValue: "30"
+      description: Maximum number of results to pull.
+      name: max_results
+    description: Runs advanced queries to search in a specified business object.
+    name: cherwell-query-business-object
+  - arguments:
+    - description: ' Business object type, for example: "Incident". '
+      name: type
+      required: true
+    - description: Field property to search by (Name, DIsplay Name or Field id)
+      name: field_property
+      required: true
+    description: Gets information for a field, by one of its properties (Name, Display
+      Name, or id).
+    name: cherwell-get-field-info
+    outputs:
+    - contextPath: Cherwell.FieldInfo.DisplayName
+      description: Field display name (as it displays in the Cherwell UI).
+      type: String
+    - contextPath: Cherwell.FieldInfo.FieldId
+      description: Field ID.
+      type: String
+    - contextPath: Cherwell.FieldInfo.Name
+      description: The name to use when working with business object commands.
+      type: String
+  - arguments:
+    - description: Business object association ID for the saved search.
+      name: association_id
+      required: true
+    - description: Scope name or ID for the saved search
+      name: scope
+      required: true
+    - description: Scope owner ID for the saved search. Use "(None)" when no scope
+        owner exists.
+      name: scope_owner
+      required: true
+    - description: Name of the saved search.
+      name: search_name
+      required: true
+    description: Returns the results of a saved search.
+    name: cherwell-run-saved-search
+  - arguments:
+    - description: Business object name.
+      name: business_object_name
+      required: true
+    description: Get a general business object id by name
+    name: cherwell-get-business-object-id
+    outputs:
+    - contextPath: Cherwell.BusinessObjectInfo.BusinessObjectId
+      description: Business object ID.
+      type: String
+    - contextPath: Cherwell.BusinessObjectInfo.BusinessObjectName
+      description: Business object name.
+      type: String
+  dockerimage: demisto/python3:3.7.2.214
+  isfetch: true
+  runonce: false
+  script: |2-
+
+
+
+
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    import traceback
+    from datetime import datetime, timedelta
+    import os
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+    PARAMS = demisto.params()
+    FETCHES_INCIDENTS = PARAMS.get('isFetch')
+    FETCH_TIME = PARAMS.get('fetch_time')
+    FETCH_ATTACHMENTS = PARAMS.get('fetch_attachments')
+    OBJECTS_TO_FETCH = PARAMS.get('objects_to_fetch').split(',')
+    MAX_RESULT = PARAMS.get('max_results')
+    USERNAME = PARAMS.get('credentials').get('identifier')
+    PASSWORD = PARAMS.get('credentials').get('password')
+    # Remove trailing slash to prevent wrong URL path to service
+    SERVER = PARAMS['url'][:-1] if (PARAMS['url'] and PARAMS['url'].endswith('/')) else PARAMS['url']
+    SECURED = not PARAMS.get('insecure')
+    CLIENT_ID = PARAMS.get('client_id')
+    QUERY_STRING = PARAMS.get('query_string')
+    DATE_FORMAT = '%m/%d/%Y %I:%M:%S %p'
+    # Service base URL
+    BASE_URL = SERVER + '/CherwellAPI/'
+
+    HTTP_CODES = {
+        'unauthorized': 401,
+        'internal_server_error': 500,
+        'success': 200
+    }
+
+    HEADERS = {
+        'Content-Type': "application/json",
+        'Accept': "application/json"
+    }
+
+    QUERY_OPERATORS = ['eq', 'gt', 'lt', 'contains', 'startwith']
+
+    #######################################################################################################################
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def parse_response(response, error_operation, file_content=False, is_fetch=False):
+        try:
+            response.raise_for_status()
+            if not response.content:
+                return
+            if file_content:
+                return response.content
+            else:
+                return response.json()
+        except requests.exceptions.HTTPError:
+            try:
+                res_json = response.json()
+                err_msg = res_json.get('errorMessage') or res_json.get('error_description') or res_json.get('Message')
+            except Exception:
+                err_msg = response.content.decode('utf-8')
+            raise_or_return_error(error_operation + ": " + str(err_msg), is_fetch)
+        except Exception as error:
+            raise_or_return_error(f'Could not parse response {error}', is_fetch)
+
+
+    def cherwell_dict_parser(key, value, item_list):
+        new_dict = {}
+        for item in item_list:
+            field_key = item.get(key)
+            new_dict[field_key] = item.get(value)
+
+        return new_dict
+
+
+    def parse_fields_from_business_object(field_list):
+        new_business_obj = cherwell_dict_parser('name', 'value', field_list)
+
+        return new_business_obj
+
+
+    def parse_fields_from_business_object_list(response):
+        object_list = []
+        if not response.get('businessObjects'):
+            return []
+        for business_obj in response.get('businessObjects'):
+            new_business_obj = parse_fields_from_business_object(business_obj.get('fields'))
+            new_business_obj['BusinessObjectId'] = business_obj.get('busObId')
+            new_business_obj['PublicId'] = business_obj.get('busObPublicId')
+            new_business_obj['RecordId'] = business_obj.get('busObRecId')
+            object_list.append(new_business_obj)
+
+        return object_list
+
+
+    def build_fields_for_business_object(data_dict, ids_dict):
+        fields = []
+        for key, value in data_dict.items():
+            new_field = {
+                "dirty": "true",
+                "fieldId": ids_dict.get(key),
+                "name": key,
+                "value": value
+            }
+            fields.append(new_field)
+        return fields
+
+
+    def http_request(method, url, payload, token=None, custom_headers=None, is_fetch=False):
+        headers = build_headers(token, custom_headers)
+        try:
+            response = requests.request(method, url, data=payload, headers=headers, verify=SECURED)
+        except requests.exceptions.ConnectionError as e:
+            err_message = f'Error connecting to server. Check your URL/Proxy/Certificate settings: {e}'
+            raise_or_return_error(err_message, is_fetch)
+        return response
+
+
+    def request_new_access_token(using_refresh):
+        url = BASE_URL + "token"
+        refresh_token = demisto.getIntegrationContext().get('refresh_token')
+
+        if using_refresh:
+            payload = f'client_id={CLIENT_ID}&grant_type=refresh_token&refresh_token={refresh_token}'
+        else:
+            payload = f'client_id={CLIENT_ID}&grant_type=password&username={USERNAME}&password={PASSWORD}'
+
+        headers = {
+            'Accept': "application/json",
+            'Content-Type': "application/x-www-form-urlencoded",
+        }
+
+        response = http_request('POST', url, payload, custom_headers=headers)
+        return response
+
+
+    def get_new_access_token(is_fetch=False):
+        response = request_new_access_token(True)
+        if not response.status_code == HTTP_CODES['success']:
+            response = request_new_access_token(False)
+        res_json = parse_response(response,
+                                  "Could not get token. Check your credentials (user/password/client id) and try again",
+                                  is_fetch=is_fetch)
+        token_expiration_time = int(date_to_timestamp(res_json.get('.expires'), '%a, %d %b %Y %H:%M:%S GMT'))
+        demisto.setIntegrationContext({
+            'refresh_token': res_json.get('refresh_token'),
+            'token_expiration_time': token_expiration_time,
+            'access_token': res_json.get('access_token')
+        })
+        return res_json.get('access_token')
+
+
+    def get_access_token(new_token, is_fetch=False):
+        integration_context = demisto.getIntegrationContext()
+        token_expiration_time = integration_context.get('token_expiration_time')
+        current_time = date_to_timestamp(datetime.utcnow())
+        if new_token or not token_expiration_time or token_expiration_time < current_time:
+            token = get_new_access_token(is_fetch=is_fetch)
+            return token
+        else:
+            return integration_context.get('access_token')
+
+
+    def build_headers(token, headers=None):
+        headers = headers if headers else HEADERS
+        headers['Authorization'] = f'Bearer {token}'
+        return headers
+
+
+    def make_request(method, url, payload=None, headers=None, is_fetch=False):
+        token = get_access_token(False, is_fetch=is_fetch)
+        response = http_request(method, url, payload, token, custom_headers=headers, is_fetch=is_fetch)
+        if response.status_code == HTTP_CODES['unauthorized']:
+            token = get_access_token(True, is_fetch=is_fetch)
+            response = http_request(method, url, payload, token, custom_headers=headers, is_fetch=is_fetch)
+        return response
+
+
+    def get_business_object_summary_by_name(name, is_fetch):
+        url = BASE_URL + f'api/V1/getbusinessobjectsummary/busobname/{name}'
+        response = make_request('GET', url, is_fetch=is_fetch)
+        return parse_response(response, "Could not get business object summary", is_fetch=is_fetch)
+
+
+    def resolve_business_object_id_by_name(name, is_fetch=False):
+        res = get_business_object_summary_by_name(name, is_fetch)
+        if not res:
+            err_message = f'Could not retrieve "{name}" business object id. Make sure "{name}" is a valid business object.'
+            raise_or_return_error(err_message, is_fetch)
+        return res[0].get('busObId')
+
+
+    def save_business_object(payload):
+        url = BASE_URL + "api/V1/savebusinessobject"
+        response = make_request("POST", url, json.dumps(payload))
+        return parse_response(response, "Could not save business object")
+
+
+    def get_business_object_record(business_object_id, object_id, id_type):
+        id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
+        url = BASE_URL + f'api/V1/getbusinessobject/busobid/{business_object_id}/{id_type_str}/{object_id}'
+        response = make_request("GET", url)
+        return parse_response(response, "Could not get business objects")
+
+
+    def delete_business_object_record(business_object_id, object_id, id_type):
+        id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
+        url = BASE_URL + f'api/V1/deletebusinessobject/busobid/{business_object_id}/{id_type_str}/{object_id}'
+        response = make_request("DELETE", url)
+        return parse_response(response, "Could not delete business object")
+
+
+    def get_search_results(payload, is_fetch=False):
+        url = BASE_URL + "api/V1/getsearchresults"
+        response = make_request("POST", url, json.dumps(payload))
+        return parse_response(response, "Could not search for business objects", is_fetch=is_fetch)
+
+
+    def get_business_object_template(business_object_id, include_all=True, field_names=None, fields_ids=None,
+                                     is_fetch=False):
+        url = BASE_URL + "api/V1/getbusinessobjecttemplate"
+        payload = {
+            "busObId": business_object_id,
+            "includeAll": include_all
+        }
+
+        if field_names:
+            payload['fieldNames'] = field_names
+        if fields_ids:
+            payload['fieldIds'] = fields_ids
+        response = make_request("POST", url, json.dumps(payload), is_fetch=is_fetch)
+        return parse_response(response, "Could not get business object template", is_fetch=is_fetch)
+
+
+    def build_business_object_json(simple_json, business_object_id, object_id=None, id_type=None):
+        business_object_ids_dict = get_key_value_dict_from_template('name', 'fieldId', business_object_id)
+        fields_for_business_object = build_fields_for_business_object(simple_json, business_object_ids_dict)
+        business_object_json = {
+            'busObId': business_object_id,
+            "fields": fields_for_business_object
+        }
+        if object_id:
+            id_key = 'busObPublicId' if id_type == 'public_id' else 'busObRecId'
+            business_object_json[id_key] = object_id
+        return business_object_json
+
+
+    def create_business_object(name, data_json):
+        business_object_id = resolve_business_object_id_by_name(name)
+        business_object_json = build_business_object_json(data_json, business_object_id)
+        return save_business_object(business_object_json)
+
+
+    def update_business_object(name, data_json, object_id, id_type):
+        business_object_id = resolve_business_object_id_by_name(name)
+        business_object_json = build_business_object_json(data_json, business_object_id, object_id, id_type)
+        return save_business_object(business_object_json)
+
+
+    def get_business_object(name, object_id, id_type):
+        business_object_id = resolve_business_object_id_by_name(name)
+        results = get_business_object_record(business_object_id, object_id, id_type)
+        parsed_business_object = parse_fields_from_business_object(results.get('fields'))
+        parsed_business_object['PublicId'] = results.get('busObPublicId')
+        parsed_business_object['RecordId'] = results.get('busObRecId')
+        return parsed_business_object, results
+
+
+    def delete_business_object(name, object_id, id_type):
+        business_object_id = resolve_business_object_id_by_name(name)
+        return delete_business_object_record(business_object_id, object_id, id_type)
+
+
+    def download_attachment_from_business_object(attachment, is_fetch):
+        attachment_id = attachment.get('attachmentId')
+        business_object_id = attachment.get('busObId')
+        business_record_id = attachment.get('busObRecId')
+        url = BASE_URL + f'api/V1/getbusinessobjectattachment' \
+            f'/attachmentid/{attachment_id}/busobid/{business_object_id}/busobrecid/{business_record_id}'
+        response = make_request('GET', url, is_fetch=is_fetch)
+        return parse_response(response, f'Unable to get content of attachment {attachment_id}', file_content=True,
+                              is_fetch=is_fetch)
+
+
+    def get_attachments_content(attachments_to_download, is_fetch):
+        attachments = []
+        for attachment in attachments_to_download:
+            new_attachment = {
+                'FileName': attachment.get('displayText'),
+                'CreatedAt': attachment.get('created'),
+                'Content': download_attachment_from_business_object(attachment, is_fetch=is_fetch)
+            }
+            attachments.append(new_attachment)
+        return attachments
+
+
+    def get_attachments_details(id_type, object_id, object_type_name, object_type_id, type, attachment_type,
+                                is_fetch=False):
+        id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
+        business_object_type_str = 'busobid' if object_type_id else 'busobname'
+        object_type = object_type_id if object_type_id else object_type_name
+        url = BASE_URL + f'api/V1/getbusinessobjectattachments/' \
+            f'{business_object_type_str}/{object_type}/' \
+            f'{id_type_str}/{object_id}' \
+            f'/type/{type}' \
+            f'/attachmenttype/{attachment_type}'
+        response = make_request('GET', url, is_fetch=is_fetch)
+        return parse_response(response, f'Unable to get attachments for {object_type} {object_id}', is_fetch=is_fetch)
+
+
+    def download_attachments(id_type, object_id, business_object_type_name=None, business_object_type_id=None,
+                             is_fetch=False):
+        type = 'File'
+        attachment_type = 'Imported'
+        result = get_attachments_details(id_type, object_id, business_object_type_name, business_object_type_id, type,
+                                         attachment_type, is_fetch=is_fetch)
+        attachments_to_download = result.get('attachments')
+        if not attachments_to_download:
+            return
+        return get_attachments_content(attachments_to_download, is_fetch=is_fetch)
+
+
+    def get_attachments_info(id_type, object_id, attachment_type, business_object_type_name=None,
+                             business_object_type_id=None):
+        type = 'File'
+        attachment_type = attachment_type
+        result = get_attachments_details(id_type, object_id, business_object_type_name, business_object_type_id, type,
+                                         attachment_type)
+        attachments = result.get('attachments')
+        attachments_info = [{
+            'AttachmentFiledId': attachment.get('attachmentFileId'),
+            'FileName': attachment.get('displayText'),
+            'AttachmentId': attachment.get('attachmentId'),
+            'BusinessObjectType': business_object_type_name,
+            f'BusinessObject{string_to_context_key(id_type)}': object_id
+
+        } for attachment in attachments]
+        return attachments_info, result
+
+
+    def attachment_results(attachments):
+        for attachment in attachments:
+            attachment_content = attachment.get('Content')
+            attachment_name = attachment.get('FileName')
+            demisto.results(fileResult(attachment_name, attachment_content))
+        return
+
+
+    def run_query_on_business_objects(bus_id, filter_query, max_results, is_fetch):
+        payload = {
+            'busObId': bus_id,
+            'includeAllFields': True,
+            'filters': filter_query
+        }
+        if max_results:
+            payload['pageSize'] = max_results
+        return get_search_results(payload, is_fetch=is_fetch)
+
+
+    def get_key_value_dict_from_template(key, val, business_object_id, is_fetch=False):
+        template_dict = get_business_object_template(business_object_id, is_fetch=is_fetch)
+        return cherwell_dict_parser(key, val, template_dict.get('fields'))
+
+
+    def get_all_incidents(objects_names, last_created_time, max_results, query_string, real_fetch):
+        all_incidents: list = []
+        for business_object_name in objects_names:
+            business_object_id = resolve_business_object_id_by_name(business_object_name, is_fetch=real_fetch)
+            query_list = [['CreatedDateTime', 'gt', last_created_time]]
+            if query_string:
+                additional_query_list = validate_query_for_fetch_incidents(objects_names, query_string, real_fetch)
+                query_list += additional_query_list
+            incidents, _ = query_business_object(query_list, business_object_id, max_results, is_fetch=real_fetch)
+            all_incidents += incidents
+        sorted_incidents = sorted(all_incidents, key=lambda incident: incident.get('CreatedDateTime'))
+        return sorted_incidents[:max_results]
+
+
+    def object_to_incident(obj):
+        attachments_list = []
+        attachments = obj.get('Attachments')
+        if attachments:
+            obj.pop('Attachments')
+            for attachment in attachments:
+                file_name = attachment.get('FileName')
+                attachment_file = fileResult(file_name, attachment.get('Content'))
+                attachments_list.append({
+                    'path': attachment_file.get('FileID'),
+                    'name': file_name
+                })
+        item = {
+            'name': f'Record ID:{obj.get("RecID")}',
+            'attachment': attachments_list,
+            'rawJSON': json.dumps(obj)
+        }
+
+        return createContext(item, removeNull=True)
+
+
+    def save_incidents(objects_to_save):
+        final_incidents = []
+        for obj in objects_to_save:
+            final_incidents.append(object_to_incident(obj))
+        demisto.incidents(final_incidents)
+        return
+
+
+    def fetch_incidents_attachments(incidents, is_fetch):
+        for incident in incidents:
+            rec_id = incident.get('RecID')
+            business_object_id = incident.get('BusinessObjectId')
+            incident['Attachments'] = []
+            attachments = download_attachments('record_id', rec_id, business_object_type_id=business_object_id,
+                                               is_fetch=is_fetch)
+            if attachments:
+                for attachment in attachments:
+                    new_attachment_obj = {
+                        'Content': attachment.get('Content'),
+                        'FileName': attachment.get('FileName')
+                    }
+                    incident['Attachments'].append(new_attachment_obj)
+        return incidents
+
+
+    def validate_params_for_fetch(max_result, objects_to_fetch, real_fetch):
+        # Check that max result is positive integer
+        try:
+            max_result = int(max_result)
+            if max_result < 0:
+                raise ValueError
+        except ValueError:
+            max_result_err_message = 'Max results to fetch must be a number grater than 0'
+            raise_or_return_error(max_result_err_message, real_fetch)
+        # Make sure that there are objects to fetch
+        if len(objects_to_fetch) == 0:
+            objects_to_fetch_err_message = 'No objects to fetch were given'
+            raise_or_return_error(objects_to_fetch_err_message, real_fetch)
+        return
+
+
+    def fetch_incidents(objects_names, fetch_time, max_results, query_string, fetch_attachments, real_fetch=False):
+        validate_params_for_fetch(max_results, objects_names, real_fetch)
+        max_results = int(max_results)
+        last_run = demisto.getLastRun()
+        last_objects_fetched = last_run.get('objects_names_to_fetch')
+        if 'last_created_time' in last_run and last_objects_fetched == objects_names:
+            last_created_time = last_run.get('last_created_time')
+        else:
+            try:
+                last_created_time, _ = parse_date_range(fetch_time, date_format=DATE_FORMAT, to_timestamp=False)
+            except ValueError:
+                error_message = f'First fetch time stamp should be of the form: <number> <time unit>, e.g., 12 hours, ' \
+                    f'7 days. Received: "{fetch_time}"'
+                raise_or_return_error(error_message, real_fetch)
+        incidents = get_all_incidents(objects_names, last_created_time, max_results, query_string, real_fetch)
+        if fetch_attachments:
+            incidents = fetch_incidents_attachments(incidents, real_fetch)
+        if real_fetch:
+            save_incidents(incidents)
+        return incidents
+
+
+    def upload_business_object_attachment(file_name, file_size, file_content, object_type_name, id_type, object_id, ):
+        id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
+        url = BASE_URL + f'/api/V1/uploadbusinessobjectattachment/' \
+            f'filename/{file_name}/busobname/{object_type_name}/{id_type_str}/{object_id}/offset/0/totalsize/{file_size}'
+        payload = file_content
+        headers = HEADERS
+        headers['Content-Type'] = "application/octet-stream"
+        response = make_request('POST', url, payload, headers)
+        return parse_response(response, f'Could not upload attachment {file_name}')
+
+
+    def upload_attachment(id_type, object_id, type_name, file_entry_id):
+        file_data = demisto.getFilePath(file_entry_id)
+        file_path = file_data.get('path')
+        file_name = file_data.get('name')
+        try:
+            file_size = os.path.getsize(file_path)
+            with open(file_path, 'rb') as f:
+                file_content = f.read()
+            attachment_id = upload_business_object_attachment(file_name, file_size, file_content, type_name, id_type,
+                                                              object_id)
+            return attachment_id
+        except Exception as err:
+            return_error(f'unable to open file: {err}')
+
+
+    def remove_attachment(id_type, object_id, type_name, attachment_id):
+        id_type_str = 'publicid' if id_type == 'public_id' else 'busobrecid'
+        url = BASE_URL + f'/api/V1/removebusinessobjectattachment/' \
+            f'attachmentid/{attachment_id}/busobname/{type_name}/{id_type_str}/{object_id}'
+        response = make_request('DELETE', url)
+        parse_response(response, f'Could not remove attachment {attachment_id} from {type_name} {object_id}')
+        return
+
+
+    def link_related_business_objects(action, parent_business_object_id, parent_business_object_record_id, relationship_id,
+                                      business_object_id, business_object_record_id):
+        url_action_str = 'linkrelatedbusinessobject' if action == 'link' else 'unlinkrelatedbusinessobject'
+        url = BASE_URL + f"api/V1/{url_action_str}/parentbusobid/{parent_business_object_id}" \
+            f"/parentbusobrecid/{parent_business_object_record_id}" \
+            f"/relationshipid/{relationship_id}" \
+            f"/busobid/{business_object_id}" \
+            f"/busobrecid/{business_object_record_id}"
+        http_method = 'GET' if action == 'link' else 'DELETE'
+        response = make_request(http_method, url)
+        parse_response(response, "Could not link business objects")
+        return
+
+
+    def business_objects_relation_action(action, parent_type_name, parent_record_id, child_type_name, child_record_id,
+                                         relationship_id):
+        parent_business_object_id = resolve_business_object_id_by_name(parent_type_name)
+        child_business_object_id = resolve_business_object_id_by_name(child_type_name)
+        link_related_business_objects(action, parent_business_object_id, parent_record_id, relationship_id,
+                                      child_business_object_id, child_record_id)
+        return
+
+
+    def validate_query_list(query_list, is_fetch):
+        for index, query in enumerate(query_list):
+            if not len(query) == 3:
+                length_err_message = f'Cannot parse query, should be of the form: `[["FieldName","Operator","Value"],' \
+                    f'["FieldName","Operator","Value"],...]`. Filter in index {index} is malformed: {query}'
+                raise_or_return_error(length_err_message, is_fetch)
+            if query[1] not in QUERY_OPERATORS:
+                operator_err_message = f'Operator should be one of the following: {", ".join(QUERY_OPERATORS)}. Filter in' \
+                    f' index {index}, was: {query[1]}'
+                raise_or_return_error(operator_err_message, is_fetch)
+        return
+
+
+    def validate_query_for_fetch_incidents(objects_names, query_string, real_fetch):
+        if not objects_names:
+            no_objects_err_message = f'No business object name was given. \n In order to run advanced query, ' \
+                f'fill the integration parameter-`Objects to fetch` with exactly one business object name.'
+            raise_or_return_error(no_objects_err_message, real_fetch)
+        if len(objects_names) > 1:
+            multiple_objects_error_message = f'Advanced query operation is supported for a single business object. ' \
+                f'{len(objects_names)} objects were given: {",".join(objects_names)}'
+            raise_or_return_error(multiple_objects_error_message, real_fetch)
+        return parse_string_query_to_list(query_string, real_fetch)
+
+
+    def build_query_dict(query, filed_ids_dict, is_fetch):
+        field_name = query[0]
+        operator = query[1]
+        value = query[2]
+        field_id = filed_ids_dict.get(field_name)
+        if not field_id:
+            err_message = f'Field name: {field_name} does not exit in the given business objects'
+            raise_or_return_error(err_message, is_fetch)
+        return {
+            'fieldId': filed_ids_dict.get(field_name),
+            'operator': operator,
+            'value': value
+        }
+
+
+    def build_query_dict_list(query_list, filed_ids_dict, is_fetch):
+        query_dict_list = []
+        for query in query_list:
+            query_dict = build_query_dict(query, filed_ids_dict, is_fetch)
+            query_dict_list.append(query_dict)
+        return query_dict_list
+
+
+    def query_business_object(query_list, business_object_id, max_results, is_fetch=False):
+        filed_ids_dict = get_key_value_dict_from_template('name', 'fieldId', business_object_id, is_fetch=is_fetch)
+        filters = build_query_dict_list(query_list, filed_ids_dict, is_fetch=is_fetch)
+        query_result = run_query_on_business_objects(business_object_id, filters, max_results, is_fetch=is_fetch)
+        business_objects = parse_fields_from_business_object_list(query_result)
+        return business_objects, query_result
+
+
+    def parse_string_query_to_list(query_string, is_fetch=False):
+        try:
+            query_list = json.loads(query_string)
+        except (ValueError, TypeError):
+            err_message = f'Cannot parse query, should be of the form: `[["FieldName","Operator","Value"],' \
+                f'["FieldName","Operator","Value"]]`.'
+            raise_or_return_error(err_message, is_fetch)
+        validate_query_list(query_list, is_fetch)
+        return query_list
+
+
+    def query_business_object_string(business_object_name, query_string, max_results):
+        if max_results:
+            try:
+                int(max_results)
+            except ValueError:
+                return return_error(f'`max_results` argument received is not a number')
+        business_object_id = resolve_business_object_id_by_name(business_object_name)
+        query_filters_list = parse_string_query_to_list(query_string)
+        return query_business_object(query_filters_list, business_object_id, max_results)
+
+
+    def get_field_info(type, field_property):
+        business_object_id = resolve_business_object_id_by_name(type)
+        template = get_business_object_template(business_object_id)
+        business_object_fields = template.get('fields')
+        field_to_return = None
+        for field in business_object_fields:
+            if field.get('displayName') == field_property or \
+                    field.get('fieldId') == field_property or \
+                    field.get('name') == field_property:
+                field_to_return = field
+        if field_to_return:
+            field_to_return = {
+                'DisplayName': field_to_return.get('displayName'),
+                'Name': field_to_return.get('name'),
+                'FieldId': field_to_return.get('fieldId')
+            }
+        else:
+            return_error(f'Field with the value {field_property} was not found')
+        return field_to_return
+
+
+    def cherwell_run_saved_search(association_id, scope, scope_owner, search_name):
+        search_payload = {
+            "Association": association_id,
+            "scope": scope,
+            "scopeOwner": scope_owner,
+            "searchName": search_name,
+            "includeAllFields": True,
+        }
+
+        results = get_search_results(search_payload)
+        return parse_fields_from_business_object_list(results)
+
+
+    def cherwell_get_business_object_id(business_object_name):
+        business_object_id = resolve_business_object_id_by_name(business_object_name)
+        business_object_info = {
+            'BusinessObjectId': business_object_id,
+            'BusinessObjectName': business_object_name
+        }
+        return business_object_info
+
+
+    def raise_or_return_error(msg, raise_flag):
+        """
+        This function handles errors occurred in functions that are within the fetch incidents flow.
+        If the error occurred as part of a fetch-incidents flow then an exception will be thrown otherwise a regular error
+        entry will be returned.
+        This is needed when running fetch-incidents process since regular error entries are not handled correctly by the
+        server
+        :param msg: error msg to raise/return
+        :param raise_flag: if true should raise, otherwise throw
+        """
+        if raise_flag:
+            raise Exception(msg)
+        else:
+            return_error(msg)
+
+
+    ########################################################################################################################
+    '''
+    Commands
+    '''
+
+
+    def test_command():
+        if FETCHES_INCIDENTS:
+            fetch_incidents(OBJECTS_TO_FETCH, FETCH_TIME, MAX_RESULT, QUERY_STRING, FETCH_ATTACHMENTS)
+        else:
+            get_access_token(True)
+        return
+
+
+    def create_business_object_command():
+        args = demisto.args()
+        type_name = args.get('type')
+        data_json = json.loads(args.get('json'))
+        result = create_business_object(type_name, data_json)
+        ids = {
+            'PublicId': result.get('busObPublicId'),
+            'RecordId': result.get('busObRecId')
+        }
+        md = tableToMarkdown(f'New {type_name.capitalize()} was created', ids, headerTransform=pascalToSpace)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Cherwell.BusinessObjects(val.RecordId == obj.RecordId)': ids
+            }
+        })
+
+
+    def update_business_object_command():
+        args = demisto.args()
+        type_name = args.get('type')
+        data_json = json.loads(args.get('json'))
+        object_id = args.get('id_value')
+        id_type = args.get('id_type')
+        result = update_business_object(type_name, data_json, object_id, id_type)
+        ids = {
+            'PublicId': result.get('busObPublicId'),
+            'RecordId': result.get('busObRecId')
+        }
+        md = tableToMarkdown(f'{type_name.capitalize()} {object_id} was updated', ids, headerTransform=pascalToSpace)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Cherwell.BusinessObjects(val.RecordId == obj.RecordId)': ids
+            }
+        })
+
+
+    def get_business_object_command():
+        args = demisto.args()
+        type_name = args.get('type')
+        id_type = args.get('id_type')
+        object_id = args.get('id_value')
+        business_object, results = get_business_object(type_name, object_id, id_type)
+        md = tableToMarkdown(f'{type_name.capitalize()}: {object_id}', business_object,
+                             headerTransform=pascalToSpace)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'HumanReadable': md,
+            'EntryContext': {
+                'Cherwell.BusinessObjects(val.RecordId == obj.RecordId)': createContext(business_object)
+            }
+        })
+
+
+    def delete_business_object_command():
+        args = demisto.args()
+        type_name = args.get('type')
+        id_type = args.get('id_type')
+        object_id = args.get('id_value')
+        results = delete_business_object(type_name, object_id, id_type)
+        md = f'### Record {object_id} of type {type_name} was deleted.'
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'HumanReadable': md
+        })
+
+
+    def fetch_incidents_command():
+        objects_names_to_fetch = OBJECTS_TO_FETCH
+        fetch_attachments = FETCH_ATTACHMENTS
+        max_result = MAX_RESULT
+        fetch_time = FETCH_TIME
+        query_string = QUERY_STRING
+        incidents = fetch_incidents(objects_names_to_fetch, fetch_time, max_result, query_string, fetch_attachments,
+                                    real_fetch=True)
+        if incidents:
+            last_incident_created_time = incidents[-1].get('CreatedDateTime')
+            next_created_time_to_fetch = \
+                (datetime.strptime(last_incident_created_time, DATE_FORMAT) + timedelta(seconds=1)).strftime(DATE_FORMAT)
+            demisto.setLastRun({
+                'last_created_time': next_created_time_to_fetch,
+                'objects_names_to_fetch': objects_names_to_fetch
+            })
+        return
+
+
+    def download_attachments_command():
+        args = demisto.args()
+        id_type = args.get('id_type')
+        object_id = args.get('id_value')
+        type_name = args.get('type')
+        attachments = download_attachments(id_type, object_id, business_object_type_name=type_name)
+        if not attachments:
+            return_error(f'No attachments were found for {type_name}:{object_id}')
+        attachment_results(attachments)
+        return
+
+
+    def upload_attachment_command():
+        args = demisto.args()
+        id_type = args.get('id_type')
+        object_id = args.get('id_value')
+        type_name = args.get('type')
+        file_entry_id = args.get('file_entry_id')
+        attachment_id = upload_attachment(id_type, object_id, type_name, file_entry_id)
+        entry_context = {
+            'AttachmentFileId': attachment_id,
+            'BusinessObjectType': type_name,
+            string_to_context_key(id_type): object_id
+        }
+        md = f'### Attachment: {attachment_id}, was successfully attached to {type_name} {object_id}'
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': {'attachment_id': attachment_id},
+            'EntryContext': {'Cherwell.UploadedAttachments(val.AttachmentId == obj.AttachmentId)': entry_context},
+            'HumanReadable': md,
+        })
+
+
+    def remove_attachment_command():
+        args = demisto.args()
+        id_type = args.get('id_type')
+        object_id = args.get('id_value')
+        type_name = args.get('type')
+        attachment_id = args.get('attachment_id')
+        remove_attachment(id_type, object_id, type_name, attachment_id)
+        md = f'### Attachment: {attachment_id}, was successfully removed from {type_name} {object_id}'
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': md,
+            'HumanReadable': md,
+        })
+
+
+    def get_attachments_info_command():
+        args = demisto.args()
+        id_type = args.get('id_type')
+        object_id = args.get('id_value')
+        type_name = args.get('type')
+        attachment_type = args.get('attachment_type')
+        attachments_info, raw_result = get_attachments_info(id_type, object_id, attachment_type,
+                                                            business_object_type_name=type_name)
+        md = tableToMarkdown(f'{type_name.capitalize()} {object_id} attachments:', attachments_info,
+                             headerTransform=pascalToSpace) if attachments_info \
+            else f'### {type_name.capitalize()} {object_id} has no attachments'
+
+        entry = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': raw_result,
+            'HumanReadable': md
+        }
+        if attachments_info:
+            entry['EntryContext'] = {
+                f'Cherwell.AttachmentsInfo': attachments_info}
+        demisto.results(entry)
+
+
+    def link_business_objects_command():
+        args = demisto.args()
+        parent_type = args.get('parent_type')
+        parent_record_id = args.get('parent_record_id')
+        child_type = args.get('child_type')
+        child_record_id = args.get('child_record_id')
+        relationship_id = args.get('relationship_id')
+        business_objects_relation_action('link', parent_type, parent_record_id, child_type, child_record_id,
+                                         relationship_id)
+        message = \
+            f'{parent_type.capitalize()} {parent_record_id} and {child_type.capitalize()} {child_record_id} were linked'
+        md = f'### {message}'
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': message,
+            'HumanReadable': md,
+        })
+
+
+    def unlink_business_objects_command():
+        args = demisto.args()
+        parent_type = args.get('parent_type')
+        parent_record_id = args.get('parent_record_id')
+        child_type = args.get('child_type')
+        child_record_id = args.get('child_record_id')
+        relationship_id = args.get('relationship_id')
+        business_objects_relation_action('unlink', parent_type, parent_record_id, child_type, child_record_id,
+                                         relationship_id)
+        message = \
+            f'{parent_type.capitalize()} {parent_record_id} and {child_type.capitalize()} {child_record_id} were unlinked'
+        md = f'### {message}'
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': message,
+            'HumanReadable': md,
+        })
+
+
+    def query_business_object_command():
+        args = demisto.args()
+        type_name = args.get('type')
+        query_string = args.get('query')
+        max_results = args.get('max_results')
+        results, raw_response = query_business_object_string(type_name, query_string, max_results)
+        md = tableToMarkdown('Query Results', results, headerTransform=pascalToSpace)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': raw_response,
+            'EntryContext': {'Cherwell.QueryResults': results},
+            'HumanReadable': md,
+        })
+
+
+    def get_field_info_command():
+        args = demisto.args()
+        type_name = args.get('type')
+        field_property = args.get('field_property')
+        results = get_field_info(type_name, field_property)
+        md = tableToMarkdown('Field info:', results, headerTransform=pascalToSpace)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': results,
+            'EntryContext': {'Cherwell.FieldInfo(val.FieldId == obj.FieldId)': results},
+            'HumanReadable': md
+        })
+
+
+    def cherwell_run_saved_search_command():
+        args = demisto.args()
+        association_id = args.get('association_id')
+        scope = args.get('scope')
+        scope_owner = args.get('scope_owner')
+        search_name = args.get('search_name')
+        results = cherwell_run_saved_search(association_id, scope, scope_owner, search_name)
+        md = tableToMarkdown(f'{search_name} results:', results, headerTransform=pascalToSpace)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': results,
+            'EntryContext': {'Cherwell.SearchOperation(val.RecordId == obj.RecordId)': results},
+            'HumanReadable': md
+        })
+
+
+    def cherwell_get_business_object_id_command():
+        args = demisto.args()
+        business_object_name = args.get('business_object_name')
+        result = cherwell_get_business_object_id(business_object_name)
+        md = tableToMarkdown(f'Business Object Info:', result, headerTransform=pascalToSpace)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': result,
+            'EntryContext': {'Cherwell.BusinessObjectInfo(val.BusinessObjectId == obj.BusinessObjectId)': result},
+            'HumanReadable': md
+        })
+
+
+    #######################################################################################################################
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+    try:
+        handle_proxy()
+        if demisto.command() == 'test-module':
+            test_command()
+            demisto.results('ok')
+
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents_command()
+
+        elif demisto.command() == 'cherwell-create-business-object':
+            create_business_object_command()
+
+        elif demisto.command() == 'cherwell-update-business-object':
+            update_business_object_command()
+
+        elif demisto.command() == 'cherwell-get-business-object':
+            get_business_object_command()
+
+        elif demisto.command() == 'cherwell-delete-business-object':
+            delete_business_object_command()
+
+        elif demisto.command() == 'cherwell-download-attachments':
+            download_attachments_command()
+
+        elif demisto.command() == 'cherwell-get-attachments-info':
+            get_attachments_info_command()
+
+        elif demisto.command() == 'cherwell-upload-attachment':
+            upload_attachment_command()
+
+        elif demisto.command() == 'cherwell-remove-attachment':
+            remove_attachment_command()
+
+        elif demisto.command() == 'cherwell-link-business-objects':
+            link_business_objects_command()
+
+        elif demisto.command() == 'cherwell-unlink-business-objects':
+            unlink_business_objects_command()
+
+        elif demisto.command() == 'cherwell-query-business-object':
+            query_business_object_command()
+
+        elif demisto.command() == 'cherwell-get-field-info':
+            get_field_info_command()
+
+        elif demisto.command() == 'cherwell-run-saved-search':
+            cherwell_run_saved_search_command()
+
+        elif demisto.command() == 'cherwell-get-business-object-id':
+            cherwell_get_business_object_id_command()
+
+
+    # Log exceptions
+    except Exception as e:
+        if demisto.command() == 'fetch-incidents':
+            raise Exception(e)
+        message = f'Unexpected error: {e}, traceback: {traceback.format_exc()}'
+        LOG(message)
+        LOG(str(e))
+        LOG.print_log()
+        return_error(message)
+  subtype: python3
+  type: python
+system: true

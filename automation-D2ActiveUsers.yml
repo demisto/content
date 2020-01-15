@@ -1,0 +1,23 @@
+comment: Show local accounts
+commonfields:
+  id: D2ActiveUsers
+  version: -1
+name: D2ActiveUsers
+runonce: false
+script: |-
+  function usersWindows() {
+      pack(wmi_query('select * from Win32_LoggedOnUser'),'table');
+  }
+  try {
+    if (env.OS === 'windows') {
+      usersWindows();
+    }
+  } catch (ex) {
+    pack('Error: ' + ex);
+  }
+scripttarget: 1
+system: true
+tags:
+- agent
+- endpoint
+type: javascript

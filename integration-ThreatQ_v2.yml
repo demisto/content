@@ -1,0 +1,3142 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ThreatQ v2
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: ThreatQ server URL (e.g. https://192.168.1.136)
+  name: serverUrl
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: ThreatQ client ID
+  name: client_id
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Email
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: "8"
+  display: Indicator threshold (minimum TQ score to consider the indicator malicious).
+  name: threshold
+  required: false
+  type: 0
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: A threat intelligence platform that collects and interprets intelligence
+  data from open sources and manages indicator scoring, types, and attributes.
+detaileddescription: "You must have a ThreatQ user account to retrieve an api token.
+  The api token is required for all api requests. \nThreatQ provides indicator scoring
+  weighting for indicators and their contextual information, such as sources, attributes,
+  and indicator types, as they are added to ThreatQ.\nFor detailed information on
+  ThreatQ scoring please refer to https://helpcenter.threatq.com/\n"
+display: ThreatQ v2
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAb1BMVEX///8/g8QvfME5gMM1fsIyfcLs8vkresD1+fzw9fpmms7S4PD6/P4necBAhcWHrtfB1ep9qNWjwOB0otKsxuNQjchvoNHY5fKrxeKbut22zeZJiceUttzV4vHj7PZZk8zF2Oy60egLcb2OsdlZkMqLtOAXAAAL90lEQVR4nNVd6bqquBKVJBBBAREBBQXsfd7/GVtwYiYFmVy/7tm3v5hFhporm40g7O2kTM/XIHaKLDMe8LKscOLgekzLxN6L+lkpsPP7JSiwS5FJ8ANGA49/EhNRFxfB5Z7bqqcKxzZJfcdzEWnzGsCDKaJe4afJVvWk2ZGc44ygWW5tnohk8TlRPXUGbA+BYZoQcg2apmkEB62X0kodipax+7BE1Ekt1USGYaexuZLem6QZa0hyF3hc6L1JesFONaUmtueI8KP3Ikmisy5HMvfdhVfLDEfT9XPV5B7Yha4Iei+SNFS9WXcOx9M3zNFRyVE4v5ojUsYxd6h4fjVH6qg4j5Yv8Pz1OLq+bAG5P2IijV8Fgo9SDa1dhKTyq4AiecdxG0i4YPrAKJCkAhy46y/MHMldAj87dBXxq+CGwt0BZSb3humCZAexBP+U7dA3MPoTyM+KTMX8KpiRMNmo7oppAxNBO/UiXwaOgV4E8NvH+hB8iP+Yu2i0IrV3aBeE92HcIb0IVoeRrxJ3+CsMOu/Algru9421OwYRoqY+NNGJM8VNFUfanf4cz6WI6LCg9Mif4hPbvEwvQfE4C0jtkgqRGk3s890p+GcoFCP0KphiDauMOusoUfeRQ3GTtFcRH/9ReRRFb9Qn4taioXJzN0TLz8/5F3fdNHFvrRmpPuuf2NOJ/fD9DV0BQqOHfesk4rD6WynyliWPhQveFJFgo7hG2VxEXNR/yzNxFMl5s7Gzz79keOH+Wvv0+Tere8fyQ71Nzp+zTmT4i4PGuXNff7M8YRTJY/jtl3Akw894/VJ03w6xRJjXw60iGX+fD0hiCQw3d+NzgX8CKSdRgrG+XZKvYxNJEYtW4HYZbgpB+5TUUtD7/oHKuFArb2q9Vek38ycR5D/GQTX6paFXmJKiU+dKCrqNHwvELCJ26u/XOAQ4ksNwYz8uVbfx75sg9c2rR29sU8MU6Spu4fD69RcEnURcDx40vx8pZVG0Wvfa8T0JvkxJHTBNm9ovztRkcSZPhvhy5SoccS3jrdaYJFTC0H7++sOk4rpfnwz37TFdGfHFPl4KsrXJeUqOJ8PuVU2UJIrV5jH+t2mLr7V4nsPNsb31n2JSNmpepPKn7L3h2S7B8y7d7DpqIVKRXXRAn18+8TP8s+fgeeds40hB9n+teOD6h7fZ4GwX4KnTDIyIpLhtOnC/5+OP13WK/dfg/7ojYgXpxdFX89/x2qbm+TW402VI/NGJCMNj4V43X8O3shK0fA3u93aFKz/N7+B+v2vvky/Ex3zpS6D3EZWJo3t7/8/+J1+G7D3gua8LUgUSI/lc4Uc+Qp98JHvaH1DFIn4xMKElQOl7wPvA3aVE7PNm+BEJhwGGSheRzy5tUBhiqOQkvsHnpiHnz4CDDLEaQ7EGHxsRf0XeIMOmP1Myci52Pm54uIcPNlag2Dyxv/CIgKPyO+Jp+Ju56mqmdhxiblljvBGr2jyPzkA47HDtTiXN2V+HP5g0//Ag4pUSAzWN3DGfupSo6Rj26yKnbRt3TJVX47F5I18Vc/Nal8jo1/KUFtquCSvStDnSuMGJ0rFfl4J48T7FRcvVlI//h1LCwqOwlhJsycJNLx2rCVkBxREMGT0s6F4gE+Mo3qabcGHfhU54acKNrtYQfuzTRUKxF3qZ+lBUcbX7ecF92guf7adsFSnZYFOAG1I4666KNTWGWqG/mUknwmjg/+1rYrfpjaCCVhPX8aOIivuptzwDIYkR2+kFU3W/m+2oIeVWmQBdh8dQDHvaKaLShHpi2ANhYKPejWV7B+JsYIRoiqBqtabCkPKGzVdBs9Xij40BFcWaiZv3bibp6M0QIyN4RwDa9yQesvdGNsEHRPVBfKgkFL9BCHWzIP3qLK01RINZFnPhSNWK2wN7P3SKB5zQv6RlWyNrhujp8J0xF6tT53JjQkMSjBRVzB1D5arpDPyPuEQjhTHzBoqndTe/T2rKGEGGzE51vm8GfHJHx0ub5kPmwxeUJng7QscJJvMGGJFTFbUMr+lPpKgzROqUmxcTODw3KZkoamLIeniV72iJ5/TNCSO2m/A1TFHbFrC3ShhidJv4T5iS5FxtxUWlk+Ns0h/I5HOlU99IJXZmVekzaRmwubKU+2rG8DiFdKa4IGXyuJoyyi8X4E6xO2cWsOWPERXJmPPYYuLNWXY2W9K4ptZF6IazxvmJzaOsMu9kHOl/DFuL0duqpf2UeAwB6pw1sqM0nj+MnKmzHnNhgzc/lmRYbAJs2o3Y3KaC5wvGlk3L2jFHrqjgCYsCewKgOz+YjrBZ+f0sQ0DtzY8yBIQef5MhpED8NxlC6sN/8i7dQio1tZOHLDhC0jf102kYAKqd0lAvncUBkomjpW0xB1BxmJ724TRgPW80tfEnAatJ0dRPMwUblkmlq69tAsDCKW39peMAlvRr6/MexR2Y0ahv3GIM0EIGfWNPI5hLEeoR1Dh+OAxoTqrOMeBBlND8d63j+EMAV/NrnYsxgBu4hEHrfJoBwHu/6Z0T1YMFzu7/NdsJ3oTp1ywLKD8t8kshSOAlKBrkCEOwoB2D+jxvEOCtbTTI1QcB3p5Ifb0FDPD6aOU1M0AsOIeqpwwEYwbNFz9nWLTbsTLg93w0UIGouoZ0AWD2768ppRVgjSV/TGWrMVkT24PievxlgLRi+DWF5glIbPQXNymsdeb63iYqPCDjfT76m3StuE/C/0oec4YB0Bx0ZY+hW0ixCncye5fedX2iyrh+VL3TR0UGLObI0xrD6VC8Wq7hf9KjHjmzZrq8X9s9+r7JLb/t8kA71pFNutDJtk8z2pS50h09zI6MZb7u7TnrKPednk3CMdPnozGxJTkm9iXri1vJnaWZvfoL+pfaV2PwCEh9boHZqw+3myyfjl1iSOJRZF5CaB/h3HfHh8byWtvN9hdYuIS3YLrjKBb30nkHYk7hLTbnxsWeHB18xywLAUtYFpThu2E5lhizk4a9r35ZTJy/FqgjfhmPrKYhqwTb35nW7wVM/gSfRob+Ce+5MM1kf2qon2xfDgcim76yN3VlUpb35wzIr/52ZnYVRjJgvmYY3pmxL2hpn19MaXxOBOiq7B0IWYR9sOrdKWxS4lzvOVeHOnvuOpN3Zru63zbGiEbhZccrl2XHPiO2N7sOXB4PwwR5zpGHFEnYn05mNQSgUaxxlibJjmvFyEQf3S6Y386zeT7GbLrhKvMDkI4IeP+w5PqyJqbxciky3dyyDcgblnwfY3xorg7gx5uAvNAOe4eU94vaGP1b4A2wC8BmAvqAl/UxnpwANU5AXeA+a7k1AX19HJxvzABkHAEi0gpAYXv4m84XARQN4l1Yv3QKe3t2ybvcoZCnik2Dyc5KHNgHXvS2+spXKMYnY/pze9UOALZpBRwt0oOBVWKA+biT62hfWH0LH0BvmTdEPald2cujHO3LsO95crjFGgW0BgcyKeM6tLGsiwf/rGuyu9a8JTIHYvSCmNYfXrBt6KoiyqNAigbyWh8/CcHnrwJdGcW8iKRouPHbgNzeHeD9+cJIi2EArkIpYnKsVDnrmC3jN9G/lR1iV9EgRZ4E8OvzBR4EhVPEBKRgt7B+iz5x5PnqO0+svWS+4PhgOE8gjrX2oGYbskC4pnHf2D16koB5P45nRXotI+Efet6HOh1GNN2BdyEESw0IeEmJLg48XknlAMz3jmnCivj6UZfBFJr9cV2uf3ACRiDHLxxlpvZOJZnwYiZ7XQR1JdxQRoH9gahaRkwkJQpugwWJDBz4IaYOw3ywi+SLfxRJfcN4fzbkblWCj7Lz5q2pnEzewK6vohAtX+g7gvOTkTc3jJ0jQY/DyFH5iPhO9Do+1k8lvwq3ZX5cVn6han4Vct8Voq1i0/V1aYK0P0fcOWISnbWqNt8FHkdFByNPaLrqMtj30ORCEiMzTjWtw7bS2F2cnPqmRx1d6T2xPQSGufBQYtM0goNWh28EySnMCAJ5WDFGJIvPP9RPZpukfuFRRGZ5YkwQ9Qo/TX5h8Tqw8/slKLD7IEqq93DbxDAxEXVxEVzu+W91xutiv03K9HwNYudfllWVyl6WFU4cXI9pmdgSTaL/ARRFqdYCUJUeAAAAAElFTkSuQmCC
+name: ThreatQ v2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Name of the object to search.
+      name: name
+      required: true
+    - defaultValue: "10"
+      description: The maximum number of records to retrieve.
+      name: limit
+    description: Searches for objects by name in the ThreatQ repository.
+    name: threatq-search-by-name
+    outputs:
+    - contextPath: ThreatQ.Indicator.ID
+      description: The ID of the Indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Value
+      description: The value of the Indicator.
+      type: String
+    - contextPath: ThreatQ.Event.ID
+      description: The ID of the Event.
+      type: Number
+    - contextPath: ThreatQ.Event.Title
+      description: The title of the Event.
+      type: String
+    - contextPath: ThreatQ.Adversary.ID
+      description: The ID of the Adversary.
+      type: Number
+    - contextPath: ThreatQ.Adversary.Name
+      description: The name of the Adversary.
+      type: String
+  - arguments:
+    - default: true
+      description: The IP address to check.
+      name: ip
+      required: true
+    description: Checks the reputation of an IP address in ThreatQ.
+    name: ip
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The value of the indicator.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The type of the indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor of the indicator.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The DBot Score of the indicator.
+      type: Number
+    - contextPath: IP.Address
+      description: The IP Address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The IP address of the Vendor.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: The description of the Malicious IP address.
+      type: String
+    - contextPath: ThreatQ.Indicator.ID
+      description: The Id of the Indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Value
+      description: The value of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Source.ID
+      description: The source ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Source.Name
+      description: The source name of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Attribute.ID
+      description: The attribute ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Attribute.Value
+      description: The attribute value of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Attribute.Name
+      description: The attribute name of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.CreatedAt
+      description: The creation date of the indicator.
+      type: Date
+    - contextPath: ThreatQ.Indicator.UpdatedAt
+      description: The last update date of the indicator.
+      type: Date
+    - contextPath: ThreatQ.Indicator.Status
+      description: The status of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.TQScore
+      description: The ThreatQ score of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Description
+      description: The description of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Type
+      description: The type of the indicator.
+      type: String
+  - arguments:
+    - default: true
+      description: URL to check
+      name: url
+      required: true
+    description: Checks the reputation of a URL in ThreatQ.
+    name: url
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The value of the indicator.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The type of the indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor of the indicator.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The DBot Score of the indicator.
+      type: Number
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor of the malicious URL.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: The description of the malicious URL.
+      type: String
+    - contextPath: ThreatQ.Indicator.ID
+      description: The ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Value
+      description: The value of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Source.ID
+      description: The source of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Source.Name
+      description: The source of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Attribute.ID
+      description: The attribute ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Attribute.Value
+      description: The attribute value of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Attribute.Name
+      description: The attribute name of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.CreatedAt
+      description: The creation date of the indicator.
+      type: Date
+    - contextPath: ThreatQ.Indicator.UpdatedAt
+      description: The last update date of the indicator.
+      type: Date
+    - contextPath: ThreatQ.Indicator.Status
+      description: The status of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.TQScore
+      description: The ThreatQ score of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Description
+      description: The description of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Type
+      description: The type of the indicator.
+      type: String
+  - arguments:
+    - default: true
+      description: File MD5, SHA-1 or SHA-256
+      name: file
+      required: true
+    description: Checks the reputation of a file in ThreatQ.
+    name: file
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The value of the indicator.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The type of the indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor of the indicator.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The DBot Score of the indicator.
+      type: Number
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 of the file.
+      type: String
+    - contextPath: File.Path
+      description: The path of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor of the malicious file.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: The description of the malicious file.
+      type: String
+    - contextPath: ThreatQ.Indicator.ID
+      description: The ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Value
+      description: The value of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Source.ID
+      description: The source ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Source.Name
+      description: The source name of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Attribute.ID
+      description: The attribute ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Attribute.Value
+      description: The attribute value of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Attribute.Name
+      description: The attribute name of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.CreatedAt
+      description: The creation date of the indicator.
+      type: Date
+    - contextPath: ThreatQ.Indicator.UpdatedAt
+      description: The last update date of the indicator.
+      type: Date
+    - contextPath: ThreatQ.Indicator.Status
+      description: The status of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.TQScore
+      description: The ThreatQ score of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Description
+      description: The description of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Type
+      description: The type of the indicator.
+      type: String
+  - arguments:
+    - default: true
+      description: The email address to check.
+      name: email
+      required: true
+    description: Checks the reputation of an email in ThreatQ.
+    name: email
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The value of the indicator.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The type of the indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor of the indicator.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The DBot Score of the indicator.
+      type: Number
+    - contextPath: Account.Email.Address
+      description: The Email Address.
+      type: String
+    - contextPath: Account.Malicious.Vendor
+      description: The vendor of the malicious account.
+      type: String
+    - contextPath: Account.Malicious.Description
+      description: The description of the malicious account.
+      type: String
+    - contextPath: ThreatQ.Indicator.ID
+      description: The ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Value
+      description: The value of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Source.ID
+      description: The source ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Source.Name
+      description: The source name of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Attribute.ID
+      description: The attribute ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Attribute.Value
+      description: The attribute value of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Attribute.Name
+      description: The attribute name of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.CreatedAt
+      description: The creation date of the indicator.
+      type: Date
+    - contextPath: ThreatQ.Indicator.UpdatedAt
+      description: The last update date of the indicator.
+      type: Date
+    - contextPath: ThreatQ.Indicator.Status
+      description: The status of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.TQScore
+      description: The ThreatQ score of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Description
+      description: The description of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Type
+      description: The type of the indicator.
+      type: String
+  - arguments:
+    - default: true
+      description: Domain or FQDN
+      name: domain
+      required: true
+    description: Checks the reputation of a domain in ThreatQ.
+    name: domain
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The value of the indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor of the indicator.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The type of the indicator.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The DBot Score of the indicator.
+      type: Number
+    - contextPath: Domain.Name
+      description: The name of the domain.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor of the malicious domain.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: The description of the malicious domain.
+      type: String
+    - contextPath: ThreatQ.Indicator.ID
+      description: The ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Value
+      description: The value of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Source.ID
+      description: The source ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Source.Name
+      description: The source name of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Attribute.ID
+      description: The attribute ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Attribute.Value
+      description: The attribute value of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Attribute.Name
+      description: The attribute name of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.CreatedAt
+      description: The creation date of the indicator.
+      type: Date
+    - contextPath: ThreatQ.Indicator.UpdatedAt
+      description: The last update date of the indicator.
+      type: Date
+    - contextPath: ThreatQ.Indicator.Status
+      description: The status of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.TQScore
+      description: The ThreatQ score of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Description
+      description: The description of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Type
+      description: The type of the indicator.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: The type of indicator, such as email address, IP address, Registry
+        key, binary string, and so on.
+      name: type
+      predefined:
+      - Binary String
+      - CIDR Block
+      - CVE
+      - Email Address
+      - Email Attachment
+      - Email Subject
+      - File Mapping
+      - File Path
+      - Filename
+      - FQDN
+      - Fuzzy Hash
+      - GOST Hash
+      - Hash ION
+      - IP Address
+      - IPv6 Address
+      - MD5
+      - Mutex
+      - Password
+      - Registry Key
+      - Service Name
+      - SHA-1
+      - SHA-256
+      - SHA-384
+      - SHA-512
+      - String
+      - x509 Serial
+      - x509 Subject
+      - URL
+      - URL Path
+      - User-agent
+      - Username
+      - X-Mailer
+      required: true
+    - auto: PREDEFINED
+      description: 'The status of the indicator. Can be: "Active", "Expired", "Indirect",
+        "Review", or "Whitelisted".'
+      name: status
+      predefined:
+      - Active
+      - Expired
+      - Indirect
+      - Review
+      - Whitelisted
+      required: true
+    - description: The value of the indicator.
+      name: value
+      required: true
+    - description: List of Sources names, separated by commas.
+      isArray: true
+      name: sources
+    - description: Attributes names list, separated by commas. The i-th element in
+        the attributes names list corresponds to the i-th element in the attributes
+        values list.
+      isArray: true
+      name: attributes_names
+    - description: Attributes values list, separated by commas. The i-th element in
+        the attributes values list corresponds to the i-th element in the attributes
+        names list.
+      isArray: true
+      name: attributes_values
+    description: Creates a new indicator in ThreatQ.
+    name: threatq-create-indicator
+    outputs:
+    - contextPath: ThreatQ.Indicator.ID
+      description: The ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Value
+      description: The value of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Source.ID
+      description: The source ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Source.Name
+      description: The source name of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Attribute.ID
+      description: The attribute ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Attribute.Value
+      description: The attribute value of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Attribute.Name
+      description: The attribute name of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.CreatedAt
+      description: The creation date of the indicator.
+      type: Date
+    - contextPath: ThreatQ.Indicator.UpdatedAt
+      description: The last update date of the indicator.
+      type: Date
+    - contextPath: ThreatQ.Indicator.Status
+      description: The status of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.TQScore
+      description: The ThreatQ score of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Description
+      description: The description of the indicator.
+      type: String
+    - contextPath: ThreatQ.Indicator.Type
+      description: The type of the indicator.
+      type: String
+  - arguments:
+    - description: The name of the attribute to add.
+      name: name
+      required: true
+    - description: The value of the attribute to add.
+      name: value
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of the object to add. Can be: "indicator", "event", "adversary",
+        or "attachment".'
+      name: obj_type
+      predefined:
+      - indicator
+      - event
+      - adversary
+      - attachment
+      required: true
+    - description: The ID of the Object.
+      name: obj_id
+      required: true
+    description: Adds an attribute to an object in ThreatQ.
+    name: threatq-add-attribute
+  - arguments:
+    - auto: PREDEFINED
+      description: 'The type of the object. Can be: "indicator", "event", "adversary",
+        or "attachment".'
+      name: obj_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      - attachment
+      required: true
+    - description: The ID of the object.
+      name: obj_id
+      required: true
+    - description: The ID of the attribute to modify.
+      name: attribute_id
+      required: true
+    - description: The new value of the attribute.
+      name: attribute_value
+      required: true
+    description: Modifies an attribute for an object in ThreatQ.
+    name: threatq-modify-attribute
+  - arguments:
+    - description: The ID of the first object.
+      name: obj1_id
+      required: true
+    - description: The ID of the second object.
+      name: obj2_id
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of the first object. Can be: "indicator", "adversary",
+        or "event".'
+      name: obj1_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of the second object. Can be: "indicator", "adversary",
+        or "event".'
+      name: obj2_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      required: true
+    description: Links two objects together in ThreatQ.
+    name: threatq-link-objects
+  - arguments:
+    - description: Name of the adversary to create.
+      name: name
+      required: true
+    - description: List of sources names, separated by commas.
+      isArray: true
+      name: sources
+    - description: List of attributes names, separated by commas. The i-th element
+        in the attributes names list corresponds to the i-th element in the attributes
+        values list.
+      isArray: true
+      name: attributes_names
+    - description: List of attributes values, separated by commas. The i-th element
+        in the attributes values list corresponds to the i-th element in the attributes
+        names list.
+      isArray: true
+      name: attributes_values
+    description: Creates a new adversary in ThreatQ.
+    name: threatq-create-adversary
+    outputs:
+    - contextPath: ThreatQ.Adversary.Name
+      description: The name of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.ID
+      description: The ID of the adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.Source.ID
+      description: The source ID of the adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.Source.Name
+      description: The source name of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.Attribute.ID
+      description: The ID of the adversary's attribute.
+      type: number
+    - contextPath: ThreatQ.Adversary.Attribute.Name
+      description: The name of the adversary's attribute.
+      type: string
+    - contextPath: ThreatQ.Adversary.Attribute.Value
+      description: The value of the adversary's attribute.
+      type: string
+    - contextPath: ThreatQ.Adversary.UpdatedAt
+      description: The creation date of the adversary.
+      type: date
+    - contextPath: ThreatQ.Adversary.CreatedAt
+      description: The last update date of the adversary.
+      type: date
+  - arguments:
+    - description: Title of the event.
+      name: title
+      required: true
+    - auto: PREDEFINED
+      description: The type of the event, such as malware, watchlist, command and
+        control, and so on.
+      name: type
+      predefined:
+      - Spearphish
+      - Watering Hole
+      - SQL Injection Attack
+      - DoS Attack
+      - Malware
+      - Watchlist
+      - Command and Control
+      - Anonymization
+      - Exfiltration
+      - Host Characteristics
+      - Compromised PKI Certificate
+      - Login Compromise
+      - Incident
+      required: true
+    - description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
+      name: date
+      required: true
+    - description: List of sources names, separated by commas.
+      isArray: true
+      name: sources
+    - description: List of attributes names, separated by commas. The i-th element
+        in the attributes names list corresponds to the i-th element in the attributes
+        values list.
+      isArray: true
+      name: attributes_names
+    - description: List of attributes values, separated by commas. The i-th element
+        in the attributes values list corresponds to the i-th element in the attributes
+        names list.
+      isArray: true
+      name: attributes_values
+    description: Creates a new event in ThreatQ.
+    name: threatq-create-event
+    outputs:
+    - contextPath: ThreatQ.Event.ID
+      description: The ID of the event.
+      type: number
+    - contextPath: ThreatQ.Event.Source.ID
+      description: The source ID of the event.
+      type: number
+    - contextPath: ThreatQ.Event.Source.Name
+      description: The source name of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Attribute.ID
+      description: The ID of the event attribute.
+      type: number
+    - contextPath: ThreatQ.Event.Attribute.Name
+      description: The name of the event attribute.
+      type: string
+    - contextPath: ThreatQ.Event.Attribute.Value
+      description: The attribute value of the event.
+      type: string
+    - contextPath: ThreatQ.Event.UpdatedAt
+      description: The last update date of the event.
+      type: date
+    - contextPath: ThreatQ.Event.CreatedAt
+      description: The creation date of the event.
+      type: date
+    - contextPath: ThreatQ.Event.Type
+      description: The type of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Description
+      description: The description of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Title
+      description: The title of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Occurred
+      description: The date of the event that happened.
+      type: date
+  - arguments:
+    - description: The ID of the object.
+      name: obj_id
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of the object. Can be: "indicator", "event", or "adversary".'
+      name: obj_type
+      predefined:
+      - indicator
+      - event
+      - adversary
+      required: true
+    description: Retrieves related indicators for an object in ThreatQ.
+    name: threatq-get-related-indicators
+    outputs:
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.ID
+      description: The ID of the related indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Source.ID
+      description: The source ID of the related indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Source.Name
+      description: The source name of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Attribute.ID
+      description: The attribute ID of the related indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Attribute.Name
+      description: The attribute name of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Attribute.Value
+      description: The attribute value of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.UpdatedAt
+      description: The last update date of the related indicator.
+      type: date
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.CreatedAt
+      description: The creation date of the related indicator.
+      type: date
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Type
+      description: The type of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Description
+      description: The description of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Value
+      description: The value of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Status
+      description: The status of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.TQScore
+      description: The ThreatQ score of the related indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.ID
+      description: The ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Event.RelatedIndicator.ID
+      description: The ID of the related indicator.
+      type: number
+    - contextPath: ThreatQ.Event.RelatedIndicator.Source.ID
+      description: The source ID of the related indicator.
+      type: number
+    - contextPath: ThreatQ.Event.RelatedIndicator.Source.Name
+      description: The source name of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.Attribute.ID
+      description: The attribute ID of the related indicator.
+      type: number
+    - contextPath: ThreatQ.Event.RelatedIndicator.Attribute.Name
+      description: The attribute name of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.Attribute.Value
+      description: The attribute value of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.UpdatedAt
+      description: The last update date of the related indicator.
+      type: date
+    - contextPath: ThreatQ.Event.RelatedIndicator.CreatedAt
+      description: The creation date of the related indicator.
+      type: date
+    - contextPath: ThreatQ.Event.RelatedIndicator.Type
+      description: The type of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.Description
+      description: The description of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.Value
+      description: The value of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.Status
+      description: The status of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.TQScore
+      description: The ThreatQ score of the related indicator.
+      type: number
+    - contextPath: ThreatQ.Event.ID
+      description: ID of the Event.
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.ID
+      description: ID of the related indicator.
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Source.ID
+      description: Source ID of the related indicator.
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Source.Name
+      description: Source name of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Attribute.ID
+      description: ID attribute of the related indicator.
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Attribute.Name
+      description: Attribute name of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Attribute.Value
+      description: Attribute value of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.UpdatedAt
+      description: The last update date of the related indicator.
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.CreatedAt
+      description: The creation date of the related indicator.
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Type
+      description: The type of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Description
+      description: Description of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Value
+      description: The value of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Status
+      description: The status of the related indicator.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.TQScore
+      description: The ThreatQ score of the related indicator.
+      type: number
+    - contextPath: ThreatQ.Adversary.ID
+      description: ID of the Adversary.
+      type: number
+  - arguments:
+    - description: The ID of the indicator.
+      name: id
+      required: true
+    - auto: PREDEFINED
+      description: 'The new status of the indicator. Can be: "Active", "Expired",
+        "Indirect", "Review", or "Whitelisted".'
+      name: status
+      predefined:
+      - Active
+      - Expired
+      - Indirect
+      - Review
+      - Whitelisted
+      required: true
+    description: Updates an indicator status in ThreatQ.
+    name: threatq-update-status
+    outputs:
+    - contextPath: ThreatQ.Indicator.ID
+      description: ID of the indicator.
+      type: Number
+    - contextPath: ThreatQ.Indicator.Status
+      description: Status of the indicator.
+      type: String
+  - arguments:
+    - description: ID of the object.
+      name: obj_id
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of the object. Can be: "indicator", "event", or "adversary".'
+      name: obj_type
+      predefined:
+      - indicator
+      - event
+      - adversary
+      required: true
+    description: Retrieves related events of an object in ThreatQ.
+    name: threatq-get-related-events
+    outputs:
+    - contextPath: ThreatQ.Indicator.RelatedEvent.ID
+      description: ID of the related event.
+      type: number
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Source.ID
+      description: Source ID of the related event.
+      type: number
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Source.Name
+      description: Source name of the related event.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Attribute.ID
+      description: The attribute ID of the related event.
+      type: number
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Attribute.Name
+      description: The attribute name of the related event.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Attribute.Value
+      description: The attribute value of the related event.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedEvent.UpdatedAt
+      description: The last update date of the related event.
+      type: date
+    - contextPath: ThreatQ.Indicator.RelatedEvent.CreatedAt
+      description: The creation date of the related event.
+      type: date
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Description
+      description: Description of the related event.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Title
+      description: The title of the related event.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Occurred
+      description: The date of occurrence of the related event.
+      type: date
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Type
+      description: The type of the related event.
+      type: string
+    - contextPath: ThreatQ.Indicator.ID
+      description: The ID of the Indicator.
+      type: number
+    - contextPath: ThreatQ.Event.RelatedEvent.ID
+      description: The ID of the related event.
+      type: number
+    - contextPath: ThreatQ.Event.RelatedEvent.Source.ID
+      description: The source ID of the related event.
+      type: number
+    - contextPath: ThreatQ.Event.RelatedEvent.Source.Name
+      description: The source name of the related event.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedEvent.Attribute.ID
+      description: The attribute ID of the related event.
+      type: number
+    - contextPath: ThreatQ.Event.RelatedEvent.Attribute.Name
+      description: The attribute name of the related event.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedEvent.Attribute.Value
+      description: The attribute value of the related event.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedEvent.UpdatedAt
+      description: The last update date of the related event.
+      type: date
+    - contextPath: ThreatQ.Event.RelatedEvent.CreatedAt
+      description: The creation date of the related event.
+      type: date
+    - contextPath: ThreatQ.Event.RelatedEvent.Description
+      description: The description of the related event.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedEvent.Title
+      description: The title of the related event.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedEvent.Occurred
+      description: The date of occurrence of the related event.
+      type: date
+    - contextPath: ThreatQ.Event.RelatedEvent.Type
+      description: The type of the related event.
+      type: string
+    - contextPath: ThreatQ.Event.ID
+      description: The ID of the Event.
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedEvent.ID
+      description: The ID of the related event.
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Source.ID
+      description: The source ID of the related event.
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Source.Name
+      description: The source name of the related event.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Attribute.ID
+      description: The attribute ID of the of the related event.
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Attribute.Name
+      description: The attribute name of the related event.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Attribute.Value
+      description: The attribute value of the related event.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedEvent.UpdatedAt
+      description: The last update date of the related event.
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedEvent.CreatedAt
+      description: The creation date of the related event.
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Description
+      description: The description of the related event.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Title
+      description: The title of the related event.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Occurred
+      description: The date of occurrence of the related event.
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Type
+      description: The type of the related event.
+      type: string
+    - contextPath: ThreatQ.Adversary.ID
+      description: ID of the Adversary.
+      type: number
+  - arguments:
+    - description: ID of the object.
+      name: obj_id
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of the object. Can be: "indicator", "event", or "adversary".'
+      name: obj_type
+      predefined:
+      - indicator
+      - event
+      - adversary
+      required: true
+    description: Retrieve related adversaries from an object in ThreatQ.
+    name: threatq-get-related-adversaries
+    outputs:
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.ID
+      description: ID of the related adversary.
+      type: number
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.Source.ID
+      description: Source ID of the related adversary.
+      type: number
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.Source.Name
+      description: The Source name of the related adversary.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.Attribute.ID
+      description: The attribute ID of the related adversary.
+      type: number
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.Attribute.Name
+      description: The attribute name of the related adversary.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.Attribute.Value
+      description: The attribute value of the related adversary.
+      type: string
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.UpdatedAt
+      description: The last update date of the related adversary.
+      type: date
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.CreatedAt
+      description: The creation date of the related adversary.
+      type: date
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.Name
+      description: The name of the related adversary.
+      type: string
+    - contextPath: ThreatQ.Indicator.ID
+      description: The ID of the Indicator.
+      type: number
+    - contextPath: ThreatQ.Event.RelatedAdversary.ID
+      description: The ID of the related adversary.
+      type: number
+    - contextPath: ThreatQ.Event.RelatedAdversary.Source.ID
+      description: The source ID of the related adversary.
+      type: number
+    - contextPath: ThreatQ.Event.RelatedAdversary.Source.Name
+      description: The source name of the related adversary.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedAdversary.Attribute.ID
+      description: The attribute ID of the related adversary.
+      type: number
+    - contextPath: ThreatQ.Event.RelatedAdversary.Attribute.Name
+      description: The Attribute name of the related adversary.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedAdversary.Attribute.Value
+      description: The attribute value of the related adversary.
+      type: string
+    - contextPath: ThreatQ.Event.RelatedAdversary.UpdatedAt
+      description: The last update date of the related adversary.
+      type: date
+    - contextPath: ThreatQ.Event.RelatedAdversary.CreatedAt
+      description: The creation date of the related adversary.
+      type: date
+    - contextPath: ThreatQ.Event.RelatedAdversary.Name
+      description: The name of the related adversary.
+      type: string
+    - contextPath: ThreatQ.Event.ID
+      description: The ID of the Event.
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.ID
+      description: The ID of the Related adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.Source.ID
+      description: The source ID of the related adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.Source.Name
+      description: The source name of the related adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.Attribute.ID
+      description: The attribute ID of the related adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.Attribute.Name
+      description: The attribute name of the related adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.Attribute.Value
+      description: The attribute value of the related adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.UpdatedAt
+      description: The last update date of the related adversary.
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.CreatedAt
+      description: The creation date of the related adversary.
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.Name
+      description: The name of the related adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.ID
+      description: The ID of the Adversary.
+      type: number
+  - arguments:
+    - description: The file entry ID in Demisto.
+      name: entry_id
+      required: true
+    - auto: PREDEFINED
+      description: Category of the file, such as CrowdStrike Intelligence, FireEye
+        Analysis, PDF, and so on.
+      name: file_category
+      predefined:
+      - Cuckoo
+      - CrowdStrike Intelligence
+      - Early Warning and Indicator Notice (EWIN)
+      - FireEye Analysis
+      - FBI FLASH
+      - Generic Text
+      - Intelligence Whitepaper
+      - iSight Report
+      - iSight ThreatScape Intelligence Report
+      - JIB
+      - MAEC
+      - Malware Analysis Report
+      - Malware Initial Findings Report (MFIR)
+      - Malware Sample
+      - Packet Capture
+      - Palo Alto Networks WildFire XML
+      - PCAP
+      - PDF
+      - Private Industry Notification (PIN)
+      - Spearphish Attachment
+      - STIX
+      - ThreatAnalyzer Analysis
+      - ThreatQ CSV File
+      - Whitepaper
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "off"
+      description: 'Zips malware files for safer downloading. Can be: "on", or "off".
+        Default is off.'
+      name: malware_safety_lock
+      predefined:
+      - "on"
+      - "off"
+    - description: Title of the File. Default is the file name.
+      name: title
+    description: Uploads a file in ThreatQ.
+    name: threatq-upload-file
+    outputs:
+    - contextPath: ThreatQ.File.CreatedAt
+      description: Date of the file upload.
+      type: Date
+    - contextPath: ThreatQ.File.Size
+      description: Size (in bytes) of the file.
+      type: Number
+    - contextPath: ThreatQ.File.MD5
+      description: The MD5 of the file.
+      type: String
+    - contextPath: ThreatQ.File.ID
+      description: The File ID in ThreatQ.
+      type: Number
+    - contextPath: ThreatQ.File.Name
+      description: The name of the File.
+      type: String
+    - contextPath: ThreatQ.File.Title
+      description: The title of the file.
+      type: String
+    - contextPath: ThreatQ.File.UpdatedAt
+      description: The last update of the file.
+      type: Date
+    - contextPath: ThreatQ.File.MalwareLocked
+      description: Whether malware files are zipped.
+      type: Number
+    - contextPath: ThreatQ.File.ContentType
+      description: The content type of the file.
+      type: String
+    - contextPath: ThreatQ.File.Type
+      description: The type of the file.
+      type: String
+    - contextPath: ThreatQ.File.Source.ID
+      description: The source of the file.
+      type: Number
+    - contextPath: ThreatQ.File.Source.Name
+      description: The source name of the file.
+      type: String
+    - contextPath: ThreatQ.File.Attribute.ID
+      description: The attribute ID of the file.
+      type: Number
+    - contextPath: ThreatQ.File.Attribute.Name
+      description: The attribute name of the file.
+      type: String
+    - contextPath: ThreatQ.File.Attribute.Value
+      description: The attribute value of the file.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: 'The type of the object. Can be: "indicator", "event", "attachment"
+        or "adversary".'
+      name: obj_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      - attachment
+      required: true
+    - description: The ID of the Object.
+      name: obj_id
+      required: true
+    description: Searches for an object by object type and ID. Generic and DBotScore
+      contexts also may be generated.
+    name: threatq-search-by-id
+    outputs:
+    - contextPath: ThreatQ.Indicator.ID
+      description: ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.Source.ID
+      description: Source ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.Source.Name
+      description: Source name of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Attribute.ID
+      description: Attribute ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.Attribute.Name
+      description: Attribute name of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Attribute.Value
+      description: Attribute value of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.CreatedAt
+      description: Creation date of the indicator.
+      type: date
+    - contextPath: ThreatQ.Indicator.UpdatedAt
+      description: Last update date of the indicator.
+      type: date
+    - contextPath: ThreatQ.Indicator.Description
+      description: Description of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Value
+      description: The value of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Status
+      description: The status of indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Type
+      description: The type of the indicator. For example, IP Address.
+      type: string
+    - contextPath: ThreatQ.Indicator.TQScore
+      description: The ThreatQ Score of the indicator.
+      type: number
+    - contextPath: ThreatQ.Event.ID
+      description: The ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Event.Source.ID
+      description: The source ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Event.Source.Name
+      description: The source name of the indicator.
+      type: string
+    - contextPath: ThreatQ.Event.Attribute.ID
+      description: The attribute ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Event.Attribute.Name
+      description: The attribute name of the indicator.
+      type: string
+    - contextPath: ThreatQ.Event.Attribute.Value
+      description: The attribute value of the indicator.
+      type: string
+    - contextPath: ThreatQ.Event.UpdatedAt
+      description: The last update date of the event.
+      type: date
+    - contextPath: ThreatQ.Event.CreatedAt
+      description: The creation date of the event.
+      type: date
+    - contextPath: ThreatQ.Event.Type
+      description: The type of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Description
+      description: Description of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Title
+      description: The title of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Occurred
+      description: The date that the event happened.
+      type: date
+    - contextPath: ThreatQ.Adversary.Name
+      description: The name of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.ID
+      description: The ID of the adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.Source.ID
+      description: The source of the adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.Source.Name
+      description: The source name of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.Attribute.ID
+      description: The attribute ID of the adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.Attribute.Name
+      description: The attribute name of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.Attribute.Value
+      description: The attribute value of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.UpdatedAt
+      description: The creation date of the adversary.
+      type: date
+    - contextPath: ThreatQ.Adversary.CreatedAt
+      description: The last update date of the adversary.
+      type: date
+    - contextPath: ThreatQ.File.CreatedAt
+      description: The date that the file was uploaded.
+      type: Date
+    - contextPath: ThreatQ.File.Size
+      description: The size of the file (in bytes).
+      type: Number
+    - contextPath: ThreatQ.File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: ThreatQ.File.ID
+      description: The file ID in ThreatQ.
+      type: Number
+    - contextPath: ThreatQ.File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: ThreatQ.File.Title
+      description: The title of the file.
+      type: String
+    - contextPath: ThreatQ.File.UpdatedAt
+      description: The last update of the file.
+      type: Date
+    - contextPath: ThreatQ.File.MalwareLocked
+      description: Whether malware files are zipped.
+      type: Number
+    - contextPath: ThreatQ.File.ContentType
+      description: The content type of the file.
+      type: String
+    - contextPath: ThreatQ.File.Type
+      description: The file type.
+      type: String
+    - contextPath: ThreatQ.File.Source.ID
+      description: The source of the file.
+      type: Number
+    - contextPath: ThreatQ.File.Source.Name
+      description: The source name of the file.
+      type: String
+    - contextPath: ThreatQ.File.Attribute.ID
+      description: The attribute ID of the file.
+      type: Number
+    - contextPath: ThreatQ.File.Attribute.Name
+      description: The attribute name of the file.
+      type: String
+    - contextPath: ThreatQ.File.Attribute.Value
+      description: The attribute value of the file.
+      type: String
+  - arguments:
+    - description: The ID of the first object.
+      name: obj1_id
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of the first object. Can be: "adversary", "indicator",
+        or "event".'
+      name: obj1_type
+      predefined:
+      - adversary
+      - indicator
+      - event
+      required: true
+    - description: The ID of the second object.
+      name: obj2_id
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of the second object. Can be: "adversary", "indicator",
+        or "event".'
+      name: obj2_type
+      predefined:
+      - adversary
+      - indicator
+      - event
+      required: true
+    description: Unlinks two objects in ThreatQ.
+    name: threatq-unlink-objects
+  - arguments:
+    - description: ID of the Object.
+      name: obj_id
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of the object. Can be: "indicator", "event", "adversary"
+        or "attachment".'
+      name: obj_type
+      predefined:
+      - indicator
+      - event
+      - adversary
+      - attachment
+      required: true
+    description: Deletes an object in ThreatQ.
+    name: threatq-delete-object
+  - arguments:
+    - description: ID of an Object.
+      name: obj_id
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of the object. Can be: "indicator", "event", "adversary",
+        or "attachment".'
+      name: obj_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      - attachment
+      required: true
+    - description: The source name.
+      name: source
+      required: true
+    description: Adds a source to an object in ThreatQ.
+    name: threatq-add-source
+  - arguments:
+    - description: ID of the source.
+      name: source_id
+      required: true
+    - description: ID of the object.
+      name: obj_id
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of the object. Can be: "indicator", "event", "adversary",
+        or "attachment".'
+      name: obj_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      - attachment
+      required: true
+    description: Deletes a source from an object in ThreatQ.
+    name: threatq-delete-source
+  - arguments:
+    - description: ID of the attribute.
+      name: attribute_id
+      required: true
+    - description: ID of the object.
+      name: obj_id
+      required: true
+    - auto: PREDEFINED
+      description: 'The type of the object. Can be: "indicator", "event", "adversary",
+        or "attachment".'
+      name: obj_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      - attachment
+      required: true
+    description: Deletes an attribute from an object in ThreatQ.
+    name: threatq-delete-attribute
+  - arguments:
+    - description: ID of the Adversary to update.
+      name: id
+      required: true
+    - description: Name of the new adversary.
+      name: name
+      required: true
+    description: Updates an adversary name in ThreatQ.
+    name: threatq-edit-adversary
+    outputs:
+    - contextPath: ThreatQ.Adversary.Name
+      description: The name of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.ID
+      description: The ID of the adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.Source.ID
+      description: The source ID of the adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.Source.Name
+      description: The source name of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.Attribute.ID
+      description: The attribute ID of the adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.Attribute.Name
+      description: The attribute name of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.Attribute.Value
+      description: The value of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.UpdatedAt
+      description: The creation date of the adversary.
+      type: date
+    - contextPath: ThreatQ.Adversary.CreatedAt
+      description: The last update date of the adversary.
+      type: date
+  - arguments:
+    - description: The ID of the indicator.
+      name: id
+      required: true
+    - description: The value of the new indicator.
+      name: value
+    - auto: PREDEFINED
+      description: The type of the new indicator, such as email address, Filename,
+        Binary string and so on.
+      name: type
+      predefined:
+      - Binary String
+      - CIDR Block
+      - CVE
+      - Email Address
+      - Email Attachment
+      - Email Subject
+      - File Mapping
+      - File Path
+      - Filename
+      - FQDN
+      - Fuzzy Hash
+      - GOST Hash
+      - Hash ION
+      - IP Address
+      - IPv6 Address
+      - MD5
+      - Mutex
+      - Password
+      - Registry Key
+      - Service Name
+      - SHA-1
+      - SHA-256
+      - SHA-384
+      - SHA-512
+      - String
+      - x509 Serial
+      - x509 Subject
+      - URL
+      - URL Path
+      - User-agent
+      - Username
+      - X-Mailer
+    - description: The description of the indicator.
+      name: description
+    description: Updates an indicator in ThreatQ.
+    name: threatq-edit-indicator
+    outputs:
+    - contextPath: ThreatQ.Indicator.ID
+      description: The ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.Source.ID
+      description: The source ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.Source.Name
+      description: The source name of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Attribute.ID
+      description: The attribute ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.Attribute.Name
+      description: The attribute name of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Attribute.Value
+      description: The attribute value of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.CreatedAt
+      description: The creation date of the indicator.
+      type: date
+    - contextPath: ThreatQ.Indicator.UpdatedAt
+      description: The last update date of the indicator.
+      type: date
+    - contextPath: ThreatQ.Indicator.Description
+      description: The description of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Value
+      description: The value of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Status
+      description: The status of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Type
+      description: The type of the indicator. For example, IP Address.
+      type: string
+    - contextPath: ThreatQ.Indicator.TQScore
+      description: The ThreatQ Score of the indicator.
+      type: number
+  - arguments:
+    - description: The ID of the Event.
+      name: id
+      required: true
+    - description: The title of the new event.
+      name: title
+    - description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
+      name: date
+    - auto: PREDEFINED
+      description: Type of the event, such as DoS Attack, Malware, Watchlist, and
+        so on.
+      name: type
+      predefined:
+      - Spearphish
+      - Watering Hole
+      - SQL Injection Attack
+      - DoS Attack
+      - Malware
+      - Watchlist
+      - Command and Control
+      - Anonymization
+      - Exfiltration
+      - Host Characteristics
+      - Compromised PKI Certificate
+      - Login Compromise
+      - Incident
+    - description: Description of the event.
+      name: description
+    description: Updates an event in ThreatQ.
+    name: threatq-edit-event
+    outputs:
+    - contextPath: ThreatQ.Event.ID
+      description: The ID of the event.
+      type: number
+    - contextPath: ThreatQ.Event.Source.ID
+      description: The source ID of the event.
+      type: number
+    - contextPath: ThreatQ.Event.Source.Name
+      description: The source name of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Attribute.ID
+      description: The attribute ID of the event.
+      type: number
+    - contextPath: ThreatQ.Event.Attribute.Name
+      description: The attribute name of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Attribute.Value
+      description: The attribute value of the event.
+      type: string
+    - contextPath: ThreatQ.Event.UpdatedAt
+      description: The last update date of the event.
+      type: date
+    - contextPath: ThreatQ.Event.CreatedAt
+      description: The creation date of the event.
+      type: date
+    - contextPath: ThreatQ.Event.Type
+      description: The type of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Description
+      description: The description of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Title
+      description: The title of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Occurred
+      description: The date that the event happened.
+      type: date
+  - arguments:
+    - description: The ID of the indicator.
+      name: id
+      required: true
+    - auto: PREDEFINED
+      description: 'The manual indicator score. Can be: "Generated Score" or "1",
+        "2", "3", "4", "5", "6", "7", "8", "9" or "10".'
+      name: score
+      predefined:
+      - Generated Score
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "8"
+      - "9"
+      - "10"
+      required: true
+    description: Modifies an indicator's score in ThreatQ. The final indicator score
+      is the highest of the manual and generated scores.
+    name: threatq-update-score
+    outputs:
+    - contextPath: ThreatQ.Indicator.ID
+      description: The ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.Source.ID
+      description: The source ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.Source.Name
+      description: The source name of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Attribute.ID
+      description: The attribute ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.Attribute.Name
+      description: The attribute name of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Attribute.Value
+      description: The attribute value of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.CreatedAt
+      description: The creation date of the indicator.
+      type: date
+    - contextPath: ThreatQ.Indicator.UpdatedAt
+      description: The last update date of the indicator.
+      type: date
+    - contextPath: ThreatQ.Indicator.Description
+      description: The description of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Value
+      description: The value of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Status
+      description: The status of the Indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Type
+      description: The type of the indicator. For example, IP Address.
+      type: string
+    - contextPath: ThreatQ.Indicator.TQScore
+      description: The ThreatQ Score of the indicator.
+      type: number
+  - arguments:
+    - description: The ID of the file.
+      name: id
+      required: true
+    description: Downloads a file from ThreatQ to Demisto.
+    name: threatq-download-file
+  - arguments:
+    - defaultValue: "0"
+      description: The result page number to return. Default is 0.
+      name: page
+    - defaultValue: "50"
+      description: The maximum number of indicators return. Default is 50.
+      name: limit
+    description: Retrieves all indicators in ThreatQ.
+    name: threatq-get-all-indicators
+    outputs:
+    - contextPath: ThreatQ.Indicator.ID
+      description: ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.Source.ID
+      description: Source ID of the indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.Source.Name
+      description: Source name of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Attribute.ID
+      description: Attribute ID of the of the indicator.
+      type: number
+    - contextPath: ThreatQ.Indicator.Attribute.Name
+      description: Attribute name of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Attribute.Value
+      description: Attribute value of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.CreatedAt
+      description: The creation date of the indicator.
+      type: date
+    - contextPath: ThreatQ.Indicator.UpdatedAt
+      description: The last update date of the indicator.
+      type: date
+    - contextPath: ThreatQ.Indicator.Description
+      description: The description of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Value
+      description: The value of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Status
+      description: The status of the indicator.
+      type: string
+    - contextPath: ThreatQ.Indicator.Type
+      description: The type of the indicator. For example, IP Address.
+      type: string
+    - contextPath: ThreatQ.Indicator.TQScore
+      description: The ThreatQ Score of the indicator.
+      type: number
+  - arguments:
+    - defaultValue: "0"
+      description: The result page number to return. Default is 0.
+      name: page
+    - defaultValue: "50"
+      description: The maximum number of events to return. Default is 50.
+      name: limit
+    description: Retrieves all events in ThreatQ.
+    name: threatq-get-all-events
+    outputs:
+    - contextPath: ThreatQ.Event.ID
+      description: The ID of the event.
+      type: number
+    - contextPath: ThreatQ.Event.Source.ID
+      description: The source ID of the event.
+      type: number
+    - contextPath: ThreatQ.Event.Source.Name
+      description: The source name of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Attribute.ID
+      description: The attribute ID of the event.
+      type: number
+    - contextPath: ThreatQ.Event.Attribute.Name
+      description: The attribute name of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Attribute.Value
+      description: The attribute value of the event.
+      type: string
+    - contextPath: ThreatQ.Event.UpdatedAt
+      description: The last update date of the event.
+      type: date
+    - contextPath: ThreatQ.Event.CreatedAt
+      description: The creation date of the event.
+      type: date
+    - contextPath: ThreatQ.Event.Type
+      description: The type of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Description
+      description: The description of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Title
+      description: The title of the event.
+      type: string
+    - contextPath: ThreatQ.Event.Occurred
+      description: The date the event happened.
+      type: date
+  - arguments:
+    - defaultValue: "0"
+      description: The result page number to return. Default is 0.
+      name: page
+    - defaultValue: "50"
+      description: The maximum number of objects to return in one response (maximum
+        is 200).
+      name: limit
+    description: Returns all adversaries in ThreatQ.
+    name: threatq-get-all-adversaries
+    outputs:
+    - contextPath: ThreatQ.Adversary.Name
+      description: The name of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.ID
+      description: The ID of the of the adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.Source.ID
+      description: The source ID of the adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.Source.Name
+      description: The source name of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.Attribute.ID
+      description: The attribute ID of the adversary.
+      type: number
+    - contextPath: ThreatQ.Adversary.Attribute.Name
+      description: The attribute name of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.Attribute.Value
+      description: The attribute value of the adversary.
+      type: string
+    - contextPath: ThreatQ.Adversary.UpdatedAt
+      description: The creation date of the adversary.
+      type: date
+    - contextPath: ThreatQ.Adversary.CreatedAt
+      description: The last update date of the adversary.
+      type: date
+  dockerimage: demisto/python3:3.7.4.977
+  runonce: false
+  script: |2-
+
+
+
+    ''' IMPORTS '''
+    import requests
+    import json
+    import shutil
+    from typing import Dict, Any
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARIABLES '''
+
+    SERVER_URL = demisto.params()['serverUrl'].rstrip('/')
+    API_URL = SERVER_URL + '/api'
+    CLIENT_ID = demisto.params()['client_id']
+    EMAIL = demisto.getParam('credentials').get('identifier')
+    PASSWORD = demisto.getParam('credentials').get('password')
+    USE_SSL = not demisto.params().get('insecure', False)
+    THRESHOLD = int(demisto.params().get('threshold', '0'))
+    if THRESHOLD:
+        THRESHOLD = int(THRESHOLD)
+
+    domain_regex = r'(?i)(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-A-Z0-9]+\[?\.\]?)+[-A-Z0-9]+' \
+                   r'(?::[0-9]+)?(?:(?:\/|\?)[-A-Z0-9+&@#\/%=~_$?!:,.\(\);\*|]*[-A-Z0-9+&@#\/%=~_$\(\);\*|])?|' \
+                   r'\b[-A-Za-z0-9._%+\*|]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
+
+    REGEX_MAP = {
+        'email': re.compile(emailRegex, regexFlags),
+        'url': re.compile(urlRegex, regexFlags),
+        'md5': re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags),
+        'sha1': re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags),
+        'sha256': re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags),
+        'domain': re.compile(domain_regex, regexFlags)
+    }
+
+    TQ_TO_DEMISTO_INDICATOR_TYPES = {
+        'IP Address': 'ip',
+        'IPv6 Address': 'ip',
+        'Email Address': 'email',
+        'URL': 'url',
+        'MD5': 'file',
+        'SHA-1': 'file',
+        'SHA-256': 'file',
+        'FQDN': 'domain'
+    }
+
+    STATUS_ID_TO_STATUS = {
+        1: 'Active',
+        2: 'Expired',
+        3: 'Indirect',
+        4: 'Review',
+        5: 'Whitelisted'
+    }
+
+    TYPE_ID_TO_INDICATOR_TYPE = {
+        1: 'Binary String',
+        2: 'CIDR Block',
+        3: 'CVE',
+        4: 'Email Address',
+        5: 'Email Attachment',
+        6: 'Email Subject',
+        7: 'File Mapping',
+        8: 'File Path',
+        9: 'Filename',
+        10: 'FQDN',
+        11: 'Fuzzy Hash',
+        12: 'GOST Hash',
+        13: 'Hash ION',
+        14: 'IP Address',
+        15: 'IPv6 Address',
+        16: 'MD5',
+        17: 'Mutex',
+        18: 'Password',
+        19: 'Registry Key',
+        20: 'Service Name',
+        21: 'SHA-1',
+        22: 'SHA-256',
+        23: 'SHA-384',
+        24: 'SHA-512',
+        25: 'String',
+        26: 'x509 Serial',
+        27: 'x509 Subject',
+        28: 'URL',
+        29: 'URL Path',
+        30: 'User-agent',
+        31: 'Username',
+        32: 'X-Mailer'
+    }
+
+    TYPE_ID_TO_EVENT_TYPE = {
+        1: 'Spearphish',
+        2: 'Watering Hole',
+        3: 'SQL Injection Attack',
+        4: 'DoS Attack',
+        5: 'Malware',
+        6: 'Watchlist',
+        7: 'Command and Control',
+        8: 'Anonymization',
+        9: 'Exfiltration',
+        10: 'Host Characteristics',
+        11: 'Compromised PKI Certificate',
+        12: 'Login Compromise',
+        13: 'Incident'
+    }
+
+    TYPE_ID_TO_FILE_TYPE = {
+        1: 'Cuckoo',
+        2: 'CrowdStrike Intelligence',
+        3: 'Early Warning and Indicator Notice (EWIN)',
+        4: 'FireEye Analysis',
+        5: 'FBI FLASH',
+        6: 'Generic Text',
+        7: 'Intelligence Whitepaper',
+        8: 'iSight Report',
+        9: 'iSight ThreatScape Intelligence Report',
+        10: 'IB',
+        11: 'AEC',
+        12: 'Malware Analysis Report',
+        13: 'Malware Initial Findings Report (MFIR)',
+        14: 'Malware Sample',
+        15: 'Packet Capture',
+        16: 'Palo Alto Networks WildFire XML',
+        17: 'PCAP',
+        18: 'PDF',
+        19: 'Private Industry Notification (PIN)',
+        20: 'Spearphish Attachment',
+        21: 'STIX',
+        22: 'ThreatAnalyzer Analysis',
+        23: 'ThreatQ CSV File',
+        24: 'Whitepaper'
+    }
+
+    TABLE_HEADERS = {
+        'indicator': ['ID', 'Type', 'Value', 'Description', 'Status',
+                      'TQScore', 'CreatedAt', 'UpdatedAt', 'URL'],
+        'adversary': ['ID', 'Name', 'CreatedAt', 'UpdatedAt', 'URL'],
+        'event': ['ID', 'Type', 'Title', 'Description', 'Occurred', 'CreatedAt', 'UpdatedAt', 'URL'],
+        'attachment': ['ID', 'Name', 'Title', 'Type', 'Size', 'Description', 'MD5', 'CreatedAt', 'UpdatedAt',
+                       'MalwareLocked', 'ContentType', 'URL'],
+        'attributes': ['ID', 'Name', 'Value'],
+        'sources': ['ID', 'Name']
+    }
+
+    OBJ_DIRECTORY = {
+        'indicator': 'indicators',
+        'adversary': 'adversaries',
+        'event': 'events',
+        'attachment': 'attachments'
+    }
+
+    RELATED_KEY = {
+        'indicator': 'RelatedIndicator',
+        'adversary': 'RelatedAdversary',
+        'event': 'RelatedEvent'
+    }
+
+    CONTEXT_PATH = {
+        'indicator': 'ThreatQ.Indicator(val.ID === obj.ID)',
+        'adversary': 'ThreatQ.Adversary(val.ID === obj.ID)',
+        'event': 'ThreatQ.Event(val.ID === obj.ID)',
+        'attachment': 'ThreatQ.File(val.ID === obj.ID)'
+    }
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def get_errors_string_from_bad_request(bad_request_results, status_code):
+        if status_code == 404:
+            return 'Object does not exist.\n'
+
+        # Errors could be retrieved in two forms:
+        # 1. A dictionary of fields and errors list related to the fields, all under 'data' key in the response json object
+        # 2. A list, directly within the response object
+
+        errors_string = 'Errors from service:\n\n'
+
+        # First form
+        errors_dict = bad_request_results.json().get('data', {}).get('errors', {})
+        if errors_dict:
+            for error_num, (key, lst) in enumerate(errors_dict.items(), 1):
+                curr_error_string = '\n'.join(lst) + '\n\n'
+                errors_string += 'Error #{0}. In \'{1}\':\n{2}'.format(error_num, key, curr_error_string)
+            return errors_string
+
+        # Second form
+        errors_list = bad_request_results.json().get('errors', [])
+        if errors_list:
+            for error_num, error in enumerate(errors_list, 1):
+                if isinstance(error, str):
+                    errors_string += 'Error #{0}: {1}\n'.format(error_num, error)
+                else:  # error is a list
+                    for i in range(len(error)):
+                        errors_string += 'Error #{0}.{1}: {2}\n'.format(error_num, i, error[i])
+            return errors_string
+
+        return str()  # Service did not provide any errors.
+
+
+    def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_response=False, allow_redirects=True):
+        api_call_headers = None
+        if url_suffix != '/token':
+            access_token = get_access_token()
+            api_call_headers = {'Authorization': 'Bearer ' + access_token}
+
+            if not files:
+                params = json.dumps(params)
+
+        response = requests.request(method, API_URL + url_suffix, data=params, headers=api_call_headers,
+                                    verify=USE_SSL, files=files, allow_redirects=allow_redirects)
+
+        if response.status_code >= 400:
+            errors_string = get_errors_string_from_bad_request(response, response.status_code)
+            error_message = 'Received an error - status code [{0}].\n{1}'.format(response.status_code, errors_string)
+            return_error(error_message)
+
+        if retrieve_entire_response:
+            return response
+        elif method != 'DELETE':  # the DELETE request returns nothing in response
+            return response.json()
+        return None
+
+
+    def request_new_access_token():
+        params = {'grant_type': 'password', 'email': EMAIL, 'password': PASSWORD, 'client_id': CLIENT_ID}
+        access_token_response = tq_request('POST', '/token', params, allow_redirects=False)
+
+        updated_integration_context = {
+            'access_token': access_token_response['access_token'],
+            'access_token_creation_time': int(time.time()) - 1,  # decrementing one second to be on the safe side
+            'access_token_expires_in': access_token_response['expires_in']
+        }
+        demisto.setIntegrationContext(updated_integration_context)
+        threatq_access_token = access_token_response['access_token']
+        return threatq_access_token
+
+
+    def access_token_not_expired():
+        epoch_time_now = time.time()
+        epoch_time_when_token_granted = demisto.getIntegrationContext().get('access_token_creation_time')
+        token_time_until_expiration = demisto.getIntegrationContext().get('access_token_expires_in')
+        return int(epoch_time_now) - int(epoch_time_when_token_granted) < int(token_time_until_expiration)
+
+
+    def get_access_token():
+        existing_access_token = demisto.getIntegrationContext().get('access_token')
+        if existing_access_token and access_token_not_expired():
+            return existing_access_token
+        else:
+            new_access_token = request_new_access_token()
+            return new_access_token
+
+
+    def make_create_object_request(obj_type, params):
+        url_suffix = '/{0}'.format(OBJ_DIRECTORY[obj_type])
+        res = tq_request('POST', url_suffix, params)
+
+        # For some reason, only while creating an indicator, the response data is a list of dicts with size 1.
+        # Creating other objects simply returns one dict, as expected.
+        data = res['data'][0] if obj_type == 'indicator' else res['data']
+        data = data_to_demisto_format(data, obj_type)
+
+        entry_context = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)}
+
+        readable_title = '{0} was successfully created.'.format(obj_type.title())
+        readable = build_readable(readable_title, obj_type, data)
+
+        return_outputs(readable, entry_context, res)
+
+
+    def make_edit_request_for_an_object(obj_id, obj_type, params):
+        # Remove items with empty values.
+        params = {k: v for k, v in params.items() if v is not None}
+
+        url_suffix = '/{0}/{1}?with=attributes,sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
+        if obj_type == 'indicator':
+            url_suffix += ',score'
+
+        res = tq_request('PUT', url_suffix, params)
+
+        data = data_to_demisto_format(res['data'], obj_type)
+        entry_context = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)}
+
+        readable_title = 'Successfully edited {0} with ID {1}'.format(obj_type, obj_id)
+        readable = build_readable(readable_title, obj_type, data)
+
+        return_outputs(readable, entry_context, res)
+
+
+    def make_indicator_reputation_request(indicator_type, value, generic_context):
+        # Search for the indicator ID by keyword:
+        url_suffix = '/search?query={0}&limit=1'.format(value)
+        res = tq_request('GET', url_suffix)
+
+        data = {}  # type: Dict[str, Any]
+        for obj in res.get('data', []):
+            if obj.get('value') == value and obj.get('object') == 'indicator':
+                # Search for detailed information about the indicator
+                url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(obj.get('id'))
+                res = tq_request('GET', url_suffix)
+                data = indicator_data_to_demisto_format(res['data'])
+                break
+
+        dbot_context = create_dbot_context(value, indicator_type, data.get('TQScore', -1))
+        entry_context = set_indicator_entry_context(indicator_type, data, dbot_context, generic_context)
+
+        readable_title = 'Search results for {0} {1}'.format(indicator_type, value)
+        readable = build_readable(readable_title, 'indicator', data)
+
+        return_outputs(readable, entry_context, res)
+
+
+    def create_dbot_context(indicator, ind_type, ind_score):
+        """ This function converts a TQ scoring value of an indicator into a DBot score.
+        The default score mapping function is: -1 -> 0, [0,3] -> 1, [4,7] -> 2, [8,10] -> 3.
+
+        If threshold parameter is set manually, it overrides the default function definition for a
+        malicious indicator, such that TQ score >= threshold iff the DBot score == 3.
+
+        Args:
+            indicator (str): The indicator name
+            ind_type (str): The indicator type
+            ind_score (int): The indicator TQ score
+
+        Returns:
+            (dict). The indicator's DBotScore.
+
+        """
+        dbot_score_map = {
+            -1: 0,
+            0: 1,
+            1: 1,
+            2: 1,
+            3: 1,
+            4: 2,
+            5: 2,
+            6: 2,
+            7: 2,
+            8: 2,
+            9: 2,
+            10: 2
+        }
+
+        ret = {
+            'Vendor': 'ThreatQ v2',
+            'Indicator': indicator,
+            'Type': ind_type
+        }
+
+        if ind_score >= THRESHOLD:
+            ret['Score'] = 3
+        else:
+            ret['Score'] = dbot_score_map[ind_score]
+
+        return ret
+
+
+    def get_tq_score_from_response(score_data):
+        if score_data is None:
+            return None
+        if isinstance(score_data, dict):
+            # score will be max(gen_score, manual_score)
+            gen_score = str(score_data.get('generated_score'))
+            manual_score = score_data.get('manual_score', 0.0)
+            if manual_score is None:
+                manual_score = -1
+            return max(float(gen_score), float(manual_score))
+        else:
+            # score is already defined as a number
+            return float(score_data)
+
+
+    def clean_html_from_string(raw_html):
+        """ This function receives an HTML string of a text, and retrieves a clean string of its content.
+
+        Args:
+            raw_html: An HTML format text
+
+        Returns:
+            (string). A clean text string
+        """
+        if not raw_html:
+            return None
+        clean_r = re.compile('<.*?>')
+        clean_text = re.sub(clean_r, '', raw_html)
+        return clean_text
+
+
+    def sources_to_request_format(sources):
+        if not sources:
+            return []
+        if isinstance(sources, str):
+            sources = sources.split(',')
+        return [{'name': source} for source in sources]
+
+
+    def sources_to_demisto_format(lst):
+        if lst is None:
+            return None
+        return [{
+            'Name': elem.get('name'),
+            'ID': elem.get('pivot', {}).get('id')
+        } for elem in lst]
+
+
+    def attributes_to_request_format(attributes_names, attributes_values):
+        if not attributes_names and not attributes_values:
+            return []
+        if isinstance(attributes_names, str):
+            attributes_names = attributes_names.split(',')
+        if isinstance(attributes_values, str):
+            attributes_values = attributes_values.split(',')
+        if not attributes_names or not attributes_values or len(attributes_names) != len(attributes_values):
+            return_error('Attributes_names and attributes_values arguments must have the same length.')
+
+        return [{'name': name, 'value': val} for name, val in zip(attributes_names, attributes_values)]
+
+
+    def attributes_to_demisto_format(lst):
+        if lst is None:
+            return None
+        return [{
+            'Name': elem.get('name'),
+            'Value': elem.get('value'),
+            'ID': elem.get('id')
+        } for elem in lst]
+
+
+    def content_type_to_demisto_format(c_type_id):
+        # content_type is a file object property
+        return 'text/plain' if c_type_id == 1 else 'text/rtf'
+
+
+    def malware_locked_to_request_format(state):
+        # malware_locked is a file object property
+        if not state:
+            return None
+        return 1 if state == 'on' else 0
+
+
+    def malware_locked_to_demisto_format(state):
+        return 'on' if state == 1 else 'off'
+
+
+    def parse_date(text):
+        valid_formats = ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d']
+        for fmt in valid_formats:
+            try:
+                return str(datetime.strptime(text, fmt))
+            except ValueError:
+                pass
+        return_error('Time data \'{0}\' does not match any valid format.'.format(text))
+
+
+    def data_to_demisto_format(data, obj_type):
+        if obj_type == 'indicator':
+            return indicator_data_to_demisto_format(data)
+        elif obj_type == 'event':
+            return event_data_to_demisto_format(data)
+        elif obj_type == 'adversary':
+            return adversary_data_to_demisto_format(data)
+        elif obj_type == 'attachment':
+            return file_data_to_demisto_format(data)
+
+
+    def indicator_data_to_demisto_format(data):
+        ret = {
+            'ID': data.get('id'),
+            'UpdatedAt': data.get('updated_at'),
+            'CreatedAt': data.get('created_at'),
+            'Value': data.get('value'),
+            'Status': STATUS_ID_TO_STATUS[data.get('status_id')],
+            'Type': TYPE_ID_TO_INDICATOR_TYPE[data.get('type_id')],
+            'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
+            'TQScore': get_tq_score_from_response(data.get('score')),
+            'Description': clean_html_from_string(data.get('description')),
+            'Source': sources_to_demisto_format(data.get('sources')),
+            'Attribute': attributes_to_demisto_format(data.get('attributes'))
+        }
+        return ret
+
+
+    def adversary_data_to_demisto_format(data):
+        ret = {
+            'ID': data.get('id'),
+            'UpdatedAt': data.get('updated_at'),
+            'CreatedAt': data.get('created_at'),
+            'Name': data.get('name'),
+            'URL': '{0}/adversaries/{1}/details'.format(SERVER_URL, data.get('id')),
+            'Source': sources_to_demisto_format(data.get('sources')),
+            'Attribute': attributes_to_demisto_format(data.get('attributes'))
+        }
+        return ret
+
+
+    def event_data_to_demisto_format(data):
+        ret = {
+            'ID': data.get('id'),
+            'UpdatedAt': data.get('updated_at'),
+            'CreatedAt': data.get('created_at'),
+            'Title': data.get('title'),
+            'Occurred': data.get('happened_at'),
+            'Type': TYPE_ID_TO_EVENT_TYPE[data.get('type_id')],
+            'URL': '{0}/events/{1}/details'.format(SERVER_URL, data.get('id')),
+            'Description': clean_html_from_string(data.get('description')),
+            'Source': sources_to_demisto_format(data.get('sources')),
+            'Attribute': attributes_to_demisto_format(data.get('attributes'))
+        }
+        return ret
+
+
+    def file_data_to_demisto_format(data):
+        raw = {
+            'ID': data.get('id'),
+            'CreatedAt': data.get('created_at'),
+            'UpdatedAt': data.get('updated_at'),
+            'Size': data.get('file_size'),
+            'MD5': data.get('hash'),
+            'Type': TYPE_ID_TO_FILE_TYPE[data.get('type_id')],
+            'URL': '{0}/files/{1}/details'.format(SERVER_URL, data.get('id')),
+            'Name': data.get('name'),
+            'Title': data.get('title'),
+            'Description': data.get('description'),
+            'ContentType': content_type_to_demisto_format(data.get('content_type_id')),
+            'MalwareLocked': malware_locked_to_demisto_format(data.get('malware_locked')),
+            'Source': sources_to_demisto_format(data.get('sources')),
+            'Attribute': attributes_to_demisto_format(data.get('attributes'))
+        }
+
+        return raw
+
+
+    def get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id):
+        # A pivot id represents a connection between two objects.
+
+        url_suffix = '/{0}/{1}/{2}'.format(OBJ_DIRECTORY[obj1_type], obj1_id, OBJ_DIRECTORY[obj2_type])
+        res = tq_request('GET', url_suffix)
+
+        for related_object in res['data']:  # res['data'] contains all the related objects of obj_id1
+            if int(related_object.get('id')) == int(obj2_id):
+                return int(related_object['pivot']['id'])
+        else:
+            return_error('Command failed - objects are not related.')
+
+
+    def add_malicious_data(generic_context, tq_score):
+        generic_context['Malicious'] = {
+            'Vendor': 'ThreatQ v2',
+            'Description': 'Score from ThreatQ is {0}'.format(tq_score)
+        }
+
+
+    def set_indicator_entry_context(indicator_type, raw, dbot, generic):
+        if dbot.get('Score') == 3:
+            add_malicious_data(generic, raw.get('TQScore', -1))
+
+        ec = {
+            outputPaths[indicator_type]: generic,
+            'DBotScore': dbot
+        }
+        if raw:
+            ec[CONTEXT_PATH['indicator']] = raw
+        return ec
+
+
+    def build_readable_for_search_by_name(indicator_context, event_context, adversary_context, file_context):
+        if not (indicator_context or event_context or adversary_context or file_context):
+            return 'No results.'
+
+        human_readable = ''
+        if indicator_context:
+            human_readable += tableToMarkdown('Search Results - Indicators', indicator_context)
+        if event_context:
+            human_readable += tableToMarkdown('Search Results - Events', event_context)
+        if adversary_context:
+            human_readable += tableToMarkdown('Search Results - Adversaries', adversary_context)
+        if file_context:
+            human_readable += tableToMarkdown('Search Results - Files', file_context)
+
+        return human_readable
+
+
+    def build_readable(readable_title, obj_type, data, metadata=None):
+        if isinstance(data, dict):  # One object data
+            readable = tableToMarkdown(readable_title, data, headers=TABLE_HEADERS[obj_type],
+                                       headerTransform=pascalToSpace, removeNull=True, metadata=metadata)
+            if 'Attribute' in data:
+                readable += tableToMarkdown('Attributes', data['Attribute'], headers=TABLE_HEADERS['attributes'],
+                                            removeNull=True, headerTransform=pascalToSpace, metadata=metadata)
+            if 'Source' in data:
+                readable += tableToMarkdown('Sources', data['Source'], headers=TABLE_HEADERS['sources'],
+                                            removeNull=True, headerTransform=pascalToSpace, metadata=metadata)
+            if 'URL' in data:
+                url_in_markdown_format = '[{0}]({1})'.format(data['URL'], data['URL'])
+                readable = readable.replace(data['URL'], url_in_markdown_format)
+
+        else:  # 'data' is a list of objects
+            readable = tableToMarkdown(readable_title, data, headers=TABLE_HEADERS[obj_type],
+                                       headerTransform=pascalToSpace, removeNull=True, metadata=metadata)
+            for elem in data:
+                url_in_markdown_format = '[{0}]({1})'.format(elem['URL'], elem['URL'])
+                readable = readable.replace(elem['URL'], url_in_markdown_format)
+
+        return readable
+
+
+    ''' COMMANDS '''
+
+
+    def test_module():
+        token = request_new_access_token()
+        threshold = demisto.params().get('threshold')
+        threshold_is_integer = isinstance(threshold, int) or (isinstance(threshold, str) and threshold.isdigit())
+        if token and threshold_is_integer and 0 <= int(threshold) <= 10:
+            demisto.results('ok')
+
+
+    def search_by_name_command():
+        args = demisto.args()
+        name = args.get('name')
+        limit = args.get('limit')
+
+        if limit and isinstance(limit, str) and not limit.isdigit():
+            return_error('limit argument must be an integer.')
+
+        url_suffix = '/search?query={0}&limit={1}'.format(name, limit)
+        res = tq_request('GET', url_suffix)
+
+        indicator_context = [{'ID': e['id'], 'Value': e['value']} for e in res['data'] if e['object'] == 'indicator']
+        event_context = [{'ID': e['id'], 'Title': e['value']} for e in res['data'] if e['object'] == 'event']
+        adversary_context = [{'ID': e['id'], 'Name': e['value']} for e in res['data'] if e['object'] == 'adversary']
+        file_context = [{'ID': e['id'], 'Name': e['value'].split()[1]} for e in res['data'] if e['object'] == 'attachment']
+        # file value in response is returned in the form ["title" name], thus we use the split method above
+
+        entry_context = {
+            CONTEXT_PATH['indicator']: indicator_context,
+            CONTEXT_PATH['event']: event_context,
+            CONTEXT_PATH['adversary']: adversary_context,
+            CONTEXT_PATH['attachment']: file_context
+        }
+
+        # Remove items with empty values:
+        entry_context = {k: v for k, v in entry_context.items() if v}
+
+        readable = build_readable_for_search_by_name(indicator_context, event_context, adversary_context, file_context)
+
+        return_outputs(readable, entry_context, res)
+
+
+    def search_by_id_command():
+        args = demisto.args()
+        obj_type = args.get('obj_type')
+        obj_id = args.get('obj_id')
+
+        if isinstance(obj_id, str) and not obj_id.isdigit():
+            return_error('obj_id argument must be an integer.')
+
+        url_suffix = '/{0}/{1}?with=attributes,sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
+        if obj_type == 'indicator':
+            url_suffix += ',score,type'
+
+        res = tq_request('GET', url_suffix)
+        data = data_to_demisto_format(res['data'], obj_type)
+
+        ec = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)}
+
+        if obj_type == 'indicator':
+            indicator_type = TQ_TO_DEMISTO_INDICATOR_TYPES.get(data['Type'])
+            if indicator_type is not None:
+                ec['DBotScore'] = create_dbot_context(data['Value'], indicator_type, data['TQScore'])
+
+        readable_title = 'Search results for {0} with ID {1}'.format(obj_type, obj_id)
+        readable = build_readable(readable_title, obj_type, data)
+
+        return_outputs(readable, ec, res)
+
+
+    def create_indicator_command():
+        args = demisto.args()
+        indicator_type = args.get('type')
+        status = args.get('status')
+        value = args.get('value')
+        sources = args.get('sources')
+        attributes_names = args.get('attributes_names')
+        attributes_values = args.get('attributes_values')
+
+        params = {
+            'type': indicator_type,
+            'status': status,
+            'value': value,
+            'sources': sources_to_request_format(sources),
+            'attributes': attributes_to_request_format(attributes_names, attributes_values)
+        }
+
+        make_create_object_request('indicator', params)
+
+
+    def create_adversary_command():
+        args = demisto.args()
+        name = args.get('name')
+        sources = args.get('sources')
+        attributes_names = args.get('attributes_names')
+        attributes_values = args.get('attributes_values')
+
+        params = {
+            'name': name,
+            'sources': sources_to_request_format(sources),
+            'attributes': attributes_to_request_format(attributes_names, attributes_values)
+        }
+
+        make_create_object_request('adversary', params)
+
+
+    def create_event_command():
+        args = demisto.args()
+        event_type = args.get('type')
+        title = args.get('title')
+        date = args.get('date')
+        sources = args.get('sources')
+        attributes_names = args.get('attributes_names')
+        attributes_values = args.get('attributes_values')
+
+        params = {
+            'title': title,
+            'type': event_type,
+            'happened_at': parse_date(date),
+            'sources': sources_to_request_format(sources),
+            'attributes': attributes_to_request_format(attributes_names, attributes_values)
+        }
+
+        make_create_object_request('event', params)
+
+
+    def edit_indicator_command():
+        args = demisto.args()
+        indicator_id = args.get('id')
+        value = args.get('value')
+        indicator_type = args.get('type')
+        description = args.get('description')
+
+        if isinstance(indicator_id, str) and not indicator_id.isdigit():
+            return_error('id argument must be an integer.')
+
+        params = {
+            'value': value,
+            'type': indicator_type,
+            'description': description
+        }
+
+        make_edit_request_for_an_object(indicator_id, 'indicator', params)
+
+
+    def edit_adversary_command():
+        args = demisto.args()
+        adversary_id = args.get('id')
+        name = args.get('name')
+
+        if isinstance(adversary_id, str) and not adversary_id.isdigit():
+            return_error('id argument must be an integer.')
+
+        params = {
+            'name': name
+        }
+
+        make_edit_request_for_an_object(adversary_id, 'adversary', params)
+
+
+    def edit_event_command():
+        args = demisto.args()
+        event_id = args.get('id')
+        event_type = args.get('type')
+        title = args.get('title')
+        date = args.get('date')
+        description = args.get('description')
+
+        if isinstance(event_id, str) and not event_id.isdigit():
+            return_error('id argument must be an integer.')
+
+        params = {
+            'title': title,
+            'happened_at': parse_date(date) if date else None,
+            'type': event_type,
+            'description': description
+        }
+
+        make_edit_request_for_an_object(event_id, 'event', params)
+
+
+    def delete_object_command():
+        args = demisto.args()
+        obj_type = args.get('obj_type')
+        obj_id = args.get('obj_id')
+
+        if isinstance(obj_id, str) and not obj_id.isdigit():
+            return_error('obj_id argument must be an integer.')
+
+        url_suffix = '/{0}/{1}'.format(OBJ_DIRECTORY[obj_type], obj_id)
+        tq_request('DELETE', url_suffix)
+        demisto.results('Successfully deleted {0} with ID {1}.'.format(obj_type, obj_id))
+
+
+    def get_related_objs_command(related_type):
+        args = demisto.args()
+        obj_type = args.get('obj_type')
+        obj_id = args.get('obj_id')
+
+        if isinstance(obj_id, str) and not obj_id.isdigit():
+            return_error('obj_id argument must be an integer.')
+
+        url_suffix = '/{0}/{1}/{2}?with=sources'.format(OBJ_DIRECTORY[obj_type], obj_id, OBJ_DIRECTORY[related_type])
+        if related_type == 'indicator':
+            url_suffix += ',score'
+        res = tq_request('GET', url_suffix)
+
+        info = [data_to_demisto_format(obj, related_type) for obj in res['data']]
+        info = createContext(info, removeNull=True)
+        data = {
+            RELATED_KEY[related_type]: createContext(info, removeNull=True),
+            'ID': int(obj_id)
+        }
+        ec = {CONTEXT_PATH[obj_type]: data} if info else {}
+
+        readable_title = 'Related {0} type objects of {1} with ID {2}'.format(related_type, obj_type, obj_id)
+        readable = build_readable(readable_title, related_type, data[RELATED_KEY[related_type]])
+
+        return_outputs(readable, ec, res)
+
+
+    def link_objects_command():
+        args = demisto.args()
+        obj1_type = args.get('obj1_type')
+        obj1_id = args.get('obj1_id')
+        obj2_type = args.get('obj2_type')
+        obj2_id = args.get('obj2_id')
+
+        if isinstance(obj1_id, str) and not obj1_id.isdigit() or isinstance(obj2_id, str) and not obj2_id.isdigit():
+            return_error('obj1_id, obj2_id arguments must be integers.')
+
+        if obj1_type == obj2_type and obj1_id == obj2_id:
+            return_error('Cannot link an object to itself.')
+
+        url_suffix = '/{0}/{1}/{2}'.format(OBJ_DIRECTORY[obj1_type], obj1_id, OBJ_DIRECTORY[obj2_type])
+        params = {
+            'id': obj2_id
+        }
+        tq_request('POST', url_suffix, params)
+        demisto.results(
+            'Successfully linked {0} with ID {1} and {2} with ID {3}.'.format(obj1_type, obj1_id, obj2_type, obj2_id))
+
+
+    def unlink_objects_command():
+        args = demisto.args()
+        obj1_type = args.get('obj1_type')
+        obj1_id = args.get('obj1_id')
+        obj2_type = args.get('obj2_type')
+        obj2_id = args.get('obj2_id')
+
+        if isinstance(obj1_id, str) and not obj1_id.isdigit() or isinstance(obj2_id, str) and not obj2_id.isdigit():
+            return_error('obj1_id, obj2_id arguments must be integers.')
+
+        if obj1_type == obj2_type and obj1_id == obj2_id:
+            return_error('An object cannot be linked to itself.')
+
+        p_id = get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id)
+        url_suffix = '/{0}/{1}/{2}'.format(OBJ_DIRECTORY[obj1_type], obj1_id, OBJ_DIRECTORY[obj2_type])
+        tq_request('DELETE', url_suffix, params=[p_id])
+        demisto.results(
+            'Successfully unlinked {0} with ID {1} and {2} with ID {3}.'.format(obj1_type, obj1_id, obj2_type, obj2_id))
+
+
+    def update_score_command():
+        # Note: We can't update DBot Score because API doesn't retrieve the indicator value.
+        args = demisto.args()
+        indicator_id = args.get('id')
+        score = args.get('score')
+
+        if isinstance(indicator_id, str) and not indicator_id.isdigit():
+            return_error('id argument must be an integer.')
+
+        if isinstance(score, str) and not score.isdigit():  # User chose 'Generated Score' option
+            manual_score = None
+        else:
+            manual_score = int(score)
+
+        url_suffix = '/indicator/{0}/scores'.format(indicator_id)
+        params = {'manual_score': manual_score}
+
+        res = tq_request('PUT', url_suffix, params)
+
+        data = {
+            'ID': int(indicator_id),
+            'TQScore': get_tq_score_from_response(res['data'])
+        }
+
+        ec = {CONTEXT_PATH['indicator']: data}
+
+        readable = 'Successfully updated score of indicator with ID {0} to {1}. '\
+                   'Notice that final score is the maximum between ' \
+                   'manual and generated scores.'.format(indicator_id, int(data['TQScore']))
+
+        return_outputs(readable, ec, res)
+
+
+    def add_source_command():
+        args = demisto.args()
+        source = args.get('source')
+        obj_id = args.get('obj_id')
+        obj_type = args.get('obj_type')
+
+        if isinstance(obj_id, str) and not obj_id.isdigit():
+            return_error('obj_id argument must be an integer.')
+
+        url_suffix = '/{0}/{1}/sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
+        params = {
+            'name': source
+        }
+
+        tq_request('POST', url_suffix, params)
+        demisto.results('Successfully added source {0} to {1} with ID {2}.'.format(source, obj_type, obj_id))
+
+
+    def delete_source_command():
+        args = demisto.args()
+        source_id = args.get('source_id')
+        obj_id = args.get('obj_id')
+        obj_type = args.get('obj_type')
+
+        if isinstance(obj_id, str) and not obj_id.isdigit():
+            return_error('obj_id argument must be an integer.')
+        if isinstance(source_id, str) and not source_id.isdigit():
+            return_error('source_id argument must be an integer.')
+
+        url_suffix = '/{0}/{1}/sources/{2}'.format(OBJ_DIRECTORY[obj_type], obj_id, source_id)
+
+        tq_request('DELETE', url_suffix)
+        demisto.results('Successfully deleted source #{0} from {1} with ID {2}.'.format(source_id, obj_type, obj_id))
+
+
+    def add_attribute_command():
+        args = demisto.args()
+        attribute_name = args.get('name')
+        attribute_value = args.get('value')
+        obj_type = args.get('obj_type')
+        obj_id = args.get('obj_id')
+
+        if isinstance(obj_id, str) and not obj_id.isdigit():
+            return_error('obj_id argument must be an integer.')
+
+        url_suffix = '/{0}/{1}/attributes'.format(OBJ_DIRECTORY[obj_type], obj_id)
+        params = {
+            'name': attribute_name,
+            'value': attribute_value
+        }
+
+        tq_request('POST', url_suffix, params)
+        demisto.results('Successfully added attribute to {0} with ID {1}.'.format(obj_type, obj_id))
+
+
+    def modify_attribute_command():
+        args = demisto.args()
+        attribute_id = args.get('attribute_id')
+        attribute_value = args.get('attribute_value')
+        obj_type = args.get('obj_type')
+        obj_id = args.get('obj_id')
+
+        if isinstance(obj_id, str) and not obj_id.isdigit():
+            return_error('obj_id argument must be an integer.')
+        if isinstance(attribute_id, str) and not attribute_id.isdigit():
+            return_error('attribute_id argument must be an integer.')
+
+        url_suffix = '/{0}/{1}/attributes/{2}'.format(OBJ_DIRECTORY[obj_type], obj_id, attribute_id)
+        params = {'value': attribute_value}
+
+        tq_request('PUT', url_suffix, params)
+
+        demisto.results('Successfully modified attribute #{0} of {1} with ID {2}.'.format(attribute_id, obj_type, obj_id))
+
+
+    def delete_attribute_command():
+        args = demisto.args()
+        attribute_id = args.get('attribute_id')
+        obj_type = args.get('obj_type')
+        obj_id = args.get('obj_id')
+
+        if isinstance(obj_id, str) and not obj_id.isdigit():
+            return_error('obj_id argument must be an integer.')
+        if isinstance(attribute_id, str) and not attribute_id.isdigit():
+            return_error('attribute_id argument must be an integer.')
+
+        url_suffix = '/{0}/{1}/attributes/{2}'.format(OBJ_DIRECTORY[obj_type], obj_id, attribute_id)
+
+        tq_request('DELETE', url_suffix)
+        demisto.results('Successfully deleted attribute #{0} from {1} with ID {2}.'.format(attribute_id, obj_type, obj_id))
+
+
+    def update_status_command():
+        args = demisto.args()
+        indicator_id = args.get('id')
+        status = args.get('status')
+
+        if isinstance(indicator_id, str) and not indicator_id.isdigit():
+            return_error('id argument must be an integer.')
+
+        url_suffix = '/indicators/{0}'.format(indicator_id)
+        params = {'status': status}
+
+        res = tq_request('PUT', url_suffix, params)
+
+        data = {
+            'ID': int(indicator_id),
+            'Status': STATUS_ID_TO_STATUS[res['data'].get('status_id')],
+        }
+
+        ec = {CONTEXT_PATH['indicator']: data}
+
+        readable = 'Successfully updated status of indicator with ID {0} to {1}.'.format(indicator_id, status)
+
+        return_outputs(readable, ec, res)
+
+
+    def upload_file_command():
+        args = demisto.args()
+        entry_id = args.get('entry_id')
+        title = args.get('title')
+        malware_safety_lock = args.get('malware_safety_lock')
+        file_category = args.get('file_category')
+
+        file_info = demisto.getFilePath(entry_id)
+
+        if not title:
+            title = file_info['name']
+
+        params = {
+            'name': file_info['name'],
+            'title': title,
+            'type': file_category,
+            'malware_locked': malware_locked_to_request_format(malware_safety_lock)
+        }
+
+        try:
+            shutil.copy(file_info['path'], file_info['name'])
+        except Exception as e:
+            return_error('Failed to prepare file for upload. Error message: {0}'.format(str(e)))
+
+        try:
+            with open(file_info['name'], 'rb') as f:
+                files = {'file': f}
+                url_suffix = '/attachments'
+                res = tq_request('POST', url_suffix, params, files=files)
+        finally:
+            shutil.rmtree(file_info['name'], ignore_errors=True)
+
+        data = file_data_to_demisto_format(res['data'])
+
+        ec = {CONTEXT_PATH['attachment']: data}
+
+        readable_title = 'Successfully uploaded file {0}.'.format(file_info['name'])
+        readable = build_readable(readable_title, 'attachment', data)
+
+        return_outputs(readable, ec, res)
+
+
+    def download_file_command():
+        args = demisto.args()
+        file_id = args.get('id')
+
+        if isinstance(file_id, str) and not file_id.isdigit():
+            return_error('id argument must be an integer.')
+
+        url_suffix = '/attachments/{0}/download'.format(file_id)
+
+        res = tq_request('GET', url_suffix, retrieve_entire_response=True)
+
+        # 'Content-Disposition' value is of the form: attachment; filename="filename.txt"
+        # Since we don't have the file name anywhere else in the response object, we parse it from this entry.
+        filename = res.headers.get('Content-Disposition', str()).split('\"')[1]
+        content = res.content
+
+        demisto.results(fileResult(filename, content))
+
+
+    def get_all_objs_command(obj_type):
+        args = demisto.args()
+        page = int(args.get('page'))
+        limit = int(args.get('limit'))
+        if limit > 200:
+            limit = 200
+
+        url_suffix = '/{0}?with=attributes,sources'.format(OBJ_DIRECTORY[obj_type])
+        if obj_type == 'indicator':
+            url_suffix += ',score'
+        res = tq_request('GET', url_suffix)
+
+        from_index = min(page, len(res['data']))
+        to_index = min(from_index + limit, len(res['data']))
+
+        data = [data_to_demisto_format(obj, obj_type) for obj in res['data'][from_index:to_index]]
+        ec = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)} if data else {}
+
+        readable_title = 'List of all objects of type {0} - {1}-{2}'.format(obj_type, from_index, to_index - 1)
+        metadata = 'Total number of objects is {0}'.format(len(res['data']))
+        readable = build_readable(readable_title, obj_type, data, metadata=metadata)
+
+        return_outputs(readable, ec, res)
+
+
+    def get_ip_reputation():
+        args = demisto.args()
+        ip = args.get('ip')
+
+        if not is_ip_valid(ip, accept_v6_ips=True):
+            return_error('{0} is not a valid IP address.'.format(ip))
+
+        generic_context = {'Address': ip}
+
+        make_indicator_reputation_request(indicator_type='ip', value=ip, generic_context=generic_context)
+
+
+    def get_url_reputation():
+        args = demisto.args()
+        url = args.get('url')
+
+        if not REGEX_MAP['url'].match(url):
+            return_error('{0} is not a valid URL.'.format(url))
+
+        generic_context = {'Data': url}
+
+        make_indicator_reputation_request(indicator_type='url', value=url, generic_context=generic_context)
+
+
+    def get_email_reputation():
+        args = demisto.args()
+        email = args.get('email')
+
+        if not REGEX_MAP['email'].match(email):
+            return_error('{0} is not a valid email address.'.format(email))
+
+        generic_context = {'Address': email}
+
+        make_indicator_reputation_request(indicator_type='email', value=email, generic_context=generic_context)
+
+
+    def get_domain_reputation():
+        args = demisto.args()
+        domain = args.get('domain')
+
+        if not REGEX_MAP['domain'].match(domain):
+            return_error('{0} is not a valid domain.'.format(domain))
+
+        generic_context = {'Name': domain}
+
+        make_indicator_reputation_request(indicator_type='domain', value=domain, generic_context=generic_context)
+
+
+    def get_file_reputation():
+        args = demisto.args()
+        file = args.get('file')
+
+        for fmt in ['md5', 'sha1', 'sha256']:
+            if REGEX_MAP[fmt].match(file):
+                break
+        else:
+            return_error('{0} is not a valid file format.'.format(file))
+
+        generic_context = createContext({
+            'MD5': file if fmt == 'md5' else None,
+            'SHA1': file if fmt == 'sha1' else None,
+            'SHA256': file if fmt == 'sha256' else None
+        }, removeNull=True)
+
+        make_indicator_reputation_request(indicator_type='file', value=file, generic_context=generic_context)
+
+
+    ''' EXECUTION CODE '''
+    command = demisto.command()
+    LOG('command is {0}'.format(demisto.command()))
+    try:
+        handle_proxy()
+        if command == 'test-module':
+            test_module()
+        elif command == 'threatq-search-by-name':
+            search_by_name_command()
+        elif command == 'threatq-search-by-id':
+            search_by_id_command()
+        elif command == 'threatq-create-indicator':
+            create_indicator_command()
+        elif command == 'threatq-create-event':
+            create_event_command()
+        elif command == 'threatq-create-adversary':
+            create_adversary_command()
+        elif command == 'threatq-edit-indicator':
+            edit_indicator_command()
+        elif command == 'threatq-edit-event':
+            edit_event_command()
+        elif command == 'threatq-edit-adversary':
+            edit_adversary_command()
+        elif command == 'threatq-delete-object':
+            delete_object_command()
+        elif command == 'threatq-get-related-indicators':
+            get_related_objs_command('indicator')
+        elif command == 'threatq-get-related-events':
+            get_related_objs_command('event')
+        elif command == 'threatq-get-related-adversaries':
+            get_related_objs_command('adversary')
+        elif command == 'threatq-link-objects':
+            link_objects_command()
+        elif command == 'threatq-unlink-objects':
+            unlink_objects_command()
+        elif command == 'threatq-update-score':
+            update_score_command()
+        elif command == 'threatq-add-source':
+            add_source_command()
+        elif command == 'threatq-delete-source':
+            delete_source_command()
+        elif command == 'threatq-add-attribute':
+            add_attribute_command()
+        elif command == 'threatq-modify-attribute':
+            modify_attribute_command()
+        elif command == 'threatq-delete-attribute':
+            delete_attribute_command()
+        elif command == 'threatq-update-status':
+            update_status_command()
+        elif command == 'threatq-upload-file':
+            upload_file_command()
+        elif command == 'threatq-download-file':
+            download_file_command()
+        elif command == 'threatq-get-all-indicators':
+            get_all_objs_command('indicator')
+        elif command == 'threatq-get-all-events':
+            get_all_objs_command('event')
+        elif command == 'threatq-get-all-adversaries':
+            get_all_objs_command('adversary')
+        elif command == 'ip':
+            get_ip_reputation()
+        elif command == 'domain':
+            get_domain_reputation()
+        elif command == 'email':
+            get_email_reputation()
+        elif command == 'url':
+            get_url_reputation()
+        elif command == 'file':
+            get_file_reputation()
+
+    except Exception as ex:
+        return_error(str(ex))
+  subtype: python3
+  type: python
+system: true

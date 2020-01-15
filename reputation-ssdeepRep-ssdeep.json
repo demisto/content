@@ -1,0 +1,23 @@
+{
+	"contextPath": "",
+	"contextValue": "",
+	"defaultMapping": null,
+	"details": "ssdeep",
+	"disabled": true,
+	"enhancementScriptNames": [],
+	"excludedBrands": null,
+	"file": false,
+	"fileHashesPriority": null,
+	"formatScript": "",
+	"id": "ssdeepRep",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "",
+	"reputationCommand": "",
+	"reputationScriptName": "",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

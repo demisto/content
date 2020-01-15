@@ -1,0 +1,205 @@
+description: Enrich Endpoint with CrowdStrike
+id: crowdstrike_endpoint_enrichment
+inputs:
+- description: The hostname to enrich
+  key: Hostname
+  required: false
+  value:
+    simple: ${Endpoint.Hostname}
+name: CrowdStrike Endpoint Enrichment
+outputs:
+- contextPath: Endpoint.ID
+  description: Unique ID of the endpoint in FalconHost
+  type: string
+- contextPath: Endpoint.IPAddress
+  description: IPAddress of the endpoint
+  type: string
+- contextPath: Endpoint.Domain
+  description: Domain of the endpoint
+  type: string
+- contextPath: Endpoint.MACAddress
+  description: MACAddress of the endpoint
+  type: string
+- contextPath: Endpoint.OS
+  description: OS of the endpoint
+  type: string
+- contextPath: Endpoint.OSVersion
+  description: OSVersion of the endpoint
+  type: string
+- contextPath: Endpoint.BIOSVersion
+  description: BIOSVersion of the endpoint
+  type: string
+- contextPath: Endpoint.HostName
+  description: The host of the endpoint
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 7cfa3cf6-82b0-452f-8c52-85355d20008a
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 7cfa3cf6-82b0-452f-8c52-85355d20008a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 51
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: ed6e2d6c-2eac-4e07-8a0d-8412d8700a52
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: ed6e2d6c-2eac-4e07-8a0d-8412d8700a52
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: FalconHostDevices
+          operator: isExists
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if there was any machine match to the hostname
+      id: 6b7bfc47-d31a-4296-8cc5-0522912daa56
+      iscommand: false
+      name: Was device found?
+      type: condition
+      version: -1
+    taskid: 6b7bfc47-d31a-4296-8cc5-0522912daa56
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      ids:
+        simple: ${FalconHostDevices}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get host information from CrowdStrike Falcon Host
+      id: dcdf99c6-c7ad-48fa-895c-2730fe3821d6
+      iscommand: true
+      name: Get host information from CrowdStrike Falcon Host
+      script: '|||cs-device-details'
+      type: regular
+      version: -1
+    taskid: dcdf99c6-c7ad-48fa-895c-2730fe3821d6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 299,
+          "y": 550
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    scriptarguments:
+      filter:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: hostname:"
+              suffix:
+                value:
+                  simple: '"'
+            operator: concat
+      limit: {}
+      offset: {}
+      query: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get CrowdStrike device id
+      id: bea25d30-36cf-4ca9-8909-1a6ac435bcc1
+      iscommand: true
+      name: Get device ID
+      script: '|||cs-device-search'
+      type: regular
+      version: -1
+    taskid: bea25d30-36cf-4ca9-8909-1a6ac435bcc1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 210
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 734,
+        "width": 629,
+        "x": 50,
+        "y": 51
+      }
+    }
+  }

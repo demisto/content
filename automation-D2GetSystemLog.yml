@@ -1,0 +1,40 @@
+args:
+- description: Name of the log to retrieve
+  name: logName
+  required: true
+comment: Copy a log file. Works on Windows and Unix (differently - take a peek at
+  the script itself to see how).
+commonfields:
+  id: D2GetSystemLog
+  version: -1
+name: D2GetSystemLog
+runonce: false
+script: |-
+  function copyLogUnix() {
+    pack_file('/var/log/' + args.logName, args.logName);
+  }
+  function copyLogWindows() {
+    var fileName = 'c:\\' + args.logName + '.log';
+    var output = execute('wevtutil epl ' + args.logName + ' ' + fileName);
+    if (!output.Success) {
+      pack(output);
+      throw output.Error + ': ';
+    }
+    pack_file(fileName, args.logName);
+    del(fileName);
+  }
+  try {
+    if (env.OS === 'windows') {
+      copyLogWindows();
+    } else  {
+      copyLogUnix();
+    }
+  } catch (ex) {
+    pack('Error: ' + ex);
+  }
+scripttarget: 1
+system: true
+tags:
+- agent
+- endpoint
+type: javascript

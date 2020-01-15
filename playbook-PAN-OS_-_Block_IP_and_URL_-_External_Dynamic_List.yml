@@ -1,0 +1,591 @@
+description: |-
+  This playbook blocks IP addresses and URLs using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
+  It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook (otherwise the list will be configured), and adds the input IPs and URLs to the relevant lists.
+id: PAN-OS - Block IP and URL - External Dynamic List
+inputs:
+- description: IP address list from the instance context with which to override the
+    remote file.
+  key: IPListName
+  required: false
+  value:
+    simple: Demisto Remediation - IP EDL
+- description: IP address to block
+  key: IP
+  required: false
+  value:
+    complex:
+      accessor: Address
+      filters:
+      - - left:
+            iscontext: true
+            value:
+              simple: IP.Malicious
+          operator: isExists
+      root: IP
+      transformers:
+      - operator: uniq
+- description: URL to block
+  key: URL
+  required: false
+  value:
+    complex:
+      accessor: Data
+      filters:
+      - - left:
+            iscontext: true
+            value:
+              simple: URL.Malicious
+          operator: isExists
+      root: URL
+      transformers:
+      - operator: uniq
+- description: URL list from the instance context with which to override the remote
+    file.
+  key: URLListName
+  required: false
+  value:
+    simple: Demisto Remediation - URL EDL
+- description: Log Forwarding object name.
+  key: LogForwarding
+  required: false
+  value: {}
+- description: EDL server IP address.
+  key: EDLServerIP
+  required: false
+  value: {}
+- description: |-
+    This input establishes whether to commit the configuration automatically.
+    Yes - Commit automatically.
+    No - Commit manually.
+  key: AutoCommit
+  required: false
+  value:
+    simple: "No"
+name: PAN-OS - Block IP and URL - External Dynamic List
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 7144823f-b498-4a71-8d20-8836daf980e2
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 7144823f-b498-4a71-8d20-8836daf980e2
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": -210
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      add_or_remove: {}
+      file_path:
+        complex:
+          root: inputs.IPListName
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .txt
+            operator: concat
+      list_items:
+        complex:
+          root: inputs.IP
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      list_name:
+        complex:
+          root: inputs.IPListName
+      verbose: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Updates the instance context with the specified list name and list
+        items, and overrides the path of the remote file with the internal list.
+      id: e22b070d-665b-4617-8c22-b9c70dd9d9e3
+      iscommand: true
+      name: PAN OS - Update IP EDL
+      script: '|||pan-os-edl-update'
+      type: regular
+      version: -1
+    taskid: e22b070d-665b-4617-8c22-b9c70dd9d9e3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 580
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      device-group: {}
+      name:
+        complex:
+          root: inputs.IPListName
+    separatecontext: false
+    task:
+      brand: ""
+      description: Refreshes the specified external dynamic list
+      id: 3b58c187-0f80-4fe1-86e9-7e39f7e073db
+      iscommand: true
+      name: PAN-OS - Refresh IP EDL
+      script: '|||panorama-refresh-edl'
+      type: regular
+      version: -1
+    taskid: 3b58c187-0f80-4fe1-86e9-7e39f7e073db
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 755
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 8349b9db-d407-4d95-80c3-3a17c8626c91
+      iscommand: false
+      name: Malicious IPs
+      type: title
+      version: -1
+    taskid: 8349b9db-d407-4d95-80c3-3a17c8626c91
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 67.5,
+          "y": 100
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 7d26ed7d-02a6-4ccb-80b9-d3b8b52c92d0
+      iscommand: false
+      name: Malicious URLs
+      type: title
+      version: -1
+    taskid: 7d26ed7d-02a6-4ccb-80b9-d3b8b52c92d0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 707.5,
+          "y": 100
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      add_or_remove:
+        simple: add
+      file_path:
+        complex:
+          root: inputs.URLListName
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .txt
+            operator: concat
+      list_items:
+        complex:
+          root: inputs.URL
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      list_name:
+        complex:
+          root: inputs.URLListName
+      verbose: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Updates the instance context with the specified list name and list
+        items, and overrides the path of the remote file with the internal list.
+      id: 4030a77b-b3b2-4a4f-87c6-e43217117f37
+      iscommand: true
+      name: PAN OS - Update URL EDL
+      script: '|||pan-os-edl-update'
+      type: regular
+      version: -1
+    taskid: 4030a77b-b3b2-4a4f-87c6-e43217117f37
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 580
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      device-group: {}
+      name:
+        complex:
+          root: inputs.URLListName
+    separatecontext: false
+    task:
+      brand: ""
+      description: Refreshes the specified external dynamic list
+      id: 133163e9-86c8-4e91-87e1-94c4dd3b5362
+      iscommand: true
+      name: PAN-OS - Refresh URL EDL
+      script: '|||panorama-refresh-edl'
+      type: regular
+      version: -1
+    taskid: 133163e9-86c8-4e91-87e1-94c4dd3b5362
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 755
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 126ef010-3b9e-403b-8f7a-0a3e27fdf3d7
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 126ef010-3b9e-403b-8f7a-0a3e27fdf3d7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 930
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.IP
+          operator: isNotEmpty
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "13"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: ee05bf94-70c7-4fa3-86ce-7fbd5b2f63b3
+      iscommand: false
+      name: Are there IP addresses to update?
+      type: condition
+      version: -1
+    taskid: ee05bf94-70c7-4fa3-86ce-7fbd5b2f63b3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 67.5,
+          "y": 240
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.URL
+          operator: isNotEmpty
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d94f2109-4196-42b6-8e1a-1ac606354080
+      iscommand: false
+      name: Are there URLs to update?
+      type: condition
+      version: -1
+    taskid: d94f2109-4196-42b6-8e1a-1ac606354080
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 707.5,
+          "y": 240
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      action-type:
+        simple: drop
+      auto-commit:
+        complex:
+          root: inputs.AutoCommit
+      ioc-type:
+        simple: URL
+      list-name:
+        complex:
+          root: inputs.URLListName
+      log-forwarding-object-name:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.LogForwarding
+              operator: isNotEmpty
+          root: inputs.LogForwarding
+      pre-post-rulebase:
+        simple: pre-rulebase
+      web-server-ip:
+        complex:
+          root: inputs.EDLServerIP
+    separatecontext: true
+    task:
+      brand: ""
+      description: Sets up external dynamic list in PAN-OS.\nIn case file exists in
+        web server, the file is synchronized with Demisto. Lastly, it creates an EDL
+        object and matching rule.
+      id: 03ac66c8-ebed-49d0-8d8a-8675db38e88a
+      iscommand: false
+      name: PAN-OS EDL Setup
+      playbookName: PAN-OS EDL Setup
+      type: playbook
+      version: -1
+    taskid: 03ac66c8-ebed-49d0-8d8a-8675db38e88a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 410
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    scriptarguments:
+      action-type:
+        simple: drop
+      auto-commit:
+        simple: "No"
+      ioc-type:
+        simple: IP
+      list-name:
+        complex:
+          root: inputs.IPListName
+      log-forwarding-object-name:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: inputs.LogForwarding
+              operator: isNotEmpty
+          root: inputs.LogForwarding
+      pre-post-rulebase:
+        simple: pre-rulebase
+      web-server-ip:
+        complex:
+          root: inputs.EDLServerIP
+    separatecontext: true
+    task:
+      brand: ""
+      id: 1b142fd6-27ca-4cad-8291-57380d422c8e
+      iscommand: false
+      name: PAN-OS EDL Setup
+      playbookName: PAN-OS EDL Setup
+      type: playbook
+      version: -1
+    taskid: 1b142fd6-27ca-4cad-8291-57380d422c8e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 410
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: palo_alto_networks_pan_os_edl_management
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "4"
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 0390aedf-db29-4159-8ee7-e2f83dbddefa
+      iscommand: false
+      name: Is Palo Alto Networks PAN-OS EDL Management Enabled?
+      type: condition
+      version: -1
+    taskid: 0390aedf-db29-4159-8ee7-e2f83dbddefa
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": -70
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_9_#default#": 0.45,
+      "11_9_#default#": 0.44,
+      "14_9_#default#": 0.84
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1205,
+        "width": 1520,
+        "x": -180,
+        "y": -210
+      }
+    }
+  }

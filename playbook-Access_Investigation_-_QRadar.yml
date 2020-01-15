@@ -1,0 +1,348 @@
+description: |-
+  This playbook uses the QRadar integration to investigate an access incident by gathering user and IP information.
+
+  The playbook then interacts with the user that triggered the incident to confirm whether or not they initiated the access action.
+id: access_investigation_-_qradar
+inputs: []
+name: Access Investigation - QRadar
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 9191bc70-1a40-4150-83d9-66731d89243f
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 9191bc70-1a40-4150-83d9-66731d89243f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 0397e09e-ea98-47a4-8148-7df722f74fe4
+      iscommand: false
+      name: QRadar alert
+      type: title
+      version: -1
+    taskid: 0397e09e-ea98-47a4-8148-7df722f74fe4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      GetCorrelationLogs:
+        simple: "True"
+      ID:
+        complex:
+          accessor: labels.id
+          root: incident
+      MaxLogsCount:
+        simple: "20"
+      StartTime:
+        complex:
+          accessor: labels.start_time
+          root: incident
+    separatecontext: true
+    task:
+      brand: ""
+      id: 6f12a822-db6c-40b7-813d-714a77e77f1f
+      iscommand: false
+      name: QRadar - Get offense correlations
+      playbookName: QRadar - Get offense correlations
+      type: playbook
+      version: -1
+    taskid: 6f12a822-db6c-40b7-813d-714a77e77f1f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    scriptarguments:
+      DstIP:
+        complex:
+          accessor: Correlation.DestinationIP
+          root: QRadar
+          transformers:
+          - operator: uniq
+      SrcIP:
+        complex:
+          accessor: Correlation.SourceIP
+          root: QRadar
+          transformers:
+          - operator: uniq
+      Username:
+        complex:
+          accessor: Correlation.Username
+          root: QRadar
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    task:
+      brand: ""
+      id: 552536df-def5-4b43-862d-27dfd4fc368b
+      iscommand: false
+      name: Access Investigation - Generic
+      playbookName: Access Investigation - Generic
+      type: playbook
+      version: -1
+    taskid: 552536df-def5-4b43-862d-27dfd4fc368b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f5971b5b-220a-4d33-814f-5a1b428cc6b5
+      iscommand: false
+      name: Investigate access incident
+      type: title
+      version: -1
+    taskid: f5971b5b-220a-4d33-814f-5a1b428cc6b5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 12caaa45-7f58-4a12-8c36-319eaa965335
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 12caaa45-7f58-4a12-8c36-319eaa965335
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    scriptarguments:
+      addLabels: {}
+      app: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      daysbetweenreportcreation: {}
+      dest:
+        complex:
+          accessor: Correlation.DestinationIP
+          root: QRadar
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      destntdomain: {}
+      details: {}
+      duration: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      labels: {}
+      malwarefamily: {}
+      mdtest: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity: {}
+      signature: {}
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      src:
+        complex:
+          accessor: Correlation.SourceIP
+          root: QRadar
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      srcntdomain: {}
+      srcuser:
+        complex:
+          accessor: Correlation.Username
+          root: QRadar
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      systems: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: |-
+        Set the information retrieved from QRadar into the access incident custom fields:
+        * Dest
+        * Src
+        * Src User
+      id: 062be244-4158-4ac7-8f2b-ce9e6693ccca
+      iscommand: true
+      name: Set QRadar information into access custom fields
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 062be244-4158-4ac7-8f2b-ce9e6693ccca
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

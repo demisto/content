@@ -1,0 +1,201 @@
+description: Use this playbook to retrieve and download files.
+id: Traps Retrieve And Download Files
+inputs:
+- description: The ID of the endpoint.
+  key: endpoint_id
+  required: true
+  value: {}
+- description: the name of the file to retrieve (including path).
+  key: file_name
+  required: true
+  value: {}
+- description: The ID of the Event.
+  key: event_id
+  required: true
+  value: {}
+name: Traps Retrieve And Download Files
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f12d335f-9a8b-4c06-8b0e-d9fe3eefd8e1
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: f12d335f-9a8b-4c06-8b0e-d9fe3eefd8e1
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      endpoint_id:
+        simple: ${inputs.endpoint_id}
+      event_id:
+        simple: ${inputs.event_id}
+      file_name:
+        simple: ${inputs.file_name}
+    separatecontext: false
+    task:
+      brand: Traps
+      description: Execute a file retrieve action / SAM on the specified agent.
+      id: 6940ec13-06c0-4763-8485-0d626ea90c9c
+      iscommand: true
+      name: traps-endpoint-files-retrieve
+      script: Traps|||traps-endpoint-files-retrieve
+      type: regular
+      version: -1
+    taskid: 6940ec13-06c0-4763-8485-0d626ea90c9c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${Traps.FileRetrieve.OperationID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: operation_id
+      PollingCommandName:
+        simple: traps-endpoint-files-retrieve-result
+      Timeout:
+        simple: "5"
+      dt:
+        simple: Traps.FileRetrieveResult(val.Status == 'pending' || val.Status ==
+          'in progress').OperationID
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 2d5c2257-9a10-4df2-8006-3aef829c2b3a
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 2d5c2257-9a10-4df2-8006-3aef829c2b3a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      operation_id:
+        simple: ${Traps.FileRetrieve.OperationID}
+    separatecontext: false
+    task:
+      brand: Traps
+      description: Get the result of an endpoint file retrieval action.
+      id: c2d488f9-d7be-4416-8025-85e2b23e543f
+      iscommand: true
+      name: traps-endpoint-files-retrieve-result
+      script: Traps|||traps-endpoint-files-retrieve-result
+      type: regular
+      version: -1
+    taskid: c2d488f9-d7be-4416-8025-85e2b23e543f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      operation_id:
+        simple: ${Traps.FileRetrieve.OperationID}
+    separatecontext: false
+    task:
+      brand: Traps
+      description: Get the result of an endpoint file retrieval action.
+      id: 8c65d7a1-5d83-471c-8068-594ad8c42965
+      iscommand: true
+      name: traps-endpoint-files-retrieve-result
+      script: Traps|||traps-endpoint-files-retrieve-result
+      type: regular
+      version: -1
+    taskid: 8c65d7a1-5d83-471c-8068-594ad8c42965
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,30 @@
+{
+	"category": "utility",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 0,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"description": "Use the page break widget in a report to force a page break before the widgets that follow.",
+	"id": "page-break-widget",
+	"isPredefined": true,
+	"name": "Page Break Widget",
+	"params": {
+		"text": "/pagebreak"
+	},
+	"query": "",
+	"size": 0,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "text"
+}

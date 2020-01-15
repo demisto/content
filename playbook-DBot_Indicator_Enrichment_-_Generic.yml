@@ -1,0 +1,548 @@
+description: Get indicators internal Dbot score
+id: dbot_indicator_enrichment_-_generic
+inputs:
+- description: Email address to enrich with Dbot Score
+  key: Email
+  required: false
+  value:
+    simple: ${Account.Email.Address}
+- description: URL to enrich with Dbot Score
+  key: URL
+  required: false
+  value:
+    simple: ${URL.Data}
+- description: IP to enrich with Dbot Score
+  key: IP
+  required: false
+  value:
+    simple: ${IP.Address}
+- description: MD5 to enrich with Dbot Score
+  key: MD5
+  required: false
+  value:
+    simple: ${File.MD5}
+- description: SH1 to enrich with Dbot Score
+  key: SHA1
+  required: false
+  value:
+    simple: ${File.SHA1}
+- description: SHA256 to enrich with Dbot Score
+  key: SHA256
+  required: false
+  value:
+    simple: ${File.SHA256}
+name: DBot Indicator Enrichment - Generic
+outputs:
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The Indicator
+  type: string
+- contextPath: DBotScore.Type
+  description: The Indicator Type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The DBot score vendor
+  type: string
+- contextPath: DBotScore.Score
+  description: The DBot score
+  type: number
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+      - "6"
+      - "4"
+      - "10"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 5f144764-22dd-48bf-8179-b44b7576d050
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 5f144764-22dd-48bf-8179-b44b7576d050
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1164,
+          "y": -67
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.MD5
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there's any MD5 indicators to enrich
+      id: 5afc1cd3-d846-4353-8977-95adfe1c70a5
+      iscommand: false
+      name: Do we have MD5 hashes?
+      type: condition
+      version: -1
+    taskid: 5afc1cd3-d846-4353-8977-95adfe1c70a5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 340
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      indicator:
+        simple: ${inputs.MD5}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Query DBot for indicators' pre-existing reputation. If exist, the
+        score will be added to the incident's context
+      id: b1bed29a-6cbe-4238-8c4d-3203457bdc73
+      iscommand: false
+      name: Get MD5 internal Dbot score
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      version: -1
+    taskid: b1bed29a-6cbe-4238-8c4d-3203457bdc73
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 515
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d1a4161a-90a1-4f74-8d55-8ec4919d5f56
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: d1a4161a-90a1-4f74-8d55-8ec4919d5f56
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1287.5,
+          "y": 690
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Email
+          operator: isExists
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there's any Email indicators to enrich
+      id: ca10b1e8-fb57-42ca-8443-df8e39f3630c
+      iscommand: false
+      name: Is there an Email address to check?
+      type: condition
+      version: -1
+    taskid: ca10b1e8-fb57-42ca-8443-df8e39f3630c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      indicator:
+        complex:
+          root: inputs.Email
+    separatecontext: false
+    task:
+      brand: ""
+      description: Query DBot for indicators' pre-existing reputation. If exist, the
+        score will be added to the incident's context
+      id: c84e302e-2844-414f-8b19-71f7b3e0fd18
+      iscommand: false
+      name: Get Email address internal Dbot score
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      version: -1
+    taskid: c84e302e-2844-414f-8b19-71f7b3e0fd18
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.URL
+          operator: isExists
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there's any URL indicators to enrich
+      id: 236e4b6d-3833-4b6c-8b4b-760976caed6e
+      iscommand: false
+      name: Do we have URLs?
+      type: condition
+      version: -1
+    taskid: 236e4b6d-3833-4b6c-8b4b-760976caed6e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 340
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      indicator:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    task:
+      brand: ""
+      description: Query DBot for indicators' pre-existing reputation. If exist, the
+        score will be added to the incident's context
+      id: 47908ce9-33ad-4e39-835b-246f3cdfbe53
+      iscommand: false
+      name: Get URL internal Dbot score
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      version: -1
+    taskid: 47908ce9-33ad-4e39-835b-246f3cdfbe53
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 515
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.IP
+          operator: isExists
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "9"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there's any IP indicators to enrich
+      id: eb495689-5df3-44b3-8272-d2cc2dc36d51
+      iscommand: false
+      name: Do we have IP Addresses?
+      type: condition
+      version: -1
+    taskid: eb495689-5df3-44b3-8272-d2cc2dc36d51
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 340
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      indicator:
+        simple: ${inputs.IP}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Query DBot for indicators' pre-existing reputation. If exist, the
+        score will be added to the incident's context
+      id: 2efb0c7e-9166-4646-8ad1-041fd257a55c
+      iscommand: false
+      name: Get IP internal Dbot score
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      version: -1
+    taskid: 2efb0c7e-9166-4646-8ad1-041fd257a55c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 951,
+          "y": 515
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "11"
+      - "13"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d510fe26-bf16-4596-8f67-51e37732383f
+      iscommand: false
+      name: File
+      type: title
+      version: -1
+    taskid: d510fe26-bf16-4596-8f67-51e37732383f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1962.5,
+          "y": 195
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SHA256
+          operator: isExists
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there's any SHA256 indicators to enrich
+      id: a6ee34a5-0587-4d40-8e83-752e3261bbd1
+      iscommand: false
+      name: Do we have SHA256 hashes?
+      type: condition
+      version: -1
+    taskid: a6ee34a5-0587-4d40-8e83-752e3261bbd1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2412.5,
+          "y": 340
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      indicator:
+        complex:
+          root: inputs.SHA256
+    separatecontext: false
+    task:
+      brand: ""
+      description: Query DBot for indicators' pre-existing reputation. If exist, the
+        score will be added to the incident's context
+      id: 102eceb6-41fb-4b97-8279-c4ebfeb5bc63
+      iscommand: false
+      name: Get SHA256 internal Dbot score
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      version: -1
+    taskid: 102eceb6-41fb-4b97-8279-c4ebfeb5bc63
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2300,
+          "y": 515
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SHA1
+          operator: isExists
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "14"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there's any SHA1 indicators to enrich
+      id: 525d4fb2-26b9-4d8f-8960-b8c12362ee4f
+      iscommand: false
+      name: Do we have SHA1 hashes?
+      type: condition
+      version: -1
+    taskid: 525d4fb2-26b9-4d8f-8960-b8c12362ee4f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1962.5,
+          "y": 340
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      indicator:
+        complex:
+          root: inputs.SHA1
+    separatecontext: false
+    task:
+      brand: ""
+      description: Query DBot for indicators' pre-existing reputation. If exist, the
+        score will be added to the incident's context
+      id: 4168a3e7-0f00-4e0a-8517-7dde46cf63db
+      iscommand: false
+      name: Get SHA256 internal Dbot score
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      version: -1
+    taskid: 4168a3e7-0f00-4e0a-8517-7dde46cf63db
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 515
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 822,
+        "width": 2742.5,
+        "x": 50,
+        "y": -67
+      }
+    }
+  }

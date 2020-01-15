@@ -1,0 +1,29 @@
+{
+	"category": "others",
+	"dataType": "roi",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "roi",
+	"isPredefined": true,
+	"name": "Return On Investment (ROI)",
+	"params": {
+		"currencySign": "$"
+	},
+	"query": "",
+	"size": 5,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "number"
+}

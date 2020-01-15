@@ -1,0 +1,31 @@
+comment: Show indicator geo location on map
+commonfields:
+  id: ShowLocationOnMap
+  version: -1
+dockerimage: demisto/python3:3.7.3.286
+enabled: true
+name: ShowLocationOnMap
+runas: DBotWeakRole
+runonce: false
+script: |2-
+
+
+
+
+  loc = demisto.get(demisto.args()['indicator'], "CustomFields.geolocation")
+  err_msg = "No location data was available"
+
+  if not loc:
+      return_error(err_msg)
+  try:
+      lat, lng = loc.split(',')
+  except ValueError:
+      return_error(err_msg)
+  demisto.results(
+      {'ContentsFormat': formats['json'], 'Type': entryTypes['map'], 'Contents': {"lat": float(lat), "lng": float(lng)}})
+scripttarget: 0
+subtype: python3
+system: true
+tags:
+- dynamic-indicator-section
+type: python

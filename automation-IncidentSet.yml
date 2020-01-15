@@ -1,0 +1,79 @@
+args:
+- description: Incident owner - must be an existing user in the platform
+  name: owner
+- description: Assigned new playbook name
+  name: playbook
+- description: Incident stage - must be from a predefined list of stages
+  name: stage
+- description: Incident details
+  name: details
+- auto: PREDEFINED
+  description: The severity to set. Can be "unknown", "low","medium","high" or "critical".
+  name: severity
+  predefined:
+  - unknown
+  - low
+  - medium
+  - high
+  - critical
+- description: Incident type
+  name: type
+- default: true
+  description: Incident name
+  name: name
+- description: Should we also update the playbook according to the new given type.
+    Can be yes or no. Default is yes.
+  name: updatePlaybookForType
+- description: 'Set and override the labels for the incident. Labels expected format
+    is [{"labelName": "labelValue"}, {"labelName1": "labelValue1"}] (JSON).'
+  name: labels
+- description: 'Add to the list of labels for the incident. Labels expected format
+    is [{"labelName": "labelValue"}, {"labelName1": "labelValue1"}] (JSON).'
+  name: addLabels
+- description: Name for a custom field you want to change
+  name: customFieldName
+- description: The value you want to set for the field specified in customFieldName
+  name: customFieldValue
+comment: Modify incident info such as name, owner, type, etc.
+commonfields:
+  id: IncidentSet
+  version: -1
+deprecated: true
+name: IncidentSet
+runonce: false
+script: |-
+  res = []
+  dArgs = {}
+  inArgs= demisto.args()
+  if demisto.get(inArgs, 'owner'):
+      res += demisto.executeCommand("setOwner", {'owner': inArgs['owner']})
+  if demisto.get(inArgs, 'stage'):
+      res += demisto.executeCommand("setStage", {'stage': inArgs['stage']})
+  if demisto.get(inArgs, 'name'):
+      dArgs['name'] = inArgs['name']
+  if demisto.get(inArgs, 'details'):
+      dArgs['details'] = inArgs['details']
+  if demisto.get(inArgs, 'severity'):
+      dArgs['severity'] = inArgs['severity']
+  if demisto.get(inArgs, 'labels'):
+      dArgs['labels'] = inArgs['labels']
+  if demisto.get(inArgs, 'addLabels'):
+      dArgs['addLabels'] = inArgs['addLabels']
+  if demisto.get(inArgs, 'customFieldName'):
+      v = demisto.get(inArgs, 'customFieldValue')
+      if v:
+          dArgs['customFields'] = json.dumps({demisto.get(inArgs, 'customFieldName'): v})
+  if demisto.get(inArgs, 'type'):
+      dArgs['type'] = inArgs['type']
+      if (not demisto.get(inArgs, 'updatePlaybookForType') or demisto.get(inArgs, 'updatePlaybookForType') == 'yes') and not demisto.get(inArgs, 'playbook'):
+          dArgs['replacePlaybook'] = 'yes'
+  if dArgs:
+      res += demisto.executeCommand("setIncident", dArgs)
+  if demisto.get(inArgs, 'playbook'):
+      res += demisto.executeCommand("setPlaybook", {'name': inArgs['playbook']})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- management
+type: python

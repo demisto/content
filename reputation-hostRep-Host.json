@@ -1,0 +1,228 @@
+{
+	"contextPath": "",
+	"contextValue": "",
+	"defaultMapping": {
+		"biosversion": {
+			"complex": {
+				"accessor": "BIOVersion",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"blocked": {
+			"complex": {
+				"accessor": "Blocked",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"devicemodel": {
+			"complex": {
+				"accessor": "Model",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"dhcpserver": {
+			"complex": {
+				"accessor": "DHCPServer",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"domainname": {
+			"complex": {
+				"accessor": "Domain",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"id": {
+			"complex": {
+				"accessor": "ID",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "toUpperCase"
+					},
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"ipaddress": {
+			"complex": {
+				"accessor": "IP",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"macaddress": {
+			"complex": {
+				"accessor": "MACAddress",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "toUpperCase"
+					},
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"memory": {
+			"complex": {
+				"accessor": "Memory",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"operatingsystem": {
+			"complex": {
+				"accessor": "OS",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"operatingsystemversion": {
+			"complex": {
+				"accessor": "OSVersion",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"processor": {
+			"complex": {
+				"accessor": "Processor",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"processors": {
+			"complex": {
+				"accessor": "Processors",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"quarantined": {
+			"complex": {
+				"accessor": "Quarantined",
+				"filters": [],
+				"root": "Host",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		}
+	},
+	"details": "Host",
+	"disabled": false,
+	"enhancementScriptNames": [],
+	"excludedBrands": [],
+	"file": false,
+	"fileHashesPriority": null,
+	"formatScript": "",
+	"id": "hostRep",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "",
+	"reputationCommand": "",
+	"reputationScriptName": "",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

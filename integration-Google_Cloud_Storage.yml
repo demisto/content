@@ -1,0 +1,947 @@
+category: IT Services
+commonfields:
+  id: Google Cloud Storage
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Service Account Private Key file contents (JSON)
+  name: service_account_json
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+description: Google Cloud Storage is a RESTful online file storage web service for
+  storing and accessing data on Google Cloud Platform infrastructure.
+detaileddescription: |
+  Create a Service Account
+  1. Go to the [Google documentation](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) and follow the procedure in the Creating a Service Account section. After you create a service account, a Service Account Private Key file is downloaded. You will need this file in step 3.
+  2. Grant the Storage Admin permission to the Service Account to enable the Service Account to perform all Google Storage API commands.
+  3. In Demisto, configure an instance of the Google Cloud Storage integration. For the Service Account Private Key parameter, copy the JSON contents of the file you downloaded in step 1.
+display: Google Cloud Storage
+image: data:image/png;base64,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
+name: Google Cloud Storage
+script:
+  commands:
+  - arguments: []
+    description: Retrieves the list of buckets.
+    name: gcs-list-buckets
+    outputs:
+    - contextPath: GCS.Bucket.Name
+      description: Bucket name (also ID).
+      type: String
+    - contextPath: GCS.Bucket.TimeCreated
+      description: Bucket creation time.
+      type: Date
+    - contextPath: GCS.Bucket.TimeUpdated
+      description: Last time bucket was modified.
+      type: Date
+    - contextPath: GCS.Bucket.OwnerID
+      description: Bucket owner ID.
+      type: String
+  - arguments:
+    - default: true
+      description: Name of the bucket to retrieve.
+      name: bucket_name
+      required: true
+    description: Retrieves bucket information.
+    name: gcs-get-bucket
+    outputs:
+    - contextPath: GCS.Bucket.Name
+      description: Bucket name (also ID).
+      type: String
+    - contextPath: GCS.Bucket.TimeCreated
+      description: Bucket creation time.
+      type: Date
+    - contextPath: GCS.Bucket.TimeUpdated
+      description: Last time bucket was modified.
+      type: Date
+    - contextPath: GCS.Bucket.OwnerID
+      description: Bucket owner ID.
+      type: String
+  - arguments:
+    - default: true
+      description: Name of the bucket to create.
+      name: bucket_name
+      required: true
+    - auto: PREDEFINED
+      description: Access Control List for the bucket.
+      name: bucket_acl
+      predefined:
+      - authenticatedRead
+      - private
+      - projectPrivate
+      - publicRead
+      - publicReadWrite
+    - auto: PREDEFINED
+      description: Default Access Control List for the object.
+      name: default_object_acl
+      predefined:
+      - authenticatedRead
+      - bucketOwnerFullControl
+      - bucketOwnerRead
+      - private
+      - projectPrivate
+      - publicRead
+    description: Creates a new bucket.
+    name: gcs-create-bucket
+  - arguments:
+    - default: true
+      description: Name of the bucket to delete.
+      name: bucket_name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Forces the bucket to delete (if not empty).
+      name: force
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    description: Deletes a bucket.
+    name: gcs-delete-bucket
+  - arguments:
+    - default: true
+      description: Name of the bucket in which to list objects.
+      name: bucket_name
+      required: true
+    description: Retrieves the list of objects in a bucket.
+    name: gcs-list-bucket-objects
+    outputs:
+    - contextPath: GCS.BucketObject.Name
+      description: Object name.
+      type: String
+    - contextPath: GCS.BucketObject.Bucket
+      description: Name of the bucket containing the object.
+      type: String
+    - contextPath: GCS.BucketObject.ContentType
+      description: Content-Type of the object data.
+      type: String
+    - contextPath: GCS.BucketObject.TimeCreated
+      description: Object creation time.
+      type: Date
+    - contextPath: GCS.BucketObject.TimeUpdated
+      description: Last time object was modified.
+      type: Date
+    - contextPath: GCS.BucketObject.TimeDeleted
+      description: Object deletion time (available if the object is archived).
+      type: Date
+    - contextPath: GCS.BucketObject.Size
+      description: Object size in bytes.
+      type: Number
+    - contextPath: GCS.BucketObject.MD5
+      description: MD5 hash of the data in Base64.
+      type: String
+    - contextPath: GCS.BucketObject.OwnerID
+      description: Object owner ID.
+      type: String
+    - contextPath: GCS.BucketObject.CRC32c
+      description: CRC32c checksum (as described in RFC 4960, Appendix B https://tools.ietf.org/html/rfc4960#appendix-B),
+        encoded using Base64 in big-endian byte order.
+      type: String
+    - contextPath: GCS.BucketObject.EncryptionAlgorithm
+      description: The encryption algorithm.
+      type: String
+    - contextPath: GCS.BucketObject.EncryptionKeySHA256
+      description: SHA256 hash value of the encryption key.
+      type: String
+  - arguments:
+    - description: Name of the bucket in which the object resides.
+      name: bucket_name
+      required: true
+    - default: true
+      description: Name of the object to download.
+      name: object_name
+      required: true
+    - description: Name of the file in which the object is downloaded (if not specified,
+        the name is derived from the object name, but this may fail if the object
+        contains invalid filename characters).
+      name: saved_file_name
+    description: Retrieves object data into a file.
+    name: gcs-download-file
+  - arguments:
+    - default: true
+      description: ID of a context entry containing the file to upload.
+      name: entry_id
+      required: true
+    - description: Name of the bucket in which to upload the object.
+      name: bucket_name
+      required: true
+    - description: Name of the uploaded object within the bucket.
+      name: object_name
+      required: true
+    - auto: PREDEFINED
+      description: Access Control List for the uploaded object.
+      name: object_acl
+      predefined:
+      - authenticatedRead
+      - bucketOwnerFullControl
+      - bucketOwnerRead
+      - private
+      - projectPrivate
+      - publicRead
+    description: Uploads a file (object) into a bucket.
+    name: gcs-upload-file
+  - arguments:
+    - default: true
+      description: Name of the bucket for the Access Control List.
+      name: bucket_name
+      required: true
+    description: Retrieves the Access Control List of a bucket.
+    name: gcs-list-bucket-policy
+    outputs:
+    - contextPath: GCS.BucketPolicy.Bucket
+      description: Name of the bucket holding the Access Control List.
+      type: String
+    - contextPath: GCS.BucketPolicy.Entity
+      description: The entity holding the permission.
+      type: String
+    - contextPath: GCS.BucketPolicy.Email
+      description: Email address associated with the entity (if any).
+      type: String
+    - contextPath: GCS.BucketPolicy.Role
+      description: The access permission for the entity.
+      type: String
+    - contextPath: GCS.BucketPolicy.Team
+      description: Project team associated with the entity (if any).
+      type: String
+  - arguments:
+    - description: Name of the bucket in which to modify the Access Control List.
+      name: bucket_name
+      required: true
+    - default: true
+      description: |-
+        Entity to add into the Access Control List.
+        Common entity formats are:
+        * user-<userId or email>
+        * group-<groupId or email>
+        * allUsers
+        * allAuthenticatedUsers
+        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+      name: entity
+      required: true
+    - auto: PREDEFINED
+      description: The access permission for the entity.
+      name: role
+      predefined:
+      - Reader
+      - Writer
+      - Owner
+      required: true
+    description: |-
+      Adds a new entity to a bucket's Access Control List.
+      Note: use the gcs-put-bucket-policy command to update an existing entry.
+    name: gcs-create-bucket-policy
+  - arguments:
+    - description: Name of the bucket in which to modify the Access Control List.
+      name: bucket_name
+      required: true
+    - default: true
+      description: |-
+        The entity to update in the Access Control List.
+        Common entity formats are:
+        * user-<userId or email>
+        * group-<groupId or email>
+        * allUsers
+        * allAuthenticatedUsers
+        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+      name: entity
+      required: true
+    - auto: PREDEFINED
+      description: The access permissions for the entity.
+      name: role
+      predefined:
+      - Reader
+      - Writer
+      - Owner
+      required: true
+    description: |-
+      Updates an existing entity in a bucket's Access Control List.
+      Note: use the gcs-create-bucket-policy command to create a new entry.
+    name: gcs-put-bucket-policy
+  - arguments:
+    - description: Name of the bucket in which to modify the Access Control List.
+      name: bucket_name
+      required: true
+    - default: true
+      description: |-
+        Entity to remove from the Access Control List.
+        Common entity formats are:
+        * user-<userId or email>
+        * group-<groupId or email>
+        * allUsers
+        * allAuthenticatedUsers
+        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+      name: entity
+      required: true
+    description: Removes an entity from a bucket's Access Control List.
+    name: gcs-delete-bucket-policy
+  - arguments:
+    - description: Name of the bucket in which the object resides.
+      name: bucket_name
+      required: true
+    - default: true
+      description: Name of the object in which to list access controls.
+      name: object_name
+      required: true
+    description: Retrieves the Access Control List of an object.
+    name: gcs-list-bucket-object-policy
+    outputs:
+    - contextPath: GCS.BucketObjectPolicy.Bucket
+      description: Name of the bucket in which the object resides.
+      type: String
+    - contextPath: GCS.BucketObjectPolicy.Object
+      description: Name of the object holding the Access Control List.
+      type: String
+    - contextPath: GCS.BucketObjectPolicy.Entity
+      description: The entity holding the permission.
+      type: String
+    - contextPath: GCS.BucketObjectPolicy.Email
+      description: Email address associated with the entity (if any).
+      type: String
+    - contextPath: GCS.BucketObjectPolicy.Role
+      description: The access permission for the entity.
+      type: String
+    - contextPath: GCS.BucketObjectPolicy.Team
+      description: Project team associated with the entity (if any).
+      type: String
+  - arguments:
+    - description: Name of the bucket in which the object resides.
+      name: bucket_name
+      required: true
+    - description: Name of the object in which to modify the Access control List.
+      name: object_name
+      required: true
+    - default: true
+      description: |-
+        Entity to add into the Access Control List.
+        Common entity formats are:
+        * user-<userId or email>
+        * group-<groupId or email>
+        * allUsers
+        * allAuthenticatedUsers
+        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+      name: entity
+      required: true
+    - auto: PREDEFINED
+      description: The access permission for the entity.
+      name: role
+      predefined:
+      - Reader
+      - Owner
+      required: true
+    description: |-
+      Adds a new entity to an object's Access Control List.
+      Note: use the gcs-put-bucket-object-policy command to update an existing entry.
+    name: gcs-create-bucket-object-policy
+  - arguments:
+    - description: Name of the bucket in which the object resides.
+      name: bucket_name
+      required: true
+    - description: Name of the object in which to modify access controls.
+      name: object_name
+      required: true
+    - default: true
+      description: |-
+        The entity to update in the Access Control List.
+        Common entity formats are:
+        * user-<userId or email>
+        * group-<groupId or email>
+        * allUsers
+        * allAuthenticatedUsers
+        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+      name: entity
+      required: true
+    - auto: PREDEFINED
+      description: The access permissions for the entity.
+      name: role
+      predefined:
+      - Reader
+      - Owner
+      required: true
+    description: |-
+      Updates an existing entity in an object's Access Control List.
+      Note: use gcs-create-bucket-object-policy command to create a new entry.
+    name: gcs-put-bucket-object-policy
+  - arguments:
+    - description: Name of the bucket in which the object resides.
+      name: bucket_name
+      required: true
+    - description: Name of the object in which to modify access controls.
+      name: object_name
+      required: true
+    - default: true
+      description: |-
+        Entity to remove from the Access Control List.
+        Common entity formats are:
+        * user-<userId or email>
+        * group-<groupId or email>
+        * allUsers
+        * allAuthenticatedUsers
+        For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource
+      name: entity
+      required: true
+    description: Removes an entity from an object's Access Control List.
+    name: gcs-delete-bucket-object-policy
+  dockerimage: demisto/google-cloud-storage:1.0.0.1734
+  runonce: false
+  script: |2-
+
+
+
+    ''' IMPORTS '''
+
+    from google.cloud import storage
+    from typing import Any, Dict
+    import requests
+    import traceback
+    import urllib3
+
+
+    ''' GLOBALS/PARAMS '''
+
+    RFC3339_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+    DEMISTO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
+
+    SERVICE_ACCOUNT_JSON = demisto.params().get('service_account_json', '')
+    INSECURE = demisto.params().get('insecure', False)
+
+    client: storage.Client
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def initialize_module():
+        global client
+
+        # Allow an un-initialized client for the sake of unit tests
+        if SERVICE_ACCOUNT_JSON:
+            client = init_storage_client()
+
+        if INSECURE:
+            disable_tls_verification()
+
+        # Remove proxy if not set to true in params
+        handle_proxy()
+
+
+    def init_storage_client():
+        """Creates the Python API client for Google Cloud Storage."""
+        cur_directory_path = os.getcwd()
+        credentials_file_name = demisto.uniqueFile() + '.json'
+        credentials_file_path = os.path.join(cur_directory_path, credentials_file_name)
+
+        with open(credentials_file_path, 'w') as creds_file:
+            json_object = json.loads(SERVICE_ACCOUNT_JSON)
+            json.dump(json_object, creds_file)
+
+        return storage.Client.from_service_account_json(credentials_file_path)
+
+
+    def disable_tls_verification():
+
+        original_method = requests.Session.merge_environment_settings
+
+        def merge_environment_settings(self, url, proxies, stream, verify, cert):
+            settings = original_method(self, url, proxies, stream, verify, cert)
+            settings['verify'] = False
+            return settings
+
+        # noinspection PyTypeHints
+        requests.Session.merge_environment_settings = merge_environment_settings  # type: ignore
+
+        urllib3.disable_warnings(category=urllib3.exceptions.InsecureRequestWarning)
+
+
+    def ec_key(path, *merge_by):
+        """Returns the context key and merge logic for the given context path and ID field name(s)."""
+
+        if len(merge_by) == 0:
+            return path
+
+        js_condition = ''
+        for key in merge_by:
+            if js_condition:
+                js_condition += ' && '
+            js_condition += 'val.{0} && val.{0} === obj.{0}'.format(key)
+
+        return '{}({})'.format(path, js_condition)
+
+
+    def reformat_datetime_str(dt_str):
+        """Reformats a date/time string from Google's RFC 3339 format to our format."""
+        dt = None if not dt_str else datetime.strptime(dt_str, RFC3339_DATETIME_FORMAT)
+        return datetime2str(dt)
+
+
+    def datetime2str(dt):
+        """Converts a datetime object to string."""
+        return '' if not dt else dt.strftime(DEMISTO_DATETIME_FORMAT)
+
+
+    def human_readable_table(title, contents):
+        """Creates a human-readable table for the given contents, preserving header order and adding spaces to headers."""
+
+        def header_transform(header):
+            return re.sub(r'([a-z])([A-Z])', '\\1 \\2', header)
+
+        first_dict: Dict[str, Any] = {}
+        if isinstance(contents, list) and contents:
+            first_dict = contents[0]
+        elif isinstance(contents, dict):
+            first_dict = contents
+
+        ordered_headers = None if not first_dict else list(first_dict.keys())
+
+        return tableToMarkdown(title, contents, ordered_headers, header_transform)
+
+
+    def format_error(ex):
+        """Creates a human-readable error message for the given raised error."""
+        msg = 'Error occurred in the Google Cloud Storage Integration'
+
+        if hasattr(ex, '__class__'):
+            class_name = ex.__class__.__name__
+            details = str(ex)
+            if isinstance(ex, BaseException) and details:
+                msg = '{}: {}'.format(class_name, details)
+            else:
+                msg += ' ({})'.format(details if details else class_name)
+
+        return msg
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def module_test():
+        next(client.list_buckets().pages)
+
+
+    ''' Bucket management '''
+
+
+    def bucket2dict(bucket):
+        """Converts a google.cloud.storage.Bucket object to context format (GCS.Bucket)."""
+        return {
+            'Name': bucket.name,
+            'TimeCreated': reformat_datetime_str(bucket._properties.get('timeCreated', '')),
+            'TimeUpdated': reformat_datetime_str(bucket._properties.get('updated', '')),
+            'OwnerID': '' if not bucket.owner else bucket.owner.get('entityId', '')
+        }
+
+
+    def gcs_list_buckets():
+        buckets = client.list_buckets()
+        result = [bucket2dict(bucket) for bucket in buckets]
+
+        return_outputs(
+            readable_output=human_readable_table('Buckets in project ' + client.project, result),
+            outputs={ec_key('GCS.Bucket', 'Name'): result},
+            raw_response=result,
+        )
+
+
+    def gcs_get_bucket():
+        bucket_name = demisto.args()['bucket_name']
+
+        bucket = client.get_bucket(bucket_name)
+        result = bucket2dict(bucket)
+
+        return_outputs(
+            readable_output=human_readable_table('Bucket ' + bucket_name, result),
+            outputs={ec_key('GCS.Bucket', 'Name'): result},
+            raw_response=result,
+        )
+
+
+    def gcs_create_bucket():
+        bucket_name = demisto.args()['bucket_name']
+        bucket_acl = demisto.args().get('bucket_acl', '')
+        default_object_acl = demisto.args().get('default_object_acl', '')
+
+        bucket = client.create_bucket(bucket_name)
+        if bucket_acl:
+            bucket.acl.save_predefined(bucket_acl)
+        if default_object_acl:
+            bucket.default_object_acl.save_predefined(default_object_acl)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': f'Bucket {bucket_name} was created successfully.'
+        })
+
+
+    def gcs_delete_bucket():
+        bucket_name = demisto.args()['bucket_name']
+        force = demisto.args().get('force', '') == 'true'
+
+        bucket = client.get_bucket(bucket_name)
+        bucket.delete(force)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': f'Bucket {bucket_name} was deleted successfully.'
+        })
+
+
+    ''' Object operations '''
+
+
+    def blob2dict(blob):
+        """Converts a google.cloud.storage.Blob (which represents a storage object) to context format (GCS.BucketObject)."""
+        return {
+            'Name': blob.name,
+            'Bucket': blob.bucket.name,
+            'ContentType': blob.content_type,
+            'TimeCreated': datetime2str(blob.time_created),
+            'TimeUpdated': datetime2str(blob.updated),
+            'TimeDeleted': datetime2str(blob.time_deleted),
+            'Size': blob.size,
+            'MD5': blob.md5_hash,
+            'OwnerID': '' if not blob.owner else blob.owner.get('entityId', ''),
+            'CRC32c': blob.crc32c,
+            'EncryptionAlgorithm': blob._properties.get('customerEncryption', {}).get('encryptionAlgorithm', ''),
+            'EncryptionKeySHA256': blob._properties.get('customerEncryption', {}).get('keySha256', ''),
+        }
+
+
+    def download_blob(blob, file_name=''):
+        cur_directory_path = os.getcwd()
+        file_name = file_name or blob.name.replace('\\', '/').split('/')[-1] or demisto.uniqueFile()
+        file_path = os.path.join(cur_directory_path, file_name)
+
+        with open(file_path, 'wb') as file:
+            client.download_blob_to_file(blob, file)
+
+        return file_name
+
+
+    def upload_blob(file_path, bucket_name, object_name):
+        bucket = client.get_bucket(bucket_name)
+        blob = bucket.blob(object_name)
+
+        blob.upload_from_filename(file_path)
+
+        return blob
+
+
+    def gcs_list_bucket_objects():
+        bucket_name = demisto.args()['bucket_name']
+
+        blobs = client.list_blobs(bucket_name)
+        result = [blob2dict(blob) for blob in blobs]
+
+        return_outputs(
+            readable_output=human_readable_table('Objects in bucket ' + bucket_name, result),
+            outputs={ec_key('GCS.BucketObject', 'Name', 'Bucket'): result},
+            raw_response=result,
+        )
+
+
+    def gcs_download_file():
+        bucket_name = demisto.args()['bucket_name']
+        blob_name = demisto.args()['object_name']
+        saved_file_name = demisto.args().get('saved_file_name', '')
+
+        bucket = client.get_bucket(bucket_name)
+        blob = storage.Blob(blob_name, bucket)
+        saved_file_name = download_blob(blob, saved_file_name)
+
+        demisto.results(file_result_existing_file(saved_file_name))
+
+
+    def gcs_upload_file():
+        entry_id = demisto.args()['entry_id']
+        bucket_name = demisto.args()['bucket_name']
+        object_name = demisto.args()['object_name']
+        object_acl = demisto.args().get('object_acl', '')
+
+        context_file = demisto.getFilePath(entry_id)
+        file_path = context_file['path']
+        file_name = context_file['name']
+        blob = upload_blob(file_path, bucket_name, object_name)
+        if object_acl:
+            blob.acl.save_predefined(object_acl)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': f'File {file_name} was successfully uploaded to bucket {bucket_name} as {object_name}'
+        })
+
+
+    ''' Bucket policy (ACL) '''
+
+
+    def acl2dict(acl_entry, include_object_name=False):
+        """Converts an ACL entry from its raw JSON form to context format (GCS.BucketPolicy or GCS.BucketObjectPolicy)."""
+        result = {
+            'Bucket': acl_entry.get('bucket', ''),
+            'Object': acl_entry.get('object', ''),
+            'Entity': acl_entry.get('entity', ''),
+            'Email': acl_entry.get('email', ''),
+            'Role': acl_entry.get('role', ''),
+            'Team': acl_entry.get('projectTeam', {}).get('team', '')
+        }
+
+        # Check if we need to adapt from GCS.BucketObjectPolicy to GCS.BucketPolicy
+        if not include_object_name:
+            del result['Object']
+
+        return result
+
+
+    def get_acl_entries(acl):
+        """Retrieves the entries of the given ACL (access control list) in their raw dictionary form."""
+        path = acl.reload_path
+        parsed_json = client._connection.api_request(method='GET', path=path)
+        return parsed_json.get('items', ())
+
+
+    def set_acl_entry(acl, entity, role):
+        acl_entry = acl.entity_from_dict({'entity': entity, 'role': role.upper()})
+        acl.add_entity(acl_entry)
+        acl.save()
+
+
+    def delete_acl_entry(acl, entity):
+        del acl.entities[str(entity)]
+        acl.save()
+
+
+    def gcs_list_bucket_policy():
+        bucket_name = demisto.args()['bucket_name']
+
+        acl = client.get_bucket(bucket_name).acl
+
+        acl_entries = get_acl_entries(acl)
+        result = [acl2dict(entry) for entry in acl_entries]
+
+        return_outputs(
+            readable_output=human_readable_table('ACL policy for bucket ' + bucket_name, result),
+            outputs={ec_key('GCS.BucketPolicy', 'Bucket', 'Entity'): result},
+            raw_response=result,
+        )
+
+
+    def gcs_create_bucket_policy():
+        bucket_name = demisto.args()['bucket_name']
+        entity = demisto.args()['entity']
+        role = demisto.args()['role']
+
+        acl = client.get_bucket(bucket_name).acl
+        if acl.has_entity(entity):
+            raise ValueError(f'Entity {entity} already exists in the ACL of bucket {bucket_name}'
+                             ' (use gcs-put-bucket-policy to update it)')
+
+        set_acl_entry(acl, entity, role)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': f'Added entity {entity} to ACL of bucket {bucket_name} with role {role}'
+        })
+
+
+    def gcs_put_bucket_policy():
+        bucket_name = demisto.args()['bucket_name']
+        entity = demisto.args()['entity']
+        role = demisto.args()['role']
+
+        acl = client.get_bucket(bucket_name).acl
+        if not acl.has_entity(entity):
+            raise ValueError(f'Entity {entity} does not exist in the ACL of bucket {bucket_name}'
+                             ' (use gcs-create-bucket-policy to create it)')
+
+        set_acl_entry(acl, entity, role)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': f'Updated ACL entity {entity} in bucket {bucket_name} to role {role}'
+        })
+
+
+    def gcs_delete_bucket_policy():
+        bucket_name = demisto.args()['bucket_name']
+        entity = demisto.args()['entity']
+
+        acl = client.get_bucket(bucket_name).acl
+        if not acl.has_entity(entity):
+            raise ValueError(f'Entity {entity} does not exist in the ACL of bucket {bucket_name}')
+
+        delete_acl_entry(acl, entity)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': f'Removed entity {entity} from ACL of bucket {bucket_name}'
+        })
+
+
+    ''' Object policy (ACL) '''
+
+
+    def get_blob_acl(bucket_name, blob_name):
+        bucket = client.get_bucket(bucket_name)
+        blob = storage.Blob(blob_name, bucket)
+        return blob.acl
+
+
+    def gcs_list_bucket_object_policy():
+        bucket_name = demisto.args()['bucket_name']
+        blob_name = demisto.args()['object_name']
+
+        acl = get_blob_acl(bucket_name, blob_name)
+        acl_entries = get_acl_entries(acl)
+        result = [acl2dict(entry, include_object_name=True) for entry in acl_entries]
+
+        return_outputs(
+            readable_output=human_readable_table('ACL policy for object ' + blob_name, result),
+            outputs={ec_key('GCS.BucketObjectPolicy', 'Bucket', 'Object', 'Entity'): result},
+            raw_response=result,
+        )
+
+
+    def gcs_create_bucket_object_policy():
+        bucket_name = demisto.args()['bucket_name']
+        blob_name = demisto.args()['object_name']
+        entity = demisto.args()['entity']
+        role = demisto.args()['role']
+
+        acl = get_blob_acl(bucket_name, blob_name)
+        if acl.has_entity(entity):
+            raise ValueError(f'Entity {entity} already exists in the ACL of object {blob_name}'
+                             ' (use gcs-put-bucket-object-policy to update it)')
+
+        set_acl_entry(acl, entity, role)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': f'Added entity {entity} to ACL of object {blob_name} with role {role}'
+        })
+
+
+    def gcs_put_bucket_object_policy():
+        bucket_name = demisto.args()['bucket_name']
+        blob_name = demisto.args()['object_name']
+        entity = demisto.args()['entity']
+        role = demisto.args()['role']
+
+        acl = get_blob_acl(bucket_name, blob_name)
+        if not acl.has_entity(entity):
+            raise ValueError(f'Entity {entity} does not exist in the ACL of object {blob_name}'
+                             ' (use gcs-create-bucket-object-policy to create it)')
+
+        set_acl_entry(acl, entity, role)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': f'Updated ACL entity {entity} in object {blob_name} to role {role}'
+        })
+
+
+    def gcs_delete_bucket_object_policy():
+        bucket_name = demisto.args()['bucket_name']
+        blob_name = demisto.args()['object_name']
+        entity = demisto.args()['entity']
+
+        acl = get_blob_acl(bucket_name, blob_name)
+        if not acl.has_entity(entity):
+            raise ValueError(f'Entity {entity} does not exist in the ACL of object {blob_name}')
+
+        delete_acl_entry(acl, entity)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': f'Removed entity {entity} from ACL of object {blob_name}'
+        })
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is ' + demisto.command())
+
+    try:
+        initialize_module()
+
+        if demisto.command() == 'test-module':
+            module_test()
+            demisto.results('ok')
+
+        #
+        # Bucket management
+        #
+        elif demisto.command() == 'gcs-list-buckets':
+            gcs_list_buckets()
+
+        elif demisto.command() == 'gcs-get-bucket':
+            gcs_get_bucket()
+
+        elif demisto.command() == 'gcs-create-bucket':
+            gcs_create_bucket()
+
+        elif demisto.command() == 'gcs-delete-bucket':
+            gcs_delete_bucket()
+
+        #
+        # Object operations
+        #
+        elif demisto.command() == 'gcs-list-bucket-objects':
+            gcs_list_bucket_objects()
+
+        elif demisto.command() == 'gcs-download-file':
+            gcs_download_file()
+
+        elif demisto.command() == 'gcs-upload-file':
+            gcs_upload_file()
+
+        #
+        # Bucket policy (ACL)
+        #
+        elif demisto.command() == 'gcs-list-bucket-policy':
+            gcs_list_bucket_policy()
+
+        elif demisto.command() == 'gcs-create-bucket-policy':
+            gcs_create_bucket_policy()
+
+        elif demisto.command() == 'gcs-put-bucket-policy':
+            gcs_put_bucket_policy()
+
+        elif demisto.command() == 'gcs-delete-bucket-policy':
+            gcs_delete_bucket_policy()
+
+        #
+        # Object policy (ACL)
+        #
+        elif demisto.command() == 'gcs-list-bucket-object-policy':
+            gcs_list_bucket_object_policy()
+
+        elif demisto.command() == 'gcs-create-bucket-object-policy':
+            gcs_create_bucket_object_policy()
+
+        elif demisto.command() == 'gcs-put-bucket-object-policy':
+            gcs_put_bucket_object_policy()
+
+        elif demisto.command() == 'gcs-delete-bucket-object-policy':
+            gcs_delete_bucket_object_policy()
+
+    except Exception as e:
+        LOG(traceback.format_exc())
+        return_error(format_error(e))
+  type: python
+system: true

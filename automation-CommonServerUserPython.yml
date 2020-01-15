@@ -1,0 +1,13 @@
+comment: Common user defined code that will be merged into each server script when
+  it runs
+commonfields:
+  id: CommonServerUserPython
+  version: -1
+name: CommonServerUserPython
+runonce: false
+script: ""
+scripttarget: 0
+tags:
+- infra
+- server
+type: python

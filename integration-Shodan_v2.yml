@@ -1,0 +1,947 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Shodan_v2
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Api Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: https://api.shodan.io
+  display: Base url to Shodan API
+  name: api_url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: A search engine used for searching Internet-connected devices
+detaileddescription: "## Overview\n---\n\nsearch engine for Internet-connected devices\nThis
+  integration was integrated and tested with version xx of Shodan_v2\n## Shodan_v2
+  Playbook\n---\n\n## Use Cases\n---\n\n## Configure Shodan_v2 on Demisto\n---\n\n1.
+  Navigate to __Settings__ > __Integrations__ > __Servers & Services__.\n2. Search
+  for Shodan_v2.\n3. Click __Add instance__ to create and configure a new integration
+  instance.\n    * __Name__: a textual name for the integration instance.\n    * __Api
+  Key__\n    * __Base url to Shodan API__\n    * __Trust self-signed certificate (insecure)__\n
+  \   * __Use system proxy settings__\n4. Click __Test__ to validate the URLs, token,
+  and connection.\n## Fetched Incidents Data\n---\n\n## Commands\n---\nYou can execute
+  these commands from the Demisto CLI, as part of an automation, or in a playbook.\nAfter
+  you successfully execute a command, a DBot message appears in the War Room with
+  the command details.\n1. search\n2. ip\n3. shodan-search-count\n4. shodan-scan-ip\n5.
+  shodan-scan-internet\n6. shodan-scan-status\n7. shodan-create-network-alert\n8.
+  shodan-network-get-alert-by-id\n9. shodan-network-get-alerts\n10. shodan-network-delete-alert\n11.
+  shodan-network-alert-set-trigger\n12. shodan-network-alert-remove-trigger\n13. shodan-network-alert-whitelist-service\n14.
+  shodan-network-alert-remove-service-from-whitelist\n### 1. search\n---\nSearch Shodan
+  using the same query syntax as the website and use facets to get summary information
+  for different properties.\n##### Base Command\n\n`search`\n##### Input\n\n| **Argument
+  Name** | **Description** | **Required** |\n| --- | --- | --- |\n| query | Shodan
+  search query. The provided string is used to search the database of banners in Shodan,
+  with the additional option to provide filters inside the search query using a \"filter:value\"
+  format. For example, the following search query would find Apache webservers located
+  in Germany: \"apache country:DE\" | Required | \n| facets | A comma-separated list
+  of properties to get summary information on. Property names can also be in the format
+  of \"property:count\", where \"count\" is the number of facets that will be returned
+  for a property (i.e. \"country:100\" to get the top 100 countries for a search query)
+  | Optional | \n| page | Result page number to be fetched. Each page contains up
+  to 100 results. | Optional | \n\n\n##### Context Output\n\n| **Path** | **Type**
+  | **Description** |\n| --- | --- | --- |\n| Shodan.Banner.Org | String | The name
+  of the organization that is assigned the IP space for this device | \n| Shodan.Banner.Isp
+  | String | The ISP that is providing the organization with the IP space for this
+  device. Consider this the \"parent\" of the organization in terms of IP ownership
+  | \n| Shodan.Banner.Transport | String | Either \"udp\" or \"tcp\" to indicate which
+  IP transport protocol was used to fetch the information | \n| Shodan.Banner.Asn
+  | String | The autonomous system number (ex. \"AS4837\"). | \n| Shodan.Banner.IP
+  | String | The IP address of the host as a string | \n| Shodan.Banner.Port | Number
+  | The port number that the service is operating on | \n| Shodan.Banner.Ssl.versions
+  | String | list of SSL versions that are supported by the server. If a version isnt
+  supported the value is prefixed with a \"-\". Example: [\"TLSv1\", \"-SSLv2\"] means
+  that the server supports TLSv1 but doesnt support SSLv2. | \n| Shodan.Banner.Hostnames
+  | String | An array of strings containing all of the hostnames that have been assigned
+  to the IP address for this device. | \n| Shodan.Banner.Location.City | String |
+  The name of the city where the device is located | \n| Shodan.Banner.Location.Longitude
+  | Number | The longitude for the geolocation of the device | \n| Shodan.Banner.Location.Latitude
+  | Number | The latitude for the geolocation of the device | \n| Shodan.Banner.Location.Country
+  | String | The name of the country where the device is located | \n| Shodan.Banner.Timestamp
+  | Date | The timestamp for when the banner was fetched from the device in the UTC
+  timezone | \n| Shodan.Banner.Domains | String | An array of strings containing the
+  top-level domains for the hostnames of the device. This is a utility property in
+  case you want to filter by TLD instead of subdomain. It is smart enough to handle
+  global TLDs with several dots in the domain (ex. \"co.uk\") | \n| Shodan.Banner.OS
+  | String | The operating system that powers the device | \n\n\n##### Command Example\n```!search
+  query=\"country:HK product:Apache\"```\n\n##### Human Readable Output\n\n\n### 2.
+  ip\n---\nReturns all services that have been found on the given host IP.\n#####
+  Base Command\n\n`ip`\n##### Input\n\n| **Argument Name** | **Description** | **Required**
+  |\n| --- | --- | --- |\n| ip | Host IP address | Required | \n\n\n##### Context
+  Output\n\n| **Path** | **Type** | **Description** |\n| --- | --- | --- |\n| IP.ASN
+  | Unknown | Autonomous System Number (ASN) such as IP owner | \n| IP.Address | Unknown
+  | IP Address | \n| IP.Geo.Country | Unknown | Country of given IP | \n| IP.Geo.Description
+  | Unknown | Description of location  | \n| IP.Geo.Location | Unknown | Latitude
+  and longitude of given IP | \n| IP.Hostname | Unknown | Hostname | \n| Shodan.IP.Tags
+  | String | The tags related to the IP | \n| Shodan.IP.Latitude | Number | The latitude
+  for the geolocation of the device | \n| Shodan.IP.Org | String | The name of the
+  organization that is assigned the IP space for this device | \n| Shodan.IP.ASN |
+  String | The autonomous system number (ex. \"AS4837\"). | \n| Shodan.IP.ISP | String
+  | The ISP that is providing the organization with the IP space for this device.
+  Consider this the \"parent\" of the organization in terms of IP ownership | \n|
+  Shodan.IP.Longitude | Number | The Longitude for the geolocation of the device |
+  \n| Shodan.IP.LastUpdate | Date | The timestamp for when the banner was fetched
+  from the device in the UTC timezone | \n| Shodan.IP.CountryName | String | The name
+  of the country where the device is located | \n| Shodan.IP.OS | String | The operating
+  system that powers the device | \n| Shodan.IP.Port | Number | The port number that
+  the service is operating on | \n| Shodan.IP.Address | String | The IP address of
+  the host as a string | \n\n\n##### Command Example\n```!ip ip=\"8.8.8.8\"```\n\n#####
+  Human Readable Output\n\n\n### 3. shodan-search-count\n---\nThis method behaves
+  identical to \"shodan-search\" with the only difference that this method does not
+  return any host results, it only returns the total number of results that matched
+  the query and any facet information that was requested. As a result this method
+  does not consume query credits.\n##### Base Command\n\n`shodan-search-count`\n#####
+  Input\n\n| **Argument Name** | **Description** | **Required** |\n| --- | --- | ---
+  |\n| query | Shodan search query. The provided string is used to search the database
+  of banners in Shodan, with the additional option to provide filters inside the search
+  query using a \"filter:value\" format. | Required | \n\n\n##### Context Output\n\n|
+  **Path** | **Type** | **Description** |\n| --- | --- | --- |\n| Shodan.Search.ResultCount
+  | Number | Number of results generated by the search query | \n\n\n##### Command
+  Example\n```!shodan-search-count query=\"country:HK product:Apache\"```\n\n#####
+  Human Readable Output\n\n\n### 4. shodan-scan-ip\n---\nUse this method to request
+  Shodan to crawl a network.\n##### Base Command\n\n`shodan-scan-ip`\n##### Input\n\n|
+  **Argument Name** | **Description** | **Required** |\n| --- | --- | --- |\n| ips
+  | A comma-separated list of IPs or netblocks (in CIDR notation) that should get
+  crawled. | Required | \n\n\n##### Context Output\n\n| **Path** | **Type** | **Description**
+  |\n| --- | --- | --- |\n| Shodan.Scan.ID | String | The unique scan ID that was
+  returned by shodan-scan-ip. | \n| Shodan.Scan.Status | String | The status of the
+  scan job | \n\n\n##### Command Example\n```!shodan-scan-ip ips=\"1.1.1.69\"```\n\n#####
+  Human Readable Output\n\n\n### 5. shodan-scan-internet\n---\nThis method is restricted
+  to security researchers and companies with a Shodan Enterprise Data license\n#####
+  Base Command\n\n`shodan-scan-internet`\n##### Input\n\n| **Argument Name** | **Description**
+  | **Required** |\n| --- | --- | --- |\n| port | The port that Shodan should crawl
+  the Internet for | Required | \n| protocol | The name of the protocol that should
+  be used to interrogate the port. | Required | \n\n\n##### Context Output\n\n| **Path**
+  | **Type** | **Description** |\n| --- | --- | --- |\n| Shodan.Scan.ID | String |
+  The id of the scan job | \n\n\n##### Command Example\n```!shodan-scan-internet port=\"80\"
+  protocol=\"http\"```\n\n##### Human Readable Output\n\n\n### 6. shodan-scan-status\n---\nCheck
+  the progress of a previously submitted scan request\n##### Base Command\n\n`shodan-scan-status`\n#####
+  Input\n\n| **Argument Name** | **Description** | **Required** |\n| --- | --- | ---
+  |\n| scanID | The unique scan ID that was returned by shodan-scan. | Required |
+  \n\n\n##### Context Output\n\n| **Path** | **Type** | **Description** |\n| --- |
+  --- | --- |\n| Shodan.Scan.Id | String | The unique scan ID that was returned by
+  shodan-scan | \n| Shodan.Scan.Status | String | The status of the scan job | \n\n\n#####
+  Command Example\n```!shodan-scan-status scanID=\"fnFNYGzNGJFNE8lQ\"```\n\n#####
+  Human Readable Output\n\n\n### 7. shodan-create-network-alert\n---\nUse this method
+  to create a network alert for a defined IP/ netblock which can be used to subscribe
+  to changes/ events that are discovered within that range.\n##### Base Command\n\n`shodan-create-network-alert`\n#####
+  Input\n\n| **Argument Name** | **Description** | **Required** |\n| --- | --- | ---
+  |\n| alertName | The name to describe the network alert | Required | \n| ip | A
+  list of IPs or network ranges defined using CIDR notation | Required | \n| expires
+  | Number of seconds that the alert should be active | Optional | \n\n\n##### Context
+  Output\n\n| **Path** | **Type** | **Description** |\n| --- | --- | --- |\n| Shodan.Alert.ID
+  | String | The id of the alert subscription | \n| Shodan.Alert.Expires | String
+  | Number of seconds that the alert should be active | \n\n\n##### Command Example\n```!shodan-create-network-alert
+  alertName=\"test_alert\" ip=\"1.1.1.1\"```\n\n##### Human Readable Output\n\n\n###
+  8. shodan-network-get-alert-by-id\n---\nGet the details for a network alert\n#####
+  Base Command\n\n`shodan-network-get-alert-by-id`\n##### Input\n\n| **Argument Name**
+  | **Description** | **Required** |\n| --- | --- | --- |\n| alertID | AlertID | Required
+  | \n\n\n##### Context Output\n\n| **Path** | **Type** | **Description** |\n| ---
+  | --- | --- |\n| Shodan.Alert.ID | String | The id of the alert subscription | \n|
+  Shodan.Alert.Expires | String | Number of seconds that the alert should be active
+  | \n\n\n##### Command Example\n```!shodan-network-get-alert-by-id alertID=\"Y6KRMXWQ8FPNSHHY```\n\n#####
+  Human Readable Output\n\n\n### 9. shodan-network-get-alerts\n---\nGet a list of
+  all the created alerts\n##### Base Command\n\n`shodan-network-get-alerts`\n#####
+  Input\n\nThere are no input arguments for this command.\n\n##### Context Output\n\n|
+  **Path** | **Type** | **Description** |\n| --- | --- | --- |\n| Shodan.Alert.ID
+  | String | The id of the alert subscription | \n| Shodan.Alert.Expires | String
+  | Number of seconds that the alert should be active | \n\n\n##### Command Example\n```!shodan-network-get-alerts```\n\n#####
+  Human Readable Output\n\n\n### 10. shodan-network-delete-alert\n---\nRemove the
+  specified network alert.\n##### Base Command\n\n`shodan-network-delete-alert`\n#####
+  Input\n\n| **Argument Name** | **Description** | **Required** |\n| --- | --- | ---
+  |\n| alertID | AlertID | Required | \n\n\n##### Context Output\n\nThere is no context
+  output for this command.\n\n##### Command Example\n```!shodan-network-delete-alert
+  alertID=\"Y6KRMXWQ8FPNSHHY\"```\n\n##### Human Readable Output\n\n\n### 11. shodan-network-alert-set-trigger\n---\nGet
+  notifications when the specified trigger is met.\n##### Base Command\n\n`shodan-network-alert-set-trigger`\n#####
+  Input\n\n| **Argument Name** | **Description** | **Required** |\n| --- | --- | ---
+  |\n| alertID | AlertID | Required | \n| Trigger | Trigger name | Required | \n\n\n#####
+  Context Output\n\nThere is no context output for this command.\n\n##### Command
+  Example\n```!shodan-network-alert-set-trigger alertID=\"Y6KRMXWQ8FPNSHHY\" Trigger=\"any\"```\n\n#####
+  Human Readable Output\n\n\n### 12. shodan-network-alert-remove-trigger\n---\nStop
+  getting notifications for the specified trigger.\n##### Base Command\n\n`shodan-network-alert-remove-trigger`\n#####
+  Input\n\n| **Argument Name** | **Description** | **Required** |\n| --- | --- | ---
+  |\n| alertID | AlertID | Required | \n| Trigger | Trigger name | Required | \n\n\n#####
+  Context Output\n\nThere is no context output for this command.\n\n##### Command
+  Example\n```!shodan-network-alert-remove-trigger alertID=\"Y6KRMXWQ8FPNSHHY\" Trigger=\"any\"```\n\n#####
+  Human Readable Output\n\n\n### 13. shodan-network-alert-whitelist-service\n---\nIgnore
+  the specified service when it is matched for the trigger.\n##### Base Command\n\n`shodan-network-alert-whitelist-service`\n#####
+  Input\n\n| **Argument Name** | **Description** | **Required** |\n| --- | --- | ---
+  |\n| alertID | AlertID | Required | \n| trigger | Trigger name | Required | \n|
+  service | Service specified in the format \"ip:port\" (ex. \"1.1.1.1:80\") | Required
+  | \n\n\n##### Context Output\n\nThere is no context output for this command.\n\n#####
+  Command Example\n```!shodan-network-alert-whitelist-service alertID=\"Y6KRMXWQ8FPNSHHY\"
+  trigger=\"any\" service=\"1.1.1.1:80\"```\n\n##### Human Readable Output\n\n\n###
+  14. shodan-network-alert-remove-service-from-whitelist\n---\nStart getting notifications
+  again for the specified trigger\n##### Base Command\n\n`shodan-network-alert-remove-service-from-whitelist`\n#####
+  Input\n\n| **Argument Name** | **Description** | **Required** |\n| --- | --- | ---
+  |\n| alertID | AlertID | Required | \n| trigger | Trigger name | Required | \n|
+  service | Service specified in the format \"ip:port\" (ex. \"1.1.1.1:80\") | Required
+  | \n\n\n##### Context Output\n\nThere is no context output for this command.\n\n#####
+  Command Example\n```!shodan-network-alert-remove-service-from-whitelist alertID=\"Y6KRMXWQ8FPNSHHY\"
+  trigger=\"any\" service=\"1.1.1.1:80\"```\n\n##### Human Readable Output\n"
+display: Shodan v2
+image: data:image/png;base64,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
+name: Shodan_v2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The query for searching the database of banners. The search query
+        supports filtering using the "filter:value" format to narrow your search.
+        For example, the query "apache country:DE" returns Apache web servers located
+        in Germany.
+      name: query
+      required: true
+    - description: A CSV list of properties on which to get summary information. The
+        search query supports filtering using the "property:count" format to define
+        the number of facets to return for a property. For example, the query "country:100"
+        returns the top 100 countries.
+      name: facets
+    - defaultValue: "1"
+      description: The page number of the fetched results. Each page contains a maximum
+        of 100 results.
+      name: page
+    description: Searches Shodan using facets to get summary information on properties.
+    name: search
+    outputs:
+    - contextPath: Shodan.Banner.Org
+      description: The name of the organization to which the space of the IP address
+        space for the searched device is assigned.
+      type: String
+    - contextPath: Shodan.Banner.Isp
+      description: The Internet Service Provider that provides the organization with
+        the IP address space for the searched device.
+      type: String
+    - contextPath: Shodan.Banner.Transport
+      description: The IP address transport protocol used to fetch the summary information.
+        Can be "UDP" or "TCP".
+      type: String
+    - contextPath: Shodan.Banner.Asn
+      description: The Autonomous System Number. For example, "AS4837".
+      type: String
+    - contextPath: Shodan.Banner.IP
+      description: The IP address of the host as a string.
+      type: String
+    - contextPath: Shodan.Banner.Port
+      description: The port number on which the service is operating.
+      type: Number
+    - contextPath: Shodan.Banner.Ssl.versions
+      description: The list of SSL versions that are supported by the server. Unsupported
+        versions are prefixed with a "-". For example, ["TLSv1", "-SSLv2"] means that
+        the server supports TLSv1, but does not support SSLv2.
+      type: String
+    - contextPath: Shodan.Banner.Hostnames
+      description: An array of strings containing all of the host names that have
+        been assigned to the IP address for the searched device.
+      type: String
+    - contextPath: Shodan.Banner.Location.City
+      description: The city in which the searched device is located.
+      type: String
+    - contextPath: Shodan.Banner.Location.Longitude
+      description: The longitude of the geolocation of the searched device.
+      type: Number
+    - contextPath: Shodan.Banner.Location.Latitude
+      description: The latitude of the geolocation of the searched device.
+      type: Number
+    - contextPath: Shodan.Banner.Location.Country
+      description: The country in which the searched device is located.
+      type: String
+    - contextPath: Shodan.Banner.Timestamp
+      description: The timestamp in UTC format indicating when the banner was fetched
+        from the searched device.
+      type: Date
+    - contextPath: Shodan.Banner.Domains
+      description: An array of strings containing the top-level domains for the host
+        names of the searched device. It is a utility property for filtering by a
+        top-level domain instead of a subdomain. It supports handling global top-level
+        domains that have several dots in the domain. For example, "co.uk".
+      type: String
+    - contextPath: Shodan.Banner.OS
+      description: The operating system that powers the searched device.
+      type: String
+  - arguments:
+    - default: true
+      description: The IP address of the host.
+      name: ip
+      required: true
+    description: Returns all services that have been found on the IP address of the
+      searched host.
+    name: ip
+    outputs:
+    - contextPath: IP.ASN
+      description: The Autonomous System Number.
+      type: Unknown
+    - contextPath: IP.Address
+      description: The IP address.
+      type: Unknown
+    - contextPath: IP.Geo.Country
+      description: The country of a given IP address.
+      type: Unknown
+    - contextPath: IP.Geo.Description
+      description: The description of the location.
+      type: Unknown
+    - contextPath: IP.Geo.Location
+      description: The latitude and longitude of an IP address.
+      type: Unknown
+    - contextPath: IP.Hostname
+      description: The hostname of the IP address.
+      type: Unknown
+    - contextPath: Shodan.IP.Tags
+      description: The tags associated with the IP address.
+      type: String
+    - contextPath: Shodan.IP.Latitude
+      description: The latitude of the geolocation of the searched device.
+      type: Number
+    - contextPath: Shodan.IP.Org
+      description: The name of the organization to which the IP space for the searched
+        device is assigned.
+      type: String
+    - contextPath: Shodan.IP.ASN
+      description: The Autonomous System Number. For example, "AS4837".
+      type: String
+    - contextPath: Shodan.IP.ISP
+      description: The Internet Service Provider that provides the organization with
+        the IP space for the searched device.
+      type: String
+    - contextPath: Shodan.IP.Longitude
+      description: The longitude of the geolocation of the searched device.
+      type: Number
+    - contextPath: Shodan.IP.LastUpdate
+      description: The timestamp in UTC format indicating when the banner was fetched
+        from the searched device.
+      type: Date
+    - contextPath: Shodan.IP.CountryName
+      description: The country in which the searched device is located.
+      type: String
+    - contextPath: Shodan.IP.OS
+      description: The operating system on which the searched device is running.
+      type: String
+    - contextPath: Shodan.IP.Port
+      description: The port number on which the service is operating.
+      type: Number
+    - contextPath: Shodan.IP.Address
+      description: The IP address of the host as a string.
+      type: String
+  - arguments:
+    - description: The query for searching the database of banners. The search query
+        supports filtering using the "filter:value" format to narrow your search.
+        For example, the query "apache country:DE" returns Apache web servers located
+        in Germany.
+      name: query
+      required: true
+    description: Returns the total number of results that match only the specified
+      query or facet settings. This command does not return host results. This command
+      does not consume query credits.
+    name: shodan-search-count
+    outputs:
+    - contextPath: Shodan.Search.ResultCount
+      description: The number of results matched in the search query.
+      type: Number
+  - arguments:
+    - description: A CSV list of IP addresses or netblocks for Shodan to crawl defined
+        in CIDR notation.
+      name: ips
+      required: true
+    description: Requests Shodan to crawl a network.
+    name: shodan-scan-ip
+    outputs:
+    - contextPath: Shodan.Scan.ID
+      description: The unique ID of the scan.
+      type: String
+    - contextPath: Shodan.Scan.Status
+      description: The status of the scan.
+      type: String
+  - arguments:
+    - description: The port for which Shodan crawls the Internet.
+      name: port
+      required: true
+    - description: The name of the protocol used to interrogate the port.
+      name: protocol
+      required: true
+    description: Requests for Shodan to perform a scan on the specified port and protocol.
+    name: shodan-scan-internet
+    outputs:
+    - contextPath: Shodan.Scan.ID
+      description: The ID of the initial scan.
+      type: String
+  - arguments:
+    - description: The unique ID of the initial scan.
+      name: scanID
+      required: true
+    description: Checks the progress of a previously submitted scan request on the
+      specified port and protocol.
+    name: shodan-scan-status
+    outputs:
+    - contextPath: Shodan.Scan.Id
+      description: The unique ID of the scan request checked for progress.
+      type: String
+    - contextPath: Shodan.Scan.Status
+      description: The status of the scan job checked for progress.
+      type: String
+  - arguments:
+    - description: The name of the network alert.
+      name: alertName
+      required: true
+    - description: A list of IP addresses or network ranges defined in CIDR notation.
+      name: ip
+      required: true
+    - description: The number of seconds for the network alert to remain active.
+      name: expires
+    description: Creates a network alert for a defined IP address or netblock used
+      for subscribing to changes or events that are discovered within the netblock's
+      range.
+    name: shodan-create-network-alert
+    outputs:
+    - contextPath: Shodan.Alert.ID
+      description: The ID of the subscription of the specified network alert.
+      type: String
+    - contextPath: Shodan.Alert.Expires
+      description: The number of seconds that the specified network alert remains
+        active.
+      type: String
+  - arguments:
+    - description: The ID of the network alert.
+      name: alertID
+      required: true
+    description: Gets the details of a network alert.
+    name: shodan-network-get-alert-by-id
+    outputs:
+    - contextPath: Shodan.Alert.ID
+      description: The ID of the subscription of the network alert.
+      type: String
+    - contextPath: Shodan.Alert.Expires
+      description: The number of seconds that the network alert remains active.
+      type: String
+  - arguments: []
+    description: Gets a list of all created network alerts.
+    name: shodan-network-get-alerts
+    outputs:
+    - contextPath: Shodan.Alert.ID
+      description: The IDs of the subscriptions of the network alerts.
+      type: String
+    - contextPath: Shodan.Alert.Expires
+      description: The number of seconds that the network alerts remain active.
+      type: String
+  - arguments:
+    - description: The ID of the network alert to remove.
+      name: alertID
+      required: true
+    description: Removes the specified network alert.
+    name: shodan-network-delete-alert
+  - arguments:
+    - description: The ID of the network alert for which to enable notifications.
+      name: alertID
+      required: true
+    - description: The name of the trigger.
+      name: Trigger
+      required: true
+    description: Enables receiving notifications for network alerts that are set off
+      by the specified triggers.
+    name: shodan-network-alert-set-trigger
+  - arguments:
+    - description: The ID of the network alert for which to disable notifications.
+      name: alertID
+      required: true
+    - description: The name of the trigger.
+      name: Trigger
+      required: true
+    description: Disables receiving notifications for network alerts that are set
+      off by the specified triggers.
+    name: shodan-network-alert-remove-trigger
+  - arguments:
+    - description: The ID of the network alert for which to ignore the specified services.
+      name: alertID
+      required: true
+    - description: The name of the trigger.
+      name: trigger
+      required: true
+    - description: The service specified in the "ip:port" format. For example, "1.1.1.1:80".
+      name: service
+      required: true
+    description: Ignores the specified services for network alerts that are set off
+      by the specified triggers.
+    name: shodan-network-alert-whitelist-service
+  - arguments:
+    - description: The ID of the alert for which to resume the specified services.
+      name: alertID
+      required: true
+    - description: The name of the trigger.
+      name: trigger
+      required: true
+    - description: The service specified in the "ip:port" format. For example, "1.1.1.1:80".
+      name: service
+      required: true
+    description: Resumes receiving notifications for network alerts that are set off
+      by the specified triggers.
+    name: shodan-network-alert-remove-service-from-whitelist
+  dockerimage: demisto/python3:3.7.3.286
+  runonce: false
+  script: |2-
+
+
+
+
+    ''' IMPORTS '''
+
+    import json
+    import requests
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    API_KEY = demisto.params()['api_key']
+
+    # Remove trailing slash to prevent wrong URL path to service
+    API_URL = demisto.params()['api_url'].rstrip('/')
+
+    # Should we use SSL
+    USE_SSL = not demisto.params().get('insecure', False)
+
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        os.environ.pop('HTTP_PROXY', None)
+        os.environ.pop('HTTPS_PROXY', None)
+        os.environ.pop('http_proxy', None)
+        os.environ.pop('https_proxy', None)
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_request(method, uri, params=None, data=None, headers=None):
+        if params is None:
+            params = {}
+
+        params.update({
+            'key': API_KEY
+        })
+
+        url = f'{API_URL}{uri}'
+        res = requests.request(method,
+                               url,
+                               params=params,
+                               data=data,
+                               headers=headers,
+                               verify=USE_SSL)
+
+        if res.status_code != 200:
+            error_msg = f'Error in API call {url} [{res.status_code}] - {res.reason}'
+            if 'application/json' in res.headers['content-type'] and 'error' in res.json():
+                error_msg += f': {res.json()["error"]}'
+
+            return_error(error_msg)
+
+        return res.json()
+
+
+    def alert_to_demisto_result(alert):
+        ec = {
+            'Shodan': {
+                'Alert': {
+                    'ID': alert.get('id', ''),
+                    'Expires': alert.get('expires', 0)
+                }
+            }
+        }
+
+        human_readable = tableToMarkdown(f'Alert ID {ec["Shodan"]["Alert"]["ID"]}', {
+            'Name': alert.get('name', ''),
+            'IP': alert.get('filters', {'ip', ''})['ip'],
+            'Expires': ec['Shodan']['Alert']['Expires']
+        })
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': alert,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': human_readable,
+            'HumanReadableFormat': formats['markdown'],
+            'EntryContext': ec
+        })
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def get_scan_status(scan_id):
+        res = http_request("GET", f'/shodan/scan/{scan_id}')
+
+        ec = {
+            'Shodan': {
+                'Scan': {
+                    'ID': res.get('id', ''),
+                    'Status': res.get('status', '')
+                }
+            }
+        }
+
+        human_readable = tableToMarkdown(f'Scanning results for scan {scan_id}', {
+            'ID': ec['Shodan']['Scan']['ID'],
+            'Status': ec['Shodan']['Scan']['Status']
+        })
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': human_readable,
+            'HumanReadableFormat': formats['markdown'],
+            'EntryContext': ec
+        })
+
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        http_request('GET', '/shodan/ports', {'query': 'test'})
+
+
+    def search_command():
+        query = demisto.args()['query']
+        facets = demisto.args().get('facets')
+        page = int(demisto.args().get('page', 1))
+
+        params = {'query': query}
+        if facets:
+            params['facets'] = facets
+        if page:
+            params['page'] = page
+
+        res = http_request('GET', '/shodan/host/search', params)
+
+        matches = res.get('matches', [])
+        for match in matches:
+            location = match.get('location', {'city': '', 'country_name': '', 'longitude': 0, 'latitude': 0})
+            ec = {
+                'Shodan': {
+                    'Banner': {
+                        'Org': match.get('org', ''),
+                        'Isp': match.get('isp', ''),
+                        'Transport': match.get('transport', ''),
+                        'Asn': match.get('asn', ''),
+                        'IP': match.get('ip_str', ''),
+                        'Port': match.get('port', 0),
+                        'Ssl': {
+                            'versions': match.get('ssl', {'versions': []})['versions']
+                        },
+                        'Hostnames': match.get('hostnames', []),
+                        'Location': {
+                            'City': location['city'],
+                            'Longitude': location['longitude'],
+                            'Latitude': location['latitude'],
+                            'Country': location['country_name']
+                        },
+                        'Timestamp': match.get('timestamp', ''),
+                        'Domains': match.get('domains', []),
+                        'OS': match.get('os', '')
+                    }
+                }
+            }
+
+            human_readable = tableToMarkdown(f'Search results for query "{query}" - page {page}, facets: {facets}',
+                                             {
+                                                 'IP': ec['Shodan']['Banner']['IP'],
+                                                 'Port': ec['Shodan']['Banner']['Port'],
+                                                 'Timestamp': ec['Shodan']['Banner']['Timestamp']
+                                             })
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': match,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': human_readable,
+                'HumanReadableFormat': formats['markdown'],
+                'EntryContext': ec
+            })
+
+
+    def ip_command():
+        ip = demisto.args()['ip']
+
+        res = http_request('GET', f'/shodan/host/{ip}')
+
+        hostnames = res.get('hostnames')
+        hostname = hostnames[0] if hostnames else ''  # It's a list, only if it exists and not empty we take the first value
+
+        location = f'{round(res.get("latitude", 0.0), 3)},{round(res.get("longitude", 0.0), 3)}'
+
+        ip_details = {
+            'ASN': res.get('asn', ''),
+            'Address': ip,
+            'Hostname': hostname,
+            'Geo': {
+                'Country': res.get('country_name', ''),
+                'Location': location
+            }
+        }
+
+        shodan_ip_details = {
+            'Tag': res.get('tags', []),
+            'Latitude': res.get('latitude', 0.0),
+            'Longitude': res.get('longitude', 0.0),
+            'Org': res.get('org', ''),
+            'ASN': res.get('asn', ''),
+            'ISP': res.get('isp', ''),
+            'LastUpdate': res.get('last_update', ''),
+            'CountryName': res.get('country_name', ''),
+            'Address': ip,
+            'OS': res.get('os', ''),
+            'Port': res.get('ports', [])
+        }
+
+        ec = {
+            outputPaths['ip']: ip_details,
+            'Shodan': {
+                'IP': shodan_ip_details
+            }
+        }
+
+        human_readable = tableToMarkdown(f'Shodan details for IP {ip}', {
+            'Country': ec[outputPaths['ip']]['Geo']['Country'],
+            'Location': ec[outputPaths['ip']]['Geo']['Location'],
+            'ASN': ec[outputPaths['ip']]['ASN'],
+            'ISP': ec['Shodan']['IP']['ISP'],
+            'Ports': ', '.join([str(x) for x in ec['Shodan']['IP']['Port']]),
+            'Hostname': ec[outputPaths['ip']]['Hostname']
+        })
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': human_readable,
+            'HumanReadableFormat': formats['markdown'],
+            'EntryContext': ec
+        })
+
+
+    def shodan_search_count_command():
+        query = demisto.args()['query']
+
+        res = http_request('GET', '/shodan/host/count', {'query': query})
+
+        ec = {
+            'Shodan': {
+                'Search': {
+                    'ResultCount': res.get('total', 0)
+                }
+            }
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': f'## {ec["Shodan"]["Search"]["ResultCount"]} results for query "{query}"',
+            'HumanReadableFormat': formats['markdown'],
+            'EntryContext': ec
+        })
+
+
+    def shodan_scan_ip_command():
+        ips = demisto.args()['ips']
+
+        res = http_request('POST', '/shodan/scan', data={'ips': ips})
+
+        if 'id' not in res:
+            demisto.results({
+                'Type': entryTypes['error'],
+                'Contents': res,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': f'## Unknown answer format, no "id" field in response',
+                'HumanReadableFormat': formats['markdown'],
+            })
+
+        get_scan_status(res['id'])
+
+
+    def shodan_scan_internet_command():
+        port = demisto.args()['port']
+
+        try:
+            port = int(port)
+        except ValueError:
+            return_error(f'Port must be number, not {port}')
+
+        protocol = demisto.args()['protocol']
+
+        res = http_request('POST', '/shodan/scan/internet', data={
+            'port': port,
+            'protocol': protocol
+        })
+
+        ec = {
+            'Shodan': {
+                'Scan': {
+                    'ID': res.get('id', '')
+                }
+            }
+        }
+
+        human_readable = tableToMarkdown(f'Intenet scanning results for port {port} and protocol {protocol}', {
+            'ID': ec['Shodan']['Scan']['ID'],
+        })
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': human_readable,
+            'HumanReadableFormat': formats['markdown'],
+            'EntryContext': ec
+        })
+
+
+    def shodan_scan_status_command():
+        scan_id = demisto.args()['scanID']
+
+        get_scan_status(scan_id)
+
+
+    def shodan_create_network_alert_command():
+        alert_name = demisto.args()['alertName']
+        ip = demisto.args()['ip']
+        try:
+            expires = int(demisto.args().get('expires', 0))
+        except ValueError:
+            return_error(f'Expires must be a number, not {expires}')
+
+        res = http_request('POST', '/shodan/alert', data=json.dumps({
+            'name': alert_name,
+            'filters': {
+                'ip': ip
+            },
+            'expires': expires
+        }), headers={'content-type': 'application/json'})
+
+        alert_to_demisto_result(res)
+
+
+    def shodan_network_get_alert_by_id_command():
+        alert_id = demisto.args()['alertID']
+
+        res = http_request('GET', f'/shodan/alert/{alert_id}/info')
+
+        alert_to_demisto_result(res)
+
+
+    def shodan_network_get_alerts_command():
+        res = http_request('GET', '/shodan/alert/info')
+
+        if len(res) == 0:
+            demisto.results('No alerts')
+        else:
+            for alert in res:
+                alert_to_demisto_result(alert)
+
+
+    def shodan_network_delete_alert_command():
+        alert_id = demisto.args()['alertID']
+
+        http_request('DELETE', f'/shodan/alert/{alert_id}')
+
+        demisto.results(f'Deleted alert {alert_id}')
+
+
+    def shodan_network_alert_set_trigger_command():
+        alert_id = demisto.args()['alertID']
+        trigger = demisto.args()['Trigger']
+
+        res = http_request('PUT', f'/shodan/alert/{alert_id}/trigger/{trigger}')
+
+        if not res.get('success', False):
+            return_error(f'Failed setting trigger {trigger} for alert {alert_id}')
+
+        demisto.results(f'Set trigger "{trigger}" for alert {alert_id}')
+
+
+    def shodan_network_alert_remove_trigger_command():
+        alert_id = demisto.args()['alertID']
+        trigger = demisto.args()['Trigger']
+
+        res = http_request('DELETE', f'/shodan/alert/{alert_id}/trigger/{trigger}')
+
+        if not res.get('success', False):
+            return_error(f'Failed deleting trigger {trigger} for alert {alert_id}')
+
+        demisto.results(f'Deleted trigger "{trigger}" for alert {alert_id}')
+
+
+    def shodan_network_alert_whitelist_service_command():
+        alert_id = demisto.args()['alertID']
+        trigger = demisto.args()['trigger']
+        service = demisto.args()['service']
+
+        res = http_request('PUT', f'/shodan/alert/{alert_id}/trigger/{trigger}/ignore/{service}')
+
+        if not res.get('success', False):
+            return_error(f'Failed whitelisting service "{service}" for trigger {trigger} in alert {alert_id}')
+
+        demisto.results(f'Whitelisted service "{service}" for trigger {trigger} in alert {alert_id}')
+
+
+    def shodan_network_alert_remove_service_from_whitelist_command():
+        alert_id = demisto.args()['alertID']
+        trigger = demisto.args()['trigger']
+        service = demisto.args()['service']
+
+        res = http_request('DELETE', f'/shodan/alert/{alert_id}/trigger/{trigger}/ignore/{service}')
+
+        if not res.get('success', False):
+            return_error(
+                f'Failed removing service "{service}" for trigger {trigger} in alert {alert_id} from the whitelist')
+
+        demisto.results(f'Removed service "{service}" for trigger {trigger} in alert {alert_id} from the whitelist')
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        test_module()
+        demisto.results('ok')
+    elif demisto.command() == 'search':
+        search_command()
+    elif demisto.command() == 'ip':
+        ip_command()
+    elif demisto.command() == 'shodan-search-count':
+        shodan_search_count_command()
+    elif demisto.command() == 'shodan-scan-ip':
+        shodan_scan_ip_command()
+    elif demisto.command() == 'shodan-scan-internet':
+        shodan_scan_internet_command()
+    elif demisto.command() == 'shodan-scan-status':
+        shodan_scan_status_command()
+    elif demisto.command() == 'shodan-create-network-alert':
+        shodan_create_network_alert_command()
+    elif demisto.command() == 'shodan-network-get-alert-by-id':
+        shodan_network_get_alert_by_id_command()
+    elif demisto.command() == 'shodan-network-get-alerts':
+        shodan_network_get_alerts_command()
+    elif demisto.command() == 'shodan-network-delete-alert':
+        shodan_network_delete_alert_command()
+    elif demisto.command() == 'shodan-network-alert-set-trigger':
+        shodan_network_alert_set_trigger_command()
+    elif demisto.command() == 'shodan-network-alert-remove-trigger':
+        shodan_network_alert_remove_trigger_command()
+    elif demisto.command() == 'shodan-network-alert-whitelist-service':
+        shodan_network_alert_whitelist_service_command()
+    elif demisto.command() == 'shodan-network-alert-remove-service-from-whitelist':
+        shodan_network_alert_remove_service_from_whitelist_command()
+  subtype: python3
+  type: python
+system: true

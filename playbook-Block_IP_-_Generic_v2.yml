@@ -1,0 +1,654 @@
+description: |-
+  This playbook blocks malicious IPs using all integrations that are enabled.
+
+  Supported integrations for this playbook:
+  * Check Point Firewall
+  * Palo Alto Networks Minemeld
+  * Palo Alto Networks PAN-OS
+  * Zscaler
+id: Block IP - Generic v2
+inputs:
+- description: The name of the IP blacklist Miner in  Minemeld.
+  key: IPBlacklistMiner
+  required: false
+  value: {}
+- description: Array of malicious IPs to block.
+  key: IP
+  required: false
+  value: {}
+name: Block IP - Generic v2
+outputs:
+- contextPath: CheckpointFWRule.Destination
+  description: Rule Destination.
+- contextPath: CheckpointFWRule.DestinationNegate
+  description: Rule destination negate status (True/False).
+- contextPath: PanoramaRule.Direction
+  description: Direction of the Panorama rule. Can be 'to','from', 'both'
+  type: string
+- contextPath: PanoramaRule.IP
+  description: The IP the Panorama rule blocks
+  type: string
+- contextPath: CheckpointFWRule.Name
+  description: Rule name.
+- contextPath: PanoramaRule.Name
+  description: Name of the Panorama rule
+  type: string
+- contextPath: CheckpointFWRule.UID
+  description: Rule UID.
+- contextPath: PanoramaRule
+  description: List of Panorama rules
+- contextPath: CheckpointFWRule.Type
+  description: Rule Type.
+- contextPath: CheckpointFWRule.Action
+  description: 'Rule action (Valid values are: Accept, Drop, Apply Layer, Ask, Info).'
+- contextPath: CheckpointFWRule.ActionSetting
+  description: Rule action settings.
+- contextPath: CheckpointFWRule.CustomFields
+  description: Rule custom fields.
+- contextPath: CheckpointFWRule.Data
+  description: Rule data.
+- contextPath: CheckpointFWRule.DataDirection
+  description: Rule data direction.
+- contextPath: CheckpointFWRule.DataNegate
+  description: Rule data negate status (True/False).
+- contextPath: CheckpointFWRule.Domain
+  description: Rule domain.
+- contextPath: CheckpointFWRule.Enabled
+  description: Rule status.
+- contextPath: CheckpointFWRule.Hits
+  description: Rule hits count.
+- contextPath: CheckpointFWRule.Data.Name
+  description: Rule data object name.
+- contextPath: CheckpointFWRule.Data.Domain
+  description: Information about the domain the data object belongs to.
+- contextPath: CheckpointFWRule.Domain.Name
+  description: Rule domain name.
+- contextPath: CheckpointFWRule.Domain.UID
+  description: Rule domain UID.
+- contextPath: CheckpointFWRule.Domain.Type
+  description: Rule domain type.
+- contextPath: CheckpointFWRule.Hits.FirstDate
+  description: The date of the first hit for the rule.
+- contextPath: CheckpointFWRule.Hits.LastDate
+  description: The date of the last hit for the rule.
+- contextPath: CheckpointFWRule.Hits.Level
+  description: Level of rule hits.
+- contextPath: CheckpointFWRule.Hits.Percentage
+  description: Percentage of rule hits.
+- contextPath: CheckpointFWRule.Hits.Value
+  description: Value of rule hits.
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: b95110b7-ba18-42a5-87ad-c5d37915401c
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: b95110b7-ba18-42a5-87ad-c5d37915401c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 10
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1808d949-f921-4957-8796-7bbedd822ad9
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 1808d949-f921-4957-8796-7bbedd822ad9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1080
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+      - "18"
+      - "19"
+      - "20"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: cea4b9a9-d2a5-42c6-84e7-7eab6d6ab7a8
+      iscommand: false
+      name: Block IPs
+      type: title
+      version: -1
+    taskid: cea4b9a9-d2a5-42c6-84e7-7eab6d6ab7a8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      direction:
+        simple: both
+      ip:
+        complex:
+          root: inputs.IP
+      ipname:
+        simple: IP-${inputs.IP}
+      rulename:
+        simple: Block-${inputs.IP}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Block the IPs using Check Point Firewall.
+      id: 077714b6-f53e-4ab4-8679-d2c172e67a59
+      iscommand: true
+      name: Block IP with Check Point Firewall
+      script: '|||checkpoint-block-ip'
+      type: regular
+      version: -1
+    taskid: 077714b6-f53e-4ab4-8679-d2c172e67a59
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 910
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Check Point
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that there is a valid instance of Check Point Firewall enabled.
+      id: cc26e2d3-b22c-4e90-819e-5a1dc485c2db
+      iscommand: false
+      name: Is Check Point Firewall enabled?
+      type: condition
+      version: -1
+    taskid: cc26e2d3-b22c-4e90-819e-5a1dc485c2db
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 695
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.IP
+          operator: isExists
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that the playbook input includes at least one IP to block.
+      id: 3f8eeba3-99f9-484c-8f73-a0c6d9bd02bb
+      iscommand: false
+      name: Is there an IP to block?
+      type: condition
+      version: -1
+    taskid: 3f8eeba3-99f9-484c-8f73-a0c6d9bd02bb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 155
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      Indicator:
+        complex:
+          root: inputs.IP
+      MinerName:
+        complex:
+          root: inputs.IPBlacklistMiner
+    separatecontext: true
+    task:
+      brand: ""
+      id: dbee1e60-454a-4043-8676-7f5bb3006b00
+      iscommand: false
+      name: Add Indicator to Miner - Minemeld
+      playbookName: Add Indicator to Miner - Palo Alto MineMeld
+      type: playbook
+      version: -1
+    taskid: dbee1e60-454a-4043-8676-7f5bb3006b00
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 660
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Zscaler
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that there is a valid instance of Zscaler enabled.
+      id: 43617e2e-a00d-4569-8d43-80b6e732798e
+      iscommand: false
+      name: Is Zscaler enabled?
+      type: condition
+      version: -1
+    taskid: 43617e2e-a00d-4569-8d43-80b6e732798e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 705
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    task:
+      brand: Zscaler
+      description: Block the IPs using Zscaler.
+      id: 6c6d1f99-8689-49d7-8c7c-f9ddcdd2a782
+      iscommand: true
+      name: Block IP with Zscaler
+      script: Zscaler|||zscaler-blacklist-ip
+      type: regular
+      version: -1
+    taskid: 6c6d1f99-8689-49d7-8c7c-f9ddcdd2a782
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 910
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      IP:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      LogForwarding: {}
+    separatecontext: true
+    task:
+      brand: ""
+      id: 7f789536-a8f4-42fa-836b-925b0ca13840
+      iscommand: false
+      name: PAN-OS - Block IP - Custom Block Rule
+      playbookName: PAN-OS - Block IP - Custom Block Rule
+      type: playbook
+      version: -1
+    taskid: 7f789536-a8f4-42fa-836b-925b0ca13840
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 660
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      AddressGroupName: {}
+      AutoCommit:
+        simple: "No"
+      IP:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      LogForwarding: {}
+    separatecontext: true
+    task:
+      brand: ""
+      id: 667eb34c-413d-405e-8b0d-22c7ab5297ff
+      iscommand: false
+      name: PAN-OS - Block IP - Static Address Group
+      playbookName: PAN-OS - Block IP - Static Address Group
+      type: playbook
+      version: -1
+    taskid: 667eb34c-413d-405e-8b0d-22c7ab5297ff
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 660
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      EDLServerIP: {}
+      IP:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      IPListName: {}
+      LogForwarding: {}
+      URL: {}
+      URLListName: {}
+    separatecontext: true
+    task:
+      brand: ""
+      id: acd02d63-947e-4886-88ce-b7035a46e8e1
+      iscommand: false
+      name: PAN-OS - Block IP and URL - External Dynamic List
+      playbookName: PAN-OS - Block IP and URL - External Dynamic List
+      type: playbook
+      version: -1
+    taskid: acd02d63-947e-4886-88ce-b7035a46e8e1
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -760,
+          "y": 660
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+      - "15"
+      - "14"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 901eaceb-8b70-4afa-81b8-cb26eb624fd2
+      iscommand: false
+      name: PAN-OS
+      type: title
+      version: -1
+    taskid: 901eaceb-8b70-4afa-81b8-cb26eb624fd2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 515
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: eaa34a69-51d5-4309-851e-cec547062d7e
+      iscommand: false
+      name: CheckPoint FW
+      type: title
+      version: -1
+    taskid: eaa34a69-51d5-4309-851e-cec547062d7e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 515
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 5ef9b8f5-62a4-415c-896d-a739062d19ad
+      iscommand: false
+      name: MineMeld
+      type: title
+      version: -1
+    taskid: 5ef9b8f5-62a4-415c-896d-a739062d19ad
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 515
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: c35db5b5-164d-466d-825c-144a961f4f9c
+      iscommand: false
+      name: Zscaler
+      type: title
+      version: -1
+    taskid: c35db5b5-164d-466d-825c-144a961f4f9c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 515
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.23,
+      "7_2_#default#": 0.39,
+      "8_2_#default#": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1135,
+        "width": 2610,
+        "x": -760,
+        "y": 10
+      }
+    }
+  }

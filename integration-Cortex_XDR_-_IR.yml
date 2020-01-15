@@ -1,0 +1,843 @@
+category: Endpoint
+commonfields:
+  id: Cortex XDR - IR
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: ""
+  display: Server URL (copy url from XDR - press ? to see more info)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: API Key ID
+  name: apikey_id
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: "true"
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+description: Cortex XDR is the world's first detection and response app that natively
+  integrates network, endpoint and cloud data to stop sophisticated attacks.
+detaileddescription: |
+  ## Palo Alto Networks Cortex XDR - IR
+  Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
+
+  ### Generate an API Key and API Key ID
+  1. In your Cortex XDR platform, go to **Settings**.
+  2. Click the **+New Key** button in the top right corner
+  3. Generate a key of type **Advanced**.
+  4. Copy and paste the key.
+  5. From the ID column, copy the Key ID.
+
+  ### URL
+  1. In your Cortex XDR platform, go to **Settings**.
+  2. Click the **Copy URL** button in the top right corner.
+display: Palo Alto Networks Cortex XDR - Investigation and Response
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAACXBIWXMAAAsSAAALEgHS3X78AAAD6klEQVR4nO2cS24bMQyGyaL75AbJCeo5QIH6BnVPkOkN3BPER8gN4tzA3XQbB+gBHHTbRbzq1kH3ZaGA4ygUNaPxxBOA4AcIqPWgHv9QosZOkYjAscs719Y2LrBxXGDjuMDGcYGN4wIbxwU2jgtsHBfYOC6wcVxg47jAxnGBjeMCG+f9W04PEacAENIDES2TCs7wNR77+2BEPAeABQBcRNl3RDRNKjuDGdWDEbEGgCsAOEkKnaPQW2BErHhbPY2ydwCwJqJN0uCluNdJQf/+Q79VUiAgonWS+WyjEuMvIRwjDwPs7OL14eMpJrGfm2+YGyLOAeAPAPwloh9Jb1HlogQAQaAwAGpJD5otfiC0dksuW/LnYH+u2SiwpaVg91SxsVbqdqXFQDtr0bYW5cFJKlEniLsR9eZc9hsA/gHAL22d9ja0TKWT4olkbMgHYxNPhs9kWZ4Ic4DAT7YUG28ucMm8owd/7xBR2UdOH7R1alLJFh06+STybnhyQbhz3kJmAHCmbDG1yH8MdbXtKGICACsWs4tvvDDNw1ixdzR9TsJ2KLbsJY8/5jL6951Snt3ymS3bzZHMl4gWHHQ2Aed+3ogoA9EbIqqjtj8z/SSdZBMvVvwEPQnaUn+m5MmnUPME+SQ3aarUlR5cUifpU2nTq77iwYmH9jj+5BrJneFg210ePBOf6zbPI6JVkpl64VVSI8+swHM0kgBGqfPanLPXSTrv+MEzOWCbcFa8Y94rOhTTK4pui0xbeLFtE9EuXzWhM1oODwwixjYrcQ175G3v2JyJbb7hrmPrbpjyUSOPs2nPNXtBL4FDyD6ksyMxaTE7eIFGRIthTnjHqw8dRte7aLkw86RGN9u4BgcVpWTv1RH37CVbkf+d44USG69BeBuHSuoMFDveEVxw+UF0CbxkL2i4DOcMX77jAZ6GQSCidtbJbb3PYEu21jkvYsViN3wecnaNBSLOhLhhvb+Idb8+WGQt8hIRnryQxxH1Wl7EC9vLC70WRa8y48lG0XxN2rX1lUuvEEUfcg+uxHj3LzuUMuIgNxlHW2otFCLJztSUaS9fdOyEMFLgdY8XHdPSRWtLYwusjDN5GBXnKJpLn2tS4+VLRFxxhzMlUt3yZHNRdmh3G30ObW8RsYkwm3M5bLFXHdeKHZ+58ed4rBt+zxtfxxYF23VsUztqNPqc77LuQuQtZbzA6w7iWAtHZF0aOI72dWFHIOFfFx6J0X7RwV75VQQPjhWB4Vnkit9lOyPwpn/h7z/ZOT7+XzgYx39VaRwX2DgusHFcYOO4wMZxgY3jAhvHBTaOC2wcF9g4LrBxXGDjuMDGcYEtAwD/AbjPSozwVJX9AAAAAElFTkSuQmCC
+name: Cortex XDR - IR
+script:
+  commands:
+  - arguments:
+    - description: Time format 2019-12-31T23:59:00.
+      name: lte_creation_time
+    - description: Returned incidents that were created on or after the specified
+        date/time, in the format 2019-12-31T23:59:00.
+      name: gte_creation_time
+    - description: Filters returned incidents that were created on or before the specified
+        date/time, in the format 2019-12-31T23:59:00.
+      name: lte_modification_time
+    - description: Filters returned incidents that were modified on or after the specified
+        date/time, in the format 2019-12-31T23:59:00.
+      name: gte_modification_time
+    - description: An array or CSV string of incident IDs.
+      isArray: true
+      name: incident_id_list
+    - description: Filters returned incidents that were created on or after the specified
+        date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+      name: since_creation_time
+    - description: Filters returned incidents that were modified on or after the specified
+        date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+      name: since_modification_time
+    - auto: PREDEFINED
+      description: Sorts returned incidents by the date/time that the incident was
+        last modified ("asc" - ascending, "desc" - descending).
+      name: sort_by_modification_time
+      predefined:
+      - asc
+      - desc
+    - auto: PREDEFINED
+      description: Sorts returned incidents by the date/time that the incident was
+        created ("asc" - ascending, "desc" - descending).
+      name: sort_by_creation_time
+      predefined:
+      - asc
+      - desc
+    - defaultValue: "0"
+      description: Page number (for pagination). The default is 0 (the first page).
+      name: page
+    - defaultValue: "100"
+      description: Maximum number of incidents to return per page. The default and
+        maximum is 100.
+      name: limit
+    description: |-
+      Returns a list of incidents, which you can filter by a list of incident IDs (max 100), the time the incident was last modified, and the time the incident was created.
+      If you pass multiple filtering argument, they will be concatenated using the AND condition. The OR condition is not supported.
+    name: xdr-get-incidents
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Incident.incident_id
+      description: Unique ID assigned to each returned incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.manual_severity
+      description: Incident severity assigned by the user. This does not affect the
+        calculated severity (LOW, MEDIUM, HIGH).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.manual_description
+      description: Incident description provided by the user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.assigned_user_mail
+      description: Email address of the assigned user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.high_severity_alert_count
+      description: Number of alerts with the severity HIGH.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.host_count
+      description: Number of hosts involved in the incident.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.xdr_url
+      description: A link to the incident view on XDR.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.assigned_user_pretty_name
+      description: Full name of the user assigned to the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alert_count
+      description: Total number of alerts in the incident.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.med_severity_alert_count
+      description: Number of alerts with the severity MEDIUM.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.user_count
+      description: Number of users involved in the incident.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.severity
+      description: Calculated severity of the incident (LOW, MEDIUM, HIGH).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.low_severity_alert_count
+      description: Number of alerts with the severity LOW.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.status
+      description: Current status of the incident (NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED,
+        RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_OTHER).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.description
+      description: Dynamic calculated description of the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.resolve_comment
+      description: Comments entered by the user when the incident was resolved.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.notes
+      description: Comments entered by the user regarding the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.creation_time
+      description: Date and time the incident was created on XDR.
+      type: date
+    - contextPath: PaloAltoNetworksXDR.Incident.detection_time
+      description: Date and time that the first alert occurred in the incident.
+      type: date
+    - contextPath: PaloAltoNetworksXDR.Incident.modification_time
+      description: Date and time that the incident was last modified.
+      type: date
+  - arguments:
+    - description: The ID of the incident for which to get additional data.
+      name: incident_id
+      required: true
+    - defaultValue: "1000"
+      description: Maximum number of alerts to return. Default is 1,000.
+      name: alerts_limit
+    description: Returns additional data for the specified incident, for example,
+      related alerts, file artifacts, network artifacts, and so on.
+    name: xdr-get-incident-extra-data
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Incident.incident_id
+      description: Unique ID assigned to each returned incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.manual_severity
+      description: Incident severity assigned by the user. This does not affect the
+        calculated severity (LOW, MEDIUM, HIGH).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.manual_description
+      description: Incident description provided by the user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.assigned_user_mail
+      description: Email address of the assigned user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.high_severity_alert_count
+      description: Number of alerts with the severity HIGH.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.host_count
+      description: Number of hosts involved in the incident
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.xdr_url
+      description: A link to the incident view on XDR.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.assigned_user_pretty_name
+      description: Full name of the user assigned to the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alert_count
+      description: Total number of alerts in the incident.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.med_severity_alert_count
+      description: Number of alerts with the severity MEDIUM.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.user_count
+      description: Number of users involved in the incident.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.severity
+      description: Calculated severity of the incident (LOW, MEDIUM, HIGH).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.low_severity_alert_count
+      description: Number of alerts with the severity LOW.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.status
+      description: Current status of the incident (NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED,
+        RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_OTHER).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.description
+      description: Dynamic calculated description of the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.resolve_comment
+      description: Comments entered by the user when the incident was resolved.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.notes
+      description: Comments entered by the user regarding the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.creation_time
+      description: Date and time the incident was created on XDR.
+      type: date
+    - contextPath: PaloAltoNetworksXDR.Incident.detection_time
+      description: Date and time that the first alert occurred in the incident.
+      type: date
+    - contextPath: PaloAltoNetworksXDR.Incident.modification_time
+      description: Date and time that the incident was last modified.
+      type: date
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.category
+      description: Category of the alert, for example, Spyware Detected via Anti-Spyware
+        profile.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_pretty
+      description: The action that triggered the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.description
+      description: Textual description of the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.severity
+      description: Severity of the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_ip
+      description: Host IP involved in the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.source
+      description: Source of the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.user_name
+      description: User name involved with the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.alert_id
+      description: Unique ID for each alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_name
+      description: Host name involved in the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.detection_timestamp
+      description: Date and time that the alert occurred.
+      type: date
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.name
+      description: Calculated name of the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_port
+      description: The remote port related to the artifact.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.alert_count
+      description: Number of alerts related to the artifact.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
+      description: The remote IP related to the artifact.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.is_manual
+      description: Whether the artifact was created by the user (manually).
+      type: boolean
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
+      description: The domain related to the artifact.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.type
+      description: The artifact type, for example, IP.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_status
+      description: Digital signature status of the file.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_process
+      description: Whether the file artifact is related to a process execution.
+      type: boolean
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_name
+      description: Name of the file.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_wildfire_verdict
+      description: The file verdict, calculated by Wildfire.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.alert_count
+      description: Number of alerts related to the artifact.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_malicious
+      description: Whether the artifact is malicious, decided by the Wildfire verdict.
+      type: boolean
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_manual
+      description: Whether the artifact was created by the user (manually).
+      type: boolean
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.type
+      description: The artifact type, for example, hash.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
+      description: SHA-256 hash of the file
+      type: String
+  - arguments:
+    - description: XDR incident ID. You can get the incident ID from the output of
+        the 'xdr-get-incidents' command or the 'xdr-get-incident-extra-details' command.
+      name: incident_id
+      required: true
+    - auto: PREDEFINED
+      description: Severity to assign to the incident (LOW, MEDIUM, or HIGH).
+      name: manual_severity
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+    - description: Email address of the user to assigned to the incident.
+      name: assigned_user_mail
+    - description: Full name of the user assigned to the incident.
+      name: assigned_user_pretty_name
+    - auto: PREDEFINED
+      description: Status of the incident (NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED,
+        RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_OTHER).
+      name: status
+      predefined:
+      - NEW
+      - UNDER_INVESTIGATION
+      - RESOLVED_THREAT_HANDLED
+      - RESOLVED_KNOWN_ISSUE
+      - RESOLVED_DUPLICATE
+      - RESOLVED_FALSE_POSITIVE
+      - RESOLVED_OTHER
+    - description: Comment explaining why the incident was resolved. This should be
+        set when the incident is resolved.
+      name: resolve_comment
+    - auto: PREDEFINED
+      description: If true, will remove all assigned users from the incident.
+      name: unassign_user
+      predefined:
+      - "true"
+    description: Updates one or more fields of a specified incident. Missing fields
+      will be ignored. To remove the assignment for an incident, pass a null value
+      in assignee email argument.
+    name: xdr-update-incident
+  dockerimage: demisto/python3:3.7.4.977
+  isfetch: true
+  runonce: false
+  script: |2-
+
+
+
+
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    from datetime import datetime, timezone
+    import secrets
+    import string
+    import hashlib
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    # Remove trailing slash to prevent wrong URL path to service
+    SERVER = demisto.params()['url'][:-1] \
+        if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+
+    USE_SSL = not demisto.params().get('insecure', False)
+    API_KEY = demisto.params().get('apikey')
+    API_KEY_ID = demisto.params().get('apikey_id')
+    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    BASE_URL = SERVER + '/public_api/v1'
+
+    TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    NONCE_LENGTH = 64
+    API_KEY_LENGTH = 128
+
+
+    def convert_epoch_to_milli(ts):
+        if ts is None:
+            return None
+        if 9 < len(str(ts)) < 13:
+            ts = int(ts) * 1000
+        return int(ts)
+
+
+    def convert_datetime_to_epoch(the_time=0):
+        if the_time is None:
+            return None
+        else:
+            try:
+                if isinstance(the_time, datetime):
+                    return int(the_time.strftime('%s'))
+            except Exception as e:
+                print(e)
+                return 0
+
+
+    def convert_datetime_to_epoch_millis(the_time=0):
+        return convert_epoch_to_milli(convert_datetime_to_epoch(the_time=the_time))
+
+
+    def generate_current_epoch_utc():
+        return convert_datetime_to_epoch_millis(datetime.now(timezone.utc))
+
+
+    def generate_key():
+        return "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(API_KEY_LENGTH)])
+
+
+    def create_auth(api_key):
+        nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(NONCE_LENGTH)])
+        timestamp = str(generate_current_epoch_utc())  # Get epoch time utc millis
+        m = hashlib.sha256()
+        m.update((api_key + nonce + timestamp).encode("utf-8"))
+        return nonce, timestamp, m.hexdigest()
+
+
+    # nonce, timestamp, auth = create_auth(API_KEY)
+    nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
+    timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
+    auth_key = "%s%s%s" % (API_KEY, nonce, timestamp)
+    auth_key = auth_key.encode("utf-8")
+    api_key_hash = hashlib.sha256(auth_key).hexdigest()
+
+    HEADERS = {
+        "x-xdr-timestamp": timestamp,
+        "x-xdr-nonce": nonce,
+        "x-xdr-auth-id": str(API_KEY_ID),
+        "Authorization": api_key_hash
+    }
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_request(method, url_suffix, params=None, data=None):
+        demisto.debug(json.dumps(data, indent=4))
+
+        res = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            verify=USE_SSL,
+            params=params,
+            json=data,
+            headers=HEADERS
+        )
+        # Handle error responses gracefully
+        if res.status_code not in [200]:
+            if 'err_code' in res.text:
+                error = res.json().get('reply')
+                raise ValueError('Error occurred while doing HTTP request.\nURL: {}\nstatus_code: {}\nerr_code: {}'
+                                 '\nerr_message: {}\n{}'
+                                 .format(BASE_URL + url_suffix, res.status_code, error.get('err_code'),
+                                         error.get('err_msg'), error.get('err_extra')))
+
+            raise ValueError('Error in API call to Palo Alto Networks XDR [%d] - %s' % (res.status_code, res.reason))
+
+        try:
+            return res.json()
+        except Exception:
+            raise ValueError("Failed to parse HTTP response to JSON. Original response: \n\n{}".format(res.text))
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        last_one_day, _ = parse_date_range(FETCH_TIME, TIME_FORMAT)
+        get_incidents(lte_creation_time=last_one_day, limit=1)
+
+
+    def get_incidents_command():
+        """
+        Gets details about a items using IDs or some other filters
+        """
+        incident_id_list = argToList(demisto.args().get('incident_id_list'))
+
+        lte_modification_time = demisto.args().get('lte_modification_time')
+        gte_modification_time = demisto.args().get('gte_modification_time')
+        since_modification_time = demisto.args().get('since_modification_time')
+
+        if since_modification_time and gte_modification_time:
+            raise ValueError('Can\'t set both since_modification_time and lte_modification_time')
+        elif since_modification_time:
+            gte_modification_time, _ = parse_date_range(since_modification_time, TIME_FORMAT)
+
+        lte_creation_time = demisto.args().get('lte_creation_time')
+        gte_creation_time = demisto.args().get('gte_creation_time')
+        since_creation_time = demisto.args().get('since_creation_time')
+
+        if since_creation_time and gte_creation_time:
+            raise ValueError('Can\'t set both since_creation_time and lte_creation_time')
+        elif since_creation_time:
+            gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
+
+        sort_by_modification_time = demisto.args().get('sort_by_modification_time')
+        sort_by_creation_time = demisto.args().get('sort_by_creation_time')
+
+        page = int(demisto.args().get('page', 0))
+        limit = int(demisto.args().get('limit', 100))
+
+        # If no filters were given, return a meaningful error message
+        if (not lte_modification_time and not gte_modification_time and not since_modification_time
+                and not lte_creation_time and not gte_creation_time and not since_creation_time):
+            return_error("Specify a query for the incidents.\nFor example:"
+                         " !xdr-get-incidents since_creation_time=\"1 year\" sort_by_creation_time=\"desc\" limit=10")
+
+        raw_incidents = get_incidents(
+            incident_id_list=incident_id_list,
+            lte_modification_time=lte_modification_time,
+            gte_modification_time=gte_modification_time,
+            lte_creation_time=lte_creation_time,
+            gte_creation_time=gte_creation_time,
+            sort_by_creation_time=sort_by_creation_time,
+            sort_by_modification_time=sort_by_modification_time,
+            page_number=page,
+            limit=limit
+        )
+
+        return_outputs(
+            readable_output=tableToMarkdown('Incidents', raw_incidents),
+            outputs={
+                'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': raw_incidents
+            },
+            raw_response=raw_incidents
+        )
+
+
+    def get_incidents(incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
+                      lte_creation_time=None, gte_creation_time=None, sort_by_modification_time=None,
+                      sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
+        """
+        Filters and returns incidents
+
+        :param incident_id_list: List of incident ids - must be list
+        :param lte_modification_time: string of time format "2019-12-31T23:59:00"
+        :param gte_modification_time: string of time format "2019-12-31T23:59:00"
+        :param lte_creation_time: string of time format "2019-12-31T23:59:00"
+        :param gte_creation_time: string of time format "2019-12-31T23:59:00"
+        :param sort_by_modification_time: optional - enum (asc,desc)
+        :param sort_by_creation_time: optional - enum (asc,desc)
+        :param page_number: page number
+        :param limit: maximum number of incidents to return per page
+        :param gte_creation_time_milliseconds: greater than time in milliseconds
+        :return:
+        """
+        search_from = page_number * limit
+        search_to = search_from + limit
+
+        request_data = {
+            'search_from': search_from,
+            'search_to': search_to
+        }
+
+        if sort_by_creation_time and sort_by_modification_time:
+            raise ValueError('Should be provide either sort_by_creation_time or '
+                             'sort_by_modification_time. Can\'t provide both')
+        elif sort_by_creation_time:
+            request_data['sort'] = {
+                'field': 'creation_time',
+                'keyword': sort_by_creation_time
+            }
+        elif sort_by_modification_time:
+            request_data['sort'] = {
+                'field': 'modification_time',
+                'keyword': sort_by_modification_time
+            }
+
+        filters = []
+        if incident_id_list is not None and len(incident_id_list) > 0:
+            filters.append({
+                'field': 'incident_id_list',
+                'operator': 'in',
+                'value': incident_id_list
+            })
+
+        if lte_creation_time:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'lte',
+                'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
+            })
+
+        if gte_creation_time:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
+            })
+
+        if lte_modification_time:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'lte',
+                'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
+            })
+
+        if gte_modification_time:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'gte',
+                'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
+            })
+
+        if gte_creation_time_milliseconds > 0:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': gte_creation_time_milliseconds
+            })
+
+        if len(filters) > 0:
+            request_data['filters'] = filters
+
+        res = http_request('POST', '/incidents/get_incidents/', data={'request_data': request_data})
+        incidents = res.get('reply').get('incidents', [])
+
+        return incidents
+
+
+    def get_incident_extra_data_command():
+        incident_id = demisto.args().get('incident_id')
+        alerts_limit = int(demisto.args().get('alerts_limit', 1000))
+
+        raw_incident = get_incident_extra_data(incident_id, alerts_limit)
+
+        incident = raw_incident.get('incident')
+        incident_id = incident.get('incident_id')
+        alerts = raw_incident.get('alerts').get('data')
+        file_artifacts = raw_incident.get('file_artifacts').get('data')
+        network_artifacts = raw_incident.get('network_artifacts').get('data')
+
+        readable_output = [tableToMarkdown('Incident {}'.format(incident_id), incident)]
+
+        if len(alerts) > 0:
+            readable_output.append(tableToMarkdown('Alerts', alerts))
+        else:
+            readable_output.append(tableToMarkdown('Alerts', []))
+
+        if len(network_artifacts) > 0:
+            readable_output.append(tableToMarkdown('Network Artifacts', network_artifacts))
+        else:
+            readable_output.append(tableToMarkdown('Network Artifacts', []))
+
+        if len(file_artifacts) > 0:
+            readable_output.append(tableToMarkdown('File Artifacts', file_artifacts))
+        else:
+            readable_output.append(tableToMarkdown('File Artifacts', []))
+
+        incident.update({
+            'alerts': alerts,
+            'file_artifacts': file_artifacts,
+            'network_artifacts': network_artifacts
+        })
+        return_outputs(
+            readable_output='\n'.join(readable_output),
+            outputs={
+                'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': incident
+            },
+            raw_response=raw_incident
+        )
+
+
+    def get_incident_extra_data(incident_id, alerts_limit=1000):
+        """
+        Returns incident by id
+
+        :param incident_id: The id of incident
+        :param alerts_limit: Maximum number alerts to get
+        :return:
+        """
+        request_data = {
+            'incident_id': incident_id,
+            'alerts_limit': alerts_limit
+        }
+
+        reply = http_request('POST', '/incidents/get_incident_extra_data/', data={'request_data': request_data})
+        incident = reply.get('reply')
+
+        return incident
+
+
+    def update_incident_command():
+        incident_id = demisto.args().get('incident_id')
+        assigned_user_mail = demisto.args().get('assigned_user_mail')
+        assigned_user_pretty_name = demisto.args().get('assigned_user_pretty_name')
+        status = demisto.args().get('status')
+        severity = demisto.args().get('manual_severity')
+        unassign_user = demisto.args().get('unassign_user') == 'true'
+        resolve_comment = demisto.args().get('resolve_comment')
+
+        update_incident(
+            incident_id=incident_id,
+            assigned_user_mail=assigned_user_mail,
+            assigned_user_pretty_name=assigned_user_pretty_name,
+            unassign_user=unassign_user,
+            status=status,
+            severity=severity,
+            resolve_comment=resolve_comment
+        )
+
+        return_outputs('Incident {} has been updated'.format(incident_id), outputs=None)
+
+
+    def update_incident(incident_id, assigned_user_mail, assigned_user_pretty_name, status, severity, resolve_comment,
+                        unassign_user):
+        update_data = {}
+
+        if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
+            raise ValueError("Can't provide both assignee_email/assignee_name and unassign_user")
+        elif unassign_user:
+            update_data['assigned_user_mail'] = 'none'
+
+        if assigned_user_mail:
+            update_data['assigned_user_mail'] = assigned_user_mail
+
+        if assigned_user_pretty_name:
+            update_data['assigned_user_pretty_name'] = assigned_user_pretty_name
+
+        if status:
+            update_data['status'] = status
+
+        if severity:
+            update_data['manual_severity'] = severity
+
+        if resolve_comment:
+            update_data['resolve_comment'] = resolve_comment
+
+        request_data = {
+            'incident_id': incident_id,
+            'update_data': update_data
+        }
+        demisto.info(json.dumps(request_data, indent=4))
+        http_request('POST', '/incidents/update_incident/', data={'request_data': request_data})
+
+
+    def fetch_incidents():
+        last_run = demisto.getLastRun()
+        # Get the last fetch time, if exists
+        last_fetch = last_run.get('time')
+
+        # Handle first time fetch, fetch incidents retroactively
+        if last_fetch is None:
+            last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+
+        incidents = []
+        raw_incidents = get_incidents(gte_creation_time_milliseconds=last_fetch,
+                                      limit=50, sort_by_creation_time='asc')
+
+        for raw_incident in raw_incidents:
+            incident_id = raw_incident.get('incident_id')
+            description = raw_incident.get('description')
+            occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
+            incident = {
+                'name': '#{} - {}'.format(incident_id, description),
+                'occurred': occurred,
+                'rawJSON': json.dumps(raw_incident)
+            }
+
+            # Update last run and add incident if the incident is newer than last fetch
+            if raw_incident['creation_time'] > last_fetch:
+                last_fetch = raw_incident['creation_time']
+
+            incidents.append(incident)
+
+        demisto.setLastRun({'time': last_fetch + 1})
+        demisto.incidents(incidents)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+
+    def main():
+        LOG('Command being called is %s' % (demisto.command()))
+
+        try:
+            if demisto.command() == 'test-module':
+                test_module()
+                demisto.results('ok')
+
+            elif demisto.command() == 'fetch-incidents':
+                fetch_incidents()
+
+            elif demisto.command() == 'xdr-get-incidents':
+                get_incidents_command()
+
+            elif demisto.command() == 'xdr-get-incident-extra-data':
+                get_incident_extra_data_command()
+
+            elif demisto.command() == 'xdr-update-incident':
+                update_incident_command()
+
+        # Log exceptions
+        except Exception as e:
+            if demisto.command() == 'fetch-incidents':
+                LOG(str(e))
+                raise
+            else:
+                return_error(e)
+
+
+    if __name__ in ['__main__', '__builtin__', 'builtins']:
+        main()
+  subtype: python3
+  type: python
+system: true

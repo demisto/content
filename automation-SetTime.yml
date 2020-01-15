@@ -1,0 +1,23 @@
+args:
+- default: true
+  description: Incident field name to set
+  name: fieldName
+  required: true
+comment: Fill the current time in a custom incident field
+commonfields:
+  id: SetTime
+  version: -1
+name: SetTime
+runonce: false
+script: |-
+  import datetime
+  now = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S+00:00')
+  fieldName = demisto.args()['fieldName']
+  # Example format: '2018-02-02T22:58:21+02:00'
+  demisto.log('[*] ' + fieldName + ' <- ' + now)
+  demisto.setContext(fieldName, now)
+  demisto.results( demisto.executeCommand("setIncident", {fieldName: now }) )
+scripttarget: 0
+system: true
+tags: []
+type: python

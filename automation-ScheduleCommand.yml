@@ -1,0 +1,25 @@
+args:
+- default: true
+  description: The command to schedule
+  name: command
+  required: true
+- description: The scheduled time to run
+  name: cron
+  required: true
+- description: When should we end the schedule. Will be only relevant if times is
+    not provided. Optional. Format is 'Mon, 02 Jan 2006 15:04:05 MST'
+  name: endDate
+- description: The number of times to run. Optional.
+  name: times
+comment: Schedule a command to run inside the war room at a future time (once or reoccurring)
+commonfields:
+  id: ScheduleCommand
+  version: -1
+name: ScheduleCommand
+runonce: false
+script: return executeCommand("scheduleEntry", args);
+scripttarget: 0
+system: true
+tags:
+- Utility
+type: javascript

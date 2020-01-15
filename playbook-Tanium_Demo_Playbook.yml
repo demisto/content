@@ -1,0 +1,251 @@
+description: This playbook shows how to use automation scripts to interact with Tanium.
+id: playbook15
+inputs: []
+name: Tanium Demo Playbook
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 18219156-ab84-4e03-8a5d-eaf3f2b5d402
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 18219156-ab84-4e03-8a5d-eaf3f2b5d402
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 54
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      question:
+        simple: ${Tanium.SavedQuestions.query_text}
+    separatecontext: false
+    task:
+      brand: Tanium
+      description: Ask the server to parse the question text and choose the first
+        parsed result as the question to run
+      id: 3533d2be-a90d-4f93-8630-c169d790254d
+      iscommand: true
+      name: Ask questions
+      script: Tanium|||tn-ask-question
+      type: regular
+      version: -1
+    taskid: 3533d2be-a90d-4f93-8630-c169d790254d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 669
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      question:
+        simple: Get all machines with processes starting with "EC"
+    separatecontext: false
+    task:
+      brand: Tanium
+      description: Ask the server to parse the question text and choose the first
+        parsed result as the question to run
+      id: d7609125-e21f-4871-8d72-518017ea0b93
+      iscommand: true
+      name: Run a complex Tanium query to find all machines with processes starting
+        with "EC"
+      script: Tanium|||tn-ask-question
+      type: regular
+      version: -1
+    taskid: d7609125-e21f-4871-8d72-518017ea0b93
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 830
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    scriptarguments:
+      id: {}
+      name:
+        simple: Tanium Client Versions
+    separatecontext: false
+    task:
+      brand: Tanium
+      description: Get a saved question by name or id
+      id: 6553c9ee-e178-4084-8718-5e2fdc549fed
+      iscommand: true
+      name: Get saved question - Tanium Client Versions
+      script: Tanium|||tn-get-saved-question
+      type: regular
+      version: -1
+    taskid: 6553c9ee-e178-4084-8718-5e2fdc549fed
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 338
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      id: {}
+      name:
+        simple: Running Applications
+    separatecontext: false
+    task:
+      brand: Tanium
+      description: Get a saved question by name or id
+      id: a4aaa5eb-3724-43fe-86e5-c8e7363743ed
+      iscommand: true
+      name: Get saved question - Running Applications
+      script: Tanium|||tn-get-saved-question
+      type: regular
+      version: -1
+    taskid: a4aaa5eb-3724-43fe-86e5-c8e7363743ed
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 508
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 474a6415-eb35-4137-8977-c60db94ac520
+      iscommand: false
+      name: Querying Tanium
+      type: title
+      version: -1
+    taskid: 474a6415-eb35-4137-8977-c60db94ac520
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 198
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: c6202d75-3923-44df-86e6-a685195739c8
+      iscommand: false
+      name: Deploying Actions
+      type: title
+      version: -1
+    taskid: c6202d75-3923-44df-86e6-a685195739c8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 998
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      action_filters: {}
+      action_options: {}
+      get_results: {}
+      package:
+        simple: USB Write Protect - Set to On
+      package_args: {}
+    separatecontext: false
+    task:
+      brand: Tanium
+      description: Deploy a package and get the results back
+      id: b05fd6d0-3e6d-40a9-81b3-58888214b896
+      iscommand: true
+      name: Deploy a Tanium action to enable USB write protect for all hosts
+      script: Tanium|||tn-deploy-package
+      type: regular
+      version: -1
+    taskid: b05fd6d0-3e6d-40a9-81b3-58888214b896
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1152
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1193,
+        "width": 380,
+        "x": 450,
+        "y": 54
+      }
+    }
+  }

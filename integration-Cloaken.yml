@@ -1,0 +1,163 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Cloaken
+  version: -1
+configuration:
+- defaultvalue: https://cloaken.cypherint.com
+  display: Server URL (e.g., https://cloaken.cypherint.com)
+  name: server_url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Unshorten URLs onsite using the power of a Tor proxy server to prevent
+  leaking IP addresses to adversaries.
+display: Cloaken
+image: data:image/png;base64,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
+name: Cloaken
+script:
+  commands:
+  - arguments:
+    - description: URL to unshorten.
+      name: url
+      required: true
+    description: Unshortens a URL.
+    name: cloaken-unshorten-url
+    outputs:
+    - contextPath: Cloaken.UnshortenedURL
+      description: The unshortened URL.
+      type: string
+    - contextPath: Cloaken.OriginalURL
+      description: The original URL.
+      type: string
+    - contextPath: URL.Data
+      description: The unshortened URL.
+      type: string
+    - contextPath: Cloaken.Status
+      description: 'Status of the response: BADREQUEST or OK.'
+      type: number
+  - arguments:
+    - description: The URL for which to take a screenshot.
+      name: url
+      required: true
+    description: Creates a screenshot of the specified URL.
+    name: cloaken-screenshot-url
+    outputs:
+    - contextPath: CloakenScreenshot.Url
+      description: Url
+      type: string
+    - contextPath: CloakenScreenshot.Status
+      description: Status of the screenshot.
+      type: string
+  dockerimage: demisto/cloaken:1.0.0.1787
+  runonce: false
+  script: |2-
+
+
+
+
+    from cloakensdk.client import SyncClient
+    from cloakensdk.resources import Url
+    from cloakensdk import utility
+
+    PROXY = handle_proxy("proxy", False)
+
+
+    def get_client():
+        server = demisto.params()["server_url"]
+        verify = not demisto.params().get('insecure', False)
+        password = demisto.params()["credentials"]["password"]
+        username = demisto.params()["credentials"]["identifier"]
+        client = SyncClient(
+            server_url=server,
+            username=username,
+            verify=verify,
+            password=password
+        )
+        return client
+
+
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        client = get_client()
+        demisto.results('ok')
+
+    if demisto.command() == 'cloaken-unshorten-url':
+        client = get_client()
+        url = demisto.args()['url']
+        resource = Url(client)
+        resource.unshorten(url)
+        response = resource.full_request()
+
+        response_code = response.get('response_code', 'NA')
+        response_status = response.get('status', 'FAILED')
+        if response_status == 'Success':
+            # successfully unshortened the url
+            url_data = response.get('data', {}).get('unshortened_url')
+            cloaken_context = {
+                'OriginalURL': url,
+                'UnshortenedURL': url_data,
+                'Status': response_code,
+            }
+            ec = {
+                outputPaths['url']: {
+                    'Data': url_data
+                },
+                'Cloaken': cloaken_context
+            }
+            return_outputs(
+                tableToMarkdown('Cloakened URL', cloaken_context),
+                ec,
+                cloaken_context
+            )
+        elif response_code == 400:
+            # url was malformed
+            return_warning("Not able to resolve or malformed URL ")
+        else:
+            # server error or unavailable
+            return_error('Error Cloaken Unshorten: ' + str(response.get('data', 'key missing')))
+
+    if demisto.command() == 'cloaken-screenshot-url':
+        client = get_client()
+        url = demisto.args()["url"]
+        screenshot = utility.RasterizeAndRetrieveImage(client, url=url)
+        context = {"Url": url, "Status": 'failed'}
+        try:
+            result = screenshot.get_screenshot()
+            if result.get("data", "") != "":
+                stored_img = fileResult(result.get("filename", "screenshot.png"),
+                                        result.get("data", ""), "image")
+                demisto.results({'Type': entryTypes['image'],
+                                 'ContentsFormat': formats['text'],
+                                 'File': stored_img['File'],
+                                 'FileID': stored_img['FileID'],
+                                 'Contents': ''
+                                 })
+                context["Status"] = "Success"
+                return_outputs(tableToMarkdown("Screenshot Succeeded", context),
+                               {"CloakenScreenshot": context},
+                               context
+                               )
+            else:
+                return_warning("No Screenshot data available")
+
+        except utility.RasterizeTimeout as e:
+            return_warning("Screenshot Timed Out: " + str(e))
+        except utility.RasterizeException as e:
+            return_warning("Screenshot Failed: " + str(e))
+  subtype: python3
+  type: python
+system: true

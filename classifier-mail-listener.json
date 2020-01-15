@@ -1,0 +1,219 @@
+{
+	"brandName": "mail-listener",
+	"custom": false,
+	"defaultIncidentType": "",
+	"id": "mail-listener",
+	"incidentSamples": null,
+	"instanceId": "",
+	"instanceName": "",
+	"isDefault": true,
+	"keyTypeMap": {
+		"mail-listener": "Phishing"
+	},
+	"mapping": {
+		"Phishing": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Attachment Name": {
+					"complex": null,
+					"simple": "attachments"
+				},
+				"Email BCC": {
+					"complex": null,
+					"simple": "bcc"
+				},
+				"Email Body": {
+					"complex": null,
+					"simple": "text"
+				},
+				"Email CC": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "cc",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Email From": {
+					"complex": null,
+					"simple": "headers.From"
+				},
+				"Email HTML": {
+					"complex": null,
+					"simple": "HTML"
+				},
+				"Email Message ID": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "rawHeaders",
+						"transformers": [
+							{
+								"args": {
+									"from": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "Message-ID: \u003c"
+										}
+									}
+								},
+								"operator": "substringFrom"
+							},
+							{
+								"args": {
+									"to": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "\u003e"
+										}
+									}
+								},
+								"operator": "substringTo"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Email Received": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "rawHeaders",
+						"transformers": [
+							{
+								"args": {
+									"from": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "Received:"
+										}
+									}
+								},
+								"operator": "substringFrom"
+							},
+							{
+								"args": {
+									"to": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ";"
+										}
+									}
+								},
+								"operator": "substringTo"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Email Return Path": {
+					"complex": null,
+					"simple": "headers.Return-Path"
+				},
+				"Email Sender IP": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "rawHeaders",
+						"transformers": [
+							{
+								"args": {
+									"from": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "x-originating-ip: ["
+										}
+									}
+								},
+								"operator": "substringFrom"
+							},
+							{
+								"args": {
+									"to": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "]"
+										}
+									}
+								},
+								"operator": "substringTo"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Email Subject": {
+					"complex": null,
+					"simple": "subject"
+				},
+				"Email To": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "to",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Email To Count": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "to",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "count"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Email to": {
+					"complex": null,
+					"simple": "to.[0]"
+				}
+			}
+		}
+	},
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": "brand"
+	},
+	"unclassifiedCases": {},
+	"version": -1
+}

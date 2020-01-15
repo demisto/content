@@ -1,0 +1,33 @@
+{
+	"category": "",
+	"dataType": "system",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "minutes",
+			"byTo": "",
+			"field": "",
+			"fromValue": 60,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"description": "Number of busy workers per engine in the previous 24 hours",
+	"id": "engine-busy-workers-line",
+	"isPredefined": true,
+	"name": "Busy Workers per Engine (last 24h)",
+	"params": {
+		"groupBy": [
+			"engine"
+		],
+		"timeFrame": "minutes"
+	},
+	"query": "engine.workers.busy-workers",
+	"size": 1440,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "line"
+}

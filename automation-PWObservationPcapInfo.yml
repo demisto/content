@@ -1,0 +1,55 @@
+args:
+- default: true
+  description: Sensor ID (or a comma-separated list of IDs)
+  name: sensorId
+  required: true
+- description: The observation ID (or a comma-separated list of IDs)
+  name: id
+  required: true
+comment: Display information about the PCAPs related to the specified ProtectWise
+  Observations.
+commonfields:
+  id: PWObservationPcapInfo
+  version: -1
+dependson:
+  must:
+  - ProtectWise|||observation-pcap-info
+deprecated: true
+name: PWObservationPcapInfo
+runonce: false
+script: |
+  res = []
+  infos = []
+  dArgs = demisto.args()
+  dArgs["using-brand"] = "ProtectWise"
+  obIDs = argToList(demisto.get(dArgs, 'id'))
+  sensorList = argToList(demisto.get(dArgs, 'sensorId'))
+  for sensorId in sensorList:
+      dArgs['sensorId'] = sensorId
+      for oid in obIDs:
+          dArgs['id'] = oid
+          resCmd = demisto.executeCommand("observation-pcap-info", dArgs)
+          try:
+              for entry in resCmd:
+                  if isError(entry):
+                      res = resCmd
+                      break
+                  else:
+                      myData = demisto.get(entry, 'Contents')
+                      if myData and isinstance(myData, dict):
+                          for field in myData:
+                              myData[field] = formatCell(myData[field])
+                          infos += [myData]
+                      else:
+                          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                      "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"], indent = 4)})
+          except Exception as ex:
+              res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                          "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": infos})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- protectwise
+type: python

@@ -1,0 +1,61 @@
+args:
+- default: true
+  description: Admin user to use for compliance search
+  name: username
+  required: true
+- description: Password for the specified user
+  name: password
+  required: true
+  secret: true
+- description: in seconds. Default is 5 mins. Max is 2 hours.
+  name: timeout
+- description: Query to use for finding mails
+  name: query
+  required: true
+- description: Windows system to run the powershell script
+  name: system
+  required: true
+- description: if set to "true" (case insensitive) - the script will also delete found
+    emails. Default is false.
+  name: delete
+comment: Search mails in office-365
+commonfields:
+  id: O365SearchEmails
+  version: -1
+name: O365SearchEmails
+runonce: false
+script: |
+  res = []
+  dArgs = demisto.args()
+  dArgs['using'] = dArgs['system']
+  import re
+  REGEX_RESULTS = r"Search results\: \{([^}]*)\}"
+
+  delArg = demisto.get(dArgs, 'delete')
+  if type(delArg) in [str, unicode] and delArg.lower()  == 'true':
+      demisto.log('[*] Script set to also delete found emails.')
+      resCmdName = demisto.executeCommand("D2O365SearchAndDelete", dArgs)
+  else:
+      resCmdName = demisto.executeCommand("D2O365ComplianceSearch", dArgs)
+  try:
+      for entry in resCmdName:
+          if isError(entry):
+              res = resCmdName
+              break
+          else:
+              myData = demisto.get(entry, 'Contents')
+              match = re.search(REGEX_RESULTS, myData)
+              if match and match.groups():
+                  searchResults = match.groups()[0]
+                  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": searchResults})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmdName)})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- office365
+- email
+- response
+type: python

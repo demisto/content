@@ -1,0 +1,141 @@
+description: Assume that malicious IOCs are in the right place in the context and
+  start hunting using available tools
+id: Hunt for bad IOCs
+inputs: []
+name: Hunt for bad IOCs
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 9d563269-d6b7-4d77-83c8-8916860ed44b
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 9d563269-d6b7-4d77-83c8-8916860ed44b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 4575847d-6979-4a86-8f77-ad7afcda5b01
+      iscommand: false
+      name: ""
+      playbookName: Carbon black Protection Rapid IOC Hunting
+      type: playbook
+      version: -1
+    taskid: 4575847d-6979-4a86-8f77-ad7afcda5b01
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: ea507294-262f-4b30-879a-7a0d33944a0f
+      iscommand: false
+      name: ""
+      playbookName: Carbon Black Rapid IOC Hunting
+      type: playbook
+      version: -1
+    taskid: ea507294-262f-4b30-879a-7a0d33944a0f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 69cac33b-55de-4223-84f4-dea5ccca44e9
+      iscommand: false
+      name: ""
+      playbookName: CrowdStrike Rapid IOC Hunting
+      type: playbook
+      version: -1
+    taskid: 69cac33b-55de-4223-84f4-dea5ccca44e9
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: e977184e-8358-4c0e-88f5-9a0bb3b41bb6
+      iscommand: false
+      name: ""
+      playbookName: TIE - IOC Hunt
+      type: playbook
+      version: -1
+    taskid: e977184e-8358-4c0e-88f5-9a0bb3b41bb6
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 240,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

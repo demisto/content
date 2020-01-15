@@ -1,0 +1,368 @@
+description: Create a phishing classifier using machine learning technique, based
+  on email content
+id: DBotCreatePhishingClassifier
+inputs:
+- description: The name of Demisto list to store the model
+  key: modelListStoreName
+  required: false
+  value:
+    simple: phishing_model
+- description: Incident key to extract email body text
+  key: emailTextKey
+  required: false
+  value:
+    simple: details
+- description: Incident key to extract email subject
+  key: emailSubjectKey
+  required: false
+  value:
+    simple: emailsubject
+- description: Incident key expression to extract email tag
+  key: emailTagKey
+  required: false
+  value:
+    simple: closeReason
+- description: 'Comma-separated values of email tags values and mapping. The script
+    going to consider only the tags specify in this field. You can map label to another
+    value by using this format: LABEL:MAPPED_LABEL. For example: let''s say we have
+    4 values in email tag: malicious, credentials harvesting, inner communitcation,
+    external legit email, unclassified. While training, we want to ignore "unclassified"
+    tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to
+    merge "inner communitcation" and "external legit email" to one tag called "non-malicious".
+    The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
+    external legit email:non-malicious'
+  key: phishingLabels
+  required: false
+  value:
+    simple: '*'
+- description: The incidents query to fetch the training data for the model
+  key: incidentsTrainingQuery
+  required: false
+  value:
+    simple: type:Phishing and created:>="180 days ago" and created:<"7 days ago"
+- description: The incidents query to fetch the test data for the model
+  key: incidentsEvaluationQuery
+  required: false
+  value:
+    simple: type:Phishing and created:>="7 days ago"
+- description: Maximum number of incidents to fetch while training the model
+  key: maxIncidentsToFetchOnTraining
+  required: false
+  value:
+    simple: "2000"
+- description: Is context data needed to get email text\subject\tag value?
+  key: isContextNeeded
+  required: false
+  value:
+    simple: "no"
+- description: The name of demisto list contains historical data samples for the algorithm
+  key: historicalDataFileListName
+  required: false
+  value: {}
+- description: Preform hash function to the words (to anonymize the data). Choose
+    between yes/no
+  key: hashData
+  required: false
+  value:
+    simple: "no"
+name: DBot Create Phishing Classifier
+outputs:
+- contextPath: DBotPredictPhishingEvaluation.F1
+  description: F1 score (0-1)
+  type: number
+- contextPath: DBotPredictPhishingEvaluation.Precision
+  description: Precision score (0-1)
+  type: number
+- contextPath: DBotTextClassifier.ListName
+  description: Model list name in Demisto
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d43d5bc7-608a-4580-856a-6c07aaf1b3dc
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d43d5bc7-608a-4580-856a-6c07aaf1b3dc
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    scriptarguments:
+      emailSubjectKey:
+        simple: ${inputs.emailSubjectKey}
+      emailTextKey:
+        simple: ${inputs.emailTextKey}
+      hashData:
+        simple: ${inputs.hashData}
+      incidentsQuery:
+        simple: ${inputs.incidentsTrainingQuery}
+      isContextNeeded:
+        simple: ${inputs.isContextNeeded}
+      maxNumberOfIncidents:
+        simple: ${inputs.maxIncidentsToFetchOnTraining}
+      phishingLabels:
+        simple: ${inputs.phishingLabels}
+      storeFileInList: {}
+      tagKey:
+        simple: ${inputs.emailTagKey}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Prepare emails data to machine learning model
+      id: 88dfca43-623f-4ab4-8b4a-c76e522c7f5f
+      iscommand: false
+      name: Prepare phishing data
+      scriptName: DBotPreparePhishingData
+      type: regular
+      version: -1
+    taskid: 88dfca43-623f-4ab4-8b4a-c76e522c7f5f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      modelStoreListName:
+        simple: ${inputs.modelListStoreName}
+      precisionThreshold: {}
+      trainingFileName:
+        simple: ${DBotPreparePhishingDataFilename},${inputs.historicalDataFileListName}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Train the machine learning model
+      id: ee891512-2e90-40eb-8e62-46242df2a75f
+      iscommand: false
+      name: Train model
+      scriptName: DBotTrainTextClassifier
+      type: regular
+      version: -1
+    taskid: ee891512-2e90-40eb-8e62-46242df2a75f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      emailSubjectKey:
+        simple: ${inputs.emailSubjectKey}
+      emailTextKey:
+        simple: ${inputs.emailTextKey}
+      hashData:
+        simple: ${inputs.hashData}
+      incidentsQuery:
+        simple: ${inputs.incidentsEvaluationQuery}
+      isContextNeeded:
+        simple: ${inputs.isContextNeeded}
+      maxNumberOfIncidents:
+        simple: "500"
+      modelListName:
+        simple: ${inputs.modelListStoreName}
+      phishingLabels:
+        simple: ${inputs.phishingLabels}
+      tagKey:
+        simple: ${inputs.emailTagKey}
+    separatecontext: false
+    task:
+      brand: ""
+      description: 'Evaluate the model  '
+      id: 47b24192-7505-4410-838d-4036ab392f2b
+      iscommand: false
+      name: 'Model evaluation '
+      scriptName: DBotPredictPhishingEvaluation
+      type: regular
+      version: -1
+    taskid: 47b24192-7505-4410-838d-4036ab392f2b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f44bf907-a56b-4fc9-8db0-a79831c9b27a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: f44bf907-a56b-4fc9-8db0-a79831c9b27a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotTextClassifier
+          operator: isNotEmpty
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if the model successfully trained
+      id: 3c14c89b-6d87-4dba-813b-4d783f81ad85
+      iscommand: false
+      name: Is model trained?
+      type: condition
+      version: -1
+    taskid: 3c14c89b-6d87-4dba-813b-4d783f81ad85
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.historicalDataFileListName
+          operator: isNotEmpty
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Do we have file with historic data we want to load?
+      id: c20fcbea-60ac-49c6-8659-bf3bc09033d2
+      iscommand: false
+      name: Historical data exist
+      type: condition
+      version: -1
+    taskid: c20fcbea-60ac-49c6-8659-bf3bc09033d2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      filename: {}
+      isZipFile:
+        simple: "yes"
+      listname:
+        simple: ${inputs.historicalDataFileListName}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Dump the file to the war room (from base64 list)
+      id: c87ef0d3-71bc-4d0d-8110-e8fc6e838cfa
+      iscommand: false
+      name: Get historical file
+      scriptName: Base64ListToFile
+      type: regular
+      version: -1
+    taskid: c87ef0d3-71bc-4d0d-8110-e8fc6e838cfa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 550
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 750,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

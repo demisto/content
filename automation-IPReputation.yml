@@ -1,0 +1,25 @@
+args:
+- default: true
+  description: IP address to look up
+  name: ip
+  required: true
+comment: A context script for IP entities
+commonfields:
+  id: IPReputation
+  version: -1
+enabled: true
+name: IPReputation
+runonce: false
+script: |-
+  results = demisto.executeCommand('ip', {'ip': demisto.get(demisto.args(),'ip')})
+
+  for item in results:
+      if isError(item):
+          item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
+
+  demisto.results(results)
+scripttarget: 0
+system: true
+tags:
+- enhancement
+type: python

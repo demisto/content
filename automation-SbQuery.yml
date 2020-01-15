@@ -1,0 +1,66 @@
+args:
+- description: The md5 to query
+  name: md5
+- description: The sha1 to query
+  name: sha1
+- description: The sha256 to query
+  name: sha256
+- description: File extension (although the service identifies the type)
+  name: file_type
+- auto: PREDEFINED
+  description: Available features - default is te and av
+  name: features
+  predefined:
+  - te
+  - av
+  - extraction
+  - all
+- description: Array of objects with id and revision of available OS images
+  name: images
+- description: Array of supported report formats of - pdf | xml | tar
+  name: reports
+- auto: PREDEFINED
+  description: By default, reports are returned only for malicious files - you can
+    mark this as true and get benign reports
+  name: benign_reports
+  predefined:
+  - "true"
+  - "false"
+- auto: PREDEFINED
+  description: If true, response delivers the quota data (for cloud services only)
+  name: quota
+  predefined:
+  - "true"
+  - "false"
+- description: File name - service calculates the file name from the part name
+  name: file_name
+comment: Use the Query API to have a client application look for either the analysis
+  report of a specific file on the Check Point Threat Prevention service databases
+  or the status of a file, uploaded for analysis
+commonfields:
+  id: SbQuery
+  version: -1
+dependson:
+  must:
+  - sb-query
+name: SbQuery
+runonce: false
+script: |2
+
+  resp = demisto.executeCommand("sb-query", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.response")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- sandblast
+type: python

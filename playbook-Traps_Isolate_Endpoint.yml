@@ -1,0 +1,306 @@
+description: This playbook accepts an endpoint ID from Traps integration and performs
+  isolation on this endpoint.
+id: Traps Isolate Endpoint
+inputs:
+- description: Endpoint ID of the endpoint to isolate, provided by the Palo Alto Networks
+    Traps integration.
+  key: EndpointId
+  required: false
+  value: {}
+name: Traps Isolate Endpoint
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: db8c61b1-9887-4c83-82f8-16e173bff1de
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: db8c61b1-9887-4c83-82f8-16e173bff1de
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Traps
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 51601fa9-ee3f-427a-84ac-aee609d05d44
+      iscommand: false
+      name: Is Traps integration enabled?
+      type: condition
+      version: -1
+    taskid: 51601fa9-ee3f-427a-84ac-aee609d05d44
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 56243283-6b5a-4157-89f8-8c9399bac654
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 56243283-6b5a-4157-89f8-8c9399bac654
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 1280
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.EndpointId
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 58c109ff-477c-426a-8187-465ce596ceac
+      iscommand: false
+      name: Is there an endpoint to isolate?
+      type: condition
+      version: -1
+    taskid: 58c109ff-477c-426a-8187-465ce596ceac
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: inputs.EndpointId
+    separatecontext: false
+    task:
+      brand: ""
+      description: Isolates the specified endpoint.
+      id: 0c995345-9005-435b-8e15-c292b8d8ddbc
+      iscommand: true
+      name: Traps - Isolate endpoint
+      script: '|||traps-endpoint-isolate'
+      type: regular
+      version: -1
+    taskid: 0c995345-9005-435b-8e15-c292b8d8ddbc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 540
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    scriptarguments:
+      operation_id:
+        complex:
+          accessor: Isolate.OperationID
+          root: Traps
+    separatecontext: false
+    task:
+      brand: Traps
+      description: Returns the status of the specified endpoint isolate operation.
+      id: ed98f50d-188c-4323-8f95-73b6b33d6d2a
+      iscommand: true
+      name: Traps - Isolate endpoint status
+      script: Traps|||traps-endpoint-isolate-status
+      type: regular
+      version: -1
+    taskid: ed98f50d-188c-4323-8f95-73b6b33d6d2a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 730
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${Traps.Isolate.OperationID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: operation_id
+      PollingCommandName:
+        simple: traps-endpoint-isolate-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: Traps.IsolateResult(val.Status == 'pending' || val.Status == 'in progress').OperationID
+    separatecontext: true
+    task:
+      brand: ""
+      id: 9e4dc3d8-eea9-42c6-8007-cb08582ea62c
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 9e4dc3d8-eea9-42c6-8007-cb08582ea62c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 920
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      operation_id:
+        complex:
+          accessor: Isolate.OperationID
+          root: Traps
+    separatecontext: false
+    task:
+      brand: Traps
+      description: Returns the status of the specified endpoint isolate operation.
+      id: b82f3d33-9c95-4f34-8a2b-ef1acb0f8976
+      iscommand: true
+      name: Traps - Isolate endpoint status
+      script: Traps|||traps-endpoint-isolate-status
+      type: regular
+      version: -1
+    taskid: b82f3d33-9c95-4f34-8a2b-ef1acb0f8976
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1110
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.3,
+      "3_2_#default#": 0.17
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1295,
+        "width": 920,
+        "x": -160,
+        "y": 50
+      }
+    }
+  }

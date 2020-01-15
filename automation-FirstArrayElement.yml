@@ -1,0 +1,39 @@
+args:
+- default: true
+  description: An array for which to return the first element.
+  isArray: true
+  name: value
+  required: true
+comment: Returns the first element of an array.  If the value passed is not an array,
+  it returns the original value that was passed.
+commonfields:
+  id: FirstArrayElement
+  version: -1
+dockerimage: demisto/python3:3.7.4.2728
+enabled: true
+name: FirstArrayElement
+runas: DBotWeakRole
+runonce: false
+script: |2-
+
+
+
+  def main():
+      value = demisto.args()['value']
+
+      if isinstance(value, list) and value:
+          value = value[0]
+
+      demisto.results(value)
+
+
+  if __name__ == "__builtin__" or __name__ == "builtins":
+      main()
+scripttarget: 0
+subtype: python3
+system: true
+tags:
+- general
+- transformer
+- entirelist
+type: python

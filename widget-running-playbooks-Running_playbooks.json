@@ -1,0 +1,43 @@
+{
+	"category": "",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "running-playbooks",
+	"isPredefined": true,
+	"name": "Running playbooks",
+	"params": {
+		"colors": {
+			"isEnabled": true,
+			"items": {
+				"#00CD33": {
+					"value": 0
+				},
+				"#FAC100": {
+					"value": 5
+				},
+				"#FF1B15": {
+					"value": 20
+				}
+			},
+			"type": "above"
+		}
+	},
+	"query": "runStatus:running",
+	"size": 0,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "number"
+}

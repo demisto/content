@@ -1,0 +1,66 @@
+args:
+- description: Demisto list name that stores the machine learning model
+  name: modelListName
+  required: true
+- auto: PREDEFINED
+  defaultValue: "no"
+  description: Is the input text is hashed
+  name: hashData
+  predefined:
+  - "yes"
+  - "no"
+- description: The email subject.
+  name: emailSubject
+- description: The email body. It's better to use text body if possible, HTML is also
+    valid (HTML tags will be removed).
+  name: emailBody
+comment: |-
+  Predict text label using pre-trained machine learning phishing model.
+  Notice you have to run training playbook successfully first.
+commonfields:
+  id: DBotPredictPhishingLabel
+  version: -1
+dockerimage: demisto/dl:1.1
+enabled: true
+name: DBotPredictPhishingLabel
+outputs:
+- contextPath: DBotPredictPhishingLabel.Label
+  description: The suggested label
+  type: String
+- contextPath: DBotPredictPhishingLabel.Probability
+  description: 'The prediction probability '
+  type: Number
+- contextPath: DBotPredictPhishingLabel.InputTextNumberOfTokens
+  description: Number of tokens in the input text
+  type: Number
+- contextPath: DBotPredictPhishingLabel.InputTextTokens
+  description: The input text
+  type: String
+runonce: false
+script: |2-
+
+
+
+
+  args = dict(demisto.args())
+  args['inputText'] = args.get('emailSubject', '') + ' ' + args.get('emailBody', '')
+  res = demisto.executeCommand('DBotPredictTextLabel', args)
+  res = res[-1]
+  if is_error(res):
+      return_error(get_error(res))
+  old_context_key_prefix = 'DBotPredictTextLabel'
+  new_context_key_prefix = 'DBotPredictPhishingLabel'
+  ec = res.get('EntryContext', {}) or {}
+  for key in ec:
+      if key.startswith(old_context_key_prefix):
+          new_key = new_context_key_prefix + key.lstrip(old_context_key_prefix)
+          ec[new_context_key_prefix] = ec.pop(old_context_key_prefix)
+  res['EntryContext'] = ec
+  demisto.results(res)
+scripttarget: 0
+subtype: python3
+system: true
+tags:
+- ml
+- phishing
+type: python

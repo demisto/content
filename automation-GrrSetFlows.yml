@@ -1,0 +1,25 @@
+args:
+- default: true
+  description: The ID of the client
+  name: client_id
+  required: true
+- description: JSON string of the flow to set
+  name: flow
+  required: true
+comment: Starts a flow on a given client with given parameters
+commonfields:
+  id: GrrSetFlows
+  version: -1
+dependson:
+  must:
+  - grr_set_flows
+name: GrrSetFlows
+runonce: false
+script: |2
+
+  demisto.results(demisto.executeCommand("grr_set_flows", demisto.args()))
+scripttarget: 0
+system: true
+tags:
+- GRR
+type: python

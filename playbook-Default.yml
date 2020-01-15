@@ -1,0 +1,283 @@
+description: Default playbook, Enrich indicators in incident using one or more integrations
+id: playbook0
+inputs:
+- description: Should preform enrichment on all indicators in the incident
+  key: Enrich
+  required: false
+  value:
+    simple: "True"
+name: Default
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 08854949-08a5-4873-8f01-b3935c78675f
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 08854949-08a5-4873-8f01-b3935c78675f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Enrich
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    note: false
+    scriptarguments:
+      left: {}
+      right: {}
+    separatecontext: false
+    task:
+      brand: ""
+      id: a8430dac-8cbb-47b3-8a87-2752cab0f36c
+      iscommand: false
+      name: Should perform enrichment?
+      type: condition
+      version: -1
+    taskid: a8430dac-8cbb-47b3-8a87-2752cab0f36c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      assignBy:
+        simple: random
+      email: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 145e7a29-471e-4702-8493-65b7abbea30c
+      iscommand: false
+      name: Choose analyst
+      scriptName: AssignAnalystToIncident
+      type: regular
+      version: -1
+    taskid: 145e7a29-471e-4702-8493-65b7abbea30c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 09e4583d-597f-4955-897c-5bb5f24f4f57
+      iscommand: false
+      name: Enrich indicators
+      type: title
+      version: -1
+    taskid: 09e4583d-597f-4955-897c-5bb5f24f4f57
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 44e6a83f-14cd-49f4-8c41-0ffde22d3c4f
+      iscommand: false
+      name: ""
+      playbookName: Extract Indicators - Generic
+      type: playbook
+      version: -1
+    taskid: 44e6a83f-14cd-49f4-8c41-0ffde22d3c4f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 49cd29a6-4a83-44e6-8bdc-86136341411a
+      iscommand: false
+      name: ""
+      playbookName: Entity Enrichment - Generic
+      type: playbook
+      version: -1
+    taskid: 49cd29a6-4a83-44e6-8bdc-86136341411a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 0e467280-8c85-40e6-84a0-4b11305dbcd7
+      iscommand: false
+      name: ""
+      playbookName: Calculate Severity - Generic
+      type: playbook
+      version: -1
+    taskid: 0e467280-8c85-40e6-84a0-4b11305dbcd7
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 865
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 52714931-6ca9-42ff-854f-af9d3bc9e3d0
+      iscommand: false
+      name: Manually review the incident
+      type: regular
+      version: -1
+    taskid: 52714931-6ca9-42ff-854f-af9d3bc9e3d0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Default Enrichment Playbook
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Close the current incident
+      id: e39abb8a-2dbe-415e-8541-ba414ee3dfa6
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: e39abb8a-2dbe-415e-8541-ba414ee3dfa6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1395
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1440,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

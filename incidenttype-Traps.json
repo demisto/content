@@ -1,0 +1,23 @@
+{
+	"autorun": true,
+	"closureScript": "",
+	"color": "#32d296",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"disabled": false,
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Traps",
+	"locked": false,
+	"name": "Traps",
+	"playbookId": "Palo Alto Networks - Endpoint Malware Investigation",
+	"preProcessingScript": "",
+	"readonly": false,
+	"reputationCalc": 0,
+	"sortValues": null,
+	"system": true,
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

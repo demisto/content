@@ -1,0 +1,32 @@
+args:
+- default: true
+  description: The text to extract md5 from
+  name: text
+  required: true
+comment: Extract md5s from the given text and place them both as output and in the
+  context of a playbook
+commonfields:
+  id: MD5Extract
+  version: -1
+deprecated: true
+name: MD5Extract
+runonce: false
+script: |-
+  import re
+  md5Regex = r'\b[a-fA-F\d]{32}\b'
+  res = []
+  hashes = []
+  data = demisto.args()['text']
+  for m in re.finditer(md5Regex, data, re.I):
+      h = m.group(0)
+      if h not in hashes:
+          hashes.append(h)
+  res.append('MD5s found:\n' + '\n'.join(hashes))
+  appendContext('md5s', hashes, dedup = True)
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- hash
+- infra
+type: python

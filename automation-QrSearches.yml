@@ -1,0 +1,36 @@
+args:
+- default: true
+  description: The query expressions in AQL
+  name: query_expression
+  required: true
+- description: Fields to filter in
+  name: fields
+comment: Searches in QRadar
+commonfields:
+  id: QrSearches
+  version: -1
+dependson:
+  must:
+  - qr-searches
+deprecated: true
+name: QrSearches
+runonce: false
+script: |2
+
+  resp = demisto.executeCommand("qr-searches", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- QRadar
+type: python

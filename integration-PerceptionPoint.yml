@@ -1,0 +1,260 @@
+category: Email Gateway
+commonfields:
+  id: PerceptionPoint
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Token to use Perception Point's API
+  name: pp_token
+  required: true
+  type: 4
+- defaultvalue: "1"
+  display: Number of API loops
+  name: api_loops
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Fetch blocked incidents
+  name: fetch_blocked
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Fetch spam incidents
+  name: fetch_spam
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Fetch malicious incidents
+  name: fetch_malicious
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: ""
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Loads incidents from Perception Point and releases falsely quarantined
+  emails.
+detaileddescription: "## Get your PerceptionPoint API token\nTo get an API token,
+  contact PerceptionPoint support. \n\n## API token use cases\nTo set the number of
+  results to return, specify the parameter \"Number of API loops\". Each loop returns
+  a maximum of 20 items.\n- View and manage your incidents list. This list will be
+  updated automatically in the Incidents dashboard.\n- Release emails from quarantine
+  and resend them to their recipients, by passing the scan ID as an argument.\n"
+display: PerceptionPoint
+image: data:image/png;base64,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
+name: PerceptionPoint
+script:
+  commands:
+  - arguments:
+    - description: The PP scan ID of the email.
+      name: scan_id
+      required: true
+    description: Re-sends an email that was falsely quarantined, using the scan ID.
+    name: pp-release-email
+    outputs:
+    - contextPath: PP.Released
+      description: The scan ID of the released email.
+      type: number
+  dockerimage: demisto/python3:3.7.2.214
+  isfetch: true
+  runonce: false
+  script: |2-
+
+
+
+    ''' IMPORTS'''
+    import requests
+    import json
+    from collections import defaultdict
+
+    ''' INTEGRATION PARAMS '''
+    URL = 'http://api.perception-point.io/api/v1/{endpoint}'  # disable-secrets-detection
+    INCIDENTS_ENDPOINT = 'scans/incidents/'
+    RELEASE_ENDPOINT = 'quarantine/release/{id_}'
+
+    USER_PARAMS = demisto.params()
+    SECURED = not USER_PARAMS.get('insecure', False)
+    PP_TOKEN = USER_PARAMS.get('pp_token', None)
+    if PP_TOKEN is None:
+        return_error('Perception Point token is mandatory. '
+                     'Please enter your token or contact PerceptionPoint support for assistance')
+    try:
+        API_MAX_LOOPS = int(USER_PARAMS.get('api_loops', 1))
+    except Exception:
+        API_MAX_LOOPS = 1
+    HEADER = {'Authorization': f'Token {PP_TOKEN}'}
+
+    ''' CONSTANTS '''
+    RELEASE = 'release'
+    LIST = 'list'
+    API_ACTIONS_DICT = {RELEASE: RELEASE_ENDPOINT,
+                        LIST: INCIDENTS_ENDPOINT}
+    SPAM = 'SPM'
+    BLOCKED = 'BLK'
+    MALICIOUS = 'MAL'
+
+    API_CURSOR_ARG = '_cursor'
+
+    VERBOSE_VERDICT_PARAM = 'verbose_verdict[]'
+
+    FETCH_INCIDENTS_TYPE = [{'demisto_param': 'fetch_malicious',
+                             'req_pname': VERBOSE_VERDICT_PARAM,
+                             'req_pval': MALICIOUS},
+                            {'demisto_param': 'fetch_blocked',
+                             'req_pname': VERBOSE_VERDICT_PARAM,
+                             'req_pval': BLOCKED},
+                            {'demisto_param': 'fetch_spam',
+                             'req_pname': VERBOSE_VERDICT_PARAM,
+                             'req_pval': SPAM}]
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def build_fetch_incident_types(fetch_blocked, fetch_malicious, fetch_spam):
+        fetch_type_dict = defaultdict(list)  # type: ignore
+        fetch_select = {
+            'fetch_blocked': fetch_blocked,
+            'fetch_malicious': fetch_malicious,
+            'fetch_spam': fetch_spam
+        }
+        for darg in FETCH_INCIDENTS_TYPE:
+            darg_input = fetch_select.get(darg['demisto_param'])
+            if darg_input:
+                fetch_type_dict[darg['req_pname']].append(darg.get('req_pval', darg_input))
+        return dict(fetch_type_dict)
+
+
+    def create_incident(record):
+        record.pop('Attachment', None)
+        record['RawJSON'] = json.dumps(record)
+        return record
+
+
+    def collect_incidents(params):
+        list_url = build_request_url(LIST)
+        api_res = get_pp_api_result(list_url, params)
+        num_of_results = api_res.get('count')
+        incidents = []  # type: list
+        api_loops = 0
+        while num_of_results and api_loops < API_MAX_LOOPS:
+            incidents += map(create_incident, api_res.get('results'))
+            if api_res.get('next'):
+                api_res = get_pp_api_result(api_res.get('next'), {})
+                num_of_results = api_res.get('count')
+            api_loops += 1
+        return incidents
+
+
+    def report_incidents(incidents_list):
+        demisto.incidents(incidents_list)
+
+
+    def get_pp_api_result(url, params):
+        try:
+            res = requests.get(url=url,
+                               params=params,
+                               headers=HEADER,
+                               verify=SECURED)
+            res.raise_for_status()
+            try:
+                res_content = res.json()
+            except Exception:
+                res_content = {}
+            return res_content
+        except requests.exceptions.HTTPError as err:
+            if 400 <= res.status_code < 500:
+                return_error('Invalid token')
+            else:
+                return_error(err)
+        except Exception as err:
+            return_error(err)
+
+
+    def build_request_url(api_action):
+        return URL.format(endpoint=API_ACTIONS_DICT.get(api_action))
+
+
+    def command_fetch_incidents():
+        try:
+            fetch_blocked = USER_PARAMS.get('fetch_blocked')
+            fetch_spam = USER_PARAMS.get('fetch_spam')
+            fetch_malicious = USER_PARAMS.get('fetch_malicious')
+            req_args = build_fetch_incident_types(fetch_blocked, fetch_malicious, fetch_spam)
+            last_run_id = int(demisto.getLastRun().get('scan_id', 0))
+            req_args[API_CURSOR_ARG] = last_run_id
+            incidents_list = collect_incidents(req_args)
+            report_incidents(incidents_list)
+            if incidents_list:
+                last_run_id = max(last_run_id, int(incidents_list[-1].get('Scan Id')))
+                demisto.setLastRun({'scan_id': int(last_run_id)})
+        except Exception as err:
+            return_error(f'An error occurred while trying to fetch new incidents. '
+                         f'Please contact PerceptionPoint support for more info. {err}')
+
+
+    def release_email_and_get_message(scan_id_to_release):
+        try:
+            release_url = build_request_url(RELEASE).format(id_=scan_id_to_release)
+            _ = get_pp_api_result(release_url, {})
+            return f'Email with id {scan_id_to_release} was released Successfully!'
+        except Exception:
+            raise
+
+
+    def command_release_email():
+        try:
+            scan_id_to_release = demisto.args().get('scan_id')
+            entry = {
+                'Type': entryTypes['note'],
+                'ReadableContentsFormat': formats['markdown']
+            }
+            email_release_response = release_email_and_get_message(scan_id_to_release)
+            entry.update({'Contents': email_release_response,
+                          'ContentsFormat': formats['text'],
+                          'EntryContext': {'PP.Released': scan_id_to_release}}
+                         )
+            demisto.results(entry)
+        except Exception as err:
+            return_error(f'An error occurred while trying to release email. '
+                         f'Please contact PerceptionPoint support for more info\n. {err}')
+
+
+    def test_command():
+        list_url = build_request_url(LIST)
+        if get_pp_api_result(list_url, {}):
+            demisto.results('ok')
+
+
+    ''' COMMAND CLASSIFIER'''
+    try:
+        handle_proxy()
+        if demisto.command() == 'test-module':
+            test_command()
+        if demisto.command() == 'fetch-incidents':
+            command_fetch_incidents()
+        if demisto.command() == 'pp-release-email':
+            command_release_email()
+    except Exception as e:
+        LOG(str(e))
+        message = f'Unexpected error: {e} \n'
+        LOG(message)
+        LOG.print_log()
+        return_error(message)
+  type: python
+system: true

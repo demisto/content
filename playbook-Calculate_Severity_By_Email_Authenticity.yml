@@ -1,0 +1,392 @@
+description: Calculates a severity according to the verdict coming from the CheckEmailAuthenticity
+  script.
+id: Calculate Severity By Email Authenticity
+inputs:
+- description: The verdict regarding the authenticity of the investigated email. Returned
+    from CheckEmailAuthenticity script.
+  key: EmailAuthenticityCheck
+  required: false
+  value:
+    complex:
+      accessor: AuthenticityCheck
+      root: Email
+name: Calculate Severity By Email Authenticity
+outputs:
+- contextPath: Severities.EmailAuthenticitySeverity
+  description: The maliciousness score evaluated by the Calculate Severity - Email
+    Authenticity playbook.
+  type: number
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 3eded69b-617e-4212-86b7-2537474285f3
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 3eded69b-617e-4212-86b7-2537474285f3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 150
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 483350d5-ab17-44cd-87b3-0e2360ce3577
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 483350d5-ab17-44cd-87b3-0e2360ce3577
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 965
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.EmailAuthenticityCheck
+          operator: isExists
+      label: "yes"
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "25"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks the playbook inputs for a verdict regarding the authenticity
+        of the investigated email. The verdict comes from the CheckEmailAuthenticity
+        script.
+      id: 75107f50-55da-459d-8ee1-cc86e21b0cdb
+      iscommand: false
+      name: Is there an email authenticity verdict?
+      type: condition
+      version: -1
+    taskid: 75107f50-55da-459d-8ee1-cc86e21b0cdb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 305
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 5b8bbca5-8b80-4f1f-86cb-98a874c946de
+      iscommand: false
+      name: No Authenticity Verdict
+      type: title
+      version: -1
+    taskid: 5b8bbca5-8b80-4f1f-86cb-98a874c946de
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 495
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: inputs.EmailAuthenticityCheck
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: fail
+                root: inputs.EmailAuthenticityCheck
+          operator: isExists
+      label: Fail
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: inputs.EmailAuthenticityCheck
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: suspicious
+                root: inputs.EmailAuthenticityCheck
+          operator: isExists
+      label: Suspicious
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: inputs.EmailAuthenticityCheck
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: undetermined
+                root: inputs.EmailAuthenticityCheck
+          operator: isExists
+      label: Undetermined
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: inputs.EmailAuthenticityCheck
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: pass
+                root: inputs.EmailAuthenticityCheck
+          operator: isExists
+      label: Pass
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      Fail:
+      - "27"
+      Pass:
+      - "30"
+      Suspicious:
+      - "28"
+      Undetermined:
+      - "29"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Evaluates the severity score for this playbook, according to the
+        verdict returned from CheckEmailAuthenticity.
+      id: 8a89986f-7d9c-4fd0-8d44-8cd692b436d1
+      iscommand: false
+      name: Evaluate score
+      type: condition
+      version: -1
+    taskid: 8a89986f-7d9c-4fd0-8d44-8cd692b436d1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 570
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.EmailAuthenticitySeverity
+      value:
+        simple: High
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Sets the severity output of this playbook to "High".
+      id: a49df7b0-523d-4244-8678-15123c096f9d
+      iscommand: false
+      name: Set severity to high
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: a49df7b0-523d-4244-8678-15123c096f9d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 755
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.EmailAuthenticitySeverity
+      value:
+        simple: Medium
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Sets the severity output of this playbook to "Medium".
+      id: 63cfd481-48c0-4e4c-85c8-f21f97225c4b
+      iscommand: false
+      name: Set severity to medium
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 63cfd481-48c0-4e4c-85c8-f21f97225c4b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 792.5,
+          "y": 755
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.EmailAuthenticitySeverity
+      value:
+        simple: Unknown
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Sets the severity output of this playbook to "Unknown".
+      id: 60ac3b8b-d3d0-4df2-8260-bfce589b1649
+      iscommand: false
+      name: Set severity to unknown
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 60ac3b8b-d3d0-4df2-8260-bfce589b1649
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 755
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.EmailAuthenticitySeverity
+      value:
+        simple: Low
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Sets the severity output of this playbook to "Low".
+      id: 0afd3efa-0d48-45f1-8cac-4e18c98f003f
+      iscommand: false
+      name: Set severity to low
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 0afd3efa-0d48-45f1-8cac-4e18c98f003f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 755
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "23_24_#default#": 0.37,
+      "23_25_yes": 0.58,
+      "25_27_Fail": 0.87,
+      "25_28_Suspicious": 0.6,
+      "25_29_Undetermined": 0.64,
+      "25_30_Pass": 0.85
+    },
+    "paper": {
+      "dimensions": {
+        "height": 880,
+        "width": 1580,
+        "x": -10,
+        "y": 150
+      }
+    }
+  }

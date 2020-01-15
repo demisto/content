@@ -1,0 +1,25 @@
+args:
+- default: true
+  description: File hash to look up - supports MD5, SHA1 and SHA256
+  name: file
+  required: true
+comment: A context script for hash entities
+commonfields:
+  id: FileReputation
+  version: -1
+enabled: true
+name: FileReputation
+runonce: false
+script: |-
+  results = demisto.executeCommand('file', {'file': demisto.get(demisto.args(),'file')})
+
+  for item in results:
+      if isError(item):
+          item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
+
+  demisto.results(results)
+scripttarget: 0
+system: true
+tags:
+- enhancement
+type: python

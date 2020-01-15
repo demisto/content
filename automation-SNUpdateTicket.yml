@@ -1,0 +1,56 @@
+args:
+- default: true
+  description: Ticket new category
+  name: category
+- description: Ticket new sub category
+  name: subcategory
+- description: Ticket new short description
+  name: shortdescription
+- description: Ticket new comments
+  name: comments
+- description: Ticket new assignment group
+  name: assignmentgroup
+- description: ID of the Ticket/Incident in ServiceNow
+  name: id
+  required: true
+comment: Update a ServiceNow ticket.
+commonfields:
+  id: SNUpdateTicket
+  version: -1
+dependson:
+  must:
+  - servicenow-incident-update
+deprecated: true
+name: SNUpdateTicket
+runonce: false
+script: |-
+  DISPLAY_FIELDS = ['number', 'severity', 'category', 'opened_at', 'subcategory', 'priority', 'comments', 'short_description']
+  res = []
+  dArgs = demisto.args()
+  if 'assignmentgroup' in dArgs:
+      dArgs['assignment-group'] = dArgs.pop('assignmentgroup')
+  if 'shortdescription' in dArgs:
+      dArgs['short-description'] = dArgs.pop('shortdescription')
+  resCmdName = demisto.executeCommand("servicenow-incident-update", dArgs)
+  try:
+      for entry in resCmdName:
+          if isError(entry):
+              res = resCmdName
+              break
+          else:
+              myData = demisto.get(entry, 'Contents.result')
+              if myData:
+                  myData = {k: formatCell(myData[k]) for k in DISPLAY_FIELDS}
+                  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": myData})
+              else:
+                  res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                              "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"])})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmdName)})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- servicenow
+type: python

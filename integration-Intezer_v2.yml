@@ -1,0 +1,372 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: Intezer v2
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: API Key
+  name: APIKey
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Malware detection and analysis based on code reuse
+detaileddescription: |
+  Intezer is a cloud-based malware detection and analysis provides a fast, in-depth understanding of any file by mapping its code DNA.
+  See [https://analyze.intezer.com](https://analyze.intezer.com/#/account-details) for creating an API key and more details.
+
+  In order to use 'Intezer-scan host' playbook, you should add the latest version of intezer scanner tool (you can find it under https://analyze.intezer.com).
+  After downloading the scanner, add it to your Demisto agent tool library(Settings->Integrations->agent tools).
+  You should upload a zip file named 'Scanner' with the 'Scanner.exe' file inside it. (Files names are case sensitive)
+display: Intezer v2
+image: data:image/png;base64,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
+name: Intezer v2
+script:
+  commands:
+  - arguments:
+    - description: Hash of the file to query. Supports SHA256, MD5 and SHA1
+      name: file_hash
+      required: true
+    description: Checks file reputation of the given hash, supports SHA256, SHA1 and
+      MD5
+    name: intezer-analyze-by-hash
+    outputs:
+    - contextPath: Intezer.Analysis.ID
+      description: Intezer analysis id
+      type: string
+    - contextPath: Intezer.Analysis.Status
+      description: status of the analysis
+      type: string
+    - contextPath: Intezer.Analysis.Type
+      description: type of the analysis
+      type: string
+  - arguments:
+    - default: true
+      description: The file entry id to upload
+      name: file_entry_id
+      required: true
+    description: Checks file reputation for uploaded file (up to 32MB)
+    name: intezer-analyze-by-file
+    outputs:
+    - contextPath: Intezer.Analysis.ID
+      description: Intezer analysis id
+      type: string
+    - contextPath: Intezer.Analysis.Status
+      description: status of the analysis
+      type: string
+    - contextPath: Intezer.Analysis.Type
+      description: type of the analysis
+      type: string
+  - arguments:
+    - description: The analysis ID we want to get results for
+      isArray: true
+      name: analysis_id
+    - auto: PREDEFINED
+      defaultValue: File
+      description: The type of the analysis
+      name: analysis_type
+      predefined:
+      - File
+      - Endpoint
+    - description: indicator to classify
+      name: indicator_name
+    description: Check the analysis status and get analysis result, support file and
+      endpoint analysis
+    name: intezer-get-analysis-result
+    outputs:
+    - contextPath: File.SHA256
+      description: Hash SHA256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Metadata
+      description: Metadata returned from Intezer analysis (analysis id, analysis
+        url, family, family type, sha256, verdict, sub_verdict). Metedata will be
+        retuned only for supported files.
+      type: Unknown
+    - contextPath: Endpoint.Metadata
+      description: Metadata returned from Intezer analysis (endpoint analysis id,
+        endpoint analysis url, families,  verdict, host_name)
+      type: Unknown
+  dockerimage: demisto/python3:3.7.3.286
+  runonce: false
+  script: |2-
+
+
+
+
+
+    ''' IMPORTS '''
+
+    import requests
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    API_KEY = demisto.getParam('APIKey')
+    SERVER_URL = 'https://analyze.intezer.com/api'
+    API_VERSION = '/v2-0'
+    BASE_URL = SERVER_URL + API_VERSION
+    IS_AVAILABLE_URL = 'is-available'
+    ERROR_PREFIX = 'Error from Intezer:'
+    ACCEPTABLE_HTTP_CODES = {200, 201, 202}
+    USE_SSL = not demisto.params().get('insecure', False)
+
+    http_status_to_error_massage = {
+        400: '400 Bad Request - Wrong or invalid parameters',
+        401: '401 Unauthorized - Wrong or invalid api key',
+        403: '403 Forbidden - The account is not allowed to preform this task',
+        404: '404 Not Found - Analysis was not found',
+        410: '410 Gone - Analysis no longer exists in the service',
+        500: '500 Internal Server Error - Internal error',
+        503: '503 Service Unavailable'
+    }
+    dbot_score_by_verdict = {
+        'malicious': 3,
+        'suspicious': 2,
+        'trusted': 1,
+        'neutral': 1,
+        'no_threats': 1
+    }
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def handle_response(response, acceptable_http_status_codes):
+        if response.status_code not in acceptable_http_status_codes:
+            error_msg = http_status_to_error_massage.get(response.status_code, "Failed to perform request")
+            return_error(f'{ERROR_PREFIX} {error_msg}')
+
+        try:
+            return response.json()
+        except json.decoder.JSONDecodeError:
+            # This error is unlikely to happen, as the return code should indicate of error beforehand
+            return_error(f'Response returned with no data. This might be an issue with Intezer.\nPlease try again later\n'
+                         f'Response content:\n{response.content}')
+
+
+    def get_session():
+        response = requests.post(BASE_URL + '/get-access-token', json={'api_key': API_KEY}, verify=USE_SSL)
+        response = handle_response(response, {200})
+        session = requests.session()
+        session.headers['Authorization'] = f'Bearer {response["result"]}'
+
+        return session
+
+
+    ''' COMMANDS '''
+
+
+    def check_is_available():
+        url = f'{SERVER_URL}/{IS_AVAILABLE_URL}'
+        result = SESSION.get(url, verify=USE_SSL)
+
+        return 'ok' if result.json()['is_available'] else None
+
+
+    def analyze_by_hash_command():
+        file_hash = demisto.getArg('file_hash')
+        response = make_analyze_by_hash_request(file_hash)
+        handle_analyze_by_hash_response(response, file_hash)
+
+
+    def make_analyze_by_hash_request(file_hash):
+        data = {'hash': file_hash}
+        return SESSION.post(BASE_URL + '/analyze-by-hash', json=data, verify=USE_SSL)
+
+
+    def handle_analyze_by_hash_response(response, file_hash):
+        if response.status_code == 404:
+            dbot = {
+                'Vendor': 'Intezer',
+                'Type': 'hash',
+                'Indicator': file_hash,
+                'Score': 0
+            }
+            hr = f'Hash {file_hash} does not exist on Intezer genome database'
+            ec = {'DBotScore': dbot}
+            return_outputs(hr, ec)
+            return
+
+        elif response.status_code == 400:
+            return_error('File hash is not valid.\nIntezer file hash reputation supports only SHA-256, '
+                         'SHA-1 and MD5 hash formats.\n')
+
+        handle_analyze_response(response)
+
+
+    def analyze_by_uploaded_file_command():
+        response = make_analyze_by_file_request(demisto.getArg('file_entry_id'))
+        handle_analyze_response(response)
+
+
+    def make_analyze_by_file_request(file_id):
+        file_data = demisto.getFilePath(file_id)
+        with open(file_data['path'], 'rb') as file_to_upload:
+            files = {'file': (file_data['name'], file_to_upload)}
+            return SESSION.post(BASE_URL + '/analyze', files=files, verify=USE_SSL)
+
+
+    def handle_analyze_response(response):
+        response = handle_response(response, ACCEPTABLE_HTTP_CODES)
+
+        result_url = response['result_url']
+        analysis_id = result_url.rsplit('/', 1)[-1]
+
+        context_json = {'Intezer.Analysis(obj.ID === val.ID)': {'ID': analysis_id, 'Status': 'Created', 'type': 'File'}}
+
+        return_outputs('Analysis created successfully', context_json, response)
+
+
+    def check_analysis_status_and_get_results_command():
+        analysis_type = demisto.args().get('analysis_type', 'File')
+        analysis_ids = argToList(demisto.args().get('analysis_id'))
+        indicator_name = demisto.args().get('indicator_name')
+
+        for analysis_id in analysis_ids:
+            response = make_analysis_status_request(analysis_id, analysis_type)
+            analysis_result = handle_analysis_result(response)
+
+            if analysis_result and analysis_type == 'Endpoint':
+                enrich_dbot_and_display_endpoint_analysis_results(analysis_result, indicator_name)
+            elif analysis_result and analysis_type == 'File':
+                enrich_dbot_and_display_file_analysis_results(analysis_result)
+
+
+    def make_analysis_status_request(analysis_id, analysis_type):
+        analysis_endpoint = 'endpoint-analyses/' if analysis_type == 'Endpoint' else 'analyses/'
+        result_url = f'{BASE_URL}/{analysis_endpoint}{analysis_id}'
+        return SESSION.get(result_url, verify=USE_SSL)
+
+
+    def handle_analysis_result(response):
+        json_response = handle_response(response, ACCEPTABLE_HTTP_CODES)
+
+        if response.status_code != 200:
+            result_url = json_response['result_url']
+            analysis_id = result_url.rsplit('/', 1)[-1]
+
+            context_json = {'Intezer.Analysis(val.ID === obj.ID)': {'ID': analysis_id,
+                                                                    'Status': 'InProgress'}}
+
+            return_outputs('Analysis is still in progress', context_json)
+            return
+
+        return json_response['result']
+
+
+    def enrich_dbot_and_display_file_analysis_results(result):
+        verdict = result.get('verdict')
+        sha256 = result.get('sha256')
+        analysis_id = result.get('analysis_id')
+
+        dbot = {
+            'Vendor': 'Intezer',
+            'Type': 'hash',
+            'Indicator': sha256,
+            'Score': dbot_score_by_verdict.get(verdict, 0)
+        }
+
+        file = {'SHA256': sha256, 'Metadata': result, 'ExistsInIntezer': True}
+
+        if verdict == 'malicious':
+            file['Malicious'] = {'Vendor': 'Intezer'}
+
+        presentable_result = '## Intezer File analysis result\n'
+        presentable_result += f' SHA256: {sha256}\n'
+        presentable_result += f' Verdict: **{verdict}** ({result["sub_verdict"]})\n'
+        if 'family_name' in result:
+            presentable_result += f'Family: **{result["family_name"]}**\n'
+        presentable_result += f'[Analysis Link]({result["analysis_url"]})\n'
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': {
+                outputPaths['dbotscore']: dbot,
+                outputPaths['file']: file,
+                'Intezer.Analysis(val.ID === obj.ID)': {'ID': analysis_id, 'Status': 'Done'}},
+            'HumanReadable': presentable_result,
+            'ContentsFormat': formats['json'],
+            'Contents': result
+        })
+
+
+    def enrich_dbot_and_display_endpoint_analysis_results(result, indicator_name=None):
+        verdict = result['verdict']
+        computer_name = result['computer_name']
+        analysis_id = result['analysis_id']
+
+        dbot = {
+            'Vendor': 'Intezer',
+            'Type': 'hostname',
+            'Indicator': indicator_name if indicator_name else computer_name,
+            'Score': dbot_score_by_verdict.get(verdict, 0)
+        }
+
+        endpoint = {'Metadata': result}
+
+        presentable_result = '## Intezer Endpoint analysis result\n'
+        presentable_result += f'Host Name: {computer_name}\n'
+        presentable_result += f' Verdict: **{verdict}**\n'
+        if result.get('families') is not None:
+            presentable_result += f'Families: **{result["families"]}**\n'
+        presentable_result += f' Scan Time: {result["scan_start_time"]}\n'
+        presentable_result += f'[Analysis Link]({result["analysis_url"]})\n'
+        ec = {
+            'DBotScore': dbot,
+            'Endpoint': endpoint,
+            'Intezer.Analysis(val.ID === obj.ID)': {'ID': analysis_id, 'Status': 'Done'}
+        }
+        return_outputs(presentable_result, ec, result)
+
+
+    ''' EXECUTION CODE '''
+
+
+    try:
+        SESSION = get_session()
+    except Exception as e:
+        return_error(str(e))
+
+
+    def main():
+        try:
+            handle_proxy()
+            if demisto.command() == 'test-module':
+                demisto.results(check_is_available())
+            elif demisto.command() == 'intezer-analyze-by-hash':
+                analyze_by_hash_command()
+            elif demisto.command() == 'intezer-analyze-by-file':
+                analyze_by_uploaded_file_command()
+            elif demisto.command() == 'intezer-get-analysis-result':
+                check_analysis_status_and_get_results_command()
+        except Exception as e:
+            return_error(str(e))
+
+
+    # python2 uses __builtin__ python3 uses builtins
+    if __name__ == "__builtin__" or __name__ == "builtins":
+        main()
+  type: python
+system: true

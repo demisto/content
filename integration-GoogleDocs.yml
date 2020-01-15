@@ -1,0 +1,514 @@
+category: Utilities
+commonfields:
+  id: GoogleDocs
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Service Account Private Key file contents (JSON)
+  name: service_account_credentials
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the Google Docs integration to create and modify Google Docs documents.
+detaileddescription: "##Creating a Service Account\n1. Go to the [Google documentation](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount)
+  and follow the procedure in the Creating a Service Account section. After you create
+  a service account, a Service Account Private Key file is downloaded. You will need
+  this file when configuring an instance of the integration.\n2. Grant the Compute
+  Admin permission to the Service Account to enable the Service Account to perform
+  certain Google Cloud API commands.\n3. In Demisto, configure an instance of the
+  Google Cloud Compute integration. For the Service Account Private Key parameter,
+  add the Service Account Private Key file contents (JSON).\n##Create document command:\nCreates
+  a blank document. It's not possible to pass body arguments.\nThat's a limitation
+  by the google api. For inserting content you should the update document command.\n##Update
+  document command:  \nUpdate a document based upon it's ID. Actions to perform are
+  passed in the following format:\n* action1{param1,param2,...};action2{param1,param2,...}...\nIt
+  is then converted to:  \n* action1(param1,param2,...), action2(param1,param2),...\nwhere
+  action1 is the function name to be called and param1 and param2 are the parameters
+  \ \nFor example:  \ninsertText(5,hello)  \ninsertTable(5,7,7);insertText(5,hello)
+  \ \n###List of allowed actions:\n-createNamedRange(start_index, end_index, name,
+  segment_id(optional))  \n-createParagraphBullets(start_index, end_index, bullet_type,
+  segment_id(optional))  \n-deleteContentRange(start_index, end_index, segment_id(optional))
+  \ \n-deleteNamedRangeByName(name)  \n-deleteNamedRangeById(named_range_id)\n-deleteParagraphBullets(start_index,
+  end_index, segment_id(optional))  \n-deletePositionedObject(object_id)  \n-deleteTableColumn(index,
+  row_index, column_index, segment_id(optional))  \n-deleteTableRow(index, row_index,
+  column_index, segment_id(optional))  \n-insertInlineImage(index, uri, width, height,
+  segment_id(optional))  \n-insertPageBreak(index, segment_id(optional))  \n-insertTable(index,
+  rows, columns, segment_id(optional))  \n-insertTableColumn(index, row_index, column_index,
+  insert_below, segment_id(optional))  \n-insertTableRow(index, row_index, column_index,
+  insert_below, segment_id(optional))  \n-insertText(index, text, segment_id(optional))
+  \ \n-replaceAllText(source, target, match_case)\n"
+display: Google Docs
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAAXNSR0IArs4c6QAAAwBQTFRFR3BMLHX2iLT/Xpf7TIz0SY3/AG3/BVD/K3LwLHX1LXb2L3j3Lnf3OoL3KHLyKnT0N3/8Sob2WZP5KXP0IWnqK3r2MXn4oNL4lLX4NoP4MX75Sor2OH72ncH/KnT0n8L/+vv3ImvsM4D1NH36M3z5Q3jSNn77KXj0k634PID4JnDwLnj3LnXwLXf0LXj2Soj4K3TyTIr2JW7vLHPsKXb1Mnr4JG3uNnz1OYH8NYD0utT9Mnnyu9X+VpL4JXPyJ2DAkY7SIFa3YZn7UIz2MHn3K3b0LHf3PYPiHlS1M3nzK3f1JV6+ka/qK3HpMnn4///3H1i7hbL+JHHwL3/zd5zpPYDsM3zzAFDjW5LxM331NXz2Q4n9bJ76UojjVpD5KHDtTo/7OH3yNnTkK3v0LXbtV4/6OoD3PHrlJWvhL3HoPH3tKXLsKGHCOHDSjrP0n8D4RYr9T5H+gq39HVKvLXPpLWG8hrL+n8L/KHLyNX37NHz5J3HyMnv4Nn76LXj3Nn/6Lnb3KnTzIFe3KXPzJ3DwM3z5MXn4N4D8Jm7vJW/vKnT1KnX1K3X0I2zsN3/7MHj4I23tNH36M3v4JW7uJW3tNHv6MXn3JnDwImrqM3r5JG7uOYD8LHb1NH75JXDvMHf2LHb1M3z4LXf1Mnz4KHLxOH/8LXb3IWrqNXz6IVi4MXr5L3j3I2vrKnb3JGvsN377HlW2Mnn5Nn77LHX2K3X1M336J3DxImvqJ3HwIWzsLHf3nsH/JW/uMHn4L3n4LHr/Nn75Knn/MXv7Knj8J3X9LH3/ImvsO4X/KXb6L3n6LXf6KHP1JXL6KHT3LHf5KHj/N4P/pcf/rtP/KXX5I2/0osP/jrTzKnv/Pof/I1q5nMD+GlK0L3//QYr/L3z/Jnf/KXf+OID8HlSyLHv8OYT/Hli8WpT7Nn/+NoL/JXH3LWK9WJP6Q4v/M3z8IVvANn38NX79LmO+I3LzJGXVJmrhImDKLn39L2O/IG7wtNj/Uo32qcr/jrPxkbTwn8b/Z6T/DOr1qwAAAQB0Uk5TAP3adBg1BwMG/P39+4j8/P1KdP37l/0EH18KTeT9/v0T+1/9/TX9lR/j/P688PlJ8EP7vN39++L8iLy9vHXd8AL6dEPx+dwE+rzd8A29+hb93N1BFFasBySA7vY0M2brmrqSTJI+6nLs0aG18Pz9u+Srk/q9+df//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////0jAtKAAAA2nSURBVHjarVsLeFPlGU43FZp0sYKrN6xAu4rt5rRSQCcOhogy7B42QW7e8PZ4352QQkgbEqUN6Q17kWCehjbUppXSpJdF2moLYltamdWJW6mlahEF5hCnu+/7/3P7T3LO+f8kvJBzUh+f532/7/9u5ztFpwvDJPis+/W3WLBc/LIcvi9f/vvlz/1Md5kuPgD/o79ae+rooTB8zF1JHJHwKYfu/90arwLgn7/22JHkeckKyACkpWXwSBOQLiDNN/GPOBUs0OkePHVk3rydCHX4uvM4D5dr717XFgSXa4urZeNmjNdf37XLbK4vLS01m9OGJq5555Z4FCxYoJt/6gRPX1fH0T///PHjdcfr6oCfp3e5Wlo2btzcgvh37SqtfxHxl7aWmocm3rv6nVumx65giW7d2kMK/EAv8iMBe4EfewCbz/Hb7WZzaOK9a+JRgA7gmBL/cUSK+F3Y/r2k/Tx/K/CbfRPvbQAFt8aqYIlu1S85B4Tx17ki/L9Zgb8MBLy2IQ4fTNZdsvbjeTT+vQS/uZ7kL2sCD8SjYInu/mOfzuP46wh+2fmT9gvn39qK+WuwgNdiP4VJup+cen6euv1bwu2X+b+sxs55gFMQSzZiAck75fnncqnZL+SfnecXBPCnEIMCJOBEclj+q8Zf2PnX7K4x8wJiVsAJ2Kldf2T5b5bO326XBGyIMQ6QgC+S1eNPqf4I/Lt319glATHmguiBiPhz8fbXbwzLf+H8d++226urJQGxKRAE0OtPxPnb7faysuphSUBMCngByvnXopF/yP/VZdX7SAGxxAEnQP38Nfmr9+3bJBMQgwJegIr99Wr5z/E7HI5NTZ+TAqJXwAmQ9z8F/yvy7wP+sjABUccBL4Bzv2r/UfY/ckBZ0YRcQLQKQMCxL5JV8r9FPf95fiUPbIhKwSTdt5GAOob5Q/C/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
+name: GoogleDocs
+script:
+  commands:
+  - arguments:
+    - description: The document ID of the document to fetch.
+      name: document_id
+      required: true
+    description: Returns the document that matches the specified document ID.
+    name: google-docs-get-document
+    outputs:
+    - contextPath: GoogleDocs.Title
+      description: The title of the document.
+      type: String
+    - contextPath: GoogleDocs.RevisionId
+      description: The revision ID of the updated document.
+      type: String
+    - contextPath: GoogleDocs.DocumentId
+      description: The document ID of the updated document.
+      type: String
+  - arguments:
+    - description: The title of the document to create.
+      name: title
+      required: true
+    description: Creates a document.
+    name: google-docs-create-document
+    outputs:
+    - contextPath: GoogleDocs.Title
+      description: The title of the new document.
+      type: String
+    - contextPath: GoogleDocs.RevisionId
+      description: The revision ID of the new document.
+      type: String
+    - contextPath: GoogleDocs.DocumentId
+      description: The document ID of the new document.
+      type: String
+  - arguments:
+    - description: The document ID of the document to update.
+      name: document_id
+      required: true
+    - description: 'Updates to the document in the format: action1{param1,param2,...};action2{param1,param2,...}.'
+      name: actions
+      required: true
+    - description: The target revision ID of the document to which the write request
+        will be applied. If a newer revision exists you will receive an error. If
+        you specify the target_revision_id argument, you cannot use this argument.
+      name: required_revision_id
+    - description: The target revision ID of the document to which the write request
+        will be applied. If a newer revision exists you will receive an error. If
+        you specify the required_revision_id argument, you cannot use this argument.
+      name: target_revision_id
+    description: Updates the document with the specified document ID.
+    name: google-docs-update-document
+    outputs:
+    - contextPath: GoogleDocs.Title
+      description: The title of the updated.
+      type: String
+    - contextPath: GoogleDocs.RevisionId
+      description: The revision ID of the updated document.
+      type: String
+    - contextPath: GoogleDocs.DocumentId
+      description: The document ID of the updated document.
+      type: Unknown
+  dockerimage: demisto/googleapi-python3:1.0.0.2205
+  runonce: false
+  script: |2-
+
+
+    ''' IMPORTS '''
+
+    import requests
+    import httplib2
+    import urllib.parse
+    from oauth2client import service_account
+    from googleapiclient import discovery
+
+    import typing
+    from collections import defaultdict
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    SCOPES = ['https://www.googleapis.com/auth/documents']  # Permissions the application needs to use google docs
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def get_function_by_action_name(action):
+        action_to_function = {
+            'createNamedRange': create_named_range,
+            'createParagraphBullets': create_paragraph_bullets,
+            'deleteContentRange': delete_content_range,
+            'deleteNamedRangeByName': delete_named_range_by_name,
+            'deleteNamedRangeById': delete_named_range_by_id,
+            'deleteParagraphBullets': delete_paragraph_bullets,
+            'deletePositionedObject': delete_positioned_object,
+            'deleteTableColumn': delete_table_column,
+            'deleteTableRow': delete_table_row,
+            'insertInlineImage': insert_inline_image,
+            'insertPageBreak': insert_page_break,
+            'insertTable': insert_table,
+            'insertTableColumn': insert_table_column,
+            'insertTableRow': insert_table_row,
+            'insertText': insert_text,
+            'replaceAllText': replace_all_text
+        }
+        return action_to_function[action]
+
+
+    def parse_actions(actions: str):
+        """Destructs action1{param1,param2,...};action2{param1,param2,...}... to a dictionary where keys are action type and
+          values are function params"""
+        parsed_actions = dict()
+        actions = actions.split(';')
+        for action in actions:
+            action_type, params = action.split('{')
+            params = params[:-1]
+            params = params.split(',')
+            parsed_actions[action_type] = params
+        return parsed_actions
+
+
+    def get_http_client_with_proxy(disable_ssl):
+        proxies = handle_proxy()
+        if not proxies.get('https', True):
+            raise Exception('https proxy value is empty. Check Demisto server configuration')
+        https_proxy = proxies['https']
+        if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
+            https_proxy = 'https://' + https_proxy
+        parsed_proxy = urllib.parse.urlparse(https_proxy)
+        proxy_info = httplib2.ProxyInfo(
+            proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
+            proxy_host=parsed_proxy.hostname,
+            proxy_port=parsed_proxy.port,
+            proxy_user=parsed_proxy.username,
+            proxy_pass=parsed_proxy.password)
+        return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=disable_ssl)
+
+
+    def get_credentials(credentials, scopes):
+        credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(credentials, scopes=scopes)
+        return credentials
+
+
+    def get_client(credentials, scopes, proxy, disable_ssl):
+        credentials = get_credentials(credentials, scopes)
+
+        if proxy or disable_ssl:
+            http_client = credentials.authorize(get_http_client_with_proxy(disable_ssl))
+            return discovery.build('docs', 'v1', http=http_client)
+        return discovery.build('docs', 'v1', credentials=credentials)
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def get_range_object(start_index, end_index, segment_id=None):
+        range_obj = {
+            'range': {
+                'startIndex': start_index,
+                'endIndex': end_index,
+            }
+        }
+
+        if segment_id:
+            range_obj['range']['segmentId'] = segment_id
+
+        return range_obj
+
+
+    def get_location_object(index, segment_id=None):
+        location_obj = {
+            "index": index,
+        }
+        if segment_id:
+            location_obj["segmentId"] = segment_id
+        return location_obj
+
+
+    def replace_all_text(action_name, source, target, match_case):
+        return {
+            action_name: {
+                "replaceText": target,
+                'containsText': {
+                    "text": source,
+                    "matchCase": match_case
+                }
+            }
+        }
+
+
+    def insert_text(action_name, index, text, segment_id=None):
+        return {
+            action_name: {
+                "location": get_location_object(index, segment_id),
+                'text': text
+            }
+        }
+
+
+    def create_paragraph_bullets(action_name, start_index, end_index, bullet_type, segment_id=None):
+        return {
+            action_name: {
+                **get_range_object(start_index, end_index, segment_id),
+                'bulletPreset': bullet_type,
+            }
+        }
+
+
+    def delete_paragraph_bullets(action_name, start_index, end_index, segment_id=None):
+        return {
+            action_name: {
+                **get_range_object(start_index, end_index, segment_id),
+            }
+        }
+
+
+    def create_named_range(action_name, start_index, end_index, name, segment_id=None):
+        return {
+            action_name: {
+                "name": name,
+                **get_range_object(start_index, end_index, segment_id),
+            }
+        }
+
+
+    def delete_named_range_by_id(action_name, named_range_id):
+        return {
+            action_name: {
+                "namedRangeId": named_range_id
+            }
+        }
+
+
+    def delete_named_range_by_name(action_name, name):
+        return {
+            action_name: {
+                "name": name
+            }
+        }
+
+
+    def delete_content_range(action_name, start_index, end_index, segment_id=None):
+        return {action_name: get_range_object(segment_id, start_index, end_index)}
+
+
+    def insert_inline_image(action_name, index, uri, width, height, segment_id=None):
+        return {
+            action_name: {
+                "uri": uri,
+                "objectSize": {
+                    "height": {
+                        "magnitude": height,
+                        "unit": 'PT'
+                    },
+                    "width": {
+                        "magnitude": width,
+                        "unit": 'PT'
+                    }
+                },
+                "location": get_location_object(index, segment_id)
+            }
+        }
+
+
+    def insert_table(action_name, index, rows, columns, segment_id=None):
+        return {
+            action_name: {
+                "rows": rows,
+                "columns": columns,
+                "location": get_location_object(index, segment_id)
+            }
+        }
+
+
+    def insert_table_row(action_name, index, row_index, column_index, insert_below, segment_id=None):
+        return {
+            action_name: {
+                "tableCellLocation": {
+                    "tableStartLocation": get_location_object(index, segment_id),
+                    "rowIndex": row_index,
+                    "columnIndex": column_index
+                },
+                "insertBelow": insert_below
+            }
+        }
+
+
+    def insert_table_column(action_name, index, row_index, column_index, insert_below, segment_id=None):
+        return {
+            action_name: {
+                "tableCellLocation": {
+                    "tableStartLocation": get_location_object(index, segment_id),
+                    "rowIndex": row_index,
+                    "columnIndex": column_index
+                },
+                "insertRight": insert_below
+            }
+        }
+
+
+    def delete_table_row(action_name, index, row_index, column_index, segment_id=None):
+        return {
+            action_name: {
+                "tableCellLocation": {
+                    "tableStartLocation": get_location_object(index, segment_id),
+                    "rowIndex": row_index,
+                    "columnIndex": column_index
+                },
+            }
+        }
+
+
+    def delete_table_column(action_name, index, row_index, column_index, segment_id=None):
+        return {
+            action_name: {
+                "tableCellLocation": {
+                    "tableStartLocation": get_location_object(index, segment_id),
+                    "rowIndex": row_index,
+                    "columnIndex": column_index
+                },
+            }
+        }
+
+
+    def insert_page_break(action_name, index, segment_id=None):
+        return {
+            action_name: {
+                "location": get_location_object(index, segment_id)
+            }
+        }
+
+
+    def delete_positioned_object(action_name, object_id):
+        return {
+            action_name: {
+                "objectId": object_id
+            }
+        }
+
+
+    def batch_update_document_command(service):
+        args = demisto.args()
+        document_id = args.get('document_id')
+        actions = parse_actions(args.get('actions'))
+        required_revision_id = args.get("required_revision_id", None)
+        target_revision_id = args.get("target_revision_id", None)
+        document = batch_update_document(service, document_id, actions, required_revision_id, target_revision_id)
+        human_readable_text = "The document with the title {title} and actions {actions} was updated. the results are:".\
+            format(title=document['title'], actions=args.get('actions'))
+        return document, human_readable_text
+
+
+    def batch_update_document(service, document_id, actions, required_revision_id=None, target_revision_id=None):
+        payload: dict = {
+            "requests": []
+        }
+
+        write_control: typing.DefaultDict = defaultdict(dict)
+        if required_revision_id and target_revision_id:
+            raise Exception("Enter required_revision_id or target_revision_id but not both")
+        elif required_revision_id:
+            write_control['writeControl']["requiredRevisionId"] = required_revision_id
+        elif target_revision_id:
+            write_control['writeControl']["targetRevisionId"] = target_revision_id
+
+        payload = {**payload, **write_control}
+
+        # Return a function based on the action name and execute it
+        for action_type, params in actions.items():
+            request = get_function_by_action_name(action_type)(action_type, *params)
+            payload["requests"].append(request)
+
+        service.documents().batchUpdate(documentId=document_id, body=payload).execute()
+        document = get_document(service, document_id)
+        return document
+
+
+    def create_document_command(service):
+        args = demisto.args()
+        title = args.get('title')
+        document = create_document(service, title)
+        human_readable_text = "The document with the title {title} was created. The results are:".format(title=title)
+        return document, human_readable_text
+
+
+    def create_document(service, title):
+        payload = {
+            "title": title,
+        }
+
+        document = service.documents().create(body=payload).execute()
+        return document
+
+
+    def get_document_command(service):
+        args = demisto.args()
+        document_id = args.get('document_id')
+        document = get_document(service, document_id)
+        human_readable_text = "The document with the title {title} was returned. The results are:".\
+            format(title=document['title'])
+        return document, human_readable_text
+
+
+    def get_document(service, document_id):
+        document = service.documents().get(documentId=document_id).execute()
+        return document
+
+
+    def main():
+        demisto.debug('Command being called is %s' % (demisto.command()))
+        proxy = demisto.params().get('proxy')
+        disable_ssl = demisto.params().get('insecure', False)
+        service_account_credentials = json.loads(demisto.params().get('service_account_credentials'))
+        if demisto.command() == 'test-module':
+            try:
+                get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
+                demisto.results('ok')
+            except Exception as e:
+                return_error("Failed to execute test. Error: {}".format(str(e)), e)
+
+        try:
+            service = get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
+            if demisto.command() == 'google-docs-update-document':
+                document, human_readable_text = batch_update_document_command(service)
+            elif demisto.command() == 'google-docs-create-document':
+                document, human_readable_text = create_document_command(service)
+            elif demisto.command() == 'google-docs-get-document':
+                document, human_readable_text = get_document_command(service)
+            else:
+                return_error("Command {} does not exist".format(demisto.command()))
+                return
+
+            res = {
+                'RevisionId': document['revisionId'],
+                'DocumentId': document['documentId'],
+                'Title': document['title']
+            }
+            ec = {
+                'GoogleDocs(val.DocumentId && val.DocumentId == obj.DocumentId)': res
+            }
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': ec,
+                'HumanReadable': tableToMarkdown(human_readable_text, res),
+                'EntryContext': ec
+            })
+
+        # Log exceptions
+        except Exception as e:
+            LOG(str(e))
+            LOG.print_log()
+            return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)), e)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+    if __name__ == "__builtin__" or __name__ == "builtins":
+        main()
+  subtype: python3
+  type: python
+system: true

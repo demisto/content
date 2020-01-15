@@ -1,0 +1,32 @@
+{
+	"category": "",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "mean-time-to-resolution-occurred",
+	"isPredefined": true,
+	"name": "Mean Time to Resolution (Occurred)",
+	"params": {
+		"keys": [
+			"avg|closed - occurred",
+			"count|1"
+		]
+	},
+	"query": "-category:job and status:closed",
+	"size": 0,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "duration"
+}

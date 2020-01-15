@@ -1,0 +1,1462 @@
+{
+	"createdBy": "DBot",
+	"cronView": false,
+	"dashboard": null,
+	"decoder": {
+		"evidences.fetched": {
+			"type": "date",
+			"value": "02/01/06 3:04:05 PM"
+		},
+		"evidences.markedDate": {
+			"type": "date",
+			"value": "02/01/06 3:04:05 PM"
+		},
+		"evidences.occurred": {
+			"type": "date",
+			"value": "02/01/06 3:04:05 PM"
+		},
+		"incident.activated": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.closed": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.created": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.dueDate": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.occurred": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.openDuration": {
+			"type": "duration",
+			"value": ""
+		},
+		"incident.reminder": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.severity.0": {
+			"type": "string",
+			"value": "Unknown"
+		},
+		"incident.severity.0.5": {
+			"type": "string",
+			"value": "Informational"
+		},
+		"incident.severity.1": {
+			"type": "string",
+			"value": "Low"
+		},
+		"incident.severity.2": {
+			"type": "string",
+			"value": "Medium"
+		},
+		"incident.severity.3": {
+			"type": "string",
+			"value": "High"
+		},
+		"incident.severity.4": {
+			"type": "string",
+			"value": "Critical"
+		},
+		"incident.status.0": {
+			"type": "string",
+			"value": "Pending"
+		},
+		"incident.status.1": {
+			"type": "string",
+			"value": "Active"
+		},
+		"incident.status.2": {
+			"type": "string",
+			"value": "Closed"
+		},
+		"incident.status.3": {
+			"type": "string",
+			"value": "Closed"
+		},
+		"incident.status.4": {
+			"type": "string",
+			"value": "On Hold"
+		},
+		"indicators.score.0": {
+			"type": "string",
+			"value": "None"
+		},
+		"indicators.score.1": {
+			"type": "string",
+			"value": "Good"
+		},
+		"indicators.score.2": {
+			"type": "string",
+			"value": "suspicious"
+		},
+		"indicators.score.3": {
+			"type": "string",
+			"value": "Bad"
+		},
+		"investigation.closed": {
+			"type": "date",
+			"value": "02 Jan 2006"
+		},
+		"investigation.created": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"investigation.openDuration": {
+			"type": "duration",
+			"value": ""
+		},
+		"investigation.status.0": {
+			"type": "string",
+			"value": "Active"
+		},
+		"investigation.status.1": {
+			"type": "string",
+			"value": "Done"
+		},
+		"investigation.type.0": {
+			"type": "string",
+			"value": "Standard"
+		},
+		"investigation.type.1": {
+			"type": "string",
+			"value": "Restricted"
+		},
+		"investigation.type.9": {
+			"type": "string",
+			"value": "Playground"
+		}
+	},
+	"description": "A summary report that contains various details such as evidence and investigation time line, investigation team, statistics and more",
+	"disableHeader": false,
+	"endingDate": "0001-01-01T00:00:00Z",
+	"id": "investigationSummaryReport",
+	"latestReportName": "",
+	"latestReportTime": "0001-01-01T00:00:00Z",
+	"latestReportUsername": "",
+	"latestScheduledReportTime": "0001-01-01T00:00:00Z",
+	"locked": false,
+	"name": "Investigation Summary",
+	"nextScheduledTime": "0001-01-01T00:00:00Z",
+	"orientation": "portrait",
+	"paperSize": "",
+	"recipients": [],
+	"recurrent": false,
+	"reportType": "investigation",
+	"runOnce": false,
+	"runningUser": "",
+	"scheduled": false,
+	"sections": [
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "{0}",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 200,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 22,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": "investigation",
+				"keys": [
+					"name"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "#{0}",
+			"layout": {
+				"columnPos": 200,
+				"rowPos": 200,
+				"style": {
+					"color": "gray",
+					"fontSize": 12,
+					"textAlign": "right"
+				}
+			},
+			"query": {
+				"filter": "investigation",
+				"keys": [
+					"id"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Summary Report",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 300,
+				"sectionStyle": {
+					"width": 180
+				},
+				"style": {
+					"fontSize": 16,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"columnPos": 200,
+				"format": "MMMM Do YYYY, h:mm:ss a z",
+				"rowPos": 300,
+				"style": {
+					"color": "gray",
+					"fontSize": 12,
+					"marginBottom:": 12,
+					"textAlign": "right"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "date"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Generated by: {0}",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 400,
+				"rowStyle": {
+					"marginBottom": -27,
+					"marginTop": -17
+				},
+				"sectionStyle": {
+					"width": 280
+				},
+				"style": {
+					"fontSize": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": "sessionUser",
+				"keys": [
+					"name"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "({0})",
+			"layout": {
+				"columnPos": 200,
+				"rowPos": 400,
+				"style": {
+					"color": "gray",
+					"fontSize": 12,
+					"textAlign": "right"
+				}
+			},
+			"query": {
+				"filter": "sessionUser",
+				"keys": [
+					"email"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"rowPos": 500
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "divider"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Breach Type",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 600,
+				"rowStyle": {
+					"marginTop": -20
+				},
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Severity",
+			"layout": {
+				"columnPos": 200,
+				"rowPos": 600,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Occurred",
+			"layout": {
+				"columnPos": 300,
+				"rowPos": 600,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "{0}",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 700,
+				"rowStyle": {
+					"marginTop": -15
+				},
+				"style": {
+					"fontSize": 16,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": "investigation",
+				"keys": [
+					"type"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "{0}",
+			"layout": {
+				"columnPos": 200,
+				"rowPos": 700,
+				"style": {
+					"fontSize": 16,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": "incident",
+				"keys": [
+					"severity"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "{0}",
+			"layout": {
+				"columnPos": 300,
+				"rowPos": 700,
+				"style": {
+					"fontSize": 16,
+					"marginBottom:": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": "incident",
+				"keys": [
+					"occurred"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 800,
+				"rowStyle": {
+					"marginTop": -17
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Closure",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 900,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Time to resolve",
+			"layout": {
+				"columnPos": 200,
+				"rowPos": 900,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Reason for closing",
+			"layout": {
+				"columnPos": 300,
+				"rowPos": 900,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "{0}",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 1000,
+				"rowStyle": {
+					"marginTop": -15
+				},
+				"style": {
+					"fontSize": 16,
+					"marginBottom:": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": "investigation",
+				"keys": [
+					"closed"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "{0}",
+			"layout": {
+				"columnPos": 200,
+				"rowPos": 1000,
+				"style": {
+					"fontSize": 16,
+					"marginBottom:": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": "investigation",
+				"keys": [
+					"openDuration"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "{0}",
+			"layout": {
+				"columnPos": 300,
+				"rowPos": 1000,
+				"style": {
+					"fontSize": 16,
+					"marginBottom:": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": "investigation",
+				"keys": [
+					"Close Reason"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 1100,
+				"rowStyle": {
+					"marginTop": -17
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Earliest flagged evidence",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 1200,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Most recent flagged evidence",
+			"layout": {
+				"columnPos": 200,
+				"rowPos": 1200,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"columnPos": 300,
+				"rowPos": 1200
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"columnPos": 100,
+				"format": "Do MMM YYYY",
+				"rowPos": 1300,
+				"rowStyle": {
+					"marginTop": -15
+				},
+				"style": {
+					"fontSize": 16,
+					"marginBottom:": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": {
+					"type": "earliestEvidence"
+				},
+				"type": "evidences"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"columnPos": 200,
+				"format": "Do MMM YYYY",
+				"rowPos": 1300,
+				"style": {
+					"fontSize": 16,
+					"marginBottom:": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": {
+					"type": "latestEvidence"
+				},
+				"type": "evidences"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"columnPos": 300,
+				"rowPos": 1300
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Owner",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 1500,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"classes": "small circular",
+				"columnPos": 100,
+				"rowPos": 1600,
+				"rowStyle": {
+					"marginTop": -15
+				},
+				"sectionStyle": {
+					"width": 60
+				}
+			},
+			"query": {
+				"filter": "incidentOwner",
+				"keys": [
+					"image"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "image"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "{0} ({1})",
+			"layout": {
+				"columnPos": 200,
+				"rowPos": 1600,
+				"sectionStyle": {
+					"verticalAlign": "middle"
+				},
+				"style": {
+					"fontSize": 16,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": "incidentOwner",
+				"keys": [
+					"name",
+					"email"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Playbook Used",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 1800,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "{0}",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 1900,
+				"rowStyle": {
+					"marginTop": -15
+				},
+				"style": {
+					"fontSize": 16,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": "workplan",
+				"keys": [
+					"name"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Close Notes",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 2250,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 24,
+					"pageBreakBefore": "always",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "{0}",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 2255,
+				"rowStyle": {
+					"marginTop": -15
+				},
+				"style": {
+					"fontSize": 16,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": "investigation",
+				"keys": [
+					"Close Notes"
+				],
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 2270
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Custom Data",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 2300,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 24,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 2301
+			},
+			"query": {
+				"filter": "incidentCustomData",
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Investigation Timeline",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 4000,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 24,
+					"pageBreakBefore": "always",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 4001
+			},
+			"query": {
+				"filter": {
+					"categories": [
+						"incidentInfo"
+					],
+					"pageSize": 10000
+				},
+				"type": "entries"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Investigation Indicators",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 10000,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 24,
+					"pageBreakBefore": "always",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"classes": "striped stackable small very compact",
+				"columnPos": 100,
+				"readableHeaders": {
+					"firstSeen": "First Seen",
+					"indicator_type": "Type",
+					"lastSeen": "Last Seen",
+					"score": "Reputation",
+					"source": "Source",
+					"value": "Value"
+				},
+				"rowPos": 10001,
+				"tableColumns": [
+					"Value",
+					"Reputation",
+					"Type",
+					"Source",
+					"First Seen",
+					"Last Seen"
+				]
+			},
+			"query": {
+				"filter": {
+					"query": "investigationIDs:{{.investigationID}} and (reputation:Bad or reputation:Suspicious)"
+				},
+				"type": "indicators"
+			},
+			"titleStyle": null,
+			"type": "table"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "War Room Notes",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 200000,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 24,
+					"pageBreakBefore": "always",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 300000
+			},
+			"query": {
+				"filter": {
+					"categories": [
+						"notes"
+					],
+					"pageSize": 10000
+				},
+				"type": "entries"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Evidence Timeline",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 300001,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 24,
+					"pageBreakBefore": "always",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Showing all Evidences as of start of investigation",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 300010,
+				"style": {
+					"color": "#999999",
+					"fontSize": 12,
+					"fontStyle": "italic",
+					"marginTop": -15,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"classes": "selectable celled fixed unstackable",
+				"columnPos": 100,
+				"readableHeaders": {
+					"description": "Description",
+					"id": "ID",
+					"occurred": "Occurred"
+				},
+				"rowPos": 300020,
+				"tableColumns": [
+					"Occurred",
+					"Description",
+					"ID"
+				]
+			},
+			"query": {
+				"filter": {
+					"query": ""
+				},
+				"type": "evidences"
+			},
+			"titleStyle": null,
+			"type": "table"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Detailed Evidence",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 300030,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 24,
+					"pageBreakBefore": "always",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "{0}",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 300042
+			},
+			"query": {
+				"filter": {
+					"filter": {
+						"query": ""
+					},
+					"type": "evidenceTimeline"
+				},
+				"type": "evidences"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Skipped Tasks",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 400000,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 24,
+					"pageBreakBefore": "always",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "{0}",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 400001
+			},
+			"query": {
+				"filter": "skippedTasks",
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Team",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 500000,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 24,
+					"pageBreakBefore": "always",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"classes": "collapsing selectable unstackable",
+				"columnPos": 100,
+				"rowPos": 500001,
+				"tableColumns": [
+					{
+						"hidden": true,
+						"key": "Avatar"
+					},
+					"Name",
+					"Email",
+					"Phone Number"
+				]
+			},
+			"query": {
+				"filter": "investigationUsers",
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "table"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Linked Incidents",
+			"layout": {
+				"columnPos": 100,
+				"rowPos": 600000,
+				"style": {
+					"color": "#4e6767",
+					"fontSize": 24,
+					"pageBreakBefore": "always",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"classes": "collapsing selectable unstackable",
+				"columnPos": 100,
+				"rowPos": 600001,
+				"tableColumns": [
+					"ID",
+					"Name",
+					"Status",
+					"Closure Reason",
+					"Close Notes"
+				]
+			},
+			"query": {
+				"filter": "linkedIncidents",
+				"type": "sessionData"
+			},
+			"titleStyle": null,
+			"type": "table"
+		}
+	],
+	"sensitive": false,
+	"sortValues": null,
+	"startDate": "0001-01-01T00:00:00Z",
+	"system": true,
+	"times": 0,
+	"timezoneOffset": 0,
+	"type": "pdf",
+	"userAPIKey": "",
+	"userAPIKeyID": "",
+	"version": -1
+}

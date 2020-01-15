@@ -1,0 +1,16 @@
+comment: Common code that will be merged into each server integration when it runs
+commonfields:
+  id: CommonIntegrationPython
+  version: -1
+deprecated: true
+name: CommonIntegrationPython
+runonce: false
+script: 'entryTypes = {''note'': 1, ''downloadAgent'': 2, ''file'': 3, ''error'':
+  4, ''pinned'': 5, ''userManagement'': 6, ''image'': 7, ''plagroundError'': 8, ''entryInfoFile'':
+  9, ''map'': 15}'
+scripttarget: 0
+system: true
+tags:
+- infra
+- server
+type: python

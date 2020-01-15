@@ -1,0 +1,32 @@
+{
+	"category": "",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 30,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"description": "The mean time (average time) to detection across all incidents that their severity was determined. The widget takes into account incidents from the last 30 days by default.",
+	"id": "mean-time-to-detection",
+	"isPredefined": true,
+	"name": "Mean Time to Detection",
+	"params": {
+		"keys": [
+			"avg|detectionsla.totalDuration"
+		]
+	},
+	"query": "-category:job and detectionsla.runStatus:ended",
+	"size": 0,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "duration"
+}

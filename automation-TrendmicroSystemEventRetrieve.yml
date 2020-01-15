@@ -1,0 +1,76 @@
+args:
+- description: Time interval start
+  name: rangeFrom
+- description: Time interval end
+  name: rangeTo
+- description: Specific time
+  name: specificTime
+- auto: PREDEFINED
+  description: Define time filter mode. mandatory if filtering by time.
+  name: timeFilterType
+  predefined:
+  - LAST_HOUR
+  - LAST_24_HOURS
+  - LAST_7_DAYS
+  - CUSTOM_RANGE
+  - SPECIFIC_TIME
+- description: Filter by host group ID
+  name: hostGroupID
+- description: Filter by host ID
+  name: hostID
+- description: Filter by host security profile ID
+  name: securityProfileID
+- auto: PREDEFINED
+  description: Define host filter mode. mandatory if filtering by host/s.
+  name: hostFilterType
+  predefined:
+  - ALL_HOSTS
+  - HOSTS_IN_GROUP
+  - HOSTS_USING_SECURITY_PROFILE
+  - HOSTS_IN_GROUP_AND_ALL_SUBGROUPS
+  - SPECIFIC_HOST
+  - MY_HOSTS
+- description: filter by event ID
+  name: eventID
+- auto: PREDEFINED
+  description: event ID operator
+  name: eventFilterOperator
+  predefined:
+  - GREATER_THAN
+  - LESS_THAN
+  - EQUAL
+- auto: PREDEFINED
+  description: Include non host event
+  name: includeNonHostEvents
+  predefined:
+  - "false"
+  - "true"
+  required: true
+comment: Get system events
+commonfields:
+  id: TrendmicroSystemEventRetrieve
+  version: -1
+dependson:
+  must:
+  - trendmicro-system-event-retrieve
+name: TrendmicroSystemEventRetrieve
+runonce: false
+script: |2
+
+  resp = demisto.executeCommand("trendmicro-system-event-retrieve", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.systemEventRetrieveReturn.systemEvents.item")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- Trend Micro
+type: python

@@ -1,0 +1,646 @@
+description: |-
+  Enrich URL using one or more integrations.
+
+  URL enrichment includes:
+  * Verify URL SSL
+  * Threat information
+  * URL reputaiton
+  * Take URL screenshot
+id: url_enrichment_-_generic
+inputs:
+- description: url to enrich
+  key: url
+  required: false
+  value:
+    complex:
+      accessor: Data
+      root: URL
+- description: Should the system take safe screenshots of input URLs?
+  key: Rasterize
+  required: false
+  value:
+    simple: "False"
+- description: Should the system verify the input URLs?
+  key: VerifyURL
+  required: false
+  value:
+    simple: "False"
+- description: Should the playbook get reputation for the URL
+  key: GetReputation
+  required: true
+  value:
+    simple: "True"
+name: URL Enrichment - Generic
+outputs:
+- contextPath: URL
+  description: The URL's object
+  type: uknown
+- contextPath: URL.Data
+  description: The enriched URL
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore
+  type: unknown
+- contextPath: URL.Malicious
+  description: whether url was detected as malicious
+  type: unknown
+- contextPath: URL.Vendor
+  description: name of vendor who labeled as malicious
+  type: string
+- contextPath: URL.Description
+  description: additional info on the url
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 8ec1d86f-9108-44d5-8c64-49fa9294f043
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 8ec1d86f-9108-44d5-8c64-49fa9294f043
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -39
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.url
+          operator: isExists
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    note: false
+    scriptarguments:
+      value:
+        simple: inputs.url
+    separatecontext: false
+    task:
+      brand: ""
+      description: do we have a url to check
+      id: 53e529ea-dc35-4f97-84ae-f0b0d471aa8e
+      iscommand: false
+      name: Do we have URLs?
+      type: condition
+      version: -1
+    taskid: 53e529ea-dc35-4f97-84ae-f0b0d471aa8e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 165
+        }
+      }
+  "20":
+    continueonerror: true
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    scriptarguments:
+      file:
+        simple: ${File.SHA256}
+      ip: {}
+      url:
+        simple: ${inputs.url}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Run reputation for the given url
+      id: 8fcb9133-0893-4133-8602-a26947510691
+      iscommand: false
+      name: Get URLs reputation
+      scriptName: URLReputation
+      type: regular
+      version: -1
+    taskid: 8fcb9133-0893-4133-8602-a26947510691
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 1010
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 86cea036-b5bf-40d7-86f9-278a0e1d5557
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 86cea036-b5bf-40d7-86f9-278a0e1d5557
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1185
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "26"
+    note: false
+    scriptarguments:
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: brand
+              operator: isEqualString
+              right:
+                value:
+                  simple: Rasterize
+          - - left:
+                iscontext: true
+                value:
+                  simple: state
+              operator: isEqualString
+              right:
+                value:
+                  simple: active
+          root: modules
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if we can use rasterize
+      id: 3d331702-e1e3-4106-86dc-d88714dfc19f
+      iscommand: false
+      name: 'Is Rasterize integration enabled? '
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 3d331702-e1e3-4106-86dc-d88714dfc19f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -80.5,
+          "y": 835
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    scriptarguments:
+      height: {}
+      type: {}
+      url:
+        simple: ${inputs.url}
+      width: {}
+    separatecontext: false
+    task:
+      brand: Rasterize
+      description: Get the screenshot of the url page
+      id: da3cf2fe-f7e1-4d46-8fb6-45739ae10f7b
+      iscommand: true
+      name: Get URL screenshot
+      script: Rasterize|||rasterize
+      type: regular
+      version: -1
+    taskid: da3cf2fe-f7e1-4d46-8fb6-45739ae10f7b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 163,
+          "y": 1010
+        }
+      }
+  "27":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Rasterize
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "25"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 'Check if the Rasterize input equals to "True" '
+      id: a8b035c8-713a-4eb7-8e8d-fe1c5adc790a
+      iscommand: false
+      name: Should the system take the URLs screenshots?
+      type: condition
+      version: -1
+    taskid: a8b035c8-713a-4eb7-8e8d-fe1c5adc790a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "29"
+      - "30"
+      - "31"
+      - "35"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1db2760c-e81e-4a9f-80a0-84efb609d3f3
+      iscommand: false
+      name: Enrich URLs
+      type: title
+      version: -1
+    taskid: 1db2760c-e81e-4a9f-80a0-84efb609d3f3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 370
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: c5661851-815e-4a10-8476-a968c41eb6e9
+      iscommand: false
+      name: Take Screenshots
+      type: title
+      version: -1
+    taskid: c5661851-815e-4a10-8476-a968c41eb6e9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: bb725dfb-4d4c-4428-8a8c-63c117d350fa
+      iscommand: false
+      name: URL reputation
+      type: title
+      version: -1
+    taskid: bb725dfb-4d4c-4428-8a8c-63c117d350fa
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 515
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f7cbd050-2f16-4d62-84d1-0dcef6c8a64a
+      iscommand: false
+      name: Verify URLs
+      type: title
+      version: -1
+    taskid: f7cbd050-2f16-4d62-84d1-0dcef6c8a64a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1329.5,
+          "y": 515
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    scriptarguments:
+      url:
+        simple: ${inputs.url}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify URL SSL certificate
+      id: e0e0aaf2-da6f-4b4c-8fc0-87b0474c5707
+      iscommand: false
+      name: URL SSL Verification
+      scriptName: URLSSLVerification
+      type: regular
+      version: -1
+    taskid: e0e0aaf2-da6f-4b4c-8fc0-87b0474c5707
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1329.5,
+          "y": 1010
+        }
+      }
+  "33":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.VerifyURL
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "32"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: 'Check if the VerifyURL input equals to "True" '
+      id: 3f10b64b-59b0-4968-8ec6-e66911654ec0
+      iscommand: false
+      name: Should the system verify the URLs?
+      type: condition
+      version: -1
+    taskid: 3f10b64b-59b0-4968-8ec6-e66911654ec0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1329.5,
+          "y": 708
+        }
+      }
+  "34":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.GetReputation
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "20"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: "Should the system retrieve the url reputation from all of the
+        relevant integration?\nDefault: True\n "
+      id: a283aea5-6246-483c-893e-5ade81c0d073
+      iscommand: false
+      name: Should the system get the URL Reputation?
+      type: condition
+      version: -1
+    taskid: a283aea5-6246-483c-893e-5ade81c0d073
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 708
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d2ef3a60-d0bd-4368-8cb2-bfede3130f58
+      iscommand: false
+      name: Enrich using Virus Total Private API
+      type: title
+      version: -1
+    taskid: d2ef3a60-d0bd-4368-8cb2-bfede3130f58
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1825,
+          "y": 515
+        }
+      }
+  "36":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VirusTotal - Private API
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "37"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of the Virus Total Private
+        API enabled.
+      id: d28f230f-511e-490f-821c-387389336800
+      iscommand: false
+      name: Is Virus Total Private API enabled?
+      type: condition
+      version: -1
+    taskid: d28f230f-511e-490f-821c-387389336800
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1825,
+          "y": 708
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    scriptarguments:
+      allInfo: {}
+      fullResponse: {}
+      resource:
+        complex:
+          root: inputs.url
+      shortFormat: {}
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: VirusTotal - Private API
+      description: |
+        Retrieves a report for a given URL.
+      id: 552cab93-1b17-405d-8741-84ce788d53d9
+      iscommand: true
+      name: Get URL report form Virus Total Private API
+      script: VirusTotal - Private API|||vt-private-get-url-report
+      type: regular
+      version: -1
+    taskid: 552cab93-1b17-405d-8741-84ce788d53d9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1825,
+          "y": 1010
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1289,
+        "width": 2285.5,
+        "x": -80.5,
+        "y": -39
+      }
+    }
+  }

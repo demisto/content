@@ -1,0 +1,22 @@
+comment: Commit configuration to panorama
+commonfields:
+  id: PanoramaCommit
+  version: -1
+dependson:
+  must:
+  - panorama
+deprecated: true
+name: PanoramaCommit
+runonce: false
+script: |-
+  var reqArgs = {
+          type: 'commit',
+          cmd: '<commit></commit>'
+      };
+  return executeCommand('panorama', reqArgs)[0].Contents.response['-status'];
+scripttarget: 0
+system: true
+tags:
+- panorama
+- firewall
+type: javascript

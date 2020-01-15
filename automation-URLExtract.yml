@@ -1,0 +1,38 @@
+args:
+- default: true
+  description: The text to extract URLs from
+  name: text
+  required: true
+comment: Extract URLs from the given text and place them both as output and in the
+  context of a playbook
+commonfields:
+  id: URLExtract
+  version: -1
+deprecated: true
+name: URLExtract
+runonce: false
+script: |-
+  import re
+  strURLRegex = r'(?i)(?:(?:https?|ftp):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])'
+  res = []
+  urls = []
+  filtered = ['http://schemas.microsoft.com/office/2004/12/omml', 'http://www.w3.org/TR/REC-html40']
+  data = demisto.args()['text']
+  for m in re.finditer(strURLRegex, data, re.I):
+      u = m.group(0)
+      if u in filtered:
+          continue
+      if u in urls:
+          continue
+      if 'mailto:' in u:
+          continue
+      urls.append(u)
+  res.append('URLs found:\n' + '\n'.join(urls))
+  appendContext('urls', urls, dedup = True)
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- url
+- infra
+type: python

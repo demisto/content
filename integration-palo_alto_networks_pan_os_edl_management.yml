@@ -1,0 +1,789 @@
+category: Utilities
+commonfields:
+  id: palo_alto_networks_pan_os_edl_management
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Hostname or IP of server
+  name: hostname
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: server port
+  name: port
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: SSH credentials to server (username and certificate)
+  name: Authentication
+  required: true
+  type: 9
+- defaultvalue: ""
+  display: SSH extra parameters (e.g., "-c ChaCha20")
+  name: ssh_extra_params
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: SCP extra parameters (e.g., "-c ChaCha20 -l 8000")
+  name: scp_extra_params
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Document root (e.g., var/www/html/files)
+  name: document_root
+  required: false
+  type: 0
+description: This integration enables you to manage and edit files located on a remote
+  web server via SSH using integration context as Single Source of Truth.
+detaileddescription: "## Set Up a Remote Web Server\nTo use the Palo Alto Networks
+  PAN-OS EDL Management integration, you need to set up a remote web server.\n1. Set
+  up a remote server with Apache.\n2. Generate a pair of SSH keys and send the keys
+  to the Apache server.\n3. Save the private SSH key in Demisto Credentials.\n4. To
+  verify the location of the document root where the files are stored, run the following
+  command.\n  - **CentOS**: `\"httpd -S\"` \n  - **Ubuntu**: `apcahe2 -S\"`\n"
+display: Palo Alto Networks PAN-OS EDL Management
+image: data:image/png;base64,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
+name: palo_alto_networks_pan_os_edl_management
+script:
+  commands:
+  - arguments:
+    - description: Unique path to the file on a remote server.
+      name: file_path
+      required: true
+    description: Displays the contents of the specified remote file located in the
+      War Room.
+    name: pan-os-edl-get-external-file
+  - arguments:
+    - description: Unique path to the file on a remote server.
+      name: file_path
+      required: true
+    - description: String to search for in the remote file.
+      name: search_string
+      required: true
+    description: Searches for a string in a remote file.
+    name: pan-os-edl-search-external-file
+  - arguments:
+    - description: List from the instance context with which to override the remote
+        file.
+      name: list_name
+      required: true
+    - description: Unique path to file
+      name: file_path
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Prints the updated remote file to the War Room. Default is "false".
+      name: verbose
+      predefined:
+      - "true"
+      - "false"
+    - description: List items.
+      isArray: true
+      name: list_items
+      required: true
+    - auto: PREDEFINED
+      defaultValue: add
+      description: Whether to add to, or remove from the list. Default is "add".
+      name: add_or_remove
+      predefined:
+      - add
+      - remove
+      required: true
+    description: Updates the instance context with the specified list name and list
+      items, and then overrides the path of the remote file with the internal list.
+    execution: true
+    name: pan-os-edl-update
+  - arguments:
+    - description: Unique path to the file on a remote server.
+      name: file_path
+      required: true
+    - description: List name.
+      name: list_name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: merge
+      description: Update type. "Merge" adds non-duplicate values, "Override" deletes
+        existing data in the internal list. Default is "merge".
+      name: type
+      predefined:
+      - merge
+      - override
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Prints the updated internal list to the War Room. Default is "false".
+      name: verbose
+      predefined:
+      - "true"
+      - "false"
+    description: Updates internal list data with the contents of a remote file.
+    execution: true
+    name: pan-os-edl-update-from-external-file
+  - arguments:
+    - description: Unique path to the file on a remote server.
+      name: file_path
+      required: true
+    description: Deletes a file from a remote server.
+    execution: true
+    name: pan-os-edl-delete-external-file
+  - arguments:
+    - description: List name.
+      name: list_name
+      required: true
+    description: Displays internal list data in the War Room.
+    name: pan-os-edl-print-internal-list
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: file
+      description: List data destination. Default is "file".
+      name: destination
+      predefined:
+      - file
+      - incident_context
+      required: true
+    - description: List name.
+      name: list_name
+      required: true
+    description: Dumps (copies) instance context to either the incident context or
+      a file.
+    name: pan-os-edl-dump-internal-list
+    outputs:
+    - contextPath: PANOSEDL.ListItems
+      description: Items of the internal list.
+      type: string
+    - contextPath: PANOSEDL.ListName
+      description: Name of the internal list.
+      type: string
+  - arguments: []
+    description: Displays instance context list names.
+    name: pan-os-edl-list-internal-lists
+  - arguments:
+    - description: Name of list
+      name: list_name
+      required: true
+    - description: String to search for in the remote file.
+      name: search_string
+      required: true
+    description: Search for a string in internal list.
+    name: pan-os-edl-search-internal-list
+  - arguments:
+    - description: List name.
+      name: list_name
+      required: true
+    - description: Unique path to the file on a remote server.
+      name: file_path
+      required: true
+    description: Compares internal list and external file contents.
+    name: pan-os-edl-compare
+  - arguments:
+    - description: Unique path to the file on a remote server.
+      name: file_path
+      required: true
+    description: Gets metadata for an external file.
+    name: pan-os-edl-get-external-file-metadata
+    outputs:
+    - contextPath: PANOSEDL.FileName
+      description: Name of the external file.
+      type: String
+    - contextPath: PANOSEDL.Size
+      description: File size.
+      type: Number
+    - contextPath: PANOSEDL.NumberOfLines
+      description: Number of lines.
+      type: Number
+    - contextPath: PANOSEDL.LastModified
+      description: Date that the file was last modified.
+      type: String
+  dockerimage: demisto/openssh:1.0.0.305
+  runonce: false
+  script: |2-
+
+
+
+
+    '''IMPORTS'''
+
+    import tempfile
+    import subprocess
+    import shutil
+    import os
+
+    ''' GLOBALS '''
+
+
+    def create_certificate_file(authentication: dict):
+        password = authentication.get('password', None)
+        certificate = None
+        if 'credentials' in authentication and 'sshkey' in authentication['credentials'] and len(
+                authentication['credentials']['sshkey']) > 0:
+            certificate = authentication.get('credentials', None).get('sshkey')
+
+        cert_file = tempfile.NamedTemporaryFile(delete=False, mode='w')
+        if certificate:
+            cert_file.write(certificate)
+            cert_file.flush()
+            os.chmod(cert_file.name, 0o400)
+        elif password:
+            # check that password field holds a certificate and not a password
+            if password.find('-----') == -1:
+                return_error('Password parameter must contain a certificate.')
+            # split certificate by dashes
+            password_list = password.split('-----')
+            # replace spaces with newline characters
+            password_fixed = '-----'.join(password_list[:2] + [password_list[2].replace(' ', '\n')] + password_list[3:])
+            cert_file.write(password_fixed)
+            cert_file.flush()
+            os.chmod(cert_file.name, 0o400)
+        else:
+            return_error('To connect to the remote server, provide a certificate.')
+
+        return cert_file
+
+
+    AUTHENTICATION = demisto.params().get('Authentication')
+
+    HOSTNAME = demisto.params().get('hostname')
+    USERNAME = AUTHENTICATION.get('identifier')
+    PORT = str(demisto.params().get('port')) if demisto.params().get('port', None) and len(
+        demisto.params().get('port')) > 0 else None
+
+    SSH_EXTRA_PARAMS = demisto.params().get('ssh_extra_params').split() if demisto.params().get('ssh_extra_params',
+                                                                                                None) else None
+    SCP_EXTRA_PARAMS = demisto.params().get('scp_extra_params').split() if demisto.params().get('scp_extra_params',
+                                                                                                None) else None
+    DOCUMENT_ROOT = '/' + demisto.params().get('document_root') if demisto.params().get('document_root', None) else None
+
+    CERTIFICATE_FILE = create_certificate_file(AUTHENTICATION)
+
+    ''' UTILS '''
+
+
+    def ssh_execute(command: str):
+        if PORT and SSH_EXTRA_PARAMS:
+            param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '-p',
+                          PORT] + SSH_EXTRA_PARAMS + [USERNAME + '@' + HOSTNAME, command]
+            result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        elif PORT:
+            result = subprocess.run(
+                ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '-p', PORT,
+                 USERNAME + '@' + HOSTNAME, command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        elif SSH_EXTRA_PARAMS:
+            param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SSH_EXTRA_PARAMS + [
+                USERNAME + '@' + HOSTNAME, command]
+            result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        else:
+            result = subprocess.run(
+                ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, USERNAME + '@' + HOSTNAME, command],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        if result.returncode != 0:
+            if result.stderr:
+                if result.stderr.find("Warning: Permanently added") != -1:
+                    return result.stdout  # ignore addition of new hosts warnings
+                elif result.stderr.find("Permission denied") != -1:
+                    return_error(
+                        'Permission denied, check your username and certificate.\n' + 'Got error: ' + result.stderr)
+                else:
+                    return_error(result.stderr)
+            elif command.find('grep') != -1 and result.returncode == 1:
+                #  a search command that did not find any value
+                demisto.results({
+                    'Type': 11,
+                    'Contents': 'Search string was not found in the external file path given.',
+                    'ContentsFormat': formats['text']
+                })
+                sys.exit(0)
+            else:
+                return_error('Command failed with exit status: ' + str(result.returncode))
+
+        return result.stdout
+
+
+    def scp_execute(file_name: str, file_path: str):
+        if SCP_EXTRA_PARAMS:
+            param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
+                file_name, USERNAME + '@' + HOSTNAME + ':' + f'\'{file_path}\'']
+            result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        else:
+            param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, file_name,
+                          USERNAME + '@' + HOSTNAME + ':' + f'\'{file_path}\'']
+            result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        if result.returncode != 0:
+            if result.stderr:
+                if result.stderr.find("Warning: Permanently added") != -1:
+                    return True  # ignore addition of new hosts warnings
+                else:
+                    return_error(result.stderr)
+            else:
+                return_error('Command failed with exit status: ' + str(result.returncode))
+        else:
+            return True
+
+
+    ''' COMMANDS '''
+
+
+    def edl_get_external_file(file_path: str):
+        command = f'cat \'{file_path}\''
+        result = ssh_execute(command)
+        return result
+
+
+    def edl_get_external_file_command():
+        """
+        Get external file from web-server and prints to Warroom
+        """
+        file_path = demisto.args().get('file_path')
+        if DOCUMENT_ROOT:
+            file_path = os.path.join(DOCUMENT_ROOT, file_path)
+
+        result = edl_get_external_file(file_path)
+
+        md = tableToMarkdown('File Content:', result, headers=['List'])
+        demisto.results({
+            'ContentsFormat': formats['markdown'],
+            'Type': entryTypes['note'],
+            'Contents': md
+        })
+
+
+    def edl_search_external_file(file_path: str, search_string: str):
+        return ssh_execute(f'grep \'{search_string}\' \'{file_path}\'')
+
+
+    def edl_search_external_file_command():
+        """
+        Search the external file and return all matching entries to Warroom
+        """
+        file_path = demisto.args().get('file_path')
+        if DOCUMENT_ROOT:
+            file_path = os.path.join(DOCUMENT_ROOT, file_path)
+        search_string = demisto.args().get('search_string')
+
+        result = edl_search_external_file(file_path, search_string)
+
+        md = tableToMarkdown('Search Results', result, headers=['Result'])
+
+        demisto.results({
+            'ContentsFormat': formats['markdown'],
+            'Type': entryTypes['note'],
+            'Contents': md
+        })
+
+
+    def edl_update_external_file(file_path: str, list_name: str, verbose: bool) -> bool:
+        dict_of_lists = demisto.getIntegrationContext()
+        list_data = dict_of_lists.get(list_name)
+
+        file_name = file_path.rsplit('/', 1)[-1] + '.txt'
+        try:
+            with open(file_name, 'w') as file:
+                file.write("\n".join(list_data))
+            success = scp_execute(file_name, file_path)
+        finally:
+            shutil.rmtree(file_name, ignore_errors=True)
+
+        if not success:
+            return False
+        else:
+            if verbose:
+                return ssh_execute(f'cat \'{file_path}\'')
+            else:
+                return True
+
+
+    def edl_update():
+        """
+        Updates the instance context with the list name and items given
+        Overrides external file path with internal list
+        """
+        file_path = demisto.args().get('file_path')
+        if DOCUMENT_ROOT:
+            file_path = os.path.join(DOCUMENT_ROOT, file_path)
+        list_name = demisto.args().get('list_name')
+        list_items = argToList(demisto.args().get('list_items'))
+        add = demisto.args().get('add_or_remove') == 'add'
+        verbose = demisto.args().get('verbose') == 'true'
+
+        # update internal list
+        dict_of_lists = demisto.getIntegrationContext()
+        if not dict_of_lists:
+            dict_of_lists = {list_name: list_items}
+            if verbose:
+                md = tableToMarkdown('List items:', list_items, headers=[list_name])
+            else:
+                md = 'Instance context updated successfully'
+        else:
+            if not dict_of_lists.get(list_name, None) and not add:
+                return_error('Cannot remove items from an empty list')
+            if dict_of_lists.get(list_name, None):
+                if add:
+                    list_items = list(set(dict_of_lists.get(list_name) + list_items))
+                else:
+                    list_items = [item for item in dict_of_lists.get(list_name) if item not in list_items]
+
+            if len(list_items) == 0:  # delete list from instance context
+                dict_of_lists.pop(list_name, None)
+                md = 'List is empty, deleted from instance context.'
+            else:
+                dict_of_lists.update({list_name: list_items})
+                if verbose:
+                    md = tableToMarkdown('List items:', list_items, headers=[list_name])
+                else:
+                    md = 'Instance context updated successfully'
+
+        demisto.setIntegrationContext(dict_of_lists)
+        demisto.results({
+            'ContentsFormat': formats['markdown'],
+            'Type': entryTypes['note'],
+            'Contents': md
+        })
+
+        # scp internal list to file_path
+        result = edl_update_external_file(file_path, list_name, verbose)
+        if result:
+            if verbose:
+                md = tableToMarkdown('Updated File Data:', result, headers=['Data'])
+            else:
+                md = 'External file updated successfully'
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': md,
+                'ContentsFormat': formats['markdown']
+            })
+
+
+    def edl_update_from_external_file(list_name: str, file_path: str, type_: str):
+        dict_of_lists = demisto.getIntegrationContext()
+        list_data = dict_of_lists.get(list_name, None)
+        file_data = edl_get_external_file(file_path)
+
+        if list_data:
+            set_internal = set(list_data)
+            set_external = set(file_data.split('\n'))
+            set_external.discard('')
+            if type_ == 'merge':
+                unified = set_internal.union(set_external)
+                list_data_new = list(unified)
+            else:  # type_ == 'override'
+                list_data_new = list(set_external)
+            dict_of_lists.update({list_name: list_data_new})
+            demisto.setIntegrationContext(dict_of_lists)
+            return list_data_new
+        else:
+            dict_of_lists.update({list_name: file_data})
+            demisto.setIntegrationContext(dict_of_lists)
+            return file_data
+
+
+    def edl_update_from_external_file_command():
+        """
+        Updates internal list data with external file contents
+        """
+        file_path = demisto.args().get('file_path')
+        if DOCUMENT_ROOT:
+            file_path = os.path.join(DOCUMENT_ROOT, file_path)
+        list_name = demisto.args().get('list_name')
+        type_ = demisto.args().get('type')
+        verbose = demisto.args().get('verbose') == 'true'
+
+        list_data_new = edl_update_from_external_file(list_name, file_path, type_)
+
+        if verbose:
+            md = tableToMarkdown('List items:', list_data_new, headers=[list_name])
+        else:
+            md = 'Instance context updated successfully'
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': md,
+            'ContentsFormat': formats['markdown']
+        })
+
+
+    def edl_delete_external_file(file_path: str):
+        ssh_execute(f'rm -f \'{file_path}\'')
+        return 'File deleted successfully'
+
+
+    def edl_delete_external_file_command():
+        """
+        Delete external file
+        """
+        file_path = demisto.args().get('file_path')
+        if DOCUMENT_ROOT:
+            file_path = os.path.join(DOCUMENT_ROOT, file_path)
+        result = edl_delete_external_file(file_path)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': result,
+            'ContentsFormat': formats['text']
+        })
+
+
+    def edl_list_internal_lists_command():
+        """
+        List all instance context lists
+        """
+        dict_of_lists = demisto.getIntegrationContext()
+        list_names = list(dict_of_lists.keys())
+
+        md = tableToMarkdown('Instance context Lists:', list_names, headers=['List names'])
+
+        demisto.results({
+            'ContentsFormat': formats['markdown'],
+            'Type': entryTypes['note'],
+            'Contents': md
+        })
+
+
+    def edl_search_internal_list_command():
+        """
+        Search a string on internal list
+        """
+        list_name = demisto.args().get('list_name')
+        search_string = demisto.args().get('search_string')
+
+        dict_of_lists = demisto.getIntegrationContext()
+        list_data = dict_of_lists.get(list_name, None)
+
+        if not list_data:
+            demisto.results({
+                'Type': 11,
+                'Contents': 'List was not found in instance context.',
+                'ContentsFormat': formats['text']
+            })
+        elif search_string in list_data:
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': 'Search string is in internal list.',
+                'ContentsFormat': formats['text']
+            })
+        else:
+            demisto.results({
+                'Type': 11,
+                'Contents': 'Search string was not found in instance context list.',
+                'ContentsFormat': formats['text']
+            })
+
+
+    def edl_print_internal_list_command():
+        """
+        Print to warroom instance context list
+        """
+        list_name = demisto.args().get('list_name')
+        dict_of_lists = demisto.getIntegrationContext()
+        list_data = dict_of_lists.get(list_name, None)
+
+        if not list_data:
+            demisto.results({
+                'Type': 11,
+                'Contents': 'List was not found in instance context.',
+                'ContentsFormat': formats['text']
+            })
+        else:
+            md = tableToMarkdown('List items:', list_data, headers=[list_name])
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': md,
+                'ContentsFormat': formats['markdown']
+            })
+
+
+    def edl_dump_internal_list_command():
+        """
+        Dumps an instance context list to either a file or incident context
+        """
+        destination = demisto.args().get('destination')
+        list_name = demisto.args().get('list_name')
+
+        dict_of_lists = demisto.getIntegrationContext()
+        list_data = dict_of_lists.get(list_name, None)
+        if not list_data:
+            demisto.results({
+                'Type': 11,
+                'Contents': 'List was not found in instance context or has no data.',
+                'ContentsFormat': formats['text']
+            })
+            sys.exit(0)
+        if destination == 'file':  # dump list as file
+            internal_file_path = demisto.uniqueFile()
+
+            try:
+                with open(internal_file_path, 'w') as f:
+                    f.write("\n".join(list_data))
+                file_type = entryTypes['entryInfoFile']
+                with open(internal_file_path, 'rb') as file:
+                    file_entry = fileResult(internal_file_path, file.read(), file_type)
+                demisto.results(file_entry)
+            finally:
+                shutil.rmtree(internal_file_path, ignore_errors=True)
+
+        else:  # update incident context
+            md = tableToMarkdown('List items:', list_data, headers=[list_name])
+            ec = {
+                'ListName': list_name,
+                'ListItems': list_data
+            }
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': md,
+                'ContentsFormat': formats['markdown'],
+                'EntryContext': {
+                    "PANOSEDL(val.ListName == obj.ListName)": ec
+                }
+            })
+
+
+    def edl_compare_command():
+        list_name = demisto.args().get('list_name')
+        file_path = demisto.args().get('file_path')
+        if DOCUMENT_ROOT:
+            file_path = os.path.join(DOCUMENT_ROOT, file_path)
+
+        dict_of_lists = demisto.getIntegrationContext()
+        list_data = dict_of_lists.get(list_name, None)
+        if not list_data:
+            demisto.results({
+                'Type': 11,
+                'Contents': 'List was not found in instance context.',
+                'ContentsFormat': formats['text']
+            })
+            sys.exit(0)
+
+        file_data = edl_get_external_file(file_path)
+        if not file_data:
+            demisto.results({
+                'Type': 11,
+                'Contents': 'file was not found in external web-server.',
+                'ContentsFormat': formats['text']
+            })
+            sys.exit(0)
+
+        set_internal = set(list_data)
+        set_external = set(file_data.split('\n'))
+        set_external.discard('')
+
+        unique_internal = set_internal - set_external
+        unique_external = set_external - set_internal
+
+        md = ''
+        if unique_external:
+            md += '### Warning: External file contain values which are not in the internal demisto list.\n'
+            md += '#### Please check who has writing permissions to the external file.\n'
+            md += tableToMarkdown('', list(unique_external),
+                                  headers=[file_path.rsplit('/')[-1]])
+        if unique_internal:
+            md += '### Warning: Internal list has values which are not in the external file.\n'
+            md += '#### Please check who has writing permissions to the external file.\n'
+            md += tableToMarkdown('', list(unique_internal), headers=[list_name])
+        if len(md) == 0:
+            md = 'Internal list and External file have the same values'
+
+        demisto.results({
+            'Type': 11 if unique_external or unique_internal else entryTypes['note'],
+            'Contents': md,
+            'ContentsFormat': formats['markdown'],
+        })
+
+
+    def edl_get_external_file_metadata_command():
+        file_path = demisto.args().get('file_path')
+        if DOCUMENT_ROOT:
+            file_path = os.path.join(DOCUMENT_ROOT, file_path)
+
+        result = ssh_execute(f'stat \'{file_path}\'')
+
+        file_size = int(result.split("Size: ", 1)[1].split(" ", 1)[0])
+        file_name = file_path.split("/")[-1]
+        if len(file_name) < 0:
+            file_name = file_path
+        last_modified_parts = result.split("Change: ", 1)[1].split(" ", 2)[0:2]
+        last_modified = ' '.join(last_modified_parts)
+
+        number_of_lines = int(ssh_execute(f'wc -l < \'{file_path}\'')) + 1
+
+        metadata_outputs = {
+            'FileName': file_name,
+            'Size': file_size,
+            'LastModified': last_modified,
+            'NumberOfLines': number_of_lines
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': result,
+            'ContentsFormat': formats['text'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('File metadata:', metadata_outputs,
+                                             ['FileName', 'Size', 'NumberOfLines', 'LastModified'], removeNull=True),
+            'EntryContext': {"PANOSEDL(val.FileName == obj.FileName)": metadata_outputs}
+        })
+
+
+    ''' EXECUTION '''
+
+
+    def main():
+        LOG('command is %s' % (demisto.command(),))
+        try:
+            if demisto.command() == 'test-module':
+                ssh_execute('echo 1')
+                demisto.results('ok')
+
+            elif demisto.command() == 'pan-os-edl-get-external-file':
+                edl_get_external_file_command()
+
+            elif demisto.command() == 'pan-os-edl-search-external-file':
+                edl_search_external_file_command()
+
+            elif demisto.command() == 'pan-os-edl-update':
+                edl_update()
+
+            elif demisto.command() == 'pan-os-edl-update-from-external-file':
+                edl_update_from_external_file_command()
+
+            elif demisto.command() == 'pan-os-edl-delete-external-file':
+                edl_delete_external_file_command()
+
+            elif demisto.command() == 'pan-os-edl-list-internal-lists':
+                edl_list_internal_lists_command()
+
+            elif demisto.command() == 'pan-os-edl-search-internal-list':
+                edl_search_internal_list_command()
+
+            elif demisto.command() == 'pan-os-edl-print-internal-list':
+                edl_print_internal_list_command()
+
+            elif demisto.command() == 'pan-os-edl-dump-internal-list':
+                edl_dump_internal_list_command()
+
+            elif demisto.command() == 'pan-os-edl-compare':
+                edl_compare_command()
+
+            elif demisto.command() == 'pan-os-edl-get-external-file-metadata':
+                edl_get_external_file_metadata_command()
+
+            else:
+                return_error('Unrecognized command: ' + demisto.command())
+
+        except Exception as ex:
+            if str(ex).find('warning') != -1:
+                LOG(str(ex))
+            else:
+                return_error(str(ex))
+
+        finally:
+            shutil.rmtree(CERTIFICATE_FILE.name, ignore_errors=True)
+            LOG.print_log()
+
+
+    if __name__ == "__builtin__" or __name__ == "builtins":
+        main()
+  subtype: python3
+  type: python
+system: true

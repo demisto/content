@@ -1,0 +1,44 @@
+comment: Display the list of folders and scans from Nessus.
+commonfields:
+  id: NessusListScans
+  version: -1
+dependson:
+  must:
+  - Nessus|||scans-list
+deprecated: true
+name: NessusListScans
+runonce: false
+script: |
+  from time import ctime
+  res = []
+
+  dArgs = demisto.args()
+  resScanList = demisto.executeCommand("scans-list", dArgs)
+  try:
+      for entry in resScanList:
+          if isError(entry):
+              res = resScanList
+              break
+          else:
+              mdResult = ''
+              ts = demisto.get(entry, 'Contents.timestamp')
+              folders = demisto.get(entry, 'Contents.folders')
+              scans = demisto.get(entry, 'Contents.scans')
+              mdResult += '## Nessus Scan List'
+              if ts:
+                  mdResult += ' - ' + ctime(ts)
+              mdResult += '\n'
+              if folders:
+                  mdResult += tblToMd("Folders", folders)
+              if scans:
+                  mdResult += tblToMd("Scans", scans)
+              res.append({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': mdResult})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resScanList)})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- nessus
+type: python

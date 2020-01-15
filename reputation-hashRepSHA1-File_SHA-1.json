@@ -1,0 +1,26 @@
+{
+	"contextPath": "File(val.SHA1 \u0026\u0026 val.SHA1 === obj.SHA1)",
+	"contextValue": "SHA1",
+	"defaultMapping": null,
+	"details": "File SHA-1",
+	"disabled": true,
+	"enhancementScriptNames": [
+		"FileReputation",
+		"SplunkPySearch"
+	],
+	"excludedBrands": null,
+	"file": false,
+	"fileHashesPriority": null,
+	"formatScript": "",
+	"id": "hashRepSHA1",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "\\b[a-fA-F\\d]{40}\\b",
+	"reputationCommand": "file",
+	"reputationScriptName": "",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

@@ -1,0 +1,2685 @@
+description: |-
+  This playbook investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveler). The playbook gathers user, timestamp and IP information
+  associated with the multiple application login attempts.
+
+  The playbook then measures the time difference between the multiple login attempts and computes the distance between the two locations to verify whether it is possible the user could traverse the distance
+  in the amount of time determined. Also, it takes steps to remediate the incident by blocking the offending IPs and disabling the user account, if chosen to do so.
+id: Impossible Traveler
+inputs:
+- description: The maximum miles per hour that is still considered reasonable. If
+    the geographical distance and difference in time between logins is greater than
+    this value, the user will be considered an impossible traveler.
+  key: MaxMilesPerHourAllowed
+  required: false
+  value:
+    simple: "600"
+- description: CSV of IP addresses that are allowed to be used across long distances.
+  key: WhitelistedIPs
+  required: false
+  value: {}
+- description: Whether to automatically block the source IPs that the login originated
+    from. Can be False or True.
+  key: AutomaticallyBlockIPs
+  required: false
+  value:
+    simple: "False"
+- description: The default link from which to create a travel map. The "SOURCE" and
+    "DESTINATION" words are replaced with the previous coordinates and current coordinates
+    of the traveler, respectively.
+  key: DefaultMapLink
+  required: false
+  value:
+    simple: https://bing.com/maps/default.aspx?rtp=pos.SOURCE~pos.DESTINATION
+- description: Whether to automatically disable the impossible traveler account using
+    Active Directory.
+  key: AutomaticallyDisableUser
+  required: false
+  value:
+    simple: "False"
+- description: Whether to ask the user manager for the legitimacy of the login events,
+    in case of an alleged impossible traveler.
+  key: ContactUserManager
+  required: false
+  value:
+    simple: "False"
+name: Impossible Traveler
+outputs:
+- contextPath: Account.Email.Address
+  description: The email address object associated with the Account
+  type: string
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor
+  type: unknown
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name)
+  type: string
+- contextPath: Account.Username
+  description: The Account username
+  type: string
+- contextPath: Account.Email
+  description: The email address associated with the Account
+- contextPath: Account.Type
+  description: Type of the Account entity
+  type: string
+- contextPath: Account.Groups
+  description: The groups the Account is a part of
+- contextPath: Account
+  description: Account object
+  type: unknown
+- contextPath: Account.DisplayName
+  description: The Account display name
+  type: string
+- contextPath: Account.Manager
+  description: The Account's manager
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator value
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator's type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The indicator's vendor
+  type: string
+- contextPath: DBotScore.Score
+  description: The indicator's score
+  type: number
+- contextPath: IP
+  description: The IP objects
+  type: unknown
+- contextPath: Endpoint
+  description: The Endpoint's object
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname to enrich
+  type: string
+- contextPath: Endpoint.OS
+  description: Endpoint OS
+  type: string
+- contextPath: Endpoint.IP
+  description: List of endpoint IP addresses
+- contextPath: Endpoint.MAC
+  description: List of endpoint MAC addresses
+- contextPath: Endpoint.Domain
+  description: Endpoint domain name
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "62"
+      - "61"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 279586da-ee4e-4bb6-831e-d9ffab1b57f4
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 279586da-ee4e-4bb6-831e-d9ffab1b57f4
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -560
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "63"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      dest_coords:
+        complex:
+          root: SourceIPGeo
+          transformers:
+          - operator: uniq
+      src_coords:
+        complex:
+          root: PreviousSourceIPGeo
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    task:
+      brand: ""
+      description: Compute the distance between two sets of coordinates in miles.
+      id: 09f24959-1fbf-4314-86e4-e187658d0df6
+      iscommand: false
+      name: Calculate geographical distance between logins
+      scriptName: CalculateGeoDistance
+      tags:
+      - geodistance
+      type: regular
+      version: -1
+    taskid: 09f24959-1fbf-4314-86e4-e187658d0df6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -740,
+          "y": 1580
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "63"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      end_time:
+        complex:
+          accessor: signindatetime
+          root: incident
+          transformers:
+          - operator: uniq
+      start_time:
+        complex:
+          accessor: previoussignindatetime
+          root: incident
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    task:
+      brand: ""
+      description: Calculate the time difference, in minutes.
+      id: 1ed29c55-64ab-4bca-8ba5-7f75a951c470
+      iscommand: false
+      name: Calculate time difference between logins
+      scriptName: CalculateTimeDifference
+      tags:
+      - eventduration
+      type: regular
+      version: -1
+    taskid: 1ed29c55-64ab-4bca-8ba5-7f75a951c470
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1580
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f41e8485-7d37-4331-8675-46283a5e4d06
+      iscommand: false
+      name: Containment
+      type: title
+      version: -1
+    taskid: f41e8485-7d37-4331-8675-46283a5e4d06
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 3155
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: true
+    reputationcalc: 1
+    scriptarguments:
+      base-dn: {}
+      username:
+        complex:
+          accessor: username
+          root: incident
+    separatecontext: false
+    task:
+      brand: ""
+      description: Disables the account of the offending user, using Active Directory.
+      id: a1c09ea2-4966-47ff-868e-5e412effa507
+      iscommand: true
+      name: Disable user account
+      script: '|||ad-disable-account'
+      type: regular
+      version: -1
+    taskid: a1c09ea2-4966-47ff-868e-5e412effa507
+    timertriggers:
+    - action: start
+      fieldname: remediationsla
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 3835
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "74"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedhosts: {}
+      affectedindividualscontactinformation: {}
+      affectedips: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      awsfindingid: {}
+      awsfindingtype: {}
+      awsinstanceid: {}
+      awsinstancename: {}
+      backupowner: {}
+      bugtraq: {}
+      campaigntargetcount: {}
+      campaigntargets: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      computername: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates:
+        complex:
+          root: SourceIPGeo
+          transformers:
+          - operator: uniq
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      currentip: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      demoautomatedcondition: {}
+      demomanualcondition: {}
+      description: {}
+      dest: {}
+      destinationip: {}
+      destip: {}
+      destntdomain: {}
+      details:
+        simple: A user has logged in from multiple geographical locations in too short
+          an amount of time. The user is an impossible traveler according to the maximum
+          miles per hour allowed.
+      detectedusers: {}
+      detectorid: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailrecipient: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      endpointgrid: {}
+      epohost: {}
+      eposcanstatus: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      findingid: {}
+      host: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      infected: {}
+      internalip: {}
+      involvedusers: {}
+      isthedatasubjecttodpia: {}
+      jasontest: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      notes: {}
+      occurred: {}
+      owner: {}
+      phase:
+        simple: Containment
+      phishingconfirmationstatus: {}
+      phishingsubtype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates:
+        complex:
+          root: PreviousSourceIPGeo
+          transformers:
+          - operator: uniq
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      previousip: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      queue: {}
+      redlockpolicyname: {}
+      relateddomain: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reporteremailaddress: {}
+      reportingdepartment: {}
+      reportinguser: {}
+      requestor: {}
+      riskscore: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      securitygroupid: {}
+      selector: {}
+      serverip: {}
+      servername: {}
+      severity:
+        simple: high
+      signature: {}
+      signindatetime: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      sourceip: {}
+      src: {}
+      srcip: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      travelmaplink:
+        complex:
+          root: TravelMap
+          transformers:
+          - operator: uniq
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      whitelistrequest: {}
+      xdr: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Updates the incident details to say that the user is an impossible
+        traveler, and sets the incident severity to high.
+      id: cdbbfe88-0f18-43cc-841c-646e6c580454
+      iscommand: true
+      name: Update incident details and set severity
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: cdbbfe88-0f18-43cc-841c-646e6c580454
+    timertriggers:
+    - action: stop
+      fieldname: detectionsla
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 3300
+        }
+      }
+  "38":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.AutomaticallyBlockIPs
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "79"
+      "yes":
+      - "71"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether the source IPs that the user used to login from
+        can be blocked automatically, according to the playbook inputs.
+      id: 81bcf6f0-7966-475a-80a8-f9c99a8bb8ce
+      iscommand: false
+      name: Should the source IPs be blocked automatically?
+      type: condition
+      version: -1
+    taskid: 81bcf6f0-7966-475a-80a8-f9c99a8bb8ce
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 4130
+        }
+      }
+  "49":
+    id: "49"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "51"
+    note: false
+    scriptarguments:
+      IP:
+        complex:
+          accessor: Address
+          root: IP
+          transformers:
+          - operator: uniq
+      InternalRange: {}
+      ResolveIP:
+        simple: "True"
+    separatecontext: true
+    task:
+      brand: ""
+      id: fda33d67-1286-4602-8bbd-dec192b4e1d0
+      iscommand: false
+      name: IP Enrichment - Generic v2
+      playbookName: IP Enrichment - Generic v2
+      type: playbook
+      version: -1
+    taskid: fda33d67-1286-4602-8bbd-dec192b4e1d0
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": -90
+        }
+      }
+  "50":
+    id: "50"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "49"
+      - "80"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 2fd3af58-fb2c-4120-8f2b-40189302f3e9
+      iscommand: false
+      name: Travel Information Enrichment
+      type: title
+      version: -1
+    taskid: 2fd3af58-fb2c-4120-8f2b-40189302f3e9
+    timertriggers:
+    - action: start
+      fieldname: detectionsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -230
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "52"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: a637c80f-f562-42dc-85f1-dc19e1289489
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+    taskid: a637c80f-f562-42dc-85f1-dc19e1289489
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 805
+        }
+      }
+  "52":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: IP
+                transformers:
+                - args:
+                    equalTo:
+                      iscontext: true
+                      value:
+                        simple: incident.sourceip
+                    field:
+                      value:
+                        simple: Address
+                    getField:
+                      value:
+                        simple: Geo
+                  operator: WhereFieldEquals
+                - args:
+                    field:
+                      value:
+                        simple: Location
+                  operator: getField
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: IP
+                transformers:
+                - args:
+                    equalTo:
+                      iscontext: true
+                      value:
+                        simple: incident.previoussourceip
+                    field:
+                      value:
+                        simple: Address
+                    getField:
+                      value:
+                        simple: Geo
+                  operator: WhereFieldEquals
+                - args:
+                    field:
+                      value:
+                        simple: Location
+                  operator: getField
+          operator: isNotEmpty
+      label: "yes"
+    id: "52"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "54"
+      "yes":
+      - "58"
+      - "59"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether coordinates were retrieved for the IPs that the
+        user used to login.
+      id: c53d55de-4c42-4b3c-8aa2-01725f6d28a5
+      iscommand: false
+      name: Are there coordinates for the source IPs?
+      type: condition
+      version: -1
+    taskid: c53d55de-4c42-4b3c-8aa2-01725f6d28a5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 940
+        }
+      }
+  "54":
+    id: "54"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "70"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Manually investigate the incident. Try to understand the locations
+        from which the user connected, and the time difference between the two logins.
+        Contain the incident, if needed.
+      id: f32a2a0a-a7cf-4f12-8abd-ce9d28b149bc
+      iscommand: false
+      name: Manually investigate the incident
+      type: regular
+      version: -1
+    taskid: f32a2a0a-a7cf-4f12-8abd-ce9d28b149bc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1150
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "73"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: SourceIPGeo
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Geo.Location
+              operator: isExists
+          root: IP
+          transformers:
+          - args:
+              equalTo:
+                iscontext: true
+                value:
+                  simple: incident.sourceip
+              field:
+                value:
+                  simple: Address
+              getField:
+                value:
+                  simple: Geo
+            operator: WhereFieldEquals
+          - args:
+              field:
+                value:
+                  simple: Location
+            operator: getField
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+    separatecontext: false
+    task:
+      brand: ""
+      description: Saves the geolocation of the IP associated with the user's login.
+      id: 01219670-caf0-4a29-8042-dcc86459e5e7
+      iscommand: false
+      name: Save source IP geolocation data
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 01219670-caf0-4a29-8042-dcc86459e5e7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 1150
+        }
+      }
+  "59":
+    id: "59"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "73"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: PreviousSourceIPGeo
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Geo.Location
+              operator: isExists
+          root: IP
+          transformers:
+          - args:
+              equalTo:
+                iscontext: true
+                value:
+                  simple: incident.previoussourceip
+              field:
+                value:
+                  simple: Address
+              getField:
+                value:
+                  simple: Geo
+            operator: WhereFieldEquals
+          - args:
+              field:
+                value:
+                  simple: Location
+            operator: getField
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+    separatecontext: false
+    task:
+      brand: ""
+      description: Saves the geolocation of the IP associated with the previous user
+        login.
+      id: 87d065fc-ac14-4f6b-8f43-1f3fb4b962c2
+      iscommand: false
+      name: Save previous source IP geolocation data
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 87d065fc-ac14-4f6b-8f43-1f3fb4b962c2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -510,
+          "y": 1150
+        }
+      }
+  "61":
+    id: "61"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "50"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      days: {}
+      fullResponse: {}
+      include_inactive: {}
+      ip:
+        complex:
+          accessor: previoussourceip
+          root: incident
+          transformers:
+          - operator: uniq
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      verbose: {}
+      wait: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Gets geolocation information about the previous IP that the user
+        logged in from.
+      id: c7f3f7c8-ea8c-4454-87ce-d51a1d5a9240
+      iscommand: true
+      name: Get previous login IP location information
+      script: '|||ip'
+      type: regular
+      version: -1
+    taskid: c7f3f7c8-ea8c-4454-87ce-d51a1d5a9240
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": -400
+        }
+      }
+  "62":
+    id: "62"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "50"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      days: {}
+      fullResponse: {}
+      include_inactive: {}
+      ip:
+        complex:
+          accessor: sourceip
+          root: incident
+          transformers:
+          - operator: uniq
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      verbose: {}
+      wait: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Gets geolocation information about the IP that the user logged
+        in from.
+      id: 561660d5-04a4-4695-84eb-57db82b404ae
+      iscommand: true
+      name: Get login IP location information
+      script: '|||ip'
+      type: regular
+      version: -1
+    taskid: 561660d5-04a4-4695-84eb-57db82b404ae
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": -400
+        }
+      }
+  "63":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Distance
+                root: Geo
+                transformers:
+                - args:
+                    by:
+                      iscontext: true
+                      value:
+                        simple: Time.Difference
+                  operator: division
+                - args:
+                    by:
+                      value:
+                        simple: "60"
+                  operator: multiply
+          operator: greaterThan
+          right:
+            iscontext: true
+            value:
+              simple: inputs.MaxMilesPerHourAllowed
+      label: "yes"
+    id: "63"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "66"
+      "yes":
+      - "84"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether the user traveled faster than the allowed speed
+        in MPH.
+      id: 3c33b8c9-3f92-4ba1-8eb2-ce8462c3a58b
+      iscommand: false
+      name: Did the user travel more than the allowed MPH?
+      type: condition
+      version: -1
+    taskid: 3c33b8c9-3f92-4ba1-8eb2-ce8462c3a58b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1870
+        }
+      }
+  "66":
+    id: "66"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "70"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedhosts: {}
+      affectedindividualscontactinformation: {}
+      affectedips: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      awsfindingid: {}
+      awsfindingtype: {}
+      awsinstanceid: {}
+      awsinstancename: {}
+      backupowner: {}
+      bugtraq: {}
+      campaigntargetcount: {}
+      campaigntargets: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      computername: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates:
+        complex:
+          root: SourceIPGeo
+          transformers:
+          - operator: uniq
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      currentip: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      demoautomatedcondition: {}
+      demomanualcondition: {}
+      description: {}
+      dest: {}
+      destinationip: {}
+      destip: {}
+      destntdomain: {}
+      details:
+        simple: The user logged in from two different locations within a reasonable
+          time period.
+      detectedusers: {}
+      detectorid: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailrecipient: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      endpointgrid: {}
+      epohost: {}
+      eposcanstatus: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      findingid: {}
+      host: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      infected: {}
+      internalip: {}
+      involvedusers: {}
+      isthedatasubjecttodpia: {}
+      jasontest: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      notes: {}
+      occurred: {}
+      owner: {}
+      phase:
+        simple: No Response Needed (Legitimate Login)
+      phishingconfirmationstatus: {}
+      phishingsubtype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates:
+        complex:
+          root: PreviousSourceIPGeo
+          transformers:
+          - operator: uniq
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      previousip: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      queue: {}
+      redlockpolicyname: {}
+      relateddomain: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reporteremailaddress: {}
+      reportingdepartment: {}
+      reportinguser: {}
+      requestor: {}
+      riskscore: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      securitygroupid: {}
+      selector: {}
+      serverip: {}
+      servername: {}
+      severity:
+        simple: low
+      signature: {}
+      signindatetime: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      sourceip: {}
+      src: {}
+      srcip: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      travelmaplink:
+        complex:
+          root: TravelMap
+          transformers:
+          - operator: uniq
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      whitelistrequest: {}
+      xdr: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Updates the incident details to say that the user is a legitimate
+        traveler, and sets the incident severity to low.
+      id: 9d4e51c3-ed66-4f0c-87a7-692997df4651
+      iscommand: true
+      name: Update incident details and set severity
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 9d4e51c3-ed66-4f0c-87a7-692997df4651
+    timertriggers:
+    - action: stop
+      fieldname: detectionsla
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -940,
+          "y": 3155
+        }
+      }
+  "67":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: sourceip
+                root: incident
+                transformers:
+                - operator: uniq
+          operator: in
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.WhitelistedIPs
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: splitAndTrim
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: sourceip
+                root: incident
+                transformers:
+                - operator: uniq
+          operator: in
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.WhitelistedIPs
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: splitAndTrim
+      label: "yes"
+    id: "67"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "69"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether both user login events originated from whitelisted
+        IP addresses.
+      id: 1d4b34cb-9c47-4c9c-8eba-c5ce1c4ddf34
+      iscommand: false
+      name: Did the user login from whitelisted IP addresses?
+      type: condition
+      version: -1
+    taskid: 1d4b34cb-9c47-4c9c-8eba-c5ce1c4ddf34
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 2900
+        }
+      }
+  "68":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.WhitelistedIPs
+          operator: isNotEmpty
+      label: "yes"
+    id: "68"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "67"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether whitelisted IPs were configured.
+      id: b82256fd-77ba-46a4-825d-c9ab3347aa69
+      iscommand: false
+      name: Are there whitelisted IPs configured?
+      type: condition
+      version: -1
+    taskid: b82256fd-77ba-46a4-825d-c9ab3347aa69
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 2690
+        }
+      }
+  "69":
+    id: "69"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "70"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedhosts: {}
+      affectedindividualscontactinformation: {}
+      affectedips: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      awsfindingid: {}
+      awsfindingtype: {}
+      awsinstanceid: {}
+      awsinstancename: {}
+      backupowner: {}
+      bugtraq: {}
+      campaigntargetcount: {}
+      campaigntargets: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      computername: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates:
+        complex:
+          root: SourceIPGeo
+          transformers:
+          - operator: uniq
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      currentip: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      demoautomatedcondition: {}
+      demomanualcondition: {}
+      description: {}
+      dest: {}
+      destinationip: {}
+      destip: {}
+      destntdomain: {}
+      details:
+        simple: A user has logged in from multiple geographical locations in a short
+          amount of time. However, they logged in from whitelisted IP addresses, so
+          the login was considered legitimate.
+      detectedusers: {}
+      detectorid: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailrecipient: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      endpointgrid: {}
+      epohost: {}
+      eposcanstatus: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      findingid: {}
+      host: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      infected: {}
+      internalip: {}
+      involvedusers: {}
+      isthedatasubjecttodpia: {}
+      jasontest: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      notes: {}
+      occurred: {}
+      owner: {}
+      phase:
+        simple: No Response Needed (Whitelisted Login)
+      phishingconfirmationstatus: {}
+      phishingsubtype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates:
+        complex:
+          root: PreviousSourceIPGeo
+          transformers:
+          - operator: uniq
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      previousip: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      queue: {}
+      redlockpolicyname: {}
+      relateddomain: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reporteremailaddress: {}
+      reportingdepartment: {}
+      reportinguser: {}
+      requestor: {}
+      riskscore: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      securitygroupid: {}
+      selector: {}
+      serverip: {}
+      servername: {}
+      severity:
+        simple: low
+      signature: {}
+      signindatetime: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      sourceip: {}
+      src: {}
+      srcip: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      travelmaplink:
+        complex:
+          root: TravelMap
+          transformers:
+          - operator: uniq
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      whitelistrequest: {}
+      xdr: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Updates the incident details to say that the user is a legitimate
+        traveler because the login events originated from whitelisted IP addresses,
+        and sets the incident severity to low.
+      id: 1789d555-822d-4e40-897b-a9bfb23ba0d8
+      iscommand: true
+      name: Update incident details and set severity
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 1789d555-822d-4e40-897b-a9bfb23ba0d8
+    timertriggers:
+    - action: stop
+      fieldname: detectionsla
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 3155
+        }
+      }
+  "70":
+    id: "70"
+    ignoreworker: false
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      importantfield: {}
+      phishingsubtype: {}
+      test2: {}
+      timefield1: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Closes the investigation.
+      id: bfe4ebc4-f732-4e64-875a-2f836d058242
+      iscommand: true
+      name: Close investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: bfe4ebc4-f732-4e64-875a-2f836d058242
+    timertriggers:
+    - action: stop
+      fieldname: remediationsla
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 4710
+        }
+      }
+  "71":
+    id: "71"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "70"
+    note: false
+    scriptarguments:
+      IP:
+        complex:
+          accessor: sourceip
+          root: incident
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ','
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: incident.previoussourceip
+            operator: concat
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: splitAndTrim
+      IPBlacklistMiner: {}
+    separatecontext: true
+    task:
+      brand: ""
+      id: 60b4aab9-6bb9-412a-83cc-256789a9936b
+      iscommand: false
+      name: Block IP - Generic v2
+      playbookName: Block IP - Generic v2
+      type: playbook
+      version: -1
+    taskid: 60b4aab9-6bb9-412a-83cc-256789a9936b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 4380
+        }
+      }
+  "72":
+    id: "72"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "89"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: TravelMap
+      value:
+        complex:
+          root: inputs.DefaultMapLink
+          transformers:
+          - args:
+              limit: {}
+              replaceWith:
+                iscontext: true
+                value:
+                  simple: PreviousSourceIPGeo
+              toReplace:
+                value:
+                  simple: SOURCE
+            operator: replace
+          - args:
+              limit: {}
+              replaceWith:
+                iscontext: true
+                value:
+                  simple: SourceIPGeo
+              toReplace:
+                value:
+                  simple: DESTINATION
+            operator: replace
+          - args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: _
+              toReplace:
+                value:
+                  simple: ','
+            operator: replace
+    separatecontext: false
+    task:
+      brand: ""
+      description: Creates a travel map link and saves it in the context.
+      id: abf73ffa-84f4-480f-8933-54d98d7d56b7
+      iscommand: false
+      name: Generate travel map link
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: abf73ffa-84f4-480f-8933-54d98d7d56b7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1560
+        }
+      }
+  "73":
+    id: "73"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+      - "72"
+      - "29"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f73c845a-80a4-47eb-8dac-988c55049ec3
+      iscommand: false
+      name: Process Travel Data
+      type: title
+      version: -1
+    taskid: f73c845a-80a4-47eb-8dac-988c55049ec3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1350
+        }
+      }
+  "74":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.AutomaticallyDisableUser
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "74"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "75"
+      "yes":
+      - "34"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether the user can be disabled automatically, as configured
+        in the playbook inputs.
+      id: 2a735eb6-0f6f-4b71-8415-b8e3eab1d9bd
+      iscommand: false
+      name: Can the user be disabled automatically?
+      type: condition
+      version: -1
+    taskid: 2a735eb6-0f6f-4b71-8415-b8e3eab1d9bd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 3470
+        }
+      }
+  "75":
+    id: "75"
+    ignoreworker: false
+    nexttasks:
+      Approval Granted:
+      - "34"
+      Unapproved:
+      - "76"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: You should now contain the incident of the offending user. Please
+        get approval to automatically disable the user account in Active Directory.
+      id: fdcd8ec4-d701-469a-8b43-ce15152f0a00
+      iscommand: false
+      name: Get approval for disabling user
+      type: condition
+      version: -1
+    taskid: fdcd8ec4-d701-469a-8b43-ce15152f0a00
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 3660
+        }
+      }
+  "76":
+    id: "76"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Please take manual steps to disable the user account, or expire
+        his or her password.
+      id: 03607bd4-a69c-4ffe-8800-aa190cdf53c1
+      iscommand: false
+      name: Manually disable user account
+      type: regular
+      version: -1
+    taskid: 03607bd4-a69c-4ffe-8800-aa190cdf53c1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 3960
+        }
+      }
+  "79":
+    id: "79"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "70"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Please take manual steps to block the offending IPs.
+      id: 9a9e3f9d-a33c-4e62-8c5f-d361b3a3bf9f
+      iscommand: false
+      name: Manually block IPs
+      type: regular
+      version: -1
+    taskid: 9a9e3f9d-a33c-4e62-8c5f-d361b3a3bf9f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 4380
+        }
+      }
+  "80":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.username
+          operator: isExists
+      label: "yes"
+    id: "80"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "51"
+      "yes":
+      - "81"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether there is a username for the offending user in context,
+        and whether Active Directory v2 is enabled.
+      id: c345d9c6-e5bf-47e5-8e62-1c3a99b8d3da
+      iscommand: false
+      name: Can the account be enriched?
+      type: condition
+      version: -1
+    taskid: c345d9c6-e5bf-47e5-8e62-1c3a99b8d3da
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -90
+        }
+      }
+  "81":
+    id: "81"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "82"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit: {}
+      name: {}
+      user-account-control-out: {}
+      username:
+        complex:
+          accessor: username
+          root: incident
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    task:
+      brand: ""
+      description: Gets details about the offending username from Active Directory.
+      id: 60a52413-4588-4700-8bc0-922ab52e5f82
+      iscommand: true
+      name: Enrich offending user account
+      script: '|||ad-get-user'
+      tags:
+      - userinfo
+      type: regular
+      version: -1
+    taskid: 60a52413-4588-4700-8bc0-922ab52e5f82
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 80
+        }
+      }
+  "82":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Manager
+                root: Account
+          operator: isExists
+      label: "yes"
+    id: "82"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "51"
+      "yes":
+      - "83"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if a manager was configured for the offending user in Active
+        Directory.
+      id: 64637398-912d-40de-8602-718b1faf4649
+      iscommand: false
+      name: is there a configured manager for the user?
+      type: condition
+      version: -1
+    taskid: 64637398-912d-40de-8602-718b1faf4649
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 240
+        }
+      }
+  "83":
+    id: "83"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "85"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit: {}
+      name: {}
+      user-account-control-out: {}
+      username: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Gets information about the manager of the offending user account,
+        using Active Directory.
+      id: 2579dc9a-28f1-4bde-88f3-02d5016d07d4
+      iscommand: true
+      name: Enrich user account's manager
+      script: '|||ad-get-user'
+      type: regular
+      version: -1
+    taskid: 2579dc9a-28f1-4bde-88f3-02d5016d07d4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 410
+        }
+      }
+  "84":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Account.DisplayName
+                    operator: isEqualString
+                    right:
+                      iscontext: true
+                      value:
+                        simple: UserManager
+                root: Account
+          operator: isExists
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.ContactUserManager
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "84"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "68"
+      "yes":
+      - "86"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether an email address was retrieved for the manger of
+        the offending user.
+      id: bff6005c-5565-47cf-8b4a-1aed57cf3e5d
+      iscommand: false
+      name: Can the manager be contacted for travel approval?
+      type: condition
+      version: -1
+    taskid: bff6005c-5565-47cf-8b4a-1aed57cf3e5d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 2040
+        }
+      }
+  "85":
+    id: "85"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "51"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: UserManager
+      value:
+        complex:
+          accessor: Manager
+          root: Account
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    task:
+      brand: ""
+      description: Saves the manager of the offending user in context.
+      id: d87a3a95-1d54-4821-84fb-701fdfeab270
+      iscommand: false
+      name: Save user manager name
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: d87a3a95-1d54-4821-84fb-701fdfeab270
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 590
+        }
+      }
+  "86":
+    id: "86"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "87"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      additionalOptions: {}
+      attachIds: {}
+      bcc: {}
+      bodyType: {}
+      cc: {}
+      email: {}
+      message:
+        simple: '!Print value="User ${incident.username} traveled ${Geo.Distance}
+          miles in ${(Time.Difference)} minutes. Was this an expected event?"'
+      option1: {}
+      option2: {}
+      persistent: {}
+      playbookTaskID: {}
+      replyAddress: {}
+      replyEntriesTag: {}
+      retries: {}
+      roles: {}
+      subject:
+        simple: User ${incident.username} is an impossible traveler!
+      task:
+        simple: TravelQuestion
+    separatecontext: false
+    task:
+      brand: ""
+      description: Ask a user a question via email and process the reply directly
+        into the investigation.
+      id: 71be37b9-f5a9-448b-8971-c6ae76e6e614
+      iscommand: false
+      name: Ask manager if travel was expected
+      scriptName: EmailAskUser
+      type: regular
+      version: -1
+    taskid: 71be37b9-f5a9-448b-8971-c6ae76e6e614
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 2230
+        }
+      }
+  "87":
+    id: "87"
+    ignoreworker: false
+    nexttasks:
+      "No":
+      - "68"
+      "Yes":
+      - "88"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Gets a response from the manager as to whether the travel done
+        by the user was expected. The response is received from the email reply that
+        the manager sends.
+      id: a2636351-dafa-4e59-83e2-1000af044c4d
+      iscommand: false
+      name: Get manager response
+      tags:
+      - TravelQuestion
+      type: condition
+      version: -1
+    taskid: a2636351-dafa-4e59-83e2-1000af044c4d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 2410
+        }
+      }
+  "88":
+    id: "88"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "70"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedhosts: {}
+      affectedindividualscontactinformation: {}
+      affectedips: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      awsfindingid: {}
+      awsfindingtype: {}
+      awsinstanceid: {}
+      awsinstancename: {}
+      backupowner: {}
+      bugtraq: {}
+      campaigntargetcount: {}
+      campaigntargets: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      computername: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates:
+        complex:
+          root: SourceIPGeo
+          transformers:
+          - operator: uniq
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      currentip: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      demoautomatedcondition: {}
+      demomanualcondition: {}
+      description: {}
+      dest: {}
+      destinationip: {}
+      destip: {}
+      destntdomain: {}
+      details:
+        simple: The user logged in from two different locations within a reasonable
+          time period.
+      detectedusers: {}
+      detectorid: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailrecipient: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      endpointgrid: {}
+      epohost: {}
+      eposcanstatus: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      findingid: {}
+      host: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      infected: {}
+      internalip: {}
+      involvedusers: {}
+      isthedatasubjecttodpia: {}
+      jasontest: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      notes: {}
+      occurred: {}
+      owner: {}
+      phase:
+        simple: No Response Needed (Legitimate Login)
+      phishingconfirmationstatus: {}
+      phishingsubtype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates:
+        complex:
+          root: PreviousSourceIPGeo
+          transformers:
+          - operator: uniq
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      previousip: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      queue: {}
+      redlockpolicyname: {}
+      relateddomain: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reporteremailaddress: {}
+      reportingdepartment: {}
+      reportinguser: {}
+      requestor: {}
+      riskscore: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      securitygroupid: {}
+      selector: {}
+      serverip: {}
+      servername: {}
+      severity:
+        simple: low
+      signature: {}
+      signindatetime: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      sourceip: {}
+      src: {}
+      srcip: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      travelmaplink:
+        complex:
+          root: TravelMap
+          transformers:
+          - operator: uniq
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      whitelistrequest: {}
+      xdr: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Updates the incident details to say that the manager of the user
+        approved the travel, and sets the incident severity to low.
+      id: c9829d88-f3b2-45c0-8b9e-289e6171495c
+      iscommand: true
+      name: Update incident details and set severity
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: c9829d88-f3b2-45c0-8b9e-289e6171495c
+    timertriggers:
+    - action: stop
+      fieldname: detectionsla
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 2690
+        }
+      }
+  "89":
+    id: "89"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "63"
+    note: false
+    scriptarguments:
+      height: {}
+      type: {}
+      url:
+        complex:
+          root: TravelMap
+          transformers:
+          - operator: uniq
+      wait_time:
+        simple: "15"
+      width: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Converts the contents of a URL to an image file or a PDF file.
+      id: ebb78788-b984-401d-8e4b-0eea1afcab71
+      iscommand: true
+      name: Create travel map image
+      script: '|||rasterize'
+      type: regular
+      version: -1
+    taskid: ebb78788-b984-401d-8e4b-0eea1afcab71
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1700
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "38_71_yes": 0.35,
+      "52_54_#default#": 0.43,
+      "52_58_yes": 0.84,
+      "52_59_yes": 0.9,
+      "63_66_#default#": 0.18,
+      "67_32_#default#": 0.44,
+      "67_69_yes": 0.28,
+      "68_32_#default#": 0.25,
+      "68_67_yes": 0.42,
+      "74_34_yes": 0.35,
+      "74_75_#default#": 0.33,
+      "75_34_Approval Granted": 0.63,
+      "75_76_Unapproved": 0.42,
+      "80_51_#default#": 0.33,
+      "80_81_yes": 0.56,
+      "82_51_#default#": 0.16,
+      "84_86_yes": 0.44,
+      "87_68_No": 0.29,
+      "87_88_Yes": 0.34
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5365,
+        "width": 2380,
+        "x": -940,
+        "y": -560
+      }
+    }
+  }

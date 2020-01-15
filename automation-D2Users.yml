@@ -1,0 +1,28 @@
+comment: Show local accounts
+commonfields:
+  id: D2Users
+  version: -1
+name: D2Users
+runonce: false
+script: |-
+  function usersUnix() {
+    packOutput('cat /etc/passwd');
+  }
+  function usersWindows() {
+    pack(wmi_query('select * from Win32_Account'), 'table');
+  }
+  try {
+    if (env.OS === 'windows') {
+      usersWindows();
+    } else {
+      usersUnix();
+    }
+  } catch (ex) {
+    pack('Error: ' + ex);
+  }
+scripttarget: 1
+system: true
+tags:
+- agent
+- endpoint
+type: javascript

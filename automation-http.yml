@@ -1,0 +1,128 @@
+args:
+- auto: PREDEFINED
+  description: The method for the http request
+  name: method
+  predefined:
+  - GET
+  - POST
+  - DELETE
+  - PUT
+  required: true
+- description: The body for the http request
+  name: body
+- description: The url for the http request
+  name: url
+  required: true
+- description: The headers for the http request, in the format of 'key1:value1,key2:value2,
+    ...'
+  name: headers
+- auto: PREDEFINED
+  deprecated: true
+  description: Trust any certificate (unsecure)
+  name: insecure
+- auto: PREDEFINED
+  defaultValue: "true"
+  description: Trust any certificate (unsecure)
+  name: unsecure
+  predefined:
+  - "true"
+  - "false"
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Use system proxy settings
+  name: proxy
+  predefined:
+  - "true"
+  - "false"
+- description: The user for the http request
+  name: username
+- description: The password for the http request
+  name: password
+  secret: true
+- defaultValue: "no"
+  description: yes to save file, else no. Default is no
+  name: saveAsFile
+- description: Using filename from headers if filename is not given. Default is http-file
+  name: filename
+comment: Sends http request. Returns the response as json.
+commonfields:
+  id: http
+  version: -1
+enabled: true
+name: http
+outputs:
+- contextPath: HttpRequest.Response
+  description: The response for the http request
+runonce: false
+script: |+
+  var requestObj = {
+      Method: args.method,
+  };
+
+  if (args.username) {
+      requestObj.Username = args.username;
+  }
+
+  if (args.username) {
+      requestObj.Password = args.password;
+  }
+
+  if (args.body) {
+      var body = (typeof args.body) === 'string' ? args.body : JSON.stringify(args.body);
+      requestObj.Body = body;
+  }
+
+  if (args.headers) {
+      var headersJs = {};
+      var headersArr = args.headers.split(',');
+      for (i = 0; i < headersArr.length; i++) {
+          var keyValue = headersArr[i].split(':');
+          if (keyValue.length != 2 ){
+              throw 'Invalid headers. Please make sure you have entered "headers" in correct format.';
+          } else {
+              headersJs[keyValue[0]] = [keyValue[1]];
+          }
+      }
+      requestObj.Headers = headersJs;
+  }
+  if (args.saveAsFile === 'yes') {
+      requestObj.SaveToFile = true;
+  }
+
+  var unsecure = (args.unsecure === 'true' || args.insecure === 'true');
+  var proxy = (args.proxy === 'true');
+  var res = http(args.url, requestObj, unsecure, proxy);
+  var fileName;
+  if (args.filename) {
+      fileName = args.filename;
+  } else if (res.Headers['Content-disposition']) {
+      fileName = res.Headers['Content-disposition'][0];
+  } else {
+      fileName = 'http-file';
+  }
+
+  if (args.saveAsFile === 'yes') {
+      return {
+          Type: 3,
+          FileID: res.Path,
+          File: fileName,
+          Contents: fileName
+      };
+  }
+
+  return {
+      Type: entryTypes.note,
+      Contents: res,
+      ContentsFormat: formats.json,
+      EntryContext: {
+          'HttpRequest.Response': res
+      }
+  };
+
+
+
+scripttarget: 0
+system: true
+tags:
+- Utility
+type: javascript

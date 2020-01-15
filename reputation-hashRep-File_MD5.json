@@ -1,0 +1,26 @@
+{
+	"contextPath": "File(val.MD5 \u0026\u0026 val.MD5 === obj.MD5)",
+	"contextValue": "MD5",
+	"defaultMapping": null,
+	"details": "File MD5",
+	"disabled": true,
+	"enhancementScriptNames": [
+		"FileReputation",
+		"SplunkPySearch"
+	],
+	"excludedBrands": null,
+	"file": false,
+	"fileHashesPriority": null,
+	"formatScript": "",
+	"id": "hashRep",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "\\b[a-fA-F\\d]{32}\\b",
+	"reputationCommand": "file",
+	"reputationScriptName": "",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

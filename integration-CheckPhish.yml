@@ -1,0 +1,374 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: CheckPhish
+  version: -1
+configuration:
+- defaultvalue: https://developers.redmarlin.ai/api/neo/scan
+  display: CheckPhish API URL
+  name: url
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Good Dispositions (CheckPhish labels for non-phishing URLs. Default is
+    "clean")
+  name: good_disp
+  options:
+  - adult
+  - cryptojacking
+  - drug_spam
+  - gambling
+  - hacked_website
+  - likely_phish
+  - phish
+  - scam
+  - streaming
+  - suspicious
+  required: false
+  type: 16
+- defaultvalue: ""
+  display: Suspicious dispositions (CheckPhish labels for suspicious phishing URLs).
+    Default is "drug_spam", "gambling", "hacked_website", "streaming", "suspicious"
+  name: susp_disp
+  options:
+  - adult
+  - cryptojacking
+  - drug_spam
+  - gambling
+  - hacked_website
+  - likely_phish
+  - phish
+  - scam
+  - streaming
+  - suspicious
+  required: false
+  type: 16
+- defaultvalue: ""
+  display: Bad dispositions (CheckPhish labels for phishing URLs). Defaults are "cryptojacking",
+    "phish", "likely_phish", "scam".
+  name: bad_disp
+  options:
+  - adult
+  - cryptojacking
+  - drug_spam
+  - gambling
+  - hacked_website
+  - likely_phish
+  - phish
+  - scam
+  - streaming
+  - suspicious
+  required: false
+  type: 16
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Check any URL to detect supsicious behavior.
+detaileddescription: "## Supported Dispositions\nCheckPhish classifies URLs by the
+  following dispositions (categories).\n- Zero-day phishing\n- Tech support scams\n-
+  Gift card scams\n- Survey scams\n- Adult websites\n- Drug pharmacy (Drug Spam) websites\n-
+  Illegal/rogue streaming sites\n- Gambling websites\n- Hacked Websites\n- Cryptojacking/cryptomining\n\n##
+  Sending URLs to Check\nThere is no limit to the number of URLs you can send in each
+  call. The limit is determined by your API privileges. using commas between the URLs,
+  \nfor Example: www.demisto.com,www.google.com,www.youtube.com\n\n## Modify Severity
+  Levels\nYou can modify the severity levels of any disposition received from CheckPhish.
+  We recommend the following default parameters:\\\n- Good = clean\\\n- Suspicious
+  = drug_spam, gambling, hacked_website, streaming, suspicious\\\n- Bad = cryptojacking,
+  phish, likely_phish, scam\\\n\n**Note**: The worst category in which a label is
+  included will be the effective one. \n"
+display: CheckPhish
+image: data:image/png;base64,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
+name: CheckPhish
+script:
+  commands:
+  - arguments:
+    - description: A CSV list of URLs to check.
+      isArray: true
+      name: url
+      required: true
+    description: Checks URLs against the CheckPhish database and returns the results.
+    name: CheckPhish-check-urls
+    outputs:
+    - contextPath: CheckPhish.URL.url
+      description: URL that was submitted.
+      type: String
+    - contextPath: CheckPhish.URL.status
+      description: CheckPhish job status of the URL.
+      type: String
+    - contextPath: CheckPhish.URL.jobID
+      description: CheckPhish jobID that was assigned to the URL when it was submitted.
+      type: String
+    - contextPath: CheckPhish.URL.disposition
+      description: The CheckPhish category (disposition) of the URL.
+      type: String
+    - contextPath: CheckPhish.URL.brand
+      description: The brand (attack target) countered by the URL.
+      type: String
+    - contextPath: DBotScore.Score
+      description: DBot score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: Indicator type that was tested.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor that provided the DBot score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: Indicator that CheckPhish tested.
+      type: String
+    - contextPath: URL.Data
+      description: URL that was submitted.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: CheckPhish.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: The brand (attack target) countered by the URL.
+      type: String
+  runonce: false
+  script: |2-
+
+
+
+
+    ''' IMPORTS '''
+
+    import json
+    import requests
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    BASE_URL = demisto.params()['url']
+    API_KEY = demisto.params().get('token')
+    GOOD_DISP = argToList(demisto.params().get('good_disp'))
+    SUSP_DISP = argToList(demisto.params().get('susp_disp'))
+    BAD_DISP = argToList(demisto.params().get('bad_disp'))
+    USE_SSL = not demisto.params().get('insecure', False)
+
+    HEADERS = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+
+    STATUS_SUFFIX = '/status'
+    CLEAN_STATUS = 'clean'
+    PENDING_STATUS = 'PENDING'
+    DONE_STATUS = 'DONE'
+
+    DEFAULT_GOOD_DISP = {
+        'clean'
+    }
+
+    DEFAULT_SUSP_DISP = {
+        'drug_spam',
+        'gambling',
+        'hacked_website',
+        'streaming',
+        'suspicious'
+    }
+
+    DEFAULT_BAD_DISP = {
+        'cryptojacking',
+        'phish',
+        'likely_phish',
+        'scam'
+    }
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_request(method, url, params=None, data=None):
+        res = requests.request(
+            method,
+            url,
+            verify=USE_SSL,
+            params=params,
+            data=data,
+            headers=HEADERS
+        )
+
+        if res.status_code not in {200}:
+            return_error('Error in API call to CheckPhish [%d] - %s' % (res.status_code, res.reason))
+
+        try:
+            return res.json()
+
+        except ValueError as err:
+            return_error('Failed to parse response from service, received the following error:\n{}'.format(str(err)))
+
+
+    def unite_dispositions():
+        for disp in GOOD_DISP:
+            DEFAULT_GOOD_DISP.add(disp)
+
+        for disp in SUSP_DISP:
+            DEFAULT_SUSP_DISP.add(disp)
+
+        for disp in BAD_DISP:
+            DEFAULT_BAD_DISP.add(disp)
+
+
+    def get_dbot_score(disposition):
+        if disposition in DEFAULT_BAD_DISP:
+            return 3
+        if disposition in DEFAULT_SUSP_DISP:
+            return 2
+        if disposition in DEFAULT_GOOD_DISP:
+            return 1
+        return 0
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        query = {
+            'apiKey': API_KEY,
+            'urlInfo': {'url': 'https://www.google.com'}
+        }
+        res = http_request('POST', BASE_URL, data=json.dumps(query))
+        if res and 'message' not in res:
+            return 'ok'
+
+        return res['message']  # the message field contains the error message
+
+
+    def submit_to_checkphish(url):
+        """ Submit a URL for analysis in CheckPhish
+
+        Args:
+            url(str): URL to be sent to CheckPhish for analysis
+
+        Returns:
+            (str). jobID retrieved from CheckPhish for the URL
+
+        """
+        if 'http' not in url:
+            url = 'http://' + url
+
+        if re.match(urlRegex, url):
+            query = {
+                'apiKey': API_KEY,
+                'urlInfo': {'url': url},
+                'scanType': 'full'
+            }
+            res = http_request('POST', BASE_URL, data=json.dumps(query))
+
+            return res['jobID']
+
+        else:
+            return_error(url + ' is not a valid url')
+
+
+    def is_job_ready_checkphish(jobID):
+        query = {
+            'apiKey': API_KEY,
+            'jobID': jobID
+        }
+        res = http_request('POST', BASE_URL + STATUS_SUFFIX, data=json.dumps(query))
+
+        if res and res['status'] == DONE_STATUS:
+            return True
+
+        return False
+
+
+    def get_result_checkphish(jobID):
+        query = {
+            'apiKey': API_KEY,
+            'jobID': jobID
+        }
+        res = http_request('POST', BASE_URL + STATUS_SUFFIX, data=json.dumps(query))
+
+        if res and 'errorMessage' not in res:
+            result = {
+                'url': res['url'],
+                'jobID': jobID,
+                'status': res['status'],
+                'disposition': res['disposition'],
+                'brand': res['brand']
+            }
+
+            url_dict = {
+                'Data': result['url']
+            }
+
+            if result['disposition'] != CLEAN_STATUS:
+                url_dict['Malicious'] = {
+                    'Vendor': 'CheckPhish',
+                    'Description': 'Targets ' + result['brand']
+                }
+
+            dbot_score = {
+                'Type': 'url',
+                'Vendor': 'CheckPhish',
+                'Indicator': result['url'],
+                'Score': get_dbot_score(result['disposition'])
+            }
+
+            context = {
+                'CheckPhish.' + outputPaths['url']: result,
+                outputPaths['url']: url_dict,
+                'DBotScore': dbot_score
+            }
+
+            human_readable = tableToMarkdown('CheckPhish reputation for ' + result['url'],
+                                             result,
+                                             ['url', 'disposition', 'brand', 'status', 'jobID'])
+
+            return_outputs(human_readable, context, res)
+
+        else:
+            return_error('Error getting job status')
+
+
+    def checkphish_check_urls():
+        urls = argToList(demisto.args().get('url'))
+        job_ids = []
+
+        for url in urls:
+            submit = submit_to_checkphish(url)
+            if submit:
+                job_ids.append(submit)
+
+        while len(job_ids):
+            for job_id in job_ids[:]:
+                if is_job_ready_checkphish(job_id):
+                    get_result_checkphish(job_id)
+                    job_ids.remove(job_id)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is %s' % (demisto.command()))
+    handle_proxy()
+    unite_dispositions()
+
+    try:
+        if demisto.command() == 'test-module':
+            demisto.results(test_module())
+
+        elif demisto.command() == 'CheckPhish-check-urls':
+            checkphish_check_urls()
+
+    # Log exceptions
+    except Exception as e:
+        LOG(str(e))
+        LOG.print_log()
+        raise
+  type: python
+system: true

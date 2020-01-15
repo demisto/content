@@ -1,0 +1,157 @@
+beta: true
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Blueliv_Beta
+  version: -1
+configuration:
+- defaultvalue: https://api.blueliv.com
+  display: Server URL (e.g., https://api.blueliv.com)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Blueliv reduces risk through actionable, dynamic and targeted threat
+  intelligence, trusted by your organization.
+detaileddescription: |
+  Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
+display: Blueliv (Beta)
+image: data:image/png;base64,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
+name: Blueliv_Beta
+script:
+  commands:
+  - arguments: []
+    description: Data set collection that gives the latest STIX Indicators about bot
+      ips gathered by Blueliv.
+    name: blueliv-get-botips-feed
+  - arguments: []
+    description: Data set collection that gives the latest STIX Indicators about known
+      malicious servers gathered by Blueliv.
+    name: blueliv-get-crimeservers-feed
+  - arguments: []
+    description: Data set collection that gives the latest STIX Indicators about malware
+      hashes gathered and analyzed by Blueliv.
+    name: blueliv-get-malware-feed
+  - arguments: []
+    description: Data set collection that gives the latest STIX Indicators about attacking
+      IPs gathered and analyzed by Blueliv.
+    name: blueliv-get-attackingips-feed
+  - arguments: []
+    description: 'Data related to the number of hacktivism tweets recently created.
+      Blueliv provides two types of feeds: the first one contains the most popular
+      hacktivism hashtags and the second one contains the countries where more number
+      of hacktivism tweets are coming from.'
+    name: blueliv-get-hacktivism-feed
+  dockerimage: demisto/blueliv:1.0.0.165
+  runonce: false
+  script: |2-
+
+
+
+    ''' IMPORTS '''
+
+    from sdk.blueliv_api import BluelivAPI
+
+    ''' GLOBALS/PARAMS '''
+
+    TOKEN = demisto.params().get('token')
+    URL = demisto.params()['url']
+    SERVER = URL[:-1] if URL.endswith('/') else URL
+
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def verify_response_code(response):
+
+        if response.status_code != 200:
+            raise ValueError(response.error_msg)
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+
+        response = api.crime_servers.last('all')
+        verify_response_code(response)
+        demisto.results('ok')
+
+
+    def get_botips_feed_command():
+
+        response = api.bot_ips.recent('full')
+        verify_response_code(response)
+        human_readable = tableToMarkdown('Bot IP feed', response.items)
+        return_outputs(human_readable, {})
+
+
+    def get_crimeservers_feed_command():
+
+        response = api.crime_servers.last('all')
+        verify_response_code(response)
+        human_readable = tableToMarkdown('Crimeservers feed', response.items)
+        return_outputs(human_readable, {})
+
+
+    def get_malware_feed_command():
+
+        response = api.malwares.recent('all')
+        verify_response_code(response)
+        human_readable = tableToMarkdown('Malware feed', response.items)
+        return_outputs(human_readable, {})
+
+
+    def get_attackingips_feed_command():
+
+        response = api.attacking_ips.recent('all')
+        verify_response_code(response)
+        human_readable = tableToMarkdown('Attacking IPs feed', response.items)
+        return_outputs(human_readable, {})
+
+
+    def get_hacktivism_feed_command():
+
+        response = api.hacktivism_ops.last('all')
+        verify_response_code(response)
+        human_readable = tableToMarkdown('Hacktivism feed', response.items)
+        return_outputs(human_readable, {})
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    COMMANDS = {
+        'test-module': test_module,
+        'blueliv-get-botips-feed': get_botips_feed_command,
+        'blueliv-get-crimeservers-feed': get_crimeservers_feed_command,
+        'blueliv-get-malware-feed': get_malware_feed_command,
+        'blueliv-get-attackingips-feed': get_attackingips_feed_command,
+        'blueliv-get-hacktivism-feed': get_hacktivism_feed_command
+    }
+
+    try:
+        api = BluelivAPI(
+            base_url=SERVER,
+            token=TOKEN
+        )
+        LOG('Command being called is {}'.format(demisto.command()))
+        command_func = COMMANDS.get(demisto.command())
+        if command_func is not None:
+            command_func()
+    except Exception as e:
+        return_error(str(e))
+  type: python
+system: true

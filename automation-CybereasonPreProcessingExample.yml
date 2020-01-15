@@ -1,0 +1,35 @@
+comment: |-
+  Preprocessing script to run when fetching Cybereason malops.
+  Will check if malop was already fetched, and will then update the existing incident, otherwise will create a new incident.
+commonfields:
+  id: CybereasonPreProcessingExample
+  version: -1
+enabled: true
+name: CybereasonPreProcessingExample
+runonce: false
+script: |-
+  res = True
+  incident = demisto.incidents()[0]
+  malop_guid = ''
+  for label in incident['labels']:
+      if label['type'] == 'guidString':
+          malop_guid = label['value']
+
+  response = demisto.executeCommand('getIncidents', {'query': '-status:Closed and malopguid: {}'.format(malop_guid)})
+  malop_incident = response[0]['Contents']['data']
+
+  if malop_incident:
+      # Malop was already fetched - updating the relevant incident
+      res = False
+      malop_incident = malop_incident[0]
+      incident['id'] = malop_incident['id']
+      demisto.executeCommand('setIncident', incident)
+
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- preProcessing
+- Cybereason
+- example
+type: python

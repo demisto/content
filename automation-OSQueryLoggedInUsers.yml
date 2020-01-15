@@ -1,0 +1,23 @@
+args:
+- default: true
+  description: The System to remote execute on, can be a list of systems
+  name: system
+  required: true
+comment: Returns logged in users details from a remote system using OSQuery
+commonfields:
+  id: OSQueryLoggedInUsers
+  version: -1
+dependson:
+  must:
+  - OSQueryBasicQuery
+name: OSQueryLoggedInUsers
+runonce: false
+script: |-
+  QUERY = "select liu.*, p.name, p.cmdline, p.cwd, p.root from logged_in_users liu, processes p where liu.pid = p.pid;"
+
+  demisto.results(demisto.executeCommand("OSQueryBasicQuery", {'query':QUERY, 'system':demisto.args()['system']}))
+scripttarget: 0
+system: true
+tags:
+- OSQuery
+type: python

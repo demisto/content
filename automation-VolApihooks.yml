@@ -1,0 +1,29 @@
+args:
+- description: Path to memory dump file on the system being used
+  name: memdump
+  required: true
+- description: System with Volatility installed to be used for the analysis
+  name: system
+  required: true
+- description: Process ID to pass to volatility as a parameter of the apihooks command
+  name: pid
+- description: Volatility profile to use
+  name: profile
+comment: Volatility script for command apihooks
+commonfields:
+  id: VolApihooks
+  version: -1
+name: VolApihooks
+runonce: false
+script: |-
+  var cmdline = 'apihooks -p ' + args.pid;
+  var out = executeCommand('Volatility', {memdump:args.memdump, profile:args.profile, system: args.system, cmd:cmdline});
+  return out;
+scripttarget: 0
+system: true
+tags:
+- memory
+- forensics
+- volatility
+- server
+type: javascript

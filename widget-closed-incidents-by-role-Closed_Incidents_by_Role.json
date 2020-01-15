@@ -1,0 +1,31 @@
+{
+	"category": "",
+	"dataType": "incidents",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "closed-incidents-by-role",
+	"isPredefined": true,
+	"name": "Closed Incidents by Role",
+	"params": {
+		"groupBy": [
+			"roles"
+		]
+	},
+	"query": "status:closed",
+	"size": 10,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "bar"
+}

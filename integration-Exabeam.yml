@@ -1,0 +1,602 @@
+category: Analytics & SIEM
+commonfields:
+  id: Exabeam
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL (e.g https://100.24.16.156:8484)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: The Exabeam Security Management Platform provides end-to-end detection,
+  User Event Behavioral Analytics, and SOAR.
+display: Exabeam
+image: data:image/png;base64,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
+name: Exabeam
+script:
+  commands:
+  - arguments:
+    - description: The time period for which to fetch notable users, such as 3 months,
+        2 days, 4 hours, 1 year, and so on.
+      isArray: true
+      name: time_period
+      required: true
+    - defaultValue: "10"
+      description: The maximum number of returned results.
+      name: limit
+      required: true
+    description: Returns notable users in a period of time.
+    name: get-notable-users
+    outputs:
+    - contextPath: Exabeam.User.RiskScore
+      description: The risk score of the notable user.
+      type: Number
+    - contextPath: Exabeam.User.UserFullName
+      description: The full name of the user.
+      type: String
+    - contextPath: Exabeam.User.AverageRiskScore
+      description: The average risk score of the user.
+      type: Number
+    - contextPath: Exabeam.User.FirstSeen
+      description: The date the user was first seen.
+      type: Date
+    - contextPath: Exabeam.User.NotableSessionIds
+      description: The ID of the notable session.
+      type: String
+    - contextPath: Exabeam.User.AccountsNumber
+      description: The number of accounts.
+      type: Number
+    - contextPath: Exabeam.User.LastSeen
+      description: The date the user was last seen.
+      type: Date
+    - contextPath: Exabeam.User.Location
+      description: The location of the user.
+      type: String
+    - contextPath: Exabeam.User.UserName
+      description: The name of the user.
+      type: String
+    - contextPath: Exabeam.User.Labels
+      description: The labels of the user.
+      type: String
+    - contextPath: Exabeam.User.LastActivityType
+      description: The last activity type of the user.
+      type: String
+    - contextPath: Exabeam.User.NotableUser
+      description: Whether the user is a notable user.
+      type: Boolean
+  - arguments: []
+    description: Returns all watchlist IDs and titles.
+    name: get-watchlists
+    outputs:
+    - contextPath: Exabeam.Watchlist.Category
+      description: The watchlist category.
+      type: String
+    - contextPath: Exabeam.Watchlist.Title
+      description: The watchlist title.
+      type: String
+    - contextPath: Exabeam.Watchlist.WatchlistID
+      description: The watchlist ID.
+      type: String
+  - arguments: []
+    description: Returns all peer groups.
+    name: get-peer-groups
+    outputs:
+    - contextPath: Exabeam.PeerGroup.Name
+      description: The name of the peer group.
+      type: String
+  - arguments:
+    - description: The username of the user to fetch.
+      name: username
+      required: true
+    description: Returns user information data for the username.
+    name: get-user-info
+    outputs:
+    - contextPath: Exabeam.User.RiskScore
+      description: The risk score of the user.
+      type: Number
+    - contextPath: Exabeam.User.AverageRiskScore
+      description: The average risk score.
+      type: Number
+    - contextPath: Exabeam.User.PeerGroupFieldName
+      description: The field name of the peer group.
+      type: String
+    - contextPath: Exabeam.User.FirstSeen
+      description: The date when the user was first seen.
+      type: Date
+    - contextPath: Exabeam.User.PeerGroupDisplayName
+      description: The display name of the Peer group.
+      type: String
+    - contextPath: Exabeam.User.LastSeen
+      description: The date the user was last seen.
+      type: Date
+    - contextPath: Exabeam.User.PeerGroupFieldValue
+      description: The field value of the peer group.
+      type: String
+    - contextPath: Exabeam.User.Label
+      description: The labels of the user.
+      type: String
+    - contextPath: Exabeam.User.Username
+      description: The name of the user.
+      type: String
+    - contextPath: Exabeam.User.PeerGroupType
+      description: The type of the peer group.
+      type: String
+    - contextPath: Exabeam.User.LastSessionID
+      description: The last session ID of the user.
+      type: String
+    - contextPath: Exabeam.User.LastActivityType
+      description: The last activity type of the user.
+      type: String
+    - contextPath: Exabeam.User.AccountNames
+      description: The account name of the user.
+      type: String
+  - arguments: []
+    description: Returns all labels of the user.
+    name: get-user-labels
+    outputs:
+    - contextPath: Exabeam.UserLabel.Label
+      description: The label of the user.
+      type: String
+  - arguments:
+    - description: The username for which to fetch data.
+      name: username
+      required: true
+    - description: The Start time of the time range. For example, 2018-08-01T11:50:16).
+      name: start_time
+    - description: The end time of the time range. For example, 2018-08-01T11:50:16.
+      name: end_time
+    description: Returns sessions for the given username and time range.
+    name: get-user-sessions
+    outputs:
+    - contextPath: Exabeam.User.Session.EndTime
+      description: The end time of the session.
+      type: Date
+    - contextPath: Exabeam.User.Session.InitialRiskScore
+      description: The initial risk score of the session.
+      type: Number
+    - contextPath: Exabeam.User.Session.Label
+      description: The label of the session.
+      type: String
+    - contextPath: Exabeam.User.Session.LoginHost
+      description: The login host.
+      type: String
+    - contextPath: Exabeam.User.Session.RiskScore
+      description: The risk score of the session.
+      type: Number
+    - contextPath: Exabeam.User.Session.SessionID
+      description: The ID of the session.
+      type: String
+    - contextPath: Exabeam.User.Session.StartTime
+      description: The start time of the session.
+      type: Date
+    - contextPath: Exabeam.User.Username
+      description: The username of the session.
+      type: String
+  dockerimage: demisto/python3:3.7.4.1900
+  runonce: false
+  script: |2-
+
+
+
+    ''' IMPORTS '''
+
+    import requests
+    from typing import Dict, Optional, MutableMapping
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' HELPERS '''
+
+
+    def convert_unix_to_date(d):
+        """Convert unix timestamp to datetime in iso format"""
+        return datetime.fromtimestamp(int(d) / 1000).isoformat()
+
+
+    class Client:
+        def __init__(self, exabeam_url: str, username: str, password: str, verify: bool,
+                     proxies: Optional[MutableMapping[str, str]], headers):
+            self.server = exabeam_url.rstrip('/')
+            self.base_url = f'{self.server}/uba/api/'
+            self.username = username
+            self.password = password
+            self.verify = verify
+            self.proxies = proxies
+            self.headers = headers
+            self.session = requests.Session()
+            self.session.headers = headers
+            self._login()
+
+        def __del__(self):
+            self._logout()
+
+        def _http_request(self, method: str, suffix_url: str = None, params: dict = None, data: dict = None,
+                          full_url: str = None, resp_type: str = 'json'):
+            full_url = full_url if full_url else f'{self.base_url}{suffix_url}'
+            try:
+                res = self.session.request(
+                    method,
+                    full_url,
+                    verify=self.verify,
+                    data=data,
+                    proxies=self.proxies,
+                    params=params
+                )
+                if not res.ok:
+                    raise ValueError(f'Error in API call to Exabeam {res.status_code}. Reason: {res.text}')
+
+                try:
+                    if resp_type == 'json':
+                        return res.json()
+                    else:
+                        return res.text
+                except Exception:
+                    raise ValueError(
+                        f'Failed to parse http response to JSON format. Original response body: \n{res.text}')
+
+            except requests.exceptions.ConnectTimeout as exception:
+                err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
+                          ' is incorrect or that the Server is not accessible from your host.'
+                raise DemistoException(err_msg, exception)
+
+            except requests.exceptions.SSLError as exception:
+                err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+                          ' the integration configuration.'
+                raise DemistoException(err_msg, exception)
+
+            except requests.exceptions.ProxyError as exception:
+                err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                          ' selected, try clearing the checkbox.'
+                raise DemistoException(err_msg, exception)
+
+            except requests.exceptions.ConnectionError as exception:
+                # Get originating Exception in Exception chain
+                error_class = str(exception.__class__)
+                err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+                err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                          'Verify that the server URL parameter' \
+                          ' is correct and that you have access to the server from your host.' \
+                    .format(err_type, exception.errno, exception.strerror)
+                raise DemistoException(err_msg, exception)
+
+        def _login(self):
+            """ Login using the credentials and store the cookie """
+            self._http_request('POST', full_url=f'{self.server}/api/auth/login', data={
+                'username': self.username,
+                'password': self.password
+            })
+
+        def _logout(self):
+            """ Logout from the session """
+            self._http_request('GET', self._http_request('GET', f'{self.server}/api/auth/logout'))
+
+        def test_module_request(self):
+            """
+            Performs basic get request to check if the server is reachable.
+            """
+            suffix_url = 'ping'
+            return self._http_request('GET', suffix_url, resp_type='text')
+
+        def get_notable_users_request(self, api_unit: str = None, num: str = None, limit: int = None):
+
+            suffix_url = 'users/notable'
+
+            params = {
+                'unit': api_unit,
+                'num': num,
+                'numberOfResults': limit
+            }
+            response = self._http_request('GET', suffix_url, params)
+            return response
+
+        def get_user_info_request(self, username: str):
+
+            suffix_url = f'user/{username}/info'
+            response = self._http_request('GET', suffix_url)
+            return response
+
+        def get_watchlist_request(self):
+
+            suffix_url = 'watchlist'
+            response = self._http_request('GET', suffix_url)
+
+            return response
+
+        def get_peergroups_request(self):
+
+            suffix_url = 'peerGroup'
+
+            response = self._http_request('GET', suffix_url)
+            return response
+
+        def get_user_labels_request(self):
+
+            suffix_url = 'userLabel'
+            response = self._http_request('GET', suffix_url)
+
+            return response
+
+        def user_sequence_request(self, username: str = None, parse_start_time=None, parse_end_time=None):
+
+            suffix_url = f'user/{username}/sequences'
+            params = {
+                'username': username,
+                'startTime': parse_start_time,
+                'endTime': parse_end_time
+            }
+
+            response = self._http_request('GET', suffix_url, params)
+            return response
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module(client: Client, *_):
+
+        client.test_module_request()
+        demisto.results('ok')
+        return '', None, None
+
+
+    def get_notable_users(client: Client, args: Dict):
+        """ Get notable users in a period of time
+
+        Args:
+            client: Client
+            args: Dict
+
+        """
+        limit: int = args.get('limit', 10)
+        time_period: str = args.get('time_period', '')
+        time_ = time_period.split(' ')
+        if not len(time_) == 2:
+            return_error('Got invalid time period. Enter the time period number and unit.')
+        num: str = time_[0]
+        unit: str = time_[1]
+        api_unit = unit[0]
+        if api_unit == 'm':
+            api_unit = api_unit.upper()
+
+        if api_unit not in {'d', 'y', 'M', 'h'}:
+            return_error('The time unit is incorrect - can be hours, days, months, years')
+
+        contents = []
+        headers = ['UserFullName', 'UserName', 'Title', 'Department', 'RiskScore', 'Labels', 'NotableSessionIds',
+                   'EmployeeType', 'FirstSeen', 'LastSeen', 'LastActivity', 'Location']
+        users = client.get_notable_users_request(api_unit, num, limit).get('users', [])
+        if not users:
+            return 'No users were found in this period of time.', {}, {}
+        else:
+            for user in users:
+                user_ = user.get('user', {})
+                user_info = user_.get('info', {})
+                contents.append({
+                    'UserName': user_.get('username'),
+                    'RiskScore': round(user_.get('riskScore')),
+                    'FirstSeen': convert_unix_to_date(user_.get('firstSeen')),
+                    'LastSeen': convert_unix_to_date(user_.get('lastSeen')),
+                    'LastActivity': user_.get('lastActivityType'),
+                    'Labels': user_.get('labels'),
+                    'UserFullName': user.get('userFullName'),
+                    'Location': user_.get('info')['location'],
+                    'NotableSessionIds': user.get('notableSessionIds'),
+                    'NotableUser': True,
+                    'HighestRiskSession': user.get('highestRiskSession'),
+                    'EmployeeType': user_info.get('employeeType'),
+                    'Department': user_info.get('department'),
+                    'Title': user_info.get('title')
+                })
+
+            context = {
+                'Exabeam.User(val.UserName && val.UserName === obj.UserName)': contents
+            }
+
+            human_readable = tableToMarkdown('Exabeam Notable Users', contents, headers, removeNull=True)
+            return human_readable, context, users
+
+
+    def get_user_info(client: Client, args: Dict):
+        """  Returns User info data for the given username
+        Args:
+            client: Client
+            args: Dict
+
+        """
+        username: str = args.get('username', '')
+        headers = ['Username', 'RiskScore', 'AverageRiskScore', 'LastSessionID', 'Labels', 'FirstSeen',
+                   'LastSeen', 'LastActivityType', 'AccountNames', 'PeerGroupFieldName', 'PeerGroupFieldValue',
+                   'PeerGroupDisplayName', 'PeerGroupType']
+        user = client.get_user_info_request(username)
+        user_info = user.get('userInfo', {})
+        contents = {
+            'Username': user.get('username'),
+            'RiskScore': round(user_info.get('riskScore')),
+            'AverageRiskScore': user_info.get('averageRiskScore'),
+            'LastSessionID': user_info.get('lastSessionId'),
+            'FirstSeen': convert_unix_to_date(user_info.get('firstSeen')),
+            'LastSeen': convert_unix_to_date(user_info.get('lastSeen')),
+            'LastActivityType': user_info.get('lastActivityType'),
+            'Label': user_info.get('labels'),
+            'AccountNames': user.get('accountNames'),
+            'PeerGroupFieldName': user.get('peerGroupFieldName'),
+            'PeerGroupFieldValue': user.get('peerGroupFieldValue'),
+            'PeerGroupDisplayName': user.get('peerGroupDisplayName'),
+            'PeerGroupType': user.get('peerGroupType')
+        }
+
+        context = {
+            'Exabeam.User(val.UserName && val.UserName === obj.UserName)': contents
+        }
+
+        if not user_info.get('firstSeen'):
+            return f'The user {username} was not found', {}, {}
+        else:
+            human_readable = tableToMarkdown(f'User {username} information', contents, headers, removeNull=True)
+            return human_readable, context, user
+
+
+    def get_user_sessions(client: Client, args: Dict):
+        """ Returns sessions for the given username and time range
+
+        Args:
+            client: Client
+            args: Dict
+
+        """
+        username = args.get('username')
+        start_time = args.get('start_time', datetime.now() - timedelta(days=30))
+        end_time = args.get('end_time', datetime.now())
+        parse_start_time = date_to_timestamp(start_time)
+        parse_end_time = date_to_timestamp(end_time)
+        contents = []
+        headers = ['SessionID', 'RiskScore', 'InitialRiskScore', 'StartTime', 'EndTime', 'LoginHost', 'Label']
+
+        user = client.user_sequence_request(username, parse_start_time, parse_end_time)
+        session = user.get('sessions')
+        for session_ in session:
+            contents.append({
+                'SessionID': session_.get('sessionId'),
+                'StartTime': convert_unix_to_date(session_.get('startTime')),
+                'EndTime': convert_unix_to_date(session_.get('endTime')),
+                'InitialRiskScore': session_.get('initialRiskScore'),
+                'RiskScore': round(session_.get('riskScore')),
+                'LoginHost': session_.get('loginHost'),
+                'Label': session_.get('label')
+            })
+
+        context = {
+            'Exabeam.User(val.SessionID && val.SessionID === obj.SessionID)': {
+                'Username': username,
+                'Session': contents
+            }
+        }
+
+        if session:
+            human_readable = tableToMarkdown(f'User {username} sessions information', contents, headers, removeNull=True)
+            return human_readable, context, user
+        else:
+            return f'The user {username} was not found', {}, {}
+
+
+    def get_watchlist(client: Client, *_):
+        """  Returns all watchlist ids and titles.
+
+        Args:
+            client: Client
+
+        """
+
+        watchlist = client.get_watchlist_request()
+        contents = []
+        headers = ['WatchlistID', 'Title', 'Category']
+        for list_ in watchlist:
+            contents.append({
+                'WatchlistID': list_.get('watchlistId'),
+                'Title': list_.get('title'),
+                'Category': list_.get('category')
+            })
+
+        context = {
+            'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents
+        }
+
+        human_readable = tableToMarkdown('Exabeam Watchlists', contents, headers)
+        return human_readable, context, watchlist
+
+
+    def get_peer_groups(client: Client, *_):
+        """ Returns all peer groups
+
+        Args:
+            client: Client
+
+        """
+        groups = client.get_peergroups_request()
+        contents = []
+        for group in groups:
+            contents.append({
+                'Name': group
+            })
+
+        context = {
+            'Exabeam.PeerGroup(val.Name && val.Name === obj.Name)': contents
+        }
+
+        human_readable = tableToMarkdown('Exabeam Peer Groups', contents)
+        return human_readable, context, groups
+
+
+    def get_user_labels(client: Client, *_):
+        """ Returns all user Labels
+
+        Args:
+            client: Client
+
+        """
+        labels = client.get_user_labels_request()
+        contents = []
+        for label in labels:
+            contents.append({
+                'Label': label
+            })
+
+        context = {
+            'Exabeam.UserLabel(val.Label && val.Label === obj.Label)': contents
+        }
+
+        human_readable = tableToMarkdown('Exabeam User Labels', contents)
+        return human_readable, context, labels
+
+
+    def main():
+        username = demisto.params().get('credentials').get('identifier')
+        password = demisto.params().get('credentials').get('password')
+        server_url = demisto.params().get('url')
+        verify_certificate = not demisto.params().get('insecure', False)
+        headers = {
+            'Accept': 'application/json'
+        }
+        proxies = handle_proxy()
+        client = Client(server_url, verify=verify_certificate, username=username, password=password, proxies=proxies,
+                        headers=headers)
+        LOG(f'Command being called is demisto.command()')
+        commands = {
+            'test-module': test_module,
+            'get-notable-users': get_notable_users,
+            'get-watchlists': get_watchlist,
+            'get-peer-groups': get_peer_groups,
+            'get-user-info': get_user_info,
+            'get-user-labels': get_user_labels,
+            'get-user-sessions': get_user_sessions
+        }
+        try:
+            command = demisto.command()
+            if command in commands:
+                return_outputs(*commands[command](client, demisto.args()))  # type: ignore
+
+        except Exception as e:
+            return_error(str(e))
+
+
+    if __name__ in ['__main__', 'builtin', 'builtins']:
+        main()
+  subtype: python3
+  type: python
+system: true

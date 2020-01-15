@@ -1,0 +1,46 @@
+args:
+- default: true
+  description: field to verify
+  name: field1
+- description: optional field1 value validation
+  name: value1
+- description: field to verify
+  name: field2
+- description: optional field2 value validation
+  name: value2
+- description: field to verify
+  name: field3
+- description: optional field3 value validation
+  name: value3
+- description: field to verify
+  name: field4
+- description: optional field4 value validation
+  name: value4
+comment: Verify fields are in context (use VerifyContext instead)
+commonfields:
+  id: VerifyContextFields
+  version: -1
+deprecated: true
+enabled: true
+name: VerifyContextFields
+runonce: false
+script: |
+  var fields = [args.field1, args.field2, args.field3, args.field4];
+  var values = [args.value1, args.value2, args.value3, args.value4];
+
+  for (i = 0; i < fields.length; i++) {
+      if (fields[i] !== undefined) {
+          if (values[i] !== undefined) {
+              verifyContextField(fields[i], values[i]);
+              log('Verified: ' + fields[i] + ' == ' + values[i]);
+          } else {
+              verifyContextField(fields[i]);
+              log('Verified field existence: ' + fields[i]);
+          }
+      }
+  }
+scripttarget: 0
+system: true
+tags:
+- Utility
+type: javascript

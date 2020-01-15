@@ -1,0 +1,132 @@
+{
+	"TypeName": "",
+	"id": "registryKey",
+	"kind": "indicatorsDetails",
+	"name": "",
+	"sortValues": null,
+	"system": true,
+	"tabs": [
+		{
+			"id": "default-main",
+			"name": "Info",
+			"sections": [
+				{
+					"h": 2,
+					"i": "reputationSources",
+					"moved": false,
+					"name": "Reputation",
+					"static": false,
+					"type": "reputationSources",
+					"w": 2,
+					"x": 1,
+					"y": 0
+				},
+				{
+					"h": 3,
+					"i": "relatedIncidents",
+					"moved": false,
+					"name": "Related Incidents",
+					"static": false,
+					"type": "relatedIncidents",
+					"w": 2,
+					"x": 1,
+					"y": 2
+				},
+				{
+					"displayType": "ROW",
+					"h": 2,
+					"i": "indicatorTimeline",
+					"items": [
+						{
+							"endCol": 2,
+							"fieldId": "firstseen",
+							"height": 24,
+							"id": "indicator-first-seen",
+							"index": 0,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "lastseen",
+							"height": 24,
+							"id": "indicator-last-seen",
+							"index": 1,
+							"startCol": 0
+						}
+					],
+					"moved": false,
+					"name": "Timeline",
+					"static": false,
+					"type": "indicatorTimeline",
+					"w": 1,
+					"x": 0,
+					"y": 3
+				},
+				{
+					"displayType": "ROW",
+					"h": 3,
+					"i": "e2c8c970-a09d-11e9-8956-390f602b039a",
+					"items": [
+						{
+							"endCol": 2,
+							"fieldId": "indicatortype",
+							"height": 24,
+							"id": "indicator-type",
+							"index": 0,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "source",
+							"height": 24,
+							"id": "indicator-source",
+							"index": 1,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "comment",
+							"height": 48,
+							"id": "indicator-comment",
+							"index": 2,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "name",
+							"height": 24,
+							"id": "51f3e5c0-b1e0-11e9-b8c7-15ca72216f6a",
+							"index": 3,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "path",
+							"height": 24,
+							"id": "54a83050-b1e0-11e9-b8c7-15ca72216f6a",
+							"index": 4,
+							"startCol": 0
+						},
+						{
+							"endCol": 2,
+							"fieldId": "registryvalue",
+							"height": 24,
+							"id": "56bc1c30-b1e0-11e9-b8c7-15ca72216f6a",
+							"index": 5,
+							"startCol": 0
+						}
+					],
+					"moved": false,
+					"name": "Registry Key Info",
+					"static": false,
+					"w": 1,
+					"x": 0,
+					"y": 0
+				}
+			],
+			"type": "custom"
+		}
+	],
+	"typeId": "registryKey",
+	"version": -1
+}

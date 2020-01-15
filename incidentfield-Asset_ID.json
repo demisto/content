@@ -1,0 +1,42 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"Vulnerability"
+	],
+	"breachScript": "",
+	"caseInsensitive": false,
+	"cliName": "assetid",
+	"closeForm": true,
+	"columns": null,
+	"content": true,
+	"defaultRows": null,
+	"description": "",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_assetid",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "Asset ID",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": null,
+	"sla": 0,
+	"sortValues": null,
+	"system": false,
+	"systemAssociatedTypes": [
+		"Vulnerability"
+	],
+	"threshold": 0,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}

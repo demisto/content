@@ -1,0 +1,225 @@
+description: This playbook accepts a SHA256 hash and adds the hash to the Global Quarantine
+  list using the Cylance Protect v2 integration.
+id: Block File - Cylance Protect v2
+inputs:
+- description: The SHA256 hash of the file to block.
+  key: SHA256
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      filters:
+      - - left:
+            iscontext: true
+            value:
+              simple: File.Malicious
+          operator: isExists
+      root: File
+      transformers:
+      - operator: uniq
+name: Block File - Cylance Protect v2
+outputs:
+- contextPath: CbResponse.BlockedHashes.LastBlock.Time
+  description: Last block time
+- contextPath: CbResponse.BlockedHashes.LastBlock.Hostname
+  description: Last block hostname
+- contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
+  description: Last block sensor ID
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 5e4385e3-76c2-48e2-80a4-c3798cdae027
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 5e4385e3-76c2-48e2-80a4-c3798cdae027
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Cylance Protect v2
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if Cylance Protect is enabled.
+      id: df41aaaa-8055-4c59-8e9e-a167a7ef7819
+      iscommand: false
+      name: Is Cylance Protect v2 enabled?
+      type: condition
+      version: -1
+    taskid: df41aaaa-8055-4c59-8e9e-a167a7ef7819
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.SHA256
+          operator: isNotEmpty
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "10"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is a value for the SHA256 input field. This task
+        does not verify that the value is actually a SHA256 hash, just that the value
+        for the field exists.
+      id: 9b14005e-903d-4724-80ec-84e7c42a9e7b
+      iscommand: false
+      name: Is there a SHA256 to block?
+      type: condition
+      version: -1
+    taskid: 9b14005e-903d-4724-80ec-84e7c42a9e7b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 370
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 2c14bf01-7fd9-45f8-8554-86d0c1332d81
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 2c14bf01-7fd9-45f8-8554-86d0c1332d81
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 710
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      category: {}
+      listType:
+        simple: GlobalQuarantine
+      reason: {}
+      sha256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: false
+    task:
+      brand: Cylance Protect v2
+      description: Add a convicted threat to either the Global Quarantine or the Global
+        Safe list for a particular Tenant
+      id: e5138608-1de0-48ac-879d-faf7c0e29d4f
+      iscommand: true
+      name: Add hash to Global Quarantine list
+      script: Cylance Protect v2|||cylance-protect-add-hash-to-list
+      type: regular
+      version: -1
+    taskid: e5138608-1de0-48ac-879d-faf7c0e29d4f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 540
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_9_#default#": 0.64,
+      "8_9_#default#": 0.32
+    },
+    "paper": {
+      "dimensions": {
+        "height": 725,
+        "width": 885,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }

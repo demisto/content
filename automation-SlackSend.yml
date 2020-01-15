@@ -1,0 +1,33 @@
+args:
+- description: Send a Direct message by specifying a Slack user name
+  name: to
+- description: Specify a Slack channel where the message will appear.
+  name: channel
+- description: Send a link to this entry in the War Room
+  name: entry
+- description: Specify a private channel
+  name: group
+- default: true
+  description: Message contents to send.
+  name: message
+comment: Send messages to Slack teams
+commonfields:
+  id: SlackSend
+  version: -1
+dependson:
+  must:
+  - slack-send
+deprecated: true
+name: SlackSend
+runonce: false
+script: |-
+  dArgs = {}
+  for argName in ['message', 'to', 'channel', 'group', 'entry']:
+      if demisto.get(demisto.args(), argName):
+          dArgs[argName] = demisto.args()[argName]
+  demisto.results( demisto.executeCommand( 'slack-send', dArgs )  )
+scripttarget: 0
+system: true
+tags:
+- slack
+type: python

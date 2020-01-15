@@ -1,0 +1,29 @@
+{
+	"category": "incidents",
+	"dataType": "audit",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "incidents-dropped-in-preprocessing",
+	"isPredefined": true,
+	"name": "Incidents Dropped in Preprocessing",
+	"params": {
+		"preProcessing": true
+	},
+	"query": "",
+	"size": 0,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "number"
+}

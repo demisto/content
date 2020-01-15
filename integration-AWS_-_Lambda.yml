@@ -1,0 +1,954 @@
+category: IT Services
+commonfields:
+  id: AWS - Lambda
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: AWS Default Region
+  name: defaultRegion
+  options:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  required: false
+  type: 15
+- defaultvalue: ""
+  display: Role Arn
+  name: roleArn
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Role Session Name
+  name: roleSessionName
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Role Session Duration
+  name: sessionDuration
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Access Key
+  name: access_key
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Secret Key
+  name: secret_key
+  required: false
+  type: 4
+- defaultvalue: ""
+  display: Trust any cert (Not Secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Amazon Web Services Serverless Compute service (lambda)
+detaileddescription: "Before you can use the AWS Lambda integration in Demisto, you
+  need to perform several configuration steps in your AWS environment.\n\n### Prerequisites\n-
+  Attach an instance profile with the required permissions to the Demisto server or
+  engine that is running \non your AWS environment.\n- Instance profile requires minimum
+  permission: sts:AssumeRole.\n- Instance profile requires permission to assume the
+  roles needed by the AWS integrations.\n\n### Configure AWS Settings\n1. Create an
+  IAM Role for the Instance Profile.\n2. Attach a Role to the Instance Profile.\n3.
+  Configure the Necessary IAM Roles that the AWS Integration Can Assume.\n\nFor detailed
+  instructions, [see the AWS Integrations Configuration Guide](https://support.demisto.com/hc/en-us/articles/360005686854-AWS-Integrations-Configuration-Guide).\n"
+display: AWS - Lambda
+image: data:image/png;base64,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
+name: AWS - Lambda
+script:
+  commands:
+  - arguments:
+    - description: The name of the Lambda function.
+      name: functionName
+      required: true
+    - description: Specify a version or alias to get details about a published version
+        of the function.
+      name: qualifier
+    - auto: PREDEFINED
+      description: The AWS Region, if not specified the default region will be used
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Returns the configuration information of the Lambda function and
+      a presigned URL link to the .zip file you uploaded with CreateFunction so you
+      can download the .zip file. Note that the URL is valid for up to 10 minutes.
+      The configuration information is the same information you provided as parameters
+      when uploading the function.  Use the Qualifier parameter to retrieve a published
+      version of the function. Otherwise, returns the unpublished version ($LATEST
+      ).
+    name: aws-lambda-get-function
+    outputs:
+    - contextPath: AWS.Lambda.Functions.Configuration.FunctionName
+      description: The name of the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.FunctionArn
+      description: The function's Amazon Resource Name.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Runtime
+      description: The runtime environment for the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Role
+      description: The function's execution role.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Handler
+      description: The function Lambda calls to begin executing your function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.CodeSize
+      description: The size of the function's deployment package in bytes.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Description
+      description: The function's description.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Timeout
+      description: The amount of time that Lambda allows a function to run before
+        terminating it.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Configuration.MemorySize
+      description: The memory allocated to the function
+      type: number
+    - contextPath: 'AWS.Lambda.Functions.Configuration.LastModified '
+      description: The date and time that the function was last updated, in ISO-8601
+        format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: date
+    - contextPath: AWS.Lambda.Functions.Configuration.CodeSha256
+      description: The SHA256 hash of the function's deployment package.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Version
+      description: The version of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.VpcConfig.SecurityGroupIds
+      description: A list of VPC security groups IDs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.DeadLetterConfig.TargetArn
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon
+        SNS topic.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Environment.Variables
+      description: Environment variable key-value pairs
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Environment.Error.ErrorCode
+      description: Error messages for environment variables that could not be applied.
+        The error code.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Environment.
+      description: Error messages for environment variables that could not be applied.
+        The error message.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.KMSKeyArn
+      description: The KMS key used to encrypt the function's environment variables.
+        Only returned if you've configured a customer managed CMK.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.TracingConfig.Mode
+      description: The function's AWS X-Ray tracing configuration. The tracing mode.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.MasterArn
+      description: The ARN of the master function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.RevisionId
+      description: Represents the latest updated revision of the function or alias.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Layers.Arn
+      description: The Amazon Resource Name (ARN) of the function layer.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Layers.CodeSize
+      description: The size of the layer archive in bytes.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Code.RepositoryType
+      description: The repository from which you can download the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Code.Location
+      description: The presigned URL you can use to download the function's .zip file
+        that you previously uploaded. The URL is valid for up to 10 minutes.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Tags
+      description: list of tags associated with the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Concurrency.ReservedConcurrentExecutions
+      description: The number of concurrent executions reserved for this function.
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region, if not specified the default region will be used
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Returns a list of your Lambda functions. For each function, the response
+      includes the function configuration information. You must use GetFunction to
+      retrieve the code for your function.
+    name: aws-lambda-list-functions
+    outputs:
+    - contextPath: AWS.Lambda.Functions.FunctionName
+      description: The name of the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.FunctionArn
+      description: The function's Amazon Resource Name.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Runtime
+      description: The runtime environment for the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Role
+      description: The function's execution role.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Handler
+      description: The function Lambda calls to begin executing your function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.CodeSize
+      description: The size of the function's deployment package in bytes.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Description
+      description: The function's description.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Timeout
+      description: The amount of time that Lambda allows a function to run before
+        terminating it.
+      type: number
+    - contextPath: AWS.Lambda.Functions.MemorySize
+      description: The memory allocated to the function.
+      type: number
+    - contextPath: AWS.Lambda.Functions.LastModified
+      description: The date and time that the function was last updated, in ISO-8601
+        format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: date
+    - contextPath: AWS.Lambda.Functions.CodeSha256
+      description: The SHA256 hash of the function's deployment package.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Version
+      description: The version of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SecurityGroupIds
+      description: A list of VPC security groups IDs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.Lambda.Functions.DeadLetterConfig.TargetArn
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon
+        SNS topic.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Environment.Variables
+      description: Environment variable key-value pairs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Environment.Error.ErrorCode
+      description: Error messages for environment variables that could not be applied.
+        The error code.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Environment.Error.Message
+      description: Error messages for environment variables that could not be applied.
+        The error message.
+      type: string
+    - contextPath: AWS.Lambda.Functions.KMSKeyArn
+      description: The KMS key used to encrypt the function's environment variables.
+        Only returned if you've configured a customer managed CMK.
+      type: string
+    - contextPath: AWS.Lambda.Functions.TracingConfig.Mode
+      description: The function's AWS X-Ray tracing configuration. The tracing mode.
+      type: string
+    - contextPath: AWS.Lambda.Functions.MasterArn
+      description: The ARN of the master function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.RevisionId
+      description: Represents the latest updated revision of the function or alias.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Layers.Arn
+      description: The Amazon Resource Name (ARN) of the function layer.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Layers.CodeSize
+      description: The size of the layer archive in bytes.
+      type: string
+  - arguments:
+    - description: The name of the lambda function.
+      name: functionName
+      required: true
+    - description: If you specify this optional parameter, the API returns only the
+        aliases that are pointing to the specific Lambda function version, otherwise
+        the API returns all of the aliases created for the Lambda function.
+      name: functionVersion
+    - auto: PREDEFINED
+      description: The AWS Region, if not specified the default region will be used
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Returns list of aliases created for a Lambda function. For each alias,
+      the response includes information such as the alias ARN, description, alias
+      name, and the function version to which it points.
+    name: aws-lambda-list-aliases
+    outputs:
+    - contextPath: AWS.Lambda.Aliases.AliasArn
+      description: 'Lambda function ARN that is qualified using the alias name as
+        the suffix. '
+      type: string
+    - contextPath: AWS.Lambda.Aliases.Name
+      description: Alias name.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.FunctionVersion
+      description: Function version to which the alias points.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.Description
+      description: Alias description.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.RoutingConfig.AdditionalVersionWeights
+      description: The name of the second alias, and the percentage of traffic that
+        is routed to it.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.RevisionId
+      description: Represents the latest updated revision of the function or alias.
+      type: string
+  - arguments:
+    - description: The name of the Lambda function.
+      name: functionName
+      required: true
+    - auto: PREDEFINED
+      description: Choose from the following options.  RequestResponse (default) -
+        Invoke the function synchronously. Keep the connection open until the function
+        returns a response or times out. Event - Invoke the function asynchronously.
+        Send events that fail multiple times to the function's dead-letter queue (if
+        configured). DryRun - Validate parameter values and verify that the user or
+        role has permission to invoke the function.
+      name: invocationType
+      predefined:
+      - Event
+      - RequestResponse
+      - DryRun
+    - auto: PREDEFINED
+      description: You can set this optional parameter to Tail in the request only
+        if you specify the InvocationType parameter with value RequestResponse . In
+        this case, AWS Lambda returns the base64-encoded last 4 KB of log data produced
+        by your Lambda function in the x-amz-log-result header.
+      name: logType
+      predefined:
+      - None
+      - Tail
+    - description: 'Using the ClientContext you can pass client-specific information
+        to the Lambda function you are invoking. '
+      name: clientContext
+    - description: JSON that you want to provide to your Lambda function as input.
+      name: payload
+    - description: Specify a version or alias to invoke a published version of the
+        function.
+      name: qualifier
+    - auto: PREDEFINED
+      description: The AWS Region, if not specified the default region will be used
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Invokes a Lambda function. Specify just a function name to invoke
+      the latest version of the function. To invoke a published version, use the Qualifier
+      parameter to specify a version or alias .  If you use the RequestResponse (synchronous)
+      invocation option, the function will be invoked only once. If you use the Event
+      (asynchronous) invocation option, the function will be invoked at least once
+      in response to an event and the function must be idempotent to handle this.  For
+      functions with a long timeout, your client may be disconnected during synchronous
+      invocation while it waits for a response. Configure your demisto server to allow
+      for long connections with timeout or keep-alive settings.
+    execution: true
+    name: aws-lambda-invoke
+    outputs:
+    - contextPath: AWS.Lambda.InvokedFunctions.FunctionName
+      description: The name of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.InvokedFunctions.FunctionError
+      description: Indicates whether an error occurred while executing the Lambda
+        function. If an error occurred this field will have one of two values; Handled
+        or Unhandled . Handled errors are errors that are reported by the function
+        while the Unhandled errors are those detected and reported by AWS Lambda.
+        Unhandled errors include out of memory errors and function timeouts.
+      type: string
+    - contextPath: AWS.Lambda.InvokedFunctions.LogResult
+      description: logs for the Lambda function invocation. This is present only if
+        the invocation type is RequestResponse and the logs were requested.
+      type: string
+    - contextPath: AWS.Lambda.InvokedFunctions.Payload
+      description: It is the JSON representation of the object returned by the Lambda
+        function. This is present only if the invocation type is RequestResponse.
+      type: string
+    - contextPath: AWS.Lambda.InvokedFunctions.ExecutedVersion
+      description: The function version that has been executed. This value is returned
+        only if the invocation type is RequestResponse.
+      type: string
+    - contextPath: AWS.Lambda.InvokedFunctions.Region
+      description: The AWS Region.
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region, if not specified the default region will be used
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Retrieves details about your account's limits and usage in an AWS
+      Region.
+    name: aws-lambda-get-account-settings
+    outputs:
+    - contextPath: AWS.Lambda.AccountLimit.TotalCodeSize
+      description: The amount of storage space that you can use for all deployment
+        packages and layer archives.
+      type: number
+    - contextPath: AWS.Lambda.AccountLimit.CodeSizeUnzipped
+      description: The maximum size of your function's code and layers when they're
+        extracted.
+      type: number
+    - contextPath: AWS.Lambda.AccountLimit.CodeSizeZipped
+      description: The maximum size of a deployment package when it's uploaded directly
+        to AWS Lambda. Use Amazon S3 for larger files.
+      type: number
+    - contextPath: AWS.Lambda.AccountLimit.ConcurrentExecutions
+      description: The maximum number of simultaneous function executions.
+      type: number
+    - contextPath: AWS.Lambda.AccountLimit.UnreservedConcurrentExecutions
+      description: The maximum number of simultaneous function executions, minus the
+        capacity that's reserved for individual functions with PutFunctionConcurrency
+        .
+      type: number
+    - contextPath: AWS.Lambda.AccountUsage.TotalCodeSize
+      description: The amount of storage space, in bytes, that's being used by deployment
+        packages and layer archives.
+      type: number
+    - contextPath: AWS.Lambda.AccountUsage. FunctionCount
+      description: The number of Lambda functions.
+      type: number
+  dockerimage: demisto/boto3py3:1.0.0.1030
+  runonce: false
+  script: |2-
+
+
+
+
+    """IMPORTS"""
+    import boto3
+    import base64
+    from datetime import datetime, date
+    from botocore.config import Config
+    from botocore.parsers import ResponseParserError
+    import urllib3.util
+
+    # Disable insecure warnings
+    urllib3.disable_warnings()
+
+    """GLOBAL VARIABLES"""
+    AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
+    AWS_ROLE_ARN = demisto.params().get('roleArn')
+    AWS_ROLE_SESSION_NAME = demisto.params().get('roleSessionName')
+    AWS_ROLE_SESSION_DURATION = demisto.params().get('sessionDuration')
+    AWS_ROLE_POLICY = None
+    AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
+    AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
+    VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+    proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+    config = Config(
+        connect_timeout=1,
+        retries=dict(
+            max_attempts=5
+        ),
+        proxies=proxies
+    )
+
+    """HELPER FUNCTIONS"""
+
+
+    def aws_session(service='lambda', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
+                    rolePolicy=None):
+        kwargs = {}
+        if roleArn and roleSessionName is not None:
+            kwargs.update({
+                'RoleArn': roleArn,
+                'RoleSessionName': roleSessionName,
+            })
+        elif AWS_ROLE_ARN and AWS_ROLE_SESSION_NAME is not None:
+            kwargs.update({
+                'RoleArn': AWS_ROLE_ARN,
+                'RoleSessionName': AWS_ROLE_SESSION_NAME,
+            })
+
+        if roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds': int(roleSessionDuration)})
+        elif AWS_ROLE_SESSION_DURATION is not None:
+            kwargs.update({'DurationSeconds': int(AWS_ROLE_SESSION_DURATION)})
+
+        if rolePolicy is not None:
+            kwargs.update({'Policy': rolePolicy})
+        elif AWS_ROLE_POLICY is not None:
+            kwargs.update({'Policy': AWS_ROLE_POLICY})
+        if kwargs and AWS_ACCESS_KEY_ID is None:
+
+            if AWS_ACCESS_KEY_ID is None:
+                sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
+                sts_response = sts_client.assume_role(**kwargs)
+                if region is not None:
+                    client = boto3.client(
+                        service_name=service,
+                        region_name=region,
+                        aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                        aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                        aws_session_token=sts_response['Credentials']['SessionToken'],
+                        verify=VERIFY_CERTIFICATE,
+                        config=config
+                    )
+                else:
+                    client = boto3.client(
+                        service_name=service,
+                        region_name=AWS_DEFAULT_REGION,
+                        aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                        aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                        aws_session_token=sts_response['Credentials']['SessionToken'],
+                        verify=VERIFY_CERTIFICATE,
+                        config=config
+                    )
+        elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
+            sts_client = boto3.client(
+                service_name='sts',
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                verify=VERIFY_CERTIFICATE,
+                config=config
+            )
+            kwargs.update({
+                'RoleArn': AWS_ROLE_ARN,
+                'RoleSessionName': AWS_ROLE_SESSION_NAME,
+            })
+            sts_response = sts_client.assume_role(**kwargs)
+            client = boto3.client(
+                service_name=service,
+                region_name=AWS_DEFAULT_REGION,
+                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                aws_session_token=sts_response['Credentials']['SessionToken'],
+                verify=VERIFY_CERTIFICATE,
+                config=config
+            )
+        else:
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                    verify=VERIFY_CERTIFICATE,
+                    config=config
+                )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                    verify=VERIFY_CERTIFICATE,
+                    config=config
+                )
+
+        return client
+
+
+    def parse_tag_field(tags_str):
+        tags = []
+        regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)', flags=re.I)
+        for f in tags_str.split(';'):
+            match = regex.match(f)
+            if match is None:
+                demisto.log('could not parse field: %s' % (f,))
+                continue
+
+            tags.append({
+                'Key': match.group(1),
+                'Value': match.group(2)
+            })
+        return tags
+
+
+    class DatetimeEncoder(json.JSONEncoder):
+        # pylint: disable=method-hidden
+        def default(self, obj):
+            if isinstance(obj, datetime):
+                return obj.strftime('%Y-%m-%dT%H:%M:%S')
+            elif isinstance(obj, date):
+                return obj.strftime('%Y-%m-%d')
+            # Let the base class default method raise the TypeError
+            return json.JSONEncoder.default(self, obj)
+
+
+    def parse_resource_ids(resource_id):
+        id_list = resource_id.replace(" ", "")
+        resource_ids = id_list.split(",")
+        return resource_ids
+
+
+    def create_entry(title, data, ec):
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
+            'EntryContext': ec
+        }
+
+
+    """MAIN FUNCTIONS"""
+
+
+    def get_function(args):
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+        obj = vars(client._client_config)
+        kwargs = {'FunctionName': args.get('functionName')}
+        if args.get('qualifier') is not None:
+            kwargs.update({'Qualifier': args.get('qualifier')})
+
+        response = client.get_function(**kwargs)
+        func = response['Configuration']
+        data = ({
+            'FunctionName': func['FunctionName'],
+            'FunctionArn': func['FunctionArn'],
+            'Runtime': func['Runtime'],
+            'Region': obj['_user_provided_options']['region_name'],
+        })
+
+        raw = json.loads(json.dumps(response, cls=DatetimeEncoder))
+        if raw:
+            raw.update({'Region': obj['_user_provided_options']['region_name']})
+
+        ec = {'AWS.Lambda.Functions(val.FunctionArn === obj.FunctionArn)': raw}
+        human_readable = tableToMarkdown('AWS Lambda Functions', data)
+        return_outputs(human_readable, ec)
+
+
+    def list_functions(args):
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+        obj = vars(client._client_config)
+        data = []
+        output = []
+
+        paginator = client.get_paginator('list_functions')
+        for response in paginator.paginate():
+            for function in response['Functions']:
+                data.append({
+                    'FunctionName': function['FunctionName'],
+                    'FunctionArn': function['FunctionArn'],
+                    'Runtime': function['Runtime'],
+                    'LastModified': function['LastModified'],
+                    'Region': obj['_user_provided_options']['region_name'],
+                })
+                output.append(function)
+
+        raw = json.loads(json.dumps(response, cls=DatetimeEncoder))
+        if raw:
+            raw.update({'Region': obj['_user_provided_options']['region_name']})
+
+        ec = {'AWS.Lambda.Functions(val.FunctionArn === obj.FunctionArn)': raw}
+        human_readable = tableToMarkdown('AWS Lambda Functions', data)
+        return_outputs(human_readable, ec)
+
+
+    def list_aliases(args):
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+
+        data = []
+        output = []
+        kwargs = {'FunctionName': args.get('functionName')}
+        if args.get('functionVersion') is not None:
+            kwargs.update({'FunctionVersion': args.get('functionVersion')})
+
+        paginator = client.get_paginator('list_aliases')
+        for response in paginator.paginate(**kwargs):
+            for alias in response['Aliases']:
+                data.append({
+                    'AliasArn': alias['AliasArn'],
+                    'Name': alias['Name'],
+                    'FunctionVersion': alias['FunctionVersion'],
+                })
+                output.append(alias)
+        try:
+            raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+        except ValueError as e:
+            return_error('Could not decode/encode the raw response - {err_msg}'.format(err_msg=e))
+        ec = {'AWS.Lambda.Aliases(val.AliasArn === obj.AliasArn)': raw}
+        human_readable = tableToMarkdown('AWS Lambda Aliases', data)
+        return_outputs(human_readable, ec)
+
+
+    def invoke(args):
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+        obj = vars(client._client_config)
+        kwargs = {'FunctionName': args.get('functionName')}
+        if args.get('invocationType') is not None:
+            kwargs.update({'InvocationType': args.get('invocationType')})
+        if args.get('logType') is not None:
+            kwargs.update({'LogType': args.get('logType')})
+        if args.get('clientContext') is not None:
+            kwargs.update({'ClientContext': args.get('clientContext')})
+        if args.get('payload') is not None:
+            kwargs.update({'Payload': json.dumps(args.get('payload'))})
+        if args.get('qualifier') is not None:
+            kwargs.update({'Qualifier': args.get('qualifier')})
+        response = client.invoke(**kwargs)
+        data = ({
+            'FunctionName': args.get('functionName'),
+            'Region': obj['_user_provided_options']['region_name'],
+        })
+        if 'LogResult' in response:
+            data.update({'LogResult': base64.b64decode(response['LogResult'])})  # type:ignore
+        if 'Payload' in response:
+            data.update({'Payload': response['Payload'].read().decode("utf-8")})  # type:ignore
+        if 'ExecutedVersion' in response:
+            data.update({'ExecutedVersion': response['ExecutedVersion']})  # type:ignore
+        if 'FunctionError' in response:
+            data.update({'FunctionError': response['FunctionError']})
+
+        ec = {'AWS.Lambda.InvokedFunctions(val.FunctionName === obj.FunctionName)': data}
+        human_readable = tableToMarkdown('AWS Lambda Invoked Functions', data)
+        return_outputs(human_readable, ec)
+
+
+    def remove_permission(args):
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+        kwargs = {
+            'FunctionName': args.get('functionName'),
+            'StatementId': args.get('StatementId')
+        }
+        if args.get('Qualifier') is not None:
+            kwargs.update({'Qualifier': args.get('Qualifier')})
+        if args.get('RevisionId') is not None:
+            kwargs.update({'RevisionId': args.get('RevisionId')})
+
+        response = client.remove_permission(**kwargs)
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            demisto.results('Permissions have been removed')
+
+
+    def get_account_settings(args):
+        client = aws_session(
+            region=args.get('region'),
+            roleArn=args.get('roleArn'),
+            roleSessionName=args.get('roleSessionName'),
+            roleSessionDuration=args.get('roleSessionDuration'),
+        )
+        obj = vars(client._client_config)
+        response = client.get_account_settings()
+        account_limit = response['AccountLimit']
+        account_usage = response['AccountUsage']
+        data = {
+            'AccountLimit': {
+                'TotalCodeSize': str(account_limit['TotalCodeSize']),
+                'CodeSizeUnzipped': str(account_limit['CodeSizeUnzipped']),
+                'CodeSizeZipped': str(account_limit['CodeSizeZipped']),
+                'ConcurrentExecutions': str(account_limit['ConcurrentExecutions']),
+                'UnreservedConcurrentExecutions': str(account_limit['UnreservedConcurrentExecutions'])
+            },
+            'AccountUsage': {
+                'TotalCodeSize': str(account_usage['TotalCodeSize']),
+                'FunctionCount': str(account_usage['FunctionCount'])
+            }
+        }
+        try:
+            raw = json.loads(json.dumps(response, cls=DatetimeEncoder))
+        except ValueError as e:
+            return_error('Could not decode/encode the raw response - {err_msg}'.format(err_msg=e))
+        if raw:
+            raw.update({'Region': obj['_user_provided_options']['region_name']})
+
+        ec = {'AWS.Lambda.Functions(val.Region === obj.Region)': raw}
+        human_readable = tableToMarkdown('AWS Lambda Functions', data)
+        return_outputs(human_readable, ec)
+
+
+    """TEST FUNCTION"""
+
+
+    def test_function():
+        client = aws_session()
+        response = client.list_functions()
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            demisto.results('ok')
+
+
+    """EXECUTION BLOCK"""
+    try:
+        if demisto.command() == 'test-module':
+            test_function()
+        elif demisto.command() == 'aws-lambda-get-function':
+            get_function(demisto.args())
+        elif demisto.command() == 'aws-lambda-list-functions':
+            list_functions(demisto.args())
+        elif demisto.command() == 'aws-lambda-list-aliases':
+            list_aliases(demisto.args())
+        elif demisto.command() == 'aws-lambda-invoke':
+            invoke(demisto.args())
+        elif demisto.command() == 'aws-lambda-remove-permission':
+            remove_permission(demisto.args())
+        elif demisto.command() == 'aws-lambda-get-account-settings':
+            get_account_settings(demisto.args())
+    except ResponseParserError as e:
+        return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
+            error=type(e)))
+        LOG(str(e))
+
+    except Exception as e:
+        return_error('Error has occurred in the AWS Lambda Integration: {error}\n {message}'.format(
+            error=type(e), message=str(e)))
+  subtype: python3
+  type: python
+system: true

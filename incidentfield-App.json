@@ -1,0 +1,42 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"Access"
+	],
+	"breachScript": "",
+	"caseInsensitive": false,
+	"cliName": "app",
+	"closeForm": false,
+	"columns": null,
+	"content": true,
+	"defaultRows": null,
+	"description": "",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_app",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "App",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": null,
+	"sla": 0,
+	"sortValues": null,
+	"system": false,
+	"systemAssociatedTypes": [
+		"Access"
+	],
+	"threshold": 0,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": true,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}

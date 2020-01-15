@@ -1,0 +1,18 @@
+args:
+- default: true
+  description: Name of system to use
+  name: using
+- description: Local filepath on the endpoint
+  name: filepath
+  required: true
+comment: Get a File from using a D2 agent
+commonfields:
+  id: FetchFileD2
+  version: -1
+name: FetchFileD2
+runonce: false
+script: return executeCommand('D2GetFile', args);
+scripttarget: 0
+system: true
+tags: []
+type: javascript

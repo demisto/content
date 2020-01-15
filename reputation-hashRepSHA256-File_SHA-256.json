@@ -1,0 +1,25 @@
+{
+	"contextPath": "File(val.SHA256 \u0026\u0026 val.SHA256 === obj.SHA256)",
+	"contextValue": "SHA256",
+	"defaultMapping": null,
+	"details": "File SHA-256",
+	"disabled": true,
+	"enhancementScriptNames": [
+		"FileReputation"
+	],
+	"excludedBrands": null,
+	"file": false,
+	"fileHashesPriority": null,
+	"formatScript": "",
+	"id": "hashRepSHA256",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "\\b[a-fA-F\\d]{64}\\b",
+	"reputationCommand": "file",
+	"reputationScriptName": "",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

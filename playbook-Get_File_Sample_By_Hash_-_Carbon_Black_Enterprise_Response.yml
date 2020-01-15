@@ -1,0 +1,201 @@
+description: Returns to the war-room a file sample correlating to MD5 hashes in the
+  input using Carbon Black Enterprise Response integration
+id: get_file_sample_by_hash_-_carbon_black_enterprise_Response
+inputs:
+- description: 'Get file sample from input MD5 '
+  key: MD5
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+name: Get File Sample By Hash - Carbon Black Enterprise Response
+outputs:
+- contextPath: File
+  description: File Sample
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 13be4945-ec82-4790-8892-a66b8b74111c
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 13be4945-ec82-4790-8892-a66b8b74111c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    note: false
+    scriptarguments:
+      extend-context: {}
+      value:
+        complex:
+          accessor: brand
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: modules.brand
+              operator: isEqualString
+              right:
+                value:
+                  simple: carbonblack
+          - - left:
+                iscontext: true
+                value:
+                  simple: modules.state
+              operator: isEqualString
+              right:
+                value:
+                  simple: active
+          root: modules
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if the Carbon Black Enterprise Response integration is enabled
+      id: 795290dd-889b-4ea6-8e83-7b04252bddf2
+      iscommand: false
+      name: Is Carbon Black Enterprise Response enabled?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 795290dd-889b-4ea6-8e83-7b04252bddf2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    note: false
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.MD5
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks for MD5 in context
+      id: d489fccb-fab0-471b-849c-3b64ab63e7ce
+      iscommand: false
+      name: Do we have a MD5?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: d489fccb-fab0-471b-849c-3b64ab63e7ce
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 90947de7-db04-49c9-88f3-747e0ad4c026
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 90947de7-db04-49c9-88f3-747e0ad4c026
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 711
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      facet: {}
+      md5:
+        complex:
+          root: inputs.MD5
+      pid: {}
+      query: {}
+      rows: {}
+      segid: {}
+      sort: {}
+      start: {}
+      summary: {}
+    separatecontext: false
+    task:
+      brand: carbonblack
+      id: 4241ccef-7acc-49f9-8976-e97a654bf89d
+      iscommand: true
+      name: Get binary from MD5
+      script: carbonblack|||cb-binary-get
+      type: regular
+      version: -1
+    taskid: 4241ccef-7acc-49f9-8976-e97a654bf89d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 309,
+          "y": 550
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 726,
+        "width": 639,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

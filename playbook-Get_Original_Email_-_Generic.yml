@@ -1,0 +1,177 @@
+description: |-
+  Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+
+  You must have the necessary permissions in your email service to execute global search.
+
+  - EWS: eDiscovery
+  - Gmail: Google Apps Domain-Wide Delegation of Authority
+id: get_original_email_-_generic
+inputs: []
+name: Get Original Email - Generic
+outputs:
+- contextPath: Email
+  description: The email object
+  type: unknown
+- contextPath: File
+  description: Original attachments
+  type: unknown
+- contextPath: Email.To
+  description: The recipient of the email
+  type: string
+- contextPath: Email.From
+  description: The sender of the email
+  type: string
+- contextPath: Email.CC
+  description: The CC address of the email
+  type: string
+- contextPath: Email.BCC
+  description: The BCC address of the email
+  type: string
+- contextPath: Email.HTML
+  description: The email HTML
+  type: string
+- contextPath: Email.Body
+  description: The email text body
+  type: string
+- contextPath: Email.Headers
+  description: The email headers
+  type: unknown
+- contextPath: Email.Subject
+  description: The email subject
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d7920fee-8ada-4d48-8197-2e08d19a54dc
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d7920fee-8ada-4d48-8197-2e08d19a54dc
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: b52aade3-aa90-4343-8417-d4aa26803d62
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: b52aade3-aa90-4343-8417-d4aa26803d62
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      id: eaebbf2e-aa04-4581-8157-2f55adc08880
+      iscommand: false
+      name: Get Original Message - Gmail
+      playbookName: Get Original Email - Gmail
+      type: playbook
+      version: -1
+    taskid: eaebbf2e-aa04-4581-8157-2f55adc08880
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      InReplyTo:
+        complex:
+          accessor: labels.Email/Header/In-Reply-To
+          root: incident
+      Mailbox:
+        complex:
+          accessor: labels.Email/from
+          root: incident
+      ThreadTopic:
+        complex:
+          accessor: labels.Email/Header/Thread-Topic
+          root: incident
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+
+        You must have the necessary permissions in the EWS integration to execute global search: eDiscovery
+      id: 96353c64-dc04-4475-89a8-f0f90922090f
+      iscommand: false
+      name: Get Original Email - EWS
+      playbookName: Get Original Email - EWS
+      type: playbook
+      version: -1
+    taskid: 96353c64-dc04-4475-89a8-f0f90922090f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 820,
+        "x": 40,
+        "y": 50
+      }
+    }
+  }

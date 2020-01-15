@@ -1,0 +1,35 @@
+args:
+- default: true
+  description: SQL query to preform
+  name: query
+  required: true
+- description: 'Limit amount of rows results to be displayed, Default: 100'
+  name: limit
+comment: Query a relational DB using SQL
+commonfields:
+  id: RunSqlQuery
+  version: -1
+dependson:
+  must:
+  - query
+deprecated: true
+name: RunSqlQuery
+runonce: false
+script: |
+  resp = demisto.executeCommand("query", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- sql
+type: python

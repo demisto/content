@@ -1,0 +1,154 @@
+{
+	"contextPath": "",
+	"contextValue": "",
+	"defaultMapping": {
+		"accounttype": {
+			"complex": {
+				"accessor": "Type",
+				"filters": [],
+				"root": "Account",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"blocked": {
+			"complex": {
+				"accessor": "Blocked",
+				"filters": [],
+				"root": "Account",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"displayname": {
+			"complex": {
+				"accessor": "DisplayName",
+				"filters": [],
+				"root": "Account",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"domainname": {
+			"complex": {
+				"accessor": "Domain",
+				"filters": [],
+				"root": "Account",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"emailaddress": {
+			"complex": {
+				"accessor": "Email.Address",
+				"filters": [],
+				"root": "Account",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"groups": {
+			"complex": {
+				"accessor": "Groups",
+				"filters": [],
+				"root": "Account",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"id": {
+			"complex": {
+				"accessor": "ID",
+				"filters": [],
+				"root": "Account",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "toUpperCase"
+					},
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"organizationalunitou": {
+			"complex": {
+				"accessor": "OrganizationUnit",
+				"filters": [],
+				"root": "Acoount",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"username": {
+			"complex": {
+				"accessor": "Username",
+				"filters": [],
+				"root": "Account",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		}
+	},
+	"details": "Account",
+	"disabled": false,
+	"enhancementScriptNames": [],
+	"excludedBrands": [],
+	"file": false,
+	"fileHashesPriority": null,
+	"formatScript": "",
+	"id": "accountRep",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "",
+	"reputationCommand": "",
+	"reputationScriptName": "",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

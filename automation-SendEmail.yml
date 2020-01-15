@@ -1,0 +1,68 @@
+args:
+- default: true
+  description: Email addresses for the 'to' field
+  name: to
+  required: true
+- description: Email addresses for the 'cc' field
+  name: cc
+- description: Email addresses for the 'bcc' field
+  name: bcc
+- description: Subject for the email to be sent
+  name: subject
+  required: true
+- description: The contents (body) of the email to be sent
+  name: body
+- description: 'A comma-separated list of IDs of war room entries that contain files.
+    Used to attach files to the outgoing email. Example: attachIDs=15@8,19@8'
+  name: attachIDs
+- description: Send an html formatted email - overrides "body" argument, cannot use
+    both.
+  name: htmlBody
+- description: Send the textual contents of an entry
+  name: noteEntryID
+- description: The address to reply to
+  name: replyTo
+comment: |-
+  Deprecated - please use the send-mail command instead
+
+  Send an email with the specified parameters.
+  Attachments are provided as a comma-separated list of entry IDs.
+  Example usage: !SendEmail subject="File from war room" body="Please see the attached file. --DBot" to=jane@acme.com cc=john@acme.com attachIDs=89@3,46@3
+commonfields:
+  id: SendEmail
+  version: -1
+dependson:
+  must:
+  - send-mail
+deprecated: true
+name: SendEmail
+runonce: false
+script: |-
+  from string import Template
+  dArgs = demisto.args()
+  if 'htmlBody' in dArgs:
+      dArgs['htmlBody'] = Template(dArgs['htmlBody'].replace('\\n', '\n')).safe_substitute(recipient=dArgs['to'])
+  elif 'body' in dArgs:
+      dArgs['body'] = Template(dArgs['body'].replace('\\n', '\n')).safe_substitute(recipient=dArgs['to'])
+  elif 'noteEntryID' in dArgs:
+      entry = demisto.executeCommand( 'getEntry', { 'id' : demisto.args()['noteEntryID'] } )[0]
+      if isError(entry):
+          demisto.results(entry)
+          sys.exit()
+      else:
+          dArgs['body'] = entry['Contents']
+  else:
+      dArgs['body'] = ''
+  if 'subject' in dArgs:
+      if demisto.incidents():
+          dArgs['subject'] = Template(dArgs['subject']).safe_substitute(name=demisto.incidents()[0]['name'])
+  else:
+      dArgs['subject'] = 'No subject'
+  demisto.results(demisto.executeCommand('send-mail', dArgs))
+scripttarget: 0
+system: true
+tags:
+- response
+- email
+- server
+type: python

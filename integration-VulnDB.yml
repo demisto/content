@@ -1,0 +1,1471 @@
+category: Vulnerability Management
+commonfields:
+  id: VulnDB
+  version: -1
+configuration:
+- defaultvalue: https://vulndb.cyberriskanalytics.com/
+  display: Hostname, IP address, or server URL
+  name: api_url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: client_id
+  name: client_id
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: client_secret
+  name: client_secret
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Lists all of the security vulnerabilities for various products (OS,Applications)
+  etc)
+detaileddescription: "## Overview\n---\n\nLists all of the security vulnerabilities
+  for various products (OS,Applications) etc)\nThis integration was integrated and
+  tested with version xx of VulnDB\n## VulnDB Playbook\n---\n\n## Use Cases\n---\n\n##
+  Configure VulnDB on Demisto\n---\n\n1. Navigate to __Settings__ > __Integrations__
+  > __Servers & Services__.\n2. Search for VulnDB.\n3. Click __Add instance__ to create
+  and configure a new integration instance.\n    * __Name__: a textual name for the
+  integration instance.\n    * __Hostname, IP address, or server URL__\n    * __client_id__\n
+  \   * __client_secret__\n    * __Trust any certificate (unsecure)__\n    * __Use
+  system proxy settings__\n4. Click __Test__ to validate the URLs, token, and connection.\n##
+  Fetched Incidents Data\n---\n\n## Commands\n---\nYou can execute these commands
+  from the Demisto CLI, as part of an automation, or in a playbook.\nAfter you successfully
+  execute a command, a DBot message appears in the War Room with the command details.\n1.
+  vulndb-get-vuln-by-id\n2. vulndb-get-vendor\n3. vulndb-get-product\n4. vulndb-get-version\n5.
+  vulndb-get-updates-by-dates-or-hours\n6. vulndb-get-vuln-by-vendor-and-product-name\n7.
+  vulndb-get-vuln-by-vendor-and-product-id\n8. vulndb-get-vuln-by-vendor-id\n9. vulndb-get-vuln-by-product-id\n10.
+  vulndb-get-vuln-by-cve-id\n### 1. vulndb-get-vuln-by-id\n---\nProvides full details
+  about a specific vulnerability by id\n##### Base Command\n\n`vulndb-get-vuln-by-id`\n#####
+  Input\n\n| **Argument Name** | **Description** | **Required** |\n| --- | --- | ---
+  |\n| vuln_id | Vulnerability id | Required | \n\n\n##### Context Output\n\n| **Path**
+  | **Type** | **Description** |\n| --- | --- | --- |\n| VulnDB.Vulnerability.ID |
+  string | Vulnerability id | \n| VulnDB.Vulnerability.Title | string | Vulnerability
+  title (only human readable) | \n| VulnDB.Vulnerability.Keywords | string | Vulnerability
+  keywords | \n| VulnDB.Vulnerability.Description | string | Vulnerability description
+  (only human readable) | \n| VulnDB.Vulnerability.Solution | string | Vulnerability
+  solution (only human readable) | \n| VulnDB.Vulnerability.PublishedDate | date |
+  Vulnerability published date | \n| VulnDB.Vulnerability.TDescription | string |
+  Vulnerability description (only human readable) | \n| VulnDB.Vulnerability.SolutionDate
+  | date | Vulnerability solution date | \n| VulnDB.Vulnerability.DiscoveryDate |
+  date | Vulnerability discovery date | \n| VulnDB.Vulnerability.ExploitPublishDate
+  | date | Exploit publish date | \n| VulnDB.CVE-ExtReferences.Value | string | CVE-
+  is a constant string | \n| VulnDB.CvssMetrics.Id | number | Cvss reference value
+  | \n| VulnDB.CvssMetrics.AccessVector | string | Cvss access vector | \n| VulnDB.CvssMetrics.AccessComplexity
+  | string | Cvss access complexity | \n| VulnDB.CvssMetrics.Authentication | string
+  | Cvss metric authentication | \n| VulnDB.CvssMetrics.ConfidentialityImpact | string
+  | Cvss confidentiality impact | \n| VulnDB.cvssMetrics.IntegrityImpact | string
+  | Cvss integrity impact | \n| VulnDB.CvssMetrics.AvailabilityImpact | string | Cvss
+  availability impact | \n| VulnDB.CvssMetrics.GeneratedOn | date | Cvss Metric date
+  | \n| VulnDB.CvssMetrics.Score | number | Cvss score | \n| VulnDB.Vendor.Id | number
+  | Vendor id | \n| VulnDB.Vendor.Name | string | Vendor name | \n| VulnDB.Products.Id
+  | number | Products id | \n| VulnDB.Products.Name | string | Products name | \n|
+  VulnDB.Products.Versions.Id | number | Product version id | \n| VulnDB.Products.Versions.Name
+  | string | Product versions name | \n| VulnDB.Classification.Longname | string |
+  Classification long name | \n| VulnDB.Classification.Description | string | Classification
+  description (only human readable) | \n\n\n##### Command Example\n```!vulndb-get-vuln-by-id
+  vuln_id=\"1\"```\n\n##### Human Readable Output\n\n\n### 2. vulndb-get-vendor\n---\nProvides
+  all or specific vendor details to include vendor name and id\n##### Base Command\n\n`vulndb-get-vendor`\n#####
+  Input\n\n| **Argument Name** | **Description** | **Required** |\n| --- | --- | ---
+  |\n| vendor_id | specific vendor id | Optional | \n| vendor_name | specific vendor
+  name (only human readable) | Optional | \n| max_size | Maximum number of entries
+  returned from the query, to avoid slow response. | Optional | \n\n\n##### Context
+  Output\n\n| **Path** | **Type** | **Description** |\n| --- | --- | --- |\n| VulnDB.Results.Id
+  | number | Result id | \n| VulnDB.Results.Name | string | Result name | \n| VulnDB.Results.ShortName
+  | string | Result short name | \n| VulnDB.Results.VendorUrl | string | Result vendor
+  url (only human readable) | \n\n\n##### Command Example\n```!vulndb-get-vendor max_size=\"20\"```\n\n#####
+  Human Readable Output\n\n\n### 3. vulndb-get-product\n---\nProvides a list of versions
+  by product name or id\n##### Base Command\n\n`vulndb-get-product`\n##### Input\n\n|
+  **Argument Name** | **Description** | **Required** |\n| --- | --- | --- |\n| vendor_id
+  | Vendor id | Optional | \n| vendor_name | Vendor name | Optional | \n| max_size
+  | Maximum number of entries returned from the query, to avoid slow response. | Optional
+  | \n\n\n##### Context Output\n\n| **Path** | **Type** | **Description** |\n| ---
+  | --- | --- |\n| VulnDB.Results.Id | number | Result id | \n| VulnDB.Results.Name
+  | string | Result name | \n\n\n##### Command Example\n```!vulndb-get-product vendor_id=\"2974649\"
+  max_size=\"20\"```\n\n##### Human Readable Output\n\n\n### 4. vulndb-get-version\n---\nProvides
+  the versions for the specified product by product name or id\n##### Base Command\n\n`vulndb-get-version`\n#####
+  Input\n\n| **Argument Name** | **Description** | **Required** |\n| --- | --- | ---
+  |\n| product_name | Product name | Optional | \n| product_id | Product id | Optional
+  | \n| max_size | Maximum number of entries returned from the query, to avoid slow
+  response. | Optional | \n\n\n##### Context Output\n\n| **Path** | **Type** | **Description**
+  |\n| --- | --- | --- |\n| VulnDB.Results.Id | number | Version id | \n| VulnDB.Results.Name
+  | Unknown | Version name | \n\n\n##### Command Example\n```!vulndb-get-version product_name=\"1-Search\"
+  max_size=\"20\"```\n\n##### Human Readable Output\n\n\n### 5. vulndb-get-updates-by-dates-or-hours\n---\nProvides
+  the recent vulnerabilities by dates or hours\n##### Base Command\n\n`vulndb-get-updates-by-dates-or-hours`\n#####
+  Input\n\n| **Argument Name** | **Description** | **Required** |\n| --- | --- | ---
+  |\n| start_date | Date YYYY-MM-dd starting date (earliest) | Optional | \n| end_date
+  | Date YYYY-MM-dd finishing date (latest) | Optional | \n| hours_ago | How many
+  hours ago | Optional | \n| max_size | Maximum number of entries returned from the
+  query, to avoid slow response. | Optional | \n\n\n##### Context Output\n\n| **Path**
+  | **Type** | **Description** |\n| --- | --- | --- |\n| VulnDB.Vulnerability.ID |
+  string | Vulnerability id | \n| VulnDB.Vulnerability.Title | string | Vulnerability
+  title (only human readable) | \n| VulnDB.Vulnerability.Keywords | string | Vulnerability
+  keywords | \n| VulnDB.Vulnerability.Description | string | Vulnerability description
+  (only human readable) | \n| VulnDB.Vulnerability.Solution | string | Vulnerability
+  solution (only human readable) | \n| VulnDB.Vulnerability.PublishedDate | date |
+  Vulnerability published date | \n| VulnDB.Vulnerability.TDescription | string |
+  Vulnerability description (only human readable) | \n| VulnDB.Vulnerability.SolutionDate
+  | date | Vulnerability solution date | \n| VulnDB.Vulnerability.DiscoveryDate |
+  date | Vulnerability discovery date | \n| VulnDB.Vulnerability.ExploitPublishDate
+  | date | Exploit publish date | \n| VulnDB.CVE-ExtReferences.Value | string | CVE-
+  is a constant string | \n| VulnDB.CvssMetrics.Id | number | Cvss reference value
+  | \n| VulnDB.CvssMetrics.AccessVector | string | Cvss access vector | \n| VulnDB.CvssMetrics.AccessComplexity
+  | string | Cvss access complexity | \n| VulnDB.CvssMetrics.Authentication | string
+  | Cvss metric authentication | \n| VulnDB.CvssMetrics.ConfidentialityImpact | string
+  | Cvss confidentiality impact | \n| VulnDB.cvssMetrics.integrity_impact | string
+  | Cvss integrity impact | \n| VulnDB.CvssMetrics.AvailabilityImpact | string | Cvss
+  \ availability impact | \n| VulnDB.CvssMetrics.Generated_on | date | Cvss Metric
+  date | \n| VulnDB.CvssMetrics.Score | number | Cvss score | \n| VulnDB.Vendors.Id
+  | number | Vendor id | \n| VulnDB.Vendor.Name | string | Vendor name | \n| VulnDB.Products.Id
+  | number | Products id | \n| VulnDB.Products.Name | string | Products name | \n|
+  VulnDB.Products.Versions.Id | number | Product version id | \n| VulnDB.Products.Versions.Name
+  | string | Product versions name | \n| VulnDB.Classification.Longname | string |
+  Classification long name | \n| VulnDB.Classification.Description | string | Classification
+  description (only human readable) | \n\n\n##### Command Example\n```!vulndb-get-updates-by-dates-or-hours
+  start_date=\"2015-10-27T04:27:22\" end_date=\"2017-10-27T04:27:22\" max_size=\"20\"```\n\n#####
+  Human Readable Output\n\n\n### 6. vulndb-get-vuln-by-vendor-and-product-name\n---\nProvides
+  full details about a specific vulnerability by vendor and product name\n##### Base
+  Command\n\n`vulndb-get-vuln-by-vendor-and-product-name`\n##### Input\n\n| **Argument
+  Name** | **Description** | **Required** |\n| --- | --- | --- |\n| vendor_name |
+  Vendor name | Required | \n| product_name | Product name | Required | \n| max_size
+  | Maximum number of entries returned from the query, to avoid slow response. | Optional
+  | \n\n\n##### Context Output\n\n| **Path** | **Type** | **Description** |\n| ---
+  | --- | --- |\n| VulnDB.Vulnerability.ID | string | Vulnerability id | \n| VulnDB.Vulnerability.Title
+  | string | Vulnerability title (only human readable) | \n| VulnDB.Vulnerability.Keywords
+  | string | Vulnerability keywords | \n| VulnDB.Vulnerability.Description | string
+  | Vulnerability description (only human readable) | \n| VulnDB.Vulnerability.Solution
+  | string | Vulnerability solution (only human readable) | \n| VulnDB.Vulnerability.PublishedDate
+  | date | Vulnerability published date | \n| VulnDB.Vulnerability.TDescription |
+  string | Vulnerability description (only human readable) | \n| VulnDB.Vulnerability.SolutionDate
+  | date | Vulnerability solution date | \n| VulnDB.Vulnerability.DiscoveryDate |
+  date | Vulnerability discovery date | \n| VulnDB.Vulnerability.ExploitPublishDate
+  | date | Exploit publish date | \n| VulnDB.CVE-ExtReferences.Value | string | CVE-
+  is a constant string | \n| VulnDB.CvssMetrics.Id | number | Cvss reference value
+  | \n| VulnDB.CvssMetrics.AccessVector | string | Cvss access vector | \n| VulnDB.CvssMetrics.AccessComplexity
+  | string | Cvss access complexity | \n| VulnDB.CvssMetrics.Authentication | string
+  | Cvss metric authentication | \n| VulnDB.CvssMetrics.ConfidentialityImpact | string
+  | Cvss confidentiality impact | \n| VulnDB.cvssMetrics.integrity_impact | string
+  | Cvss integrity impact | \n| VulnDB.CvssMetrics.AvailabilityImpact | string | Cvss
+  \ availability impact | \n| VulnDB.CvssMetrics.Generated_on | date | Cvss Metric
+  date | \n| VulnDB.CvssMetrics.Score | number | Cvss score | \n| VulnDB.Vendors.Id
+  | number | Vendor id | \n| VulnDB.Vendor.Name | string | Vendor name | \n| VulnDB.Products.Id
+  | number | Products id | \n| VulnDB.Products.Name | string | Products name | \n|
+  VulnDB.Products.Versions.Id | number | Product version id | \n| VulnDB.Products.Versions.Name
+  | string | Product versions name | \n| VulnDB.Classification.Longname | string |
+  Classification long name | \n| VulnDB.Classification.Description | string | Classification
+  description (only human readable) | \n\n\n##### Command Example\n```!vulndb-get-vuln-by-vendor-and-product-name
+  vendor_name=\"Adobe Systems Incorporated\" product_name=\"ColdFusion\" max_size=\"20\"```\n\n#####
+  Human Readable Output\n\n\n### 7. vulndb-get-vuln-by-vendor-and-product-id\n---\nProvides
+  full details about a specific vulnerability by vendor and product id\n##### Base
+  Command\n\n`vulndb-get-vuln-by-vendor-and-product-id`\n##### Input\n\n| **Argument
+  Name** | **Description** | **Required** |\n| --- | --- | --- |\n| vendor_id | Vendor
+  ID | Required | \n| product_id | Product ID | Required | \n| max_size | Maximum
+  number of entries returned from the query, to avoid slow response. | Optional |
+  \n\n\n##### Context Output\n\n| **Path** | **Type** | **Description** |\n| --- |
+  --- | --- |\n| VulnDB.Vulnerability.ID | string | Vulnerability id | \n| VulnDB.Vulnerability.Title
+  | string | Vulnerability title (only human readable) | \n| VulnDB.Vulnerability.Keywords
+  | string | Vulnerability keywords | \n| VulnDB.Vulnerability.Description | string
+  | Vulnerability description (only human readable) | \n| VulnDB.Vulnerability.Solution
+  | string | Vulnerability solution (only human readable) | \n| VulnDB.Vulnerability.PublishedDate
+  | date | Vulnerability published date | \n| VulnDB.Vulnerability.TDescription |
+  string | Vulnerability description (only human readable) | \n| VulnDB.Vulnerability.SolutionDate
+  | date | Vulnerability solution date | \n| VulnDB.Vulnerability.DiscoveryDate |
+  date | Vulnerability discovery date | \n| VulnDB.Vulnerability.ExploitPublishDate
+  | date | Exploit publish date | \n| VulnDB.CVE-ExtReferences.Value | string | CVE-
+  is a constant string | \n| VulnDB.CvssMetrics.Id | number | Cvss reference value
+  | \n| VulnDB.CvssMetrics.AccessVector | string | Cvss access vector | \n| VulnDB.CvssMetrics.AccessComplexity
+  | string | Cvss access complexity | \n| VulnDB.CvssMetrics.Authentication | string
+  | Cvss metric authentication | \n| VulnDB.CvssMetrics.ConfidentialityImpact | string
+  | Cvss confidentiality impact | \n| VulnDB.cvssMetrics.integrity_impact | string
+  | Cvss integrity impact | \n| VulnDB.CvssMetrics.AvailabilityImpact | string | Cvss
+  \ availability impact | \n| VulnDB.CvssMetrics.Generated_on | date | Cvss Metric
+  date | \n| VulnDB.CvssMetrics.Score | number | Cvss score | \n| VulnDB.Vendors.Id
+  | number | Vendor id | \n| VulnDB.Vendor.Name | string | Vendor name | \n| VulnDB.Products.Id
+  | number | Products id | \n| VulnDB.Products.Name | string | Products name | \n|
+  VulnDB.Products.Versions.Id | number | Product version id | \n| VulnDB.Products.Versions.Name
+  | string | Product versions name | \n| VulnDB.Classification.Longname | string |
+  Classification long name | \n| VulnDB.Classification.Description | string | Classification
+  description (only human readable) | \n\n\n##### Command Example\n```!vulndb-get-vuln-by-vendor-and-product-id
+  vendor_id=\"5011\" product_id=\"1777\" max_size=\"20\"```\n\n##### Human Readable
+  Output\n\n\n### 8. vulndb-get-vuln-by-vendor-id\n---\nProvides full details about
+  vulnerabilities by vendor id\n##### Base Command\n\n`vulndb-get-vuln-by-vendor-id`\n#####
+  Input\n\n| **Argument Name** | **Description** | **Required** |\n| --- | --- | ---
+  |\n| vendor_id | Vendor id | Required | \n| max_size | Maximum number of entries
+  returned from the query, to avoid slow response. | Optional | \n\n\n##### Context
+  Output\n\n| **Path** | **Type** | **Description** |\n| --- | --- | --- |\n| VulnDB.Vulnerability.ID
+  | string | Vulnerability id | \n| VulnDB.Vulnerability.Title | string | Vulnerability
+  title (only human readable) | \n| VulnDB.Vulnerability.Keywords | string | Vulnerability
+  keywords | \n| VulnDB.Vulnerability.Description | string | Vulnerability description
+  (only human readable) | \n| VulnDB.Vulnerability.Solution | string | Vulnerability
+  solution (only human readable) | \n| VulnDB.Vulnerability.PublishedDate | date |
+  Vulnerability published date | \n| VulnDB.Vulnerability.TDescription | string |
+  Vulnerability description (only human readable) | \n| VulnDB.Vulnerability.SolutionDate
+  | date | Vulnerability solution date | \n| VulnDB.Vulnerability.DiscoveryDate |
+  date | Vulnerability discovery date | \n| VulnDB.Vulnerability.ExploitPublishDate
+  | date | Exploit publish date | \n| VulnDB.CVE-ExtReferences.Value | string | CVE-
+  is a constant string | \n| VulnDB.CvssMetrics.Id | number | Cvss reference value
+  | \n| VulnDB.CvssMetrics.AccessVector | string | Cvss access vector | \n| VulnDB.CvssMetrics.AccessComplexity
+  | string | Cvss access complexity | \n| VulnDB.CvssMetrics.Authentication | string
+  | Cvss metric authentication | \n| VulnDB.CvssMetrics.ConfidentialityImpact | string
+  | Cvss confidentiality impact | \n| VulnDB.cvssMetrics.integrity_impact | string
+  | Cvss integrity impact | \n| VulnDB.CvssMetrics.AvailabilityImpact | string | Cvss
+  \ availability impact | \n| VulnDB.CvssMetrics.Generated_on | date | Cvss Metric
+  date | \n| VulnDB.CvssMetrics.Score | number | Cvss score | \n| VulnDB.Vendors.Id
+  | number | Vendor id | \n| VulnDB.Vendor.Name | string | Vendor name | \n| VulnDB.Products.Id
+  | number | Products id | \n| VulnDB.Products.Name | string | Products name | \n|
+  VulnDB.Products.Versions.Id | number | Product version id | \n| VulnDB.Products.Versions.Name
+  | string | Product versions name | \n| VulnDB.Classification.Longname | string |
+  Classification long name | \n| VulnDB.Classification.Description | string | Classification
+  description (only human readable) | \n\n\n##### Command Example\n```!vulndb-get-vuln-by-vendor-id
+  vendor_id=\"5011\" max_size=\"20\"```\n\n##### Human Readable Output\n\n\n### 9.
+  vulndb-get-vuln-by-product-id\n---\nProvides full details about vulnerabilities
+  by product id\n##### Base Command\n\n`vulndb-get-vuln-by-product-id`\n##### Input\n\n|
+  **Argument Name** | **Description** | **Required** |\n| --- | --- | --- |\n| product_id
+  | Product id | Required | \n| max_size | Maximum number of entries returned from
+  the query, to avoid slow response. | Optional | \n\n\n##### Context Output\n\n|
+  **Path** | **Type** | **Description** |\n| --- | --- | --- |\n| VulnDB.Vulnerability.ID
+  | string | Vulnerability id | \n| VulnDB.Vulnerability.Title | string | Vulnerability
+  title (only human readable) | \n| VulnDB.Vulnerability.Keywords | string | Vulnerability
+  keywords | \n| VulnDB.Vulnerability.Description | string | Vulnerability description
+  (only human readable) | \n| VulnDB.Vulnerability.Solution | string | Vulnerability
+  solution (only human readable) | \n| VulnDB.Vulnerability.PublishedDate | date |
+  Vulnerability published date | \n| VulnDB.Vulnerability.TDescription | string |
+  Vulnerability description (only human readable) | \n| VulnDB.Vulnerability.SolutionDate
+  | date | Vulnerability solution date | \n| VulnDB.Vulnerability.DiscoveryDate |
+  date | Vulnerability discovery date | \n| VulnDB.Vulnerability.ExploitPublishDate
+  | date | Exploit publish date | \n| VulnDB.CVE-ExtReferences.Value | string | CVE-
+  is a constant string | \n| VulnDB.CvssMetrics.Id | number | Cvss reference value
+  | \n| VulnDB.CvssMetrics.AccessVector | string | Cvss access vector | \n| VulnDB.CvssMetrics.AccessComplexity
+  | string | Cvss access complexity | \n| VulnDB.CvssMetrics.Authentication | string
+  | Cvss metric authentication | \n| VulnDB.CvssMetrics.ConfidentialityImpact | string
+  | Cvss confidentiality impact | \n| VulnDB.cvssMetrics.integrity_impact | string
+  | Cvss integrity impact | \n| VulnDB.CvssMetrics.AvailabilityImpact | string | Cvss
+  \ availability impact | \n| VulnDB.CvssMetrics.Generated_on | date | Cvss Metric
+  date | \n| VulnDB.CvssMetrics.Score | number | Cvss score | \n| VulnDB.Vendors.Id
+  | number | Vendor id | \n| VulnDB.Vendor.Name | string | Vendor name | \n| VulnDB.Products.Id
+  | number | Products id | \n| VulnDB.Products.Name | string | Products name | \n|
+  VulnDB.Products.Versions.Id | number | Product version id | \n| VulnDB.Products.Versions.Name
+  | string | Product versions name | \n| VulnDB.Classification.Longname | string |
+  Classification long name | \n| VulnDB.Classification.Description | string | Classification
+  description (only human readable) | \n\n\n##### Command Example\n```!vulndb-get-vuln-by-product-id
+  product_id=\"1777\" max_size=\"20\"```\n\n##### Human Readable Output\n\n\n### 10.
+  vulndb-get-vuln-by-cve-id\n---\nProvides full details about vulnerabilities by cve
+  id\n##### Base Command\n\n`vulndb-get-vuln-by-cve-id`\n##### Input\n\n| **Argument
+  Name** | **Description** | **Required** |\n| --- | --- | --- |\n| cve_id | CVE id
+  | Required | \n| max_size | Maximum number of entries returned from the query, to
+  avoid slow response. | Optional | \n\n\n##### Context Output\n\n| **Path** | **Type**
+  | **Description** |\n| --- | --- | --- |\n| VulnDB.Vulnerability.ID | string | Vulnerability
+  id | \n| VulnDB.Vulnerability.Title | string | Vulnerability title (only human readable)
+  | \n| VulnDB.Vulnerability.Keywords | string | Vulnerability keywords | \n| VulnDB.Vulnerability.Description
+  | string | Vulnerability description (only human readable) | \n| VulnDB.Vulnerability.Solution
+  | string | Vulnerability solution (only human readable) | \n| VulnDB.Vulnerability.PublishedDate
+  | date | Vulnerability published date | \n| VulnDB.Vulnerability.TDescription |
+  string | Vulnerability description (only human readable) | \n| VulnDB.Vulnerability.SolutionDate
+  | date | Vulnerability solution date | \n| VulnDB.Vulnerability.DiscoveryDate |
+  date | Vulnerability discovery date | \n| VulnDB.Vulnerability.ExploitPublishDate
+  | date | Exploit publish date | \n| VulnDB.CVE-ExtReferences.Value | string | CVE-
+  is a constant string | \n| VulnDB.CvssMetrics.Id | number | Cvss reference value
+  | \n| VulnDB.CvssMetrics.AccessVector | string | Cvss access vector | \n| VulnDB.CvssMetrics.AccessComplexity
+  | string | Cvss access complexity | \n| VulnDB.CvssMetrics.Authentication | string
+  | Cvss metric authentication | \n| VulnDB.CvssMetrics.ConfidentialityImpact | string
+  | Cvss confidentiality impact | \n| VulnDB.cvssMetrics.integrity_impact | string
+  | Cvss integrity impact | \n| VulnDB.CvssMetrics.AvailabilityImpact | string | Cvss
+  \ availability impact | \n| VulnDB.CvssMetrics.Generated_on | date | Cvss Metric
+  date | \n| VulnDB.CvssMetrics.Score | number | Cvss score | \n| VulnDB.Vendors.Id
+  | number | Vendor id | \n| VulnDB.Vendor.Name | string | Vendor name | \n| VulnDB.Products.Id
+  | number | Products id | \n| VulnDB.Products.Name | string | Products name | \n|
+  VulnDB.Products.Versions.Id | number | Product version id | \n| VulnDB.Products.Versions.Name
+  | string | Product versions name | \n| VulnDB.Classification.Longname | string |
+  Classification long name | \n| VulnDB.Classification.Description | string | Classification
+  description (only human readable) | \n\n\n##### Command Example\n```!vulndb-get-vuln-by-cve-id
+  cve_id=\"2013-1228\" max_size=\"20\"```\n\n##### Human Readable Output\n\n\n## Additional
+  Information\n---\n\n## Known Limitations\n---\n\n## Troubleshooting\n---\n"
+display: VulnDB
+image: data:image/png;base64,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
+name: VulnDB
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: ID of the vulnerability for which to return information.
+      name: vuln_id
+      required: true
+    description: Returns full details about a specific vulnerability.
+    name: vulndb-get-vuln-by-id
+    outputs:
+    - contextPath: VulnDB.Vulnerability.ID
+      description: Vulnerability ID.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Title
+      description: Vulnerability title (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Keywords
+      description: Vulnerability keywords.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Description
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Solution
+      description: Vulnerability solution (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.PublishedDate
+      description: Vulnerability published date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.TDescription
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.SolutionDate
+      description: Vulnerability solution date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
+      description: Vulnerability discovery date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
+      description: Exploit publish date.
+      type: date
+    - contextPath: VulnDB.CVE-ExtReferences.Value
+      description: CVE (constant string).
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Id
+      description: CVSS reference value.
+      type: number
+    - contextPath: VulnDB.CvssMetrics.AccessVector
+      description: CVSS access vector.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
+      description: CVSS access complexity.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Authentication
+      description: CVSS metric authentication.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
+      description: CVSS confidentiality impact.
+      type: string
+    - contextPath: VulnDB.cvssMetrics.IntegrityImpact
+      description: CVSS integrity impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
+      description: CVSS availability impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.GeneratedOn
+      description: CVSS metric date.
+      type: date
+    - contextPath: VulnDB.CvssMetrics.Score
+      description: CVSS score.
+      type: number
+    - contextPath: VulnDB.Vendor.Id
+      description: Vendor ID.
+      type: number
+    - contextPath: VulnDB.Vendor.Name
+      description: Vendor name.
+      type: string
+    - contextPath: VulnDB.Products.Id
+      description: Product IDs.
+      type: number
+    - contextPath: VulnDB.Products.Name
+      description: Product names.
+      type: string
+    - contextPath: VulnDB.Products.Versions.Id
+      description: Product version IDs.
+      type: number
+    - contextPath: VulnDB.Products.Versions.Name
+      description: Product version names.
+      type: string
+    - contextPath: VulnDB.Classification.Longname
+      description: Classification name (long).
+      type: string
+    - contextPath: VulnDB.Classification.Description
+      description: Classification description (human readable).
+      type: string
+  - arguments:
+    - description: specific vendor id
+      name: vendor_id
+    - description: specific vendor name (only human readable)
+      name: vendor_name
+    - defaultValue: "20"
+      description: Maximum number of entries to return. A high number of entries might
+        effect performance.
+      name: max_size
+    description: Returns all, or specific, vendor details to include vendor name and
+      ID.
+    name: vulndb-get-vendor
+    outputs:
+    - contextPath: VulnDB.Results.Id
+      description: Result ID.
+      type: number
+    - contextPath: VulnDB.Results.Name
+      description: Result name.
+      type: string
+    - contextPath: VulnDB.Results.ShortName
+      description: Result short name.
+      type: string
+    - contextPath: VulnDB.Results.VendorUrl
+      description: Result vendor URL (human readable).
+      type: string
+  - arguments:
+    - description: Vendor ID.
+      name: vendor_id
+    - description: Vendor name.
+      name: vendor_name
+    - defaultValue: "20"
+      description: Maximum number of entries to return. A high number of entries might
+        effect performance.
+      name: max_size
+    description: Returns a list of versions by product name or ID.
+    name: vulndb-get-product
+    outputs:
+    - contextPath: VulnDB.Results.Id
+      description: Result ID.
+      type: number
+    - contextPath: VulnDB.Results.Name
+      description: Result name.
+      type: string
+  - arguments:
+    - description: Product name.
+      name: product_name
+    - description: Product ID.
+      name: product_id
+    - defaultValue: "20"
+      description: Maximum number of entries to return. A high number of entries might
+        effect performance.
+      name: max_size
+    description: Returns the version of the specified product.
+    name: vulndb-get-version
+    outputs:
+    - contextPath: VulnDB.Results.Id
+      description: Version ID.
+      type: number
+    - contextPath: VulnDB.Results.Name
+      description: Version name.
+      type: Unknown
+  - arguments:
+    - description: Start date for which to return vulnerabilities.
+      name: start_date
+    - description: End date for which to return vulnerabilities.
+      name: end_date
+    - description: Number of previous hours for which to return vulnerabilities.
+      name: hours_ago
+    - defaultValue: "20"
+      description: Maximum number of entries to return. A high number of entries might
+        effect performance.
+      name: max_size
+    description: Returns recent vulnerabilities, by date or number of hours.
+    name: vulndb-get-updates-by-dates-or-hours
+    outputs:
+    - contextPath: VulnDB.Vulnerability.ID
+      description: Vulnerability ID.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Title
+      description: Vulnerability title (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Keywords
+      description: Vulnerability keywords.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Description
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Solution
+      description: Vulnerability solution (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.PublishedDate
+      description: Vulnerability published date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.TDescription
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.SolutionDate
+      description: Vulnerability solution date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
+      description: Vulnerability discovery date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
+      description: Exploit publish date.
+      type: date
+    - contextPath: VulnDB.CVE-ExtReferences.Value
+      description: CVE (constant string).
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Id
+      description: CVSS reference value.
+      type: number
+    - contextPath: VulnDB.CvssMetrics.AccessVector
+      description: CVSS access vector.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
+      description: Cvss access complexity
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Authentication
+      description: CVSS metric authentication.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
+      description: CVSS confidentiality impact.
+      type: string
+    - contextPath: VulnDB.cvssMetrics.integrity_impact
+      description: CVSS integrity impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
+      description: CVSS availability impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Generated_on
+      description: CVSS metric date.
+      type: date
+    - contextPath: VulnDB.CvssMetrics.Score
+      description: CVSS score.
+      type: number
+    - contextPath: VulnDB.Vendors.Id
+      description: Vendor ID.
+      type: number
+    - contextPath: VulnDB.Vendor.Name
+      description: Vendor name.
+      type: string
+    - contextPath: VulnDB.Products.Id
+      description: Product IDs.
+      type: number
+    - contextPath: VulnDB.Products.Name
+      description: Product names.
+      type: string
+    - contextPath: VulnDB.Products.Versions.Id
+      description: Product version IDs.
+      type: number
+    - contextPath: VulnDB.Products.Versions.Name
+      description: Product version names.
+      type: string
+    - contextPath: VulnDB.Classification.Longname
+      description: Classification name (long).
+      type: string
+    - contextPath: VulnDB.Classification.Description
+      description: Classification description (human readable).
+      type: string
+  - arguments:
+    - description: Vendor name.
+      name: vendor_name
+      required: true
+    - description: Product name.
+      name: product_name
+      required: true
+    - defaultValue: "20"
+      description: Maximum number of entries to return. A high number of entries might
+        effect performance.
+      name: max_size
+    description: Returns full details about a specific vulnerability, by vendor name
+      and product name.
+    name: vulndb-get-vuln-by-vendor-and-product-name
+    outputs:
+    - contextPath: VulnDB.Vulnerability.ID
+      description: Vulnerability ID.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Title
+      description: Vulnerability title (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Keywords
+      description: Vulnerability keywords.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Description
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Solution
+      description: Vulnerability solution (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.PublishedDate
+      description: Vulnerability published date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.TDescription
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.SolutionDate
+      description: Vulnerability solution date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
+      description: Vulnerability discovery date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
+      description: Exploit publish date.
+      type: date
+    - contextPath: VulnDB.CVE-ExtReferences.Value
+      description: CVE (constant string).
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Id
+      description: CVSS reference value.
+      type: number
+    - contextPath: VulnDB.CvssMetrics.AccessVector
+      description: CVSS access vector.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
+      description: CVSS access complexity.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Authentication
+      description: CVSS metric authentication.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
+      description: CVSS confidentiality impact.
+      type: string
+    - contextPath: VulnDB.cvssMetrics.integrity_impact
+      description: CVSS integrity impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
+      description: CVSS  availability impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Generated_on
+      description: CVSS metric date.
+      type: date
+    - contextPath: VulnDB.CvssMetrics.Score
+      description: CVSS score.
+      type: number
+    - contextPath: VulnDB.Vendors.Id
+      description: Vendor ID.
+      type: number
+    - contextPath: VulnDB.Vendor.Name
+      description: Vendor name.
+      type: string
+    - contextPath: VulnDB.Products.Id
+      description: Product IDs.
+      type: number
+    - contextPath: VulnDB.Products.Name
+      description: Product names.
+      type: string
+    - contextPath: VulnDB.Products.Versions.Id
+      description: Product version IDs.
+      type: number
+    - contextPath: VulnDB.Products.Versions.Name
+      description: Product version names.
+      type: string
+    - contextPath: VulnDB.Classification.Longname
+      description: Classification (name).
+      type: string
+    - contextPath: VulnDB.Classification.Description
+      description: Classification description (human readable).
+      type: string
+  - arguments:
+    - description: Vendor ID.
+      name: vendor_id
+      required: true
+    - description: Product ID.
+      name: product_id
+      required: true
+    - defaultValue: "20"
+      description: Maximum number of entries to return. A high number of entries might
+        effect performance.
+      name: max_size
+    description: Returns full details about a specific vulnerability, by vendor ID
+      and product ID.
+    name: vulndb-get-vuln-by-vendor-and-product-id
+    outputs:
+    - contextPath: VulnDB.Vulnerability.ID
+      description: Vulnerability ID.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Title
+      description: Vulnerability title (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Keywords
+      description: Vulnerability keywords.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Description
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Solution
+      description: Vulnerability solution (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.PublishedDate
+      description: Vulnerability published date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.TDescription
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.SolutionDate
+      description: Vulnerability solution date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
+      description: Vulnerability discovery date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
+      description: Exploit publish date.
+      type: date
+    - contextPath: VulnDB.CVE-ExtReferences.Value
+      description: CVE (constant string).
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Id
+      description: CVSS reference value.
+      type: number
+    - contextPath: VulnDB.CvssMetrics.AccessVector
+      description: CVSS access vector.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
+      description: CVSS access complexity.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Authentication
+      description: CVSS metric authentication.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
+      description: CVSS confidentiality impact.
+      type: string
+    - contextPath: VulnDB.cvssMetrics.integrity_impact
+      description: CVSS integrity impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
+      description: CVSS availability impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Generated_on
+      description: CVSS metric date.
+      type: date
+    - contextPath: VulnDB.CvssMetrics.Score
+      description: CVSS score.
+      type: number
+    - contextPath: VulnDB.Vendors.Id
+      description: Vendor ID.
+      type: number
+    - contextPath: VulnDB.Vendor.Name
+      description: Vendor name.
+      type: string
+    - contextPath: VulnDB.Products.Id
+      description: Product IDs.
+      type: number
+    - contextPath: VulnDB.Products.Name
+      description: Product names.
+      type: string
+    - contextPath: VulnDB.Products.Versions.Id
+      description: Product version IDs.
+      type: number
+    - contextPath: VulnDB.Products.Versions.Name
+      description: Product version names.
+      type: string
+    - contextPath: VulnDB.Classification.Longname
+      description: Classification name (long).
+      type: string
+    - contextPath: VulnDB.Classification.Description
+      description: Classification description (human readable).
+      type: string
+  - arguments:
+    - description: Vendor ID.
+      name: vendor_id
+      required: true
+    - defaultValue: "20"
+      description: Maximum number of entries to return. A high number of entries might
+        effect performance.
+      name: max_size
+    description: Returns full details about vulnerabilities, by vendor ID.
+    name: vulndb-get-vuln-by-vendor-id
+    outputs:
+    - contextPath: VulnDB.Vulnerability.ID
+      description: Vulnerability ID.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Title
+      description: Vulnerability title (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Keywords
+      description: Vulnerability keywords.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Description
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Solution
+      description: Vulnerability solution (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.PublishedDate
+      description: Vulnerability published date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.TDescription
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.SolutionDate
+      description: Vulnerability solution date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
+      description: Vulnerability discovery date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
+      description: Exploit publish date.
+      type: date
+    - contextPath: VulnDB.CVE-ExtReferences.Value
+      description: CVE (constant string).
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Id
+      description: CVSS reference value.
+      type: number
+    - contextPath: VulnDB.CvssMetrics.AccessVector
+      description: CVSS access vector.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
+      description: CVSS access complexity.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Authentication
+      description: CVSS metric authentication.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
+      description: CVSS confidentiality impact.
+      type: string
+    - contextPath: VulnDB.cvssMetrics.integrity_impact
+      description: CVSS integrity impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
+      description: CVSS availability impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Generated_on
+      description: CVSS metric date.
+      type: date
+    - contextPath: VulnDB.CvssMetrics.Score
+      description: CVSS score.
+      type: number
+    - contextPath: VulnDB.Vendors.Id
+      description: Vendor ID.
+      type: number
+    - contextPath: VulnDB.Vendor.Name
+      description: Vendor name.
+      type: string
+    - contextPath: VulnDB.Products.Id
+      description: Product IDs.
+      type: number
+    - contextPath: VulnDB.Products.Name
+      description: Product names.
+      type: string
+    - contextPath: VulnDB.Products.Versions.Id
+      description: Product version IDs.
+      type: number
+    - contextPath: VulnDB.Products.Versions.Name
+      description: Product version names.
+      type: string
+    - contextPath: VulnDB.Classification.Longname
+      description: Classification (name).
+      type: string
+    - contextPath: VulnDB.Classification.Description
+      description: Classification description (human readable).
+      type: string
+  - arguments:
+    - description: Product ID.
+      name: product_id
+      required: true
+    - defaultValue: "20"
+      description: Maximum number of entries to return. A high number of entries might
+        effect performance.
+      name: max_size
+    description: Returns full details about vulnerabilities, by product ID.
+    name: vulndb-get-vuln-by-product-id
+    outputs:
+    - contextPath: VulnDB.Vulnerability.ID
+      description: Vulnerability ID.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Title
+      description: Vulnerability title (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Keywords
+      description: Vulnerability keywords.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Description
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Solution
+      description: Vulnerability solution (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.PublishedDate
+      description: Vulnerability published date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.TDescription
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.SolutionDate
+      description: Vulnerability solution date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
+      description: Vulnerability discovery date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
+      description: Exploit publish date.
+      type: date
+    - contextPath: VulnDB.CVE-ExtReferences.Value
+      description: CVE (constant string).
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Id
+      description: CVSS reference value.
+      type: number
+    - contextPath: VulnDB.CvssMetrics.AccessVector
+      description: CVSS access vector.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
+      description: CVSS access complexity.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Authentication
+      description: CVSS metric authentication.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
+      description: CVSS confidentiality impact.
+      type: string
+    - contextPath: VulnDB.cvssMetrics.integrity_impact
+      description: CVSS integrity impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
+      description: CVSS availability impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Generated_on
+      description: CVSS metric date.
+      type: date
+    - contextPath: VulnDB.CvssMetrics.Score
+      description: CVSS score.
+      type: number
+    - contextPath: VulnDB.Vendors.Id
+      description: Vendor ID.
+      type: number
+    - contextPath: VulnDB.Vendor.Name
+      description: Vendor name.
+      type: string
+    - contextPath: VulnDB.Products.Id
+      description: Products ID.
+      type: number
+    - contextPath: VulnDB.Products.Name
+      description: Product names.
+      type: string
+    - contextPath: VulnDB.Products.Versions.Id
+      description: Product version IDs.
+      type: number
+    - contextPath: VulnDB.Products.Versions.Name
+      description: Product version names.
+      type: string
+    - contextPath: VulnDB.Classification.Longname
+      description: Classification (name).
+      type: string
+    - contextPath: VulnDB.Classification.Description
+      description: Classification description (human readable).
+      type: string
+  - arguments:
+    - default: true
+      description: CVE ID.
+      name: cve_id
+      required: true
+    - defaultValue: "20"
+      description: Maximum number of entries to return. A high number of entries might
+        effect performance.
+      name: max_size
+    description: Returns full details about vulnerabilities, by CVE ID.
+    name: vulndb-get-vuln-by-cve-id
+    outputs:
+    - contextPath: VulnDB.Vulnerability.ID
+      description: Vulnerability ID.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Title
+      description: Vulnerability title (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Keywords
+      description: Vulnerability keywords.
+      type: string
+    - contextPath: VulnDB.Vulnerability.Description
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.Solution
+      description: Vulnerability solution (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.PublishedDate
+      description: Vulnerability published date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.TDescription
+      description: Vulnerability description (human readable).
+      type: string
+    - contextPath: VulnDB.Vulnerability.SolutionDate
+      description: Vulnerability solution date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
+      description: Vulnerability discovery date.
+      type: date
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
+      description: Exploit publish date.
+      type: date
+    - contextPath: VulnDB.CVE-ExtReferences.Value
+      description: CVE (constant string).
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Id
+      description: CVSS reference value.
+      type: number
+    - contextPath: VulnDB.CvssMetrics.AccessVector
+      description: CVSS access vector.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
+      description: CVSS access complexity.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Authentication
+      description: CVSS metric authentication.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
+      description: CVSS confidentiality impact.
+      type: string
+    - contextPath: VulnDB.cvssMetrics.integrity_impact
+      description: CVSS integrity impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
+      description: CVSS availability impact.
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Generated_on
+      description: CVSS metric date.
+      type: date
+    - contextPath: VulnDB.CvssMetrics.Score
+      description: CVSS score.
+      type: number
+    - contextPath: VulnDB.Vendors.Id
+      description: Vendor ID.
+      type: number
+    - contextPath: VulnDB.Vendor.Name
+      description: Vendor name.
+      type: string
+    - contextPath: VulnDB.Products.Id
+      description: Product IDs.
+      type: number
+    - contextPath: VulnDB.Products.Name
+      description: Product names.
+      type: string
+    - contextPath: VulnDB.Products.Versions.Id
+      description: Product version IDs.
+      type: number
+    - contextPath: VulnDB.Products.Versions.Name
+      description: Product version names.
+      type: string
+    - contextPath: VulnDB.Classification.Longname
+      description: Classification name (long).
+      type: string
+    - contextPath: VulnDB.Classification.Description
+      description: Classification description (human readable).
+      type: string
+  dockerimage: demisto/python3:3.7.3.373
+  runonce: false
+  script: |2-
+
+
+
+
+    ''' IMPORTS '''
+
+    import requests
+    import urllib.parse
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    # Remove trailing slash to prevent wrong URL path to service
+    API_URL = demisto.params()['api_url'].rstrip('/')
+
+    # Should we use SSL
+    USE_SSL = not demisto.params().get('insecure', False)
+
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        os.environ.pop('HTTP_PROXY', None)
+        os.environ.pop('HTTPS_PROXY', None)
+        os.environ.pop('http_proxy', None)
+        os.environ.pop('https_proxy', None)
+
+    CLIENT_ID = demisto.params()['client_id']
+
+    CLIENT_SECRET = demisto.params()['client_secret']
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def get_oath_token():
+        # Workaround ParseResult immutability
+        parse_result = list(urllib.parse.urlparse(API_URL))
+        parse_result[2] = '/oauth/token'
+        oath_url = urllib.parse.urlunparse(parse_result)
+
+        return requests.post(oath_url,
+                             verify=USE_SSL,
+                             data={
+                                 'client_id': CLIENT_ID,
+                                 'client_secret': CLIENT_SECRET,
+                                 'grant_type': 'client_credentials'
+                             }).json()['access_token']
+
+
+    def http_request(url, size=None):
+        params = {'size': size} if size else None
+        return requests.get(url,
+                            verify=USE_SSL,
+                            headers={'Authorization': f'Bearer {get_oath_token()}'},
+                            params=params).json()
+
+
+    def vulndb_vulnerability_to_entry(vuln):
+        vulnerability_details = {
+            'ID': vuln.get('vulndb_id', 0),
+            'Title': vuln.get('title', ''),
+            'Description': vuln.get('description', '').rstrip('Z'),
+            'Keywords': vuln.get('keywords', ''),
+            'PublishedDate': vuln.get('vulndb_published_date', '').rstrip('Z'),
+            'TDescription': vuln.get('t_description', ''),
+            'SolutionDate': vuln.get('solution_date', '').rstrip('Z'),
+            'DiscoveryDate': vuln.get('disclosure_date', '').rstrip('Z'),
+            'ExploitPublishDate': vuln.get('exploit_publish_date', '').rstrip('Z'),
+        }
+
+        cve_ext_reference_values = [ext_reference['value'] for ext_reference in
+                                    vuln.get('ext_references', [])]
+
+        cvss_metrics_details = [{
+            'Id': cvss_metrics_data.get('id', 0),
+            'AccessVector': cvss_metrics_data.get('access_vector', ''),
+            'AccessComplexity': cvss_metrics_data.get('access_complexity', ''),
+            'Authentication': cvss_metrics_data.get('authentication', ''),
+            'ConfidentialityImpact': cvss_metrics_data.get('confidentiality_impact', ''),
+            'IntegrityImpact': cvss_metrics_data.get('integrity_impact', ''),
+            'AvailabilityImpact': cvss_metrics_data.get('availability_impact', ''),
+            'GeneratedOn': cvss_metrics_data.get('generated_on', ''),
+            'Score': cvss_metrics_data.get('score', 0),
+        } for cvss_metrics_data in vuln['cvss_metrics']]
+
+        vendor_details = [{'Id': vendor.get('vendor', {'id': 0})['id'], 'Name': vendor.get('vendor', {'name': ''})['name']}
+                          for vendor in vuln['vendors']]
+
+        product_details = []
+        for product in vuln['products']:
+            product_versions = [{'Id': version.get('id', ''), 'Name': version.get('name', '')} for version in
+                                product.get('versions', [])]
+            product_details.append({
+                'Id': product.get('id', ''),
+                'Name': product.get('name', ''),
+                'Versions': product_versions
+            })
+
+        default_classification = {'longname': '', 'description': ''}
+        classification_details = [{'Longname': classification.get('classification', default_classification)['longname'],
+                                   'Description': classification.get('classification', default_classification)[
+                                       'description']}
+                                  for classification in vuln['classifications']]
+
+        return {
+            'Vulnerability': vulnerability_details,
+            'CVE-ExtReference': {
+                'Value': cve_ext_reference_values
+            },
+            'CvssMetrics': cvss_metrics_details,
+            'Vendor': vendor_details,
+            'Products': product_details,
+            'Classification': classification_details
+        }
+
+
+    def vulndb_vulnerability_results_to_demisto_results(res):
+        if 'error' in res:
+            return_error(res['error'])
+        else:
+            if 'vulnerability' in res:
+                results = [res['vulnerability']]
+            elif 'results' in res:
+                results = res['results']
+            else:
+                demisto.results({
+                    'Type': entryTypes['error'],
+                    'Contents': res,
+                    'ContentsFormat': formats['json'],
+                    'HumanReadable': 'No "vulnerability" or "results" keys in the returned JSON',
+                    'HumanReadableFormat': formats['text']
+                })
+                return
+
+            for result in results:
+                ec = {
+                    'VulnDB': vulndb_vulnerability_to_entry(result)
+                }
+
+                human_readable = tableToMarkdown(f'Result for vulnerability ID: {ec["VulnDB"]["Vulnerability"]["ID"]}', {
+                    'Title': ec['VulnDB']['Vulnerability']['Title'],
+                    'Description': ec['VulnDB']['Vulnerability']['Description'],
+                    'Publish Date': ec['VulnDB']['Vulnerability']['PublishedDate'],
+                    'Solution Date': ec['VulnDB']['Vulnerability']['SolutionDate']
+                })
+
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'Contents': res,
+                    'ContentsFormat': formats['json'],
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                    'EntryContext': ec
+                })
+
+
+    def vulndb_vendor_to_entry(vendor):
+        return {
+            'Results': {
+                'Id': vendor.get('id', ''),
+                'Name': vendor.get('name', ''),
+                'ShortName': vendor.get('short_name', ''),
+                'VendorUrl': vendor.get('vendor_url', '')
+            }
+        }
+
+
+    def vulndb_vendor_results_to_demisto_results(res):
+        if 'error' in res:
+            return_error(res['error'])
+        else:
+            if 'vendor' in res:
+                results = [res['vendor']]
+            elif 'results' in res:
+                results = res['results']
+            else:
+                demisto.results({
+                    'Type': entryTypes['error'],
+                    'Contents': res,
+                    'ContentsFormat': formats['json'],
+                    'HumanReadable': 'No "vendor" or "results" keys in the returned JSON',
+                    'HumanReadableFormat': formats['text']
+                })
+                return
+
+            for result in results:
+                ec = {
+                    'VulnDB': vulndb_vendor_to_entry(result)
+                }
+
+                human_readable = tableToMarkdown(f'Result for vendor ID: {ec["VulnDB"]["Results"]["Id"]}', {
+                    'ID': ec['VulnDB']['Results']['Id'],
+                    'Name': ec['VulnDB']['Results']['Name'],
+                    'Short Name': ec['VulnDB']['Results']['ShortName'],
+                    'Vendor URL': ec['VulnDB']['Results']['VendorUrl']
+                })
+
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'Contents': res,
+                    'ContentsFormat': formats['json'],
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                    'EntryContext': ec
+                })
+
+
+    def vulndb_product_to_entry(product):
+        return {
+            'Results': {
+                'Id': product.get('id', ''),
+                'Name': product.get('name', '')
+            }
+        }
+
+
+    def vulndb_product_results_to_demisto_results(res):
+        if 'error' in res:
+            return_error(res['error'])
+        else:
+            if 'results' in res:
+                results = res['results']
+            else:
+                demisto.results({
+                    'Type': entryTypes['error'],
+                    'Contents': res,
+                    'ContentsFormat': formats['json'],
+                    'HumanReadable': 'No "results" key in the returned JSON',
+                    'HumanReadableFormat': formats['text']
+                })
+                return
+
+            for result in results:
+                ec = {
+                    'VulnDB': vulndb_product_to_entry(result)
+                }
+
+                human_readable = tableToMarkdown(f'Result for product ID: {ec["VulnDB"]["Results"]["Id"]}', {
+                    'ID': ec['VulnDB']['Results']['Id'],
+                    'Name': ec['VulnDB']['Results']['Name']
+                })
+
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'Contents': res,
+                    'ContentsFormat': formats['json'],
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                    'EntryContext': ec
+                })
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        get_oath_token()
+
+
+    def vulndb_get_vuln_by_id_command():
+        vulndb_id = demisto.args()['vuln_id']
+
+        res = requests.get(f'{API_URL}/vulnerabilities/{vulndb_id}',
+                           verify=USE_SSL,
+                           headers={'Authorization': f'Bearer {get_oath_token()}'}
+                           ).json()
+
+        vulndb_vulnerability_results_to_demisto_results(res)
+
+
+    def vulndb_get_vuln_by_vendor_and_product_name_command():
+        vendor_name = demisto.args()['vendor_name']
+        product_name = demisto.args()['product_name']
+        max_size = demisto.args().get('max_size')
+
+        res = http_request(
+            f'{API_URL}/vulnerabilities/find_by_vendor_and_product_name?vendor_name={vendor_name}&product_name={product_name}',
+            max_size)
+
+        vulndb_vulnerability_results_to_demisto_results(res)
+
+
+    def vulndb_get_vuln_by_vendor_and_product_id_command():
+        vendor_id = demisto.args()['vendor_id']
+        product_id = demisto.args()['product_id']
+        max_size = demisto.args().get('max_size')
+
+        res = http_request(
+            f'{API_URL}/vulnerabilities/find_by_vendor_and_product_id?vendor_id={vendor_id}&product_id={product_id}',
+            max_size)
+
+        vulndb_vulnerability_results_to_demisto_results(res)
+
+
+    def vulndb_get_vuln_by_vendor_id_command():
+        vendor_id = demisto.args()['vendor_id']
+        max_size = demisto.args().get('max_size')
+
+        res = http_request(f'{API_URL}/vulnerabilities/find_by_vendor_id?vendor_id={vendor_id}',
+                           max_size)
+
+        vulndb_vulnerability_results_to_demisto_results(res)
+
+
+    def vulndb_get_vuln_by_product_id_command():
+        product_id = demisto.args()['product_id']
+        max_size = demisto.args().get('max_size')
+
+        res = http_request(f'{API_URL}/vulnerabilities/find_by_product_id?product_id={product_id}',
+                           max_size)
+
+        vulndb_vulnerability_results_to_demisto_results(res)
+
+
+    def vulndb_get_vuln_by_cve_id_command():
+        cve_id = demisto.args()['cve_id']
+        max_size = demisto.args().get('max_size')
+
+        res = http_request(f'{API_URL}/vulnerabilities/{cve_id}/find_by_cve_id',
+                           max_size)
+
+        vulndb_vulnerability_results_to_demisto_results(res)
+
+
+    def vulndb_get_updates_by_dates_or_hours_command():
+        start_date = demisto.args().get('start_date')
+        end_date = demisto.args().get('end_date')
+        hours_ago = demisto.args().get('hours_ago')
+        max_size = demisto.args().get('max_size')
+
+        if start_date:
+            url = f'{API_URL}/vulnerabilities/find_by_date?start_date={start_date}'
+            if end_date:
+                url += f'&end_date={end_date}'
+
+            res = http_request(url,
+                               max_size)
+        elif hours_ago is not None:
+            res = http_request(f'{API_URL}/vulnerabilities/find_by_time?hours_ago={hours_ago}',
+                               max_size)
+        else:
+            return_error('Must provide either start date or hours ago.')
+
+        vulndb_vulnerability_results_to_demisto_results(res)
+
+
+    def vulndb_get_vendor_command():
+        vendor_id = demisto.args().get('vendor_id')
+        vendor_name = demisto.args().get('vendor_name')
+        max_size = demisto.args().get('max_size')
+
+        if vendor_id is not None and vendor_name is not None:
+            return_error('Provide either vendor id or vendor name or neither, not both.')
+        elif vendor_id:
+            res = http_request(f'{API_URL}/vendors/{vendor_id}',
+                               max_size)
+        elif vendor_name:
+            res = http_request(f'{API_URL}/vendors/by_name?vendor_name={vendor_name}',
+                               max_size)
+        else:
+            res = http_request(f'{API_URL}/vendors',
+                               max_size)
+
+        vulndb_vendor_results_to_demisto_results(res)
+
+
+    def vulndb_get_product_command():
+        vendor_id = demisto.args().get('vendor_id')
+        vendor_name = demisto.args().get('vendor_name')
+        max_size = demisto.args().get('max_size')
+
+        if vendor_id is not None and vendor_name is not None:
+            return_error('Provide either vendor id or vendor name or neither, not both.')
+        elif vendor_id:
+            res = http_request(f'{API_URL}/products/by_vendor_id?vendor_id={vendor_id}',
+                               max_size)
+        elif vendor_name:
+            res = http_request(f'{API_URL}/products/by_vendor_name?vendor_name={vendor_name}',
+                               max_size)
+        else:
+            res = http_request(f'{API_URL}/products',
+                               max_size)
+
+        vulndb_product_results_to_demisto_results(res)
+
+
+    def vulndb_get_version_command():
+        product_id = demisto.args().get('product_id')
+        product_name = demisto.args().get('product_name')
+        max_size = demisto.args().get('max_size')
+
+        if product_id is not None and product_name is not None:
+            return_error('Provide either product id or vendor name, not both.')
+        elif product_id:
+            res = http_request(f'{API_URL}/versions/by_product_id?product_id={product_id}',
+                               max_size)
+        elif product_name:
+            res = http_request(f'{API_URL}/versions/by_product_name?product_name={product_name}',
+                               max_size)
+
+        vulndb_product_results_to_demisto_results(res)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        test_module()
+        demisto.results('ok')
+    if demisto.command() == 'vulndb-get-vuln-by-id':
+        vulndb_get_vuln_by_id_command()
+    elif demisto.command() == 'vulndb-get-vuln-by-vendor-and-product-name':
+        vulndb_get_vuln_by_vendor_and_product_name_command()
+    elif demisto.command() == 'vulndb-get-vuln-by-vendor-and-product-id':
+        vulndb_get_vuln_by_vendor_and_product_id_command()
+    elif demisto.command() == 'vulndb-get-vuln-by-vendor-id':
+        vulndb_get_vuln_by_vendor_id_command()
+    elif demisto.command() == 'vulndb-get-vuln-by-product-id':
+        vulndb_get_vuln_by_product_id_command()
+    elif demisto.command() == 'vulndb-get-vuln-by-cve-id':
+        vulndb_get_vuln_by_cve_id_command()
+    elif demisto.command() == 'vulndb-get-vendor':
+        vulndb_get_vendor_command()
+    elif demisto.command() == 'vulndb-get-product':
+        vulndb_get_product_command()
+    elif demisto.command() == 'vulndb-get-version':
+        vulndb_get_version_command()
+    elif demisto.command() == 'vulndb-get-updates-by-dates-or-hours':
+        vulndb_get_updates_by_dates_or_hours_command()
+  type: python
+system: true

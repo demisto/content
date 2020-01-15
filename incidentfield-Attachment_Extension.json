@@ -1,0 +1,42 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"Phishing"
+	],
+	"breachScript": "",
+	"caseInsensitive": false,
+	"cliName": "attachmentextension",
+	"closeForm": false,
+	"columns": null,
+	"content": true,
+	"defaultRows": null,
+	"description": "",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_attachmentextension",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "Attachment Extension",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": null,
+	"sla": 0,
+	"sortValues": null,
+	"system": false,
+	"systemAssociatedTypes": [
+		"Phishing"
+	],
+	"threshold": 0,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": true,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}

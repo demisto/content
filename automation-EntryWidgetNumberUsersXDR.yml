@@ -1,0 +1,48 @@
+comment: Entry widget that returns the number of users that participated in a specified
+  Cortex XDR incident.
+commonfields:
+  id: EntryWidgetNumberUsersXDR
+  version: -1
+dockerimage: demisto/python3:3.7.3.286
+enabled: true
+name: EntryWidgetNumberUsersXDR
+runas: DBotWeakRole
+runonce: false
+script: |2-
+
+
+  incident = demisto.incidents()
+  data = {
+      "Type": 17,
+      "ContentsFormat": "number",
+      "Contents": {
+          "stats": int(incident[0].get('CustomFields', {}).get('xdrusercount', 0)),
+          "params": {
+              "layout": "horizontal",
+              "name": "Users Count",
+              "sign": "",
+              "colors": {
+                  "items": {
+                      "#00CD33": {
+                          "value": -1
+                      },
+                      "#FF9000": {
+                          "value": 0
+                      },
+                      "#ff1744": {
+                          "value": 3
+                      }
+                  }
+              },
+              "type": "above"
+          }
+      }
+  }
+
+  demisto.results(data)
+scripttarget: 0
+subtype: python3
+system: true
+tags:
+- dynamic-section
+type: python

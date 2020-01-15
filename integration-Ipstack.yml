@@ -1,0 +1,169 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Ipstack
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: "true"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: "One of the leading IP to geolocation \nAPIs and global IP database services."
+detaileddescription: |
+  To configure an instance of the ipstack integration, you need your ipstack API Key.
+
+  ## How to Get Your API Key
+  1. Go to ipstack.com
+  2. Log in using your ipstack credentials.
+  3. Click the **Dashboard** tab.
+  4. Locate and copy your API Key.
+display: ipstack
+image: data:image/png;base64,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
+name: Ipstack
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: IP address to query.
+      name: ip
+      required: true
+    description: Queries an IP address in ipstack.
+    name: ip
+    outputs:
+    - contextPath: IP.Address
+      description: IP address.
+      type: string
+    - contextPath: IP.Geo.Location
+      description: Latitude and longitude of the IP address.
+      type: string
+    - contextPath: IP.Geo.Country
+      description: Country of origin of the IP address.
+      type: string
+    - contextPath: Ipstack.IP.address
+      description: IP address.
+      type: string
+    - contextPath: Ipstack.IP.type
+      description: IP type (ipv4 or ipv6).
+      type: string
+    - contextPath: Ipstack.IP.continent_name
+      description: Continent of the IP address.
+      type: string
+    - contextPath: Ipstack.IP.latitude
+      description: Latitude of the IP address.
+      type: string
+    - contextPath: Ipstack.IP.longitude
+      description: Longitude of the IP address.
+      type: string
+  runonce: false
+  script: |2-
+
+
+
+    import os
+    import requests
+
+    BASE_URL = 'http://api.ipstack.com'
+    API_KEY = demisto.params().get('apikey')
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' HELPER FUNCTIONS '''
+    # #returns a result of a api call
+
+
+    def http_request(method, path):
+        """
+        HTTP request helper function
+        """
+        url = BASE_URL + path
+        res = requests.request(
+            method=method,
+            url=url
+        )
+
+        if not res.ok:
+            txt = 'error in URL {} status code: {} reason: {}'.format(url, res.status_code, res.text)
+            demisto.error(txt)
+            raise Exception(txt)
+
+        try:
+            res_json = res.json()
+            if res_json.get('code'):
+                txt = 'error in URL {} status code: {} reason: {}'.format(url, res.status_code, res.text)
+                demisto.error(txt)
+                raise Exception(txt)
+            else:
+                return res_json
+
+        except Exception as ex:
+            demisto.debug(str(ex))
+            demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": res.text})
+
+
+    ''' Commands '''
+
+
+    def do_ip(ip):
+        path = "/{}?access_key={}".format(ip, API_KEY)
+        return http_request('GET', path)
+
+
+    def do_ip_command():
+        ip = demisto.args().get('ip')
+        raw_response = do_ip(ip)
+        human_readable_data = {
+            "Address": raw_response.get('ip'),
+            "Country": raw_response.get('country_name'),
+            "Latitude": raw_response.get('latitude'),
+            "Longitude": raw_response.get('longitude')
+        }
+
+        outputs = {
+            'IP(val.Address == obj.Address)': {
+                'Address': raw_response.get('ip'),
+                'Geo': {
+                    'Location': "{},{}".format(raw_response.get('latitude'), raw_response.get('longitude')),
+                    'Country': raw_response.get('country_name')
+                }
+            },
+            'Ipstack.ip(val.ID==obj.ID)': {
+                'address': raw_response.get('ip'),
+                'type': raw_response.get('type'),
+                'continent_name': raw_response.get('continent_name'),
+                'latitude': raw_response.get('latitude'),
+                'longitude': raw_response.get('longitude'),
+            }
+        }
+
+        headers = ['Address', 'Country', 'Latitude', 'Longitude']
+        human_readable = tableToMarkdown('Ipstack info on {}'.format(raw_response.get('ip')), human_readable_data, headers=headers)
+        return_outputs(human_readable, outputs, raw_response)
+
+
+    def test_module():
+        path = "/1.2.3.4?access_key={}".format(API_KEY)
+        res = requests.request('GET', BASE_URL + path)
+        if res.json().get('ip') == '1.2.3.4':
+            demisto.results('ok')
+        else:
+            demisto.results('an error occurred. reason: {}'.format(res.text))
+
+
+    try:
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'ip':
+            do_ip_command()
+    except Exception, e:
+        return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
+  type: python
+system: true

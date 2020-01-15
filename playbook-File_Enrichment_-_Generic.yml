@@ -1,0 +1,421 @@
+description: |-
+  Enrich a file using one or more integrations.
+
+  File enrichment includes:
+  * File history
+  * Threat information
+  * File reputation
+id: File Enrichment - Generic
+inputs:
+- description: File MD5 hash to enrich.
+  key: MD5
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+- description: File SHA-256 hash to enrich.
+  key: SHA256
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      root: File
+- description: File SHA-1 hash to enrich.
+  key: SHA1
+  required: false
+  value:
+    complex:
+      accessor: SHA1
+      root: File
+name: File Enrichment - Generic
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The tested indicator
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore's object
+  type: unknown
+- contextPath: File
+  description: The file's object
+  type: unknown
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: File.VirusTotal.Scans
+  description: the scan object
+  type: unknown
+- contextPath: File.VirusTotal.Scans.Source
+  description: Scan vendor for this hash
+- contextPath: File.VirusTotal.Scans.Detected
+  description: Scan detection for this hash (True,False)
+- contextPath: File.VirusTotal.Scans.Result
+  description: Scan result for this hash - signature, etc.
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+      - "31"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6fa65b00-15dc-4cab-8b4e-7ab8e2720215
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 6fa65b00-15dc-4cab-8b4e-7ab8e2720215
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d2deb7de-75cc-4f33-8ba3-6f83370096f8
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: d2deb7de-75cc-4f33-8ba3-6f83370096f8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1010
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+      - "29"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 9b849bc8-3a9b-46c5-802e-2fc25b7b1761
+      iscommand: false
+      name: Threat information
+      type: title
+      version: -1
+    taskid: 9b849bc8-3a9b-46c5-802e-2fc25b7b1761
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.SHA256
+          operator: isExists
+      label: "yes"
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "26"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if there is a SHA-256 hash in context.
+      id: 803cab60-a177-4bca-8890-267658a8e037
+      iscommand: false
+      name: Is there a SHA-256 hash?
+      type: condition
+      version: -1
+    taskid: 803cab60-a177-4bca-8890-267658a8e037
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 977beaa5-2d82-4d11-815d-16c6b502b5af
+      iscommand: false
+      name: Get threat info from Cylance Protect v2
+      type: title
+      version: -1
+    taskid: 977beaa5-2d82-4d11-815d-16c6b502b5af
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "27":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Cylance Protect v2
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "28"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of Cylance Protect v2.
+      id: a385675b-4d5d-40c4-8ea3-f9658e14ef91
+      iscommand: false
+      name: Is Cylance Protect v2 enabled?
+      type: condition
+      version: -1
+    taskid: a385675b-4d5d-40c4-8ea3-f9658e14ef91
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 660
+        }
+      }
+  "28":
+    continueonerror: true
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      sha256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: false
+    task:
+      brand: Cylance Protect v2
+      description: Get threat information from the Cylance Protect v2 integration.
+      id: 5d1b9cb9-80ad-485a-80ba-e52f2bc9d2f0
+      iscommand: true
+      name: Get threat information from Cylance Protect v2
+      script: Cylance Protect v2|||cylance-protect-get-threat
+      type: regular
+      version: -1
+    taskid: 5d1b9cb9-80ad-485a-80ba-e52f2bc9d2f0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 835
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA1:
+        complex:
+          root: inputs.SHA1
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: true
+    task:
+      brand: ""
+      description: Get file reputation using one or more integrations
+      id: 0357cc1e-4fed-4d34-8672-c44dde656382
+      iscommand: false
+      name: File Enrichment - Virus Total private API
+      playbookName: File Enrichment - Virus Total Private API
+      type: playbook
+      version: -1
+    taskid: 0357cc1e-4fed-4d34-8672-c44dde656382
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 835
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA1:
+        complex:
+          root: inputs.SHA1
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: true
+    task:
+      brand: ""
+      description: Get file reputation using one or more integrations
+      id: 52857fb4-234a-41b3-863e-acedeb1b02b3
+      iscommand: false
+      name: File Enrichment - File reputation
+      playbookName: File Enrichment - File reputation
+      type: playbook
+      version: -1
+    taskid: 52857fb4-234a-41b3-863e-acedeb1b02b3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 835
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: e14e2725-8611-4089-8947-4db090c13347
+      iscommand: false
+      name: File reputation
+      type: title
+      version: -1
+    taskid: e14e2725-8611-4089-8947-4db090c13347
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 675
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 1465,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

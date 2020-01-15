@@ -1,0 +1,222 @@
+description: This playbook can be used in a job to populate indicators from PhishLabs,
+  according to a defined period of time.
+id: PhishLabs - Populate Indicators
+inputs:
+- description: Get indicators within this duration (from now).
+  key: Since
+  required: false
+  value:
+    simple: 1h
+- description: Maximum number of indicators.
+  key: Limit
+  required: false
+  value: {}
+- description: Removes the protocol part from indicators, when the rule can be applied.
+  key: Remove protocol
+  required: false
+  value:
+    simple: "false"
+- description: Removes the query string part from indicators, when the rules can be
+    applied.
+  key: Remove query
+  required: false
+  value:
+    simple: "false"
+- description: Filter the indicators by indicator type.
+  key: Indicator type
+  required: false
+  value: {}
+name: PhishLabs - Populate Indicators
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6def49b7-29f8-4905-8db0-6448936126ad
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 6def49b7-29f8-4905-8db0-6448936126ad
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      delete_false_positive: {}
+      indicator_type:
+        complex:
+          root: inputs.Indicator type
+      limit:
+        complex:
+          root: inputs.Limit
+      remove_protocol:
+        complex:
+          root: inputs.Remove protocol
+      remove_query:
+        complex:
+          root: inputs.Remove query
+      since:
+        complex:
+          root: inputs.Since
+    separatecontext: false
+    task:
+      brand: ""
+      description: Populate indicators by the PhishLabs IOC  global feed.
+      id: ab28c63c-ea49-480e-858b-c6537c5f11c0
+      iscommand: false
+      name: Populate indicators
+      scriptName: PhishLabsPopulateIndicators
+      type: regular
+      version: -1
+    taskid: ab28c63c-ea49-480e-858b-c6537c5f11c0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Close the current incident.
+      id: 58403bf5-5825-4058-8c42-6cbfdb6caac2
+      iscommand: true
+      name: Close investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 58403bf5-5825-4058-8c42-6cbfdb6caac2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: PhishLabs IOC
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: bf18488a-3da2-4074-84f4-71d023dbb313
+      iscommand: false
+      name: Is PhishLabs IOC enabled?
+      type: condition
+      version: -1
+    taskid: bf18488a-3da2-4074-84f4-71d023dbb313
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 4682a8db-5f39-4d30-8385-3b1ead5d338b
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 4682a8db-5f39-4d30-8385-3b1ead5d338b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 740
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 755,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

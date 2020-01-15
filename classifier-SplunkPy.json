@@ -1,0 +1,65 @@
+{
+	"brandName": "SplunkPy",
+	"custom": false,
+	"defaultIncidentType": "",
+	"id": "SplunkPy",
+	"incidentSamples": null,
+	"instanceId": "",
+	"instanceName": "",
+	"isDefault": true,
+	"keyTypeMap": {
+		"Access - Brute Force Access Behavior Detected - Rule": "Access",
+		"Access - Brute Force Access Behavior Detected Over 1d - Rule": "Access",
+		"Access - Concurrent App Accesses - Rule": "Access",
+		"Access - Excessive Failed Logins - Rule": "Access",
+		"Access - High or Critical Priority Individual Logging into Infected Machine - Rule": "Access",
+		"Endpoint - High Or Critical Priority Host With Malware - Rule": "Malware"
+	},
+	"mapping": {
+		"Access": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"App": {
+					"complex": null,
+					"simple": "app"
+				},
+				"Dest": {
+					"complex": null,
+					"simple": "dest"
+				},
+				"Dest NT Domain": {
+					"complex": null,
+					"simple": "dest_pci_domain"
+				},
+				"Src": {
+					"complex": null,
+					"simple": "src"
+				},
+				"Src NT Domain": {
+					"complex": null,
+					"simple": "src_pci_domain"
+				}
+			}
+		},
+		"Malware": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Dest": {
+					"complex": null,
+					"simple": "dest"
+				},
+				"Signature": {
+					"complex": null,
+					"simple": "signature"
+				}
+			}
+		}
+	},
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": "source"
+	},
+	"unclassifiedCases": null,
+	"version": -1
+}

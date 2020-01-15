@@ -1,0 +1,529 @@
+description: |-
+  This playbook blocks malicious IPs using all integrations that you have enabled.
+
+  Supported integrations for this playbook:
+  * Check Point Firewall
+  * Palo Alto Networks Minemeld
+  * Palo Alto Networks Panorama
+  * Zscaler
+id: block_ip_-_generic
+inputs:
+- description: The name of the IP blacklist Miner in  Minemeld.
+  key: IPBlacklistMiner
+  required: false
+  value: {}
+- description: Array of malicious IPs to block.
+  key: IP
+  required: false
+  value: {}
+name: Block IP - Generic
+outputs:
+- contextPath: CheckpointFWRule.Destination
+  description: Collection of Network objects identified by the name or UID. How much
+    details are returned depends on the details-level field of the request. This table
+    shows the level of detail shown when details-level is set to standard.
+- contextPath: CheckpointFWRule.DestinationNegate
+  description: True if negate is set for destination.
+- contextPath: PanoramaRule.Direction
+  description: Direction of the Panorama rule, could be 'to','from', 'both'
+  type: string
+- contextPath: PanoramaRule.IP
+  description: The IP the Panorama rule blocks
+  type: string
+- contextPath: CheckpointFWRule.Name
+  description: Object name. Should be unique in domain.
+- contextPath: PanoramaRule.Name
+  description: Name of the Panorama rule
+  type: string
+- contextPath: CheckpointFWRule.UID
+  description: Object unique identifier.
+- contextPath: PanoramaRule
+  description: List of Panorama rules
+- contextPath: CheckpointFWRule.Type
+  description: Type of the object.
+- contextPath: CheckpointFWRule.Action
+  description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
+    depends on the details-level field of the request. This table shows the level
+    of detail shown when details-level is set to standard.
+- contextPath: CheckpointFWRule.ActionSetting
+  description: Action settings.
+- contextPath: CheckpointFWRule.CustomFields
+  description: Custom fields.
+- contextPath: CheckpointFWRule.Data
+  description: How much details are returned depends on the details-level field of
+    the request. This table shows the level of detail shown when details-level is
+    set to standard.
+- contextPath: CheckpointFWRule.DataDirection
+  description: On which direction the file types processing is applied.
+- contextPath: CheckpointFWRule.DataNegate
+  description: True if negate is set for data.
+- contextPath: CheckpointFWRule.Domain
+  description: Information about the domain the object belongs to.
+- contextPath: CheckpointFWRule.Enabled
+  description: Enable/Disable the rule.
+- contextPath: CheckpointFWRule.Hits
+  description: Hits count object.
+- contextPath: CheckpointFWRule.Data.Name
+  description: Object name. Should be unique in domain.
+- contextPath: CheckpointFWRule.Data.Domain
+  description: Information about the domain the object belongs to.
+- contextPath: CheckpointFWRule.Domain.Name
+  description: Object name. Should be unique in domain.
+- contextPath: CheckpointFWRule.Domain.UID
+  description: Object unique identifier.
+- contextPath: CheckpointFWRule.Domain.Type
+  description: Domain type.
+- contextPath: CheckpointFWRule.Hits.FirstDate
+  description: First of hits.
+- contextPath: CheckpointFWRule.Hits.LastDate
+  description: Last date of hits.
+- contextPath: CheckpointFWRule.Hits.Level
+  description: Level of hits.
+- contextPath: CheckpointFWRule.Hits.Percentage
+  description: Percentage of hits
+- contextPath: CheckpointFWRule.Hits.Value
+  description: Value of hits.
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: b95110b7-ba18-42a5-87ad-c5d37915401c
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: b95110b7-ba18-42a5-87ad-c5d37915401c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 10
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1808d949-f921-4957-8796-7bbedd822ad9
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 1808d949-f921-4957-8796-7bbedd822ad9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 885
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+      - "9"
+      - "11"
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: cea4b9a9-d2a5-42c6-84e7-7eab6d6ab7a8
+      iscommand: false
+      name: Block IPs
+      type: title
+      version: -1
+    taskid: cea4b9a9-d2a5-42c6-84e7-7eab6d6ab7a8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      direction:
+        simple: both
+      ip:
+        complex:
+          root: inputs.IP
+      ipname:
+        simple: IP-${inputs.IP}
+      rulename:
+        simple: Block-${inputs.IP}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Block the IPs using Check Point Firewall.
+      id: 077714b6-f53e-4ab4-8679-d2c172e67a59
+      iscommand: true
+      name: Block IP with Check Point Firewall
+      script: '|||checkpoint-block-ip'
+      type: regular
+      version: -1
+    taskid: 077714b6-f53e-4ab4-8679-d2c172e67a59
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 680
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Check Point
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that there is a valid instance of Check Point Firewall enabled.
+      id: cc26e2d3-b22c-4e90-819e-5a1dc485c2db
+      iscommand: false
+      name: Is Check Point Firewall enabled?
+      type: condition
+      version: -1
+    taskid: cc26e2d3-b22c-4e90-819e-5a1dc485c2db
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.IP
+          operator: isExists
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that the playbook input includes at least one IP to block.
+      id: 3f8eeba3-99f9-484c-8f73-a0c6d9bd02bb
+      iscommand: false
+      name: Is there an IP to block?
+      type: condition
+      version: -1
+    taskid: 3f8eeba3-99f9-484c-8f73-a0c6d9bd02bb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 155
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "10"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that there is a valid instance of Palo Alto Networks Panorama
+        enabled.
+      id: bebb5a4e-9e67-4334-86e2-4cf1064abc72
+      iscommand: false
+      name: Is Palo Alto Networks Panorama enabled?
+      type: condition
+      version: -1
+    taskid: bebb5a4e-9e67-4334-86e2-4cf1064abc72
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 515
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      direction:
+        simple: both
+      ip:
+        complex:
+          root: inputs.IP
+      rulename:
+        simple: Block-${inputs.IP}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Block the IPs using Palo Alto Networks Panorama.
+      id: 7e800325-00ed-4c5a-8838-a40f28680299
+      iscommand: false
+      name: Block IP with Palo Alto Networks Panorama
+      scriptName: PanoramaBlockIP
+      type: regular
+      version: -1
+    taskid: 7e800325-00ed-4c5a-8838-a40f28680299
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 680
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      Indicator:
+        complex:
+          root: inputs.IP
+      MinerName:
+        complex:
+          root: inputs.IPBlacklistMiner
+    separatecontext: true
+    task:
+      brand: ""
+      id: dbee1e60-454a-4043-8676-7f5bb3006b00
+      iscommand: false
+      name: Add Indicator to Miner - Minemeld
+      playbookName: Add Indicator to Miner - Palo Alto MineMeld
+      type: playbook
+      version: -1
+    taskid: dbee1e60-454a-4043-8676-7f5bb3006b00
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 952.5,
+          "y": 515
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Zscaler
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that there is a valid instance of Zscaler enabled.
+      id: 43617e2e-a00d-4569-8d43-80b6e732798e
+      iscommand: false
+      name: Is Zscaler enabled?
+      type: condition
+      version: -1
+    taskid: 43617e2e-a00d-4569-8d43-80b6e732798e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 515
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    task:
+      brand: Zscaler
+      description: Block the IPs using Zscaler.
+      id: 6c6d1f99-8689-49d7-8c7c-f9ddcdd2a782
+      iscommand: true
+      name: Block IP with Zscaler
+      script: Zscaler|||zscaler-blacklist-ip
+      type: regular
+      version: -1
+    taskid: 6c6d1f99-8689-49d7-8c7c-f9ddcdd2a782
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 670
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.32,
+      "7_2_#default#": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 1720,
+        "x": 50,
+        "y": 10
+      }
+    }
+  }

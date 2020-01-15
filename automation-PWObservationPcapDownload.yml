@@ -1,0 +1,60 @@
+args:
+- default: true
+  description: The observation ID (or a comma-separated list of IDs)
+  name: id
+  required: true
+- description: the sensor id (or a comma-separated list of IDs)
+  name: sensorId
+  required: true
+- description: Optionally provide a filename for the download
+  name: filename
+- description: Download <burstsize> files every time, and wait <waitms> milliseconds
+    each time. Defaults are 10 files and 1 second.
+  name: burstsize
+- description: Download <burstsize> files every time, and wait <waitms> milliseconds
+    each time. Defaults are 10 files and 1 second.
+  name: waitms
+comment: Download PCAPs related to the specified observations. Supports rate throttling.
+commonfields:
+  id: PWObservationPcapDownload
+  version: -1
+dependson:
+  must:
+  - ProtectWise|||observation-pcap-download
+name: PWObservationPcapDownload
+runonce: false
+script: |
+  from time import sleep
+  res = []
+  dArgs = demisto.args()
+  burstSize = demisto.get(dArgs, 'burstsize')
+  burstSize = int(burstSize) if burstSize else 10
+  remaining = burstSize
+  waitSeconds = demisto.get(dArgs, 'waitms')
+  waitSeconds = float(waitSeconds) / 1000.0 if waitSeconds else 1.0
+  dArgs["using-brand"] = "ProtectWise"
+  obIDs = argToList(demisto.get(dArgs, 'id'))
+  sensorList = argToList(demisto.get(dArgs, 'sensorId'))
+  for sensorId in sensorList:
+      dArgs['sensorId'] = sensorId
+      for oid in obIDs:
+          dArgs['id'] = oid
+          dArgs['filename'] = oid + '.pcap'
+          if remaining:
+              remaining -= 1
+          else:
+              sleep(waitSeconds)
+              remaining = burstSize
+          resCmd = demisto.executeCommand("observation-pcap-download", dArgs)
+          try:
+              res += resCmd
+          except Exception as ex:
+              res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                          "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- protectwise
+timeout: 3.6µs
+type: python

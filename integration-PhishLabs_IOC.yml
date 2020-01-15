@@ -1,0 +1,1095 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: PhishLabs IOC
+  version: -1
+configuration:
+- defaultvalue: https://ioc.phishlabs.com
+  display: Server URL (e.g., https://ioc.phishlabs.com)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 1h
+  display: Fetch for this time period, e.g., "1d", "1h", "10m". The default is 1h.
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: "10"
+  display: Number of incidents to fetch each time
+  name: fetch_limit
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Get live feeds of IOC data from PhishLabs.
+detaileddescription: "The IOC feed in PhishLabs is divided into 2 endpoints:\n###
+  Global Feed\nThis is the PhishLabs global database for malicious indicators.\nThis
+  feed consists of indicators that are classified as malicious by PhishLabs - \nURLs,
+  domains, and attachments (MD5 hashes). All the indicators from this feed are classified
+  as malicious in Demisto.\nTo populate indicators from PhishLabs in Demisto, use
+  the **PhishLabsPopulateIndicators** script/playbooks.\n\n### User Feed\nThis feed
+  is exclusive for the user and consists of emails that were sent to PhishLabs and
+  were classified as malicious emails. For each malicious email, an incident is created
+  that contains the email details and the extracted indicators. These indicators are
+  not necessarily malicious though. In Demisto,\nthe user can choose whether to classify
+  those indicators as malicious or suspicious. Incidents can be fetched by enabling
+  fetch incidents in the integration configuration.\n"
+display: PhishLabs IOC
+image: data:image/png;base64,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
+name: PhishLabs IOC
+script:
+  commands:
+  - arguments:
+    - defaultValue: 1h
+      description: Duration (from now) for which to pull updated data, for example,
+        "1d", "1h" or "10m".
+      name: since
+    - description: Maximum number of results to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Filter the data by indicator type.
+      name: indicator_type
+      predefined:
+      - Domain
+      - Attachment
+      - URL
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Removes the protocol part from indicators, when the rule can be
+        applied.
+      name: remove_protocol
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Removes the query string part from indicators, when the rules can
+        be applied.
+      name: remove_query
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether the indiciator is a false postive.
+      name: false_positive
+      predefined:
+      - "false"
+      - "true"
+    description: Retrieves the global IOC feed from PhishLabs.
+    name: phishlabs-global-feed
+    outputs:
+    - contextPath: URL.Data
+      description: URL address.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: Vendor reporting the malicious status.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: Description of the malicious URL.
+      type: String
+    - contextPath: PhishLabs.URL.Data
+      description: URL address.
+      type: String
+    - contextPath: PhishLabs.URL.ID
+      description: URL PhishLabs ID.
+      type: String
+    - contextPath: PhishLabs.URL.CreatedAt
+      description: URL creation time, in PhishLabs.
+      type: Date
+    - contextPath: PhishLabs.URL.UpdatedAt
+      description: URL update time, in PhishLabs.
+      type: Date
+    - contextPath: PhishLabs.URL.Attribute.Name
+      description: URL attribute name.
+      type: String
+    - contextPath: PhishLabs.URL.Attribute.Value
+      description: URL attribute value.
+      type: String
+    - contextPath: PhishLabs.URL.Attribute.CreatedAt
+      description: URL attribute creation time.
+      type: Date
+    - contextPath: PhishLabs.URL.FalsePositive
+      description: Whether this URL is a false positive.
+      type: Boolean
+    - contextPath: Domain.Name
+      description: Domain name.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor reporting the malicious status.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: Description of the malicious domain.
+      type: String
+    - contextPath: PhishLabs.Domain.Name
+      description: Domain name.
+      type: String
+    - contextPath: PhishLabs.Domain.ID
+      description: Domain PhishLabs ID.
+      type: String
+    - contextPath: PhishLabs.Domain.CreatedAt
+      description: Domain creation time, in PhishLabs.
+      type: Date
+    - contextPath: PhishLabs.Domain.UpdatedAt
+      description: Domain update time, in PhishLabs.
+      type: Date
+    - contextPath: PhishLabs.Domain.Attribute.Name
+      description: Domain attribute name.
+      type: String
+    - contextPath: PhishLabs.Domain.Attribute.Value
+      description: Domain attribute value.
+      type: String
+    - contextPath: PhishLabs.Domain.Attribute.CreatedAt
+      description: Domain attribute creation time.
+      type: Date
+    - contextPath: PhishLabs.Domain.FalsePositive
+      description: Whether this domain is a false positive.
+      type: Boolean
+    - contextPath: File.Name
+      description: Full filename.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: File type.
+      type: String
+    - contextPath: PhishLabs.File.ID
+      description: File PhishLabs ID.
+      type: String
+    - contextPath: PhishLabs.File.Name
+      description: Full filename.
+      type: String
+    - contextPath: PhishLabs.File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: PhishLabs.File.Type
+      description: File type.
+      type: String
+    - contextPath: PhishLabs.File.CreatedAt
+      description: File creation time, in PhishLabs.
+      type: Date
+    - contextPath: PhishLabs.File.UpdatedAt
+      description: File update time, in PhishLabs.
+      type: Date
+    - contextPath: PhishLabs.File.Attribute.Name
+      description: File attribute name.
+      type: String
+    - contextPath: PhishLabs.File.Attribute.Value
+      description: File attribute value.
+      type: String
+    - contextPath: PhishLabs.File.Attribute.CreatedAt
+      description: File attribute creation time.
+      type: Date
+    - contextPath: PhishLabs.File.FalsePositive
+      description: Whether this file is a false positive.
+      type: Boolean
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+  - arguments:
+    - default: true
+      description: PhishLabs incident reference ID, for example, "INC123456".
+      name: incident_id
+      required: true
+    - defaultValue: 1h
+      description: Duration (from now) for which to pull updated data, for example,
+        "1d", "1h" or "10m".
+      name: since
+    - description: Maximum number of results to return.
+      name: limit
+    - auto: PREDEFINED
+      description: Filter the data by indicator type.
+      name: indicator_type
+      predefined:
+      - E-mail
+      - Domain
+      - URL
+      - Attachment
+    - auto: PREDEFINED
+      defaultValue: Suspicious
+      description: How to classify indicators from the feed.
+      name: indicators_classification
+      predefined:
+      - Malicious
+      - Suspicious
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Removes the protocol part from indicators, when the rule can be
+        applied.
+      name: remove_protocol
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Removes the query string part from indicators, when the rules can
+        be applied.
+      name: remove_query
+      predefined:
+      - "true"
+      - "false"
+    description: Retrieves indicators from a speicifed PhishLabs incident. To fetch
+      incidents to Demisto, enable fetching incidents.
+    name: phishlabs-get-incident-indicators
+    outputs:
+    - contextPath: URL.Data
+      description: URL address.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: Vendor reporting the malicious status.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: Description of the malicious URL.
+      type: String
+    - contextPath: PhishLabs.URL.Data
+      description: URL address.
+      type: String
+    - contextPath: PhishLabs.URL.CreatedAt
+      description: URL creation time, in PhishLabs
+      type: Date
+    - contextPath: PhishLabs.URL.UpdatedAt
+      description: URL update time, in PhishLabs.
+      type: Date
+    - contextPath: PhishLabs.URL.Attribute.Name
+      description: URL attribute name.
+      type: String
+    - contextPath: PhishLabs.URL.Attribute.Value
+      description: URL attribute value.
+      type: String
+    - contextPath: PhishLabs.URL.Attribute.CreatedAt
+      description: URL attribute creation time.
+      type: Date
+    - contextPath: PhishLabs.URL.FalsePositive
+      description: Whether this URL is a false positive.
+      type: Boolean
+    - contextPath: Domain.Name
+      description: Domain name.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor reporting the malicious status.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: Description of the malicious domain.
+      type: String
+    - contextPath: PhishLabs.Domain.Name
+      description: Domain name
+      type: String
+    - contextPath: PhishLabs.Domain.CreatedAt
+      description: Domain creation time, in PhishLabs.
+      type: Date
+    - contextPath: PhishLabs.Domain.UpdatedAt
+      description: Domain update time, in PhishLabs.
+      type: Date
+    - contextPath: PhishLabs.Domain.Attribute.Name
+      description: Domain attribute name.
+      type: String
+    - contextPath: PhishLabs.Domain.Attribute.Value
+      description: Domain attribute value.
+      type: String
+    - contextPath: PhishLabs.Domain.Attribute.CreatedAt
+      description: Domain attribute creation time.
+      type: Date
+    - contextPath: PhishLabs.Domain.FalsePositive
+      description: Whether this domain is a false positive.
+      type: Boolean
+    - contextPath: Email.To
+      description: Recipient of the email.
+      type: String
+    - contextPath: Email.From
+      description: Sender of the email.
+      type: String
+    - contextPath: Email.Body
+      description: Body of the email.
+      type: String
+    - contextPath: Email.Subject
+      description: Subject of the email.
+      type: String
+    - contextPath: PhishLabs.Email.ID
+      description: Email PhishLabs ID.
+      type: String
+    - contextPath: PhishLabs.Email.To
+      description: Recipient of the email.
+      type: String
+    - contextPath: PhishLabs.Email.From
+      description: Sender of the email.
+      type: String
+    - contextPath: PhishLabs.Email.Body
+      description: Body of the email.
+      type: String
+    - contextPath: PhishLabs.Email.Subject
+      description: Subject of the email.
+      type: String
+    - contextPath: PhishLabs.Email.CreatedAt
+      description: Email creation time, in PhishLabs.
+      type: Date
+    - contextPath: PhishLabs.Email.UpdatedAt
+      description: Email update time, in PhishLabs.
+      type: Date
+    - contextPath: PhishLabs.Email.Attribute.Name
+      description: Email attribute name.
+      type: String
+    - contextPath: PhishLabs.Email.Attribute.Value
+      description: Email attribute value.
+      type: String
+    - contextPath: PhishLabs.Email.Attribute.CreatedAt
+      description: Email attribute creation time.
+      type: Date
+    - contextPath: File.Name
+      description: Full filename.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: File type.
+      type: String
+    - contextPath: PhishLabs.File.ID
+      description: File PhishLabs ID.
+      type: String
+    - contextPath: PhishLabs.File.Name
+      description: Full filename.
+      type: String
+    - contextPath: PhishLabs.File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: PhishLabs.File.Type
+      description: File type.
+      type: String
+    - contextPath: PhishLabs.File.CreatedAt
+      description: File creation time, in PhishLabs.
+      type: Date
+    - contextPath: PhishLabs.File.UpdatedAt
+      description: File update time, in PhishLabs.
+      type: Date
+    - contextPath: PhishLabs.File.Attribute.Name
+      description: File attribute name.
+      type: String
+    - contextPath: PhishLabs.File.Attribute.Value
+      description: File attribute value.
+      type: String
+    - contextPath: PhishLabs.File.Attribute.CreatedAt
+      description: File attribute creation time.
+      type: Date
+    - contextPath: PhishLabs.File.FalsePositive
+      description: Whether this file is a false positive.
+      type: Boolean
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+  dockerimage: demisto/python3:3.7.3.221
+  isfetch: true
+  runonce: false
+  script: |2-
+
+
+
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    from typing import Callable
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' TYPES '''
+
+    Response = requests.models.Response
+
+
+    ''' GLOBALS/PARAMS '''
+
+    USERNAME: str = demisto.params().get('credentials', {}).get('identifier')
+    PASSWORD: str = demisto.params().get('credentials', {}).get('password')
+    SERVER: str = (demisto.params().get('url')[:-1]
+                   if (demisto.params().get('url') and demisto.params().get('url').endswith('/'))
+                   else demisto.params().get('url'))
+    USE_SSL: bool = not demisto.params().get('insecure', False)
+    BASE_URL: str = str(SERVER) + '/api/v1/'
+    HEADERS: dict = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+    NONE_DATE: str = '0001-01-01T00:00:00Z'
+
+    FETCH_TIME: str = demisto.params().get('fetch_time', '').strip()
+    FETCH_LIMIT: str = demisto.params().get('fetch_limit', '10')
+    RAISE_EXCEPTION_ON_ERROR: bool = False
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    @logger
+    def http_request(method: str, path: str, params: dict = None, data: dict = None) -> dict:
+        """
+        Sends an HTTP request using the provided arguments
+        :param method: HTTP method
+        :param path: URL path
+        :param params: URL query params
+        :param data: Request body
+        :return: JSON response
+        """
+        params: dict = params if params is not None else {}
+        data: dict = data if data is not None else {}
+
+        try:
+            res: Response = requests.request(
+                method,
+                BASE_URL + path,
+                auth=(USERNAME, PASSWORD),
+                verify=USE_SSL,
+                params=params,
+                data=json.dumps(data),
+                headers=HEADERS)
+        except requests.exceptions.SSLError:
+            ssl_error = 'Could not connect to PhishLabs IOC Feed: Could not verify certificate.'
+            if RAISE_EXCEPTION_ON_ERROR:
+                raise Exception(ssl_error)
+            return return_error(ssl_error)
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
+                requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
+            connection_error = 'Could not connect to PhishLabs IOC Feed: {}'.format(str(e))
+            if RAISE_EXCEPTION_ON_ERROR:
+                raise Exception(connection_error)
+            return return_error(connection_error)
+
+        if res.status_code < 200 or res.status_code > 300:
+            status: int = res.status_code
+            message: str = res.reason
+            try:
+                error_json: dict = res.json()
+                message = error_json.get('error', '')
+            except Exception:
+                pass
+            error_message: str = ('Error in API call to PhishLabs IOC API, status code: {}'.format(status))
+            if status == 401:
+                error_message = 'Could not connect to PhishLabs IOC Feed: Wrong credentials'
+            if message:
+                error_message += ', reason:' + message
+            if RAISE_EXCEPTION_ON_ERROR:
+                raise Exception(error_message)
+            else:
+                return return_error(error_message)
+        try:
+            return res.json()
+        except Exception:
+            error_message = 'Failed parsing the response from PhishLabs IOC API: {}'.format(res.content)
+            if RAISE_EXCEPTION_ON_ERROR:
+                raise Exception(error_message)
+            else:
+                return return_error(error_message)
+
+
+    @logger
+    def populate_context(dbot_scores: list, domain_entries: list, file_entries: list,
+                         url_entries: list, email_entries: list = None) -> dict:
+        """
+        Populate the context object with entries as tuples -
+        the first element contains global objects and the second contains PhishLabs objects
+        :param dbot_scores: Indicator DBotScore
+        :param domain_entries: Domain indicators
+        :param file_entries: File indicators
+        :param url_entries: URL indicators
+        :param email_entries: Email indicators
+        :return: The context object
+        """
+        context: dict = {}
+        if url_entries:
+            context[outputPaths['url']] = createContext(list(map(lambda u: u[0], url_entries)))
+            context['PhishLabs.URL(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda u: u[1], url_entries)),
+                                                                                  removeNull=True)
+        if domain_entries:
+            context[outputPaths['domain']] = createContext(list(map(lambda d: d[0], domain_entries)))
+            context['PhishLabs.Domain(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda d: d[1],
+                                                                                              domain_entries)),
+                                                                                     removeNull=True)
+        if file_entries:
+            context[outputPaths['file']] = createContext(list(map(lambda f: f[0], file_entries)))
+            context['PhishLabs.File(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda f: f[1], file_entries)),
+                                                                                   removeNull=True)
+        if email_entries:
+            context['Email'] = createContext(list(map(lambda e: e[0], email_entries)))
+            context['PhishLabs.Email(val.ID && val.ID === obj.ID)'] = createContext(list(map(lambda e: e[1],
+                                                                                             email_entries)),
+                                                                                    removeNull=True)
+        if dbot_scores:
+            context[outputPaths['dbotscore']] = dbot_scores
+        return context
+
+
+    @logger
+    def get_file_properties(indicator: dict) -> tuple:
+        """
+        Extract the file properties from the indicator attributes.
+        Example:
+        Indicator: {
+                "attributes": [
+                    {
+                        "createdAt": "2019-05-14T13:03:45Z",
+                        "id": "xyz",
+                        "name": "md5",
+                        "value": "c8092abd8d581750c0530fa1fc8d8318" # guardrails-disable-line
+                    },
+                    {
+                        "createdAt": "2019-05-14T13:03:45Z",
+                        "id": "abc",
+                        "name": "filetype",
+                        "value": "application/zip"
+                    },
+                    {
+                        "createdAt": "2019-05-14T13:03:45Z",
+                        "id": "qwe",
+                        "name": "name",
+                        "value": "Baycc.zip"
+                    }
+                ],
+                "createdAt": "2019-05-14T13:03:45Z",
+                "falsePositive": false,
+                "id": "def",
+                "type": "Attachment",
+                "updatedAt": "0001-01-01T00:00:00Z",
+                "value": "c8092abd8d581750c0530fa1fc8d8318" # guardrails-disable-line
+            }
+        Return values: c8092abd8d581750c0530fa1fc8d8318, Baycc.zip, application/zip
+        :param indicator: The file indicator
+        :return: File MD5, name and type
+        """
+        file_name_attribute: list = list(filter(lambda a: a.get('name') == 'name', indicator.get('attributes', [])))
+        file_name: str = file_name_attribute[0].get('value') if file_name_attribute else ''
+        file_type_attribute: list = list(filter(lambda a: a.get('name') == 'filetype', indicator.get('attributes', [])))
+        file_type: str = file_type_attribute[0].get('value') if file_type_attribute else ''
+        file_md5_attribute: list = list(filter(lambda a: a.get('name') == 'md5', indicator.get('attributes', [])))
+        file_md5: str = file_md5_attribute[0].get('value') if file_md5_attribute else ''
+
+        return file_md5, file_name, file_type
+
+
+    @logger
+    def get_email_properties(indicator: dict) -> tuple:
+        """
+        Extract the email properties from the indicator attributes.
+        Example:
+        Indicator:
+        {
+        "attributes":
+        [
+            {
+                "createdAt": "2019-05-13T16:54:18Z",
+                "id": "abc",
+                "name": "email-body",
+                "value": "\r\n\r\n-----Original Message-----\r\nFrom: A \r\nSent:
+                Monday, May 13, 2019 12:22 PM\r\nTo:
+            },
+            {
+                "createdAt": "2019-05-13T16:54:18Z",
+                "id": "def",
+                "name": "from",
+                "value": "someuser@contoso.com"
+            },
+            {
+                "createdAt": "2019-05-13T16:54:18Z",
+                "id": "cf3182ca-92ec-43b6-8aaa-429802a99fe5",
+                "name": "to",
+                "value": "example@gmail.com"
+            }
+        ],
+        "createdAt": "2019-05-13T16:54:18Z",
+        "falsePositive": false,
+        "id": "ghi",
+        "type": "E-mail",
+        "updatedAt": "0001-01-01T00:00:00Z",
+        "value": "FW: Task"
+        }
+        Return values:
+        :param indicator: The email indicator
+        :return: Email body, To and From
+        """
+        email_to_attribute: list = list(filter(lambda a: a.get('name') == 'to', indicator.get('attributes', [])))
+        email_to: str = email_to_attribute[0].get('value') if email_to_attribute else ''
+        email_from_attribute: list = list(filter(lambda a: a.get('name') == 'from', indicator.get('attributes', [])))
+        email_from: str = email_from_attribute[0].get('value') if email_from_attribute else ''
+        email_body_attribute: list = list(filter(lambda a: a.get('name') == 'email-body', indicator.get('attributes', [])))
+        email_body: str = email_body_attribute[0].get('value') if email_body_attribute else ''
+
+        return email_body, email_to, email_from
+
+
+    @logger
+    def create_domain_context(indicator: dict, classification: str) -> dict:
+        """
+        Create a domain context object
+        :param indicator: The domain indicator
+        :param classification: The indicator classification
+        :return: The domain context object
+        """
+        domain_object = {
+            'Name': indicator.get('value')
+        }
+
+        if classification == 'Malicious':
+            domain_object['Malicious'] = {
+                'Vendor': 'PhishLabs',
+                'Description': 'Domain in PhishLabs feed'
+            }
+
+        return domain_object
+
+
+    @logger
+    def create_url_context(indicator: dict, classification: str) -> dict:
+        """
+        Create a URL context object
+        :param indicator: The URL indicator
+        :param classification: The indicator classification
+        :return: The URL context object
+        """
+
+        url_object: dict = {
+            'Data': indicator.get('value')
+        }
+
+        if classification == 'Malicious':
+            url_object['Malicious'] = {
+                'Vendor': 'PhishLabs',
+                'Description': 'URL in PhishLabs feed'
+            }
+
+        return url_object
+
+
+    @logger
+    def create_phishlabs_object(indicator: dict) -> dict:
+        """
+        Create the context object for the PhishLabs path
+        :param indicator: The indicator
+        :return: The context object
+        """
+        return {
+            'ID': indicator.get('id'),
+            'CreatedAt': indicator.get('createdAt'),
+            'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', NONE_DATE) != NONE_DATE else '',
+            'Attribute': [{
+                'Name': a.get('name'),
+                'Type': a.get('type'),
+                'Value': a.get('value'),
+                'CreatedAt': a.get('createdAt')
+            } for a in indicator.get('attributes', [])]
+        }
+
+
+    @logger
+    def create_indicator_content(indicator: dict) -> dict:
+        """
+        Create content for the human readable object
+        :param indicator: The indicator
+        :return: The object to return to the War Room
+        """
+        return {
+            'ID': indicator.get('id'),
+            'Indicator': indicator.get('value'),
+            'Type': indicator.get('type'),
+            'CreatedAt': indicator.get('createdAt'),
+            'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', NONE_DATE) != NONE_DATE else '',
+            'FalsePositive': indicator.get('falsePositive')
+        }
+
+
+    ''' COMMANDS'''
+
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        get_global_feed_request(limit='1')
+        demisto.results('ok')
+
+
+    def get_global_feed_command():
+        """
+        Gets the global feed data using the provided arguments
+        """
+        indicator_headers: list = ['Indicator', 'Type', 'CreatedAt', 'UpdatedAt', 'FalsePositive']
+        contents: list = []
+        url_entries: list = []
+        domain_entries: list = []
+        file_entries: list = []
+        dbot_scores: list = []
+        context: dict = {}
+
+        since: str = demisto.args().get('since')
+        limit: str = demisto.args().get('limit')
+        indicator: list = argToList(demisto.args().get('indicator_type', []))
+        remove_protocol: str = demisto.args().get('remove_protocol')
+        remove_query: str = demisto.args().get('remove_query')
+        false_positive: str = demisto.args().get('false_positive')
+
+        feed: dict = get_global_feed_request(since, limit, indicator, remove_protocol, remove_query, false_positive)
+        results: list = feed.get('data', []) if feed else []
+
+        if results:
+            if not isinstance(results, list):
+                results = [results]
+            for result in results:
+                contents.append(create_indicator_content(result))
+                indicator_false_positive = result.get('falsePositive', False)
+                indicator_type: str = result.get('type')
+                phishlabs_object: dict = create_phishlabs_object(result)
+
+                dbot_score: dict = {
+                    'Indicator': result.get('value'),
+                    'Vendor': 'PhishLabs',
+                    'Score': 3 if not indicator_false_positive else 1
+                }
+
+                if indicator_type == 'URL':
+                    context_object = create_url_context(result, 'Malicious' if not indicator_false_positive else 'Good')
+                    phishlabs_object['Data'] = result.get('value')
+                    dbot_score['type'] = 'url'
+                    url_entries.append((context_object, phishlabs_object))
+
+                elif indicator_type == 'Domain':
+                    context_object = create_domain_context(result, 'Malicious' if not indicator_false_positive else 'Good')
+                    phishlabs_object['Name'] = result.get('value')
+                    dbot_score['type'] = 'domain'
+                    domain_entries.append((context_object, phishlabs_object))
+
+                elif indicator_type == 'Attachment':
+                    file_md5, file_name, file_type = get_file_properties(result)
+
+                    context_object = {
+                        'Name': file_name,
+                        'Type': file_type,
+                        'MD5': file_md5
+                    }
+
+                    phishlabs_object['Name'] = file_name
+                    phishlabs_object['Type'] = file_type
+                    phishlabs_object['MD5'] = file_md5
+
+                    file_entries.append((context_object, phishlabs_object))
+                    dbot_score['type'] = 'file'
+
+                dbot_scores.append(dbot_score)
+
+            context = populate_context(dbot_scores, domain_entries, file_entries, url_entries)
+            human_readable: str = tableToMarkdown('PhishLabs Global Feed', contents, headers=indicator_headers,
+                                                  removeNull=True, headerTransform=pascalToSpace)
+        else:
+            human_readable = 'No indicators found'
+
+        return_outputs(human_readable, context, feed)
+
+
+    @logger
+    def get_global_feed_request(since: str = None, limit: str = None, indicator: list = None,
+                                remove_protocol: str = None, remove_query: str = None, false_positive: str = None) -> dict:
+        """
+        Sends a request to PhishLabs global feed with the provided arguments
+        :param since: Data updated within this duration of time from now
+        :param limit: Limit the number of rows to return
+        :param indicator: Indicator type filter
+        :param remove_protocol: Removes the protocol part from indicators when the rule can be applied.
+        :param remove_query: Removes the query string part from indicators when the rules can be applied.
+        :param false_positive: Filter by indicators that are false positives.
+        :return: Global feed indicators
+        """
+        path: str = 'globalfeed'
+        params: dict = {}
+
+        if since:
+            params['since'] = since
+        if limit:
+            params['limit'] = int(limit)
+        if indicator:
+            params['indicator'] = indicator
+        if remove_protocol:
+            params['remove_protocol'] = remove_protocol
+        if remove_query:
+            params['remove_query'] = remove_query
+        if false_positive:
+            params['false_positive'] = false_positive
+
+        response = http_request('GET', path, params)
+
+        return response
+
+
+    def get_incident_indicators_command():
+        """
+        Gets the indicators for the specified incident
+        """
+        indicator_headers: list = ['Indicator', 'Type', 'CreatedAt', 'UpdatedAt', 'FalsePositive']
+        attribute_headers: list = ['Name', 'Type', 'Value', 'CreatedAt']
+        url_entries: list = []
+        domain_entries: list = []
+        file_entries: list = []
+        email_entries: list = []
+        dbot_scores: list = []
+        context: dict = {}
+
+        incident_id: str = demisto.args()['incident_id']
+        since: str = demisto.args().get('since')
+        limit: str = demisto.args().get('limit')
+        indicator: list = argToList(demisto.args().get('indicator_type', []))
+        classification: str = demisto.args().get('indicators_classification', 'Suspicious')
+        remove_protocol: str = demisto.args().get('remove_protocol')
+        remove_query: str = demisto.args().get('remove_query')
+
+        human_readable: str = '## Indicators for incident ' + incident_id + '\n'
+
+        feed: dict = get_feed_request(since, indicator=indicator, remove_protocol=remove_protocol, remove_query=remove_query)
+        results: list = feed.get('data', []) if feed else []
+
+        if results:
+            if not isinstance(results, list):
+                results = [results]
+            results = list(filter(lambda f: f.get('referenceId', '') == incident_id, results))
+            if results:
+                indicators = results[0].get('indicators', [])
+                if limit:
+                    indicators = indicators[:int(limit)]
+                for result in indicators:
+                    human_readable += tableToMarkdown('Indicator', create_indicator_content(result),
+                                                      headers=indicator_headers,
+                                                      removeNull=True, headerTransform=pascalToSpace)
+                    phishlabs_object = create_phishlabs_object(result)
+
+                    if phishlabs_object.get('Attribute'):
+                        human_readable += tableToMarkdown('Attributes', phishlabs_object['Attribute'],
+                                                          headers=attribute_headers,
+                                                          removeNull=True, headerTransform=pascalToSpace)
+                    else:
+                        human_readable += 'No attributes for this indicator\n'
+
+                    indicator_type: str = result.get('type')
+
+                    dbot_score: dict = {
+                        'Indicator': result.get('value'),
+                        'Vendor': 'PhishLabs',
+                        'Score': 3 if classification == 'Malicious' else 2
+                    }
+
+                    if indicator_type == 'URL':
+                        context_object = create_url_context(result, classification)
+                        phishlabs_object['Data'] = result.get('value')
+                        dbot_score['type'] = 'url'
+                        url_entries.append((context_object, phishlabs_object))
+
+                    elif indicator_type == 'Domain':
+                        context_object = create_domain_context(result, classification)
+                        phishlabs_object['Name'] = result.get('value')
+                        dbot_score['type'] = 'domain'
+                        domain_entries.append((context_object, phishlabs_object))
+
+                    elif indicator_type == 'Attachment':
+                        file_md5, file_name, file_type = get_file_properties(result)
+
+                        context_object = {
+                            'Name': file_name,
+                            'Type': file_type,
+                            'MD5': file_md5
+                        }
+
+                        phishlabs_object['Name'] = file_name
+                        phishlabs_object['Type'] = file_type
+                        phishlabs_object['MD5'] = file_md5
+
+                        file_entries.append((context_object, phishlabs_object))
+                        dbot_score['type'] = 'file'
+
+                    elif indicator_type == 'E-mail':
+                        email_body, email_to, email_from = get_email_properties(result)
+
+                        context_object = {
+                            'To': email_to,
+                            'From': email_from,
+                            'Body': email_body,
+                            'Subject': result.get('value')
+                        }
+
+                        phishlabs_object['To'] = email_to,
+                        phishlabs_object['From'] = email_from,
+                        phishlabs_object['Body'] = email_body
+                        phishlabs_object['Subject'] = result.get('value')
+
+                        email_entries.append((context_object, phishlabs_object))
+
+                    if indicator_type != 'E-mail':
+                        # We do not know what we have for an email
+                        dbot_scores.append(dbot_score)
+
+                context = populate_context(dbot_scores, domain_entries, file_entries, url_entries, email_entries)
+            else:
+                human_readable = 'Incident not found'
+        else:
+            human_readable = 'No incidents found'
+
+        return_outputs(human_readable, context, feed)
+
+
+    @logger
+    def get_feed_request(since: str = None, limit: str = None, indicator: list = None,
+                         remove_protocol: str = None, remove_query: str = None,
+                         offset: str = None, sort: bool = False) -> dict:
+        """
+        Sends a request to PhishLabs user feed with the provided arguments
+        :param since: Data updated within this duration of time from now
+        :param limit: Limit the number of rows to return
+        :param indicator: Indicator type filter
+        :param remove_protocol: Removes the protocol part from indicators when the rule can be applied.
+        :param remove_query: Removes the query string part from indicators when the rules can be applied.
+        :param offset: Number of incidents to skip
+        :param sort: If true, the incidents will be sorted by their creation time in ascending order.
+        :return: User feed
+        """
+        path: str = 'feed'
+        params: dict = {}
+
+        if since:
+            params['since'] = since
+        if limit:
+            params['limit'] = int(limit)
+        if offset:
+            params['offset'] = int(offset)
+        if indicator:
+            params['indicator'] = indicator
+        if remove_query:
+            params['remove_query'] = remove_query
+        if remove_protocol:
+            params['remove_protocol'] = remove_protocol
+
+        if sort:
+            params['sort'] = 'created_at'
+            params['direction'] = 'asc'
+
+        response = http_request('GET', path, params)
+
+        return response
+
+
+    def fetch_incidents():
+        """
+        Fetches incidents from the PhishLabs user feed.
+        :return: Demisto incidents
+        """
+        last_run: dict = demisto.getLastRun()
+        last_fetch: str = last_run.get('time', '') if last_run else ''
+        last_offset: str = last_run.get('offset', '0') if last_run else '0'
+
+        incidents: list = []
+        count: int = 1
+        limit = int(FETCH_LIMIT)
+        feed: dict = get_feed_request(since=FETCH_TIME)
+        last_fetch_time: datetime = (datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ') if last_fetch
+                                     else datetime.strptime(NONE_DATE, '%Y-%m-%dT%H:%M:%SZ'))
+        max_time: datetime = last_fetch_time
+        offset = int(last_offset)
+        results: list = feed.get('data', []) if feed else []
+
+        if results:
+            results = sorted(results, key=lambda r: datetime.strptime(r.get('createdAt', NONE_DATE), '%Y-%m-%dT%H:%M:%SZ'))
+            results = results[offset:]
+            if not isinstance(results, list):
+                results = [results]
+
+            for result in results:
+                if count > limit:
+                    break
+                incident_time: datetime = datetime.strptime(result.get('createdAt', NONE_DATE), '%Y-%m-%dT%H:%M:%SZ')
+                if last_fetch_time and incident_time <= last_fetch_time:
+                    continue
+
+                incident: dict = {
+                    'name': 'PhishLabs IOC Incident ' + result.get('referenceId', ''),
+                    'occurred': datetime.strftime(incident_time, '%Y-%m-%dT%H:%M:%SZ'),
+                    'rawJSON': json.dumps(result)
+                }
+                incidents.append(incident)
+                if max_time < incident_time:
+                    max_time = incident_time
+                count += 1
+
+            offset += count - 1
+
+        demisto.setLastRun({'time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%SZ'), 'offset': str(offset)})
+        demisto.incidents(incidents)
+
+
+    ''' MAIN'''
+
+
+    def main():
+        """
+        Main function
+        """
+        global RAISE_EXCEPTION_ON_ERROR
+        LOG('Command being called is {}'.format(demisto.command()))
+        handle_proxy()
+        command_dict = {
+            'test-module': test_module,
+            'fetch-incidents': fetch_incidents,
+            'phishlabs-global-feed': get_global_feed_command,
+            'phishlabs-get-incident-indicators': get_incident_indicators_command
+        }
+        try:
+            command_func: Callable = command_dict[demisto.command()]
+            if demisto.command() == 'fetch-incidents':
+                RAISE_EXCEPTION_ON_ERROR = True
+            command_func()
+
+        except Exception as e:
+            if RAISE_EXCEPTION_ON_ERROR:
+                LOG(str(e))
+                LOG.print_log()
+                raise
+            else:
+                return_error(str(e))
+
+
+    if __name__ in ['__main__', '__builtin__', 'builtins']:
+        main()
+  type: python
+system: true

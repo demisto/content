@@ -1,0 +1,70 @@
+category: Utilities
+commonfields:
+  id: Where is the egg?
+  version: -1
+configuration: []
+description: Don't ask, just try.
+display: Where is the egg?
+image: data:image/png;base64,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
+name: Where is the egg?
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: yep
+      name: magic-word
+    description: try me
+    name: clue
+  runonce: false
+  script: |
+    switch (command) {
+        case 'test-module':
+            return 'ok';
+        case 'clue':
+            var res = '';
+            switch ((args['magic-word'] || '').toLowerCase()) {
+                case '':
+                    res = 'Finally! You found me. Although Demisto demystifies, we still have so many secrets waiting to be discovered. Let\'s play a little game. Try the same command, but now with a dash of \'mystery\'…';
+                    break;
+                case 'mystery':
+                    res = 'We\'re full of mysteries, but you\'re on your way to uncovering them! It\'s not going to be easy. Say, what\'s the name of the icon we have for automated tasks? I remembered it a second ago, but then it was gone in a flash… \n\n---\n\n ![mystery](https://media.giphy.com/media/3ohhwg3O1TGRXHQYh2/source.gif)';
+                    break;
+                case 'lightning':
+                    res = 'Wow, you\'re good! Is your name Lightning McAnalyst? Because that was fast. The lightning icon does represent automated tasks. Why? Some questions are best left unanswered (which is mystery-speak for \'nobody knows\').  \nTime for your next question. As you know, DBot speaks tons of languages. One such special language (and a personal favorite of mine) is denoted by M↓. Remind me what it\'s called again? \n\n---\n\n ![lightning](https://media.giphy.com/media/FZzbTJyRTwPuw/source.gif)';
+                    break;
+                case 'markdown':
+                    res = 'That\'s a markdown touchdown! A follow-up language question. Another one of DBot\'s many languages (some would say the most important one) begins with an \'h\', I think. Any guesses?';
+                    break;
+                case 'html':
+                    res = 'You\'re on fire! Sorry my memory\'s not so good today. Perhaps I need 16GB (or SSD?) to be faster, what with things changing so quickly around here...   \nNow for a tricky one. Find the answer to this riddle:  \nDemisto content updates are constantly shipped\nPlaybooks, widgets, integrations, scripts,\nWill you be a dear and tell me please,\nThe frequency of this content release?';
+                    break;
+                case 'twice a month':
+                case 'every fortnight':
+                case 'every two weeks':
+                case 'every-two-weeks':
+                case 'everytwoweeks':
+                case 'two weeks':
+                case 'two-weeks':
+                case 'twoweeks':
+                case 'every 2 weeks':
+                case 'every-2-weeks':
+                case 'every2weeks':
+                case '2 weeks':
+                case '2-weeks':
+                case '2weeks':
+                case 'biweekly':
+                case 'fortnightly':
+                    res = 'I can\'t believe it! Everyone else is just pretending, you\'re the real legend in this town. Congratulations for conquering my little game. As a treat, run /demisto and sit back.\n\n---\n\By the way, there are many more Easter eggs to find within these digital walls. Just use the magic words "dbot I love you" and we can have a rematch.';
+                    break;
+                case 'dbot i love you':
+                    res = 'oh, that\'s nice... but try in another time... [meanwhile...](https://www.youtube.com/watch?v=dQw4w9WgXcQ)';
+                    break;
+                default:
+                    res = 'no no...';
+            }
+            return { Contents: res, ContentsFormat: 'markdown', Type: 1 };
+        default:
+    }
+  type: javascript
+scriptNotVisible: true
+system: true

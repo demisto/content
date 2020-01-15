@@ -1,0 +1,28 @@
+{
+	"contextPath": "",
+	"contextValue": "",
+	"defaultMapping": null,
+	"details": "File enhancement scripts",
+	"disabled": false,
+	"enhancementScriptNames": [
+		"Strings",
+		"CYFileRep",
+		"SandboxDetonateFile",
+		"ParseEmailFiles"
+	],
+	"excludedBrands": null,
+	"file": true,
+	"fileHashesPriority": null,
+	"formatScript": "",
+	"id": "fileRep",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "",
+	"reputationCommand": "",
+	"reputationScriptName": "",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

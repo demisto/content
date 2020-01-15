@@ -1,0 +1,660 @@
+description: |-
+  Enrich IP using one or more integrations.
+
+  IP enrichment includes:
+  * Resolve IP to Hostname (DNS)
+  * Threat information
+  * Separate internal and external addresses
+  * IP reputation
+  * For internal addresses, get host information
+id: ip_enrichment_generic
+inputs:
+- description: The IP address to enrich.
+  key: IP
+  required: false
+  value:
+    complex:
+      accessor: Address
+      root: IP
+- description: |-
+    The internal range to check against the IP address.
+    The default range is taken from the IPv4 protocol.
+  key: InternalRange
+  required: false
+  value: {}
+- description: Convert the IP address to a hostname using a DNS query (True/ False).
+  key: ResolveIP
+  required: true
+  value:
+    simple: "True"
+name: IP Enrichment - Generic
+outputs:
+- contextPath: IP
+  description: The IP objects
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor
+  type: unknown
+- contextPath: Endpoint
+  description: The Endpoint's object
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname to enrich
+  type: string
+- contextPath: Endpoint.OS
+  description: Endpoint OS
+  type: string
+- contextPath: Endpoint.IP
+  description: List of endpoint IP addresses
+- contextPath: Endpoint.MAC
+  description: List of endpoint MAC addresses
+- contextPath: Endpoint.Domain
+  description: Endpoint domain name
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 49
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Address
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: IP.InRange
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: "no"
+                root: IP
+          operator: isExists
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "27"
+    note: false
+    scriptarguments:
+      extend-context: {}
+      value:
+        complex:
+          accessor: Address
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: IP.InRange
+              operator: isEqualString
+              right:
+                value:
+                  simple: "no"
+          root: IP
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether the "InRange" attribute is set to "no".
+      id: 7cc4eee4-d804-45aa-8c51-06e9e5a53a64
+      iscommand: false
+      name: Is there an external IP address?
+      type: condition
+      version: -1
+    taskid: 7cc4eee4-d804-45aa-8c51-06e9e5a53a64
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1040
+        }
+      }
+  "19":
+    continueonerror: true
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    scriptarguments:
+      extend-context: {}
+      file:
+        simple: ${File.SHA256}
+      ip:
+        complex:
+          accessor: Address
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: IP.InRange
+              operator: isEqualString
+              right:
+                value:
+                  simple: "no"
+          root: IP
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get the IP reputation from every integration that supports the
+        `!ip` command.
+      id: 74889e4f-d5ea-46d2-8cfb-aac15c10a52f
+      iscommand: false
+      name: Check IP reputation
+      scriptName: IPReputation
+      type: regular
+      version: -1
+    taskid: 74889e4f-d5ea-46d2-8cfb-aac15c10a52f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1360
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -291,
+          "y": 1845
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: a22c2045-33e0-4ad3-8627-15886227f805
+      iscommand: false
+      name: Enrich internal IP addresses
+      type: title
+      version: -1
+    taskid: a22c2045-33e0-4ad3-8627-15886227f805
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1215
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+      - "36"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1734f24b-0b27-431e-81b6-89997f08894c
+      iscommand: false
+      name: Enrich external IP addresses
+      type: title
+      version: -1
+    taskid: 1734f24b-0b27-431e-81b6-89997f08894c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1215
+        }
+      }
+  "28":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.IP
+          operator: isExists
+      label: "yes"
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "33"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Determine whether the playbook's input contains an IP address.
+      id: 3030b8e0-e076-4309-81df-e32298eb49a6
+      iscommand: false
+      name: Do we have IP Addresses?
+      type: condition
+      version: -1
+    taskid: 3030b8e0-e076-4309-81df-e32298eb49a6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+      - "15"
+    note: false
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+      ipRanges:
+        complex:
+          root: inputs.InternalRange
+    separatecontext: false
+    task:
+      brand: ""
+      description: "Checks if the IP address is in the internal IP address ranges.\nAdds
+        \ \"yes\" to the \"InRange\" attribute of the IP address  if it is internal.
+        \nAdds \"no\"  to the \"InRange\" attribute of the IP address  if it is external.
+        \n"
+      id: dfe5b434-e54a-4290-841e-073030e2af53
+      iscommand: false
+      name: Determine whether the IP address is internal or external
+      scriptName: IsIPInRanges
+      type: regular
+      version: -1
+    taskid: dfe5b434-e54a-4290-841e-073030e2af53
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 865
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    scriptarguments:
+      Hostname:
+        complex:
+          accessor: Hostname
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Endpoint.IP
+              operator: inList
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.IP
+          root: Endpoint
+    separatecontext: true
+    task:
+      brand: ""
+      description: Enrich an Endpoint Hostname using one or more integrations
+      id: e39bd0d9-0f03-4dda-8ccd-2e31340c8daa
+      iscommand: false
+      name: Endpoint Enrichment - Generic
+      playbookName: Endpoint Enrichment - Generic
+      type: playbook
+      version: -1
+    taskid: e39bd0d9-0f03-4dda-8ccd-2e31340c8daa
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1360
+        }
+      }
+  "32":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Address
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: IP.InRange
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: "yes"
+                root: IP
+          operator: isExists
+      label: "yes"
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "26"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether the "InRange" attribute is set to "yes".
+      id: a3fc98dc-45c4-4885-8ba1-15249424617f
+      iscommand: false
+      name: Is there an internal IP address?
+      type: condition
+      version: -1
+    taskid: a3fc98dc-45c4-4885-8ba1-15249424617f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "29"
+      - "34"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 2ba6b138-2faa-4c41-8b83-8bc40445e02d
+      iscommand: false
+      name: Enrich IP address
+      type: title
+      version: -1
+    taskid: 2ba6b138-2faa-4c41-8b83-8bc40445e02d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 370
+        }
+      }
+  "34":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.ResolveIP
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "35"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether the ResolveIP parameter is set to "True".
+      id: 3f405f27-26b8-4331-814b-6a5242030dca
+      iscommand: false
+      name: Resolve the IP address?
+      type: condition
+      version: -1
+    taskid: 3f405f27-26b8-4331-814b-6a5242030dca
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 515
+        }
+      }
+  "35":
+    continueonerror: true
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    task:
+      brand: ""
+      description: Convert the IP address to a hostname using DNS query.
+      id: 4199432a-7b90-4880-8381-61a1f89a5073
+      iscommand: false
+      name: IP to Hostname (DNS)
+      scriptName: IPToHost
+      type: regular
+      version: -1
+    taskid: 4199432a-7b90-4880-8381-61a1f89a5073
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 690
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 97b967b9-1fc6-425f-8204-c363fb8e974c
+      iscommand: false
+      name: Enrich with Virus Total Private API
+      type: title
+      version: -1
+    taskid: 97b967b9-1fc6-425f-8204-c363fb8e974c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1032,
+          "y": 1375
+        }
+      }
+  "37":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VirusTotal - Private API
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "38"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of the Virus Total Private
+        API enabled.
+      id: 2d6d9c62-3d21-423f-80f7-51f57ff3c881
+      iscommand: false
+      name: Is Virus Total Private API enabled?
+      type: condition
+      version: -1
+    taskid: 2d6d9c62-3d21-423f-80f7-51f57ff3c881
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1032,
+          "y": 1503
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        complex:
+          accessor: Address
+          root: IP
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: VirusTotal - Private API
+      description: |
+        Retrieves a report for a given IP.
+      id: fce8e0ad-c5f8-47f0-8668-c9bb83c25c4e
+      iscommand: true
+      name: Get IP report form Virus Total Private API
+      script: VirusTotal - Private API|||vt-private-get-ip-report
+      type: regular
+      version: -1
+    taskid: fce8e0ad-c5f8-47f0-8668-c9bb83c25c4e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1032,
+          "y": 1692
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1861,
+        "width": 1703,
+        "x": -291,
+        "y": 49
+      }
+    }
+  }

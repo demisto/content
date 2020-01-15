@@ -1,0 +1,631 @@
+description: |
+  Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+
+  You must have the necessary permissions in your Gmail service to execute global search: Google Apps Domain-Wide Delegation of Authority
+id: get_original_email_-_gmail
+inputs:
+- description: Email ID of the forwarded message.
+  key: EmailID
+  required: false
+  value:
+    complex:
+      accessor: emailmessageid
+      root: incident
+- description: Email address of the reporting user.
+  key: User
+  required: false
+  value:
+    complex:
+      accessor: emailto
+      root: incident
+      transformers:
+      - args:
+          regex:
+            value:
+              simple: (?i).*<([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})>
+          replaceWith:
+            value:
+              simple: $1
+        operator: replaceMatch
+- description: Email address of the thread originator.
+  key: From
+  required: false
+  value:
+    complex:
+      accessor: emailfrom
+      root: incident
+      transformers:
+      - args:
+          regex:
+            value:
+              simple: (?i).*<([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})>
+          replaceWith:
+            value:
+              simple: $1
+        operator: replaceMatch
+name: Get Original Email - Gmail
+outputs:
+- contextPath: Email
+  description: The email object
+  type: unknown
+- contextPath: Email.To
+  description: The recipient of the email
+  type: string
+- contextPath: Email.From
+  description: The sender of the email
+  type: string
+- contextPath: Email.CC
+  description: The CC address of the email
+  type: string
+- contextPath: Email.BCC
+  description: The BCC address of the email
+  type: string
+- contextPath: Email.HTML
+  description: The email HTML
+  type: string
+- contextPath: Email.Body
+  description: The email text body
+  type: string
+- contextPath: Email.Headers
+  description: The email headers
+  type: string
+- contextPath: Email.Subject
+  description: The email subject
+  type: string
+- contextPath: File
+  description: Original attachments
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d8403573-b211-4d44-885c-a365045c61a2
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d8403573-b211-4d44-885c-a365045c61a2
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Gmail
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |
+        Verifies that there is an active instance of the Gmail integration enabled.
+      id: 81842102-b7a7-4202-8319-54c4b8660756
+      iscommand: false
+      name: Is Gmail enabled?
+      type: condition
+      version: -1
+    taskid: 81842102-b7a7-4202-8319-54c4b8660756
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 185c00fb-4375-4607-8b99-7538c88315bc
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 185c00fb-4375-4607-8b99-7538c88315bc
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    reputationcalc: 2
+    scriptarguments:
+      format: {}
+      message-id:
+        complex:
+          root: inputs.EmailID
+      user-id:
+        complex:
+          root: inputs.User
+      user-key:
+        complex:
+          root: inputs.User
+    separatecontext: false
+    task:
+      brand: Gmail
+      description: Get the data and metadata of the forwarded email from the Gmail
+        service.
+      id: cc460fc4-1d86-464c-8853-e996eed85049
+      iscommand: true
+      name: Retrieve the forwarded email from Gmail
+      script: Gmail|||gmail-get-mail
+      type: regular
+      version: -1
+    taskid: cc460fc4-1d86-464c-8853-e996eed85049
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: ID
+                root: Gmail
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that there is a Gmail email object in the context.
+      id: 18de5315-16b2-4d5c-8a81-2c50623ea89d
+      iscommand: false
+      name: Was the original email retrieved?
+      type: condition
+      version: -1
+    taskid: 18de5315-16b2-4d5c-8a81-2c50623ea89d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: GmailSubject
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: InReplyTo
+          operator: isExists
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "8"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that the InReplyTo and Subject fields are in context.
+      id: c09ebecb-9dc8-4e00-8fe4-0dbf0cd27d32
+      iscommand: false
+      name: Was the forwarded email data retrieved?
+      type: condition
+      version: -1
+    taskid: c09ebecb-9dc8-4e00-8fe4-0dbf0cd27d32
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1244
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: InReplyTo
+      value:
+        simple: ${Gmail.Headers(val.Name == "In-Reply-To").Value}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Set the InReplyTo field to context.
+      id: ea86d0cc-f9dc-4496-812c-bd3f5c52d08c
+      iscommand: false
+      name: Set context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: ea86d0cc-f9dc-4496-812c-bd3f5c52d08c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 720
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    reputationcalc: 2
+    scriptarguments:
+      after: {}
+      before: {}
+      fields: {}
+      filename: {}
+      from: {}
+      has-attachments: {}
+      in: {}
+      include-spam-trash: {}
+      labels-ids: {}
+      max-results: {}
+      page-token: {}
+      query: {}
+      subject:
+        complex:
+          root: GmailSubject
+      to: {}
+      user-id:
+        complex:
+          root: inputs.From
+      user-key:
+        complex:
+          root: inputs.From
+    separatecontext: false
+    task:
+      brand: Gmail
+      description: Search Gmail for the original email.
+      id: 13ee64a0-66aa-4265-8995-62cf1f44982c
+      iscommand: true
+      name: Search for original email
+      script: Gmail|||gmail-search
+      type: regular
+      version: -1
+    taskid: 13ee64a0-66aa-4265-8995-62cf1f44982c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1420
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: GmailSubject
+      value:
+        complex:
+          accessor: Subject
+          root: Gmail
+          transformers:
+          - args:
+              regex:
+                value:
+                  simple: (?i)([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$
+              replaceWith: {}
+            operator: replaceMatch
+    separatecontext: false
+    task:
+      brand: ""
+      description: Set the Subject field to context stripped of all prefixes.
+      id: 4bf99d41-0f5c-4f08-8c98-785cb0e5503d
+      iscommand: false
+      name: Set context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 4bf99d41-0f5c-4f08-8c98-785cb0e5503d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 895
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Gmail
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    task:
+      brand: ""
+      description: Delete the forwarded Gmail email object from context.
+      id: 4dbd3cc6-ae7c-4de5-89d2-b3e1b47acec5
+      iscommand: false
+      name: Delete old context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 4dbd3cc6-ae7c-4de5-89d2-b3e1b47acec5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1070
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+      - "15"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: OriginalEmail
+      value:
+        simple: ${.=val.Gmail.filter(g => g.Headers.filter(h => h.Name === "Message-ID"
+          && h.Value == val.InReplyTo).length > 0)}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Set the original email to context.
+      id: 7e75aef4-9998-407c-8ace-b342f3ef812f
+      iscommand: false
+      name: Set context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 7e75aef4-9998-407c-8ace-b342f3ef812f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 1770
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    reputationcalc: 2
+    scriptarguments:
+      message-id:
+        complex:
+          accessor: ID
+          root: OriginalEmail
+      user-id:
+        complex:
+          accessor: Mailbox
+          root: OriginalEmail
+      user-key:
+        complex:
+          accessor: Mailbox
+          root: OriginalEmail
+    separatecontext: false
+    task:
+      brand: Gmail
+      description: Retrieve the attachments of the original email from Gmail.
+      id: 29868c31-fc31-4b25-8523-5a9c937af420
+      iscommand: true
+      name: Get attachments of the original email
+      script: Gmail|||gmail-get-attachments
+      type: regular
+      version: -1
+    taskid: 29868c31-fc31-4b25-8523-5a9c937af420
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1945
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: ${.=val.Gmail.filter(g => g.Headers.filter(h => h.Name === "Message-ID"
+                && h.Value == val.InReplyTo).length > 0)}
+          operator: isExists
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that the original email is in context (matched by the InReplyTo
+        ID).
+      id: 0ce28338-abb6-4b8d-8155-3444a9df6ca9
+      iscommand: false
+      name: Was the original email retrieved?
+      type: condition
+      version: -1
+    taskid: 0ce28338-abb6-4b8d-8155-3444a9df6ca9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1595
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: Email
+      value:
+        simple: '${OriginalEmail={Subject: val[''Subject''], To: val[''To''], From:
+          val[''From''], Text: val[''Body''], HTML: val[''HTML''], Headers: val[''Headers''],
+          CC: val[''CC''], BCC: val[''BCC'']}}'
+    separatecontext: false
+    task:
+      brand: ""
+      description: Set the playbook outputs to context.
+      id: 7c1f40cb-1a0e-44dd-8d87-ff2fd67e572c
+      iscommand: false
+      name: Set output
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 7c1f40cb-1a0e-44dd-8d87-ff2fd67e572c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 1945
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 1147.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

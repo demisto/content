@@ -1,0 +1,44 @@
+args:
+- default: true
+  description: The hash value(s) to check.
+  name: hash
+  required: true
+comment: Find the rule state for a hash value in CBEP/Bit9.
+commonfields:
+  id: CBPFindRule
+  version: -1
+dependson:
+  must:
+  - cbp-fileRule-search
+name: CBPFindRule
+runonce: false
+script: |
+  STATES = { 1: "Unapproved", 2: "Approved", 3: "Banned" }
+  res = []
+  found = []
+  md = ''
+  t = []
+  limit = demisto.args()["limit"] if "limit" in demisto.args() else "10"
+  hashes = argToList(demisto.args()["hash"])
+  for h in hashes:
+      resSearch = demisto.executeCommand("cbp-fileRule-search", { "query": "hash:" + h })
+      for entry in resSearch:
+          if isError(entry):
+              res.append(entry)
+          else:
+              for rule in entry["Contents"]:
+                  t.append(rule)
+                  found.append(rule["hash"])
+                  md += "Hash " + rule["hash"] + " is in state **" + STATES[rule["fileState"]] + "**\n"
+  if found:
+      appendContext('found_hashes', ','.join(found), dedup=True)
+  res.append({ "Type" : entryTypes["note"], "ContentsFormat" : formats["markdown"], "Contents" : md })
+  res.append({ "Type" : entryTypes["note"], "ContentsFormat" : formats["table"], "Contents" : t })
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- carbon-black-protection
+- bit9
+- enhancement
+type: python

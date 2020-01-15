@@ -1,0 +1,30 @@
+{
+	"category": "",
+	"dataType": "system",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "minutes",
+			"byTo": "",
+			"field": "",
+			"fromValue": 60,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"description": "Server memory usage % (previous 24 hours)",
+	"id": "memory-percentage-trend",
+	"isPredefined": true,
+	"name": "Server Memory Usage % (last 24h)",
+	"params": {
+		"timeFrame": "minutes"
+	},
+	"query": "memory.usedPercent",
+	"size": 1440,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "line"
+}

@@ -1,0 +1,343 @@
+description: |-
+  Enrich Domain using one or more integrations.
+
+  Domain enrichment includes:
+  * Domain reputation
+  * Threat information
+id: domain_enrichment_generic
+inputs:
+- description: The domain name to enrich
+  key: Domain
+  required: false
+  value:
+    complex:
+      accessor: Name
+      root: Domain
+- description: Should the playbook get reputation for the Domain
+  key: GetReputation
+  required: true
+  value:
+    simple: "True"
+name: Domain Enrichment - Generic
+outputs:
+- contextPath: Domain
+  description: The domain objects
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 3f6b8522-c653-4608-800d-f7da232392fb
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 3f6b8522-c653-4608-800d-f7da232392fb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 41
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Domain
+          operator: isExists
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "27"
+      - "29"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Determines whether the playbook's input contains a domain name.
+      id: 7fd055ad-aeb8-476b-8ba9-ab33781d2185
+      iscommand: false
+      name: Is there a domain to check?
+      type: condition
+      version: -1
+    taskid: 7fd055ad-aeb8-476b-8ba9-ab33781d2185
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 191
+        }
+      }
+  "20":
+    continueonerror: true
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        Get the domain reputation from every integration that supports the `!domain`
+         command.
+      id: 1d8b490b-45a3-4155-8773-a55a106aab5e
+      iscommand: false
+      name: Get domain Reputation
+      scriptName: DomainReputation
+      type: regular
+      version: -1
+    taskid: 1d8b490b-45a3-4155-8773-a55a106aab5e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 545.5,
+          "y": 690
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f6da103d-6baa-4afb-8b7d-65740714dcf2
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: f6da103d-6baa-4afb-8b7d-65740714dcf2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 865
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.GetReputation
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "20"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: "Should the system retrieve the domain reputation from all of the
+        relevant integration?\nDefault: True\n "
+      id: 5acde632-6023-47ed-8e24-44a22d0f313b
+      iscommand: false
+      name: Should we get the Domain Reputation?
+      type: condition
+      version: -1
+    taskid: 5acde632-6023-47ed-8e24-44a22d0f313b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 545.5,
+          "y": 504
+        }
+      }
+  "26":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VirusTotal - Private API
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of the Virus Total Private
+        API enabled.
+      id: 5e53200b-ffd1-47f3-8cf1-1cb125623f98
+      iscommand: false
+      name: Is Virus Total Private API enabled?
+      type: condition
+      version: -1
+    taskid: 5e53200b-ffd1-47f3-8cf1-1cb125623f98
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 38.5,
+          "y": 515
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 22c253ae-95f7-45cb-86cb-e604fe2b2c72
+      iscommand: false
+      name: Enrich using Virus Total Private API
+      type: title
+      version: -1
+    taskid: 22c253ae-95f7-45cb-86cb-e604fe2b2c72
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 38.5,
+          "y": 370
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+      fullResponse: {}
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: VirusTotal - Private API
+      id: 70059258-fba3-4615-8fe6-b36360e23e18
+      iscommand: true
+      name: Get report on domain
+      script: VirusTotal - Private API|||vt-private-get-domain-report
+      type: regular
+      version: -1
+    taskid: 70059258-fba3-4615-8fe6-b36360e23e18
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 38.5,
+          "y": 690
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 8074fcf5-1164-472b-8367-18d67bcf14ce
+      iscommand: false
+      name: Get domain reputation
+      type: title
+      version: -1
+    taskid: 8074fcf5-1164-472b-8367-18d67bcf14ce
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 545.5,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 889,
+        "width": 887,
+        "x": 38.5,
+        "y": 41
+      }
+    }
+  }

@@ -1,0 +1,1028 @@
+description: |-
+  Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
+
+  The final remediation tasks are always decided by a human analyst.
+id: Phishing Investigation - Generic
+inputs:
+- description: The default role to assign the incident to.
+  key: Role
+  required: true
+  value:
+    simple: Administrator
+- description: |-
+    Enable the "Search and Delete" capability (can be either "True" or "False").
+    In case of a malicious email, the "Search and Delete" sub-playbook will look for other instances of the email and delete them pending analyst approval.
+  key: SearchAndDelete
+  required: false
+  value:
+    simple: "False"
+- description: |-
+    Enable the "Block Indicators" capability (can be either "True" or "False").
+    In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
+  key: BlockIndicators
+  required: false
+  value:
+    simple: "False"
+name: Phishing Investigation - Generic
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 44927568-9dcf-4acb-84c2-1466eb224729
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 44927568-9dcf-4acb-84c2-1466eb224729
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": -130
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      assignBy: {}
+      email: {}
+      roles:
+        complex:
+          root: inputs.Role
+      username: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Assign the incident to an analyst based on the analyst's organizational
+        role.
+      id: c4e87e26-a8fc-473a-8f84-e63335a552e8
+      iscommand: false
+      name: Assign to analyst
+      scriptName: AssignAnalystToIncident
+      type: regular
+      version: -1
+    taskid: c4e87e26-a8fc-473a-8f84-e63335a552e8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1040
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: c3cd10bc-d79e-4471-8b28-82613ac05418
+      iscommand: false
+      name: ""
+      playbookName: Calculate Severity - Generic
+      type: playbook
+      version: -1
+    taskid: c3cd10bc-d79e-4471-8b28-82613ac05418
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 865
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Review the incident to determine if the email that the user reported
+        is malicious.
+      id: 89d7dd49-06a3-4397-8b72-f4428bf24805
+      iscommand: false
+      name: Manually review the incident
+      type: regular
+      version: -1
+    taskid: 89d7dd49-06a3-4397-8b72-f4428bf24805
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1535
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+      importantfield: {}
+      test2: {}
+      timefield1: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Close the investigation.
+      id: 104d08e2-78ad-496f-81f6-f3ebe77f3b5a
+      iscommand: true
+      name: Close investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 104d08e2-78ad-496f-81f6-f3ebe77f3b5a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 3290
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f90db644-38c8-4d31-840c-4b5b16069a33
+      iscommand: false
+      name: Triage
+      type: title
+      version: -1
+    taskid: f90db644-38c8-4d31-840c-4b5b16069a33
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Account.Email.Address
+      value:
+        complex:
+          accessor: labels.Email/from
+          root: incident
+    separatecontext: false
+    task:
+      brand: ""
+      description: Store the email address of the user that reported the incident.
+      id: 1a99d7e1-2c84-4d57-80be-0ec42482d952
+      iscommand: false
+      name: Store the email address of the reporting user
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 1a99d7e1-2c84-4d57-80be-0ec42482d952
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 515
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: "Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from']
+          ? val.Account.DisplayName : val.incident.labels['Email/from']},\nWe've received
+          your email and are investigating.\nPlease do not touch the email until further
+          notice.\n\nCordially, \n  Your friendly neighborhood security team"
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: 'Re: Phishing Investigation - ${incident.name}'
+      to:
+        complex:
+          accessor: labels.Email/from
+          root: incident
+    separatecontext: false
+    task:
+      brand: ""
+      description: |
+        Send an auto-response to user that reported the incident, informing them the incident was received and being handled.
+      id: 0f0f8a66-8f89-43fe-8e23-33d1d476c175
+      iscommand: true
+      name: Acknowledge incident was received
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 0f0f8a66-8f89-43fe-8e23-33d1d476c175
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 865
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      id: ca8ce4fe-c164-447f-872e-7a4ecf2cdbcd
+      iscommand: false
+      name: Email Address Enrichment - Generic
+      playbookName: Email Address Enrichment - Generic
+      type: playbook
+      version: -1
+    taskid: ca8ce4fe-c164-447f-872e-7a4ecf2cdbcd
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 690
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.severity
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "2"
+      label: 'Malicious '
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "31"
+      'Malicious ':
+      - "41"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Determine if the email is malicious based on the calculated severity.
+      id: bd6e25bf-75cc-41b0-8f27-12b96b0f5ca4
+      iscommand: false
+      name: Is the email malicious?
+      type: condition
+      version: -1
+    taskid: bd6e25bf-75cc-41b0-8f27-12b96b0f5ca4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1215
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          We've concluded that the email you forwarded to us is safe.
+          Thank you for your alertness and your participation in keeping our organization secure.
+
+          Cordially,
+            Your security team
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      replyTo: {}
+      subject:
+        simple: 'Re: Phishing Investigation - ${incident.name}'
+      to:
+        simple: ${incident.labels.Email/from}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Send an email to the user explaining that the email they reported
+        is safe.
+      id: ac0d8fe7-8ec0-49b8-8947-75d3bb87437c
+      iscommand: false
+      name: Update  the user that the reported email is safe
+      scriptName: SendEmail
+      type: regular
+      version: -1
+    taskid: ac0d8fe7-8ec0-49b8-8947-75d3bb87437c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 2865
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    scriptarguments:
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hi ${.=val.Account.DisplayName && val.Email.Address === val.incident.labels['Email/from'] ? val.Account.DisplayName : val.incident.labels['Email/from']},
+          We've concluded that the email you forwarded to us is malicious. We've taken steps to blacklist the sender and quarantine the email. Good job on detecting and forwarding it to us!
+
+          All the best,
+            Your security team
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: 'Re: Phishing Investigation - ${incident.name}'
+      to:
+        simple: ${incident.labels.Email/from}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Send an email to the user explaining that the email they reported
+        is malicious.
+      id: 3616a344-7c58-4ac0-86fe-bad84f58c2e2
+      iscommand: true
+      name: Update  the user that the reported email is malicious
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 3616a344-7c58-4ac0-86fe-bad84f58c2e2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 2200
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: a4de0c33-52a7-42d9-8e4d-1a753a62d20e
+      iscommand: false
+      name: Engage with User
+      type: title
+      version: -1
+    taskid: a4de0c33-52a7-42d9-8e4d-1a753a62d20e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 355
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      id: d24700ff-dc15-4f52-8faa-ab74f7d65ae3
+      iscommand: false
+      name: Detonate File - Generic
+      playbookName: Detonate File - Generic
+      type: playbook
+      version: -1
+    taskid: d24700ff-dc15-4f52-8faa-ab74f7d65ae3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 690
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      id: ecff99fe-b6cf-4306-8609-9ca00a5dcc8f
+      iscommand: false
+      name: Entity Enrichment - Generic
+      playbookName: Entity Enrichment - Generic
+      type: playbook
+      version: -1
+    taskid: ecff99fe-b6cf-4306-8609-9ca00a5dcc8f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "35"
+      - "22"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      id: 87a23c95-84b5-4343-8a01-d70c6f97702a
+      iscommand: false
+      name: Process Email - Generic
+      playbookName: Process Email - Generic
+      type: playbook
+      version: -1
+    taskid: 87a23c95-84b5-4343-8a01-d70c6f97702a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 340
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1b402b79-641b-4ac1-8124-80e939ae3bd4
+      iscommand: false
+      name: Remediate
+      type: title
+      version: -1
+    taskid: 1b402b79-641b-4ac1-8124-80e939ae3bd4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 2375
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      id: 2f89f21c-0088-460a-81b2-b0c3f021b89c
+      iscommand: false
+      name: Search And Delete Emails - Generic
+      playbookName: Search And Delete Emails - Generic
+      type: playbook
+      version: -1
+    taskid: 2f89f21c-0088-460a-81b2-b0c3f021b89c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2865
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 8f9afe19-c4b2-4f86-8544-4fee8d8455d1
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 8f9afe19-c4b2-4f86-8544-4fee8d8455d1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 3465
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 50789baf-1476-467a-8386-0be463a4a460
+      iscommand: false
+      name: Malicious
+      type: title
+      version: -1
+    taskid: 50789baf-1476-467a-8386-0be463a4a460
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 2055
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 7d784d78-4fc1-4465-8a32-4c13aff74e60
+      iscommand: false
+      name: Undetermined
+      type: title
+      version: -1
+    taskid: 7d784d78-4fc1-4465-8a32-4c13aff74e60
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1390
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      "No":
+      - "40"
+      "Yes":
+      - "41"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Is the email that the user reported malicious?
+      id: 6f2e21d2-2a93-433e-81f5-3c9abd359e95
+      iscommand: false
+      name: Is the email malicious?
+      type: condition
+      version: -1
+    taskid: 6f2e21d2-2a93-433e-81f5-3c9abd359e95
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1710
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: "Consider the following:\n1. Search for and delete similar emails\n2.
+        Inform the organization about the threat\n3. Hunt the relevant IOCs\n4. Update
+        proxies and firewalls as necessary\n5. Block the malicious sender/ domain
+        in the mail-gateway "
+      id: 536ca1cd-adbe-4db2-89c1-318be024fc3e
+      iscommand: false
+      name: Manually remediate  the incident
+      type: regular
+      version: -1
+    taskid: 536ca1cd-adbe-4db2-89c1-318be024fc3e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2700
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      id: cd577642-8baf-4aba-87d9-29f0366aa173
+      iscommand: false
+      name: Extract Indicators From File - Generic
+      playbookName: Extract Indicators From File - Generic
+      type: playbook
+      version: -1
+    taskid: cd577642-8baf-4aba-87d9-29f0366aa173
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "36":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: inputs.SearchAndDelete
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: "True"
+                root: inputs.SearchAndDelete
+          operator: isExists
+      label: "yes"
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "28"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that the "Search and Delete" parameter is set to "True"?
+      id: eebcf7b0-41c8-4185-8fad-977de983ab65
+      iscommand: false
+      name: Execute the "Search and Delete" sub-playbook?
+      type: condition
+      version: -1
+    taskid: eebcf7b0-41c8-4185-8fad-977de983ab65
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2700
+        }
+      }
+  "37":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: inputs.BlockIndicators
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: "True"
+                root: inputs.BlockIndicators
+          operator: isExists
+      label: "yes"
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "38"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that the "Block indicators" parameter is set to "True"?
+      id: f6b138df-f341-4cc0-8b9a-7f4ba4a06c71
+      iscommand: false
+      name: Execute the "Block Indicators" sub-playbook?
+      type: condition
+      version: -1
+    taskid: f6b138df-f341-4cc0-8b9a-7f4ba4a06c71
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 2700
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      id: cfb76a8d-e926-41a3-8036-6d4d54abf96d
+      iscommand: false
+      name: Block Indicators - Generic
+      playbookName: Block Indicators - Generic
+      type: playbook
+      version: -1
+    taskid: cfb76a8d-e926-41a3-8036-6d4d54abf96d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 2865
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+      - "18"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 5ff2d707-a036-4db0-8851-ed3ec61802db
+      iscommand: false
+      name: Start Detection Timer
+      type: title
+      version: -1
+    taskid: 5ff2d707-a036-4db0-8851-ed3ec61802db
+    timertriggers:
+    - action: start
+      fieldname: detectionsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 0
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 83e23120-b009-4565-8ab7-880b247aee16
+      iscommand: false
+      name: Stop Detection Timer
+      type: title
+      version: -1
+    taskid: 83e23120-b009-4565-8ab7-880b247aee16
+    timertriggers:
+    - action: stop
+      fieldname: detectionsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2260
+        }
+      }
+  "41":
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 88612884-d640-4dd1-85f4-0daa684ecf99
+      iscommand: false
+      name: Stop Detection Timer
+      type: title
+      version: -1
+    taskid: 88612884-d640-4dd1-85f4-0daa684ecf99
+    timertriggers:
+    - action: stop
+      fieldname: detectionsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 1880
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+      - "37"
+      - "36"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: b7d4e2cb-4d75-4c0d-8d87-732af590173e
+      iscommand: false
+      name: Start Remediation Timer
+      type: title
+      version: -1
+    taskid: b7d4e2cb-4d75-4c0d-8d87-732af590173e
+    timertriggers:
+    - action: start
+      fieldname: remediationsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2530
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f863f789-c46a-44e2-8d8b-02174df5010b
+      iscommand: false
+      name: Stop Remediation Timer
+      type: title
+      version: -1
+    taskid: f863f789-c46a-44e2-8d8b-02174df5010b
+    timertriggers:
+    - action: stop
+      fieldname: remediationsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 3150
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3660,
+        "width": 1670,
+        "x": 40,
+        "y": -130
+      }
+    }
+  }

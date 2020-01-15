@@ -1,0 +1,30 @@
+comment: The settings information includes S-series sensor and X-series configurations
+  input by the administrator
+commonfields:
+  id: VectraSettings
+  version: -1
+dependson:
+  must:
+  - vec-settings
+deprecated: true
+name: VectraSettings
+runonce: false
+script: |2
+
+  resp = demisto.executeCommand("vec-settings", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.results")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- Vectra
+type: python

@@ -1,0 +1,1271 @@
+description: |-
+  Provides a basic response to phishing incidents. Playbook features:
+  - Calculates reputation for all indicators
+  - Extracts indicators from email attachments
+  - Calculates severity for the incident based on indicator reputation
+  - Updates reporting user about investigation status
+  - Allows manual remediation of the incident
+id: Phishing - Core
+inputs:
+- description: Whether the user wants the Rasterize integration to produce images
+    of URLs that are involved in the incident. If "True", screenshots will be taken.
+  key: GetURLScreenshots
+  required: false
+  value:
+    simple: "True"
+name: Phishing - Core
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "22"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 7bd69024-bbe7-4712-8144-eed5dd7f8f21
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 7bd69024-bbe7-4712-8144-eed5dd7f8f21
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Thank you for reporting the suspicious email, which we are actively investigating. Please do not interact with this email, such as opening or replying, until you hear back from the security team.
+
+          Sincerely,
+          Demisto's Security Team
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: '[Status Update]: ${incident.name}'
+      to:
+        complex:
+          accessor: labels.Email/from
+          root: incident
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    task:
+      brand: ""
+      description: Sends an email to the user who reported the phishing email, inoforming
+        them that the email was received and is being investigated.
+      id: 4088078f-6c08-43c2-8410-3b87ca001645
+      iscommand: true
+      name: Acknowledge email
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 4088078f-6c08-43c2-8410-3b87ca001645
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 210
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: URL
+                transformers:
+                - operator: uniq
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is at least one URL involved in the incident.
+      id: 039f7bf6-391a-4ce0-865c-6db56f2d87e2
+      iscommand: false
+      name: Is there a URL?
+      type: condition
+      version: -1
+    taskid: 039f7bf6-391a-4ce0-865c-6db56f2d87e2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+  "6":
+    continueonerror: true
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      height: {}
+      type: {}
+      url:
+        complex:
+          accessor: Data
+          root: URL
+          transformers:
+          - operator: uniq
+      width: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Uses the Rasterize integration to create screenshots (images) of
+        the URLs involved in the incident.
+      id: ad30e977-22d9-42e1-8b54-ebd88ef609e7
+      iscommand: true
+      name: Get screenshots of URLs
+      script: '|||rasterize'
+      type: regular
+      version: -1
+    taskid: ad30e977-22d9-42e1-8b54-ebd88ef609e7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1330
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Rasterize
+                root: modules
+          operator: isExists
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.GetURLScreenshots
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether the user opted to get screenshots of URLs in the
+        playbook's "GetURLScreenshots" input. Checks whether the Rasterize integration
+        is enabled.
+      id: 7880d264-1c2e-4d82-8cce-6b0474677d25
+      iscommand: false
+      name: Can we take URL screenshots?
+      type: condition
+      version: -1
+    taskid: 7880d264-1c2e-4d82-8cce-6b0474677d25
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1140
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: DBotScore
+                transformers:
+                - operator: uniq
+          operator: isExists
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "9"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether there is at least one indicator with a DBotScore.
+      id: 1812b1ae-cb94-49ff-886a-f6b0a20fa922
+      iscommand: false
+      name: Are there indicators with scores?
+      type: condition
+      version: -1
+    taskid: 1812b1ae-cb94-49ff-886a-f6b0a20fa922
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1490
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Score
+                    operator: greaterThan
+                    right:
+                      value:
+                        simple: "2"
+                root: DBotScore
+                transformers:
+                - operator: uniq
+          operator: isExists
+      label: High
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Score
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: "2"
+                root: DBotScore
+                transformers:
+                - operator: uniq
+          operator: isExists
+      label: Medium
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Score
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: "1"
+                root: DBotScore
+                transformers:
+                - operator: uniq
+          operator: isExists
+      label: Low
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      High:
+      - "13"
+      Low:
+      - "11"
+      Medium:
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        Determines the severity of the incident based on the score that was assigned to the indicators involved. The indicators are found in the DBotScore context key.
+
+        The severity level is determined by the highest score given to any of the indicators:
+        High - if there is a score higher than 2
+        Medium - if there is a score that is equal to 2
+        Low - if there is a score that is equal to 1
+      id: af3568f6-5f42-490d-8062-00993786a378
+      iscommand: false
+      name: How severe is the incident?
+      type: condition
+      version: -1
+    taskid: af3568f6-5f42-490d-8062-00993786a378
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1700
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
+      severity:
+        simple: low
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Sets the incident severity to "low".
+      id: a7d60152-f753-45f2-8dea-9937f5be9885
+      iscommand: true
+      name: Set incident severity to "low"
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: a7d60152-f753-45f2-8dea-9937f5be9885
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1980
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
+      severity:
+        simple: medium
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Sets the incident severity to "medium".
+      id: 63db02c9-0632-488f-89b4-cc9c3c83da58
+      iscommand: true
+      name: Set incident severity to "medium"
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 63db02c9-0632-488f-89b4-cc9c3c83da58
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1980
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
+      severity:
+        simple: high
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Sets the incident severity to "high".
+      id: cb522e09-996a-47b5-8fdc-5da898788702
+      iscommand: true
+      name: Set incident severity to "high"
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: cb522e09-996a-47b5-8fdc-5da898788702
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1980
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Pauses the playbook so the analyst can investigate the incdent,
+        and manually resume the playbook when necessary.
+      id: f2f75cd9-b60b-4884-862e-7cf58e61d3a5
+      iscommand: false
+      name: Manually investigate the incident
+      type: regular
+      version: -1
+    taskid: f2f75cd9-b60b-4884-862e-7cf58e61d3a5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2150
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      Benign:
+      - "17"
+      Malicious:
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Pauses the playbook so the analyst can decides whether the investigated
+        email is malicious or benign.
+      id: 1ce7d809-989d-4089-866b-61b187f69f23
+      iscommand: false
+      name: Is the email malicious or benign?
+      type: condition
+      version: -1
+    taskid: 1ce7d809-989d-4089-866b-61b187f69f23
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2320
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          After investigating the email you sent, we determined that the email is malicious. We appreciate your continued attention to suspicious emails.
+
+          Sincerely,
+          Demisto's Security Team
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: '[Status Update]: ${incident.name}'
+      to:
+        complex:
+          accessor: labels.Email/from
+          root: incident
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    task:
+      brand: ""
+      description: Sends an email to the user who reported the phishing email, informing
+        them that the email is malicious.
+      id: 9b0470e1-8c93-485d-8b77-eaf1dc682487
+      iscommand: true
+      name: Update user that the email is malicious
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 9b0470e1-8c93-485d-8b77-eaf1dc682487
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 2510
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body: {}
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: '[Status Update]: ${incident.name}'
+      to:
+        complex:
+          accessor: labels.Email/from
+          root: incident
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    task:
+      brand: ""
+      description: Sends an email to the user who reported the phishing email, informing
+        them that the email is benign.
+      id: 53b80e1f-66a2-4e48-8265-3f27e8676545
+      iscommand: true
+      name: Update user that the email is benign
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 53b80e1f-66a2-4e48-8265-3f27e8676545
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2510
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Pauses the playbook so the analyst can manually remediate the incident,
+        and manually resume the playbook.
+      id: aeef0938-0752-477d-8b54-d4a3cfdaefc1
+      iscommand: false
+      name: Manually remediate the incident
+      tags:
+      - manual
+      type: regular
+      version: -1
+    taskid: aeef0938-0752-477d-8b54-d4a3cfdaefc1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 2690
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+      importantfield: {}
+      test2: {}
+      timefield1: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Closes the current incident.
+      id: 67d2318c-bad7-4e5b-812b-e1f18c9a300f
+      iscommand: true
+      name: Close investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 67d2318c-bad7-4e5b-812b-e1f18c9a300f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2880
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    scriptarguments:
+      File:
+        complex:
+          root: File
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    task:
+      brand: ""
+      id: a5999ec8-500c-408d-818c-2517e0c1cc15
+      iscommand: false
+      name: Extract Indicators From File - Generic v2
+      playbookName: Extract Indicators From File - Generic v2
+      type: playbook
+      version: -1
+    taskid: a5999ec8-500c-408d-818c-2517e0c1cc15
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 750
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    scriptarguments:
+      Email:
+        complex:
+          accessor: labels.Email
+          root: incident
+      Email/cc:
+        complex:
+          accessor: labels.CC
+          root: incident
+      Email/format:
+        complex:
+          accessor: labels.Email/format
+          root: incident
+      Email/from:
+        complex:
+          accessor: labels.Email/from
+          root: incident
+      Email/headers:
+        complex:
+          accessor: labels.Email/headers
+          root: incident
+      Email/html:
+        complex:
+          accessor: labels.Email/html
+          root: incident
+      Email/subject:
+        complex:
+          accessor: labels.Email/subject
+          root: incident
+      Email/text:
+        complex:
+          accessor: labels.Email/text
+          root: incident
+      File:
+        complex:
+          root: File
+    separatecontext: true
+    task:
+      brand: ""
+      description: Add email details to the relevant context entities and handle the
+        case where original emails are attached.
+      id: 5636d972-b561-4920-8856-70dbc728ac0d
+      iscommand: false
+      name: Process Email - Core
+      playbookName: Process Email - Core
+      type: playbook
+      version: -1
+    taskid: 5636d972-b561-4920-8856-70dbc728ac0d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: HTML
+                root: Email
+          operator: isExists
+      label: "yes"
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "24"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if the email that was received is HTML-formatted.
+      id: 4e524f5b-4560-424e-82f9-46edc37e1c97
+      iscommand: false
+      name: Is there an HTML label in the email?
+      type: condition
+      version: -1
+    taskid: 4e524f5b-4560-424e-82f9-46edc37e1c97
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    scriptarguments:
+      height: {}
+      htmlBody:
+        complex:
+          accessor: HTML
+          root: Email
+          transformers:
+          - operator: uniq
+      type: {}
+      width: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Creates a visual image of the email, if the email is HTML-formatted.
+      id: 6be72da0-8b9c-4807-8e85-5b58bc837225
+      iscommand: true
+      name: Render HTML to an image
+      script: '|||rasterize-email'
+      tags:
+      - email_html_image
+      type: regular
+      version: -1
+    taskid: 6be72da0-8b9c-4807-8e85-5b58bc837225
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 570
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "23_21_#default#": 0.34,
+      "23_24_yes": 0.3,
+      "5_7_yes": 0.52,
+      "5_8_#default#": 0.51,
+      "7_6_yes": 0.44,
+      "7_8_#default#": 0.51,
+      "8_11_#default#": 0.73
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2925,
+        "width": 1320,
+        "x": -20,
+        "y": 50
+      }
+    }
+  }

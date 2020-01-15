@@ -1,0 +1,36 @@
+args:
+- default: true
+  description: uid of the rule
+  name: uid
+- description: name of the rule
+  name: name
+- description: e.g. Network
+  name: layer
+  required: true
+- description: '"true" to enable the rule, "false to disable it.'
+  name: enabled
+comment: Set attributes of an access rule object configured in Checkpoint FW.
+commonfields:
+  id: CPSetRule
+  version: -1
+dependson:
+  must:
+  - checkpoint
+deprecated: true
+name: CPSetRule
+runonce: false
+script: |-
+  dArgs = demisto.args()
+  dArgs['command'] = 'set-access-rule'
+
+  if 'uid' in dArgs or 'name' in dArgs:
+      resp = demisto.executeCommand('checkpoint', dArgs)
+      resp += demisto.executeCommand('checkpoint', {'command': 'publish'})
+      demisto.results(resp)
+  else:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "You must provide name or uid." } )
+scripttarget: 0
+system: true
+tags:
+- checkpoint
+type: python

@@ -1,0 +1,33 @@
+{
+	"category": "",
+	"dataType": "tasks",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": null,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "my-tasks",
+	"isPredefined": true,
+	"name": "My Tasks",
+	"params": null,
+	"query": "assignee:\"{me}\" and (state:Waiting or state:inprogress or state:error)",
+	"size": 10,
+	"sort": [
+		{
+			"asc": true,
+			"field": "dueDate",
+			"fieldType": ""
+		}
+	],
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "list"
+}

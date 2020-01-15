@@ -1,0 +1,367 @@
+description: Get file reputation using one or more integrations
+id: file_enrichment_-_file_reputation
+inputs:
+- description: File MD5 hash to enrich.
+  key: MD5
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+- description: File SHA-256 hash to enrich.
+  key: SHA256
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      root: File
+- description: File SHA-1 hash to enrich.
+  key: SHA1
+  required: false
+  value:
+    complex:
+      accessor: SHA1
+      root: File
+name: File Enrichment - File reputation
+outputs:
+- contextPath: File
+  description: The file's object
+  type: unknown
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore's object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The tested indicator
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 214ebf34-1312-43ec-873d-41d45094ba22
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 214ebf34-1312-43ec-873d-41d45094ba22
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+      - "17"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 4b42764c-31bd-4097-8721-159b73534347
+      iscommand: false
+      name: Get file hash reputation
+      type: title
+      version: -1
+    taskid: 4b42764c-31bd-4097-8721-159b73534347
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 195
+        }
+      }
+  "5":
+    continueonerror: true
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.MD5
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get the MD5 hash reputation from every integration that supports
+        the `!file` command.
+      id: 61a4a533-980d-4b46-816e-75bbf2550d0a
+      iscommand: false
+      name: Get MD5 reputation
+      scriptName: FileReputation
+      type: regular
+      version: -1
+    taskid: 61a4a533-980d-4b46-816e-75bbf2550d0a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 66d74bf4-438c-40a8-840f-58052c181d0f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 66d74bf4-438c-40a8-840f-58052c181d0f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 690
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.MD5
+          operator: isExists
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${File.MD5}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if there is an MD5 hash in context.
+      id: 63bff973-38e4-490f-830e-b9d68f2791ad
+      iscommand: false
+      name: Is there an MD5 hash?
+      type: condition
+      version: -1
+    taskid: 63bff973-38e4-490f-830e-b9d68f2791ad
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.SHA256
+          operator: isExists
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "16"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if there is a SHA-256 hash in context.
+      id: 8e16c355-ee0c-4b2b-86b1-0d2f5916430f
+      iscommand: false
+      name: Is there a SHA-256 hash?
+      type: condition
+      version: -1
+    taskid: 8e16c355-ee0c-4b2b-86b1-0d2f5916430f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 340
+        }
+      }
+  "16":
+    continueonerror: true
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.SHA256
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get the SHA-256 hash reputation from every integration that supports
+        the `!file` command.
+      id: 092a1e7e-b7d8-4d50-8f6e-021c31701974
+      iscommand: false
+      name: Get SHA-256 reputation
+      scriptName: FileReputation
+      type: regular
+      version: -1
+    taskid: 092a1e7e-b7d8-4d50-8f6e-021c31701974
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 515
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.SHA1
+          operator: isExists
+      label: "yes"
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "18"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if there is a SHA-1 hash in context.
+      id: ceddfccc-685c-4392-8955-2c116297ca5f
+      iscommand: false
+      name: Is there a SHA-1 hash?
+      type: condition
+      version: -1
+    taskid: ceddfccc-685c-4392-8955-2c116297ca5f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 340
+        }
+      }
+  "18":
+    continueonerror: true
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.SHA1
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get the SHA-1 hash reputation from every integration that supports
+        the `!file` command.
+      id: 9cd10068-c589-4c05-8a22-7ec3528b89de
+      iscommand: false
+      name: Get SHA-1 reputation
+      scriptName: FileReputation
+      type: regular
+      version: -1
+    taskid: 9cd10068-c589-4c05-8a22-7ec3528b89de
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 515
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_7_#default#": 0.52,
+      "15_7_#default#": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 1392.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

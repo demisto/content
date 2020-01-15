@@ -1,0 +1,1202 @@
+{
+	"createdBy": "DBot",
+	"cronView": false,
+	"dashboard": null,
+	"decoder": {
+		"incident.activated": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.closed": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.created": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.dueDate": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.occurred": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.openDuration": {
+			"type": "duration",
+			"value": ""
+		},
+		"incident.reminder": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.severity.0": {
+			"type": "string",
+			"value": "Unknown"
+		},
+		"incident.severity.0.5": {
+			"type": "string",
+			"value": "Informational"
+		},
+		"incident.severity.1": {
+			"type": "string",
+			"value": "Low"
+		},
+		"incident.severity.2": {
+			"type": "string",
+			"value": "Medium"
+		},
+		"incident.severity.3": {
+			"type": "string",
+			"value": "High"
+		},
+		"incident.severity.4": {
+			"type": "string",
+			"value": "Critical"
+		},
+		"incident.status.0": {
+			"type": "string",
+			"value": "Not Assigned"
+		},
+		"incident.status.1": {
+			"type": "string",
+			"value": "Not Assigned"
+		},
+		"incident.status.2": {
+			"type": "string",
+			"value": "Done"
+		},
+		"incident.status.3": {
+			"type": "string",
+			"value": "Closed"
+		},
+		"incident.status.4": {
+			"type": "string",
+			"value": "On Hold"
+		},
+		"investigation.closed": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"investigation.created": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"investigation.openDuration": {
+			"type": "duration",
+			"value": ""
+		},
+		"investigation.status.0": {
+			"type": "string",
+			"value": "Active"
+		},
+		"investigation.status.1": {
+			"type": "string",
+			"value": "Done"
+		},
+		"investigation.type.0": {
+			"type": "string",
+			"value": "Standard"
+		},
+		"investigation.type.1": {
+			"type": "string",
+			"value": "Restricted"
+		},
+		"investigation.type.9": {
+			"type": "string",
+			"value": "Playground"
+		}
+	},
+	"description": "Shift summary which includes the last 6 hours open and closed incidents.",
+	"disableHeader": false,
+	"endingDate": "0001-01-01T00:00:00Z",
+	"id": "ShiftSummaryReport",
+	"latestReportName": "",
+	"latestReportTime": "0001-01-01T00:00:00Z",
+	"latestReportUsername": "",
+	"latestScheduledReportTime": "0001-01-01T00:00:00Z",
+	"locked": false,
+	"name": "Shift summary report",
+	"nextScheduledTime": "0001-01-01T00:00:00Z",
+	"orientation": "",
+	"paperSize": "A4",
+	"recipients": [],
+	"recurrent": false,
+	"reportType": "",
+	"runOnce": false,
+	"runningUser": "",
+	"scheduled": false,
+	"sections": [
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Last 6 hours closed incidents - High severity and above",
+			"layout": {
+				"columnPos": 1,
+				"rowPos": 100,
+				"style": {
+					"fontSize": 28,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "header"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"columnPos": 2,
+				"format": "MMMM Do YYYY, h:mm:ss a z",
+				"rowPos": 100,
+				"style": {
+					"color": "gray",
+					"fontSize": 13,
+					"fontStyle": "italic",
+					"marginBottom:": 12,
+					"textAlign": "center"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "date"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Severity",
+			"layout": {
+				"columnPos": 1,
+				"rowPos": 500,
+				"style": {
+					"fontSize": 16,
+					"fontWeight": "bold",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Type",
+			"layout": {
+				"columnPos": 2,
+				"rowPos": 500,
+				"style": {
+					"fontSize": 16,
+					"fontWeight": "bold",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"chartProperties": {
+					"cx": 155,
+					"cy": 75,
+					"endAngle": -270,
+					"innerRadius": 40,
+					"label": {
+						"offsetRadius": 10
+					},
+					"labelLine": false,
+					"outerRadius": 60,
+					"startAngle": 90
+				},
+				"chartType": "pie",
+				"columnPos": 1,
+				"dimensions": {
+					"height": 220,
+					"width": 300
+				},
+				"legend": [
+					{
+						"fill": "#8d070a",
+						"name": "Critical"
+					},
+					{
+						"fill": "#D00a00",
+						"name": "High"
+					},
+					{
+						"fill": "#cb4a00",
+						"name": "Medium"
+					},
+					{
+						"fill": "#267634",
+						"name": "Low"
+					},
+					{
+						"fill": "#4357b8",
+						"name": "Informational"
+					},
+					{
+						"fill": "#999999",
+						"name": "Unknown"
+					}
+				],
+				"legendStyle": {
+					"align": "left",
+					"iconSize": 10,
+					"layout": "vertical",
+					"verticalAlign": "top"
+				},
+				"rowPos": 600,
+				"style": {
+					"fontSize": 12,
+					"marginTop": -10,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": {
+					"andOp": true,
+					"level": [
+						3,
+						4
+					],
+					"period": {
+						"by": "hour",
+						"field": "closed",
+						"fromValue": 6,
+						"toValue": 0
+					},
+					"status": [
+						2,
+						3
+					],
+					"totalOnly": false
+				},
+				"groupBy": [
+					"severity"
+				],
+				"type": "incident"
+			},
+			"titleStyle": null,
+			"type": "chart"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"chartProperties": {
+					"cy": 75,
+					"endAngle": -270,
+					"innerRadius": 40,
+					"label": {
+						"offsetRadius": 10
+					},
+					"labelLine": false,
+					"outerRadius": 60,
+					"startAngle": 90
+				},
+				"chartType": "pie",
+				"columnPos": 2,
+				"dimensions": {
+					"height": 220,
+					"width": 300
+				},
+				"legend": [
+					{
+						"fill": "#853732",
+						"name": "C2Communication"
+					},
+					{
+						"fill": "#3aabe8",
+						"name": "Unclassified"
+					},
+					{
+						"fill": "#5fa54a",
+						"name": "DeviceLost"
+					},
+					{
+						"fill": "#4f8aab",
+						"name": "Malware"
+					},
+					{
+						"fill": "#4f854a",
+						"name": "Phishing"
+					},
+					{
+						"fill": "#5b4185",
+						"name": "Ransomware"
+					},
+					{
+						"fill": "#4faa5b",
+						"name": "UnknownBinary"
+					}
+				],
+				"legendStyle": {
+					"align": "left",
+					"iconSize": 10,
+					"layout": "vertical",
+					"verticalAlign": "top"
+				},
+				"rowPos": 600,
+				"sortBy": {
+					"orders": [
+						"desc",
+						"asc"
+					],
+					"values": [
+						"value",
+						"name"
+					]
+				},
+				"style": {
+					"fontSize": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": {
+					"andOp": true,
+					"level": [
+						3,
+						4
+					],
+					"period": {
+						"by": "hour",
+						"field": "closed",
+						"fromValue": 6,
+						"toValue": 0
+					},
+					"status": [
+						2,
+						3
+					],
+					"totalOnly": false
+				},
+				"groupBy": [
+					"type"
+				],
+				"type": "incident"
+			},
+			"titleStyle": null,
+			"type": "chart"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "SLA",
+			"layout": {
+				"columnPos": 1,
+				"rowPos": 700,
+				"style": {
+					"fontSize": 16,
+					"fontWeight": "bold",
+					"marginTop": -70,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Analyst",
+			"layout": {
+				"columnPos": 2,
+				"rowPos": 700,
+				"style": {
+					"fontSize": 16,
+					"fontWeight": "bold",
+					"marginTop": -70,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"chartProperties": {
+					"cx": 155,
+					"cy": 75,
+					"endAngle": -270,
+					"innerRadius": 40,
+					"label": {
+						"offsetRadius": 10
+					},
+					"labelLine": false,
+					"outerRadius": 60,
+					"startAngle": 90
+				},
+				"chartType": "pie",
+				"columnPos": 1,
+				"dimensions": {
+					"height": 180,
+					"width": 300
+				},
+				"legend": [
+					{
+						"fill": "red",
+						"name": "late"
+					},
+					{
+						"fill": "orange",
+						"name": "risk"
+					},
+					{
+						"fill": "green",
+						"name": "within"
+					}
+				],
+				"legendStyle": {
+					"align": "left",
+					"iconSize": 10,
+					"layout": "vertical",
+					"verticalAlign": "top"
+				},
+				"rowPos": 800,
+				"style": {
+					"fontSize": 12,
+					"marginTop": -70,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": {
+					"andOp": true,
+					"level": [
+						3,
+						4
+					],
+					"period": {
+						"by": "hour",
+						"field": "closed",
+						"fromValue": 6,
+						"toValue": 0
+					},
+					"status": [
+						2,
+						3
+					],
+					"totalOnly": false
+				},
+				"groupBy": [
+					"dueDate"
+				],
+				"type": "incident"
+			},
+			"titleStyle": null,
+			"type": "chart"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"chartProperties": {
+					"barSize": 13,
+					"layout": "vertical",
+					"strokeDasharray": "3 300"
+				},
+				"chartType": "bar",
+				"columnPos": 2,
+				"dimensions": {
+					"height": 200,
+					"width": 300
+				},
+				"legend": [
+					{
+						"bar": 1,
+						"fill": "#2884d1",
+						"name": "Busy Analyst"
+					}
+				],
+				"rowPos": 800,
+				"style": {
+					"fontSize": 10,
+					"marginLeft": -15,
+					"marginTop": -70,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": {
+					"andOp": true,
+					"level": [
+						3,
+						4
+					],
+					"period": {
+						"by": "hour",
+						"field": "closed",
+						"fromValue": 6,
+						"toValue": 0
+					},
+					"status": [
+						2,
+						3
+					],
+					"totalOnly": false
+				},
+				"groupBy": [
+					"owner"
+				],
+				"type": "incident"
+			},
+			"titleStyle": null,
+			"type": "chart"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Closed incidents in the last 6 hours - High severity and above",
+			"layout": {
+				"columnPos": 1,
+				"rowPos": 900,
+				"style": {
+					"fontSize": 18,
+					"pageBreakBefore": "always",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "header"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"classes": "striped stackable small very compact",
+				"columnPos": 1,
+				"readableHeaders": {
+					"closeNotes": "Close notes",
+					"closed": "Closed",
+					"name": "Name",
+					"occurred": "Occurred",
+					"owner": "Owner",
+					"severity": "Severity",
+					"status": "Status",
+					"type": "Type"
+				},
+				"rowPos": 1000,
+				"tableColumns": [
+					"Name",
+					"Occurred",
+					"Owner",
+					"Closed",
+					"Close notes"
+				]
+			},
+			"query": {
+				"filter": {
+					"andOp": true,
+					"level": [
+						3,
+						4
+					],
+					"period": {
+						"by": "hour",
+						"field": "closed",
+						"fromValue": 6,
+						"toValue": 0
+					},
+					"status": [
+						2,
+						3
+					]
+				},
+				"type": "incident"
+			},
+			"titleStyle": null,
+			"type": "table"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Last 6 hours open incidents - High severity and above",
+			"layout": {
+				"columnPos": 1,
+				"rowPos": 10000,
+				"style": {
+					"fontSize": 28,
+					"pageBreakBefore": "always",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "header"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Severity",
+			"layout": {
+				"columnPos": 1,
+				"rowPos": 50000,
+				"style": {
+					"fontSize": 16,
+					"fontWeight": "bold",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Type",
+			"layout": {
+				"columnPos": 2,
+				"rowPos": 50000,
+				"style": {
+					"fontSize": 16,
+					"fontWeight": "bold",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"chartProperties": {
+					"cx": 155,
+					"cy": 75,
+					"endAngle": -270,
+					"innerRadius": 40,
+					"label": {
+						"offsetRadius": 10
+					},
+					"labelLine": false,
+					"outerRadius": 60,
+					"startAngle": 90
+				},
+				"chartType": "pie",
+				"columnPos": 1,
+				"dimensions": {
+					"height": 220,
+					"width": 300
+				},
+				"legend": [
+					{
+						"fill": "#8d070a",
+						"name": "Critical"
+					},
+					{
+						"fill": "#D00a00",
+						"name": "High"
+					},
+					{
+						"fill": "#cb4a00",
+						"name": "Medium"
+					},
+					{
+						"fill": "#267634",
+						"name": "Low"
+					},
+					{
+						"fill": "#4357b8",
+						"name": "Informational"
+					},
+					{
+						"fill": "#999999",
+						"name": "Unknown"
+					}
+				],
+				"legendStyle": {
+					"align": "left",
+					"iconSize": 10,
+					"layout": "vertical",
+					"verticalAlign": "top"
+				},
+				"rowPos": 60000,
+				"style": {
+					"fontSize": 12,
+					"marginTop": -10,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": {
+					"andOp": true,
+					"level": [
+						3,
+						4
+					],
+					"notStatus": [
+						2,
+						3
+					],
+					"period": {
+						"by": "hour",
+						"fromValue": 6,
+						"toValue": 0
+					},
+					"totalOnly": false
+				},
+				"groupBy": [
+					"severity"
+				],
+				"type": "incident"
+			},
+			"titleStyle": null,
+			"type": "chart"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"chartProperties": {
+					"cy": 75,
+					"endAngle": -270,
+					"innerRadius": 40,
+					"label": {
+						"offsetRadius": 10
+					},
+					"labelLine": false,
+					"outerRadius": 60,
+					"startAngle": 90
+				},
+				"chartType": "pie",
+				"columnPos": 2,
+				"dimensions": {
+					"height": 220,
+					"width": 300
+				},
+				"legend": [
+					{
+						"fill": "#853732",
+						"name": "C2Communication"
+					},
+					{
+						"fill": "#3aabe8",
+						"name": "Unclassified"
+					},
+					{
+						"fill": "#5fa54a",
+						"name": "DeviceLost"
+					},
+					{
+						"fill": "#4f8aab",
+						"name": "Malware"
+					},
+					{
+						"fill": "#4f854a",
+						"name": "Phishing"
+					},
+					{
+						"fill": "#5b4185",
+						"name": "Ransomware"
+					},
+					{
+						"fill": "#4faa5b",
+						"name": "UnknownBinary"
+					}
+				],
+				"legendStyle": {
+					"align": "left",
+					"iconSize": 10,
+					"layout": "vertical",
+					"verticalAlign": "top"
+				},
+				"rowPos": 60000,
+				"sortBy": {
+					"orders": [
+						"desc",
+						"asc"
+					],
+					"values": [
+						"value",
+						"name"
+					]
+				},
+				"style": {
+					"fontSize": 12,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": {
+					"andOp": true,
+					"level": [
+						3,
+						4
+					],
+					"notStatus": [
+						2,
+						3
+					],
+					"period": {
+						"by": "hour",
+						"fromValue": 6,
+						"toValue": 0
+					},
+					"totalOnly": false
+				},
+				"groupBy": [
+					"type"
+				],
+				"type": "incident"
+			},
+			"titleStyle": null,
+			"type": "chart"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "SLA",
+			"layout": {
+				"columnPos": 1,
+				"rowPos": 70000,
+				"style": {
+					"fontSize": 16,
+					"fontWeight": "bold",
+					"marginTop": -70,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Analyst",
+			"layout": {
+				"columnPos": 2,
+				"rowPos": 70000,
+				"style": {
+					"fontSize": 16,
+					"fontWeight": "bold",
+					"marginTop": -70,
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "text"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"chartProperties": {
+					"cx": 155,
+					"cy": 75,
+					"endAngle": -270,
+					"innerRadius": 40,
+					"label": {
+						"offsetRadius": 10
+					},
+					"labelLine": false,
+					"outerRadius": 60,
+					"startAngle": 90
+				},
+				"chartType": "pie",
+				"columnPos": 1,
+				"dimensions": {
+					"height": 180,
+					"width": 300
+				},
+				"legend": [
+					{
+						"fill": "red",
+						"name": "late"
+					},
+					{
+						"fill": "orange",
+						"name": "risk"
+					},
+					{
+						"fill": "green",
+						"name": "within"
+					}
+				],
+				"legendStyle": {
+					"align": "left",
+					"iconSize": 10,
+					"layout": "vertical",
+					"verticalAlign": "top"
+				},
+				"rowPos": 80000,
+				"style": {
+					"fontSize": 12,
+					"marginTop": -70,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": {
+					"andOp": true,
+					"level": [
+						3,
+						4
+					],
+					"notStatus": [
+						2,
+						3
+					],
+					"period": {
+						"by": "hour",
+						"fromValue": 6,
+						"toValue": 0
+					},
+					"totalOnly": false
+				},
+				"groupBy": [
+					"dueDate"
+				],
+				"type": "incident"
+			},
+			"titleStyle": null,
+			"type": "chart"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"chartProperties": {
+					"barSize": 13,
+					"layout": "vertical",
+					"strokeDasharray": "3 300"
+				},
+				"chartType": "bar",
+				"columnPos": 2,
+				"dimensions": {
+					"height": 200,
+					"width": 300
+				},
+				"legend": [
+					{
+						"bar": 1,
+						"fill": "#2884d1",
+						"name": "Busy Analyst"
+					}
+				],
+				"rowPos": 80000,
+				"style": {
+					"fontSize": 10,
+					"marginLeft": -15,
+					"marginTop": -70,
+					"textAlign": "left"
+				}
+			},
+			"query": {
+				"filter": {
+					"andOp": true,
+					"level": [
+						3,
+						4
+					],
+					"notStatus": [
+						2,
+						3
+					],
+					"period": {
+						"by": "hour",
+						"fromValue": 6,
+						"toValue": 0
+					},
+					"totalOnly": false
+				},
+				"groupBy": [
+					"owner"
+				],
+				"type": "incident"
+			},
+			"titleStyle": null,
+			"type": "chart"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "Open incidents in the last 6 hours - High severity and above",
+			"layout": {
+				"columnPos": 1,
+				"rowPos": 90000,
+				"style": {
+					"fontSize": 18,
+					"pageBreakBefore": "always",
+					"textAlign": "left"
+				}
+			},
+			"query": {},
+			"titleStyle": null,
+			"type": "header"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"classes": "striped stackable small very compact",
+				"columnPos": 1,
+				"readableHeaders": {
+					"Shift Notes": "Shift notes",
+					"name": "Name",
+					"occurred": "Occurred",
+					"owner": "Owner",
+					"severity": "Severity",
+					"status": "Status",
+					"type": "Type"
+				},
+				"rowPos": 100000,
+				"tableColumns": [
+					"Name",
+					"Occurred",
+					"Owner",
+					"Shift notes"
+				]
+			},
+			"query": {
+				"filter": {
+					"andOp": true,
+					"level": [
+						3,
+						4
+					],
+					"notStatus": [
+						2,
+						3
+					],
+					"period": {
+						"by": "hour",
+						"fromValue": 6,
+						"toValue": 0
+					}
+				},
+				"type": "incident"
+			},
+			"titleStyle": null,
+			"type": "table"
+		}
+	],
+	"sensitive": false,
+	"sortValues": null,
+	"startDate": "0001-01-01T00:00:00Z",
+	"system": true,
+	"times": 0,
+	"timezoneOffset": 0,
+	"type": "pdf",
+	"userAPIKey": "",
+	"userAPIKeyID": "",
+	"version": -1
+}

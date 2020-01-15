@@ -1,0 +1,37 @@
+args:
+- default: true
+  description: Entry to check
+  isArray: true
+  name: entryId
+  required: true
+comment: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+  to check the previous task entries. If array is provided, will return yes if one
+  of the entries returned an error.
+commonfields:
+  id: isError
+  version: -1
+enabled: true
+name: isError
+outputs:
+- contextPath: "yes"
+  description: If one or more entries is an error
+- contextPath: "no"
+  description: If none of the entries is not an error
+runonce: false
+script: |-
+  entryIds = (Array.isArray(args.entryId)) ? args.entryId : [args.entryId];
+  for(var entryIdx=0; entryIdx < entryIds.length; ++entryIdx) {
+      res = executeCommand("getEntry", {"id":entryIds[entryIdx]});
+      for (var resIdx=0; resIdx < res.length; ++resIdx) {
+          if (isError(res[resIdx])) {
+              return 'yes';
+          }
+      }
+  }
+  return 'no';
+scripttarget: 0
+system: true
+tags:
+- Condition
+- Utility
+type: javascript

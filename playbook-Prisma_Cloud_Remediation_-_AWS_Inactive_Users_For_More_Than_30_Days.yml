@@ -1,0 +1,522 @@
+description: |-
+  To increase the security of your AWS account, it is recommended to find and remove IAM user credentials (passwords, access keys) that have not been used within a specified period of time.
+
+  To remediate Prisma Cloud Alert Inactive users for more than 30 days, this playbook deactivates the user by disabling the access keys (marking them as inactive) as well as resetting the user console password.
+id: Prisma Cloud Remediation - AWS Inactive Users For More Than 30 Days
+inputs:
+- description: |-
+    if set to:
+    - yes: access keys will be disabled and password reset
+    - no: an analyst will be prompted for action
+  key: AutoQuarantine
+  required: true
+  value:
+    simple: "no"
+name: Prisma Cloud Remediation - AWS Inactive Users For More Than 30 Days
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6d5fe016-d6c6-4952-8519-2e0aece8fe29
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 6d5fe016-d6c6-4952-8519-2e0aece8fe29
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 250
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.AutoQuarantine
+                transformers:
+                - operator: toLowerCase
+          operator: isEqualString
+          right:
+            value:
+              simple: "yes"
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check whether the user should be automatically deactivated.
+      id: 309def38-5643-4406-8fd9-0282a0a4d73d
+      iscommand: false
+      name: Check automatic action
+      type: condition
+      version: -1
+    taskid: 309def38-5643-4406-8fd9-0282a0a4d73d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 595
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    scriptarguments:
+      accessKeyId:
+        simple: ${AWS.IAM.Users.AccessKeys.AccessKeyId}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      status:
+        simple: Inactive
+      userName:
+        simple: ${AWS.IAM.Users.AccessKeys.UserName}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Marks access keys as "inactive"
+      id: 10fb9db0-4a1e-41ea-8227-163d3bf497b8
+      iscommand: true
+      name: Disable access keys
+      script: '|||aws-iam-update-access-key'
+      type: regular
+      version: -1
+    taskid: 10fb9db0-4a1e-41ea-8227-163d3bf497b8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 1420
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AWS - IAM
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "15"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check to ensure that IAM integration is configured
+      id: 38925db2-9527-457a-8e66-c1704373c894
+      iscommand: false
+      name: Is AWS - IAM integration enabled?
+      type: condition
+      version: -1
+    taskid: 38925db2-9527-457a-8e66-c1704373c894
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1070
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: ffcd7bb2-29a0-440c-8856-c6afe386fae9
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: ffcd7bb2-29a0-440c-8856-c6afe386fae9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2205
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      value:
+        complex:
+          accessor: labels.resource
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: data
+            operator: getField
+    separatecontext: false
+    task:
+      brand: ""
+      description: Outputs user's credential report which contains access key attributes
+        and  user login profile
+      id: 4dbc18f2-3905-4773-81ad-6fc103bc2705
+      iscommand: false
+      name: Print user credential report
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 4dbc18f2-3905-4773-81ad-6fc103bc2705
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 410
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    scriptarguments:
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      userName:
+        complex:
+          accessor: labels.resource
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: id
+            operator: getField
+    separatecontext: false
+    task:
+      brand: ""
+      description: Returns information about the access key IDs associated with the
+        specified IAM user.
+      id: a171957c-457e-4879-81a8-d964e4755796
+      iscommand: true
+      name: List user access keys
+      script: '|||aws-iam-list-access-keys-for-user'
+      type: regular
+      version: -1
+    taskid: a171957c-457e-4879-81a8-d964e4755796
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 1245
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    scriptarguments:
+      newPassword:
+        complex:
+          accessor: labels.resource
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: data
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: user_creation_time
+            operator: getField
+          - args:
+              prefix:
+                value:
+                  simple: pass
+              suffix:
+                value:
+                  simple: word
+            operator: concat
+      passwordResetRequired:
+        simple: "True"
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      userName:
+        complex:
+          accessor: labels.resource
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: id
+            operator: getField
+    separatecontext: false
+    task:
+      brand: ""
+      description: Changes the password for the specified IAM user and requires user
+        to change password.
+      id: 5f088cbd-ac91-4bc4-8e79-d8f7173e5869
+      iscommand: true
+      name: Reset IAM password
+      script: '|||aws-iam-update-login-profile'
+      type: regular
+      version: -1
+    taskid: 5f088cbd-ac91-4bc4-8e79-d8f7173e5869
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1800
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+      mndadone: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 214eacce-6ff8-4af4-8b65-aa307c9087d5
+      iscommand: true
+      name: Close investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 214eacce-6ff8-4af4-8b65-aa307c9087d5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1990
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        1. Examine if the user has a legitimate reason for being inactive for an extended period.
+        2. Delete the user account, if the user no longer needs access to the console or no longer exists.
+      id: c06de3c2-84f6-433f-8ec8-20d0118e5c4e
+      iscommand: false
+      name: Manually check if IAM user should be deactivated/deleted
+      type: regular
+      version: -1
+    taskid: c06de3c2-84f6-433f-8ec8-20d0118e5c4e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    message:
+      bcc: null
+      body:
+        simple: Quarantine IAM user?
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - "Yes"
+      - "No"
+      subject: null
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#default#':
+      - "18"
+      "YES":
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Ask analyst whether the user should be deactivated
+      id: 3bfbd061-832e-4a6b-8685-3fe1840f559b
+      iscommand: false
+      name: Deactivate IAM user?
+      type: condition
+      version: -1
+    taskid: 3bfbd061-832e-4a6b-8685-3fe1840f559b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 805
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: labels.resource
+                root: incident
+                transformers:
+                - operator: ParseJSON
+                - args:
+                    field:
+                      value:
+                        simple: data
+                  operator: getField
+                - args:
+                    field:
+                      value:
+                        simple: password_enabled
+                  operator: getField
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check to see if the user has access to the console.
+      id: a5a6a46c-7247-4d7a-8eab-a96c36c363d3
+      iscommand: false
+      name: Is password enabled?
+      type: condition
+      version: -1
+    taskid: a5a6a46c-7247-4d7a-8eab-a96c36c363d3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 1595
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2020,
+        "width": 930,
+        "x": -70,
+        "y": 250
+      }
+    }
+  }

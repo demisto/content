@@ -1,0 +1,488 @@
+description: "Determines if a critical assest is associated with the invesigation.
+  The playbook returns a severity level of \"Critical\" if a critical asset is associated
+  with the investigation.\n\nThis playbook verifies if a user account or an endpoint
+  is part of a critical list or a critical AD group. "
+id: calculate_severity_-_critical_assets
+inputs:
+- description: Array of usernames of critical users (comma separated).
+  key: CriticalUsers
+  required: false
+  value: {}
+- description: Array of hostnames of critical endpoints (comma separated).
+  key: CriticalEndpoints
+  required: false
+  value: {}
+- description: Array of DN names of critical AD groups (comma separated).
+  key: CriticalGroups
+  required: false
+  value: {}
+- description: A user account to check against the critical lists.
+  key: Account
+  required: false
+  value:
+    complex:
+      root: Account
+- description: An endpoint to check against the critical lists.
+  key: Endpoint
+  required: false
+  value:
+    complex:
+      root: Endpoint
+name: Calculate Severity - Critical assets
+outputs:
+- contextPath: Severity
+  description: The output severity
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 3eded69b-617e-4212-86b7-2537474285f3
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 3eded69b-617e-4212-86b7-2537474285f3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 50
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+      - "8"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 75a46609-7bfd-4575-8945-2f9efd0cf549
+      iscommand: false
+      name: Check for critical entities
+      type: title
+      version: -1
+    taskid: 75a46609-7bfd-4575-8945-2f9efd0cf549
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 195
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Account.Username
+          operator: isNotEmpty
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |
+        Check if there is a “username” in the playbook inputs.
+      id: 3856c4b6-073b-418e-8f17-5b768396bd92
+      iscommand: false
+      name: Is there a username?
+      type: condition
+      version: -1
+    taskid: 3856c4b6-073b-418e-8f17-5b768396bd92
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.CriticalUsers
+                transformers:
+                - args:
+                    separator: {}
+                  operator: join
+          operator: StringContainsArray
+          right:
+            iscontext: true
+            value:
+              complex:
+                accessor: Username
+                root: inputs.Account
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if a username is on the "CriticalUsers" list.
+      id: 3cf82887-19ce-4df3-8283-51151f9e773f
+      iscommand: false
+      name: Is there a username on the "CriticalUsers" list?
+      type: condition
+      version: -1
+    taskid: 3cf82887-19ce-4df3-8283-51151f9e773f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 529
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 483350d5-ab17-44cd-87b3-0e2360ce3577
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 483350d5-ab17-44cd-87b3-0e2360ce3577
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1291
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severity
+      value:
+        simple: critical
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Set the severity level to "Critical" (asset is par of a critical
+        list).
+      id: 0b05b0cc-13d4-4486-8d8f-81c37b9a3d9f
+      iscommand: false
+      name: Set severity to "Critical"
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 0b05b0cc-13d4-4486-8d8f-81c37b9a3d9f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 747
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Endpoint.Hostname
+          operator: isNotEmpty
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "13"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if there is a "hostname" in the playbook inputs.
+      id: 33af52c8-d90f-4ac0-87e0-3113e82a0b80
+      iscommand: false
+      name: Is there a hostname?
+      type: condition
+      version: -1
+    taskid: 33af52c8-d90f-4ac0-87e0-3113e82a0b80
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1185,
+          "y": 340
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.CriticalEndpoints
+          operator: StringContainsArray
+          right:
+            iscontext: true
+            value:
+              complex:
+                accessor: Hostname
+                root: inputs.Endpoint
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if a hostname is on the "CriticalEndpoints" list.
+      id: 925fd06c-a9a1-4a41-8dff-64eb5bd3664c
+      iscommand: false
+      name: Is there a hostname on the "CriticalEndpoints" list?
+      type: condition
+      version: -1
+    taskid: 925fd06c-a9a1-4a41-8dff-64eb5bd3664c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1175,
+          "y": 529
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.CriticalGroups
+          operator: StringContainsArray
+          right:
+            iscontext: true
+            value:
+              complex:
+                accessor: Groups
+                root: inputs.Account
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if an user account AD group in context is part of the "CriticalGroups"
+        group.
+      id: 731ac547-3975-48b5-85d0-e26a89643dc3
+      iscommand: false
+      name: Is there an user account AD group that is part of the "CriticalGroups"
+        list.
+      type: condition
+      version: -1
+    taskid: 731ac547-3975-48b5-85d0-e26a89643dc3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 977
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.CriticalGroups
+          operator: StringContainsArray
+          right:
+            iscontext: true
+            value:
+              complex:
+                accessor: Groups
+                root: inputs.Endpoint
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if an Endpoint AD group in context is part of the "CriticalGroups"
+        group.
+      id: 0cd3dad7-aab6-43cb-88d6-f8dd1f56c681
+      iscommand: false
+      name: Is there an endpoint AD group that is part of the "CriticalGroups" list.
+      type: condition
+      version: -1
+    taskid: 0cd3dad7-aab6-43cb-88d6-f8dd1f56c681
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1185,
+          "y": 977
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Endpoint.Groups
+          operator: isNotEmpty
+      label: "yes"
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if an endpoint has AD groups in context.
+      id: 14767daa-c047-4b25-8b0a-4ff39c7d131b
+      iscommand: false
+      name: Are there AD groups for an Endpoint?
+      type: condition
+      version: -1
+    taskid: 14767daa-c047-4b25-8b0a-4ff39c7d131b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1185,
+          "y": 734
+        }
+      }
+  "18":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Account.Groups
+          operator: isNotEmpty
+      label: "yes"
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "15"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if a User account has AD groups in context.
+      id: 06676a0c-e523-4206-8b5a-15fea9e3d568
+      iscommand: false
+      name: Are there AD groups for a user account?
+      type: condition
+      version: -1
+    taskid: 06676a0c-e523-4206-8b5a-15fea9e3d568
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 747
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_10_#default#": 0.31,
+      "13_11_yes": 0.51,
+      "15_10_#default#": 0.17,
+      "15_11_yes": 0.15,
+      "16_10_#default#": 0.36,
+      "16_11_yes": 0.16,
+      "8_10_#default#": 0.16,
+      "9_11_yes": 0.41
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1306,
+        "width": 1515,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

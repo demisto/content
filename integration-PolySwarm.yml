@@ -1,0 +1,840 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: PolySwarm
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: PolySwarm API Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: https://api.polyswarm.network/v1
+  display: The Base URL to connect to
+  name: base_url
+  required: true
+  type: 0
+- defaultvalue: lima
+  display: PolySwarm Community
+  name: polyswarm_community
+  required: true
+  type: 0
+description: Real-time threat intelligence from a crowdsourced network of security
+  experts and antivirus companies.
+display: PolySwarm
+image: data:image/png;base64,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
+name: PolySwarm
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: UUID string
+      name: scan_uuid
+      required: true
+    description: Returns a report from the UUID.
+    name: polyswarm-get-report
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: The results of the PolySwarm Permalink.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: The total Positives found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: The PolySwarm Scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: The Artifact Queried.
+      type: String
+  - arguments:
+    - default: true
+      description: 'The hash for the file reputation information. Can be be: "SHA256",
+        "SHA1" or "MD5".'
+      name: hash
+      required: true
+    description: Queries Polyswarm for file reputation information.
+    name: file
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total Scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total Positives found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: The PolySwarm scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: The Artifact queried.
+      type: String
+  - arguments:
+    - default: true
+      description: The IP Address for the reputation information.
+      name: ip
+      required: true
+    description: Queries Polyswarm for IP reputation information.
+    name: ip
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total Scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink Results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total Positives Found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: PolySwarm Scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: Artifact Queried.
+      type: String
+  - arguments:
+    - default: true
+      description: URL for reputation information.
+      name: url
+      required: true
+    description: Queries Polyswarm for URL reputation information.
+    name: url
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total Scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total positives found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: PolySwarm Scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: Artifact Queried.
+      type: String
+  - arguments:
+    - default: true
+      description: Domain for the reputation information.
+      name: domain
+      required: true
+    description: Queries Polyswarm for Domain reputation information.
+    name: domain
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total Scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink Results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total Positives Found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: PolySwarm Scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: Artifact Queried.
+      type: String
+  - arguments:
+    - default: true
+      description: The URL to scan.
+      name: url
+      required: true
+    description: Uploads a URL to Polyswarm and retrieves analysis results.
+    name: url-scan
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total Scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total Positives found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: PolySwarm Scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: Artifact Queried.
+      type: String
+  - arguments:
+    - description: 'The hash to rescan. Can be: "SHA256", "SHA1", or "MD5".'
+      name: hash
+      required: true
+    description: Rescans the uploaded artifact by hash.
+    name: file-rescan
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total Positives found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: The PolySwarm Scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: The Artifact queried.
+      type: String
+  - arguments:
+    - default: true
+      description: 'The hash file to download. Can be: "SHA256", "SHA1", or "MD5".'
+      name: hash
+      required: true
+    description: Downloads a file from Polyswarm.
+    name: get-file
+    outputs:
+    - contextPath: File.Size
+      description: The file size.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The sample name.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The War-Room Entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: Basic information of the file.
+      type: String
+    - contextPath: File.Type
+      description: File type. For example, "PE".
+      type: String
+    - contextPath: File MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+    - contextPath: PolySwarm.FileID
+      description: The File ID.
+      type: String
+  - arguments:
+    - default: true
+      description: The War-room Entry ID.
+      name: entryID
+      required: true
+    description: Uploads a file to Polyswarm and retrieves analysis results.
+    name: file-scan
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: Total Scan
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total Positives found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: The PolySwarm scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: The Artifact queried.
+      type: String
+  runonce: false
+  script: |2-
+
+
+    import requests
+    import socket
+    import json
+    import logging
+
+
+    # CONST
+    POLYSWARM_DEMISTO_VERSION = '0.1.1'
+    POLYSWARM_URL_RESULTS = 'https://polyswarm.network/scan/results'
+    ERROR_ENDPOINT = 'Error with endpoint: '
+
+    # Set Debug level
+    logging.basicConfig(level=logging.ERROR)
+
+
+    class PolyswarmAPI:
+        # internal version
+        POLYSWARM_API_VERSION = '0.1.0'
+
+        def __init__(self, config):
+            """
+            __init__
+            :param config: config with api key for connection
+
+            :return:
+            """
+            self.config = config
+            self.headers = {'Authorization': self.config['polyswarm_api_key']}
+
+        def _http_request(self, method, path_url, data=None, files=None):
+            """
+            Send HTTP Request
+
+            :param method: [get|post]
+            :param path_url: URL for request
+            :param data: data for 'post' or 'get' request
+            :param files: for uploading files with 'post'
+
+            :return: tuple (status_code, content)
+            """
+            # set full URL for request
+            full_url = '{base_url}{path_url}'.format(base_url=self.config['base_url'],
+                                                     path_url=path_url)
+
+            logging.debug('[{method}] URL: {full_url} - params/data: {data} - files: {files} - headers: {headers}'.
+                          format(method=method.upper(),
+                                 full_url=full_url,
+                                 data=data,
+                                 files=files,
+                                 headers=self.headers))
+
+            if method.lower() == "get":
+                r = requests.get(full_url,
+                                 params=data,
+                                 headers=self.headers)
+            elif method.lower() == "post":
+                r = requests.post(full_url,
+                                  data=data,
+                                  files=files,
+                                  headers=self.headers)
+            r.raise_for_status()
+
+            logging.debug('[Response] Status code: {status_code} - Content: {response}'.
+                          format(status_code=r.status_code,
+                                 response=r.content))
+
+            return (r.status_code, r.content)
+
+        def search_hash(self, hash):
+            """
+            Search Hash
+
+            :param hash: hash
+
+            :return: tuple (status_code, response)
+            """
+            hash_type = get_hash_type(hash)
+
+            params = {'type': hash_type,
+                      'with_instances': 'true',
+                      'hash': hash}
+
+            return self._http_request('get', '/search', params)
+
+        def rescan_hash(self, hash):
+            """
+            Start a rescan for a single hash
+
+            :param hash: hash
+
+            :return: tuple (status_code, response)
+            """
+            hash_type = get_hash_type(hash)
+
+            path_url = '/consumer/{polyswarm_community}/rescan/{hash_type}/{hash}'.\
+                       format(polyswarm_community=self.config['polyswarm_community'],
+                              hash_type=hash_type, hash=hash)
+
+            return self._http_request('post', path_url)
+
+        def scan_url(self, url):
+            """
+            Upload URL for scan
+
+            :param url: string
+
+            :return: tuple (status_code, response)
+            """
+            path_url = '/consumer/{polyswarm_community}'.format(polyswarm_community=self.config['polyswarm_community'])
+
+            params = {'url': url,
+                      'artifact-type': 'url'}
+
+            return self._http_request('post', path_url, params)
+
+        def lookup(self, uuid):
+            """
+            UUID Lookup
+
+            :param uuid: string
+
+            :return: tuple (status_code, response)
+            """
+            path_url = '/consumer/{polyswarm_community}/uuid/{uuid}'.\
+                       format(polyswarm_community=self.config['polyswarm_community'],
+                              uuid=uuid)
+
+            status_code, response = self._http_request('get', path_url)
+            window_closed = json.loads(response)['result']['files'][0]['window_closed']
+
+            # we got the results at first shot
+            if window_closed:
+                return (status_code, response)
+
+            # we dont have any results already - wait for the bounty to complete
+            # and try again
+            time.sleep(30)
+
+            while not window_closed:
+                status_code, response = self._http_request('get', path_url)
+                window_closed = json.loads(response)['result']['files'][0]['window_closed']
+                time.sleep(1)
+
+            return (status_code, response)
+
+        def search_url(self, url):
+            """
+            Scan URL and return scan results
+
+            :param url: string
+
+            :return: (status_code, response, uuid)
+            """
+            status_code, response = self.scan_url(url)
+            uuid = json.loads(response)['result']
+            status_code, response = self.lookup(uuid)
+
+            return (status_code, response, uuid)
+
+        def get_file(self, hash):
+            """
+            Download file by hash
+
+            :param hash: File Hash for Download
+
+            :return: tuple (status_code, response)
+            """
+            hash_type = get_hash_type(hash)
+
+            return self._http_request('get', '/download/{hash_type}/{hash}'.
+                                      format(hash_type=hash_type, hash=hash))
+
+        def detonate_file(self, file_name, file_path):
+            """
+            Upload File to Polyswarm and get the scan results
+
+            :param file_name: file name
+            :param file_path: complete path from the file to upload
+
+            :return: (status_code, response, uuid)
+            """
+            path_url = '/consumer/{polyswarm_community}'.format(polyswarm_community=self.config['polyswarm_community'])
+
+            files = {'file': (file_name, open(file_path, 'rb'))}
+            # Force re-scans if file was already submitted
+            # params = { 'force': 'true' }
+            params = {}  # type: Dict[str, str]
+
+            status_code, response = self._http_request('post', path_url, params, files)
+            uuid = json.loads(response)['result']
+            status_code, response = self.lookup(uuid)
+
+            return (status_code, response, uuid)
+
+        def rescan_file(self, hash):
+            """
+            Rescan Hash and return scan results
+
+            :param hash: string
+
+            :return: (status_code, response, uuid)
+            """
+            status_code, response = self.rescan_hash(hash)
+            uuid = json.loads(response)['result']
+            status_code, response = self.lookup(uuid)
+
+            return (status_code, response, uuid)
+
+
+    # Allows nested keys to be accesible
+    def makehash():
+        import collections
+        return collections.defaultdict(makehash)
+
+
+    # Polyswarm-Demisto Interface
+    class PolyswarmConnector():
+        def __init__(self):
+            self.config = {}  # type: Dict[str,str]
+            self.config['polyswarm_api_key'] = demisto.params().get('api_key')
+            self.config['base_url'] = demisto.params().get('base_url')
+            self.config['polyswarm_community'] = demisto.params().get('polyswarm_community')
+
+            self.polyswarm_api = PolyswarmAPI(self.config)
+
+        def _get_results(self, title, total_scans, positives, uuid, artifact):
+            contxt = makehash()
+
+            permalink = '{url_results}/{uuid}'.\
+                format(url_results=POLYSWARM_URL_RESULTS,
+                       uuid=uuid)
+
+            contxt['Scan_UUID'] = uuid
+            contxt['Total'] = str(total_scans)
+            contxt['Positives'] = str(positives)
+            contxt['Permalink'] = permalink
+            contxt['Artifact'] = artifact
+
+            human_readable = {'Scan_UUID': uuid,
+                              'Total': str(total_scans),
+                              'Positives': str(positives),
+                              'Permalink': permalink}
+
+            ec = {'PolySwarm(val.Scan_UUID && val.Scan_UUID == obj.UUID)': contxt}
+
+            return {'Type': entryTypes['note'],
+                    'ContentsFormat': formats['markdown'],
+                    'Contents': contxt,
+                    'HumanReadable': tableToMarkdown(title, human_readable),
+                    'EntryContext': ec}
+
+        def test_connectivity(self):
+            EICAR_HASH = '131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267'  # guardrails-disable-line
+
+            # Polywarm API Response
+            #  HTTP Response
+            #   status code
+            #   response
+            status_code = 0
+            response = ''
+
+            try:
+                status_code, response = self.polyswarm_api.search_hash(EICAR_HASH)
+            except Exception:
+                return False
+
+            return True
+
+        def file_reputation(self, param):
+            title = 'PolySwarm File Reputation for Hash: %s' % param['hash']
+
+            # default values
+            total_scans = 0
+            positives = 0
+
+            # Polywarm API Response
+            #  HTTP Response
+            #   status code
+            #   response
+            #   uuid = uuid from Polyswarm
+            status_code = 0
+            response = ''
+            uuid = 'null'
+
+            try:
+                status_code, response = self.polyswarm_api.search_hash(param['hash'])
+
+                # load json response for iteration
+                try:
+                    artifact_instances = json.loads(response)['result'][0]['artifact_instances']
+                except Exception:
+                    return_error('Error in response. Details: {response}'.
+                                 format(response=str(response)))
+
+                # TODO: implement rescan logic
+                if not artifact_instances[0]['bounty_result']:
+                    return_error('Run Rescan for this hash')
+
+                uuid = artifact_instances[0]['bounty_result']['files'][0]['submission_guid']
+                assertions = artifact_instances[0]['bounty_result']['files'][0]['assertions']
+
+                for assertion in assertions:
+                    for k, v in assertion.items():
+                        if k == 'verdict' and v:
+                            positives += 1
+                    total_scans += 1
+
+                demisto.debug('Positives: {positives} - Total Scans: {total_scans}'.
+                              format(positives=positives, total_scans=total_scans))
+
+            except requests.exceptions.HTTPError as err:
+                if err.response.status_code == 404:
+                    # sample not found
+                    # returning default values == 0
+                    pass
+                else:
+                    return_error('{ERROR_ENDPOINT}{err}'.
+                                 format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                        err=err))
+
+            return self._get_results(title, total_scans,
+                                     positives, uuid,
+                                     param['hash'])
+
+        def get_file(self, param):
+            # Polywarm API Response
+            #  HTTP Response
+            #   status code
+            #   response
+            status_code = 0
+            response = ''
+
+            try:
+                status_code, response = self.polyswarm_api.get_file(param['hash'])
+
+                return fileResult(param['hash'], response)
+
+            except requests.exceptions.HTTPError as err:
+                if err.response.status_code == 404:
+                    return_error('File not found.')
+                else:
+                    return_error('{ERROR_ENDPOINT}{err}'.
+                                 format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                        err=err))
+
+        def detonate_file(self, param):
+            title = 'PolySwarm File Detonation for Entry ID: %s' % param['entryID']
+
+            # default values
+            total_scans = 0
+            positives = 0
+
+            # Polywarm API Response
+            #  HTTP Response
+            #   status_code
+            #   response
+            #  Result
+            #   uuid = uuid from Polyswarm
+            status_code = 0
+            response = ''
+            uuid = ''
+
+            try:
+                file_info = demisto.getFilePath(param['entryID'])
+            except Exception:
+                return_error('File not found - EntryID: {entryID}'.
+                             format(entryID=param['entryID']))
+
+            try:
+                status_code, response, uuid = self.polyswarm_api.detonate_file(file_info['name'],
+                                                                               file_info['path'])
+                # load json response for iteration
+                try:
+                    assertions = json.loads(response)['result']['files'][0]['assertions']
+                except Exception:
+                    return_error('Error in response. Details: {response}'.
+                                 format(response=str(response)))
+
+                # iterate for getting positives and total_scan number
+                for assertion in assertions:
+                    for k, v in assertion.items():
+                        if k == 'verdict' and v:
+                            positives += 1
+                    total_scans += 1
+
+            except requests.exceptions.HTTPError as err:
+                return_error('{ERROR_ENDPOINT}{err}'.
+                             format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                    err=err))
+
+            return self._get_results(title, total_scans,
+                                     positives, uuid,
+                                     param['entryID'])
+
+        def rescan_file(self, param):
+            title = 'PolySwarm Rescan for Hash: %s' % param['hash']
+
+            # default values
+            total_scans = 0
+            positives = 0
+
+            # Polywarm API Response
+            #  HTTP Response
+            #   status_code
+            #   response
+            #   uuid
+            status_code = 0
+            response = ''
+            uuid = ''
+
+            try:
+                status_code, response, uuid = self.polyswarm_api.rescan_file(param['hash'])
+
+                # load json response for iteration
+                try:
+                    assertions = json.loads(response)['result']['files'][0]['assertions']
+                except Exception:
+                    return_error('Error in response. Details: {response}'.
+                                 format(response=str(response)))
+
+                # iterate for getting positives and total_scan number
+                for assertion in assertions:
+                    for k, v in assertion.items():
+                        if k == 'verdict' and v:
+                            positives += 1
+                    total_scans += 1
+
+            except requests.exceptions.HTTPError as err:
+                if err.response.status_code == 404:
+                    # sample not found
+                    # returning default values == 0
+                    pass
+                else:
+                    # we got another err - report it
+                    return_error('{ERROR_ENDPOINT}{err}'.
+                                 format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                        err=err))
+
+            return self._get_results(title, total_scans,
+                                     positives, uuid,
+                                     param['hash'])
+
+        def url_reputation(self, param, artifact):
+            title = 'PolySwarm %s Reputation for: %s' % (artifact.upper(),
+                                                         param[artifact])
+
+            # default values
+            total_scans = 0
+            positives = 0
+
+            # Polywarm API Response
+            #  HTTP Response
+            #   status_code
+            #   response
+            #  Result
+            #   uuid = uuid from Polyswarm
+            status_code = 0
+            response = ''
+            uuid = ''
+
+            # IP validation
+            if artifact == 'ip':
+                try:
+                    socket.inet_aton(param[artifact])
+                except socket.error:
+                    return_error('Invalid IP Address: {ip}'.
+                                 format(ip=param[artifact]))
+
+            try:
+                status_code, response, uuid = self.polyswarm_api.search_url(param[artifact])
+
+                # load json response for iteration
+                try:
+                    assertions = json.loads(response)['result']['files'][0]['assertions']
+                except Exception:
+                    return demisto.results('Error in response. Details: {response}'.
+                                           format(str(response)))
+
+                # iterate for getting positives and total_scan number
+                for assertion in assertions:
+                    for k, v in assertion.items():
+                        if k == 'verdict' and v:
+                            positives += 1
+                    total_scans += 1
+
+            except requests.exceptions.HTTPError as err:
+                return_error('{ERROR_ENDPOINT}{err}'.
+                             format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                    err=err))
+
+            return self._get_results(title, total_scans,
+                                     positives, uuid,
+                                     param[artifact])
+
+        def get_report(self, param):
+            title = 'PolySwarm Report for UUID: %s' % param['scan_uuid']
+
+            # default values
+            total_scans = 0
+            positives = 0
+
+            # Polywarm API Response
+            #  HTTP Response
+            #   status_code
+            #   response
+            status_code = 0
+            response = ''
+
+            try:
+                status_code, response = self.polyswarm_api.lookup(param['scan_uuid'])
+
+                # load json response for iteration
+                try:
+                    assertions = json.loads(response)['result']['files'][0]['assertions']
+                except Exception:
+                    return_error('Error in response. Details: {response}'.
+                                 format(str(response)))
+
+                # iterate for getting positives and total_scan number
+                for assertion in assertions:
+                    for k, v in assertion.items():
+                        if k == 'verdict' and v:
+                            positives += 1
+                    total_scans += 1
+
+            except requests.exceptions.HTTPError as err:
+                if err.response.status_code == 404:
+                    return_error('UUID not found.')
+                else:
+                    return_error('{ERROR_ENDPOINT}{err}'.
+                                 format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                        err=err))
+
+            return self._get_results(title, total_scans,
+                                     positives,
+                                     param['scan_uuid'],
+                                     param['scan_uuid'])
+
+
+    def main():
+        ''' EXECUTION '''
+        LOG('command is %s' % (demisto.command(),))
+        try:
+            polyswarm = PolyswarmConnector()
+
+            command = demisto.command()
+            param = demisto.args()
+
+            if command == 'test-module':
+                if polyswarm.test_connectivity():
+                    demisto.results('ok')
+                else:
+                    return_error('Connection Failed')
+            elif command == 'file':
+                demisto.results(polyswarm.file_reputation(param))
+            elif command == 'get-file':
+                demisto.results(polyswarm.get_file(param))
+            elif command == 'file-scan':
+                demisto.results(polyswarm.detonate_file(param))
+            elif command == 'file-rescan':
+                demisto.results(polyswarm.rescan_file(param))
+            elif command == 'url':
+                demisto.results(polyswarm.url_reputation(param, 'url'))
+            elif command == 'url-scan':
+                demisto.results(polyswarm.url_reputation(param, 'url'))
+            elif command == 'ip':
+                demisto.results(polyswarm.url_reputation(param, 'ip'))
+            elif command == 'domain':
+                demisto.results(polyswarm.url_reputation(param, 'domain'))
+            elif command == 'polyswarm-get-report':
+                demisto.results(polyswarm.get_report(param))
+
+        # Log exceptions
+        except Exception as e:
+            LOG(e.message)
+            LOG.print_log()
+            raise
+
+
+    if __name__ in ('__builtin__', '__main__'):
+        main()
+  subtype: python2
+  type: python
+system: true

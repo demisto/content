@@ -1,0 +1,31 @@
+{
+	"category": "",
+	"dataType": "tasks",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "open-tasks-per-user",
+	"isPredefined": true,
+	"name": "Open Tasks Per User",
+	"params": {
+		"groupBy": [
+			"assignee"
+		]
+	},
+	"query": "replaced:f and -assignee:\"\" and (state:Waiting or state:inprogress or state:error)",
+	"size": 0,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "column"
+}

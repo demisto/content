@@ -1,0 +1,28 @@
+comment: Get all hosts info
+commonfields:
+  id: TrendmicroHostRetrieveAll
+  version: -1
+dependson:
+  must:
+  - trendmicro-host-retrieve-all
+name: TrendmicroHostRetrieveAll
+runonce: false
+script: |2
+
+  resp = demisto.executeCommand("trendmicro-host-retrieve-all", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.hostRetrieveAllReturn")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- Trend Micro
+type: python

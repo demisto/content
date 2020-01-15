@@ -1,0 +1,366 @@
+{
+	"contextPath": "File(val.SHA256 \u0026\u0026 val.SHA256 === obj.SHA256 || val.SHA1 \u0026\u0026 val.SHA1 === obj.SHA1 || val.MD5 \u0026\u0026 val.MD5 === obj.MD5 || val.SHA512 \u0026\u0026 val.SHA512 === obj.SHA512 || val.SSDeep \u0026\u0026 val.SSDeep === obj.SSDeep)",
+	"contextValue": "",
+	"defaultMapping": {
+		"actor": {
+			"complex": {
+				"accessor": "Actor",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"associatedfilenames": {
+			"complex": {
+				"accessor": "Name",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"blocked": {
+			"complex": null,
+			"simple": "File.Blocked"
+		},
+		"detectionengines": {
+			"complex": {
+				"accessor": "DetectionEngines",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"entryid": {
+			"complex": {
+				"accessor": "EntryID",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"fileextension": {
+			"complex": {
+				"accessor": "Extension",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "toUpperCase"
+					},
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"filetype": {
+			"complex": {
+				"accessor": "Type",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"md5": {
+			"complex": {
+				"accessor": "MD5",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "toUpperCase"
+					},
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"path": {
+			"complex": {
+				"accessor": "Path",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"positivedetections": {
+			"complex": {
+				"accessor": "PositiveDetections",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"quarantined": {
+			"complex": null,
+			"simple": "File.Quarantined"
+		},
+		"sha1": {
+			"complex": {
+				"accessor": "SHA1",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "toUpperCase"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"sha256": {
+			"complex": {
+				"accessor": "SHA256",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "toUpperCase"
+					},
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"sha512": {
+			"complex": {
+				"accessor": "SHA512",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "toUpperCase"
+					},
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"signatureauthentihash": {
+			"complex": {
+				"accessor": "Signature.Authentihash",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"signaturecopyright": {
+			"complex": {
+				"accessor": "Signature.Copyright",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"signaturedescription": {
+			"complex": {
+				"accessor": "Signature.Description",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"signaturefileversion": {
+			"complex": {
+				"accessor": "Signature.FileVersion",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"signatureinternalname": {
+			"complex": {
+				"accessor": "Signature.InternalName",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"signatureoriginalname": {
+			"complex": {
+				"accessor": "Signature.OriginalName",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"signed": {
+			"complex": {
+				"accessor": "Signed",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"size": {
+			"complex": {
+				"accessor": "Size",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"ssdeep": {
+			"complex": {
+				"accessor": "SSDeep",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "toUpperCase"
+					}
+				]
+			},
+			"simple": ""
+		},
+		"tags": {
+			"complex": {
+				"accessor": "Tags",
+				"filters": [],
+				"root": "File",
+				"transformers": [
+					{
+						"args": {},
+						"operator": "uniq"
+					}
+				]
+			},
+			"simple": ""
+		}
+	},
+	"details": "File",
+	"disabled": false,
+	"enhancementScriptNames": [
+		"FileReputation",
+		"SplunkSearch",
+		"WildfireReport"
+	],
+	"excludedBrands": [],
+	"file": false,
+	"fileHashesPriority": [
+		"ssdeep",
+		"sha512",
+		"md5",
+		"sha1",
+		"sha256"
+	],
+	"formatScript": "",
+	"id": "unifiedFileRep",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "\\b[a-fA-F\\d]{64}|[a-fA-F\\d]{40}|[a-fA-F\\d]{32}|[a-fA-F\\d]{128}\\b",
+	"reputationCommand": "file",
+	"reputationScriptName": "",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

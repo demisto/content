@@ -1,0 +1,425 @@
+description: |-
+  Hunt for sightings of MD5, SHA1 and/or SHA256 hashes on endpoints, using McAfee TIE (requires ePO as well).
+
+  Input:
+  * Hash (default, takes all deferent hashes from context)
+
+  Output:
+  * All agents that files with "Hash" has been executed on (TIE)
+  * Enrich Agents info from ePO
+id: search_endpoints_by_hash_-_tie
+inputs:
+- description: |-
+    The Hash to hunt (Could be MD5,SHA1,SHA256).
+    Default is set to all hashes
+  key: Hash
+  required: false
+  value:
+    simple: ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a,
+      b){return a.concat(b);}, []).filter(function (val1) {return val1;})}
+name: Search Endpoints By Hash - TIE
+outputs:
+- contextPath: Endpoint.Hostname
+  description: Hostname
+  type: string
+- contextPath: Endpoint
+  description: The endpoint
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 80386f11-23d2-4ca7-8e8a-efc6c7d8b797
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 80386f11-23d2-4ca7-8e8a-efc6c7d8b797
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: McAfee Threat Intelligence Exchange
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    note: false
+    scriptarguments:
+      left: {}
+      right: {}
+      value: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Is TIE enabled?
+      id: f96c54b2-b8fa-48b8-8a56-56555a749c10
+      iscommand: false
+      name: Is TIE enabled?
+      type: condition
+      version: -1
+    taskid: f96c54b2-b8fa-48b8-8a56-56555a749c10
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: epo
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    note: false
+    scriptarguments:
+      left: {}
+      right: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: modules.brand
+              operator: isEqualString
+              right:
+                value:
+                  simple: epo
+          - - left:
+                iscontext: true
+                value:
+                  simple: modules.state
+              operator: isEqualString
+              right:
+                value:
+                  simple: active
+          root: modules
+    separatecontext: false
+    task:
+      brand: ""
+      description: Is ePO enabled?
+      id: b098fed0-d1ae-418c-8a37-756e1ae0cb37
+      iscommand: false
+      name: Is ePO enabled?
+      type: condition
+      version: -1
+    taskid: b098fed0-d1ae-418c-8a37-756e1ae0cb37
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1288
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.Hash
+    separatecontext: false
+    task:
+      brand: McAfee Threat Intelligence Exchange
+      description: Get Agent GUIDS for the given hashes
+      id: 26ba9604-ced2-4c35-8e13-075d3ed04042
+      iscommand: true
+      name: List all agents that the Hash has been executed on
+      script: McAfee Threat Intelligence Exchange|||tie-file-references
+      type: regular
+      version: -1
+    taskid: 26ba9604-ced2-4c35-8e13-075d3ed04042
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 737
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: b000dc4b-e71b-43dc-87d3-da7fbeae2d91
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: b000dc4b-e71b-43dc-87d3-da7fbeae2d91
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 138,
+          "y": 1793
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: References.AgentGuid
+                root: File
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "8"
+    note: false
+    scriptarguments:
+      value:
+        complex:
+          accessor: References.AgentGuid
+          root: File
+    separatecontext: false
+    task:
+      brand: ""
+      description: Did we get any Agent GUIDS?
+      id: c7e628c9-cb07-408a-8667-8f4bb2c6d944
+      iscommand: false
+      name: Did we find any relevant agents?
+      type: condition
+      version: -1
+    taskid: c7e628c9-cb07-408a-8667-8f4bb2c6d944
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 910
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    scriptarguments:
+      searchText:
+        complex:
+          accessor: References.AgentGuid
+          root: File
+      taskID: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get hostnames for the Agent GUIDS
+      id: 101e3e85-0246-4bd4-80be-2df713ee96e6
+      iscommand: false
+      name: Get Agent info from ePO
+      scriptName: EPOFindSystem
+      type: regular
+      version: -1
+    taskid: 101e3e85-0246-4bd4-80be-2df713ee96e6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1587
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: ef3c7391-412b-4976-8fc4-f66cbe2607c4
+      iscommand: false
+      name: Hunt HASH in TIE
+      type: title
+      version: -1
+    taskid: ef3c7391-412b-4976-8fc4-f66cbe2607c4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 4795a873-58e7-4312-83ae-bd7e29d8e8f1
+      iscommand: false
+      name: Enrich in ePO
+      type: title
+      version: -1
+    taskid: 4795a873-58e7-4312-83ae-bd7e29d8e8f1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1145
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Hash
+          operator: isExists
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Do we have any files to hunt?
+      id: c8baebe6-606d-4e83-88ab-09ac98b1be34
+      iscommand: false
+      name: Do we have any files to hunt?
+      type: condition
+      version: -1
+    taskid: c8baebe6-606d-4e83-88ab-09ac98b1be34
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 507
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_4_#default#": 0.1,
+      "2_4_#default#": 0.17,
+      "5_4_#default#": 0.11,
+      "9_4_#default#": 0.12
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1808,
+        "width": 672,
+        "x": 138,
+        "y": 50
+      }
+    }
+  }

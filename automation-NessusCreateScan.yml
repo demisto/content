@@ -1,0 +1,77 @@
+args:
+- default: true
+  description: The uuid for the editor template to use
+  name: editor
+  required: true
+- description: The name of the scan
+  name: name
+  required: true
+- description: The description of the scan
+  name: description
+- description: The unique id of the policy to use(number)
+  name: policyId
+- description: The unique id of the destination folder for the scan(number)
+  name: folderId
+- description: The unique id of the scanner to use(number)
+  name: scannerId
+- description: If true, the schedule for the scan is enabled(true/false)
+  name: schedule
+  required: true
+- description: When to launch the scan. (i.e. ON_DEMAND, DAILY, WEEKLY, MONTHLY, YEARLY)
+  name: launch
+- description: The starting time and date for the scan (i.e. YYYYMMDDTHHMMSS).
+  name: startTime
+- description: Expects a semi-colon delimited string comprised of three values. The
+    frequency (FREQ=ONCE or DAILY or WEEKLY or MONTHLY or YEARLY), the interval (INTERVAL=1
+    or 2 or 3 ... x), and the days of the week (BYDAY=SU,MO,TU,WE,TH,FR,SA). To create
+    a scan that runs every three weeks on Monday Wednesday and Friday the string would
+    be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'
+  name: rules
+- description: The timezone for the scan schedule
+  name: timeZone
+- description: The list of targets to scan, Value can be single host or of comma separated
+    targets.
+  name: targets
+  required: true
+- description: A comma separated list of accounts who will recieve the email summary
+    report
+  name: emails
+- description: An array containing permissions to apply to the scan
+  name: acls
+- description: The name of a file containing the list of targets to scan
+  name: fileTargets
+comment: |
+  Creates a new scan
+commonfields:
+  id: NessusCreateScan
+  version: -1
+dependson:
+  must:
+  - Nessus|||scan-create
+deprecated: true
+name: NessusCreateScan
+runonce: false
+script: |
+  from time import ctime
+  res = []
+
+  dArgs = demisto.args()
+  resCmd = demisto.executeCommand("scan-create", dArgs)
+  try:
+      for entry in resCmd:
+          if isError(entry):
+              res = resCmd
+              break
+          else:
+              resp = demisto.get(entry, 'Contents.scan')
+              resp = {k: formatCell(resp[k]) for k in resp}
+              res.append({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': resp})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- nessus
+type: python

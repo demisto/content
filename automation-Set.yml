@@ -1,0 +1,52 @@
+args:
+- default: true
+  description: The key to set
+  name: key
+  required: true
+- description: The value to set to the key. Can be an array. Usually, a dq expression.
+  isArray: true
+  name: value
+  required: true
+- auto: PREDEFINED
+  description: If false then then the context key will be overwritten. If set to true
+    then the script will append to existing context key
+  name: append
+  predefined:
+  - "true"
+  - "false"
+comment: Sets a value into the context with the given context key
+commonfields:
+  id: Set
+  version: -1
+enabled: true
+name: Set
+runonce: false
+script: |-
+  var ec = {};
+  var value;
+  try {
+      value = JSON.parse(args.value);
+  } catch(err) {
+      value = args.value;
+  }
+
+  ec[args.key] = value;
+  var result = {
+      Type: entryTypes.note,
+      Contents: ec,
+      ContentsFormat: formats.json,
+      HumanReadable: 'Key ' + args.key + ' set'
+  };
+
+  if (!args.append || args.append === 'false') {
+      setContext(args.key, value);
+  } else {
+      result.EntryContext = ec;
+  }
+
+  return result;
+scripttarget: 0
+system: true
+tags:
+- Utility
+type: javascript

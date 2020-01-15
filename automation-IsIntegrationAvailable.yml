@@ -1,0 +1,31 @@
+args:
+- default: true
+  description: Integration's brand name to query
+  name: brandname
+  required: true
+comment: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+commonfields:
+  id: IsIntegrationAvailable
+  version: -1
+name: IsIntegrationAvailable
+outputs:
+- contextPath: "yes"
+  description: if integration is available
+- contextPath: "no"
+  description: if there is no instance for the given brand
+runonce: false
+script: |
+  brandName = demisto.get(demisto.args(), 'brandname')
+  allInstances = demisto.getModules()
+  brandInstances = [instanceName for instanceName in allInstances if allInstances[instanceName]['brand'].lower() == brandName.lower() and demisto.get(allInstances[instanceName], 'state') and allInstances[instanceName]['state'] == 'active']
+  if brandInstances:
+      demisto.setContext('brandInstances', brandInstances)
+      demisto.results('yes')
+  else:
+      demisto.results('no')
+scripttarget: 0
+system: true
+tags:
+- infra
+- Condition
+type: python

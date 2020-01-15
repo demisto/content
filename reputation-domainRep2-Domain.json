@@ -1,0 +1,25 @@
+{
+	"contextPath": "Domain(val.Name \u0026\u0026 val.Name === obj.Name)",
+	"contextValue": "Name",
+	"defaultMapping": null,
+	"details": "Domain",
+	"disabled": false,
+	"enhancementScriptNames": [
+		"DomainReputation"
+	],
+	"excludedBrands": null,
+	"file": false,
+	"fileHashesPriority": null,
+	"formatScript": "ExtractDomainFromUrlAndEmail",
+	"id": "domainRep2",
+	"locked": false,
+	"manualMapping": null,
+	"mergeContext": false,
+	"regex": "(?i)(?:(?:https?|ftp|hxxps?):\\/\\/|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-\\d\\p{L}]+\\[?\\.\\]?)+[-\\d\\p{L}]+(?::\\d+)?(?:((\\/)|(\\*|\\?))+[-\\d\\p{L}+\u0026@#\\/%=~_$?!\\-:,.\\(\\);\\\\*–—―|]+)?|\\b[A-Za-z0-9._%=+\\p{L}-]+@[A-Za-z0-9\\p{L}.-]+\\.[A-Za-z]{2,}\\b",
+	"reputationCommand": "domain",
+	"reputationScriptName": "",
+	"sortValues": null,
+	"system": true,
+	"updateAfter": 0,
+	"version": -1
+}

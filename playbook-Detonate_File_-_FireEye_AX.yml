@@ -1,0 +1,468 @@
+description: Detonate one or more files using the FireEye AX integration. This playbook
+  returns relevant reports to the War Room and file reputations to the context data.
+  The detonation supports the following file types - PE32, EXE, DLL, JAR, JS, PDF,
+  DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF,
+  LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE,
+  VBE, CHM
+id: Detonate File - FireEye AX
+inputs:
+- description: File object of the file to detonate.
+  key: File
+  required: false
+  value:
+    complex:
+      root: File
+- description: Polling frequency - how often the polling command should run (minutes)
+  key: Interval
+  required: true
+  value:
+    simple: "1"
+- description: How much time to wait before a timeout occurs  (minutes)
+  key: Timeout
+  required: true
+  value:
+    simple: "30"
+name: Detonate File - FireEye AX
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: unknown
+- contextPath: File.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: File.Size
+  description: File size
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.Name
+  description: Filename
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File
+  description: The File object
+  type: unknown
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 09a1d3ca-6465-42dc-8a28-4a1d382e76ff
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 09a1d3ca-6465-42dc-8a28-4a1d382e76ff
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Fireeye
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that there is a valid instance of FireEye AX enabled.
+      id: 6bee82b2-c6ef-4bc4-8b43-dfa80bacd1cd
+      iscommand: false
+      name: Is FireEye AX enabled
+      type: condition
+      version: -1
+    taskid: 6bee82b2-c6ef-4bc4-8b43-dfa80bacd1cd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Done
+      id: c7debc9a-f9dd-427b-898a-be6814407698
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: c7debc9a-f9dd-427b-898a-be6814407698
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1740
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    task:
+      brand: ""
+      description: Set the file object into context.
+      id: 2dbe8904-3a0e-421d-8dd6-28d64963f65d
+      iscommand: false
+      name: Set file to context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 2dbe8904-3a0e-421d-8dd6-28d64963f65d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    scriptarguments:
+      analysistype:
+        simple: "2"
+      application:
+        simple: "0"
+      force:
+        simple: "false"
+      prefetch:
+        simple: "1"
+      priority:
+        simple: "0"
+      profiles:
+        simple: ' win7-sp1m'
+      timeout:
+        simple: "300"
+      uploadFile:
+        simple: ${File.EntryID}
+    separatecontext: false
+    task:
+      brand: fireeye
+      description: Submits a sample to FireEye AX
+      id: b08d6749-94f5-4d7d-8be8-f1a1ec7874aa
+      iscommand: true
+      name: FireEye AX Upload Sample
+      script: fireeye|||fe-submit
+      type: regular
+      version: -1
+    taskid: b08d6749-94f5-4d7d-8be8-f1a1ec7874aa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.File
+          operator: isExists
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Asserts there's a file to detonate
+      id: 4f8fafd7-ca9f-47fd-8909-5e5f8a475eb9
+      iscommand: false
+      name: Is there a file to detonate?
+      type: condition
+      version: -1
+    taskid: 4f8fafd7-ca9f-47fd-8909-5e5f8a475eb9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 370
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Type
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:PE32|EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Info
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:PE32|EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Extension
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:PE32|EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+                root: File
+          operator: isExists
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: File.Extension
+          operator: notEndWith
+          right:
+            value:
+              simple: eml
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Asserts the file type is supported
+      id: e870c12f-520e-4a84-8e4c-6eb304a0feeb
+      iscommand: false
+      name: Is the file type supported?
+      type: condition
+      version: -1
+    taskid: e870c12f-520e-4a84-8e4c-6eb304a0feeb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          accessor: Submissions.Key
+          root: FireEyeAX
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: submission_Key
+      PollingCommandName:
+        simple: fe-submit-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: FireEyeAX.Submissions(val.Status != 'Done').Key
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 75d77278-0907-4f26-87dc-ad51c40cb28c
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 75d77278-0907-4f26-87dc-ad51c40cb28c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 1120
+        }
+      }
+  "17":
+    continueonerror: true
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    scriptarguments:
+      info_level: {}
+      submission_Key:
+        simple: ${FireEyeAX.Submissions.Key}
+    separatecontext: false
+    task:
+      brand: fireeye
+      description: Retrieve result data upon a file. NOTE - This command returns a
+        file
+      id: 803f374f-daac-43d6-8483-85b6fbd56f77
+      iscommand: true
+      name: AX-result
+      script: fireeye|||fe-submit-result
+      type: regular
+      version: -1
+    taskid: 803f374f-daac-43d6-8483-85b6fbd56f77
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1420
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_6_#default#": 0.38
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1755,
+        "width": 740,
+        "x": 40,
+        "y": 50
+      }
+    }
+  }

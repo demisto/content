@@ -1,0 +1,41 @@
+args:
+- description: 'ID of the application to get the incident from. For example: applicationId="75"'
+  name: applicationId
+  required: true
+- description: 'The Incident IDs to get details for, separated by commas. For example:
+    IncidentIds="12345,67891" '
+  name: incidentIds
+  required: true
+comment: 'This automation creates new incidents from RSA Archer. '
+commonfields:
+  id: RSAArcherManualFetch
+  version: -1
+dependson:
+  must:
+  - archer-manually-fetch-incident
+enabled: true
+name: RSAArcherManualFetch
+runonce: false
+script: |-
+  fetchArgs = {"applicationId": demisto.args()["applicationId"],
+           "incidentIds": demisto.args()["incidentIds"]}
+
+  incidents = demisto.executeCommand("archer-manually-fetch-incident", fetchArgs)
+
+  incidentIds = ""
+  for incident in incidents:
+      incidentData = incident['Contents']
+      incidentArgs = {
+      "details": incidentData['details'],
+      "labels": incidentData['labels'],
+      "name": incidentData['name'],
+      "occurred": incidentData['occurred'],
+      "type": "Archer"
+      }
+      result = demisto.executeCommand("createNewIncident", incidentArgs)
+
+  demisto.results("Fetched according to command.")
+scripttarget: 0
+system: true
+tags: []
+type: python

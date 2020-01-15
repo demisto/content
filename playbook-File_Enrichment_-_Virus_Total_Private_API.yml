@@ -1,0 +1,548 @@
+description: Get file information using the Virus Total Private API integration.
+id: file_enrichment_-_virus_total_private_api
+inputs:
+- description: File MD5 to enrich
+  key: MD5
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+- description: File SHA256 to enrich
+  key: SHA256
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      root: File
+- description: File SHA1 to enrich
+  key: SHA1
+  required: false
+  value:
+    complex:
+      accessor: SHA1
+      root: File
+name: File Enrichment - Virus Total Private API
+outputs:
+- contextPath: File
+  description: The file's object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The tested indicator
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore's object
+  type: unknown
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: File.VirusTotal.Scans
+  description: the scan object
+  type: unknown
+- contextPath: File.VirusTotal.Scans.Source
+  description: Scan vendor for this hash
+- contextPath: File.VirusTotal.Scans.Detected
+  description: Scan detection for this hash (True,False)
+- contextPath: File.VirusTotal.Scans.Result
+  description: Scan result for this hash - signature, etc.
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6fa65b00-15dc-4cab-8b4e-7ab8e2720215
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 6fa65b00-15dc-4cab-8b4e-7ab8e2720215
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": -23
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+      - "17"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 51eec4c5-cbce-45e7-86ab-ec78d3847158
+      iscommand: false
+      name: Enrich using Virus Total Private API
+      type: title
+      version: -1
+    taskid: 51eec4c5-cbce-45e7-86ab-ec78d3847158
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 370
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d2deb7de-75cc-4f33-8ba3-6f83370096f8
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: d2deb7de-75cc-4f33-8ba3-6f83370096f8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 873
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.MD5
+          operator: isExists
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "20"
+      - "23"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${File.MD5}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if there is an MD5 hash in context.
+      id: 56b4d081-a669-4518-8bcd-cd8350fd69e7
+      iscommand: false
+      name: Is there an MD5 hash?
+      type: condition
+      version: -1
+    taskid: 56b4d081-a669-4518-8bcd-cd8350fd69e7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 515
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.SHA256
+          operator: isExists
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "21"
+      - "24"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if there is a SHA-256 hash in context.
+      id: 041d6eb8-8fab-47a8-8fa4-8b6a6cc8d337
+      iscommand: false
+      name: Is there a SHA-256 hash?
+      type: condition
+      version: -1
+    taskid: 041d6eb8-8fab-47a8-8fa4-8b6a6cc8d337
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 515
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.SHA1
+          operator: isExists
+      label: "yes"
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "22"
+      - "25"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if there is a SHA-1 hash in context.
+      id: ab7db8fa-4db9-40e4-87f3-ca0d04398e1d
+      iscommand: false
+      name: Is there a SHA-1 hash?
+      type: condition
+      version: -1
+    taskid: ab7db8fa-4db9-40e4-87f3-ca0d04398e1d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2035,
+          "y": 515
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VirusTotal - Private API
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of the Virus Total Private
+        API enabled.
+      id: f8c02720-3892-4efe-8493-3d9e8796fc16
+      iscommand: false
+      name: Is Virus Total Private API enabled?
+      type: condition
+      version: -1
+    taskid: f8c02720-3892-4efe-8493-3d9e8796fc16
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 131
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      fullResponse: {}
+      resource:
+        complex:
+          root: inputs.MD5
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: VirusTotal - Private API
+      description: ' VirusTotal runs a distributed setup of Cuckoo sandbox machines
+        that execute the files we receive. This API allows you to retrieve the full
+        JSON report of the file''s execution as returned by the Cuckoo JSON report
+        encoder.'
+      id: 6c579c5f-03b3-4bab-8aef-3dd75da6cf5a
+      iscommand: true
+      name: Query file behavior based on the MD5 hash
+      script: VirusTotal - Private API|||vt-private-check-file-behaviour
+      type: regular
+      version: -1
+    taskid: 6c579c5f-03b3-4bab-8aef-3dd75da6cf5a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      fullResponse: {}
+      resource:
+        complex:
+          root: inputs.SHA256
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: VirusTotal - Private API
+      description: ' VirusTotal runs a distributed setup of Cuckoo sandbox machines
+        that execute the files we receive. This API allows you to retrieve the full
+        JSON report of the file''s execution as returned by the Cuckoo JSON report
+        encoder.'
+      id: 3c24cb3f-304a-4240-8ea7-ac55c97ad637
+      iscommand: true
+      name: Query file behavior based on the SHA-256 hash
+      script: VirusTotal - Private API|||vt-private-check-file-behaviour
+      type: regular
+      version: -1
+    taskid: 3c24cb3f-304a-4240-8ea7-ac55c97ad637
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 690
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      fullResponse: {}
+      resource:
+        complex:
+          root: inputs.SHA1
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: VirusTotal - Private API
+      description: ' VirusTotal runs a distributed setup of Cuckoo sandbox machines
+        that execute the files we receive. This API allows you to retrieve the full
+        JSON report of the file''s execution as returned by the Cuckoo JSON report
+        encoder.'
+      id: 7e7f3d3a-61bf-4911-85f7-822153166249
+      iscommand: true
+      name: Query file behavior based on the SHA-1 hash
+      script: VirusTotal - Private API|||vt-private-check-file-behaviour
+      type: regular
+      version: -1
+    taskid: 7e7f3d3a-61bf-4911-85f7-822153166249
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 690
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      allInfo: {}
+      resource:
+        complex:
+          root: inputs.MD5
+      shortFormat: {}
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: VirusTotal - Private API
+      description: Retrieves a concluded file scan report for a given file.
+      id: c88e1f06-64f8-4c6d-8058-8eba32f3c4a6
+      iscommand: true
+      name: Query file report based on the MD5 hash
+      script: VirusTotal - Private API|||vt-private-get-file-report
+      type: regular
+      version: -1
+    taskid: c88e1f06-64f8-4c6d-8058-8eba32f3c4a6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 690
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      allInfo: {}
+      resource:
+        complex:
+          root: inputs.SHA256
+      shortFormat: {}
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: VirusTotal - Private API
+      description: Retrieves a concluded file scan report for a given file.
+      id: 2386a69d-789a-4b40-814b-97f05751c1fb
+      iscommand: true
+      name: Query file report based on the SHA-256 hash
+      script: VirusTotal - Private API|||vt-private-get-file-report
+      type: regular
+      version: -1
+    taskid: 2386a69d-789a-4b40-814b-97f05751c1fb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 690
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      allInfo: {}
+      resource:
+        complex:
+          root: inputs.SHA1
+      shortFormat: {}
+      threshold: {}
+    separatecontext: false
+    task:
+      brand: VirusTotal - Private API
+      description: Retrieves a concluded file scan report for a given file.
+      id: 00d87887-ada6-4397-87eb-f42eebe12912
+      iscommand: true
+      name: Query file report based on the SHA-1 hash
+      script: VirusTotal - Private API|||vt-private-get-file-report
+      type: regular
+      version: -1
+    taskid: 00d87887-ada6-4397-87eb-f42eebe12912
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2260,
+          "y": 690
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_7_#default#": 0.52,
+      "15_7_#default#": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 961,
+        "width": 2590,
+        "x": 50,
+        "y": -23
+      }
+    }
+  }

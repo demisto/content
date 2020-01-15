@@ -1,0 +1,44 @@
+args:
+- description: File entry ID
+  name: entryID
+  required: true
+- description: Incident ID to upload the file to
+  name: incidentID
+  required: true
+- description: Request body
+  name: body
+comment: Copies a file from this incident to the specified incident. The file is recorded
+  as an entry in the specified incident’s War Room.
+commonfields:
+  id: DemistoUploadFile
+  version: -1
+dependson:
+  must:
+  - demisto-api-multipart
+enabled: true
+name: DemistoUploadFile
+runas: DBotWeakRole
+runonce: false
+script: |
+  var res = executeCommand("demisto-api-multipart", {"uri":'entry/upload/' + args.incidentID,"entryID":args.entryID, "body":args.body});
+  if (isError(res[0])) {
+      return res;
+  }
+  var entryId = dq(res,'Contents.response.entries.id');
+
+  var md = 'File uploaded successfully. Entry ID is ' + entryId;
+  if (args.body){
+      md +=  '. Comment is:' + args.body;
+  }
+
+  return {
+      ContentsFormat: formats.json,
+      Type: entryTypes.note,
+      Contents: res,
+      HumanReadable: md
+  };
+scripttarget: 0
+system: true
+tags:
+- DemistoAPI
+type: javascript

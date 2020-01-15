@@ -1,0 +1,1147 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: EclecticIQ Platform
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: "true"
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: High
+  display: 'IP threshold. Minimum maliciousness confidence level to consider the IP
+    address malicious: High, Medium, Low, Safe, Unknown'
+  name: ip_threshold
+  required: false
+  type: 0
+- defaultvalue: High
+  display: 'URL threshold. Minimum maliciousness confidence level to consider the
+    URL malicious: High, Medium, Low, Safe, Unknown'
+  name: url_threshold
+  required: false
+  type: 0
+- defaultvalue: High
+  display: 'File threshold. Minimum maliciousness confidence level to consider the
+    file malicious: High, Medium, Low, Safe, Unknown'
+  name: file_threshold
+  required: false
+  type: 0
+- defaultvalue: High
+  display: 'Email threshold. Minimum maliciousness confidence level to consider the
+    email address malicious: High, Medium, Low, Safe, Unknown'
+  name: email_threshold
+  required: false
+  type: 0
+- defaultvalue: High
+  display: 'Domain threshold. Minimum maliciousness confidence level to consider the
+    domain malicious: High, Medium, Low, Safe, Unknown'
+  name: domain_threshold
+  required: false
+  type: 0
+description: Threat Intelligence Platform that connects and interprets intelligence
+  data from open sources, commercial suppliers and industry partnerships.
+display: EclecticIQ Platform
+image: data:image/png;base64,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
+name: EclecticIQ Platform
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: IPv4 to get the reputation of
+      name: ip
+      required: true
+    description: Get reputation of IP address observable
+    name: ip
+    outputs:
+    - contextPath: EclecticIQ.IP.Address
+      description: IP address that was tested
+      type: String
+    - contextPath: EclecticIQ.IP.Created
+      description: Observable creation date
+      type: Date
+    - contextPath: EclecticIQ.IP.LastUpdate
+      description: Observable last updated date
+      type: Date
+    - contextPath: EclecticIQ.IP.ID
+      description: Observable ID
+      type: Number
+    - contextPath: EclecticIQ.IP.Maliciousness
+      description: Maliciousness confidence level
+      type: String
+    - contextPath: IP.Address
+      description: IP address that was tested
+      type: String
+    - contextPath: IP.Malcious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: String
+    - contextPath: IP.Malcious.Description
+      description: For malicious IPs, the reason that the vendor made the decision
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: String
+  - arguments:
+    - default: true
+      description: URL observable to get the reputation of
+      name: url
+      required: true
+    description: Gets the reputation of a URL observable.
+    name: url
+    outputs:
+    - contextPath: EclecticIQ.URL.Data
+      description: URL that was tested
+      type: String
+    - contextPath: EclecticIQ.URL.Created
+      description: Observable creation date
+      type: Date
+    - contextPath: EclecticIQ.URL.LastUpdate
+      description: Observable last updated date
+      type: Date
+    - contextPath: EclecticIQ.URL.ID
+      description: Observable ID
+      type: Number
+    - contextPath: EclecticIQ.URL.Maliciousness
+      description: Maliciousness confidence level
+      type: String
+    - contextPath: URL.Data
+      description: URL that was tested
+      type: String
+    - contextPath: URL.Malcious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: String
+    - contextPath: URL.Malcious.Description
+      description: For malicious URLs, the reason that the vendor made the decision
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: String
+  - arguments:
+    - default: true
+      description: File hash observable to get the reputation of
+      name: file
+      required: true
+    description: Gets the reputation of a file hash observable.
+    name: file
+    outputs:
+    - contextPath: EclecticIQ.File.MD5
+      description: File MD5 hash that was tested
+      type: String
+    - contextPath: EclecticIQ.File.SHA1
+      description: File SHA-1 hash that was tested
+      type: String
+    - contextPath: EclecticIQ.File.SHA256
+      description: File SHA-256 hash that was tested
+      type: String
+    - contextPath: EclecticIQ.File.SHA512
+      description: File SHA-512 hash that was tested
+      type: String
+    - contextPath: EclecticIQ.File.Created
+      description: Observable creation date
+      type: Date
+    - contextPath: EclecticIQ.File.LastUpdate
+      description: Observable last updated date
+      type: Date
+    - contextPath: EclecticIQ.File.ID
+      description: Observable ID
+      type: Number
+    - contextPath: EclecticIQ.File.Maliciousness
+      description: Maliciousness confidence level
+      type: String
+    - contextPath: File.MD5
+      description: File MD5 hash that was tested
+      type: String
+    - contextPath: File.SHA1
+      description: File SHA-1 hash that was tested
+      type: String
+    - contextPath: File.SHA256
+      description: File SHA-256 hash that was tested
+      type: String
+    - contextPath: File.SHA512
+      description: File SHA-512 hash that was tested
+      type: String
+    - contextPath: File.Malcious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: String
+    - contextPath: File.Malcious.Description
+      description: For malicious files, the reason that the vendor made the decision
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: String
+  - arguments:
+    - default: true
+      description: Observable ID to get entity information for (can be retrieved from
+        one of the IOCs commands)
+      name: observable_id
+      required: true
+    description: Returns related entities of a single observable.
+    name: eclecticiq-get-observable-related-entity
+    outputs:
+    - contextPath: EclecticIQ.Entity.Analysis
+      description: Entity analysis description
+      type: String
+    - contextPath: EclecticIQ.Entity.EstimatedObservedTime
+      description: Entity estimated observed time
+      type: Date
+    - contextPath: EclecticIQ.Entity.EstimatedStartTime
+      description: Entity estimated start time
+      type: Date
+    - contextPath: EclecticIQ.Entity.Exposure.Community
+      description: Is entity in the community feed
+      type: Boolean
+    - contextPath: EclecticIQ.Entity.Exposure.Detection
+      description: Is entity detected
+      type: Boolean
+    - contextPath: EclecticIQ.Entity.Exposure.Exposed
+      description: Is entity exposed
+      type: Boolean
+    - contextPath: EclecticIQ.Entity.Exposure.Prevention
+      description: Is entity in prevented feed
+      type: Boolean
+    - contextPath: EclecticIQ.Entity.Exposure.Sighting
+      description: Is entity sighted
+      type: Boolean
+    - contextPath: EclecticIQ.Entity.HalfLife
+      description: The time it takes an entity to decay in intelligence value, expressed
+        in the number of days until a 50% decay
+      type: String
+    - contextPath: EclecticIQ.Entity.ID
+      description: Entity ID
+      type: String
+    - contextPath: EclecticIQ.Entity.Source.Name
+      description: Entity source name
+      type: String
+    - contextPath: EclecticIQ.Entity.Source.Reliability
+      description: Entity source reliability
+      type: String
+    - contextPath: EclecticIQ.Entity.Title
+      description: Entity title
+      type: String
+    - contextPath: EclecticIQ.Entity.Source.Type
+      description: Entity source type
+      type: string
+  - arguments:
+    - default: true
+      description: Email address observable to get the reputation of
+      name: email
+      required: true
+    description: Gets the reputation of an email address observable.
+    name: email
+    outputs:
+    - contextPath: EclecticIQ.Email.Address
+      description: Email that was tested
+      type: String
+    - contextPath: EclecticIQ.Email.Created
+      description: Observable creation date
+      type: Date
+    - contextPath: EclecticIQ.Email.LastUpdate
+      description: Observable last updated date
+      type: Date
+    - contextPath: EclecticIQ.Email.ID
+      description: Observable ID
+      type: Number
+    - contextPath: EclecticIQ.Email.Maliciousness
+      description: Maliciousness confidence level
+      type: String
+    - contextPath: Account.Email.Address
+      description: Email that was tested
+      type: String
+    - contextPath: Account.Email.Malcious.Vendor
+      description: For malicious email addresses, the vendor that made the decision
+      type: String
+    - contextPath: Account.Email.Malcious.Description
+      description: For malicious email addresses, the reason that the vendor made
+        the decision
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: String
+  - arguments:
+    - default: true
+      description: Domain observable to get the reputation of
+      name: domain
+      required: true
+    description: Gets the reputation of a domain observable.
+    name: domain
+    outputs:
+    - contextPath: EclecticIQ.Domain.Name
+      description: Domain name that was tested
+      type: String
+    - contextPath: EclecticIQ.Domain.Created
+      description: Observable creation date
+      type: Date
+    - contextPath: EclecticIQ.Domain.LastUpdate
+      description: Observable last updated date
+      type: Date
+    - contextPath: EclecticIQ.Domain.ID
+      description: Observable ID
+      type: Number
+    - contextPath: EclecticIQ.Domain.Maliciousness
+      description: Maliciousness confidence level
+      type: String
+    - contextPath: Domain.Name
+      description: Domain name that was tested
+      type: String
+    - contextPath: Domain.Malcious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: String
+    - contextPath: Domain.Malcious.Description
+      description: For malicious domains, the reason that the vendor made the decision
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: String
+  runonce: false
+  script: |-
+    ''' IMPORTS '''
+
+
+
+    import json
+    import requests
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    USERNAME = demisto.params().get('credentials').get('identifier')
+    PASSWORD = demisto.params().get('credentials').get('password')
+    URL = demisto.params()['url']
+    SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
+    USE_SSL = not demisto.params().get('insecure', False)
+    HEADERS = {}  # type: Dict[str, str]
+    IP_THRESHOLD = demisto.params().get('ip_threshold').lower()
+    URL_THRESHOLD = demisto.params().get('url_threshold').lower()
+    FILE_THRESHOLD = demisto.params().get('file_threshold').lower()
+    EMAIL_THRESHOLD = demisto.params().get('email_threshold').lower()
+    DOMAIN_THRESHOLD = demisto.params().get('domain_threshold').lower()
+
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+        PROXIES = {
+            'http': None,
+            'https': None
+        }  # type: Dict[str, Optional[str]]
+    else:
+        PROXIES = {
+            'http': os.environ['http_proxy'] or os.environ['HTTP_PROXY'],
+            'https': os.environ['https_proxy'] or os.environ['HTTPS_PROXY']
+        }
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_request(method, url_suffix, headers=HEADERS, cmd_json=None):
+
+        res = requests.request(
+            method,
+            SERVER + url_suffix,
+            headers=headers,
+            json=cmd_json,
+            proxies=PROXIES,
+            verify=USE_SSL
+        )
+
+        if res.status_code not in {200}:
+            if res.status_code == 405:
+                return_error(
+                    'Error in API call to EclecticIQ Integration: [405] - Not Allowed - Might occur cause of an invalid '
+                    'URL. '
+                )
+            try:  # Parse the error message
+                errors = json.loads(res.text).get('errors', {})[0]
+                title = errors.get('title', '')
+                detail = errors.get('detail', '')
+                return_error(
+                    'Error in API call to EclecticIQ Integration: [%d] - %s - %s' % (res.status_code, title, detail)
+                )
+            except Exception:  # In case error message is not in expected format
+                return_error(res.content)
+
+        try:  # Verify we can generate json from the response
+            return res.json()
+        except ValueError:
+            return_error(res)
+
+
+    def maliciousness_to_dbotscore(maliciousness, threshold):
+
+        """
+
+        Translates EclecticIQ obversable maliciousness confidence level to DBotScore based on given threshold
+
+        Parameters
+        ----------
+        maliciousness : str
+            EclecticIQ obversable maliciousness confidence level.
+        threshold : str
+            Minimum maliciousness confidence level to consider the IOC malicious.
+
+        Returns
+        -------
+        number
+            Translated DBot Score
+
+        """
+        maliciousness_list = ['unknown', 'safe', 'low', 'medium', 'high']
+
+        maliciousness_dictionary = {
+            'unknown': 0,
+            'safe': 1,
+            'low': 2,
+            'medium': 2,
+            'high': 3
+        }
+
+        for i in maliciousness_list[maliciousness_list.index(threshold):]:
+            maliciousness_dictionary[i] = 3
+
+        return maliciousness_dictionary[maliciousness]
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        """
+
+        The function which runs when clicking on Test in integration settings
+
+
+        Returns
+        -------
+        str
+            ok if getting observable successfully
+
+        """
+
+        get_observable('8.8.8.8')
+        demisto.results('ok')
+
+
+    def login():
+
+        """
+
+        Logins to EclecticIQ API with given credentials and sets the returned token in the headers
+
+        """
+
+        cmd_url = '/api/auth'
+        cmd_json = {
+            'password': PASSWORD,
+            'username': USERNAME
+        }
+        response = http_request('POST', cmd_url, cmd_json=cmd_json)
+        if 'token' in response:
+            token = response['token']
+        else:
+            return_error('Failed to retrieve token')
+        HEADERS['Authorization'] = 'Bearer {}'.format(token)
+
+
+    def ip_command():
+
+        """
+
+        Gets reputation of an EclecticIQ IPv4 observable
+
+        Parameters
+        ----------
+        ip : str
+            IPv4 to get reputation of
+
+        Returns
+        -------
+        entry
+            Reputation of given IPv4
+
+        """
+
+        ip = demisto.args()['ip']
+
+        response = get_observable(ip)
+
+        if 'total_count' in response and response['total_count'] == 0:
+            human_readable = 'No results found'
+
+        integration_outputs = []
+        standard_ip_outputs = []
+
+        observables = response.get('data')
+
+        score = 0
+
+        for observable in observables:
+            meta = observable.get('meta', {})
+            maliciousness = meta.get('maliciousness')
+            score = maliciousness_to_dbotscore(maliciousness, IP_THRESHOLD)
+
+            integration_outputs.append({
+                'Address': ip,
+                'Created': observable.get('created_at'),
+                'LastUpdated': observable.get('last_updated_at'),
+                'ID': observable.get('id'),
+                'Maliciousness': maliciousness
+            })
+
+            standard_ip_output = {
+                'Address': ip
+            }
+            if score == 3:
+                standard_ip_output['Malicious'] = {
+                    'Vendor': 'EclectiqIQ',
+                    'Description': 'EclectiqIQ maliciousness confidence level: ' + maliciousness
+                }
+
+            standard_ip_outputs.append(standard_ip_output)
+
+        dbot_output = {
+            'Type': 'ip',
+            'Indicator': ip,
+            'Vendor': 'EclecticIQ',
+            'Score': score
+        }
+
+        context = {
+            'DBotScore': dbot_output
+        }  # type: dict
+
+        if observables:
+            human_readable_title = 'EclecticIQ IP reputation - {}'.format(ip)
+            human_readable = tableToMarkdown(human_readable_title, integration_outputs)
+            context['EclecticIQ.IP'] = createContext(data=integration_outputs, id='ID', removeNull=True)
+            context[outputPaths['ip']] = standard_ip_outputs
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': context
+        })
+
+
+    def url_command():
+
+        """
+
+        Gets reputation of an EclecticIQ URI observable
+
+        Parameters
+        ----------
+        url : str
+            URL to get reputation of
+
+        Returns
+        -------
+        entry
+            Reputation of given URL
+
+        """
+
+        url = demisto.args()['url']
+
+        response = get_observable(url)
+
+        if 'total_count' in response and response['total_count'] == 0:
+            human_readable = 'No results found.'
+
+        integration_outputs = []
+        standard_url_outputs = []
+
+        observables = response.get('data')
+
+        score = 0
+
+        for observable in observables:
+            meta = observable.get('meta', {})
+            maliciousness = meta.get('maliciousness')
+            score = maliciousness_to_dbotscore(maliciousness, URL_THRESHOLD)
+
+            integration_outputs.append({
+                'Data': url,
+                'Created': observable.get('created_at'),
+                'LastUpdated': observable.get('last_updated_at'),
+                'ID': observable.get('id'),
+                'Maliciousness': maliciousness
+            })
+
+            standard_url_output = {
+                'Data': url
+            }
+            if score == 3:
+                standard_url_output['Malicious'] = {
+                    'Vendor': 'EclectiqIQ',
+                    'Description': 'EclectiqIQ maliciousness confidence level: ' + maliciousness
+                }
+
+            standard_url_outputs.append(standard_url_output)
+
+        dbot_output = {
+            'Type': 'url',
+            'Indicator': url,
+            'Vendor': 'EclecticIQ',
+            'Score': score
+        }
+
+        context = {
+            'DBotScore': dbot_output
+        }  # type: dict
+
+        if observables:
+            human_readable_title = 'EclecticIQ URL reputation - {}'.format(url)
+            human_readable = tableToMarkdown(human_readable_title, integration_outputs)
+            context['EclecticIQ.URL'] = createContext(data=integration_outputs, id='ID', removeNull=True)
+            context[outputPaths['url']] = standard_url_outputs
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': context
+        })
+
+
+    def file_command():
+
+        """
+
+        Gets reputation of an EclecticIQ hash observable
+
+        Parameters
+        ----------
+        file : str
+            File hash to get reputation of
+
+        Returns
+        -------
+        entry
+            Reputation of given file hash
+
+        """
+
+        file = demisto.args()['file']
+
+        hash_type = get_hash_type(file).upper()
+
+        response = get_observable(file)
+
+        if 'total_count' in response and response['total_count'] == 0:
+            human_readable = 'No results found.'
+
+        integration_outputs = []
+        standard_file_outputs = []
+
+        observables = response.get('data')
+
+        score = 0
+
+        for observable in observables:
+            meta = observable.get('meta', {})
+            maliciousness = meta.get('maliciousness')
+            score = maliciousness_to_dbotscore(maliciousness, FILE_THRESHOLD)
+
+            integration_outputs.append({
+                hash_type: file,
+                'Created': observable.get('created_at'),
+                'LastUpdated': observable.get('last_updated_at'),
+                'ID': observable.get('id'),
+                'Maliciousness': maliciousness
+            })
+
+            standard_file_output = {
+                hash_type: file
+            }
+            if score == 3:
+                standard_file_output['Malicious'] = {
+                    'Vendor': 'EclectiqIQ',
+                    'Description': 'EclectiqIQ maliciousness confidence level: ' + maliciousness
+                }
+
+            standard_file_outputs.append(standard_file_output)
+
+        dbot_output = {
+            'Type': 'file',
+            'Indicator': file,
+            'Vendor': 'EclecticIQ',
+            'Score': score
+        }
+
+        context = {
+            'DBotScore': dbot_output
+        }  # type: dict
+
+        if observables:
+            human_readable_title = 'EclecticIQ File reputation - {}'.format(file)
+            human_readable = tableToMarkdown(human_readable_title, integration_outputs)
+            context['EclecticIQ.File'] = createContext(data=integration_outputs, id='ID', removeNull=True)
+            context[outputPaths['file']] = standard_file_outputs
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': context
+        })
+
+
+    def email_command():
+
+        """
+
+        Gets reputation of an EclecticIQ email address observable
+
+        Parameters
+        ----------
+        email : str
+            Email address to get reputation of
+
+        Returns
+        -------
+        entry
+            Reputation of given email address
+
+        """
+
+        email = demisto.args()['email']
+
+        response = get_observable(email)
+
+        if 'total_count' in response and response['total_count'] == 0:
+            human_readable = 'No results found.'
+
+        integration_outputs = []
+        standard_email_outputs = []
+
+        observables = response.get('data')
+
+        score = 0
+
+        for observable in observables:
+            meta = observable.get('meta', {})
+            maliciousness = meta.get('maliciousness')
+            score = maliciousness_to_dbotscore(maliciousness, EMAIL_THRESHOLD)
+
+            integration_outputs.append({
+                'Address': email,
+                'Created': observable.get('created_at'),
+                'LastUpdated': observable.get('last_updated_at'),
+                'ID': observable.get('id'),
+                'Maliciousness': maliciousness
+            })
+
+            standard_email_output = {
+                'Address': email
+            }
+            if score == 3:
+                standard_email_output['Malicious'] = {
+                    'Vendor': 'EclectiqIQ',
+                    'Description': 'EclectiqIQ maliciousness confidence level: ' + maliciousness
+                }
+
+            standard_email_outputs.append(standard_email_output)
+
+        dbot_output = {
+            'Type': 'email',
+            'Indicator': email,
+            'Vendor': 'EclecticIQ',
+            'Score': score
+        }
+
+        context = {
+            'DBotScore': dbot_output
+        }  # type: dict
+
+        if observables:
+            human_readable_title = 'EclecticIQ Email reputation - {}'.format(email)
+            human_readable = tableToMarkdown(human_readable_title, integration_outputs)
+            context['EclecticIQ.Email'] = createContext(data=integration_outputs, id='ID', removeNull=True)
+            context[outputPaths['email']] = standard_email_outputs
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': context
+        })
+
+
+    def domain_command():
+
+        """
+
+        Gets reputation of an EclecticIQ domain observable
+
+        Parameters
+        ----------
+        domain : str
+            Domain address to get reputation of
+
+        Returns
+        -------
+        entry
+            Reputation of given domain address
+
+        """
+
+        domain = demisto.args()['domain']
+
+        response = get_observable(domain)
+
+        if 'total_count' in response and response['total_count'] == 0:
+            human_readable = 'No results found.'
+
+        integration_outputs = []
+        standard_domain_outputs = []
+
+        observables = response.get('data')
+
+        score = 0
+
+        for observable in observables:
+            meta = observable.get('meta', {})
+            maliciousness = meta.get('maliciousness')
+            score = maliciousness_to_dbotscore(maliciousness, DOMAIN_THRESHOLD)
+
+            integration_outputs.append({
+                'Name': domain,
+                'Created': observable.get('created_at'),
+                'LastUpdated': observable.get('last_updated_at'),
+                'ID': observable.get('id'),
+                'Maliciousness': maliciousness
+            })
+
+            standard_email_output = {
+                'Name': domain
+            }
+            if score == 3:
+                standard_email_output['Malicious'] = {
+                    'Vendor': 'EclectiqIQ',
+                    'Description': 'EclectiqIQ maliciousness confidence level: ' + maliciousness
+                }
+
+            standard_domain_outputs.append(standard_email_output)
+
+        dbot_output = {
+            'Type': 'domain',
+            'Indicator': domain,
+            'Vendor': 'EclecticIQ',
+            'Score': score
+        }
+
+        context = {
+            'DBotScore': dbot_output
+        }  # type: dict
+
+        if observables:
+            human_readable_title = 'EclecticIQ Domain reputation - {}'.format(domain)
+            human_readable = tableToMarkdown(human_readable_title, integration_outputs)
+            context['EclecticIQ.Domain'] = createContext(data=integration_outputs, id='ID', removeNull=True)
+            context[outputPaths['domain']] = standard_domain_outputs
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': context
+        })
+
+
+    def get_observable(ioc):
+
+        """
+
+        Send API query to EclecticIQ to get reputation of an observable
+
+        Parameters
+        ----------
+        ioc : str
+            IOC to get reputation of
+
+        Returns
+        -------
+        response
+            Python requests response object
+
+        """
+
+        cmd_url = '/api/observables?filter[value]={}'.format(ioc)
+        response = http_request('GET', cmd_url)
+        return response
+
+
+    def get_observable_related_entity_command():
+
+        """
+
+        Get EclecticIQ related entities to an observable
+
+        Parameters
+        ----------
+        observable_id : str
+            EclecticIQ observable ID to get related entites of
+
+        Returns
+        -------
+        entry
+            Observable related entities data
+
+        """
+
+        observable_id = demisto.args()['observable_id']
+
+        processed_extract_response = processed_extract(observable_id)
+
+        original_extract_response = original_extract(observable_id)
+
+        response = dict(processed_extract_response)
+        response['data'].extend(original_extract_response['data'])
+        response['total_count'] += original_extract_response['total_count']
+
+        if 'total_count' in response and response['total_count'] == 0:
+            demisto.results('No results found')
+            return
+
+        context_outputs = []
+        human_readable = ''
+
+        entities = response.get('data')
+
+        for entity in entities:  # type: ignore
+
+            entity_data = entity.get('data', {})
+            test_mechanisms = entity_data.get('test_mechanisms', {})
+            entity_meta = entity.get('meta', {})
+
+            context_output = {
+                'Title': entity_data.get('title'),
+                'ID': entity.get('id'),
+                'Analysis': entity_data.get('description'),
+                'EstimatedStartTime': entity_meta.get('estimated_threat_start_time'),
+                'EstimatedObservedTime': entity_meta.get('estimated_observed_time'),
+                'HalfLife': entity_meta.get('half_life')
+            }
+
+            if context_output['Analysis']:
+                # Removing unnecessary whitespaces from the string
+                context_output['Analysis'] = ' '.join(context_output['Analysis'].split())
+
+            if context_output['HalfLife']:
+                # API returns a number, we add the time format to it
+                context_output['HalfLife'] = str(context_output['HalfLife']) + ' Days'
+
+            human_readable += tableToMarkdown('Observable ID {} related entities'.format(observable_id), context_output)
+
+            test_mechanisms_output = []
+
+            for mechanism in test_mechanisms:
+
+                mechanism_output = {
+                    'Type': mechanism.get('test_mechanism_type')
+                }
+
+                mechanism_rules = mechanism.get('rules')
+
+                mechanism_rules_outputs = []
+
+                for rule in mechanism_rules:
+
+                    mechanism_rules_outputs.append(rule.get('value'))
+
+                mechanism_output['Rule'] = mechanism_rules_outputs
+
+                test_mechanisms_output.append(mechanism_output)
+
+            if test_mechanisms_output:
+
+                context_output['TestMechanism'] = test_mechanisms_output
+                human_readable += tableToMarkdown('Test mechanisms', test_mechanisms_output, removeNull=True)
+
+            sources = entity.get('sources')
+
+            sources_output = []
+
+            for source in sources:
+
+                sources_output.append({
+                    'Name': source.get('name'),
+                    'Type': source.get('source_type'),
+                    'Reliability': source.get('source_reliability')
+                })
+
+            if sources_output:
+                context_output['Source'] = sources_output
+                human_readable += tableToMarkdown('Sources', sources_output, removeNull=True)
+
+            exposure = entity.get('exposure')
+
+            exposure_output = {
+                'Exposed': True if exposure.get('exposed') is True else False,
+                'Detection': True if exposure.get('detect_feed') is True else False,
+                'Prevention': True if exposure.get('prevent_feed') is True else False,
+                'Community': True if exposure.get('community_feed') is True else False,
+                'Sighting': True if exposure.get('sighted') is True else False
+            }
+
+            context_output['Exposure'] = exposure_output
+            human_readable += tableToMarkdown('Exposure', exposure_output, removeNull=True)
+
+            context_outputs.append(context_output)
+
+        context = {
+            'EclecticIQ.Entity': createContext(data=context_outputs, id='ID', removeNull=True)
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': human_readable,
+            'EntryContext': context
+        })
+
+
+    def processed_extract(observable_id):
+
+        """
+
+        Send API query to EclecticIQ to get extracted processed data of an observable
+
+        Parameters
+        ----------
+        observable_id : str
+            EclecticIQ observable ID to get extracted processed data of of
+
+        Returns
+        -------
+        response
+            Python requests response object
+
+        """
+
+        cmd_url = '/private/entities/processed-extract/{}'.format(observable_id)
+        response = http_request('GET', cmd_url)
+        return response
+
+
+    def original_extract(observable_id):
+
+        """
+
+        Send API query to EclecticIQ to get extracted orginial data of an observable
+
+        Parameters
+        ----------
+        observable_id : str
+            EclecticIQ observable ID to get extracted orginial data of of
+
+        Returns
+        -------
+        response
+            Python requests response object
+
+        """
+
+        cmd_url = '/private/entities/original-extract/{}'.format(observable_id)
+        response = http_request('GET', cmd_url)
+        return response
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    login()
+
+    COMMANDS = {
+        'test-module': test_module,
+        'url': url_command,
+        'ip': ip_command,
+        'email': email_command,
+        'file': file_command,
+        'domain': domain_command,
+        'eclecticiq-get-observable-related-entity': get_observable_related_entity_command
+    }
+
+    try:
+        LOG('Command being called is {}'.format(demisto.command()))
+        command_func = COMMANDS.get(demisto.command())
+        if command_func is not None:
+            command_func()
+    except Exception as e:
+        return_error('Error has occurred in EclecticIQ integration: {}\n {}'.format(type(e), e.message))
+  type: python
+system: true

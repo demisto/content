@@ -1,0 +1,272 @@
+description: Process an EWS email
+id: process_email_-_ews
+inputs:
+- description: The EWS Email ID
+  key: EmailID
+  required: false
+  value:
+    complex:
+      accessor: labels.Email/ID
+      root: incident
+name: Process Email - EWS
+outputs:
+- contextPath: Email
+  description: The email object
+  type: unknown
+- contextPath: Email.To
+  description: 'Email ''to'' addresses '
+  type: string
+- contextPath: Email.CC
+  description: Email 'cc' addresses
+  type: string
+- contextPath: Email.From
+  description: Email 'from' sender
+  type: string
+- contextPath: Email.Subject
+  description: Email subject
+  type: string
+- contextPath: Email subject
+  description: Email 'html' body if exists
+  type: string
+- contextPath: Email.Text
+  description: Email 'text' body if exists
+  type: string
+- contextPath: Email.Headers
+  description: The full email headers as a single string
+  type: string
+- contextPath: Email.Attachments
+  description: The list of attachment names in the email
+  type: string
+- contextPath: Email.Format
+  description: The format of the email if available
+  type: string
+- contextPath: File
+  description: Email's Attachment
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d2585d98-8b18-443c-8f9d-fab76927940f
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d2585d98-8b18-443c-8f9d-fab76927940f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      attachment-ids: {}
+      item-id:
+        complex:
+          accessor: labels.Email/ID
+          root: incident
+      target-mailbox: {}
+    separatecontext: false
+    task:
+      brand: EWS v2
+      description: Get EWS email all attachments - file attachments and item attachments
+        (other email, calendar item, etc..)
+      id: 4c421b2d-b73c-42a3-8e74-c9fa804196b9
+      iscommand: true
+      name: Get attachments
+      script: EWS v2|||ews-get-attachment
+      type: regular
+      version: -1
+    taskid: 4c421b2d-b73c-42a3-8e74-c9fa804196b9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: EWS.Items.ItemAttachments
+          operator: isExists
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if any item attachments exist.
+      id: 4e29788b-f10f-4afd-843d-954dc75bcd00
+      iscommand: false
+      name: Does the item "attachments" exist?
+      type: condition
+      version: -1
+    taskid: 4e29788b-f10f-4afd-843d-954dc75bcd00
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    scriptarguments:
+      append:
+        simple: "true"
+      extend-context: {}
+      key:
+        simple: Email
+      value:
+        simple: '${EWS.Items.ItemAttachments={To: val[''toRecipients''], CC: val[''ccRecipients''],
+          From: val[''sender''], Subject: val[''subject''], Text: val[''text_body''],
+          HTML: val[''body''], Headers: val[''headers'']}}'
+    separatecontext: false
+    task:
+      brand: ""
+      description: If email attachments exist - set Email context key with the item
+        values.
+      id: 86c8a1a4-96d2-4d5b-8d24-7710318ac280
+      iscommand: false
+      name: Set email context key
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 86c8a1a4-96d2-4d5b-8d24-7710318ac280
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: EWS v2
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if EWSv2 exist
+      id: 16491843-3256-4f45-8615-a8ea30e68228
+      iscommand: false
+      name: Is this an EWSv2 incident?
+      type: condition
+      version: -1
+    taskid: 16491843-3256-4f45-8615-a8ea30e68228
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 18a0ed04-37fb-4af0-8b23-ef5468460755
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 18a0ed04-37fb-4af0-8b23-ef5468460755
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

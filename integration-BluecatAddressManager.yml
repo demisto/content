@@ -1,0 +1,654 @@
+category: Authentication
+commonfields:
+  id: BluecatAddressManager
+  version: -1
+configuration:
+- defaultvalue: https://192.168.0.1
+  display: Server URL (e.g., https://192.168.0.1)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Configuration Name
+  name: conf_name
+  required: false
+  type: 0
+description: Integration Template
+detaileddescription: "When you configure an instance of the Bluecat Address Manager
+  integration in Demisto, you need to provide an API user account.\n\n## Generate
+  an API user account\n\n1. Using the Address Manager web interface, log in to Address
+  Manager as an administrator.\n2. On the Administration page, click **Users and Groups**.\n3.
+  In the **Users** section, click **New**.\n4. Enter a name in the **Username** field.\n5.
+  In the **Authentication** section, type and confirm the API user password in the
+  **Password and ConfirmPassword** fields. If external authenticators are available,
+  an **Other** checkbox and a list of authenticators appears in the **Authentication**
+  section. To use an external authenticator for the API user, select the **Other**
+  checkbox, and then select an authenticator from the list.\n6. In the **Extra Information**
+  section, set the following parameters for the API user. \n    - E-mail Address (required)
+  \n    - Phone number (optional)\n7. In the **User Access** section, define the user
+  type, security, and history privileges, and access type.\n    - Type of User: select
+  either Non-Administrator or Administrator. Non-Administrator users have access only
+  to DNS and IPAM management functions. Administrator users have unlimited access
+  to all Address Manager functions.\n    - Security Privilege: select a security privilege
+  type from the drop-down list. This field is available only for Non-Administrator
+  users with GUI, API, or GUI and API access.\n    - History Privilege: select a history
+  privilege type from the drop-down list. This field is available only for Non-Administrator
+  users with GUI, or GUI and API access.\n    - Access Type: select the type of access;
+  GUI, API, or GUI and API. GUI users can access Address Manager only through the
+  Address Manager web interface. API users can access Address Manager only through
+  the API. GUI and API users can access Address Manager either through the Address
+  Manager web interface or the API.\n8. In the **Assign to Group** section, To assign
+  the user to one or more existing user groups, go to Assign to Group section, and
+  enter the name of a use group. Select a name from the list, and then click **Add**.\n9.
+  (optional) In the **Change Control** section, add comments to describe the changes.
+  Although this step is optional but maybe set to be required.\n10. Click **Add**.\n\nAbout
+  Integration Parameters:\n* **Configuration Name:** In case you have more than one
+  configuration set up, you can use this parameter to manually set the configuration
+  you want the instance to run on, otherwise, if no value was given, the integration
+  will use the first configuration it can find.\n"
+display: BluecatAddressManager
+image: data:image/png;base64,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
+name: BluecatAddressManager
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The IP to get data about
+      name: ip
+      required: true
+    description: Enriches an IP with data about IP networks and blocks that it belongs
+      to, linked IPs and mac addresses, etc.
+    name: bluecat-am-query-ip
+    outputs:
+    - contextPath: BlueCat.AddressManager.IP.ID
+      description: The address manager ID of the IP address.
+      type: Number
+    - contextPath: BlueCat.AddressManager.IP.Name
+      description: Name of the IP address.
+      type: String
+    - contextPath: BlueCat.AddressManager.IP.MacAddress
+      description: Corresponding MAC address.
+      type: String
+    - contextPath: BlueCat.AddressManager.IP.Parents.ID
+      description: ID of the parent IP address.
+      type: String
+    - contextPath: BlueCat.AddressManager.IP.Parents.Type
+      description: Type of the parent IP address.
+      type: String
+    - contextPath: BlueCat.AddressManager.IP.Parents.Name
+      description: Name of the parent IP address.
+      type: String
+    - contextPath: BlueCat.AddressManager.IP.Parents.CIDR
+      description: Classless Inter-Domain Routing.
+      type: String
+    - contextPath: BlueCat.AddressManager.IP.Type
+      description: Type of IP address.
+      type: String
+    - contextPath: IP.Address
+      description: Address of IP.
+      type: String
+    - contextPath: BlueCat.AddressManager.IP.Parents.Prefix
+      description: Prefix of the IP address.
+      type: String
+  - arguments:
+    - defaultValue: "0"
+      description: Start index from which to get the response policies. Default is
+        0.
+      name: start
+    - defaultValue: "30"
+      description: Maximum number of response policies to return.
+      name: count
+    description: Returns all response policies.
+    name: bluecat-am-get-response-policies
+    outputs:
+    - contextPath: BlueCat.AddressManager.ResponsePolicies.ID
+      description: ID of the response policy.
+      type: Number
+    - contextPath: BlueCat.AddressManager.ResponsePolicies.Name
+      description: Name of the response policy.
+      type: String
+    - contextPath: BlueCat.AddressManager.ResponsePolicies.Ttl
+      description: Time to live (TTL) of the response policy.
+      type: Unknown
+    - contextPath: BlueCat.AddressManager.ResponsePolicies.Type
+      description: Type of the response policy (BLACKLIST, BLACKHOLE, WHITELIST, or
+        REDIRECT).
+      type: String
+    - contextPath: BlueCat.AddressManager.ResponsePolicies.RedirectTarget
+      description: Target of redirect, in case of REDIRECT policy type.
+      type: String
+  - arguments:
+    - description: Domain name by which to search.
+      name: domain
+      required: true
+    description: Searches all response policies in which the given domain is included.
+    name: bluecat-am-search-response-policies-by-domain
+    outputs:
+    - contextPath: BlueCat.AddressManager.ResponsePolicies.ID
+      description: ID of the response policy.
+      type: Number
+    - contextPath: BlueCat.AddressManager.ResponsePolicies.Name
+      description: Name of the response policy.
+      type: String
+    - contextPath: BlueCat.AddressManager.ResponsePolicies.Ttl
+      description: Time to live (TTL) of the response policy
+      type: Unknown
+    - contextPath: BlueCat.AddressManager.ResponsePolicies.Type
+      description: Type of the responce policy ( BLACKLIST, BLACKHOLE, WHITELIST,
+        or REDIRECT).
+      type: String
+    - contextPath: BlueCat.AddressManager.ResponsePolicies.RedirectTarget
+      description: Target of redirect, in case of REDIRECT policy type.
+      type: String
+  - arguments:
+    - default: true
+      description: ID of the response policy to edit.
+      name: policy_id
+      required: true
+    - description: Domain to add to the response policy.
+      name: domain
+      required: true
+    description: Adds a domain to the given response policy.
+    name: bluecat-am-response-policy-add-domain
+  - arguments:
+    - default: true
+      description: ID of the response policy to edit.
+      name: policy_id
+      required: true
+    - description: Domain to remove from the response policy.
+      name: domain
+      required: true
+    description: Removes a domain from the given response policy.
+    name: bluecat-am-response-policy-remove-domain
+  - arguments:
+    - description: The IP address for which to get the range.
+      name: ip
+      required: true
+    description: Returns the IPv4 Block containing the specified IPv4 address.
+    name: bluecat-am-get-range-by-ip
+    outputs:
+    - contextPath: BlueCat.AddressManager.Range.ID
+      description: The address manager ID of the Range.
+      type: String
+    - contextPath: BlueCat.AddressManager.Range.Name
+      description: Name of the Range.
+      type: String
+    - contextPath: BlueCat.AddressManager.Range.Type
+      description: Type of the Range.
+      type: String
+    - contextPath: BlueCat.AddressManager.Range.Parents.ID
+      description: ID of the parent Range.
+      type: String
+    - contextPath: BlueCat.AddressManager.Range.Parents.Type
+      description: Type of the parent Range.
+      type: String
+    - contextPath: BlueCat.AddressManager.Range.Parents.Name
+      description: Name of the parent Range.
+      type: String
+    - contextPath: BlueCat.AddressManager.Range.Parents.CIDR
+      description: Classless Inter-Domain Routing.
+      type: String
+  dockerimage: demisto/python3:3.7.3.286
+  runonce: false
+  script: |2-
+
+
+    ''' IMPORTS '''
+
+    import requests
+    import ipaddress
+
+
+    # error class for token errors
+    class TokenException(Exception):
+        pass
+
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    TOKEN = demisto.params().get('token')
+    # Remove trailing slash to prevent wrong URL path to service
+    SERVER = demisto.params().get('url')[:-1] \
+        if (demisto.params().get('url') and demisto.params().get('url').endswith('/')) else demisto.params().get('url')
+    # Should we use SSL
+    USE_SSL = not demisto.params().get('insecure', False)
+    # Service base URL
+    BASE_URL = f'{SERVER}/Services/REST/v1'
+
+    # Headers to be sent in requests
+    HEADERS = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+    TOKEN_LIFE_TIME_MINUTES = 5
+    USER_CONF = demisto.params().get('conf_name')
+    USERNAME = demisto.params().get('credentials').get('identifier')
+    PASSWORD = demisto.params().get('credentials').get('password')
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, safe=False):
+        """
+            A wrapper for requests lib to send our requests and handle requests and responses better.
+
+            :type method: ``str``
+            :param method: HTTP method for the request.
+
+            :type url_suffix: ``str``
+            :param url_suffix: The suffix of the URL (endpoint)
+
+            :type params: ``dict``
+            :param params: The URL params to be passed.
+
+            :type data: ``str``
+            :param data: The body data of the request.
+
+            :type headers: ``dict``
+            :param headers: Request headers
+
+            :type safe: ``bool``
+            :param safe: If set to true will return None in case of http error
+
+            :return: Returns the http request response json
+            :rtype: ``dict``
+        """
+        headers['Authorization'] = get_token()
+        url = BASE_URL + url_suffix
+        try:
+            res = requests.request(method, url, verify=USE_SSL, params=params, data=data, headers=headers)
+            # Try to create a new token
+            if res.status_code == 401:
+                headers['Authorization'] = get_token(new_token=True)
+                res = requests.request(method, url, verify=USE_SSL, params=params, data=data, headers=headers)
+        except requests.exceptions.RequestException:
+            return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
+        # Handle error responses gracefully
+        if res.status_code not in {200, 201, 202}:
+            result_msg = None
+            try:
+                result_msg = res.json()
+            finally:
+                reason = result_msg if result_msg else res.reason
+                err_msg = f'Error in API call. code:{res.status_code}; reason: {reason}'
+                if safe:
+                    return None
+                return_error(err_msg)
+        return res.json()
+
+
+    def get_token(new_token=False):
+        """
+            Retrieves the token from the server if it's expired and updates the global HEADERS to include it
+
+            :param new_token: If set to True will generate a new token regardless of time passed
+
+            :rtype: ``str``
+            :return: Token
+        """
+        now = datetime.now()
+        ctx = demisto.getIntegrationContext()
+        if ctx and not new_token:
+            passed_minutes = get_passed_minutes(now, datetime.fromtimestamp(ctx.get('time')))
+            if passed_minutes >= TOKEN_LIFE_TIME_MINUTES:
+                # token expired
+                auth_token = get_token_request()
+                demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
+            else:
+                # token hasn't expired
+                auth_token = ctx.get('auth_token')
+        else:
+            # generating new token
+            auth_token = get_token_request()
+            demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
+        return auth_token
+
+
+    def get_configuration():
+        """
+        Gets the chosen configuration to run queries on
+
+        :return: User configuration id, or the first configuration id if no user configuration provided
+        """
+        user_conf = USER_CONF
+        params = {
+            'type': 'Configuration',
+            'start': 0,
+            'count': 100
+        }
+        confs = http_request('GET', '/getEntities', params)
+        if not confs:
+            return_error('No configurations could be fetched from the system')
+        if user_conf:
+            for conf in confs:
+                if conf.get('name') == user_conf:
+                    return conf.get('id')
+
+        return confs[0].get('id')
+
+
+    def get_passed_minutes(start_time, end_time):
+        """
+            Returns the time passed in minutes
+            :param start_time: Start time in datetime
+            :param end_time: End time in datetime
+            :return: The passed minutes in int
+        """
+        time_delta = start_time - end_time
+        return time_delta.seconds / 60
+
+
+    def properties_to_camelized_dict(properties):
+        properties = properties.split('|')
+        properties_dict = {}
+        for _property in properties:
+            if _property:
+                key_val_pair = _property.split('=')
+                # camelize the key
+                key = key_val_pair[0][0].upper() + key_val_pair[0][1:]
+                properties_dict[key] = key_val_pair[1]
+        return properties_dict
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def get_token_request():
+        url_args = {
+            'username': USERNAME,
+            'password': PASSWORD
+        }
+        start_idx = 16
+        end_delim = ' <-'
+        url = BASE_URL + '/login'
+        res = requests.request('GET', url, verify=USE_SSL, params=url_args)
+        if res.status_code != 200:
+            raise TokenException('Error: Failed to create a new token, please check your credentials')
+        res_json = res.json()
+        end_idx = res_json.index(end_delim)
+        return res_json[start_idx:end_idx]
+
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        get_token(new_token=True)
+        demisto.results('ok')
+
+
+    def query_ip_command():
+        ip = demisto.getArg('ip')
+        try:
+            if isinstance(ipaddress.ip_address(ip), ipaddress.IPv6Address):
+                ip_type = 'IPv6'
+                base_ip_raw_res = query_ipv6(ip)
+            else:
+                ip_type = 'IPv4'
+                base_ip_raw_res = query_ipv4(ip)
+
+            # entity with id 0 is root, and CONF is root of parent
+            if base_ip_raw_res.get('id') in (None, 0, CONF):
+                return_outputs(f'IP: {ip} was not found.', {}, base_ip_raw_res)
+            else:
+                base_ip_parents = get_entity_parents(base_ip_raw_res.get('id'))
+                ip_object = {
+                    'ID': base_ip_raw_res.get('id'),
+                    'Name': base_ip_raw_res.get('name'),
+                    'Parents': base_ip_parents,
+                    'Type': ip_type
+                }
+                ip_object.update(properties_to_camelized_dict(base_ip_raw_res.get('properties')))
+                ec = {
+                    'BlueCat.AddressManager.IP(obj.ID === val.ID)': ip_object,
+                    'IP(val.Address === obj.Address)': {'Address': ip}
+                }
+                hr = create_human_readable_ip(ip_object, ip)
+                return_outputs(hr, ec, base_ip_raw_res)
+
+        except ipaddress.AddressValueError:
+            return_error(f'Invalid IP: {ip}')
+
+
+    def query_ipv4(ip):
+        params = {
+            'containerId': CONF,
+            'address': ip
+        }
+        return http_request('GET', '/getIP4Address', params=params)
+
+
+    def query_ipv6(ip):
+        params = {
+            'containerId': CONF,
+            'address': ip
+        }
+        return http_request('GET', '/getIP6Address', params=params)
+
+
+    def get_entity_parents(base_id):
+        base_ip_parents = []
+        entity_parent = get_entity_parent(entity_id=base_id)
+        # entity with id 0 is root, and CONF is root of parent
+        while entity_parent.get('id') not in (None, 0, CONF):
+            parent_obj = {
+                'ID': entity_parent.get('id'),
+                'Type': entity_parent.get('type'),
+                'Name': entity_parent.get('name'),
+            }
+            parent_obj.update(properties_to_camelized_dict(entity_parent.get('properties')))
+            base_ip_parents.append(parent_obj)
+            entity_parent = get_entity_parent(entity_id=entity_parent.get('id'))
+
+        return base_ip_parents
+
+
+    def get_entity_parent(entity_id):
+        params = {
+            'entityId': entity_id
+        }
+        return http_request('GET', '/getParent', params=params)
+
+
+    def create_human_readable_ip(ip_object, ip_value):
+        ip_object_cpy = dict(ip_object)
+        reversed_parents = list(reversed(ip_object_cpy['Parents']))
+        ip_object_cpy.pop('Parents')
+        hr = tblToMd(f'{ip_value} IP Result:', ip_object_cpy, headerTransform=pascalToSpace)
+        hr += tblToMd('Parents Details:', reversed_parents, headerTransform=pascalToSpace)
+        return hr
+
+
+    def get_range_by_ip_command():
+        ip = demisto.getArg('ip')
+        try:
+            if isinstance(ipaddress.ip_address(ip), ipaddress.IPv6Address) or isinstance(ipaddress.ip_address(ip),
+                                                                                         ipaddress.IPv4Address):
+                range_raw_res = get_range_by_ip(ip)
+
+                if range_raw_res.get('id') in (None, 0, CONF):
+                    return_outputs(f'IP range was not found for {ip}.', {}, range_raw_res)
+                else:
+                    base_ip_parents = get_entity_parents(range_raw_res.get('id'))
+
+                    range_object = {
+                        'ID': range_raw_res.get('id'),
+                        'Name': range_raw_res.get('name'),
+                        'Parents': base_ip_parents,
+                        'Type': range_raw_res.get('type')
+                    }
+
+                    range_object.update(properties_to_camelized_dict(range_raw_res.get('properties')))
+                    ec = {'BlueCat.AddressManager.Range(obj.ID === val.ID)': range_object}
+                    hr = create_human_readable_range(range_object, ip)
+                    return_outputs(hr, ec, range_raw_res)
+
+        except ipaddress.AddressValueError:
+            return_error(f'Invalid IP: {ip}')
+
+
+    def get_range_by_ip(ip):
+        params = {
+            'containerId': CONF,
+            'type': '',
+            'address': ip
+        }
+        return http_request('GET', '/getIPRangedByIP', params=params)
+
+
+    def create_human_readable_range(range_object, ip_value):
+        range_object_cpy = dict(range_object)
+        reversed_parents = list(reversed(range_object_cpy['Parents']))
+        range_object_cpy.pop('Parents')
+        hr = tblToMd(f'{ip_value} Range Result:', range_object_cpy, headerTransform=pascalToSpace)
+        hr += tblToMd('Parents Details:', reversed_parents, headerTransform=pascalToSpace)
+        return hr
+
+
+    def get_response_policies_command():
+        start = demisto.getArg('start')
+        count = demisto.getArg('count')
+        raw_response_policies = get_response_policies(start, count)
+        response_policies, hr = create_response_policies_result(raw_response_policies)
+        return_outputs(hr, response_policies, raw_response_policies)
+
+
+    def get_response_policies(start, count):
+        params = {
+            'parentId': CONF,
+            'type': 'ResponsePolicy',
+            'start': start,
+            'count': count
+        }
+        return http_request('GET', '/getEntities', params=params)
+
+
+    def create_response_policies_result(raw_response_policies):
+        response_policies = []
+        if raw_response_policies:
+            hr = '## Response Policies:\n'
+            for response_policy in raw_response_policies:
+                response_policy_obj = {
+                    'ID': response_policy.get('id'),
+                    'Name': response_policy.get('name'),
+                    'Type': response_policy.get('type')
+                }
+                response_policy_obj.update(properties_to_camelized_dict(response_policy.get('properties')))
+                hr += tblToMd(response_policy_obj['Name'], response_policy_obj)
+                response_policies.append(response_policy_obj)
+            return {'BlueCat.AddressManager.ResponsePolicies(val.ID === obj.ID)': response_policies}, hr
+        return {}, 'Could not find any response policy'
+
+
+    def add_domain_response_policy_command():
+        policy_id = demisto.getArg('policy_id')
+        domain = demisto.getArg('domain')
+        raw_response = add_domain_response_policy(policy_id, domain)
+        error_msg = f'Failed to add {domain} to response policy {policy_id}, ' \
+                    f'possibly the domain already exists in the response policy.'
+        if raw_response:
+            return_outputs(f'Successfully added {domain} to response policy {policy_id}', {}, raw_response)
+        else:
+            return_outputs(error_msg, {}, raw_response)
+
+
+    def add_domain_response_policy(policy_id, domain):
+        params = {
+            'policyId': policy_id,
+            'itemName': domain
+        }
+        return http_request('POST', '/addResponsePolicyItem', params=params)
+
+
+    def remove_domain_response_policy_command():
+        policy_id = demisto.getArg('policy_id')
+        domain = demisto.getArg('domain')
+        raw_response = remove_domain_response_policy(policy_id, domain)
+        error_msg = f'Failed to remove {domain} from response policy {policy_id}, ' \
+                    f'possibly the domain doesn\'t exist in the response policy.'
+        if raw_response:
+            return_outputs(f'Successfully removed {domain} from response policy {policy_id}', {}, raw_response)
+        else:
+            return_outputs(error_msg, {}, raw_response)
+
+
+    def remove_domain_response_policy(policy_id, domain):
+        params = {
+            'policyId': policy_id,
+            'itemName': domain
+        }
+        return http_request('DELETE', '/deleteResponsePolicyItem', params=params)
+
+
+    def search_response_policy_by_domain_command():
+        domain = demisto.getArg('domain')
+        raw_response_policies = search_response_policy_by_domain(domain)
+        response_policies, hr = create_response_policies_result(raw_response_policies)
+        return_outputs(hr, response_policies, raw_response_policies)
+
+
+    def search_response_policy_by_domain(domain):
+        params = {
+            'configurationId': CONF,
+            'itemName': domain
+        }
+        return http_request('GET', '/findResponsePoliciesWithItem', params=params)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    try:
+        CONF = get_configuration()
+    except TokenException as e:
+        return_error(str(e))
+
+
+    def main():
+        handle_proxy()
+        command = demisto.command()
+        LOG(f'Command being called is {command}')
+
+        try:
+            if command == 'test-module':
+                test_module()
+            elif command == 'bluecat-am-query-ip':
+                query_ip_command()
+            elif command == 'bluecat-am-get-range-by-ip':
+                get_range_by_ip_command()
+            elif command == 'bluecat-am-get-response-policies':
+                get_response_policies_command()
+            elif command == 'bluecat-am-search-response-policies-by-domain':
+                search_response_policy_by_domain_command()
+            elif command == 'bluecat-am-response-policy-add-domain':
+                add_domain_response_policy_command()
+            elif command == 'bluecat-am-response-policy-remove-domain':
+                remove_domain_response_policy_command()
+
+        # Log exceptions
+        except Exception as e:
+            return_error(str(e))
+
+
+    if __name__ == "__builtin__" or __name__ == "builtins":
+        main()
+  subtype: python3
+  type: python
+system: true

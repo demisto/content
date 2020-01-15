@@ -1,0 +1,23 @@
+args:
+- default: true
+  description: The type of mirroring can be "all" to mirror everything, "chat" to
+    mirror only chatting but not commands or "none" to stop mirroring
+  name: type
+comment: Mirror an incident to a Slack private channel. You can chose what to mirror
+  with the type argument. A Slack private channel will be created and the incident
+  team invited. Messages on Slack will be reflected in the war room and vice versa.
+commonfields:
+  id: SlackMirror
+  version: -1
+dependson:
+  must:
+  - slack-mirror-investigation
+deprecated: true
+name: SlackMirror
+runonce: false
+script: demisto.results(demisto.executeCommand('slack-mirror-investigation', demisto.args()))
+scripttarget: 0
+system: true
+tags:
+- slack
+type: python

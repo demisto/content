@@ -1,0 +1,40 @@
+args:
+- default: true
+  description: userKey - Identifies the user in the API request. The value can be
+    the user's primary email address, alias email address, or unique user ID.
+  name: userKey
+  required: true
+comment: Retrieves a list of all roleAssignments.
+commonfields:
+  id: GoogleappsGetUserRoles
+  version: -1
+dependson:
+  must:
+  - googleapps-get-user-roles
+deprecated: true
+name: GoogleappsGetUserRoles
+runonce: false
+script: |2
+
+  import re
+
+  args = demisto.args()
+  for key in args.keys():
+      args[re.sub(r'([A-Z])',lambda x:'-'+x.group(1).lower(),key)] = args.pop(key)
+  resp = demisto.executeCommand("googleapps-get-user-roles", args)
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- google apps
+type: python

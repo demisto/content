@@ -1,0 +1,35 @@
+args:
+- description: Time stamp to convert
+  name: value
+  required: true
+- defaultValue: '%Y-%m-%dT%H:%M:%S'
+  description: Python 'strptime' formatter string
+  name: formatter
+  required: true
+comment: 'Converts a custom-formatted timestamp to UNIX epoch time. Use it to convert
+  custom time stamps to a Demisto date field.  Uses the python strptime format.  For
+  more info, see: https://docs.python.org/3.7/library/datetime.html#strftime-and-strptime-behavior'
+commonfields:
+  id: FormattedDateToEpoch
+  version: -1
+dockerimage: demisto/python3:3.7.3.286
+enabled: true
+name: FormattedDateToEpoch
+runas: DBotWeakRole
+runonce: false
+script: |2-
+
+  from datetime import datetime
+
+  date_value = demisto.args()['value']
+  formatter = demisto.args()['formatter']
+
+  date_obj = datetime.strptime(date_value, formatter)
+
+  demisto.results(int(date_obj.strftime('%s')))
+scripttarget: 0
+system: true
+tags:
+- transformer
+- date
+type: python

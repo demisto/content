@@ -1,0 +1,116 @@
+args:
+- description: Given name of the user (givenName)
+  name: firstName
+  required: true
+- description: Family name of the user (familyName)
+  name: lastName
+  required: true
+- description: primary email address of user
+  name: email
+- description: Unique identifier for the user (username)
+  name: login
+  required: true
+- description: Secondary email address of user typically used for account recovery
+  name: secondEmail
+- description: Middle name(s) of the user
+  name: middleName
+- description: Honorific prefix(es) of the user, or title in most Western languages
+  name: honorificPrefix
+- description: honorific suffix(es) of the user
+  name: honorificSuffix
+- description: User’s title, such as “Vice President”
+  name: title
+- description: Name of the user, suitable for display to end-users
+  name: displayName
+- description: Casual way to address the user in real life
+  name: nickName
+- description: Url of user’s online profile (e.g. a web page)
+  name: profileUrl
+- description: Primary phone number of user such as home number
+  name: primaryPhone
+- description: mobile phone number of user
+  name: mobilePhone
+- description: Full street address component of user’s address
+  name: streetAddress
+- description: City or locality component of user’s address (locality)
+  name: city
+- description: State or region component of user’s address (region)
+  name: state
+- description: Zipcode or postal code component of user’s address (postalCode)
+  name: zipCode
+- description: Country name component of user’s address (country)
+  name: countryCode
+- description: Mailing address component of user’s address
+  name: postalAddress
+- description: User’s preferred written or spoken languages
+  name: preferredLanguage
+- description: User’s default location for purposes of localizing items such as currency,
+    date time format, numerical representations, etc.
+  name: locale
+- description: User’s time zone
+  name: timezone
+- description: Used to identify the organization to user relationship such as “Employee”
+    or “Contractor”
+  name: userType
+- description: Organization or company assigned unique identifier for the user
+  name: employeeNumber
+- description: name of a cost center assigned to
+  name: costCenter
+- description: Name of user’s organization
+  name: organization
+- description: Name of user’s division
+  name: division
+- description: Name of user’s department
+  name: department
+- description: ID of a user’s manager
+  name: managerId
+- description: DisplayName of the user’s manager
+  name: manager
+- description: Password for new user
+  name: password
+- description: Password question for new user
+  name: passwordQuestion
+- description: Password answer for question supplied
+  name: passwordAnswer
+- description: OKTA, ACTIVE_DIRECTORY,LDAP, FEDERATION, or SOCIAL
+  name: providerType
+- description: Name of provider
+  name: providerName
+- description: Ids of groups that user will be immediately added to at time of creation
+    (Do not include default group)
+  name: groupIds
+- description: Executes activation lifecycle operation when creating the user
+  name: activate
+comment: Creates a new user with an option of setting password, recovery question
+  & answer. The new user will immediately be able to login after activation with the
+  assigned password. This flow is common when developing a custom user registration
+  experience.
+commonfields:
+  id: OktaCreateUser
+  version: -1
+dependson:
+  must:
+  - okta-create-user
+deprecated: true
+enabled: true
+name: OktaCreateUser
+runonce: false
+script: |2
+
+  resp = demisto.executeCommand("okta-create-user", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- okta
+type: python

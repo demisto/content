@@ -1,0 +1,56 @@
+args:
+- default: true
+  description: ' (mandatory) Query the AD in AD syntax. E.g. "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))"
+    will find all user objects except andy'
+  name: filter
+  required: true
+- description: Root
+  name: baseDn
+- description: Specify what fields will be returned (comma separated)
+  name: attributes
+- description: Max number of returned records
+  name: sizeLimit
+- description: Max time of query response in seconds
+  name: timeLimit
+comment: Run Active Directory queries
+commonfields:
+  id: AdSearch
+  version: -1
+dependson:
+  must:
+  - ad-search
+deprecated: true
+name: AdSearch
+runonce: false
+script: |-
+  dArgs = demisto.args()
+  dApiArgs = {}
+
+  if demisto.get(dArgs, 'filter'):
+      dApiArgs['filter'] = dArgs['filter']
+  if demisto.get(dArgs, 'baseDn'):
+      dApiArgs['base-dn'] = dArgs['baseDn']
+  if demisto.get(dArgs, 'attributes'):
+      dApiArgs['attributes'] = dArgs['attributes']
+  if demisto.get(dArgs, 'sizeLimit'):
+      dApiArgs['size-limit'] = dArgs['sizeLimit']
+  if demisto.get(dArgs, 'timeLimit'):
+      dApiArgs['time-limit'] = dArgs['timeLimit']
+
+  resp = demisto.executeCommand('ad-search', demisto.args());
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- active directory
+type: python

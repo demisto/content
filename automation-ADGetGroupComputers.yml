@@ -1,0 +1,33 @@
+args:
+- description: Active Directory Distinguished Name for the desired group
+  name: groupdn
+  required: true
+- description: Include these AD attributes of the resulting objects in addition to
+    the default ones
+  name: attributes
+comment: "Use Active Directory to retrieve the list of computers that are members
+  of the specified group. Group must be given by its AD Distinguished Name. The \"attributes\"
+  argument receives a comma-separated list of additional attributes you wish to be
+  displayed in the results.\nExample usage: !ADGetGroupComputers groupdn=\"CN=ImportantComputers,DC=demisto,DC=com\"
+  attributes=operatingsystem "
+commonfields:
+  id: ADGetGroupComputers
+  version: -1
+dependson:
+  must:
+  - ad-search
+deprecated: true
+name: ADGetGroupComputers
+runonce: false
+script: |-
+  # Optional arguments and default values
+  attrs = 'name'
+  if demisto.get(demisto.args(), 'attributes'):
+      attrs += "," + demisto.args()['attributes']
+  filterstr = r"(&(objectCategory=Computer)(memberof=" + demisto.args()['groupdn'] + "))"
+  demisto.results( demisto.executeCommand( 'AdSearch', { 'filter' : filterstr, 'attributes' : attrs } ) )
+scripttarget: 0
+system: true
+tags:
+- active directory
+type: python

@@ -1,0 +1,713 @@
+description: Sets up external dynamic list in PAN-OS.\nin case file exists in web
+  server it will sync it to demisto. then it will create an EDL object and a matching
+  rule.
+id: PAN-OS EDL Setup
+inputs:
+- description: |-
+    The name of the list that will store the IOCs.
+    The name of the file on the web server. This file name will be the name of the list with the extension ".txt".
+  key: list-name
+  required: true
+  value: {}
+- description: The type of the IOCs that the list will store. Can be "IP", "URL",
+    or "Domain".
+  key: ioc-type
+  required: true
+  value: {}
+- description: |-
+    The action that will be defined in the rule:
+    allow/deny/drop
+  key: action-type
+  required: true
+  value: {}
+- description: Whether to commit the configuration automatically.
+  key: auto-commit
+  required: false
+  value:
+    simple: "No"
+- description: The server address to which to forward logs.
+  key: log-forwarding-object-name
+  required: false
+  value: {}
+- description: The IP address of the web server on which the files are stored. The
+    web server IP address is configured in the integration instance.
+  key: web-server-ip
+  required: true
+  value: {}
+- description: Either pre-rulebase or post-rulebase,  according to the rule structure.
+  key: pre-post-rulebase
+  required: true
+  value:
+    simple: pre-rulebase
+- description: |-
+    The position of the rule in the ruleset. Valid values are:
+      * Top
+      * Bottom
+      * Before
+      * After
+  key: rule-position
+  required: true
+  value: {}
+- description: If the rule-position that is chosen is before or after, specify the
+    rule name to which it is related.
+  key: relative-rule-name
+  required: false
+  value: {}
+- description: Determines if the rule is inbound or outbound.
+  key: inbound-or-outbound-rule
+  required: false
+  value: {}
+- description: The name of the rule to update, or the name of the rule that will be
+    created.
+  key: rule-name
+  required: false
+  value: {}
+- description: The device group to work on. Exists only in panorama!
+  key: device-group
+  required: false
+  value: {}
+name: PAN-OS EDL Setup
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 54a20b97-8d74-433e-8d85-654a352c47e6
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 54a20b97-8d74-433e-8d85-654a352c47e6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 130
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of the PAN-OS integration
+        enabled.
+      id: 904419e9-26ca-4791-8741-8ed17916a846
+      iscommand: false
+      name: Is PAN-OS integration enabled?
+      type: condition
+      version: -1
+    taskid: 904419e9-26ca-4791-8741-8ed17916a846
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 270
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: palo_alto_networks_pan_os_edl_management
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is an active instance of the PAN-OS EDL Management
+        integration enabled.
+      id: 12ab144d-d89e-4f6c-80e7-81ea70b1aa22
+      iscommand: false
+      name: Is PAN-OS EDL Management integration enabled?
+      type: condition
+      version: -1
+    taskid: 12ab144d-d89e-4f6c-80e7-81ea70b1aa22
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 440
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 8fd903d2-aad6-4dce-8432-41ad2f7b1fd1
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 8fd903d2-aad6-4dce-8432-41ad2f7b1fd1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 1980
+        }
+      }
+  "7":
+    continueonerror: true
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    scriptarguments:
+      file_path:
+        complex:
+          root: inputs.list-name
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .txt
+            operator: concat
+    separatecontext: false
+    task:
+      brand: ""
+      description: Extracts metadata for the external file from the web server.
+      id: 8342cc60-a6ef-40a8-8ced-a42f45242392
+      iscommand: true
+      name: Retrieve external file
+      script: '|||pan-os-edl-get-external-file-metadata'
+      type: regular
+      version: -1
+    taskid: 8342cc60-a6ef-40a8-8ced-a42f45242392
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 610
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      file_path:
+        simple: ${inputs.list-name}.txt
+      list_name:
+        simple: ${inputs.list-name}
+      type:
+        simple: merge
+      verbose: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Fetches the content of the external file and merges it with the
+        content of the internal list.
+      id: 266ca860-4e19-4b80-891c-135f004eee4c
+      iscommand: true
+      name: Add changes from external file to the internal list
+      script: '|||pan-os-edl-update-from-external-file'
+      type: regular
+      version: -1
+    taskid: 266ca860-4e19-4b80-891c-135f004eee4c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 960
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    scriptarguments:
+      add_or_remove:
+        simple: add
+      file_path:
+        simple: ${inputs.list-name}.txt
+      list_items:
+        simple: .
+      list_name:
+        simple: ${inputs.list-name}
+      verbose: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Creates an internal list in Demisto and creates an external file
+        on the web server.
+      id: 7a865cba-6eef-4ca1-8a21-00b8ef3f8320
+      iscommand: true
+      name: Create internal list and external file
+      script: '|||pan-os-edl-update'
+      type: regular
+      version: -1
+    taskid: 7a865cba-6eef-4ca1-8a21-00b8ef3f8320
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 960
+        }
+      }
+  "18":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOSEDL.FileName
+          operator: containsGeneral
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.list-name
+                transformers:
+                - args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: .txt
+                  operator: concat
+      label: "yes"
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if an external file exists in the web server.
+      id: c41aaffd-a288-4eaa-8afb-d7d2df2250ec
+      iscommand: false
+      name: Is there an external file?
+      type: condition
+      version: -1
+    taskid: c41aaffd-a288-4eaa-8afb-d7d2df2250ec
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 790
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    scriptarguments:
+      certificate_profile: {}
+      description: {}
+      name:
+        simple: ${inputs.list-name}-${inputs.ioc-type}-edl-object
+      recurring:
+        simple: five-minute
+      type:
+        simple: ${inputs.ioc-type}
+      url:
+        simple: http://${inputs.web-server-ip}/files/${inputs.list-name}.txt
+    separatecontext: false
+    task:
+      brand: ""
+      description: Creates an external dynamic list in PAN-OS and connects it to the
+        external file.
+      id: b03a2267-9026-47d9-8a11-c14b7c282713
+      iscommand: true
+      name: Create EDL Object
+      script: '|||panorama-create-edl'
+      type: regular
+      version: -1
+    taskid: b03a2267-9026-47d9-8a11-c14b7c282713
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1130
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      id: 2eefa1ba-e662-4fd2-8327-435b99c7d466
+      iscommand: false
+      name: PAN-OS-Commit-Configuration
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      version: -1
+    taskid: 2eefa1ba-e662-4fd2-8327-435b99c7d466
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1480
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      id: 4adc4ddf-8cbc-4665-8a3d-562f55c364e9
+      iscommand: false
+      name: PAN-OS-Commit-Configuration
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      version: -1
+    taskid: 4adc4ddf-8cbc-4665-8a3d-562f55c364e9
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1810
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "24"
+      "yes":
+      - "20"
+    note: false
+    results:
+    - AreValuesEqual
+    scriptarguments:
+      left:
+        simple: ${inputs.auto-commit}
+      right:
+        simple: "Yes"
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if the values provided in arguments are equal. If either
+        of the arguments are missing, "no" is returned.
+      id: f0191f59-4221-4f88-8811-a8cc196f4971
+      iscommand: false
+      name: Is auto-commit defined?
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: f0191f59-4221-4f88-8811-a8cc196f4971
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1300
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Allows the analyst to manually commit the changes. This will be
+        operational if auto-commit is "false".
+      id: fecf981d-2339-4dd6-880a-0af64002c524
+      iscommand: false
+      name: Manually commit
+      type: regular
+      version: -1
+    taskid: fecf981d-2339-4dd6-880a-0af64002c524
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1480
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Allows the analyst to manually commit the changes. This will be
+        operational if auto-commit is "false".
+      id: c6cb98f4-5335-4271-860c-677955525d7f
+      iscommand: false
+      name: Manually commit
+      type: regular
+      version: -1
+    taskid: c6cb98f4-5335-4271-860c-677955525d7f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1810
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    scriptarguments:
+      action-type:
+        complex:
+          root: inputs.action-type
+      device-group:
+        complex:
+          root: inputs.device-group
+      element-to-add:
+        complex:
+          root: inputs.list-name
+      inbound-or-outbound-rule:
+        complex:
+          root: inputs.inbound-or-outbound-rule
+      log-forwarding-object-name:
+        complex:
+          root: inputs.log-forwarding-object-name
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre-post-rulebase
+      relative-rule-name:
+        complex:
+          root: inputs.relative-rule-name
+      rule-position:
+        complex:
+          root: inputs.rule-position
+      rule_name:
+        complex:
+          root: inputs.rule-name
+    separatecontext: true
+    task:
+      brand: ""
+      description: Creates or edits a Panorama rule and moves it into the desired
+        position
+      id: 9e9faf50-d60c-4c98-8489-370871096184
+      iscommand: false
+      name: PAN-OS - Create Or Edit Rule
+      playbookName: PAN-OS - Create Or Edit Rule
+      type: playbook
+      version: -1
+    taskid: 9e9faf50-d60c-4c98-8489-370871096184
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1650
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    scriptarguments:
+      action-type:
+        complex:
+          root: inputs.action-type
+      device-group:
+        complex:
+          root: inputs.device-group
+      element-to-add:
+        complex:
+          root: inputs.list-name
+      inbound-or-outbound-rule:
+        complex:
+          root: inputs.inbound-or-outbound-rule
+      log-forwarding-object-name:
+        complex:
+          root: inputs.log-forwarding-object-name
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre-post-rulebase
+      relative-rule-name:
+        complex:
+          root: inputs.relative-rule-name
+      rule-position:
+        complex:
+          root: inputs.rule-position
+      rule_name:
+        complex:
+          root: inputs.rule-name
+    separatecontext: true
+    task:
+      brand: ""
+      id: 0a29b0bd-db3c-428c-8892-8441eab72736
+      iscommand: false
+      name: PAN-OS - Create Or Edit Rule
+      playbookName: PAN-OS - Create Or Edit Rule
+      type: playbook
+      version: -1
+    taskid: 0a29b0bd-db3c-428c-8892-8441eab72736
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1650
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "18_16_yes": 0.44,
+      "18_17_#default#": 0.39,
+      "1_3_#default#": 0.1,
+      "23_20_yes": 0.65,
+      "23_24_no": 0.59,
+      "2_3_#default#": 0.1,
+      "2_7_yes": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1915,
+        "width": 1360,
+        "x": 180,
+        "y": 130
+      }
+    }
+  }

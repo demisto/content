@@ -1,0 +1,102 @@
+args:
+- description: List of IDs to poll
+  isArray: true
+  name: ids
+  required: true
+- description: Name of the polling command to run
+  name: pollingCommand
+  required: true
+- defaultValue: ids
+  description: Name of the argument of the polling command
+  name: pollingCommandArgName
+  required: true
+- description: DT filter for polling IDs
+  name: dt
+  required: true
+- description: The ID of the playbook that contains the manual task which will be
+    completed once the polling is done.
+  name: playbookId
+- defaultValue: "1"
+  description: Polling frequency - how often the polling command should run (minutes)
+  name: interval
+  required: true
+- defaultValue: "60"
+  description: How much time to poll before declaring a timeout and resuming the playbook
+    (minutes)
+  name: timeout
+  required: true
+- defaultValue: polling
+  description: The tag of the blocking manual task ("Wait For Polling Task To Finish")
+  name: tag
+  required: true
+- description: Names of additional arguments for the polling command (e.g. arg1,arg2,...)
+  isArray: true
+  name: additionalPollingCommandArgNames
+- description: Values of the additional arguments for the polling command (e.g. value1,value2,...)
+  isArray: true
+  name: additionalPollingCommandArgValues
+comment: Called by the GenericPolling playbook, schedules the polling task.
+commonfields:
+  id: ScheduleGenericPolling
+  version: -1
+enabled: true
+name: ScheduleGenericPolling
+runonce: false
+script: |-
+  import random, string, json, re
+  from datetime import datetime, timedelta
+
+  # Returns a comma-separated string representation of a list
+  # Possible inputs: null, int, str, bytes, ["","",...], [int, int], 'a,b,...', '"a","b",...', '["","",...]'
+  def parseIds(idsArg):
+      if idsArg is None:
+          return
+      if isinstance(idsArg, list):
+          if len(idsArg) == 0 or isinstance(idsArg[0], str):
+              return idsArg
+          return ','.join(map(str, idsArg))
+      if isinstance(idsArg, str) or isinstance(idsArg, bytes):
+          return ','.join(argToList(idsArg))
+      return str(idsArg)
+
+
+  args = demisto.args()
+  ids = parseIds(args['ids'])
+  dt = args['dt']
+  pollingCommand = args['pollingCommand']
+  pollingCommandArgName = args['pollingCommandArgName']
+  tag = args['tag']
+  playbookId = ' playbookId="{}"'.format(args['playbookId']) if 'playbookId' in args else ''
+  interval = int(demisto.get(args, 'interval'))
+  timeout = int(demisto.get(args, 'timeout'))
+  args_names = ','.join(map(unicode.strip, demisto.getArg('additionalPollingCommandArgNames').split(',')))
+  args_values = ','.join(map(unicode.strip, demisto.getArg('additionalPollingCommandArgValues').split(',')))
+
+  if interval <= 0 or timeout <= 0 :
+      demisto.results({
+          'Type': entryTypes['error'],
+          'ContensFormat': formats['text'],
+          'Contents': "Interval and timeout must be positive numbers"
+      })
+      sys.exit(2)
+
+  # Verify correct dt path (does not verify condition!)
+  if not demisto.dt(demisto.context(), dt):
+      if not demisto.dt(demisto.context(), re.sub('\(.*\)', '', dt)):
+          return_error("Incorrect dt path: no ids found")
+      demisto.results("Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and that all ids have finished running.")
+
+  res = demisto.executeCommand("ScheduleCommand", {
+      'command': '''!GenericPollingScheduledTask pollingCommand="%s" pollingCommandArgName="%s"%s ids="%s" pendingIds="%s" interval="%s" timeout="%s" tag="%s"
+                  additionalPollingCommandArgNames="%s" additionalPollingCommandArgValues="%s"''' \
+                  % (pollingCommand, pollingCommandArgName, playbookId, ids.replace('"', r'\"'), dt.replace('"', r'\"'), interval, timeout, tag, args_names, args_values),
+      'cron': '*/{} * * * *'.format(interval),
+      'times': 1
+  })
+  if isError(res[0]):
+      demisto.results(res)
+      sys.exit(1)
+scripttarget: 0
+system: true
+tags: []
+type: python

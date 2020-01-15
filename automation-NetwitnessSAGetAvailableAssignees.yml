@@ -1,0 +1,27 @@
+comment: Returns the available NetWitness SA users to be assigned to incidents
+commonfields:
+  id: NetwitnessSAGetAvailableAssignees
+  version: -1
+dependson:
+  must:
+  - nw-get-available-assignees
+name: NetwitnessSAGetAvailableAssignees
+runonce: false
+script: |
+  resp = demisto.executeCommand("nw-get-available-assignees", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.availableAssignees")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- RSA NetWitness Security Analytics
+type: python

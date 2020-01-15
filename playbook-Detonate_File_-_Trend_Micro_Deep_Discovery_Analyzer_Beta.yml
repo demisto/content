@@ -1,0 +1,468 @@
+description: "Detonates a File using the Trend Micro Deep Discovery Analyzer sandbox.\nDeep
+  Discovery Analyzer(version 6.0.0) supports the following File Types:\nbat, cell,
+  chm, class, cmd, dll, doc, docx, exe, gul, hta, htm, html, hwp, hwpx, jar, js, jse,
+  jtd, lnk, mov, pdf, ppt, pptx, ps1, pub, rtf, slk, svg, swf, vbe, vbs, \nwsf, xls,
+  xlsx, xml"
+id: Detonate File - Trend Micro Deep Discovery Analyzer Beta
+inputs:
+- description: The file to detonate. File is taken from the context.
+  key: File
+  required: true
+  value:
+    complex:
+      root: File
+- description: Polling frequency - how often the polling command should run (minutes)
+  key: interval
+  required: false
+  value:
+    simple: "1"
+- description: How much time to wait before a timeout occurs (minutes)
+  key: timeout
+  required: false
+  value:
+    simple: "15"
+name: Detonate File - Trend Micro Deep Discovery Analyzer Beta
+outputs:
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: TrendMicroDDA.Submissions.SHA1
+  description: SHA1 of the submission
+  type: string
+- contextPath: TrendMicroDDA.Submissions.RiskLevel
+  description: The Risk Level of the sample
+  type: number
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: TrendMicroDDA.Submissions.isCompleted
+  description: Stating if the detonation was complete or not
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: TrendMicroDDA.Submissions.status
+  description: The status of the sample
+  type: string
+- contextPath: InfoFile.MD5
+  description: MD5 hash of the report file
+  type: string
+- contextPath: InfoFile.SHA1
+  description: SHA1 hash of the report file
+  type: string
+- contextPath: InfoFile.SHA256
+  description: SHA256 hash of the report  file
+  type: string
+- contextPath: InfoFile.Name
+  description: Report file name
+  type: string
+- contextPath: InfoFile.Type
+  description: Report file type e.g. "PE"
+  type: string
+- contextPath: InfoFile.Size
+  description: 'Report file size '
+  type: number
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: IP.Address
+  description: IPs relevant to the submission
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: fbcc0577-3904-48a9-82c9-5bb0e70b19bd
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: fbcc0577-3904-48a9-82c9-5bb0e70b19bd
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: c3878144-0a86-4654-8b08-63f655876242
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: c3878144-0a86-4654-8b08-63f655876242
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Trend Micro Deep Discovery Analyzer
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |
+        Verify that there is a valid instance of Trend Micro DDA enabled.
+      id: 054e1385-da5e-4d14-8126-359343f57190
+      iscommand: false
+      name: Is Trend Micro DDA sandbox enabled?
+      type: condition
+      version: -1
+    taskid: 054e1385-da5e-4d14-8126-359343f57190
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.File
+          operator: isExists
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks that there is a file in the playbook’s input.
+      id: c0f86d20-a8e6-4ac8-8827-aa258d0b47b9
+      iscommand: false
+      name: Is there a File to Detonate?
+      type: condition
+      version: -1
+    taskid: c0f86d20-a8e6-4ac8-8827-aa258d0b47b9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    task:
+      brand: ""
+      description: Set the file object into context.
+      id: 438549fb-1463-4997-8f3e-e12ed18bd247
+      iscommand: false
+      name: Set File to context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 438549fb-1463-4997-8f3e-e12ed18bd247
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: EntryID
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Type
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:BAT|CELL|CHM|CLASS|CMD|DLL|DOC|DOCX|EXE|GUL|HTA|HTM|HTML|HWP|HWPX|JAR|JS|JSE|JTD|LNK|MOV|PDF|PPT|PPTX|PS1|PUB|RTF|SLK|SVG|SWF|VBE|VBS|WSF|XLS|XLSX|XML)\b
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Extension
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:BAT|CELL|CHM|CLASS|CMD|DLL|DOC|DOCX|EXE|GUL|HTA|HTM|HTML|HWP|HWPX|JAR|JS|JSE|JTD|LNK|MOV|PDF|PPT|PPTX|PS1|PUB|RTF|SLK|SVG|SWF|VBE|VBS|WSF|XLS|XLSX|XML)\b
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Info
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:BAT|CELL|CHM|CLASS|CMD|DLL|DOC|DOCX|EXE|GUL|HTA|HTM|HTML|HWP|HWPX|JAR|JS|JSE|JTD|LNK|MOV|PDF|PPT|PPTX|PS1|PUB|RTF|SLK|SVG|SWF|VBE|VBS|WSF|XLS|XLSX|XML)\b
+                root: File
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if file type is supported.
+      id: fafcbca2-d501-45d7-8eb5-91d067517bc0
+      iscommand: false
+      name: Is File type supported?
+      type: condition
+      version: -1
+    taskid: fafcbca2-d501-45d7-8eb5-91d067517bc0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      EntryID:
+        simple: ${inputs.File.EntryID}
+      entryID:
+        simple: ${inputs.File.EntryID}
+    separatecontext: false
+    task:
+      brand: Trend Micro Deep Discovery Analyzer
+      description: Uploads the submission to Trend Micro DDA.
+      id: 759f9829-2d6e-4679-8a61-8aa294224f87
+      iscommand: true
+      name: Trend Micro DDA Upload File
+      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-upload-file
+      type: regular
+      version: -1
+    taskid: 759f9829-2d6e-4679-8a61-8aa294224f87
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      Ids:
+        simple: ${TrendMicroDDA.Submission.SHA1}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: sha1
+      PollingCommandName:
+        simple: trendmicro-dda-check-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: TrendMicroDDA.Submission(val.Status != 'Completed').SHA1
+    separatecontext: true
+    task:
+      brand: ""
+      description: Generic Polling Playbook
+      id: 5c162061-9a4f-4ae4-8232-87d4a06566a5
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 5c162061-9a4f-4ae4-8232-87d4a06566a5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1070
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      sha1:
+        simple: ${TrendMicroDDA.Submission.SHA1}
+    separatecontext: false
+    task:
+      brand: Trend Micro Deep Discovery Analyzer
+      description: Updates the status of the submissions in the context.
+      id: cc912d0d-6f66-4217-810e-6acbd1b813f5
+      iscommand: true
+      name: trendmicro-dda-check-status
+      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-check-status
+      type: regular
+      version: -1
+    taskid: cc912d0d-6f66-4217-810e-6acbd1b813f5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1245
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    scriptarguments:
+      sha1:
+        simple: ${TrendMicroDDA.Submission(val.Status == 'Completed').SHA1}
+      threshold: {}
+      verbose: {}
+    separatecontext: false
+    task:
+      brand: Trend Micro Deep Discovery Analyzer
+      description: Retrieve the reports from Trend Micro DDA.
+      id: 1528760c-006b-405e-8c87-a3eebf451a84
+      iscommand: true
+      name: Trend Micro DDA Get Report
+      script: Trend Micro Deep Discovery Analyzer|||trendmicro-dda-get-report
+      type: regular
+      version: -1
+    taskid: 1528760c-006b-405e-8c87-a3eebf451a84
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1420
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 717.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

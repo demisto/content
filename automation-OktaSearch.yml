@@ -1,0 +1,35 @@
+args:
+- default: true
+  description: Term to search for, this term can be first name, last name or email
+  name: term
+  required: true
+comment: Search for Okta users
+commonfields:
+  id: OktaSearch
+  version: -1
+dependson:
+  must:
+  - okta-search
+deprecated: true
+enabled: true
+name: OktaSearch
+runonce: false
+script: |2
+
+  resp = demisto.executeCommand("okta-search", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.result")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- okta
+type: python

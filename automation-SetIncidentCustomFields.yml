@@ -1,0 +1,35 @@
+args:
+- default: true
+  description: The list of fields to set - can be either array or comma-separated
+  isArray: true
+  name: fields
+  required: true
+- description: The list of values to match the fields - can be either array or comma
+    separated
+  isArray: true
+  name: values
+  required: true
+comment: Sets current incident custom fields. (Deprecated. Use the setIncident command
+  to set incident custom fields.)
+commonfields:
+  id: SetIncidentCustomFields
+  version: -1
+deprecated: true
+enabled: true
+name: SetIncidentCustomFields
+runonce: false
+script: |-
+  var fields = argToList(args.fields);
+  var values = argToList(args.values);
+
+  var o = {};
+  for (var i=0; i<fields.length && i<values.length; i++) {
+      o[fields[i]] = values[i];
+  }
+
+  return executeCommand('setIncident', o);
+scripttarget: 0
+system: true
+tags:
+- Utility
+type: javascript

@@ -1,0 +1,29 @@
+args:
+- default: true
+  description: The table to convert to HTML
+  isArray: true
+  name: table
+- description: The optional title for the table
+  name: title
+comment: Converts a given array to an HTML table
+commonfields:
+  id: ConvertTableToHTML
+  version: -1
+enabled: true
+name: ConvertTableToHTML
+outputs:
+- contextPath: HTMLTable
+  description: The HTML table we created from the array
+runonce: false
+script: |
+  if (args.table) {
+      return {Type: entryTypes.note, Contents: '', ContentsFormat: formats.text,
+          HumanReadable: tableToMarkdown(args.title, args.table),
+          EntryContext: {HTMLTable: tableToHTML(args.title, args.table)}};
+  }
+  return 'Data does not exist';
+scripttarget: 0
+system: true
+tags:
+- Utility
+type: javascript

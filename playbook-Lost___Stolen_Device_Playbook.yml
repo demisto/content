@@ -1,0 +1,1428 @@
+description: |-
+  Initial incident details should be the name of the reporting person, or ID of the SIEM alert/incident, and description of the lost device.
+  Labels:
+   - User: the owner of the device
+id: playbook8
+inputs: []
+name: Lost / Stolen Device Playbook
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 3ffe3385-a733-407d-88b8-4bc323efde75
+      iscommand: false
+      name: start_task
+      type: start
+      version: -1
+    taskid: 3ffe3385-a733-407d-88b8-4bc323efde75
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 850c4685-415d-4625-82b4-5a71add73ddf
+      iscommand: false
+      name: Triage
+      version: -1
+    taskid: 850c4685-415d-4625-82b4-5a71add73ddf
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Depending on regulatory, compliance and legal requirements or company
+        procedure, you may need to involve the legal department, PR department, upper
+        management, the employee's immediate supervisor and/or other personnel.
+      id: 1dd39fd1-72fd-4e8c-8a40-92297b9d499a
+      iscommand: false
+      name: Notify and involve appropriate personnel
+      version: -1
+    taskid: 1dd39fd1-72fd-4e8c-8a40-92297b9d499a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 340
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d58b1e4d-b2a0-4122-8aa0-63f4adc10edc
+      iscommand: false
+      name: Was the incident reported by a person?
+      version: -1
+    taskid: d58b1e4d-b2a0-4122-8aa0-63f4adc10edc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 515
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: a58e43b1-82d0-4ba9-8f6d-2757d4075efa
+      iscommand: false
+      name: Display full details for the alert
+      version: -1
+    taskid: a58e43b1-82d0-4ba9-8f6d-2757d4075efa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 202.5,
+          "y": 670
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "no":
+      - "6"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f2963d5a-6d0b-4f96-8686-67c82746114d
+      iscommand: false
+      name: Was this person the owner of the device?
+      version: -1
+    taskid: f2963d5a-6d0b-4f96-8686-67c82746114d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 959,
+          "y": 670
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 69387c21-89a3-4909-8ea9-ce0c8055398d
+      iscommand: false
+      name: Interview reporter of the incident and document their full account
+      version: -1
+    taskid: 69387c21-89a3-4909-8ea9-ce0c8055398d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 953,
+          "y": 900
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: e0e04bad-e371-4be7-8056-974a97634a17
+      iscommand: false
+      name: Retrieve equipment information for the device from ERP software
+      version: -1
+    taskid: e0e04bad-e371-4be7-8056-974a97634a17
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 579,
+          "y": 1067
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 2b1a676a-d81d-40fd-8a66-c2617d9b3e01
+      iscommand: false
+      name: Retrieve device profile from IT asset management software
+      type: regular
+      version: -1
+    taskid: 2b1a676a-d81d-40fd-8a66-c2617d9b3e01
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1243
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 85c2c84c-5a80-47e8-8875-a8f5b6ea230a
+      iscommand: false
+      name: Retrieve employee information of the device's owner from HR software
+      version: -1
+    taskid: 85c2c84c-5a80-47e8-8875-a8f5b6ea230a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1432
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        How, where and when was the device lost?
+        When is the last time they are certain that it was in their possession?
+        Do they know if it was stolen deliberately?
+        If so, do they know anything at all about the perpetrator?
+        To their knowledge, was the security of the device fully enforced at the time? Do they admit to modifying the security configuration in any way for their convenience? (Removing the screen lock, shutting down anti-malware solutions, etc.)
+      id: b7c1f351-0611-4f74-8106-a3ba3d8400cb
+      iscommand: false
+      name: Interview owner of device and document full account of the incident
+      version: -1
+    taskid: b7c1f351-0611-4f74-8106-a3ba3d8400cb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1612
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6191b9a6-ed52-461d-8d38-f6305b90d848
+      iscommand: false
+      name: Report theft of device to authorities (including serial numbers)
+      version: -1
+    taskid: 6191b9a6-ed52-461d-8d38-f6305b90d848
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1791
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        What was the purpose of device?
+        How sensitive is the data stored on it?
+        What is the extent of access to corporate resources available to the device?
+        How well protected was the device? (Screen lock, encryption, etc.)
+        Did the device include any unique business data that is not backed up? How much and how important is this data?
+      id: 6ffc4cdf-0ae8-446a-8fef-f35f15ef9b2d
+      iscommand: false
+      name: Assess severity by reviewing device details and contents of latest backup
+      version: -1
+    taskid: 6ffc4cdf-0ae8-446a-8fef-f35f15ef9b2d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 1974
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6adc9ae9-f940-44e2-82e5-062b6e4aadad
+      iscommand: false
+      name: Respond
+      version: -1
+    taskid: 6adc9ae9-f940-44e2-82e5-062b6e4aadad
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 2216
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "15"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 03764251-cb89-401e-871b-79e3bca916b6
+      iscommand: false
+      name: Does the device support remote lockdown?
+      version: -1
+    taskid: 03764251-cb89-401e-871b-79e3bca916b6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 2382
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 7cdd5619-bb34-4795-8b5b-d893f62890d9
+      iscommand: false
+      name: Activate remote lockdown on the device
+      version: -1
+    taskid: 7cdd5619-bb34-4795-8b5b-d893f62890d9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 962.5,
+          "y": 2563
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "17"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6bfd15de-613e-490b-8e91-ad67c3d6855f
+      iscommand: false
+      name: Is the device a mobile phone?
+      version: -1
+    taskid: 6bfd15de-613e-490b-8e91-ad67c3d6855f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 962.5,
+          "y": 2760
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6cfb8ea1-d144-449c-854e-3c8cbc9138d5
+      iscommand: false
+      name: Contact the mobile server provider to report the device as stolen
+      version: -1
+    taskid: 6cfb8ea1-d144-449c-854e-3c8cbc9138d5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 317,
+          "y": 2923
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 4ee12420-0fe7-4c31-80e2-4232c1d1a0b2
+      iscommand: false
+      name: Request that the mobile service provider lock the SIM card
+      version: -1
+    taskid: 4ee12420-0fe7-4c31-80e2-4232c1d1a0b2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 317,
+          "y": 3108
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 140bf051-e77a-455a-8716-ca6714b812e0
+      iscommand: false
+      name: Remove the phone number from any 2-factor authentication profiles
+      version: -1
+    taskid: 140bf051-e77a-455a-8716-ca6714b812e0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 315,
+          "y": 3308
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 55eacd25-b076-4e40-8c4e-0640f94d1219
+      iscommand: false
+      name: Cancel any credit cards stored on the device
+      version: -1
+    taskid: 55eacd25-b076-4e40-8c4e-0640f94d1219
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 556,
+          "y": 3595
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: a8bd072b-c2fb-4d04-83be-1be8a5827868
+      iscommand: false
+      name: Change password to any financial or bank account stored on the device
+      version: -1
+    taskid: a8bd072b-c2fb-4d04-83be-1be8a5827868
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 556,
+          "y": 3801
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Block access to the compromised user account in AD pending investigation
+        and cleanup, after which the account will be reinstated by an Active Directory
+        administrator with the required permissions.
+      id: 1a83ba02-3043-423b-8f6e-b91e3ed5de09
+      iscommand: false
+      name: Disable compromised AD user account(s)
+      type: regular
+      version: -1
+    taskid: 1a83ba02-3043-423b-8f6e-b91e3ed5de09
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 556,
+          "y": 3974
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 5d152b2c-067d-47ec-829b-fa56b8960307
+      iscommand: false
+      name: Revoke VPN credentials
+      type: regular
+      version: -1
+    taskid: 5d152b2c-067d-47ec-829b-fa56b8960307
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 556,
+          "y": 4139
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 222681ac-e463-4e2c-8f9f-213531fc8bb5
+      iscommand: false
+      name: Revoke DLP keys/credentials so documents on the device cannot be decrypted
+      version: -1
+    taskid: 222681ac-e463-4e2c-8f9f-213531fc8bb5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 556,
+          "y": 4314
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Some accounts do not reside on systems managed by employees but
+        the Incident Response staff must be able to revoke, lock or rotate credentials
+        to cloud accounts containing organizational information assets.
+      id: 343dc3dd-5001-49de-8034-abf4a9e4c849
+      iscommand: false
+      name: Change account passwords for any cloud-based solutions used by the organization
+      version: -1
+    taskid: 343dc3dd-5001-49de-8034-abf4a9e4c849
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 556,
+          "y": 4497
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        Personal email, social media, LinkedIn profile - these are in the control of the employee and they must be involved in order to change passwords. IT/Security staff can help to expedite.
+
+        This is not only for the benefit of the employee - there is a real danger to the organization: access to these accounts could allow the thief to convincingly impersonate the owner of the device in order to engage in Social Engineering against our other employees and further attack the organization.
+      id: 8b83a98e-4916-4a76-80e5-8736a5a207ba
+      iscommand: false
+      name: Instruct owner to change passwords for any personal accounts
+      type: regular
+      version: -1
+    taskid: 8b83a98e-4916-4a76-80e5-8736a5a207ba
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 556,
+          "y": 4675
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: If the machine contained any authentication keys, accounts to internal
+        company resources and information systems, these should be locked and revoked,
+        and reinstated later with new passwords.
+      id: bd9b46ea-07eb-46ee-8308-46888a11640b
+      iscommand: false
+      name: Lock / Rotate any other compromised accounts, keys and credentials
+      type: regular
+      version: -1
+    taskid: bd9b46ea-07eb-46ee-8308-46888a11640b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 556,
+          "y": 4850
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "29"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 2964e242-127e-4c35-8b4c-87210110e1d4
+      iscommand: false
+      name: Was the device managed by an MDM solution?
+      version: -1
+    taskid: 2964e242-127e-4c35-8b4c-87210110e1d4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 556,
+          "y": 5037
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 11b2fd90-a311-43cc-884b-61b813f42871
+      iscommand: false
+      name: Mark the device as stolen in MDM
+      version: -1
+    taskid: 11b2fd90-a311-43cc-884b-61b813f42871
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5212
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "31"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 9fdc659a-7a71-497b-86b5-9df7d296e64f
+      iscommand: false
+      name: Did the device have tracking software installed?
+      version: -1
+    taskid: 9fdc659a-7a71-497b-86b5-9df7d296e64f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 5438
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d9a9e283-da65-4c51-8b71-8d4ae30a5cde
+      iscommand: false
+      name: Remotely activate tracking software on the device
+      version: -1
+    taskid: d9a9e283-da65-4c51-8b71-8d4ae30a5cde
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1013,
+          "y": 5609
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: If the thief wiped the device or kept it isolated and unable to
+        communicate, the tracking software may not be able to report.
+      id: f926807b-f376-4b87-8719-d07f790e6b94
+      iscommand: false
+      name: Periodically check if tracking software became active and sent results
+      version: -1
+    taskid: f926807b-f376-4b87-8719-d07f790e6b94
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1013,
+          "y": 5790
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "34"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 353aafad-f461-4556-8bb3-047b8bd4d0f3
+      iscommand: false
+      name: Does the device support remote wiping?
+      version: -1
+    taskid: 353aafad-f461-4556-8bb3-047b8bd4d0f3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 5985
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "35"
+      "yes":
+      - "36"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check with owner and backup records if there is any indication
+        that the device contained crucial data and no copies of that data can be recovered
+        from other company servers or backups.
+      id: 41d383ca-bb97-4a56-8431-913c7a84571a
+      iscommand: false
+      name: Did the device contain any unique critical business data?
+      version: -1
+    taskid: 41d383ca-bb97-4a56-8431-913c7a84571a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1058,
+          "y": 6154
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d10fca7f-ae27-4826-8695-5fdc4057b3d1
+      iscommand: false
+      name: Remotely wipe the device
+      version: -1
+    taskid: d10fca7f-ae27-4826-8695-5fdc4057b3d1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1532,
+          "y": 6317
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "37"
+      "yes":
+      - "38"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 40aae724-fa93-4bc4-8aa8-2bd9b6c0f5c7
+      iscommand: false
+      name: Was the device encrypted and turned off at the time of theft?
+      version: -1
+    taskid: 40aae724-fa93-4bc4-8aa8-2bd9b6c0f5c7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 678,
+          "y": 6317
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: If the device was unencrypted the risk of confidential data leaking
+        is too great and we should wipe immediately.
+      id: 186926f8-d32d-4eb2-8c5b-fe51e56c13e6
+      iscommand: false
+      name: Remotely wipe the device
+      version: -1
+    taskid: 186926f8-d32d-4eb2-8c5b-fe51e56c13e6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 254,
+          "y": 6480
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: The decision needs to be made whether the data on the device is
+        important enough to defer wiping in the off chance that we can retrieve the
+        device.
+      id: b17974fa-4c9c-44ab-8fe2-2a61b89fcc31
+      iscommand: false
+      name: Escalate the decision to management
+      version: -1
+    taskid: b17974fa-4c9c-44ab-8fe2-2a61b89fcc31
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 962.5,
+          "y": 6480
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "40"
+      "yes":
+      - "41"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6a1e822a-db19-4ce6-8a91-920d3ba295c3
+      iscommand: false
+      name: Did management decide to wipe the device?
+      version: -1
+    taskid: 6a1e822a-db19-4ce6-8a91-920d3ba295c3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 962.5,
+          "y": 6678
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 17ae1afa-f97e-4346-87c8-32b92e5186a3
+      iscommand: false
+      name: Document the decision including written authorization to not wipe
+      version: -1
+    taskid: 17ae1afa-f97e-4346-87c8-32b92e5186a3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 6839
+        }
+      }
+  "41":
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: cd7480e8-b360-4bf4-8330-2e4b8764b214
+      iscommand: false
+      name: Remotely wipe the device
+      version: -1
+    taskid: cd7480e8-b360-4bf4-8330-2e4b8764b214
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1377,
+          "y": 6839
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 91929b2e-11a6-4882-8948-7095ac0d5a52
+      iscommand: false
+      name: Remove the stolen device from the organization's domain(s)
+      version: -1
+    taskid: 91929b2e-11a6-4882-8948-7095ac0d5a52
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 579,
+          "y": 7269
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 338b43c9-b630-4501-88c8-12ee2929609d
+      iscommand: false
+      name: Remove the device's MAC address from any whitelists
+      version: -1
+    taskid: 338b43c9-b630-4501-88c8-12ee2929609d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 742,
+          "y": 7444
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Ensure that the thief cannot use the device to infiltrate our network.
+      id: c3235bb8-65cb-4636-8bdc-5672b358fdcc
+      iscommand: false
+      name: Blacklist the stolen device in WiFi and NAC
+      version: -1
+    taskid: c3235bb8-65cb-4636-8bdc-5672b358fdcc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 742,
+          "y": 7609
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "46"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: If the thief attempts to use the device to access the network we
+        want to block it and get an immediate critical alert to the SOC.
+      id: bb6645c4-0c69-4448-809f-b429273b2543
+      iscommand: false
+      name: Insert device's MAC address to network security watchlists
+      version: -1
+    taskid: bb6645c4-0c69-4448-809f-b429273b2543
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 742,
+          "y": 7789
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "47"
+      "yes":
+      - "49"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: b37ade68-25c6-45a4-85e7-249c77347bbc
+      iscommand: false
+      name: Is the organization using an enterprise WiFi solution with individual
+        auth?
+      version: -1
+    taskid: b37ade68-25c6-45a4-85e7-249c77347bbc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 742,
+          "y": 7961
+        }
+      }
+  "47":
+    id: "47"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "48"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Must be in a way that the thief will not see - a medium where the
+        compromised account used on the device had already been locked, SMS after
+        the compromised SIM had been locked, etc.
+      id: 4893a678-7b19-4231-8fb0-0c7bf54d93b5
+      iscommand: false
+      name: Send a memo to users of the affected WiFi network(s) with new password
+      version: -1
+    taskid: 4893a678-7b19-4231-8fb0-0c7bf54d93b5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 298,
+          "y": 8129
+        }
+      }
+  "48":
+    id: "48"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "50"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: b0ce366b-64a7-40bd-8fef-1f08371b084f
+      iscommand: false
+      name: Change the WiFi passwords for all networks accessible from the compromised
+        device
+      version: -1
+    taskid: b0ce366b-64a7-40bd-8fef-1f08371b084f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 298,
+          "y": 8313
+        }
+      }
+  "49":
+    id: "49"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "50"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: bdd320bd-25c0-474c-846b-c189391e8b8d
+      iscommand: false
+      name: Revoke WiFi credentials
+      version: -1
+    taskid: bdd320bd-25c0-474c-846b-c189391e8b8d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1162,
+          "y": 8129
+        }
+      }
+  "50":
+    id: "50"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "51"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: cd286bd9-00a9-44e5-83b6-781f3e01c3ba
+      iscommand: false
+      name: Final steps
+      version: -1
+    taskid: cd286bd9-00a9-44e5-83b6-781f3e01c3ba
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 8512
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "52"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        If, to their knowledge, other employees or accounts are using the same password (e.g. a password common across the organization), those accounts may be in danger of compromise. This is true even if these accounts were never accessed from the stolen device.
+
+        The attacker may try the passwords stored in the device on other employees' accounts. In many cases it is not possible to retrieve the clear text version of the password but some advanced attacks allow attacker to try the password hash or other representation against other accounts.
+      id: efc412a5-a348-4072-8e8f-959e3aa3a482
+      iscommand: false
+      name: Check with owner if they were using a common password shared with other
+        users
+      version: -1
+    taskid: efc412a5-a348-4072-8e8f-959e3aa3a482
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 8675
+        }
+      }
+  "52":
+    id: "52"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "53"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: c2c42f58-b862-4443-8073-2b8b4c322f04
+      iscommand: false
+      name: Open a ticket for procurement to mark the device as stolen in ERP software
+      version: -1
+    taskid: c2c42f58-b862-4443-8073-2b8b4c322f04
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 8854
+        }
+      }
+  "53":
+    id: "53"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "54"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6bbe97d0-af99-43da-88be-ae84ec0c2267
+      iscommand: false
+      name: Open a ticket for new device to be supplied and provisioned by IT
+      version: -1
+    taskid: 6bbe97d0-af99-43da-88be-ae84ec0c2267
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 9047
+        }
+      }
+  "54":
+    id: "54"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: a5a8e072-2d12-46ad-8448-1c958924aa4d
+      iscommand: false
+      name: Issue report to CISO by email
+      type: regular
+      version: -1
+    taskid: a5a8e072-2d12-46ad-8448-1c958924aa4d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 9219
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_15_yes": 0.63,
+      "16_20_#default#": 0.84,
+      "28_30_#default#": 0.71,
+      "30_33_#default#": 0.54,
+      "33_42_#default#": 0.73,
+      "5_7_#default#": 0.81
+    },
+    "paper": {
+      "dimensions": {
+        "height": 9264,
+        "width": 1912,
+        "x": 0,
+        "y": 50
+      }
+    }
+  }

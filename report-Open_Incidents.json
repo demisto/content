@@ -1,0 +1,876 @@
+{
+	"createdBy": "DBot",
+	"cronView": false,
+	"dashboard": {
+		"commitMessage": "",
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"id": "",
+		"isCommon": false,
+		"layout": [
+			{
+				"forceRange": false,
+				"h": 1,
+				"i": "fb267300-0107-11e8-aeda-5f3f626d4876",
+				"id": "fb267300-0107-11e8-aeda-5f3f626d4876",
+				"w": 12,
+				"widget": {
+					"category": "",
+					"commitMessage": "",
+					"dataType": "incidents",
+					"dateRange": {
+						"fromDate": "0001-01-01T00:00:00Z",
+						"fromDateLicense": "0001-01-01T00:00:00Z",
+						"period": {
+							"by": "",
+							"byFrom": "days",
+							"byTo": "",
+							"field": "",
+							"fromValue": null,
+							"toValue": null
+						},
+						"toDate": "0001-01-01T00:00:00Z"
+					},
+					"id": "84",
+					"isPredefined": false,
+					"modified": "2018-01-24T13:00:15.373746922Z",
+					"name": "openIncidentsReport Headline",
+					"params": {
+						"text": "# **Open Incidents**\n\n{date}\n\n---"
+					},
+					"prevName": "",
+					"query": "-status:closed",
+					"shouldCommit": false,
+					"size": 0,
+					"sort": null,
+					"sortValues": null,
+					"vcShouldIgnore": false,
+					"version": 1,
+					"widgetType": "text"
+				},
+				"x": 0,
+				"y": 0
+			},
+			{
+				"forceRange": false,
+				"h": 1,
+				"i": "fbbbae20-0107-11e8-aeda-5f3f626d4876",
+				"id": "fbbbae20-0107-11e8-aeda-5f3f626d4876",
+				"w": 12,
+				"widget": {
+					"category": "",
+					"commitMessage": "",
+					"dataType": "incidents",
+					"dateRange": {
+						"fromDate": "0001-01-01T00:00:00Z",
+						"fromDateLicense": "0001-01-01T00:00:00Z",
+						"period": {
+							"by": "",
+							"byFrom": "days",
+							"byTo": "",
+							"field": "",
+							"fromValue": null,
+							"toValue": null
+						},
+						"toDate": "0001-01-01T00:00:00Z"
+					},
+					"id": "85",
+					"isPredefined": false,
+					"modified": "2018-01-24T13:07:52.125658013Z",
+					"name": "openIncidentsReport Headline1",
+					"params": {
+						"text": "# Total open incidents: {0}"
+					},
+					"prevName": "",
+					"query": "-status:closed",
+					"shouldCommit": false,
+					"size": 0,
+					"sort": null,
+					"sortValues": null,
+					"vcShouldIgnore": false,
+					"version": 1,
+					"widgetType": "text"
+				},
+				"x": 0,
+				"y": 1
+			},
+			{
+				"forceRange": false,
+				"h": 2,
+				"i": "1c3bd710-0108-11e8-aeda-5f3f626d4876",
+				"id": "1c3bd710-0108-11e8-aeda-5f3f626d4876",
+				"w": 6,
+				"widget": {
+					"category": "",
+					"commitMessage": "",
+					"dataType": "incidents",
+					"dateRange": {
+						"fromDate": "0001-01-01T00:00:00Z",
+						"fromDateLicense": "0001-01-01T00:00:00Z",
+						"period": {
+							"by": "",
+							"byFrom": "days",
+							"byTo": "",
+							"field": "",
+							"fromValue": null,
+							"toValue": null
+						},
+						"toDate": "0001-01-01T00:00:00Z"
+					},
+					"id": "86",
+					"isPredefined": false,
+					"modified": "2018-01-24T13:08:42.916035515Z",
+					"name": "Severity",
+					"params": {
+						"groupBy": [
+							"severity"
+						]
+					},
+					"prevName": "",
+					"query": "-status:closed",
+					"shouldCommit": false,
+					"size": 0,
+					"sort": null,
+					"sortValues": null,
+					"vcShouldIgnore": false,
+					"version": 1,
+					"widgetType": "pie"
+				},
+				"x": 0,
+				"y": 2
+			},
+			{
+				"forceRange": false,
+				"h": 2,
+				"i": "1fec8300-0108-11e8-aeda-5f3f626d4876",
+				"id": "1fec8300-0108-11e8-aeda-5f3f626d4876",
+				"w": 6,
+				"widget": {
+					"category": "",
+					"commitMessage": "",
+					"dataType": "incidents",
+					"dateRange": {
+						"fromDate": "0001-01-01T00:00:00Z",
+						"fromDateLicense": "0001-01-01T00:00:00Z",
+						"period": {
+							"by": "",
+							"byFrom": "days",
+							"byTo": "",
+							"field": "",
+							"fromValue": null,
+							"toValue": null
+						},
+						"toDate": "0001-01-01T00:00:00Z"
+					},
+					"id": "87",
+					"isPredefined": false,
+					"modified": "2018-01-24T13:08:51.649177332Z",
+					"name": "Type",
+					"params": {
+						"groupBy": [
+							"type"
+						]
+					},
+					"prevName": "",
+					"query": "-status:closed",
+					"shouldCommit": false,
+					"size": 0,
+					"sort": null,
+					"sortValues": null,
+					"vcShouldIgnore": false,
+					"version": 1,
+					"widgetType": "pie"
+				},
+				"x": 6,
+				"y": 2
+			},
+			{
+				"forceRange": false,
+				"h": 2,
+				"i": "286e8d20-0108-11e8-aeda-5f3f626d4876",
+				"id": "286e8d20-0108-11e8-aeda-5f3f626d4876",
+				"w": 6,
+				"widget": {
+					"category": "",
+					"commitMessage": "",
+					"dataType": "incidents",
+					"dateRange": {
+						"fromDate": "0001-01-01T00:00:00Z",
+						"fromDateLicense": "0001-01-01T00:00:00Z",
+						"period": {
+							"by": "",
+							"byFrom": "days",
+							"byTo": "",
+							"field": "",
+							"fromValue": null,
+							"toValue": null
+						},
+						"toDate": "0001-01-01T00:00:00Z"
+					},
+					"id": "88",
+					"isPredefined": false,
+					"modified": "2018-01-24T13:08:59.736513907Z",
+					"name": "SLA",
+					"params": {
+						"groupBy": [
+							"dbotDueDate"
+						]
+					},
+					"prevName": "",
+					"query": "-status:closed",
+					"shouldCommit": false,
+					"size": 0,
+					"sort": null,
+					"sortValues": null,
+					"vcShouldIgnore": false,
+					"version": 1,
+					"widgetType": "pie"
+				},
+				"x": 0,
+				"y": 4
+			},
+			{
+				"forceRange": false,
+				"h": 2,
+				"i": "29a95710-0108-11e8-aeda-5f3f626d4876",
+				"id": "29a95710-0108-11e8-aeda-5f3f626d4876",
+				"w": 6,
+				"widget": {
+					"category": "",
+					"commitMessage": "",
+					"dataType": "incidents",
+					"dateRange": {
+						"fromDate": "0001-01-01T00:00:00Z",
+						"fromDateLicense": "0001-01-01T00:00:00Z",
+						"period": {
+							"by": "",
+							"byFrom": "days",
+							"byTo": "",
+							"field": "",
+							"fromValue": null,
+							"toValue": null
+						},
+						"toDate": "0001-01-01T00:00:00Z"
+					},
+					"id": "89",
+					"isPredefined": false,
+					"modified": "2018-01-24T13:09:15.337206966Z",
+					"name": "Analyst",
+					"params": {
+						"groupBy": [
+							"owner"
+						]
+					},
+					"prevName": "",
+					"query": "-status:closed",
+					"shouldCommit": false,
+					"size": 0,
+					"sort": null,
+					"sortValues": null,
+					"vcShouldIgnore": false,
+					"version": 1,
+					"widgetType": "bar"
+				},
+				"x": 6,
+				"y": 4
+			},
+			{
+				"forceRange": false,
+				"h": 2,
+				"i": "33b583a0-0108-11e8-aeda-5f3f626d4876",
+				"id": "33b583a0-0108-11e8-aeda-5f3f626d4876",
+				"w": 12,
+				"widget": {
+					"category": "",
+					"commitMessage": "",
+					"dataType": "incidents",
+					"dateRange": {
+						"fromDate": "0001-01-01T00:00:00Z",
+						"fromDateLicense": "0001-01-01T00:00:00Z",
+						"period": {
+							"by": "",
+							"byFrom": "days",
+							"byTo": "",
+							"field": "",
+							"fromValue": null,
+							"toValue": null
+						},
+						"toDate": "0001-01-01T00:00:00Z"
+					},
+					"id": "86",
+					"isPredefined": false,
+					"modified": "2018-01-24T13:08:42.916035515Z",
+					"name": "Open Incidents",
+					"params": {
+						"tableColumns": [
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "name",
+								"width": 300
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "occurred",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "type",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "owner",
+								"width": 160
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "severity",
+								"width": 80
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "status",
+								"width": 120
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "dueDate",
+								"width": 200
+							}
+						]
+					},
+					"prevName": "",
+					"query": "-status:closed",
+					"shouldCommit": false,
+					"size": 0,
+					"sort": null,
+					"sortValues": null,
+					"vcShouldIgnore": false,
+					"version": 1,
+					"widgetType": "table"
+				},
+				"x": 0,
+				"y": 6
+			}
+		],
+		"modified": "0001-01-01T00:00:00Z",
+		"name": "Open Incidents",
+		"owner": "",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": null,
+			"toValue": null
+		},
+		"prevName": "",
+		"shared": false,
+		"shouldCommit": false,
+		"sortValues": null,
+		"system": false,
+		"toDate": "0001-01-01T00:00:00Z",
+		"vcShouldIgnore": false,
+		"version": 0
+	},
+	"decoder": {
+		"evidences.fetched": {
+			"type": "date",
+			"value": "02/01/06 3:04:05 PM"
+		},
+		"evidences.markedDate": {
+			"type": "date",
+			"value": "02/01/06 3:04:05 PM"
+		},
+		"evidences.occurred": {
+			"type": "date",
+			"value": "02/01/06 3:04:05 PM"
+		},
+		"incident.activated": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.closed": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.created": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.dueDate": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.occurred": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.openDuration": {
+			"type": "duration",
+			"value": ""
+		},
+		"incident.reminder": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"incident.severity.0": {
+			"type": "string",
+			"value": "Unknown"
+		},
+		"incident.severity.0.5": {
+			"type": "string",
+			"value": "Informational"
+		},
+		"incident.severity.1": {
+			"type": "string",
+			"value": "Low"
+		},
+		"incident.severity.2": {
+			"type": "string",
+			"value": "Medium"
+		},
+		"incident.severity.3": {
+			"type": "string",
+			"value": "High"
+		},
+		"incident.severity.4": {
+			"type": "string",
+			"value": "Critical"
+		},
+		"incident.status.0": {
+			"type": "string",
+			"value": "Pending"
+		},
+		"incident.status.1": {
+			"type": "string",
+			"value": "Active"
+		},
+		"incident.status.2": {
+			"type": "string",
+			"value": "Closed"
+		},
+		"incident.status.3": {
+			"type": "string",
+			"value": "Closed"
+		},
+		"incident.status.4": {
+			"type": "string",
+			"value": "On Hold"
+		},
+		"indicators.score.0": {
+			"type": "string",
+			"value": "None"
+		},
+		"indicators.score.1": {
+			"type": "string",
+			"value": "Good"
+		},
+		"indicators.score.2": {
+			"type": "string",
+			"value": "suspicious"
+		},
+		"indicators.score.3": {
+			"type": "string",
+			"value": "Bad"
+		},
+		"investigation.closed": {
+			"type": "date",
+			"value": "02 Jan 2006"
+		},
+		"investigation.created": {
+			"type": "date",
+			"value": "Mon, 02 Jan 2006 15:04:05 MST"
+		},
+		"investigation.openDuration": {
+			"type": "duration",
+			"value": ""
+		},
+		"investigation.status.0": {
+			"type": "string",
+			"value": "Active"
+		},
+		"investigation.status.1": {
+			"type": "string",
+			"value": "Done"
+		},
+		"investigation.type.0": {
+			"type": "string",
+			"value": "Standard"
+		},
+		"investigation.type.1": {
+			"type": "string",
+			"value": "Restricted"
+		},
+		"investigation.type.9": {
+			"type": "string",
+			"value": "Playground"
+		}
+	},
+	"description": "List and statistics of the current open incidents including type and severity distribution and SLA compliance.",
+	"disableHeader": false,
+	"endingDate": "0001-01-01T00:00:00Z",
+	"id": "openIncidentsReport",
+	"latestReportName": "",
+	"latestReportTime": "0001-01-01T00:00:00Z",
+	"latestReportUsername": "",
+	"latestScheduledReportTime": "0001-01-01T00:00:00Z",
+	"locked": false,
+	"name": "Open Incidents",
+	"nextScheduledTime": "0001-01-01T00:00:00Z",
+	"orientation": "portrait",
+	"paperSize": "A4",
+	"recipients": [],
+	"recurrent": false,
+	"reportType": "",
+	"runOnce": false,
+	"runningUser": "",
+	"scheduled": false,
+	"sections": [
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "# **Open Incidents**\n\n{date}\n\n---",
+			"layout": {
+				"columnPos": 0,
+				"h": 1,
+				"i": "fb267300-0107-11e8-aeda-5f3f626d4876",
+				"rowPos": 0,
+				"w": 12
+			},
+			"query": {
+				"filter": {
+					"fromDate": null,
+					"period": {
+						"by": "day",
+						"byFrom": "days",
+						"fromValue": null
+					},
+					"query": "-status:closed",
+					"toDate": null
+				},
+				"type": "incident"
+			},
+			"title": "openIncidentsReport Headline",
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": "# Total open incidents: {0}",
+			"layout": {
+				"columnPos": 0,
+				"h": 1,
+				"i": "fbbbae20-0107-11e8-aeda-5f3f626d4876",
+				"rowPos": 1,
+				"w": 12
+			},
+			"query": {
+				"filter": {
+					"fromDate": null,
+					"period": {
+						"by": "day",
+						"byFrom": "days",
+						"fromValue": null
+					},
+					"query": "-status:closed",
+					"toDate": null
+				},
+				"type": "incident"
+			},
+			"title": "openIncidentsReport Headline1",
+			"titleStyle": null,
+			"type": "placeholder"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"chartProperties": {
+					"cx": 103.9,
+					"cy": 75,
+					"innerRadius": 54.43730482169373,
+					"layout": "horizontal",
+					"maxRadius": 145.1661461911833,
+					"outerRadius": 72.58307309559164
+				},
+				"chartType": "pie",
+				"columnPos": 0,
+				"dimensions": {
+					"height": 180,
+					"width": 340
+				},
+				"h": 2,
+				"i": "1c3bd710-0108-11e8-aeda-5f3f626d4876",
+				"legendStyle": {
+					"align": "left",
+					"iconType": "circle",
+					"layout": "vertical",
+					"verticalAlign": "top",
+					"width": 112.2
+				},
+				"rowPos": 2,
+				"w": 6
+			},
+			"query": {
+				"filter": {
+					"fromDate": null,
+					"period": {
+						"by": "day",
+						"byFrom": "days",
+						"fromValue": null
+					},
+					"query": "-status:closed",
+					"toDate": null
+				},
+				"groupBy": [
+					"severity"
+				],
+				"type": "incident"
+			},
+			"title": "Severity",
+			"titleStyle": null,
+			"type": "chart"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"chartProperties": {
+					"cx": 103.9,
+					"cy": 75,
+					"innerRadius": 54.43730482169373,
+					"layout": "horizontal",
+					"maxRadius": 145.1661461911833,
+					"outerRadius": 72.58307309559164
+				},
+				"chartType": "pie",
+				"columnPos": 6,
+				"dimensions": {
+					"height": 180,
+					"width": 340
+				},
+				"h": 2,
+				"i": "1fec8300-0108-11e8-aeda-5f3f626d4876",
+				"legendStyle": {
+					"align": "left",
+					"iconType": "circle",
+					"layout": "vertical",
+					"verticalAlign": "top",
+					"width": 112.2
+				},
+				"rowPos": 2,
+				"w": 6
+			},
+			"query": {
+				"filter": {
+					"fromDate": null,
+					"period": {
+						"by": "day",
+						"byFrom": "days",
+						"fromValue": null
+					},
+					"query": "-status:closed",
+					"toDate": null
+				},
+				"groupBy": [
+					"type"
+				],
+				"type": "incident"
+			},
+			"title": "Type",
+			"titleStyle": null,
+			"type": "chart"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"chartProperties": {
+					"cx": 103.9,
+					"cy": 75,
+					"innerRadius": 54.43730482169373,
+					"layout": "horizontal",
+					"maxRadius": 145.1661461911833,
+					"outerRadius": 72.58307309559164
+				},
+				"chartType": "pie",
+				"columnPos": 0,
+				"dimensions": {
+					"height": 180,
+					"width": 340
+				},
+				"h": 2,
+				"i": "286e8d20-0108-11e8-aeda-5f3f626d4876",
+				"legendStyle": {
+					"align": "left",
+					"iconType": "circle",
+					"layout": "vertical",
+					"verticalAlign": "top",
+					"width": 112.2
+				},
+				"rowPos": 4,
+				"w": 6
+			},
+			"query": {
+				"filter": {
+					"fromDate": null,
+					"period": {
+						"by": "day",
+						"byFrom": "days",
+						"fromValue": null
+					},
+					"query": "-status:closed",
+					"toDate": null
+				},
+				"groupBy": [
+					"dbotDueDate"
+				],
+				"type": "incident"
+			},
+			"title": "SLA",
+			"titleStyle": null,
+			"type": "chart"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"chartProperties": {
+					"barSize": 15,
+					"layout": "vertical"
+				},
+				"chartType": "bar",
+				"columnPos": 6,
+				"dimensions": {
+					"height": 180,
+					"width": 340
+				},
+				"h": 2,
+				"i": "29a95710-0108-11e8-aeda-5f3f626d4876",
+				"legendStyle": {
+					"align": "center",
+					"hideLegend": false,
+					"iconType": "square",
+					"layout": "horizontal",
+					"verticalAlign": "top",
+					"wrapperStyle": {
+						"maxHeight": 48,
+						"top": 5,
+						"width": "100%"
+					}
+				},
+				"rowPos": 4,
+				"w": 6
+			},
+			"query": {
+				"filter": {
+					"fromDate": null,
+					"period": {
+						"by": "day",
+						"byFrom": "days",
+						"fromValue": null
+					},
+					"query": "-status:closed",
+					"toDate": null
+				},
+				"groupBy": [
+					"owner"
+				],
+				"type": "incident"
+			},
+			"title": "Analyst",
+			"titleStyle": null,
+			"type": "chart"
+		},
+		{
+			"automation": {
+				"args": null,
+				"id": "",
+				"name": "",
+				"noEvent": false
+			},
+			"data": null,
+			"layout": {
+				"classes": "striped stackable small very compact",
+				"columnPos": 0,
+				"h": 2,
+				"i": "33b583a0-0108-11e8-aeda-5f3f626d4876",
+				"rowPos": 6,
+				"tableColumns": [
+					"name",
+					"occurred",
+					"type",
+					"owner",
+					"severity",
+					"status",
+					"dueDate"
+				],
+				"w": 12
+			},
+			"query": {
+				"filter": {
+					"fromDate": null,
+					"period": {
+						"by": "day",
+						"byFrom": "days",
+						"fromValue": null
+					},
+					"query": "-status:closed",
+					"toDate": null
+				},
+				"type": "incident"
+			},
+			"title": "Open Incidents",
+			"titleStyle": null,
+			"type": "table"
+		}
+	],
+	"sensitive": false,
+	"sortValues": null,
+	"startDate": "0001-01-01T00:00:00Z",
+	"system": true,
+	"times": 0,
+	"timezoneOffset": 0,
+	"type": "pdf",
+	"userAPIKey": "",
+	"userAPIKeyID": "",
+	"version": -1
+}

@@ -1,0 +1,600 @@
+category: Database
+commonfields:
+  id: Snowflake
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Account - See Detailed Description section.
+  name: account
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ""
+  display: Region (only if you are not US West)
+  name: region
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Authenticator - See Detailed Description section.
+  name: authenticator
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Default warehouse to use
+  name: warehouse
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Default database to use
+  name: database
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Default schema to use
+  name: schema
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Default role to use
+  name: role
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉‎                                                                                  Fetch
+    query to retrieve new incidents. This field is mandatory when 'Fetches incidents'
+    is set to true.
+  name: fetch_query
+  required: false
+  type: 0
+- defaultvalue: 24 hours
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: The name of the field/column that contains the datetime object or timestamp
+    for the data being fetched (case sensitive). This field is mandatory when 'Fetches
+    incidents' is set to true.
+  name: datetime_column
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: The name of the field/column in the fetched data from which the name for
+    the demisto incident will be assigned (case sensitive)
+  name: incident_name_column
+  required: false
+  type: 0
+- defaultvalue: "10000"
+  display: The maximum number of rows to be returned by a fetch
+  name: limit
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Analytic data warehouse provided as Software-as-a-Service.
+detaileddescription: |
+  ## Integration Parameters
+
+  ### Account
+  The name of the Snowflake account to connect to without the domain name: snowflakecomputing.com. For example, mycompany.snowflakecomputing.com, enter "mycompany". For more information, see the [Snowflake Computing documentation](https://docs.snowflake.net/manuals/user-guide/python-connector-api.html#label-account-format-info).
+
+  ### Authenticator
+  (Optional) Use this parameter to log in to your Snowflake account using Okta. For the 'Username' parameter, enter your '<okta_login_name>'. For the 'Password' parameter, enter your '<okta_password>'. The value entered here should be 'https://<okta_account_name>.okta.com/' where all the values between the less than and greater than symbols are replaced with the actual information specific to your Okta account.
+
+  ### Credentials
+  To use Key Pair authentication, follow these instructions:
+  1. Follow steps 1-4 in the instructions detailed in the [Snowflake Computing documentation](https://docs.snowflake.net/manuals/user-guide/python-connector-example.html#using-key-pair-authentication).
+  2. Follow the instructions under the section titled **Configure Demisto Credentials** at this [link](https://support.demisto.com/hc/en-us/articles/115002567894).
+  3. Use the credentials you configured. Refer to the two images at the bottom of the section titled **Configure an External Credentials Vault**.
+display: Snowflake
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAAEsJJREFUeAHtWnl0VEW6r6q79e3uEELSHQwgm4CIG6COIA5hMenOIgxo5s0RRdTHuCA6zpth5P0xvDfHcRs9joqDjOuoqKholk4nIWBAEFT0jUt4sghPgewJkaSXe2/dqvdVx24STFDOcTnOuXVO971d9X3frfp9Vd92GyGnOQg4CDgIOAg4CDgIOAg4CDgIOAg4CDgIOAg4CDgIOAg4CDgIOAg4CDgIfL8I4FMTz0mwvGMux5brULS9qr5kkpnkvyzUcr6meSd0xzo31RXntCX7neuPiwA5lccHy1pvkXWtWvWkl47Uff+V5A2EGy9UifQWkeWXXFjZMG39IT055lx/XAROScFIJrM4zJdZFmKEzD4+deVCorm9NNqFMOcX6B6v//iYc/djIjCggnPLG7Lmbuw4vc/kOGKICxVzUCSzk2PYhg7OEj9h1GbH4inTn/v0wcF51U2jk7TO9YdFoF8FB8obZuiK9oFC0ceFVUefDJQemSCmhYWCv0WT3LHYtLcP6fmVbcv0oem7ZOT6OBBq+zNsjpTiv4WYnwTJ1F27lEB5a25huP1KOBDpsEYSCLfNyV9/aMipLiBQ2jphbqjpnFPlOxl9vwpGWPqV6h40AsztICKr1xHVvaOgvHUVnNyM5EkdSCgmmGmy998yvtTfUlXXIwTjsfDxIGYvvaSszTsQ30+xf9Sqgy5/y6gXFbf7TU6kl5WYcf7cisbhEpFrids9/1TXRCT8J5VLfz1VvpPR96tgML5v0HikU1JdyDZjwM8yiEv7I8JoLrNSgfPX5faY6TQsqw9hoky1jRjChMBHQojgl7ZfnhX5OtNPt2f8ZPelkqwutOPRm4xI95nh+NBtgJEHY4wwZuqprowTJIOJlE+V72T0/Sq4Zl72RhaNXWIb5vOcEAqnGDHTOJmc1BjYYMypBYedIUnTEaP2P5lllFQV+paLVacI/wVuiIwnUit+7Ggk/uymBcP3ohKIRqBxiFNgoSJYOaUG6ICOT53vZA/pV8GCITz/tN2VhRlXY5vOsW1zI5YVRJTjm5InjmWPaMYRHNOv3CucVsnlBv3yz6lp3irZ8UtCwcxXQO//UsrNX//lEIgo/LBuOlhJy5n2Nv9eU8PcUMtQ4d9Ppsz+xvqYg2Bl23xZ1aYYRiRUUzj0HcFQWejfCoLzgxUdCyFNulPW9ClC0dSMJcYFDZPglBqmKbvTVGrEOqhl/M20Oh/ZNG9MsxhPtmBl02xJT5tlRbq3VBdl1yb7e64cB8LtszHHMwE4D8Fka/Sef4bq6mZRMS4W6EKopIvipwcROxdL6gxYrsUtu7aq2FfXI6Pv9+zXvxiru9MKmM3GwgZrlIhVVRHI/lBQ5Ve1TkEWmlJd7HuiL1f/vy57tWUcVlGgpti3ujDUPsEm1jaMpEFw4CTiJvXpHS0h4FzYPzfMH7IJtz+9AEt8CqPc4MjeWlXorymsaZlmM2lMVTDr+YF4gxUt18F67w+WNl0aRmi3oJu0vl4d6fHNRkS6BMyFB0nSbh6xq8ILMw/3lpOKavMrGmfJsmuzMKtWPGaAL3nBjNJ7Ny3w7U0yFJc3uG3ims8QU1uzM1/IONJwNqbIvXHhsO2XbWicqXm9ZxvHOms2XjFiX5JHXIOlRyZj1X0ngLFQdrmJFe+OW4xeVFs49GMxLgoj6R7XWll1LWJm/CDDuJNIZDzi+F2L0EUb83wNgTcaCyTdHYLs7EPwcedx2/4cNoICPjDHtsynYy1dN9ctGR0X8kQrCLXchmT1Lm5TG0zmYdj6fgApg1H6UDi6aUWBnnsNVpSnDGqOrS3KPtDDNfB3sLx5LZzWy78Y7TvdV9+quj14ETy/GDEOm027m5rxd4Rrm1vRMFFT3Lttat0IbulxITFY1jiTaPpT3GYjQbH7YV0aFIVGwVpCyOYa52xkuNg/PlDR/BpBJKuyyDczOZNAafMi2eN5zjLjTxnNXbeINeaXfT5J0tKfAOVdzGzrMNhGEeyMhAMYg/WtSD5XyEgdeSyRwUK5EFyBE7U1GaJnzSXvDFa03TWntDlbEJcX50QrC4esqyrMeibrSFOequrbtbS0bcGK5qUbF5y2pSIvbXVv5ea+2DgqWNXxCNL0tyRFuRLsNrGNKGw21UUsO03IFG2wV89XPYMWURq/Y+9nnROrCrKmUBS/ACYdlym+SNBwRWJEkoV/G85tK/h5JHO8bJvjqG1eKynaYt3nXSnoRBM7XtK9DyFqrzVVezwseFK0RR7HqPkHWXf9NujK/e/2L6XXbEq7FSRd2cPV8y02ceD1xlG9+xLpD5YWAFrP1E/CZl2Jv7uy0LcGMoONAHK0Mlh9t1Bub57kfX5V4yTicpcixo5QZp4fLsg664tI5gRm2vlQPJgsuT1z4TAdS9L3vuaVN/1S8rj/AYWlZ4x3M38tlBt87fBwSRkUgk2eyRCdE2vuHldZmHWmyelESGNfU3TPmkCo5dqknJSJxvv8lebY9rsJIcskVUtLRM8YZ8i6vhIbxlWFlW0PdHTHnthRMiKWH2qbp6jK87ZF2yCAikiq/rdAqBWDYsQu5wIQxULLEOHLZUXz20YcovF4T9Blmm3Uit1XY+YcN/E2zgLNIWTQPfuXj0tEczX5OZ/CJAtAtSkrA5sQ/IH9+8oif5VYQD1CIqR/tqCi+TwwwTfnrm+5T86QJWTZd9N490vhQv8dgk60uiUZnXD5S7CyOY0o2n96MqJrMZJfAfGLpz6+68H3f30BRIYIUSz9gbjUm3JfOzy5buHwhLnTKM8DQ5xpMvqCoEk1glWIJfElpbPc2+ehrlR/rxvClFWM212sKzK/pmREhxiqL0EmzL0mEG6+gltWHcw9tcYka6C8+Reyy/MP0MO6Fn/W0vdXga2ExlRlpYzxIMqOTqoOjGpM0C9BCPydsELXByvb3ZC53At5eFk1PC+l4PByLIBdmVfRtA6uv4eHzgfQ0yAFgLRYHklUz8PpNpsOyruRWHQtBFaazawCHNUbuNf+FKBfE3ijqfrTVQebVMN+XfZ4Z9nxGBL8ifljqcOOGy+Z3HrgRJPI7Xi1FUd7JbdeASc+RDh+NabatZvnZB0B5kQ0ii3werEIj9vW9sSien1B8FkHPvs3OlghTtkEIil+m9EHe5GkbqHECiePrnAhJUiR/bgiK0sys0+7EAjeFn4SgsclWlp6FriAq6DvXsHIGAMI+c7aguxPxO9v02BbMpDnAgzzOLceFGCfyFcVzN4RKG95G06jLznGMTfAVOfLunedbcW3hLvfXIwKShLRubAuoOVCxqwWzN3XQ20ipT/Bz4iIwG2kugf7DZvOgK6ylIlOPqCmaOgnX5ott0DRaRMoNtENfgzqz+CWMbpMM7pADK6V4QiDIq4hLvM6ML+ZIHpr3JLaxk8bBJPFP6eg3GQ1U8gBkDY0Hz5w+4nKFQ+omT/skEGjs8EX3QOAjIOc+RnNInuClR2P9a4Iga+B5PJ4iTQ5Zy5zGwCFxUHObtqngemlMkUNyfHe18/2dgLQvB2IR9cUZL8LKd0BSAOvETS6z7MAjpIP4oidQLP0jIf3aXPLG05HhMyFuOApACCx2XrLG+geU1i9xyXcUBr41T4xSW8eTNBBwCuhBygSmTCXc4H+FUSpBdn0hKAyc1SS3lCJF04byMRZmJN/h419Xe8PxAPXQ5B6kRWLfgQSuwVfHwWLBUEke3266tsFVZX5iXwWtCp8MywY0CP3h4pGHu3MiN9gRrrWa4Mzf6dmDLkfcuRtUW4tFL4pPW9IA1SqHwJHSwkUSkQTciSJ3JA9Ysy7+aH2ElBin+cKms3FI45U5g9Z2fLFwXNY3JwCi/i7pCo3SW71UTGOVSkBLrPAY53QuCkn+iyVgEXkDZIsyyahw08gS/wcfebgTISkTJjjEaEwxvlzMJmFhRWdGfAA2NioymZxcFPqmDPGeecoWCqEjWdSi5X1J2+gPi5j4m0aegz8bJfNaaLU2x8tPHMMIMTEGMzJlt2DsuEUb6MsPgMmh7GmvAC1fI8Y10zWDRl2HMhD4aLM0YdivjP6flrPiL73yQT7WNescMHQzYInBbQIpMaNy6gCn/kEpLjjxakFXwWZN4HlGa9biF4aLspKmKwd00fEDkV9V5tdR9eYXZ0vGUZsQfId8CsY2/Dw/+Bxc65t01T+LORhSTpfUZSXg+H2Vy8pbU0FWWIiySZ8YXie/3/CgYzfgO9eByl24Mr1XAKXkFBwkq6/qxSz1YglvQd+rVkmym/7o5Hj/Bbw5RKivDoxzuiLAKiXEeseKKmejwl9vKYo533bNHZIXL0TY7IUzE/ZpnnZzf3JG6gPzjpJuD3YMLLiuuHS9ftSZjjJk1/RcCkcgunwOxF3wAlUze7OzwiPXQXm+yPGjKsg0p8q2VLC3YggF7b3BiKpV+SVN46vL8Fm388k0zVl0mLJ49qVyJtBcMqGy7KUB+95c62uTtRT1ADlUrqNcXoXBCuJoEZMTBTSQfM+hprLw/lDbxJ9ouVvOHyekjZ4ihk/tqOmOOfT8OW+LQiteitYeSuYPbIS0oTJ4iRDZQspbs8v0nBkNbBtErx5oYafy5JnCaWRR/fuMuo9Z41iwzzNk8H0z4BiSf0rUCEKVrYkjLCgH6hRODXb5/m6AhVtKxRNf6agumM1RbF70r/MaWhCTUO8bmWprLtX0kj3n6vm+fcIOVXzhu0JVLTUad70pUZ354eHRg5NzIlL8sOQ77/IYGNyy/jdQM/8pn6K6CoJadvT0n1leRUNy45Ej348Rs8AD0LmYCz/HerW8E4n3rN5OZI5tQ+FikceFXKri3LeAn98G+hldbCi9f1wkW+tycjduswLZMVdFQh33BzvolvrrvRFcysah+hYuxZKyvdBifiF1ogv4fNTJ5hY+H0zeqxBmFUoDOy2qLm46dCB2dVfKTcv1PQzCIDKJSzVai79RcmWhYISDQKzs4mub4Hc7ilJce0EM/9AwnehVSxckPmqZMdmQIqyDFZxUNJcyIp27TUpElFyouGI3AAPnSjJ+s6JF3n3ne5u36fIrp3gbS0o/i0XRAyCLNjNUNT+epOwjSFVSpnuqqKsZ81I9zLwU1fLVNsTcbfu9Xrl/cC/ihrd98Y+8P2xtxSC5eeIqgjv/qRIg8QYAFdhxWINtmkeNFqj23rTJ+8hTiGwJk0xRApwvIkaPgCbmE9tUc7/GmbkcgikhsiSa9dIt38v1H73E1UvA6LtMJ9qIBwkuDGAC4ZaOy4JNmBR9mM0euxJJMtr8te3nLG5OOuIZcYKOGOHZUkO6W68HzKYPbqk7Qf872HU+iv+LOsGcbKFnNQJDs/P3D071DBdw9LYjo72Xe8sGpfIzfKqO0fLzF4B3mCxBLaGGQbkymApGJsqTKc4XRhL50KRIj3xwp+QdLi/A1Z+FbwifDTOzDVgWsRfeFbDO+aX0xT5XJPy+s3zslImr7rEvz83980ZrhXnzERcnoZl20s5r6exSCXUeNvFRKPU+MBDpdu6c9Bh8bt3ixHynmaZt0YpP5Tsry72r4Y8POTO0AMQ7owFk9kI6VmNCCKTNMlrNELLGGq9zWxXnkv2iXgiv7RxKQG99y6gJMfFVeKk1Gasta7kMUgVelokav+fiiO3U9nucQHQXVucs+1nz++7MMvvywfFTMEyAT9qbq0M+t4MljVdzCRptOAGjB8GV6T3SDr+HY2g211prN7QqUj1kLCQuat4rnZxe65MyHSQORh22BHDjtUki0dJ7tSuT3Ykr7lPHx3s8tvLwB8vl1XVJ94MQXCUGBYm3Kbmh2kR31ShYNhBvwKlroMqVJId4kIp4cPBlx2AnfqgZMWfTviQFIVz80MgkDLRvR82fUOT3+2jtYru/hPkRAnlioBL5Enf1ES6ItIi8RFVKwj9x4DZfpRKSkjkmd/E74x/twj0q+BBCj9LcnunJooccFrhZbZFjfjj4KOeJWofF9F3NrABMMPMtq07mWnWipcS4n2wOP2y5s5V/WkDpgt9BTm/visE+lUwj7k/orHuLUhWIiLVYciaU1XkuxH+4XFAmN6TNoIkKKpVVxZm5sELhV/alO2C9AhcaKw8Qvnuk/I6g985Aqkgq7fk6pL0juDDPB+fZQyrvEw7mKrgwD8OetMNdM8JdwkeiDLWQ/GkdMJZI4Z587TPw5AjD8Tj9H8/CAyosK9q0wd6P5ZBwRdsbk8X58d54VQLUyxa4oTbx/UoXh7s7ymE9/A53z8oAv2a6AFnwNk28K0mvD0CErJNRNAJWtP+AP4A0CK7vfCfWbob3h0NWHsdULYz8L0g8M1h8QmPFQUPwrXseOvgmrolOJUXiX88qEPSz6HmsR3VAV/jCWzOTwcBBwEHAQcBBwEHAQcBBwEHAQcBBwEHAQcBBwEHAQcBBwEHAQeBkyDw/zylbOSziCHqAAAAAElFTkSuQmCC
+name: Snowflake
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The query to execute.
+      name: query
+      required: true
+    - description: The warehouse to use for the query. If not specified, the default
+        will be used.
+      name: warehouse
+    - description: The database to use for the query. If not specified, the default
+        will be used.
+      name: database
+    - description: The schema to use for the query. If not specified, the default
+        will be used.
+      name: schema
+    - description: The role to use for the query. If not specified, the default will
+        be used.
+      name: role
+    - default: true
+      defaultValue: "100"
+      description: The number of rows to retrieve.
+      name: limit
+    - description: 'A CSV list of columns to display in the specified order, for example:
+        "Name, ID, Timestamp"'
+      isArray: true
+      name: columns
+    description: Executes a SELECT query and retrieve the data.
+    execution: true
+    name: snowflake-query
+    outputs:
+    - contextPath: Snowflake.Query
+      description: The query used to fetch results from the database.
+      type: String
+    - contextPath: Snowflake.Result
+      description: Results from querying the database.
+      type: Unknown
+    - contextPath: Snowflake.Database
+      description: The name of the database object.
+      type: String
+    - contextPath: Snowflake.Schema
+      description: The name of the schema object.
+      type: String
+  - arguments:
+    - default: true
+      description: The command to execute.
+      name: db_operation
+      required: true
+    - description: The warehouse to use for the query. If not specified, the default
+        will be used.
+      name: warehouse
+    - description: The database to use for the query. If not specified, the default
+        will be used.
+      name: database
+    - description: The schema to use for the query. If not specified, the default
+        will be used.
+      name: schema
+    - description: The role to use for the query. If not specified, the default will
+        be used.
+      name: role
+    description: Makes a DML change in the database.
+    execution: true
+    name: snowflake-update
+  dockerimage: demisto/snowflake:1.0.0.211
+  isfetch: true
+  runonce: false
+  script: |2-
+
+
+
+    '''IMPORTS'''
+
+    import snowflake.connector
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import serialization
+    from datetime import date, timedelta, datetime
+    from datetime import time as dttime
+    from decimal import Decimal
+
+    '''GLOBAL VARS'''
+
+    PARAMS = demisto.params()
+    CREDENTIALS = PARAMS.get('credentials')
+    USER = CREDENTIALS.get('identifier')
+    PASSWORD = CREDENTIALS.get('password')
+    CERTIFICATE = CREDENTIALS.get('credentials', {}).get('sshkey').encode()
+    CERT_PASSWORD = CREDENTIALS.get('credentials', {}).get('password')
+    CERT_PASSWORD = CERT_PASSWORD.encode() if CERT_PASSWORD else None
+    ACCOUNT = PARAMS.get('account')
+    AUTHENTICATOR = PARAMS.get('authenticator')
+    REGION = PARAMS.get('region')
+    WAREHOUSE = PARAMS.get('warehouse')
+    DATABASE = PARAMS.get('database')
+    SCHEMA = PARAMS.get('schema')
+    ROLE = PARAMS.get('role')
+    INSECURE = PARAMS.get('insecure', False)
+    # How much time before the first fetch to retrieve incidents
+    IS_FETCH = PARAMS.get('isFetch')
+    FETCH_TIME = PARAMS.get('fetch_time')
+    FETCH_QUERY = PARAMS.get('fetch_query')
+    DATETIME_COLUMN = PARAMS.get('datetime_column')
+    INCIDENT_NAME_COLUMN = PARAMS.get('incident_name_column')
+    MAX_ROWS = int(PARAMS.get('limit')) if PARAMS.get('limit') else 10000
+
+    TYPE_CODE_TO_DATATYPE = {
+        0: 'number/int',
+        1: 'real',
+        2: 'varchar/string',
+        3: 'date',
+        4: 'timestamp',
+        5: 'variant',
+        6: 'timestamp_ltz',
+        7: 'timestamp_tz',
+        8: 'timestamp_tz',
+        9: 'object',
+        10: 'array',
+        11: 'binary',
+        12: 'time',
+        13: 'boolean'
+    }
+    DT_NEEDS_CHECKING = {'date', 'timestamp', 'timestamp_ltz', 'timestamp_tz', 'time'}
+
+
+    '''SETUP'''
+
+    if IS_FETCH and not (FETCH_QUERY and DATETIME_COLUMN):
+        err_msg = 'When fetching is enabled there are two additional parameters that are required;'
+        err_msg += ' The fetch query that determines what data to fetch and the name of the column'
+        err_msg += ' in the fetched data that contains a datetime object or timestamp.'
+        raise Exception(err_msg)
+
+
+    '''HELPER FUNCTIONS'''
+
+
+    def convert_datetime_to_string(v):
+        """
+        Parses date, time, timedelta, or datetime object into string
+
+        parameter: (datetime/date/time/timedelta) v
+            The datetime/date/time/timedelta object to convert
+
+        returns:
+            Formatted string of the object
+        """
+        if isinstance(v, datetime):
+            return v.strftime('%Y-%m-%d %H:%M:%S.%f %z').strip()
+        elif isinstance(v, date):
+            return v.strftime('%Y-%m-%d').strip()
+        elif isinstance(v, dttime):
+            return v.strftime('%H:%M:%S.%f').strip()
+        return v
+
+
+    def error_message_from_snowflake_error(e):
+        """
+        Return formatted error message from contents of a Snowflake error
+
+        parameter: (snowflake.connector.errors.Error) e
+            The Snowflake error object
+
+        returns:
+            Formatted error message
+        """
+        err_msg = 'Snowflake DB error code: {}\n'.format(e.errno)
+        err_msg += 'ANSI-compliant SQL State code: {}\n'.format(e.sqlstate)
+        err_msg += 'Snowflake query ID: {}\n'.format(e.sfqid)
+        err_msg += 'Error message: {}'
+        if e.errno == 606:
+            first_sentence = e.raw_msg[:e.raw_msg.find('.') + 1]
+            err_msg = err_msg.format(first_sentence)
+            err_msg += ' Specify an active warehouse in the command '
+            err_msg += 'arguments or in the integration parameters.'
+        elif e.errno == 2003:
+            err_msg = err_msg.format(e.raw_msg)
+            err_msg += ' A possible explanation is that the values you entered'
+            err_msg += ' for the \'warehouse\' and \'database\' were incorrect.'
+        else:
+            err_msg = err_msg.format(e.raw_msg)
+        return err_msg
+
+
+    def set_provided(params, key, val1, val2=None):
+        """
+        If value is provided, set it in the dict
+        """
+        if val1:
+            params[key] = val1
+        elif val2:
+            params[key] = val2
+
+
+    def process_table_row(row, checks):
+        """
+        Check row data and reformat if necessary
+
+        The 'checks' parameter contains the names of fields that have the potential to cause
+        issues when they will be json decoded. This function checks the values of the fields
+        flagged in the 'checks' parameter and formats the contents to a json friendly type if
+        necessary.
+
+        parameter: (dict) row
+            The data (table row) that needs to be processed
+
+        parameter: (dict[str, list]) checks
+            Dictionary where the key is a string indicative of the type (or bucket of types) that needs
+            reformatting and the values are a list of column names whose data is of that type
+
+        returns:
+            Reformatted Row
+        """
+        for column_name, val in row.items():
+            if column_name in checks.get('isDecimal', []):
+                # Then check the value and reformat it if necessary
+                if isinstance(val, Decimal):
+                    row[column_name] = str(val)
+            elif column_name in checks.get('isDT', []):
+                # Then reformat it if necessary
+                row[column_name] = convert_datetime_to_string(val)
+        return row
+
+
+    def format_to_json_serializable(column_descriptions, results):
+        """
+        Screen and reformat any data in 'results' argument that is
+        not json serializable, and return 'results'. 'results' can
+        be a table of data (a list of rows) or a single row.
+
+        parameter: (list) column_descriptions
+            The metadata that describes data for each column in the 'results' parameter
+
+        parameter: (list/dict) results
+            What was returned by the cursor object's execute or fetch operation
+
+        returns:
+            Reformatted 'results'
+        """
+        name = 0
+        type_code = 1
+
+        checks: dict = {}
+        # Screen by type_code
+        for col in column_descriptions:
+            # if col[type_code] == 0:
+            if TYPE_CODE_TO_DATATYPE.get(col[type_code]) == 'number/int':
+                # Then need to check that column's data to see if its data type is Decimal
+                checks.setdefault('isDecimal', []).append(col[name])
+            # elif col[type_code] in {3, 4, 6, 7, 8, 12}:
+            elif TYPE_CODE_TO_DATATYPE.get(col[type_code]) in DT_NEEDS_CHECKING:
+                # Then need to check that column's data to see if its data type is date, time, timedelta or datetime
+                checks.setdefault('isDT', []).append(col[name])
+
+        # if 'results' is a list then it is a data table (list of rows) and need to process each row
+        # in the table, otherwise if 'results' is a dict then it a single table row
+        # Check candidates and reformat if necessary
+        if isinstance(results, dict):
+            results = process_table_row(results, checks)
+        else:
+            # if 'results' isn't a dict, assume it's a list
+            for i, row in enumerate(results):
+                results[i] = process_table_row(row, checks)
+        return results
+
+
+    def get_connection_params(args):
+        """
+        Construct and return the connection parameters
+
+        parameter: (dict) args
+            The command arguments of the command function calling this helper function
+
+        returns:
+            Snowflake connection params
+        """
+        params: dict = {}
+        set_provided(params, 'user', USER)
+        set_provided(params, 'password', PASSWORD)
+        set_provided(params, 'account', ACCOUNT)
+        set_provided(params, 'authenticator', AUTHENTICATOR)
+        set_provided(params, 'region', REGION)
+        set_provided(params, 'insecure_mode', INSECURE)
+        set_provided(params, 'warehouse', args.get('warehouse'), WAREHOUSE)
+        set_provided(params, 'database', args.get('database'), DATABASE)
+        set_provided(params, 'schema', args.get('schema'), SCHEMA)
+        set_provided(params, 'role', args.get('role'), ROLE)
+        if CERTIFICATE:
+            p_key = serialization.load_pem_private_key(CERTIFICATE, password=CERT_PASSWORD, backend=default_backend())
+            pkb = p_key.private_bytes(
+                encoding=serialization.Encoding.DER,
+                format=serialization.PrivateFormat.PKCS8,
+                encryption_algorithm=serialization.NoEncryption()
+            )
+            params['private_key'] = pkb
+        return params
+
+
+    def row_to_incident(column_descriptions, row):
+        """
+        Create incident from data returned by queried database in fetch_incidents
+
+        parameter: (list) column_descriptions
+            The metadata that describes the values for each column in the 'data' parameter
+
+        parameter: (dict) row
+            The row of data where each cell's key in the row is the name of the column
+            to which it belongs
+
+        returns:
+            Incident Object
+        """
+        incident = {}
+        occurred = row.get(DATETIME_COLUMN)
+        timestamp = None
+        if occurred:
+            if isinstance(occurred, (dttime, timedelta)):
+                err_msg = 'The datetime field specified in the integration parameters must '
+                err_msg += 'contain values of type "datetime" or "date".'
+                raise Exception(err_msg)
+            timestamp = occurred.timestamp() * 1000
+        else:
+            err_msg = 'Nothing found when trying to fetch the datetime field specified in'
+            err_msg += ' the integration parameters. Please check that the name was correct.'
+            err_msg += ' If the field name was correct, verify that the returned value for'
+            err_msg += ' the specified field is not NULL for ALL of the rows to be fetched.'
+            raise Exception(err_msg)
+        # Incident Title
+        if INCIDENT_NAME_COLUMN:
+            name = row.get(INCIDENT_NAME_COLUMN)
+        else:
+            name = 'Snowflake Incident -- '
+            name += convert_datetime_to_string(occurred) + '- ' + str(datetime.now().timestamp())
+        incident['name'] = name
+        incident['occurred'] = occurred.isoformat()
+        # Incident occurrence time as timestamp - the datetime field specified in the integration parameters
+        incident['timestamp'] = timestamp
+        # The raw response for the row (reformatted to be json serializable) returned by the db query
+        reformatted_row = format_to_json_serializable(column_descriptions, row)
+        incident['rawJSON'] = json.dumps(reformatted_row)
+        return incident
+
+
+    '''MAIN FUNCTIONS / API CALLS'''
+
+
+    def test_module():
+        """
+        Test the validity of the integration instance parameters by trying to create a connection
+
+        returns:
+            An 'ok' message if valid, otherwise an error message
+        """
+        params = get_connection_params({})
+        with snowflake.connector.connect(**params):
+            demisto.results('ok')
+
+
+    def fetch_incidents():
+        """
+        Fetch events from this integration and return them as Demisto incidents
+
+        returns:
+            Demisto incidents
+        """
+        # demisto.getLastRun() will returns an obj with the previous run in it.
+        last_run = demisto.getLastRun()
+        # Get the last fetch time and data if it exists
+        last_fetch = last_run.get('last_fetched_data_timestamp')
+        last_fetched_data = last_run.get('last_fetched_data')
+
+        # Handle first time fetch, fetch incidents retroactively
+        if not last_fetch:
+            last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+        args = {'rows': MAX_ROWS, 'query': FETCH_QUERY}
+        column_descriptions, data = snowflake_query(args)
+        data.sort(key=lambda k: k[DATETIME_COLUMN])
+        # convert the data/events to demisto incidents
+        incidents = []
+        for row in data:
+            incident = row_to_incident(column_descriptions, row)
+            incident_timestamp = incident.get('timestamp')
+
+            # Update last run and add incident if the incident is newer than last fetch
+            if incident_timestamp and incident_timestamp >= last_fetch:
+                last_fetch = incident_timestamp
+                if incident.get('rawJSON') != last_fetched_data:
+                    last_fetched_data = incident.get('rawJSON')
+                    del incident['timestamp']
+                    incidents.append(incident)
+
+        this_run = {
+            'last_fetched_data': last_fetched_data,
+            'last_fetched_data_timestamp': last_fetch
+        }
+        demisto.setLastRun(this_run)
+        demisto.incidents(incidents)
+
+
+    def snowflake_query(args):
+        params = get_connection_params(args)
+        query = args.get('query')
+        limit = args.get('limit', '100')
+        try:
+            limit = int(limit)
+        except ValueError:
+            raise ValueError('The value for limit must be an integer.')
+        if limit > MAX_ROWS:
+            limit = MAX_ROWS
+        with snowflake.connector.connect(**params) as connection:
+            with connection.cursor(snowflake.connector.DictCursor) as cur:
+                cur.execute(query)
+                results = cur.fetchmany(limit)
+                if results:
+                    return cur.description, results
+                else:
+                    return [], []
+
+
+    def snowflake_query_command():
+        args = demisto.args()
+        query = args.get('query')
+        db = args.get('database') if args.get('database') else DATABASE
+        schema = args.get('schema') if args.get('schema') else SCHEMA
+        col_descriptions, results = snowflake_query(args)
+        if not results:
+            demisto.results('No data found matching the query')
+        else:
+            results = format_to_json_serializable(col_descriptions, results)
+
+            entry_context = {
+                'Database': db,
+                'Schema': schema,
+                'Query': query,
+                'Result': results
+            }
+            columns = argToList(args.get('columns'))
+            human_readable = tableToMarkdown(query, results, columns, removeNull=True)
+            demisto_transform = 'Snowflake(val.Query && val.Query === obj.Query'
+            demisto_transform += ' && val.Database && val.Database === obj.Database'
+            demisto_transform += ' && val.Schema && val.Schema === obj.Schema)'
+            outputs = {demisto_transform: entry_context}
+
+            return_outputs(
+                outputs=outputs,
+                readable_output=human_readable,
+                raw_response=results
+            )
+
+
+    def snowflake_update_command():
+        args = demisto.args()
+        db_operation = args.get('db_operation')
+        params = get_connection_params(args)
+        with snowflake.connector.connect(**params) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(db_operation)
+                demisto.results('Operation executed successfully.')
+
+
+    '''COMMAND SWITCHBOARD'''
+
+    commands = {
+        'test-module': test_module,
+        'fetch-incidents': fetch_incidents,
+        'snowflake-query': snowflake_query_command,
+        'snowflake-update': snowflake_update_command
+    }
+
+
+    '''EXECUTION'''
+
+    try:
+        handle_proxy()
+        if demisto.command() in commands.keys():
+            commands[demisto.command()]()
+    except snowflake.connector.errors.Error as e:
+        return_error(error_message_from_snowflake_error(e))
+    except Exception as e:
+        if IS_FETCH:
+            raise e
+        else:
+            if isinstance(e, snowflake.connector.errors.Error):
+                return_error(error_message_from_snowflake_error(e))
+            else:
+                return_error(str(e))
+  subtype: python3
+  type: python
+system: true

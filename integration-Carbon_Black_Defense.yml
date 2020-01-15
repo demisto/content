@@ -1,0 +1,1592 @@
+category: Endpoint
+commonfields:
+  id: Carbon Black Defense
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: API Key
+  name: key
+  required: true
+  type: 4
+- defaultvalue: v3
+  display: API Version
+  name: version
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Connector ID
+  name: connectorId
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: ""
+  display: SIEM key. Use to fetch incidents.
+  name: siemKey
+  required: false
+  type: 4
+- defaultvalue: ""
+  display: SIEM Connector ID. Use to fetch incidents.
+  name: siemConnector
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Next-generation antivirus + EDR in one cloud-delivered platform that
+  stops commodity malware, advanced malware, non-malware attacks and ransomware
+display: Carbon Black Defense
+image: data:image/png;base64,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
+name: Carbon Black Defense
+script:
+  commands:
+  - arguments:
+    - description: Query parameter. Filter on hostnames based on a case insensitive
+        token search.
+      name: hostName
+    - description: Query parameter. Filter on the exact hostname
+      name: hostNameExact
+    - description: Query parameter. Filter on owner name case insensitively.
+      name: ownerName
+    - description: Query parameter. Same as ownerName but with case sensitivity
+      name: ownerNameExact
+    - description: Query parameter. Filter on devices with a given external or internal
+        IP address
+      name: ipAddress
+    - description: Wanted first row number from the result (starting from 1).
+      name: start
+    - description: Wanted maximum number of rows from the result. This parameter can
+        be limited on the Cb Defense server side.
+      name: rows
+    description: 'Get a status of all devices. Optionally you can include a query
+      parameter to filter the results. Combining these query parameters is an implicit
+      “AND”. '
+    name: cbd-get-devices-status
+    outputs:
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.ActivationCodeExpiryTime
+      description: Activation Code Expiry Time
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.LastExternalIpAddress
+      description: Last External IpAddress
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.LastLocation
+      description: Last Location
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.LastReportedTime
+      description: Last Reported Time
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.LastShutdownTime
+      description: Last Shutdown Time
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.OsVersion
+      description: Os Version
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.PolicyId
+      description: Policy Id
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.RegisteredTime
+      description: Registered Time
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.Status
+      description: Status
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.DeviceId
+      description: Device Id
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.DeviceOwnerId
+      description: Device Owner Id
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.DeviceType
+      description: Device Type
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.OrganizationId
+      description: Organization Id
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.SensorVersion
+      description: Sensor Version
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.TargetPriorityType
+      description: Target Priority Type
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.Email
+      description: Email
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.LastContact
+      description: Last Contact
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.OrganizationName
+      description: Organization Name
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.SensorStates
+      description: SensorStates
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.AvStatus
+      description: AvStatus
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.LastInternalIpAddress
+      description: Last Internal IpAddress
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.Name
+      description: Name
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.PolicyName
+      description: Policy Name
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.SensorOutOfDate
+      description: Sensor Out OfDate
+    - contextPath: CarbonBlackDefense.GetDevicesStatus.Results.TestId
+      description: Test Id
+  - arguments:
+    - description: Individual device id.
+      name: deviceId
+      required: true
+    description: Retrieve details for an individual device given the device ID.
+    name: cbd-get-device-status
+    outputs:
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.TargetPriorityType
+      description: Target Priority Type
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.OrganizationId
+      description: Organization Id
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.CreateTime
+      description: Create Time
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.DeviceId
+      description: Device Id
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.Email
+      description: Email
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.LastInternalIpAddress
+      description: Last Internal IpAddress
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.LastLocation
+      description: Last Location
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.OsVersion
+      description: Os Version
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.AvStatus
+      description: AvStatus
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.LastExternalIpAddress
+      description: Last External IpAddress
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.RegisteredTime
+      description: Registered Time
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.LastContact
+      description: Last Contact
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.Status
+      description: Status
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.TestId
+      description: Test Id
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.PolicyId
+      description: Policy Id
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.UpdateVersion
+      description: Update Version
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.OrganizationName
+      description: Organization Name
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.RootedByAnalytics
+      description: Rooted ByAnalytics
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.SensorVersion
+      description: Sensor Version
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.DeviceType
+      description: Device Type
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.PolicyName
+      description: Policy Name
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.RootedByAnalyticsTime
+      description: Rooted ByAnalytics Time
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.SensorOutOfDate
+      description: Sensor Out OfDate
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.SensorStates
+      description: SensorStates
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.Name
+      description: Name
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.Id
+      description: Id
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.LastReportedTime
+      description: Last Reported Time
+    - contextPath: CarbonBlackDefense.GetDeviceStatus.DeviceInfo.DeviceOwnerId
+      description: Device Owner Id
+  - arguments:
+    - description: The device id.
+      name: deviceId
+      required: true
+    - description: Policy id.
+      name: policyId
+    - description: Policy name.
+      name: policyName
+    description: 'Change status of an individual device by its device ID. The requested
+      security policy can be indicated either as a policy ID (policyId) or policy
+      name (policyName).The current revision of the Cb Defense backend only allows
+      one element to be changed with this call: the security policy assigned to the
+      device. For example policyName=Restrictive_Windows_Workstation'
+    name: cbd-change-device-status
+  - arguments:
+    - description: 'Query parameter. Filter on hostnames case insensitive. '
+      name: hostName
+    - description: Query parameter. Filter on the exact hostname
+      name: hostNameExact
+    - description: Query parameter. Filter on owner name case insensitive.
+      name: ownerName
+    - description: Query parameter. Same as ownerName but with case sensitivity
+      name: ownerNameExact
+    - description: Query parameter. Filter on events generated by a device with a
+        given external or internal IP address
+      name: ipAddress
+    - description: Query parameter. Filter on events generated by a process with the
+        given SHA-256 hash. Note that this hash must be lowercase.
+      name: sha256hash
+    - description: Query parameter. Filter on events generated by a process with the
+        given application name. Note that this name must be lowercase
+      name: applicationName
+    - auto: PREDEFINED
+      description: Query parameter. Filter on events with a given event type.
+      name: eventType
+      predefined:
+      - NETWORK
+      - FILE_CREATE
+      - REGISTRY_ACCESS
+      - SYSTEM_API_CALL
+      - CREATE_PROCESS
+      - DATA_ACCESS
+      - INJECT_CODE
+    - description: 'Query parameter. Filter on events generated within a given relative
+        time frame. Note that the default is one day if a searchWindow is not specified.
+        Note that events may not be available past 30 days due to retention policies. '
+      name: searchWindow
+    - description: Wanted first row number from the result (starting from 1).
+      name: start
+    - description: Wanted maximum number of rows from the result. This parameter can
+        be limited on the Cb Defense server side.
+      name: rows
+    description: Retrieves all events matching the input search criteria.
+    name: cbd-find-events
+    outputs:
+    - contextPath: CarbonBlackDefense.FindEvents.Results.EventType
+      description: Event Type
+    - contextPath: CarbonBlackDefense.FindEvents.Results.ProcessDetails.MilisSinceProcessStart
+      description: Milis Since Process Start
+    - contextPath: CarbonBlackDefense.FindEvents.Results.ProcessDetails.Name
+      description: Name
+    - contextPath: CarbonBlackDefense.FindEvents.Results.ProcessDetails.PrivatePid
+      description: Private Pid
+    - contextPath: CarbonBlackDefense.FindEvents.Results.ProcessDetails.ProcessId
+      description: Process Id
+    - contextPath: CarbonBlackDefense.FindEvents.Results.ShortDescription
+      description: Short Description
+    - contextPath: CarbonBlackDefense.FindEvents.Results.CreateTime
+      description: Create Time
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceName
+      description: Device Name
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceVersion
+      description: Device Version
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.PolicyName
+      description: Policy Name
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.TargetPriorityType
+      description: Target Priority Type
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.AgentLocation
+      description: Agent Location
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceId
+      description: Device Id
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceIpV4Address
+      description: Device IpV4Address
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.AreaCode
+      description: Area Code
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.CountryCode
+      description: Country Code
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.Latitude
+      description: Latitude
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.Longitude
+      description: Longitude
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.City
+      description: City
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.CountryName
+      description: Country Name
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.DmaCode
+      description: Dma Code
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.MetroCode
+      description: Metro Code
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.PostalCode
+      description: Postal Code
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceLocation.Region
+      description: Region
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceIpAddress
+      description: Device IpAddress
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.DeviceType
+      description: Device Type
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.Email
+      description: Email
+    - contextPath: CarbonBlackDefense.FindEvents.Results.DeviceDetails.TargetPriorityCode
+      description: Target Priority Code
+    - contextPath: CarbonBlackDefense.FindEvents.Results.EventId
+      description: Event Id
+    - contextPath: CarbonBlackDefense.FindEvents.Results.EventTime
+      description: Event Time
+    - contextPath: CarbonBlackDefense.FindEvents.Results.LongDescription
+      description: Long Description
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.DestAddress
+      description: Dest Address
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.DestPort
+      description: Dest Port
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.PeerFqdn
+      description: Peer Fqdn
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.PeerIpAddress
+      description: Peer IpAddress
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.PeerIpV4Address
+      description: Peer IpV4Address
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.Service
+      description: Service
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.SourceAddress
+      description: Source Address
+    - contextPath: CarbonBlackDefense.FindEvents.Results.NetFlow.SourcePort
+      description: Source Port
+    - contextPath: CarbonBlackDefense.FindEvents.Results.SelectedApp.ApplicationName
+      description: Application Name
+    - contextPath: CarbonBlackDefense.FindEvents.Results.SelectedApp.ApplicationPath
+      description: Application Path
+    - contextPath: CarbonBlackDefense.FindEvents.Results.SelectedApp.Md5Hash
+      description: Md5Hash
+    - contextPath: CarbonBlackDefense.FindEvents.Results.SelectedApp.Sha256Hash
+      description: Sha256Hash
+    - contextPath: CarbonBlackDefense.FindEvents.Results.ThreatIndicators
+      description: Threat Indicators
+  - arguments:
+    - description: The event id.
+      name: eventId
+      required: true
+    description: 'Retrieve details for an individual event given the event ID '
+    name: cbd-find-event
+    outputs:
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ShortDescription
+      description: Short Description
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.TargetHash.ApplicationName
+      description: Application Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.TargetHash.ReputationProperty
+      description: Reputation Property
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.TargetHash.Sha256Hash
+      description: Sha256Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.EventType
+      description: Event Type
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessHash.Md5Hash
+      description: Md5Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessHash.Sha256Hash
+      description: Sha256Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessHash.ApplicationPath
+      description: Application Path
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessHash.ReputationProperty
+      description: Reputation Property
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessHash.ApplicationName
+      description: Application Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.OrgDetails.OrganizationId
+      description: Organization Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.OrgDetails.OrganizationName
+      description: Organization Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.OrgDetails.OrganizationType
+      description: Organization Type
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ParentHash.ApplicationName
+      description: Application Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ParentHash.Sha256Hash
+      description: Sha256Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.EventId
+      description: Event Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.LongDescription
+      description: Long Description
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceIpV4Address
+      description: Device IpV4Address
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceType
+      description: Device Type
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.Email
+      description: Email
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.TargetPriorityCode
+      description: Target Priority Code
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.AgentLocation
+      description: Agent Location
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceHostName
+      description: Device Host Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceId
+      description: Device Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.GroupName
+      description: Group Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceVersion
+      description: Device Version
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.TargetPriorityType
+      description: Target Priority Type
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceIpAddress
+      description: Device IpAddress
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.Latitude
+      description: Latitude
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.City
+      description: City
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.CountryCode
+      description: Country Code
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.DmaCode
+      description: Dma Code
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.Longitude
+      description: Longitude
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.MetroCode
+      description: Metro Code
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.PostalCode
+      description: Postal Code
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.Region
+      description: Region
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.AreaCode
+      description: Area Code
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceLocation.CountryName
+      description: Country Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.DeviceDetails.DeviceName
+      description: Device Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.CreateTime
+      description: Create Time
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.EventTime
+      description: Event Time
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.FullUserName
+      description: Full User Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.Name
+      description: Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.ParentCommandLine
+      description: Parent Command Line
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.ParentName
+      description: Parent Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.ParentPid
+      description: Parent Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.ProcessId
+      description: Process Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.CommandLine
+      description: Command Line
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.MilisSinceProcessStart
+      description: Milis Since Process Start
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.TargetCommandLine
+      description: Target Command Line
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.TargetPid
+      description: Target Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.UserName
+      description: User Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.ParentPrivatePid
+      description: Parent Private Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.PrivatePid
+      description: Private Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.TargetName
+      description: Target Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ProcessDetails.TargetPrivatePid
+      description: Target Private Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.EventInfo.ThreatIndicators
+      description: Threat Indicators
+  - arguments:
+    - description: 'Query parameter. Filter on hostnames case insensitive. '
+      name: hostNameExact
+    - description: Query parameter. Filter on owner name case insensitive.
+      name: ownerName
+    - description: Query parameter. Same as ownerName but with case sensitivity
+      name: ownerNameExact
+    - description: Query parameter. Filter on events generated by a device with a
+        given external or internal IP address
+      name: ipAddress
+    - description: 'Query parameter. Filter on events generated within a given relative
+        time frame. Note that the default is one day if a searchWindow is not specified.
+        Note that events may not be available past 30 days due to retention policies. '
+      name: searchWindow
+    - description: Wanted first row number from the result (starting from 1).
+      name: start
+    - description: Wanted maximum number of rows from the result. This parameter can
+        be limited on the Cb Defense server side.
+      name: rows
+    description: Find processes associated with a specific indicator or IP address
+      filter. Only API keys of type “API” can call the processes API.
+    name: cbd-find-processes
+    outputs:
+    - contextPath: CarbonBlackDefense.GetProcesses.ApplicationName
+      description: Application name
+    - contextPath: CarbonBlackDefense.GetProcesses.ProcessId
+      description: Process id
+    - contextPath: CarbonBlackDefense.GetProcesses.NumEvents
+      description: Number of events
+    - contextPath: CarbonBlackDefense.GetProcesses.ApplicationPath
+      description: Application path
+    - contextPath: CarbonBlackDefense.GetProcesses.PrivatePid
+      description: Private pid
+    - contextPath: CarbonBlackDefense.GetProcesses.Sha256Hash
+      description: sha256Hash
+    - contextPath: CarbonBlackDefense.GetProcesses.TotalResults
+      description: Total results
+  - arguments:
+    - description: The alert id
+      name: alertId
+      required: true
+    description: Get details on the events that led to an alert. This includes retrieving
+      metadata around the alert as well as a list of all the events associated with
+      the alert. Only API keys of type “API” can call the alerts API.
+    name: cbd-get-alert-details
+    outputs:
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceType
+      description: Device Type
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Group
+      description: Group
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.GroupId
+      description: Group Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.RegisteredTime
+      description: Registered Time
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceId
+      description: Device Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.DeviceName
+      description: Device Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Status
+      description: Status
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.OsVersion
+      description: Os Version
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.SensorVersion
+      description: Sensor Version
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.UserName
+      description: User Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Importance
+      description: Importance
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Message
+      description: Message
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.Success
+      description: Success
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ParentHash
+      description: Parent Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.PolicyState
+      description: Policy State
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.LongDescription
+      description: Long Description
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.CommandLine
+      description: Command Line
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ParentPid
+      description: Parent Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ProcessId
+      description: Process Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ThreatIndicators
+      description: Threat Indicators
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ApplicationPath
+      description: Application Path
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ProcessHash
+      description: Process Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ProcessMd5Hash
+      description: Process Md5Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.EventId
+      description: Event Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.EventTime
+      description: Event Time
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.EventType
+      description: Event Type
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.KillChainStatus
+      description: Kill Chain Status
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ParentName
+      description: Parent Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ParentPPid
+      description: ParentP Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.Events.ProcessPPid
+      description: ProcessP Pid
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.IncidentId
+      description: Incident Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Indicators.ApplicationName
+      description: Application Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Indicators.IndicatorName
+      description: Indicator Name
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Indicators.Sha256Hash
+      description: Sha256Hash
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Summary
+      description: Summary
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.ThreatId
+      description: Threat Id
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.ThreatScore
+      description: Threat Score
+    - contextPath: CarbonBlackDefense.GetAlertDetails.DeviceInfo.ThreatInfo.Time
+      description: Time
+  - arguments: []
+    description: Get the list of policies available in your organization.
+    name: cbd-get-policies
+    outputs:
+    - contextPath: CarbonBlackDefense.GetPolicies.Id
+      description: The policy id.
+    - contextPath: CarbonBlackDefense.GetPolicies.PriorityLevel
+      description: The policy priority level.
+    - contextPath: CarbonBlackDefense.GetPolicies.SystemPolicy
+      description: Is system policy (boolean).
+    - contextPath: CarbonBlackDefense.GetPolicies.LatestRevision
+      description: Policy latest revision.
+    - contextPath: CarbonBlackDefense.GetPolicies.Policy
+      description: The policy object.
+  - arguments:
+    - description: The policy id.
+      name: policyId
+      required: true
+    description: Retrieve a policy object by ID.
+    name: cbd-get-policy
+    outputs:
+    - contextPath: CarbonBlackDefense.GetPolicy.Id
+      description: The policy id.
+    - contextPath: CarbonBlackDefense.GetPolicy.PriorityLevel
+      description: The policy priority level.
+    - contextPath: CarbonBlackDefense.GetPolicy.SystemPolicy
+      description: Is system policy (boolean).
+    - contextPath: CarbonBlackDefense.GetPolicy.LatestRevision
+      description: Policy latest revision.
+    - contextPath: CarbonBlackDefense.GetPolicy.Policy
+      description: The policy object.
+  - arguments:
+    - description: A description of the policy
+      name: description
+      required: true
+    - description: A one-line name for the policy
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: The priority score associated with sensors assigned to this policy.
+      name: priorityLevel
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+      required: true
+    - description: The JSON object containing the policy details. Make sure a valid
+        policy object is passed. You may use 'get-policy' in order to receive a similar
+        policy object, then re-set some of the policy's fields with 'set-policy'.
+        Finally pass the mutated object.
+      name: policy
+      required: true
+    description: Create a new Policy on the Cb Defense backend.
+    name: cbd-create-policy
+    outputs:
+    - contextPath: CarbonBlackDefense.CreatePolicy.PolicyId
+      description: The new policy id.
+  - arguments:
+    - description: A description of the policy.
+      name: description
+      required: true
+    - description: A one-line name for the policy.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: The priority score associated with sensors assigned to this policy.
+      name: priorityLevel
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+      required: true
+    - description: The ID of the policy to replace.
+      name: id
+      required: true
+    - description: The JSON object containing the policy details. The JSON object
+        containing the policy details. Make sure a valid policy object is passed.
+        You may use 'get-policy' in order to receive the policy object you wish to
+        update, then re-set some of the policy's fields with 'set-policy'. Finally
+        pass the mutated object.
+      name: policy
+      required: true
+    description: Update an existing policy with a new policy. Please note that system
+      policies cannot be modified.
+    name: cbd-update-policy
+  - arguments:
+    - description: The policy id.
+      name: policyId
+      required: true
+    description: Delete a policy from the Cb Defense backend. This may return an error
+      if devices are actively assigned to the policy id requested for deletion. Please
+      note that system policies cannot be deleted.
+    name: cbd-delete-policy
+  - arguments:
+    - description: Rule action.
+      name: action
+      required: true
+    - description: Rule operation.
+      name: operation
+      required: true
+    - auto: PREDEFINED
+      description: Rule required
+      name: required
+      predefined:
+      - "false"
+      - "true"
+      required: true
+    - description: Rule id.
+      name: id
+      required: true
+    - description: Application type.
+      name: type
+      required: true
+    - description: Application value.
+      name: value
+      required: true
+    - description: The policy id.
+      name: policyId
+      required: true
+    description: Add a new rule to an existing policy. Please note that system policies
+      cannot be modified.
+    name: cbd-add-rule-to-policy
+  - arguments:
+    - description: The policy id.
+      name: policyId
+      required: true
+    - description: The rule id.
+      name: ruleId
+      required: true
+    description: Removes a rule from an existing policy. Please note that system policies
+      cannot be modified.
+    name: cbd-delete-rule-from-policy
+  - arguments:
+    - description: Rule action.
+      name: action
+      required: true
+    - description: Rule operation.
+      name: operation
+      required: true
+    - auto: PREDEFINED
+      description: Rule required
+      name: required
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    - description: Rule id.
+      name: id
+      required: true
+    - description: Application type.
+      name: type
+      required: true
+    - description: Application value.
+      name: value
+      required: true
+    - description: The policy id.
+      name: policyId
+      required: true
+    description: Update an existing rule with a new rule. Please note that system
+      policies cannot be modified.
+    name: cbd-update-rule-in-policy
+  - arguments:
+    - description: 'A json object that holds key/value pairs. Key is the field path
+        in the policy object you wish to update with value.  '
+      name: keyValue
+      required: true
+    - description: 'The policy to be set. '
+      name: policy
+      required: true
+    description: Re-set policy fields.
+    name: cbd-set-policy
+    outputs:
+    - contextPath: CarbonBlackDefense.SetPolicy.Policy
+      description: The modified policy
+  isfetch: true
+  runonce: false
+  script: |-
+    var CBDefence = function() {
+        var client = (function() {
+            var urlTemplae = '%url%/integrationServices/%version%/';
+            var authTemplate = '%key%/%connectorId%';
+            var authSiemTemplate = '%siemKey%/%siemConnector%';
+            var urlFull = replaceInTemplates(urlTemplae, params);
+            var AuthToken = replaceInTemplates(authTemplate, params);
+            var SiemToken = replaceInTemplates(authSiemTemplate, params);
+            function addAuthToHeaders(headerObj, token) {
+                 if (headerObj === 'undefined') {
+                    return { 'X-Auth-Token': [token] };
+                }
+                headerObj['X-Auth-Token'] = [token];
+                return headerObj;
+            }
+            var addClientAuthToHeaders = function(headerObj) {
+                return addAuthToHeaders(headerObj, AuthToken);
+            };
+            var addSiemKeyToHeaders = function(headerObj) {
+                return addAuthToHeaders(headerObj, SiemToken);
+            };
+            return {
+                url: urlFull,
+                addClientAuthToHeaders: addClientAuthToHeaders,
+                addSiemKeyToHeaders: addSiemKeyToHeaders
+            };
+        })();
+        var policyData = [
+            {to: 'Id', from: 'id'},
+            {to: 'PriorityLevel', from: 'priorityLevel'},
+            {to: 'SystemPolicy',from: 'systemPolicy'},
+            {to: 'LatestRevision',from: 'latestRevision'},
+            {to: 'Policy',from: 'policy'}
+        ];
+        var commands = {
+            'cbd-get-devices-status': {
+                path: 'device',
+                method: 'GET',
+                queryParams: {
+                    start: true,
+                    rows: true,
+                    hostName: true,
+                    hostNameExact: true,
+                    ownerName: true,
+                    ownerNameExact: true,
+                    ipAddress: true
+                },
+                extended: true,
+                translator:[
+                    {
+                        contextPath: 'CarbonBlackDefense.GetDevicesStatus.Results(val.DeviceId==obj.DeviceId)',
+                        title: 'Carbon Black Defense Get Devices Status',
+                        innerPath: 'results',
+                        data: [
+                            { to: 'Name', from: 'name'},
+                            { to: 'LastReportedTime', from: 'lastReportedTime'},
+                            { to: 'PolicyId', from: 'policyId'},
+                            { to: 'LastShutdownTime', from: 'lastShutdownTime'},
+                            { to: 'LastContact', from: 'lastContact'},
+                            { to: 'LastExternalIpAddress', from: 'lastExternalIpAddress'},
+                            { to: 'AvStatus', from: 'avStatus'},
+                            { to: 'RegisteredTime', from: 'registeredTime'},
+                            { to: 'TargetPriorityType', from: 'targetPriorityType'},
+                            { to: 'OrganizationId', from: 'organizationId'},
+                            { to: 'DeviceOwnerId', from: 'deviceOwnerId'},
+                            { to: 'Email', from: 'email'},
+                            { to: 'ActivationCodeExpiryTime', from: 'activationCodeExpiryTime'},
+                            { to: 'SensorVersion', from: 'sensorVersion'},
+                            { to: 'Status', from: 'status'},
+                            { to: 'TestId', from: 'testId'},
+                            { to: 'DeviceId', from: 'deviceId'},
+                            { to: 'SensorStates', from: 'sensorStates'},
+                            { to: 'PolicyName', from: 'policyName'},
+                            { to: 'SensorOutOfDate', from: 'sensorOutOfDate'},
+                            { to: 'LastLocation', from: 'lastLocation'},
+                            { to: 'DeviceType', from: 'deviceType'},
+                            { to: 'OsVersion', from: 'osVersion'},
+                            { to: 'LastInternalIpAddress', from: 'lastInternalIpAddress'},
+                            { to: 'OrganizationName', from: 'organizationName'}
+                        ]
+                    }
+                ]
+            },
+            'cbd-get-device-status': {
+                path: 'device/%deviceId%',
+                method: 'GET',
+                extended: true,
+                translator:[
+                    {
+                        contextPath: 'CarbonBlackDefense.GetDeviceStatus.DeviceInfo(val.DeviceId==obj.DeviceId)',
+                        title: 'Carbon Black Defense Get Device Status',
+                        innerPath: 'deviceInfo',
+                        data: [
+                            { to: 'Name', from: 'name'},
+                            { to: 'LastReportedTime', from: 'lastReportedTime'},
+                            { to: 'PolicyId', from: 'policyId'},
+                            { to: 'LastShutdownTime', from: 'lastShutdownTime'},
+                            { to: 'LastContact', from: 'lastContact'},
+                            { to: 'LastExternalIpAddress', from: 'lastExternalIpAddress'},
+                            { to: 'AvStatus', from: 'avStatus'},
+                            { to: 'RegisteredTime', from: 'registeredTime'},
+                            { to: 'TargetPriorityType', from: 'targetPriorityType'},
+                            { to: 'OrganizationId', from: 'organizationId'},
+                            { to: 'DeviceOwnerId', from: 'deviceOwnerId'},
+                            { to: 'Email', from: 'email'},
+                            { to: 'ActivationCodeExpiryTime', from: 'activationCodeExpiryTime'},
+                            { to: 'SensorVersion', from: 'sensorVersion'},
+                            { to: 'Status', from: 'status'},
+                            { to: 'TestId', from: 'testId'},
+                            { to: 'DeviceId', from: 'deviceId'},
+                            { to: 'SensorStates', from: 'sensorStates'},
+                            { to: 'PolicyName', from: 'policyName'},
+                            { to: 'SensorOutOfDate', from: 'sensorOutOfDate'},
+                            { to: 'LastLocation', from: 'lastLocation'},
+                            { to: 'DeviceType', from: 'deviceType'},
+                            { to: 'OsVersion', from: 'osVersion'},
+                            { to: 'LastInternalIpAddress', from: 'lastInternalIpAddress'},
+                            { to: 'OrganizationName', from: 'organizationName'}
+                        ]
+                    }
+                ]
+            },
+            'cbd-change-device-status': {
+                path: 'device/%deviceId%',
+                method: 'PATCH',
+                content: {'policyName' : null},
+                extended: true,
+                translator:[
+                    {
+                        contextPath: 'CarbonBlackDefense.ChangeDeviceStatus.DeviceInfo(val.DeviceId==obj.DeviceId)',
+                        title: 'Carbon Black Defense Change Device Status',
+                        innerPath: 'deviceInfo',
+                        data: [
+                            { to: 'Name', from: 'name'},
+                            { to: 'LastReportedTime', from: 'lastReportedTime'},
+                            { to: 'PolicyId', from: 'policyId'},
+                            { to: 'LastShutdownTime', from: 'lastShutdownTime'},
+                            { to: 'LastContact', from: 'lastContact'},
+                            { to: 'LastExternalIpAddress', from: 'lastExternalIpAddress'},
+                            { to: 'AvStatus', from: 'avStatus'},
+                            { to: 'RegisteredTime', from: 'registeredTime'},
+                            { to: 'TargetPriorityType', from: 'targetPriorityType'},
+                            { to: 'OrganizationId', from: 'organizationId'},
+                            { to: 'DeviceOwnerId', from: 'deviceOwnerId'},
+                            { to: 'Email', from: 'email'},
+                            { to: 'SensorVersion', from: 'sensorVersion'},
+                            { to: 'Status', from: 'status'},
+                            { to: 'TestId', from: 'testId'},
+                            { to: 'DeviceId', from: 'deviceId'},
+                            { to: 'SensorStates', from: 'sensorStates'},
+                            { to: 'PolicyName', from: 'policyName'},
+                            { to: 'SensorOutOfDate', from: 'sensorOutOfDate'},
+                            { to: 'LastLocation', from: 'lastLocation'},
+                            { to: 'DeviceType', from: 'deviceType'},
+                            { to: 'OsVersion', from: 'osVersion'},
+                            { to: 'LastInternalIpAddress', from: 'lastInternalIpAddress'},
+                            { to: 'OrganizationName', from: 'organizationName'}
+                        ]
+                    }
+                    ]
+            },
+            'cbd-find-events': {
+                path: 'event',
+                method: 'GET',
+                queryParams: {
+                    start: true,
+                    rows: true,
+                    hostName: true,
+                    hostNameExact: true,
+                    ownerName: true,
+                    ownerNameExact: true,
+                    ipAddress: true,
+                    sha256hash: true,
+                    applicationName: true,
+                    eventType: true,
+                    searchWindow: true
+                },
+                extended: true,
+                translator: [
+                    {
+                        contextPath: 'CarbonBlackDefense.FindEvents.Results(val.EventId==obj.EventId)',
+                        innerPath: 'results',
+                        title: 'Carbon Black Defense Find Events',
+                        data: [
+                            { to: 'EventTime', from: 'eventTime'},
+                            { to: 'LongDescription', from: 'longDescription'},
+                            { to: 'EventId', from: 'eventId'},
+                            { to: 'EventType', from: 'eventType'},
+                            { to: 'SelectedApp.EffectiveReputationSource', from: 'selectedApp.effectiveReputationSource'},
+                            { to: 'SelectedApp.ReputationProperty', from: 'selectedApp.reputationProperty'},
+                            { to: 'SelectedApp.Sha256Hash', from: 'selectedApp.sha256Hash'},
+                            { to: 'SelectedApp.ApplicationName', from: 'selectedApp.applicationName'},
+                            { to: 'SelectedApp.ApplicationPath', from: 'selectedApp.applicationPath'},
+                            { to: 'SelectedApp.EffectiveReputation', from: 'selectedApp.effectiveReputation'},
+                            { to: 'SelectedApp.Md5Hash', from: 'selectedApp.md5Hash'},
+                            { to: 'ProcessDetails.UserName', from: 'processDetails.userName'},
+                            { to: 'ProcessDetails.MilisSinceProcessStart', from: 'processDetails.milisSinceProcessStart'},
+                            { to: 'ProcessDetails.Name', from: 'processDetails.name'},
+                            { to: 'ProcessDetails.TargetCommandLine', from: 'processDetails.targetCommandLine'},
+                            { to: 'ProcessDetails.TargetName', from: 'processDetails.targetName'},
+                            { to: 'ProcessDetails.TargetPid', from: 'processDetails.targetPid'},
+                            { to: 'ProcessDetails.FullUserName', from: 'processDetails.fullUserName'},
+                            { to: 'ProcessDetails.TargetPrivatePid', from: 'processDetails.targetPrivatePid'},
+                            { to: 'ProcessDetails.CommandLine', from: 'processDetails.commandLine'},
+                            { to: 'ProcessDetails.PrivatePid', from: 'processDetails.privatePid'},
+                            { to: 'ProcessDetails.ProcessId', from: 'processDetails.processId'},
+                            { to: 'CreateTime', from: 'createTime'},
+                            { to: 'DeviceDetails.Email', from: 'deviceDetails.email'},
+                            { to: 'DeviceDetails.DeviceLocation.Region', from: 'deviceDetails.deviceLocation.region'},
+                            { to: 'DeviceDetails.DeviceLocation.City', from: 'deviceDetails.deviceLocation.city'},
+                            { to: 'DeviceDetails.DeviceLocation.Latitude', from: 'deviceDetails.deviceLocation.latitude'},
+                            { to: 'DeviceDetails.DeviceLocation.CountryCode', from: 'deviceDetails.deviceLocation.countryCode'},
+                            { to: 'DeviceDetails.DeviceLocation.CountryName', from: 'deviceDetails.deviceLocation.countryName'},
+                            { to: 'DeviceDetails.DeviceLocation.Longitude', from: 'deviceDetails.deviceLocation.longitude'},
+                            { to: 'DeviceDetails.DeviceType', from: 'deviceDetails.deviceType'},
+                            { to: 'DeviceDetails.TargetPriorityType', from: 'deviceDetails.targetPriorityType'},
+                            { to: 'DeviceDetails.PolicyName', from: 'deviceDetails.policyName'},
+                            { to: 'DeviceDetails.DeviceId', from: 'deviceDetails.deviceId'},
+                            { to: 'DeviceDetails.DeviceIpAddress', from: 'deviceDetails.deviceIpAddress'},
+                            { to: 'DeviceDetails.DeviceIpV4Address', from: 'deviceDetails.deviceIpV4Address'},
+                            { to: 'DeviceDetails.DeviceVersion', from: 'deviceDetails.deviceVersion'},
+                            { to: 'DeviceDetails.AgentLocation', from: 'deviceDetails.agentLocation'},
+                            { to: 'DeviceDetails.DeviceName', from: 'deviceDetails.deviceName'},
+                            { to: 'DeviceDetails.TargetPriorityCode', from: 'deviceDetails.targetPriorityCode'},
+                            { to: 'ShortDescription', from: 'shortDescription'},
+                            { to: 'TargetApp.EffectiveReputation', from: 'targetApp.effectiveReputation'},
+                            { to: 'TargetApp.ReputationProperty', from: 'targetApp.reputationProperty'},
+                            { to: 'TargetApp.Sha256Hash', from: 'targetApp.sha256Hash'},
+                            { to: 'TargetApp.ApplicationName', from: 'targetApp.applicationName'},
+                            { to: 'TargetApp.EffectiveReputationSource', from: 'targetApp.effectiveReputationSource'}
+                        ],
+                        contextTranslator : [
+                            {
+                                contextPath: 'Endpoint(val.Hostname==obj.Hostname)',
+                                innerPath: 'results',
+                                data: [
+                                    {to: 'Hostname', from: 'deviceDetails.deviceName'},
+                                    {to: 'Domain', from: 'deviceDetails.deviceHostName'},
+                                    {to: 'OS', from: 'deviceDetails.deviceType'},
+                                    {to: 'IPAddress', from: 'deviceDetails.deviceIpV4Address'},
+                                ]
+                            },
+                            {
+                                contextPath: 'Process(val.PID==obj.PID)',
+                                innerPath: 'results',
+                                data: [
+                                    {to: 'PID', from: 'processDetails.processId'},
+                                    {to: 'Name', from: 'processDetails.name'},
+                                    {to: 'Endpoint', from: 'processDetails.deviceName'},
+                                    {to: 'CommandLine', from: 'processDetails.commandLine'},
+                                    {to: 'MD5', from: 'processDetails.md5Hash'},
+                                    {to: 'SHA1', from: 'processDetails.sha256Hash'},
+                                    {to: 'Path', from: 'processDetails.applicationPath'},
+                                    {to: 'ParentName', from: 'processDetails.parentName'},
+                                    {to: 'ParentID', from: 'processDetails.parentPid'}
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        contextPath: 'CarbonBlackDefense.FindEvents.TotalResults(val.TotalResults==obj.TotalResults)',
+                        title: 'Carbon Black Defense Find Events - Total Results',
+                        data: [{to:'TotalResults', from: 'totalResults'}]
+                    }
+                ]
+            },
+            'cbd-find-event': {
+                path: 'event/%eventId%',
+                method: 'GET',
+                extended: true,
+                translator: [
+                    {
+                        contextPath: 'CarbonBlackDefense.FindEvent.EventInfo(val.EventId==obj.EventId)',
+                        innerPath: 'eventInfo',
+                        title: 'Carbon Black Defense Find Events',
+                        data: [
+                          { to: 'ShortDescription', from: 'shortDescription'},
+                          { to: 'TargetHash.ApplicationName', from: 'targetHash.applicationName'},
+                          { to: 'TargetHash.ReputationProperty', from: 'targetHash.reputationProperty'},
+                          { to: 'TargetHash.Sha256Hash', from: 'targetHash.sha256Hash'},
+                          { to: 'EventType', from: 'eventType'},
+                          { to: 'ProcessHash.Md5Hash', from: 'processHash.md5Hash'},
+                          { to: 'ProcessHash.Sha256Hash', from: 'processHash.sha256Hash'},
+                          { to: 'ProcessHash.ApplicationPath', from: 'processHash.applicationPath'},
+                          { to: 'ProcessHash.ReputationProperty', from: 'processHash.reputationProperty'},
+                          { to: 'ProcessHash.ApplicationName', from: 'processHash.applicationName'},
+                          { to: 'OrgDetails.OrganizationId', from: 'orgDetails.organizationId'},
+                          { to: 'OrgDetails.OrganizationName', from: 'orgDetails.organizationName'},
+                          { to: 'OrgDetails.OrganizationType', from: 'orgDetails.organizationType'},
+                          { to: 'ParentHash.ApplicationName', from: 'parentHash.applicationName'},
+                          { to: 'ParentHash.Sha256Hash', from: 'parentHash.sha256Hash'},
+                          { to: 'ThreatIndicators', from: 'threatIndicators'},
+                          { to: 'EventId', from: 'eventId'},
+                          { to: 'LongDescription', from: 'longDescription'},
+                          { to: 'DeviceDetails.DeviceIpV4Address', from: 'deviceDetails.deviceIpV4Address'},
+                          { to: 'DeviceDetails.DeviceType', from: 'deviceDetails.deviceType'},
+                          { to: 'DeviceDetails.Email', from: 'deviceDetails.email'},
+                          { to: 'DeviceDetails.TargetPriorityCode', from: 'deviceDetails.targetPriorityCode'},
+                          { to: 'DeviceDetails.AgentLocation', from: 'deviceDetails.agentLocation'},
+                          { to: 'DeviceDetails.DeviceHostName', from: 'deviceDetails.deviceHostName'},
+                          { to: 'DeviceDetails.DeviceId', from: 'deviceDetails.deviceId'},
+                          { to: 'DeviceDetails.GroupName', from: 'deviceDetails.groupName'},
+                          { to: 'DeviceDetails.DeviceVersion', from: 'deviceDetails.deviceVersion'},
+                          { to: 'DeviceDetails.TargetPriorityType', from: 'deviceDetails.targetPriorityType'},
+                          { to: 'DeviceDetails.DeviceIpAddress', from: 'deviceDetails.deviceIpAddress'},
+                          { to: 'DeviceDetails.DeviceLocation.Latitude', from: 'deviceDetails.deviceLocation.latitude'},
+                          { to: 'DeviceDetails.DeviceLocation.City', from: 'deviceDetails.deviceLocation.city'},
+                          { to: 'DeviceDetails.DeviceLocation.CountryCode', from: 'deviceDetails.deviceLocation.countryCode'},
+                          { to: 'DeviceDetails.DeviceLocation.DmaCode', from: 'deviceDetails.deviceLocation.dmaCode'},
+                          { to: 'DeviceDetails.DeviceLocation.Longitude', from: 'deviceDetails.deviceLocation.longitude'},
+                          { to: 'DeviceDetails.DeviceLocation.MetroCode', from: 'deviceDetails.deviceLocation.metroCode'},
+                          { to: 'DeviceDetails.DeviceLocation.PostalCode', from: 'deviceDetails.deviceLocation.postalCode'},
+                          { to: 'DeviceDetails.DeviceLocation.Region', from: 'deviceDetails.deviceLocation.region'},
+                          { to: 'DeviceDetails.DeviceLocation.AreaCode', from: 'deviceDetails.deviceLocation.areaCode'},
+                          { to: 'DeviceDetails.DeviceLocation.CountryName', from: 'deviceDetails.deviceLocation.countryName'},
+                          { to: 'DeviceDetails.DeviceName', from: 'deviceDetails.deviceName'},
+                          { to: 'CreateTime', from: 'createTime'},
+                          { to: 'EventTime', from: 'eventTime'},
+                          { to: 'ProcessDetails.FullUserName', from: 'processDetails.fullUserName'},
+                          { to: 'ProcessDetails.Name', from: 'processDetails.name'},
+                          { to: 'ProcessDetails.ParentCommandLine', from: 'processDetails.parentCommandLine'},
+                          { to: 'ProcessDetails.ParentName', from: 'processDetails.parentName'},
+                          { to: 'ProcessDetails.ParentPid', from: 'processDetails.parentPid'},
+                          { to: 'ProcessDetails.ProcessId', from: 'processDetails.processId'},
+                          { to: 'ProcessDetails.CommandLine', from: 'processDetails.commandLine'},
+                          { to: 'ProcessDetails.MilisSinceProcessStart', from: 'processDetails.milisSinceProcessStart'},
+                          { to: 'ProcessDetails.TargetCommandLine', from: 'processDetails.targetCommandLine'},
+                          { to: 'ProcessDetails.TargetPid', from: 'processDetails.targetPid'},
+                          { to: 'ProcessDetails.UserName', from: 'processDetails.userName'},
+                          { to: 'ProcessDetails.ParentPrivatePid', from: 'processDetails.parentPrivatePid'},
+                          { to: 'ProcessDetails.PrivatePid', from: 'processDetails.privatePid'},
+                          { to: 'ProcessDetails.TargetName', from: 'processDetails.targetName'},
+                          { to: 'ProcessDetails.TargetPrivatePid', from: 'processDetails.targetPrivatePid'}
+                        ],
+                        contextTranslator: [
+                            {
+                                contextPath: 'Endpoint',
+                                innerPath: 'deviceDetails',
+                                data: [
+                                    {to: 'Hostname', from: 'deviceName'},
+                                    {to: 'Domain', from: 'deviceHostName'},
+                                    {to: 'OS', from: 'deviceType'},
+                                    {to: 'IPAddress', from: 'deviceIpV4Address'},
+                                ]
+                            },
+                            {
+                                contextPath: 'Process',
+                                innerPath: 'processDetails',
+                                data: [
+                                    {to: 'PID', from: 'processId'},
+                                    {to: 'Name', from: 'name'},
+                                    {to: 'Endpoint', from: 'deviceName'},
+                                    {to: 'CommandLine', from: 'commandLine'},
+                                    {to: 'MD5', from: 'md5Hash'},
+                                    {to: 'SHA1', from: 'sha256Hash'},
+                                    {to: 'Path', from: 'applicationPath'},
+                                    {to: 'ParentName', from: 'parentName'},
+                                    {to: 'ParentID', from: 'parentPid'}
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            'cbd-find-processes': {
+                path: 'process',
+                method: 'GET',
+                queryParams: {
+                    start: true,
+                    rows: true,
+                    hostNameExact: true,
+                    ownerName: true,
+                    ownerNameExact: true,
+                    ipAddress: true,
+                    searchWindow: true
+                },
+                extended: true,
+                translator: [
+                    {
+                        title: 'Carbon Black Defense Get Processes.Results',
+                        contextPath:'CarbonBlackDefense.GetProcesses(val.ProcessId==obj.ProcessId)',
+                        innerPath: 'results',
+                        data: [
+                            {to: 'ApplicationName',from: 'applicationName'},
+                            {to: 'ProcessId', from: 'processId'},
+                            {to: 'NumEvents', from: 'numEvents'},
+                            {to: 'ApplicationPath', from: 'applicationPath'},
+                            {to: 'PrivatePid', from:  'privatePid'},
+                            {to: 'Sha256Hash', from: 'sha256Hash'}
+                        ]
+                    },
+                    {
+                        title: 'Carbon Black Defense Get Processes - Total Results',
+                        contextPath:'CarbonBlackDefense.GetProcesses',
+                        data: [{to: 'TotalResults',from: 'totalResults'}],
+                    }
+                ]
+            },
+            'cbd-get-alert-details': {
+                path: 'alert/%alertId%',
+                method: 'GET',
+                extended: true,
+                translator : [
+                    {
+                        contextPath: 'CarbonBlackDefense.GetAlertDetails.DeviceInfo(val.DeviceId==obj.DeviceId)',
+                        title: 'Carbon Black Defense Get Alert Details',
+                        data: [
+                            { to: 'DeviceInfo.DeviceType', from: 'deviceInfo.deviceType'},
+                            { to: 'DeviceInfo.Group', from: 'deviceInfo.adGroupName'},
+                            { to: 'DeviceInfo.GroupId', from: 'deviceInfo.adGroupId'},
+                            { to: 'DeviceInfo.RegisteredTime', from: 'deviceInfo.registeredTime'},
+                            { to: 'DeviceInfo.DeviceId', from: 'deviceInfo.deviceId'},
+                            { to: 'DeviceInfo.DeviceName', from: 'deviceInfo.deviceName'},
+                            { to: 'DeviceInfo.Status', from: 'deviceInfo.status'},
+                            { to: 'DeviceInfo.OsVersion', from: 'deviceInfo.osVersion'},
+                            { to: 'DeviceInfo.SensorVersion', from: 'deviceInfo.sensorVersion'},
+                            { to: 'DeviceInfo.UserName', from: 'deviceInfo.userName'},
+                            { to: 'DeviceInfo.Importance', from: 'deviceInfo.importance'},
+                            { to: 'DeviceInfo.Message', from: 'deviceInfo.message'},
+                            { to: 'DeviceInfo.Success', from: 'deviceInfo.success'},
+                            { to: 'Events.ParentHash', from: 'events.parentHash'},
+                            { to: 'Events.PolicyState', from: 'events.policyState'},
+                            { to: 'Events.LongDescription', from: 'events.longDescription'},
+                            { to: 'Events.CommandLine', from: 'events.commandLine'},
+                            { to: 'Events.ParentPid', from: 'events.parentPid'},
+                            { to: 'Events.ProcessId', from: 'events.processId'},
+                            { to: 'Events.ThreatIndicators', from: 'events.threatIndicators'},
+                            { to: 'Events.ApplicationPath', from: 'events.applicationPath'},
+                            { to: 'Events.ProcessHash', from: 'events.processHash'},
+                            { to: 'Events.ProcessMd5Hash', from: 'events.processMd5Hash'},
+                            { to: 'Events.EventId', from: 'events.eventId'},
+                            { to: 'Events.EventTime', from: 'events.eventTime'},
+                            { to: 'Events.EventType', from: 'events.eventType'},
+                            { to: 'Events.KillChainStatus', from: 'events.killChainStatus'},
+                            { to: 'Events.ParentName', from: 'events.parentName'},
+                            { to: 'Events.ParentPPid', from: 'events.parentPPid'},
+                            { to: 'Events.ProcessPPid', from: 'events.processPPid'},
+                            { to: 'OrgId', from: 'orgId'},
+                            { to: 'ThreatInfo.IncidentId', from: 'threatInfo.incidentId'},
+                            { to: 'ThreatInfo.Indicators.ApplicationName', from: 'threatInfo.indicators.applicationName'},
+                            { to: 'ThreatInfo.Indicators.IndicatorName', from: 'threatInfo.indicators.indicatorName'},
+                            { to: 'ThreatInfo.Indicators.Sha256Hash', from: 'threatInfo.indicators.sha256Hash'},
+                            { to: 'ThreatInfo.Summary', from: 'threatInfo.summary'},
+                            { to: 'ThreatInfo.ThreatId', from: 'threatInfo.threatId'},
+                            { to: 'ThreatInfo.ThreatScore', from: 'threatInfo.threatScore'},
+                            { to: 'ThreatInfo.Time', from: 'threatInfo.time'}
+                        ],
+                        contextTranslator: [
+                            {
+                                contextPath: 'Endpoint(val.deviceName==obj.deviceName)',
+                                innerPath: 'deviceInfo',
+                                data: [
+                                    {to: 'Hostname', from: 'deviceName'},
+                                    {to: 'OS', from: 'deviceType'}
+                                ]
+                            },
+                            {
+                                contextPath: 'Process(val.processId==obj.processId)',
+                                innerPath: 'events',
+                                data: [
+                                    {to: 'PID', from: 'processId'},
+                                    {to: 'CommandLine', from: 'commandLine'},
+                                    {to: 'MD5', from: 'processMd5Hash'},
+                                    {to: 'Path', from: 'applicationPath'},
+                                    {to: 'ParentName', from: 'parentName'},
+                                    {to: 'ParentID', from: 'parentPid'}
+                                ]
+                            },
+                            {
+                                contextPath: 'Process(val.deviceName==obj.deviceName)',
+                                innerPath: 'deviceInfo',
+                                data: [{to: 'Endpoint', from: 'deviceName'}]
+                            },
+                            {
+                                contextPath: 'Account(val.Email==obj.Email)',
+                                innerPath: 'deviceInfo',
+                                data: [
+                                    {to: 'Email', from: 'userName'},
+                                    {to: 'Groups', from: 'group'}
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "cbd-get-notifications": {
+                path: 'notification',
+                method: 'GET',
+                siemKey: true
+            },
+            'cbd-get-policies': {
+                path: 'policy',
+                method: 'GET',
+                queryParams: {
+                    start: true,
+                    rows: true
+                },
+                extended: true,
+                translator : [
+                    {
+                        title: 'Carbon Black Defense Get Policies',
+                        contextPath: 'CarbonBlackDefense.GetPolicies(val.Id==obj.Id)',
+                        innerPath: 'results',
+                        data: policyData
+                    }
+                ]
+            },
+            'cbd-get-policy': {
+                path: 'policy/%policyId%',
+                method: 'GET',
+                extended: true,
+                translator: [
+                    {
+                        title: 'Carbon Black Defense Get Policy',
+                        contextPath: 'CarbonBlackDefense.GetPolicy(val.Id==obj.Id)',
+                        innerPath: 'policyInfo',
+                        data: policyData
+                    }
+                ]
+            },
+            'cbd-create-policy': {
+                path: 'policy',
+                method: 'POST',
+                content: {
+                    'policyInfo' : {
+                        'description': null,
+                        'name': null,
+                        'version': 2,
+                        'priorityLevel': null,
+                        'policy': null
+                    }
+                },
+                extended: true,
+                translator: [
+                    {
+                        title: 'Carbon Black Defense Create New Policy',
+                        contextPath:'CarbonBlackDefense.CreatePolicy(val.PolicyId==obj.PolicyId)',
+                        data:[{to: 'PolicyId', from: 'policyId'}]
+                    }
+                ]
+            },
+            'cbd-update-policy': {
+                path: 'policy/%id%',
+                method: 'PUT',
+                content: {
+                    'policyInfo' : {
+                        'description': null,
+                        'name': null,
+                        'version': 2,
+                        'priorityLevel': null,
+                        'policy': null,
+                        'id': null
+                    }
+                }
+            },
+            'cbd-delete-policy': {
+                path: 'policy/%policyId%',
+                method: 'DELETE'
+            },
+            'cbd-add-rule-to-policy': {
+                path: 'policy/%policyId%/rule',
+                method: 'POST',
+                content: {
+                    'ruleInfo': {
+                        'action': null,
+                        'application': {
+                            'type': null,
+                            'value': null
+                        },
+                        'operation': null,
+                        'required': null,
+                        'id': null
+                    }
+                }
+            },
+            'cbd-delete-rule-from-policy': {
+                path: 'policy/%policyId%/rule/%ruleId%',
+                method: 'DELETE'
+            },
+            'cbd-update-rule-in-policy': {
+                path: 'policy/%policyId%/rule/%id%',
+                method: 'PUT',
+                content: {
+                    'ruleInfo': {
+                        'action': null,
+                        'application': {
+                            'type': null,
+                            'value': null
+                        },
+                        'operation': null,
+                        'required': null,
+                        'id': null
+                        }
+                    }
+                }
+        };
+        //Taken from common server- with modifications
+        var createEntry = function(result, translator, headerTransform) {
+            /* filters out all fields where humanReadable is false */
+            var filter = function(obj) {
+              if(obj.humanReadable !== false) {
+                  return true;
+              }
+              return false;
+            };
+            var entry = {
+              Type: entryTypes.note,
+              Contents: result,
+              ContentsType: formats.json,
+              ReadableContentsFormat: formats.markdown,
+              EntryContext: {}
+            };
+            var content = translator.innerPath ? dq(result, translator.innerPath) : result;
+            var translatedContext = mapObjFunction(translator.data) (content);
+            var translatedMD = mapObjFunction(translator.data, filter) (content);
+            var context = createContext(translatedContext);
+            entry.EntryContext[translator.contextPath] = context;
+            entry.HumanReadable = tableToMarkdown(translator.title, translatedMD, undefined, undefined, headerTransform || dotToSpace);
+            if (translator.contextTranslator) {
+                var conTranslator = translator.contextTranslator;
+                for (var i = 0; i < conTranslator.length; i++ ) {
+                    addContextToEntry(result, entry, conTranslator[i]);
+                }
+            }
+            return entry;
+        };
+        function addContextToEntry(result, entry, translator) {
+            var content = translator.innerPath ? dq(result, translator.innerPath) : result;
+            var translatedContext = mapObjFunction(translator.data) (content);
+            var context = createContext(translatedContext);
+            entry.EntryContext[translator.contextPath] = context;
+        }
+        var generateQuery = function(cmd) {
+            var seperateQueryParams = (function() {
+                var seperated = {};
+                if (cmd.queryParams) {
+                    for (var arg in args) {
+                        if (cmd.queryParams[arg]) {
+                           seperated[arg] = args[arg];
+                        }
+                    }
+                }
+                return seperated;
+            })();
+            var queryString = (function() {
+                return encodeToURLQuery(seperateQueryParams);
+            })();
+            return {
+                str: queryString,
+                parameters: seperateQueryParams
+            };
+        };
+        function sendRequest(fullurl, method, headers, body) {
+            var req = {
+                    Method: method,
+                    Headers: headers
+                };
+            if (body !== 'undifiend') {
+                req.Body = body;
+            }
+            var res = http(fullurl, req, params.insecure, params.proxy);
+            return res;
+        }
+        function pathify(cmd) {
+            return replaceInTemplates(cmd.path,args);
+        }
+        function buildBody(cmd) {
+            content = cmd.content;
+            assignContentFromArgs(content);
+            return JSON.stringify(content);
+        }
+        function assignContentFromArgs(obj) {
+            for (var key in obj) {
+                if (obj[key] === null) {
+                    if (args[key]) {
+                        if (args[key] === 'true' || args[key] === 'false') {
+                            obj[key] = (args[key] === 'true');
+                        } else if (!isNaN(args[key])) {
+                            obj[key] = parseInt(args[key]);
+                        }
+                        else {
+                            obj[key] = args[key];
+                        }
+                    }
+                } else if(typeof obj[key] === 'object' ) {
+                    assignContentFromArgs(obj[key]);
+                }
+            }
+        }
+        var setPolicy = function() {
+            var setter;
+            var policy = args.policy;
+            try {
+                setter = JSON.parse(args.keyValue);
+            } catch(err) {
+                throw err;
+            }
+            for (var path in setter) {
+                var val = setter[path];
+                var keysArr = path.split('.');
+                var obj = policy;
+                var i = 0;
+                while (obj && i < keysArr.length - 1) {
+                    obj = obj[keysArr[i]];
+                    i++;
+                }
+                if (!(obj && obj[keysArr[i]])) {
+                    throw 'field path ' + path + ' is not defined in the policy object';
+                }
+                obj[keysArr[i]] = val;
+            }
+            return {
+                Type: entryTypes.note,
+                Contents: policy,
+                ContentsFormat: formats.json,
+                EntryContext : {'CarbonBlackDefense.SetPolicy.Policy': policy }
+            };
+        };
+        function executeCommand(cmd) {
+            var query = generateQuery(cmd);
+            var uniquePath = pathify(cmd);
+            var url = client.url + uniquePath + query.str;
+            var headers = {};
+            var body;
+            if (cmd.content) {
+                body = buildBody(cmd);
+            }
+            headers = {
+                'Content-Type': ['application/json'],
+                'Accept': ['application/json']
+            };
+            if (cmd.siemKey) {
+                client.addSiemKeyToHeaders(headers);
+            } else {
+                client.addClientAuthToHeaders(headers);
+            }
+            var res = sendRequest(url, cmd.method, headers, body);
+            return res;
+        }
+        var executeAndShowResult = function (cmdName) {
+            var cmd = commands[cmdName];
+            var res = executeCommand(cmd);
+            var body = parseBody(res);
+            if (!cmd.extended) {
+                return {
+                    Type: entryTypes.note,
+                    ContentsFormat: formats.text,
+                    Contents: 'Request Success'
+                };
+            }
+            var entries = [];
+            for (var i = 0; i < cmd.translator.length; i++) {
+                entries.push(createEntry(body, cmd.translator[i]));
+            }
+            return entries;
+        };
+        function parseBody(httpResponse) {
+            var body = JSON.parse(httpResponse.Body);
+            if (httpResponse.StatusCode !== 200) {
+                throw 'Request failed: ' + httpResponse.Status + ".\n" + body.message
+            }
+            return body;
+        }
+        var runTest = function() {
+            args = { rows: '0' };
+            var res = executeCommand(commands['cbd-get-devices-status']);
+            if (res.StatusCode === 200) {
+                return 'ok';
+            }
+            if (res.StatusCode === 401) {
+                throw 'Test failed. Make sure that the Connector ID and API key are valid.';
+            }
+            throw 'Test failed for unknown reason';
+        };
+        function createIncidentsFromNotification(notification) {
+            return {
+                'name': 'event ' + notification.eventId + ', ' + notification.eventDescription,
+                'rawJson': JSON.stringify(notification)
+            };
+        }
+        var getNotifications = function() {
+            if (!params.siemKey) {
+                throw 'SIEM key is missing from parameters.';
+            }
+            if (!params.siemConnector) {
+                throw 'SIEM connector is missing from parameters.';
+            }
+            var res = executeCommand(commands['cbd-get-notifications']);
+            if (res.StatusCode !== 200 ) {
+                throw 'Request failed with status code: ' + res.StatusCode;
+            }
+            var body = JSON.parse(res.Body);
+            if (!body.notifications) {
+                return;
+            }
+            var notifications = body.notifications;
+            var incidents = [];
+            for (var i = 0; i < notifications.length; i++) {
+                var incident = createIncidentsFromNotification(notifications[i]);
+                incidents.push(incident);
+            }
+            return JSON.stringify(incidents);
+        };
+        return {
+            execute: executeAndShowResult,
+            runTest: runTest,
+            getNotifications: getNotifications,
+            setPolicy: setPolicy
+        };
+    };
+    var cbd = CBDefence();
+    switch (command) {
+        case 'test-module':
+            return cbd.runTest();
+        case 'fetch-incidents':
+            return cbd.getNotifications();
+        case 'cbd-set-policy':
+            return cbd.setPolicy();
+        default:
+            if (args.policy && typeof args.policy === 'string') {
+                try {
+                    var p = JSON.parse(args.policy);
+                    args.policy = p;
+                } catch (err) {
+                    return "Failed to parse policy into a JSON object.\n" + err;
+                }
+            }
+            return cbd.execute(command);
+    }
+  type: javascript
+system: true

@@ -1,0 +1,297 @@
+description: Triggers a backup task on each firewall appliance and pulls the resulting
+  file into the war room via SCP.
+id: playbook14
+inputs: []
+name: Checkpoint Firewall Configuration Backup Playbook
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1048472f-83e3-4b55-8d84-8e9fafbbd6cf
+      iscommand: false
+      name: start_task
+      type: start
+      version: -1
+    taskid: 1048472f-83e3-4b55-8d84-8e9fafbbd6cf
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      key:
+        simple: chkpdevicestobackup
+      value: {}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 230eed7b-c702-4c0f-87f0-700bd9d630b1
+      iscommand: false
+      name: Determine list of devices to be backed up
+      type: regular
+      version: -1
+    taskid: 230eed7b-c702-4c0f-87f0-700bd9d630b1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    results:
+    - CheckpointBackup
+    scriptarguments:
+      devices:
+        simple: ${chkpdevicestobackup}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6eb6a468-79cc-460b-8e2c-cada1799b034
+      iscommand: false
+      name: Trigger backup on each device
+      scriptName: CPCreateBackup
+      type: regular
+      version: -1
+    taskid: 6eb6a468-79cc-460b-8e2c-cada1799b034
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    results:
+    - CheckpointBackup
+    scriptarguments:
+      devices:
+        simple: ${chkpbackupstarted}
+      waittimeout:
+        simple: "5"
+    separatecontext: false
+    task:
+      brand: ""
+      id: 143e5bcf-7746-409b-8c53-ff761a2d4b99
+      iscommand: false
+      name: Show status for initiated backup tasks
+      scriptName: CPShowBackupStatus
+      type: regular
+      version: -1
+    taskid: 143e5bcf-7746-409b-8c53-ff761a2d4b99
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    note: false
+    scriptarguments:
+      data:
+        simple: ${devicesbackuperror}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 1e1e3c6f-5703-47ea-8d70-871327266a2b
+      iscommand: false
+      name: Have any backups failed?
+      scriptName: UtilAnyResults
+      type: condition
+      version: -1
+    taskid: 1e1e3c6f-5703-47ea-8d70-871327266a2b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    scriptarguments:
+      assignmentgroup: {}
+      category: {}
+      comments:
+        simple: ${devicesbackuperror}
+      shortdescription:
+        simple: Checkpoint configuration backups - Failed
+      subcategory: {}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 3fb51d97-0e06-4b4d-8d3d-44a10e657cc4
+      iscommand: false
+      name: Open ticket on ServiceNow with list of problematic devices
+      scriptName: SNOpenTicket
+      type: regular
+      version: -1
+    taskid: 3fb51d97-0e06-4b4d-8d3d-44a10e657cc4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 293,
+          "y": 903
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    scriptarguments:
+      systems2files:
+        simple: ${devicesbackupfiles}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 36723772-43f0-4619-872f-f54d53770054
+      iscommand: false
+      name: Retrieve the backup files from the devices
+      scriptName: SCPPullFiles
+      type: regular
+      version: -1
+    taskid: 36723772-43f0-4619-872f-f54d53770054
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 1097
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: ${backupsreporttext}
+      cc: {}
+      htmlBody: {}
+      subject:
+        simple: Demisto - Checkpoint Backup Report
+      to: {}
+    separatecontext: false
+    task:
+      brand: ""
+      id: d187c4cc-630c-4edd-8048-40678669101b
+      iscommand: false
+      name: Email a report of backup results
+      scriptName: SendEmail
+      type: regular
+      version: -1
+    taskid: d187c4cc-630c-4edd-8048-40678669101b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 1291
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      notes: {}
+      reason:
+        simple: Done
+    separatecontext: false
+    task:
+      brand: ""
+      id: 65e21959-2a73-48ab-8b31-0aa8b55e66d9
+      iscommand: false
+      name: CloseInvestigation
+      scriptName: CloseInvestigation
+      type: regular
+      version: -1
+    taskid: 65e21959-2a73-48ab-8b31-0aa8b55e66d9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 1485
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1530,
+        "width": 623,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,414 @@
+description: Calculates the incident severity level according to the highest indicator
+  DBotScore.
+id: Calculate Severity By Highest DBotScore
+inputs:
+- description: 'Array of all indicators associated with the incident. '
+  key: DBotScore
+  required: false
+  value:
+    complex:
+      root: DBotScore
+name: Calculate Severity By Highest DBotScore
+outputs:
+- contextPath: Severities.DBotScoreSeverity
+  description: The severity level of the incident identified and set in the Calculate
+    Severity By Highest DBotScore playbook.
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 3eded69b-617e-4212-86b7-2537474285f3
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 3eded69b-617e-4212-86b7-2537474285f3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 150
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 483350d5-ab17-44cd-87b3-0e2360ce3577
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 483350d5-ab17-44cd-87b3-0e2360ce3577
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1235
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: DBotScore
+      value:
+        complex:
+          root: inputs.DBotScore
+    separatecontext: false
+    task:
+      brand: ""
+      description: |
+        Sets the DBotScore into context.
+      id: 65ee12a8-7f06-44f9-8a4e-9bf56b8e5abd
+      iscommand: false
+      name: Get DBotScore
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 65ee12a8-7f06-44f9-8a4e-9bf56b8e5abd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 525
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.DBotScore
+          operator: isExists
+      label: "yes"
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "22"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is a "DBotScore" in the playbook inputs.
+      id: ec91eb2d-9d4d-4a1a-8c47-a522d7489968
+      iscommand: false
+      name: Is there a DBotScore?
+      type: condition
+      version: -1
+    taskid: ec91eb2d-9d4d-4a1a-8c47-a522d7489968
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 305
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 0b23d820-7999-4d3d-8275-fd32e2eedb57
+      iscommand: false
+      name: No DBotScore
+      type: title
+      version: -1
+    taskid: 0b23d820-7999-4d3d-8275-fd32e2eedb57
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 525
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Score
+                    operator: isEqualNumber
+                    right:
+                      value:
+                        simple: "3"
+                root: DBotScore
+          operator: isExists
+      label: High
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Score
+                    operator: isEqualNumber
+                    right:
+                      value:
+                        simple: "2"
+                root: DBotScore
+          operator: isExists
+      label: Medium
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Score
+                    operator: isEqualNumber
+                    right:
+                      value:
+                        simple: "1"
+                root: DBotScore
+          operator: isExists
+      label: Low
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "30"
+      High:
+      - "27"
+      Low:
+      - "29"
+      Medium:
+      - "28"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        Determines a severity based on the DBotScores of the indicators involved with the incident. Severity level is assigned according to the corresponding DBotScore:
+        No DBotScores / 0 = Unknown
+        1 = Low
+        2 = Medium
+        3 = High
+      id: 989a6b3f-7af4-49e6-812b-d5eea5c049f0
+      iscommand: false
+      name: Evaluate severity based on DBotScore of indicators
+      type: condition
+      version: -1
+    taskid: 989a6b3f-7af4-49e6-812b-d5eea5c049f0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 710
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.DBotScoreSeverity
+      value:
+        simple: High
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Sets the severity of the incident to "High". This severity level
+        means that malicious indicators were identified.
+      id: 052ef69f-e477-4d82-80f2-ae53fd062c10
+      iscommand: false
+      name: Set severity to high
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 052ef69f-e477-4d82-80f2-ae53fd062c10
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 975
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.DBotScoreSeverity
+      value:
+        simple: Medium
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Sets the severity of the incident to "Medium". This severity level
+        means that only suspicious indicators were identified (no malicious indicators).
+      id: d541a52f-b49a-473b-8759-ef01fbf11c87
+      iscommand: false
+      name: Set severity to medium
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: d541a52f-b49a-473b-8759-ef01fbf11c87
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 975
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.DBotScoreSeverity
+      value:
+        simple: Low
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Sets the severity of the incident to "Low". This severity level
+        means no suspicious or malicious indicators were identified.
+      id: 4aa1d738-871e-450c-8bea-f492b41d0d1c
+      iscommand: false
+      name: Set severity to low
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 4aa1d738-871e-450c-8bea-f492b41d0d1c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 975
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.DBotScoreSeverity
+      value:
+        simple: Unknown
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: Sets the severity of the incident to "Unknown". This severity level
+        means that either unknown indicators were identified, or no indicators were
+        identified.
+      id: 4db66a18-a33b-4d0c-8ade-30c28a877459
+      iscommand: false
+      name: Set severity to unknown
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 4db66a18-a33b-4d0c-8ade-30c28a877459
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 975
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "23_22_yes": 0.69,
+      "23_24_#default#": 0.37,
+      "25_27_High": 0.82,
+      "25_28_Medium": 0.76,
+      "25_30_#default#": 0.87
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1150,
+        "width": 1580,
+        "x": -210,
+        "y": 150
+      }
+    }
+  }

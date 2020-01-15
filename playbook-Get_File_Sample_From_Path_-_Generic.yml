@@ -1,0 +1,239 @@
+description: |-
+  Returns a file sample to the war-room from a path on an endpoint using one or more integrations
+
+  inputs:
+  * UseD2 - if "True", use Demisto Dissolvable Agent (D2) to return the file (default: False)
+id: get_file_sample_from_path_-_generic
+inputs:
+- description: ""
+  key: UseD2
+  required: false
+  value:
+    simple: "no"
+- description: ""
+  key: Hostname
+  required: false
+  value:
+    simple: ${Endpoint.Hostname}
+- description: ""
+  key: Path
+  required: false
+  value:
+    simple: ${File.Path}
+name: Get File Sample From Path - Generic
+outputs:
+- contextPath: File
+  description: The file to sample.
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 5d887731-fb71-4226-872c-a9e8dbddac42
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 5d887731-fb71-4226-872c-a9e8dbddac42
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.UseD2
+          operator: isEqualString
+          right:
+            value:
+              simple: "yes"
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    note: false
+    scriptarguments:
+      left:
+        simple: ${inputs.UseD2}
+      right:
+        simple: "True"
+    separatecontext: false
+    task:
+      brand: ""
+      description: Yes if we want to use D2 agent to get the file
+      id: 8adb1ff3-5400-4f88-8a2b-4511ae8303f5
+      iscommand: false
+      name: Use D2 agent?
+      type: condition
+      version: -1
+    taskid: 8adb1ff3-5400-4f88-8a2b-4511ae8303f5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: f81d6908-8ce9-452b-8dde-689f44256933
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: f81d6908-8ce9-452b-8dde-689f44256933
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      Credentials:
+        simple: Admin
+      Hostname:
+        simple: ${Endpoint.Hostname}
+      Path:
+        simple: ${File.Path}
+    separatecontext: false
+    task:
+      brand: ""
+      description: |-
+        Returns a file sample to the war-room from a path on an endpoint using Demisto Dissolvable Agent (D2)
+
+        Input:
+        * Credentials - credentials to use when trying to deploy Demisto Dissolvable Agent (D2)  (default: Admin)
+        * ${Endpoint.Hostname} - deploy agent on target endpoint
+        * ${File.Path} - file's path to collect
+      id: 487eeea9-469f-4725-8695-e25a6ce9c0fc
+      iscommand: false
+      name: Get File Sample From Path - D2
+      playbookName: Get File Sample From Path - D2
+      type: playbook
+      version: -1
+    taskid: 487eeea9-469f-4725-8695-e25a6ce9c0fc
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1,
+          "y": 355
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 33162da0-6e16-4324-8e6e-bcbd0e74f463
+      iscommand: false
+      name: Use 3rd party products
+      type: title
+      version: -1
+    taskid: 33162da0-6e16-4324-8e6e-bcbd0e74f463
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      Hostname:
+        simple: ${inputs.Hostname}
+      Path:
+        simple: ${inputs.Path}
+    separatecontext: true
+    task:
+      brand: ""
+      description: Returns a file sample to the war-room from a path on an endpoint
+        using Carbon Black Enterprise Response
+      id: 6689a943-ee94-437a-868b-0c6971de86f4
+      iscommand: false
+      name: Get File Sample From Path - Carbon Black Enterprise Response
+      playbookName: Get File Sample From Path - Carbon Black Enterprise Response
+      type: playbook
+      version: -1
+    taskid: 6689a943-ee94-437a-868b-0c6971de86f4
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 516
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 859,
+        "x": 1,
+        "y": 50
+      }
+    }
+  }

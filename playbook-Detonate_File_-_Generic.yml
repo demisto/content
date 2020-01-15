@@ -1,0 +1,1032 @@
+description: Detonate file through active integrations that support file detonation
+id: Detonate File - Generic
+inputs:
+- description: Entry ID of file to be detonated
+  key: EntryID
+  required: false
+  value:
+    complex:
+      accessor: EntryID
+      root: File
+- description: File object of file to be detonated
+  key: File
+  required: false
+  value:
+    complex:
+      root: File
+name: Detonate File - Generic
+outputs:
+- contextPath: Joe.Analysis.Status
+  description: Analysis Status
+  type: string
+- contextPath: Joe.Analysis.WebID
+  description: Web ID
+  type: string
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 of the file
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 of the file
+  type: string
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: unknown
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: DBotScore.Malicious.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Malicious.Detections
+  description: The sub analysis detection statuses
+  type: string
+- contextPath: DBotScore.Malicious.SHA1
+  description: The SHA1 of the file
+  type: string
+- contextPath: Sample.State
+  description: The sample state
+- contextPath: Sample.ID
+  description: The sample ID
+- contextPath: File
+  description: The File's object
+  type: unknown
+- contextPath: File.MD5
+  description: MD5 of the file
+  type: string
+- contextPath: Joe.Analysis.SampleName
+  description: Sample Data, could be a file name or URL
+  type: string
+- contextPath: Joe.Analysis.Comments
+  description: Analysis Comments
+  type: string
+- contextPath: Joe.Analysis.Time
+  description: Submitted Time
+  type: date
+- contextPath: Joe.Analysis.Runs
+  description: Sub-Analysis Information
+  type: unknown
+- contextPath: Joe.Analysis.Result
+  description: Analysis Results
+  type: string
+- contextPath: Joe.Analysis.Errors
+  description: Raised errors during sampling
+  type: unknown
+- contextPath: Joe.Analysis.Systems
+  description: Analysis OS
+  type: unknown
+- contextPath: Joe.Analysis.MD5
+  description: MD5 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SHA1
+  description: SHA1 of analysis sample
+  type: string
+- contextPath: Joe.Analysis.SHA256
+  description: SHA256 of analysis sample
+  type: string
+- contextPath: InfoFile.Name
+  description: FileName of the report file
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report file
+  type: string
+- contextPath: InfoFile.Size
+  description: File Size
+  type: number
+- contextPath: InfoFile.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: InfoFile.Info
+  description: Basic information of the file
+  type: string
+- contextPath: File.Extension
+  description: File Extension
+  type: string
+- contextPath: InfoFile
+  description: The report file's object
+  type: unknown
+- contextPath: WildFire.Report
+  description: The submission object
+  type: unknown
+- contextPath: WildFire.Report.Status
+  description: The status of the submission
+  type: string
+- contextPath: WildFire.Report.SHA256
+  description: SHA256 of the submission
+  type: string
+- contextPath: WildFire.Report.MD5
+  description: MD5 of the submission
+  type: string
+- contextPath: WildFire.Report.FileType
+  description: The type of the submission
+  type: string
+- contextPath: WildFire.Report.Size
+  description: The size of the submission
+  type: number
+- contextPath: Joe.Analysis
+  description: Thee Analysis object
+  type: unknown
+- contextPath: Cuckoo.Task.Category
+  description: Category of task
+- contextPath: Cuckoo.Task.Machine
+  description: Machine of task
+- contextPath: Cuckoo.Task.Errors
+  description: Errors of task
+- contextPath: Cuckoo.Task.Target
+  description: Target of task
+- contextPath: Cuckoo.Task.Package
+  description: Package of task
+- contextPath: Cuckoo.Task.SampleID
+  description: Sample ID of task
+- contextPath: Cuckoo.Task.Guest
+  description: Task guest
+- contextPath: Cuckoo.Task.Custom
+  description: Custom values of task
+- contextPath: Cuckoo.Task.Owner
+  description: Task owner
+- contextPath: Cuckoo.Task.Priority
+  description: Priority of task
+- contextPath: Cuckoo.Task.Platform
+  description: Platform of task
+- contextPath: Cuckoo.Task.Options
+  description: Task options
+- contextPath: Cuckoo.Task.Status
+  description: Task status
+- contextPath: Cuckoo.Task.EnforceTimeout
+  description: Is timeout of task enforced
+- contextPath: Cuckoo.Task.Timeout
+  description: Task timeout
+- contextPath: Cuckoo.Task.Memory
+  description: Task memory
+- contextPath: Cuckoo.Task.Tags
+  description: Task tags
+- contextPath: Cuckoo.Task.ID
+  description: ID of task
+- contextPath: Cuckoo.Task.AddedOn
+  description: Date on which the task was added
+- contextPath: Cuckoo.Task.CompletedOn
+  description: Date on which the task was completed
+- contextPath: Cuckoo.Task.Score
+  description: Reported score of the the task
+- contextPath: Cuckoo.Task.Monitor
+  description: Monitor of the reported task
+- contextPath: SNDBOX.Analysis.ID
+  description: Analysis ID
+  type: string
+- contextPath: SNDBOX.Analysis.SampleName
+  description: Sample Data, could be a file name or URL
+  type: string
+- contextPath: SNDBOX.Analysis.Status
+  description: Analysis Status
+  type: string
+- contextPath: SNDBOX.Analysis.Time
+  description: Submitted Time
+  type: date
+- contextPath: SNDBOX.Analysis.Result
+  description: Analysis Results
+  type: string
+- contextPath: SNDBOX.Analysis.Errors
+  description: Raised errors during sampling
+- contextPath: SNDBOX.Analysis.Link
+  description: Analysis Link
+  type: string
+- contextPath: SNDBOX.Analysis.MD5
+  description: MD5 of analysis sample
+  type: string
+- contextPath: SNDBOX.Analysis.SHA1
+  description: SHA1 of analysis sample
+  type: string
+- contextPath: SNDBOX.Analysis.SHA256
+  description: SHA256 of analysis sample
+  type: string
+- contextPath: SNDBOX.Analysis
+  description: SNDBOX analysis
+  type: unknown
+- contextPath: HybridAnalysis.Submit.State
+  description: The state of the process
+  type: string
+- contextPath: HybridAnalysis.Submit.SHA256
+  description: The submission SHA256
+  type: string
+- contextPath: HybridAnalysis.Submit.JobID
+  description: The JobID of the submission
+  type: string
+- contextPath: HybridAnalysis.Submit.EnvironmentID
+  description: The environmentID of the submission
+  type: string
+- contextPath: HybridAnalysis.Submit
+  description: The HybridAnalysis object
+  type: unknown
+- contextPath: ANYRUN.Task.AnalysisDate
+  description: Date and time the analysis was executed.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.Category
+  description: Category of a process behavior.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.Action
+  description: Actions performed by a process.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.ThreatLevel
+  description: Threat score associated with a process behavior.
+  type: Number
+- contextPath: ANYRUN.Task.Behavior.ProcessUUID
+  description: Unique ID of the process whose behaviors are being profiled.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Reputation
+  description: Connection reputation.
+  type: String
+- contextPath: ANYRUN.Task.Connection.ProcessUUID
+  description: ID of the process that created the connection.
+  type: String
+- contextPath: ANYRUN.Task.Connection.ASN
+  description: Connection autonomous system network.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Country
+  description: Connection country.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Protocol
+  description: Connection protocol.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Port
+  description: Connection port number.
+  type: Number
+- contextPath: ANYRUN.Task.Connection.IP
+  description: Connection IP number.
+  type: String
+- contextPath: ANYRUN.Task.DnsRequest.Reputation
+  description: Reputation of the DNS request.
+  type: String
+- contextPath: ANYRUN.Task.DnsRequest.IP
+  description: IP addresses associated with a DNS request.
+  type: Unknown
+- contextPath: ANYRUN.Task.DnsRequest.Domain
+  description: Domain resolution of a DNS request.
+  type: String
+- contextPath: ANYRUN.Task.Threat.ProcessUUID
+  description: Unique process ID from where the threat originated.
+  type: String
+- contextPath: ANYRUN.Task.Threat.Msg
+  description: Threat message.
+  type: String
+- contextPath: ANYRUN.Task.Threat.Class
+  description: Class of the threat.
+  type: String
+- contextPath: ANYRUN.Task.Threat.SrcPort
+  description: Port on which the threat originated.
+  type: Number
+- contextPath: ANYRUN.Task.Threat.DstPort
+  description: Destination port of the threat.
+  type: Number
+- contextPath: ANYRUN.Task.Threat.SrcIP
+  description: Source IP address where the threat originated.
+  type: String
+- contextPath: ANYRUN.Task.Threat.DstIP
+  description: Destination IP address of the threat.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Reputation
+  description: Reputation of the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Country
+  description: HTTP request country.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.ProcessUUID
+  description: ID of the process making the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Body
+  description: HTTP request body parameters and details.
+  type: Unknown
+- contextPath: ANYRUN.Task.HttpRequest.HttpCode
+  description: HTTP request response code.
+  type: Number
+- contextPath: ANYRUN.Task.HttpRequest.Status
+  description: Status of the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.ProxyDetected
+  description: Whether the HTTP request was made through a proxy.
+  type: Boolean
+- contextPath: ANYRUN.Task.HttpRequest.Port
+  description: HTTP request port.
+  type: Number
+- contextPath: ANYRUN.Task.HttpRequest.IP
+  description: HTTP request IP address.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.URL
+  description: HTTP request URL.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Host
+  description: HTTP request host.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Method
+  description: HTTP request method type.
+  type: String
+- contextPath: ANYRUN.Task.FileInfo
+  description: Details of the submitted file.
+  type: String
+- contextPath: ANYRUN.Task.OS
+  description: OS of the sandbox in which the file was analyzed.
+  type: String
+- contextPath: ANYRUN.Task.ID
+  description: The unique ID of the task.
+  type: String
+- contextPath: ANYRUN.Task.MIME
+  description: The MIME of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.MD5
+  description: The MD5 hash of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.SHA1
+  description: The SHA1 hash of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.SHA256
+  description: The SHA256 hash of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.SSDeep
+  description: SSDeep hash of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.Verdict
+  description: ANY.RUN verdict for the maliciousness of the submitted file or URL.
+  type: String
+- contextPath: ANYRUN.Task.Process.FileName
+  description: File name of the process.
+  type: String
+- contextPath: ANYRUN.Task.Process.PID
+  description: Process identification number.
+  type: Number
+- contextPath: ANYRUN.Task.Process.PPID
+  description: Parent process identification number.
+  type: Number
+- contextPath: ANYRUN.Task.Process.ProcessUUID
+  description: Unique process ID (used by ANY.RUN).
+  type: String
+- contextPath: ANYRUN.Task.Process.CMD
+  description: Process command.
+  type: String
+- contextPath: ANYRUN.Task.Process.Path
+  description: Path of the executed command.
+  type: String
+- contextPath: ANYRUN.Task.Process.User
+  description: User who executed the command.
+  type: String
+- contextPath: ANYRUN.Task.Process.IntegrityLevel
+  description: The process integrity level.
+  type: String
+- contextPath: ANYRUN.Task.Process.ExitCode
+  description: Process exit code.
+  type: Number
+- contextPath: ANYRUN.Task.Process.MainProcess
+  description: Whether the process is the main process.
+  type: Boolean
+- contextPath: ANYRUN.Task.Process.Version.Company
+  description: Company responsible for the program executed.
+  type: String
+- contextPath: ANYRUN.Task.Process.Version.Description
+  description: Description of the type of program.
+  type: String
+- contextPath: ANYRUN.Task.Process.Version.Version
+  description: Version of the program executed.
+  type: String
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: String
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: Number
+- contextPath: DBotScore.Type
+  description: Type of indicator.
+  type: String
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: String
+- contextPath: File.Extension
+  description: Extension of the file submitted for analysis.
+  type: String
+- contextPath: File.Name
+  description: The name of the file submitted for analysis.
+  type: String
+- contextPath: File.MD5
+  description: MD5 hash of the file submitted for analysis.
+  type: String
+- contextPath: File.SHA1
+  description: SHA1 hash of the file submitted for analysis.
+  type: String
+- contextPath: File.SHA256
+  description: SHA256 hash of the file submitted for analysis.
+  type: String
+- contextPath: File.SSDeep
+  description: SSDeep hash of the file submitted for analysis.
+  type: String
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision.
+  type: String
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason that the vendor made the decision.
+  type: String
+- contextPath: ANYRUN.Task.Status
+  description: Task analysis status.
+  type: String
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+      - "10"
+      - "9"
+      - "11"
+      - "13"
+      - "14"
+      - "15"
+      - "16"
+      - "17"
+      - "18"
+      - "19"
+      - "20"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Playbook start point
+      id: 454650df-c42f-4915-84cf-9a908e1bff04
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 454650df-c42f-4915-84cf-9a908e1bff04
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Done
+      id: 2a8f5bbb-7692-4ece-8abe-9801c7b05c3c
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 2a8f5bbb-7692-4ece-8abe-9801c7b05c3c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 370
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+      comments: {}
+      internet-access:
+        simple: "True"
+      interval:
+        simple: "1"
+      report-file-type: {}
+      systems: {}
+      timeout:
+        simple: "15"
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Detonates one or more files using the Joe Security - Joe Sandbox integration.
+        Returns relevant reports to the War Room and file reputations to the context data.
+        All file types are supported.
+      id: f6627718-5952-4240-8fba-104c1350e79b
+      iscommand: false
+      name: Detonate File - JoeSecurity
+      playbookName: Detonate File - JoeSecurity
+      type: playbook
+      version: -1
+    taskid: f6627718-5952-4240-8fba-104c1350e79b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+      interval:
+        simple: "1"
+      playbook:
+        simple: default
+      private: {}
+      source: {}
+      tags: {}
+      timeout:
+        simple: "15"
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Detonates a File using the McAfee Advanced Threat Defense sandbox.
+        Advanced Threat Defense supports the following File Types:
+        32-bit Portable Executables (PE)files; 64-bit PE+files
+        exe, sys, dll, com, scr, cpl, ocx, cgi
+        Microsoft Office Suite documents
+        doc,dotm, docx, dotx, xls, ppam, xlsx, pps, xlsb, ppsx, xlsm, ppsm, ppt, ppt, pptx, pptm, rtf, shs, xltm, sldm, xltx, sldx, xlam, thmx, docm, xar
+        Just Systems Ichitaro documents
+        jtd, jtdc
+        Adobe
+        pdf, swf
+        Compressed files
+        gz, 7z, tgz, msi, zip, lzh, cab, lzma, rar
+        Android application package
+        apk, Java, JAR, CLASS, Java Script, Java bin files
+        Image files
+        jpeg, png, gif
+        Other file types
+        cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
+      id: c04567fa-641d-4b51-8c94-561516554b3d
+      iscommand: false
+      name: ATD - Detonate File
+      playbookName: ATD - Detonate File
+      type: playbook
+      version: -1
+    taskid: c04567fa-641d-4b51-8c94-561516554b3d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+      FileName:
+        simple: file-detonated-via-demisto
+      interval:
+        simple: "1"
+      playbook:
+        simple: default
+      private: {}
+      source: {}
+      tags: {}
+      timeout:
+        simple: "15"
+      vm: {}
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonate one or more URLs using the Threat Grid integration. This
+        playbook returns relevant reports to the War Room and URL reputations to the
+        context data.
+      id: e82f2557-2a9d-4e13-81b1-ad3f4d685f3d
+      iscommand: false
+      name: Detonate File - ThreatGrid
+      playbookName: Detonate File - ThreatGrid
+      type: playbook
+      version: -1
+    taskid: e82f2557-2a9d-4e13-81b1-ad3f4d685f3d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      EnvironmentID:
+        simple: "100"
+      File:
+        complex:
+          root: inputs.File
+      Interval:
+        simple: "5"
+      Timeout:
+        simple: "30"
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonate one or more files using the CrowdStrike integration. This
+        playbook returns relevant reports to the War Room and file reputations to
+        the context data. The detonation supports the following file types - EXE,
+        DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ,
+        GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX,
+        BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
+      id: f1c56438-d1b6-4848-8608-c6292f3905b9
+      iscommand: false
+      name: CrowdStrike Falcon Sandbox - Detonate file
+      playbookName: CrowdStrike Falcon Sandbox - Detonate file
+      type: playbook
+      version: -1
+    taskid: f1c56438-d1b6-4848-8608-c6292f3905b9
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Detonate one or more files using the Wildfire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+        The detonation supports the following file types -
+        APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
+      id: 0a805640-8d5e-46d4-87f2-04a0781a6ca5
+      iscommand: false
+      name: WildFire - Detonate file
+      playbookName: WildFire - Detonate file
+      type: playbook
+      version: -1
+    taskid: 0a805640-8d5e-46d4-87f2-04a0781a6ca5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Detonates a File using the Lastline sandbox.
+        Lastline supports the following File Types:
+        EXE, SYS, DLL, COM, SCR, CPL, OCX, CGI, DOC, DOTM, DOCX, DOTX, XLS, PPAM, XSLX, PPS, XLSB, PPSX, XLSM, PPSM, PPT, PPTX, PPTM, RTF, SHS, XLTM, SLDM, XLTX, SLDX, XLAM, THMX, DOCM, XAR, JTD, JTDC, PDF, SWF, GZ, 7Z, TGZ, MSI, ZIP, LZH, CAB, LZMA, APK, JAR, CLASS, JPEG, PNG, GIF, CMD, ACE, BAT, ARJ, VBS, CHM, XML, LNK, URL, MOF, HTM, OCX, HTML, POTM, EML, POTX, MSG, PS, |VB, REG, VBA, WSC, VBE, WSF, VBS, WSH
+      id: d8093197-7aa9-4b18-8774-563225e8c72b
+      iscommand: false
+      name: Detonate File - Lastline
+      playbookName: Detonate File - Lastline
+      type: playbook
+      version: -1
+    taskid: d8093197-7aa9-4b18-8774-563225e8c72b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 195
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      File:
+        simple: ${inputs.File}
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonates a file using Cuckoo sandbox
+      id: 0e879eba-0377-44bf-81c4-83468555fec4
+      iscommand: false
+      name: Detonate File - Cuckoo
+      playbookName: Detonate File - Cuckoo
+      type: playbook
+      version: -1
+    taskid: 0e879eba-0377-44bf-81c4-83468555fec4
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 195
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonates a file using SNDBOX
+      id: e69051d8-12bd-440c-85de-3f3c713d1556
+      iscommand: false
+      name: Detonate File - SNDBOX
+      playbookName: Detonate File - SNDBOX
+      type: playbook
+      version: -1
+    taskid: e69051d8-12bd-440c-85de-3f3c713d1556
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 195
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonates a file using HybridAnalysis
+      id: 8bcf20e7-7f82-434b-8b21-200f3423a0ce
+      iscommand: false
+      name: Detonate File - HybridAnalysis
+      playbookName: Detonate File - HybridAnalysis
+      type: playbook
+      version: -1
+    taskid: 8bcf20e7-7f82-434b-8b21-200f3423a0ce
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 195
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonates a file using ANYRUN
+      id: 11d549c4-31e9-4cd9-8983-9e1a1c7c4baf
+      iscommand: false
+      name: Detonate File - ANYRUN
+      playbookName: Detonate File - ANYRUN
+      type: playbook
+      version: -1
+    taskid: 11d549c4-31e9-4cd9-8983-9e1a1c7c4baf
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 195
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "30"
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonates a file using FireEye AX
+      id: 3727eda2-2c84-4730-8739-b54bc07a36c3
+      iscommand: false
+      name: Detonate File - FireEye AX
+      playbookName: Detonate File - FireEye AX
+      type: playbook
+      version: -1
+    taskid: 3727eda2-2c84-4730-8739-b54bc07a36c3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 195
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      File:
+        complex:
+          root: File
+          transformers:
+          - operator: uniq
+      archive_password: {}
+      document_password: {}
+      interval:
+        simple: "1"
+      max_jobs: {}
+      reanalyze: {}
+      sample_type: {}
+      shareable: {}
+      tags: {}
+      timeout:
+        simple: "10"
+    separatecontext: true
+    task:
+      brand: ""
+      description: Detonates a file using VMRay
+      id: 77b7e144-a6a2-4e93-8e69-1160f9921573
+      iscommand: false
+      name: Detonate File - VMRay
+      playbookName: Detonate File - VMRay
+      type: playbook
+      version: -1
+    taskid: 77b7e144-a6a2-4e93-8e69-1160f9921573
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 4680,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

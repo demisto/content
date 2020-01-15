@@ -1,0 +1,53 @@
+comment: Delete Mails with ID's under the context key "ExchangeItemIDs"
+commonfields:
+  id: ExchangeDeleteIDsFromContext
+  version: -1
+dependson:
+  must:
+  - ews-delete-items
+deprecated: true
+name: ExchangeDeleteIDsFromContext
+runonce: false
+script: |-
+  import json
+  resultText = ''
+  resultErr = []
+  res = []
+  found = demisto.get(demisto.context(), 'ExchangeItemIDs')
+  if found and not found == '{}':
+      mbIds = json.loads(found)
+
+      for mb in mbIds.keys():
+          resultText += '**Deleting from {0}:**\n'.format(str(mb))
+          itemids = ','.join(mbIds[mb])
+
+          delres = demisto.executeCommand('ews-delete-items', {'target-mailbox': mb, 'item-ids' :itemids })
+          if isError(delres[0]):
+              resultErr += delres
+          else:
+              delres = delres[0]
+              if delres['Type'] != 4 and delres['ContentsFormat'] == 'json':
+                  delresp = demisto.get(delres, 'Contents.Envelope.Body.DeleteItemResponse.ResponseMessages.DeleteItemResponseMessage')
+                  if delresp:
+                      delresp = delresp if isinstance(delresp, list) else [delresp]
+                      if delresp[0]['-ResponseClass'] == 'Success':
+                          resultText += 'Delete successful.\n'
+                      else:
+                          resultText += "Delete failed: " + delresp['MessageText'] + "\nResponse Code:" + delresp['-ResponseCode']+'\n'
+                  else:
+                      resultText += "Delete failed with missing response\n"
+              else:
+                  resultErr += [delres]
+
+      res += [ { 'Type' : entryTypes['note'], 'ContentsFormat' : formats['markdown'], 'Contents': resultText } ]
+      res += resultErr
+      demisto.setContext('ExchangeItemIDs', '')
+      demisto.results(res)
+  else:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'No mail ids were found in context. Cannot continue.' } )
+scripttarget: 0
+system: true
+tags:
+- ews
+- exchange
+type: python

@@ -1,0 +1,34 @@
+comment: Finds a CSV file in the war room and loads it into context.
+commonfields:
+  id: IngestCSV
+  version: -1
+deprecated: true
+name: IngestCSV
+runonce: false
+script: |+
+  # Find the CSV attachment
+  entries = demisto.executeCommand('getEntries', {})
+  csvEntry = None
+  for entry in entries:
+      fn = demisto.get(entry, 'File')
+      if type(fn) in [unicode, str] and fn.endswith('.csv'):
+          csvEntry = entry
+          break
+  if csvEntry:
+      res = demisto.executeCommand('getFilePath', {'id': entry['ID']})
+      with open(res[0]['Contents']['path'], 'r') as f:
+          data = f.read()
+      if data:
+          demisto.setContext('csv', data)
+          demisto.results('Read %d bytes from CSV and inserted %d items into incident context.' % (len(data), len(data.split(','))) )
+      else:
+          demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'No data could be read.' } )
+  else:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'No csv file found in the war room. Ensure the file was uploaded and the filename ends in ".csv".' } )
+
+scripttarget: 0
+system: true
+tags:
+- Utility
+- ingestion
+type: python

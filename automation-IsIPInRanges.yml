@@ -1,0 +1,66 @@
+args:
+- default: true
+  description: IP to check in ranges
+  name: ip
+  required: true
+- description: 'A list of IP ranges to check the IP in. The list should be provided
+    in CIDR notation, separated by commas. An example of a list of ranges would be:
+    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
+    will use default list provided in the IsIPInRanges script (the known IPv4 private
+    address ranges).'
+  name: ipRanges
+comment: Returns yes if the IP is in one of the ranges provided, returns no otherwise.
+commonfields:
+  id: IsIPInRanges
+  version: -1
+enabled: true
+name: IsIPInRanges
+outputs:
+- contextPath: "yes"
+  description: if given value is an IP range
+- contextPath: "no"
+  description: if given value is not a IP range
+- contextPath: IP.Address
+  description: The IP Address
+- contextPath: IP.InRange
+  description: Is the IP is in the input ranges? (could be 'yes' or 'no)
+runas: DBotWeakRole
+runonce: false
+script: |
+  var private_subnets = [
+    '172.16.0.0/12',
+    '10.0.0.0/8',
+    '198.18.0.0/15',
+    '192.168.0.0/16',
+    '100.64.0.0/10',
+    '192.0.0.0/24'
+  ];
+
+  var ip = args.ip;
+  var ipranges = argToList(args.ipRanges);
+
+  if (!ipranges || ipranges.length === 0) {
+      ipranges = private_subnets;
+  }
+
+  var isInRange = ipranges.some(function(iprange) {
+      return isIPInSubnet(ip, iprange.replace(/[\s]/g, ''));
+  });
+
+  var ipObj = {};
+  ipObj.Address = ip;
+  ipObj.InRange = isInRange ? 'yes' : 'no';
+
+  var ec = {'IP(val.Address == obj.Address)' : ipObj};
+
+  return {
+    Type: entryTypes.note,
+    Contents: isInRange ? 'yes' : 'no',
+    ContentsFormat: formats.text,
+    EntryContext: ec
+  };
+scripttarget: 0
+system: true
+tags:
+- ip
+type: javascript

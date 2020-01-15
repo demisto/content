@@ -1,0 +1,1084 @@
+category: Endpoint
+commonfields:
+  id: CrowdstrikeFalcon
+  version: -1
+configuration:
+- defaultvalue: https://api.crowdstrike.com
+  display: Server URL (e.g., https://api.crowdstrike.com)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Client ID
+  name: client_id
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Secret
+  name: secret
+  required: true
+  type: 4
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: "15"
+  display: Max incidents per fetch
+  name: incidents_per_fetch
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Fetch query
+  name: fetch_query
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API),
+  enables fetching and resolving detections, searching devices, getting behaviors
+  by ID, containing hosts, and lifting host containment.
+detaileddescription: |
+  To get an The API client ID and secret please contact the crowdstrike support: support@crowdstrike.com
+display: CrowdStrike Falcon
+image: data:image/png;base64,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
+name: CrowdstrikeFalcon
+script:
+  commands:
+  - arguments:
+    - description: Returns devices that match the query.
+      name: filter
+    - description: A CSV list of device IDs to limit by which to limit the results.
+      name: ids
+    - auto: PREDEFINED
+      description: Returns devices that match the specified status.
+      name: status
+      predefined:
+      - Normal
+      - containment_pending
+      - contained
+      - lift_containment_pending
+    - description: Returns devices that match the specified hostname.
+      name: hostname
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      description: Returns devices that match the specified platform name.
+      name: platform_name
+      predefined:
+      - Windows
+      - Mac
+      - Linux
+    - description: Returns devices that match the specified site name.
+      name: site_name
+    description: Searches for a device that matches the query.
+    name: cs-falcon-search-device
+    outputs:
+    - contextPath: CrowdStrike.Device.ID
+      description: The ID of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.LocalIP
+      description: The local IP address of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.ExternalIP
+      description: The external IP address of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.Hostname
+      description: The hostname of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.OS
+      description: The operating system of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.MacAddress
+      description: The Mac address of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.FirstSeen
+      description: The first seen time of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.LastSeen
+      description: The last seen time of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.PolicyType
+      description: The policy types of the device.
+      type: Unknown
+  - arguments:
+    - description: The ID of the the behavior.
+      name: behavior_id
+      required: true
+    description: Searches for and fetches the behavior that matches the query.
+    name: cs-falcon-get-behavior
+    outputs:
+    - contextPath: CrowdStrike.Behavior.FileName
+      description: The file name in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.Scenario
+      description: The scenario name in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.MD5
+      description: The MD5 hash of the IoC in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.SHA256
+      description: The SHA256 hash of the IoC in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.IOCType
+      description: Type of the indicator of compromise.
+      type: String
+    - contextPath: CrowdStrike.Behavior.IOCValue
+      description: The value of the IoC.
+      type: String
+    - contextPath: CrowdStrike.Behavior.CommandLine
+      description: The command line executed in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.UserName
+      description: The user name related to the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.SensorID
+      description: The sensor ID related to the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.ParentProcessID
+      description: The ID of the parent process.
+      type: String
+    - contextPath: CrowdStrike.Behavior.ProcessID
+      description: The process ID of the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.ID
+      description: The ID of the behavior.
+      type: String
+  - arguments:
+    - description: IDs of the detections to search. If provided, will override other
+        arguments.
+      isArray: true
+      name: ids
+    - description: |-
+        Filter detections using a query in Falcon Query Language (FQL).
+        e.g. filter="device.hostname:'CS-SE-TG-W7-01'"
+
+        The full list of valid filter options is extensive. Review it in the following URL: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch
+      name: filter
+    description: Search for details of specific detections, either using a filter
+      query, or by providing the IDs of the detections.
+    name: cs-falcon-search-detection
+    outputs:
+    - contextPath: CrowdStrike.Detection.Behavior.FileName
+      description: The file name in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.Scenario
+      description: The scenario name in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.MD5
+      description: The MD5 hash of the IoC in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.SHA256
+      description: The SHA256 hash of the IoC in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.IOCType
+      description: The type of the IoC.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.IOCValue
+      description: The value of the IoC.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.CommandLine
+      description: The command line executed in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.UserName
+      description: The user name related to the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.SensorID
+      description: The sensor ID related to the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.ParentProcessID
+      description: The ID of the parent process.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.ProcessID
+      description: The process ID of the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.ID
+      description: The ID of the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.System
+      description: The system name of the detection.
+      type: String
+    - contextPath: CrowdStrike.Detection.CustomerID
+      description: The ID of the customer (CID).
+      type: String
+    - contextPath: CrowdStrike.Detection.MachineDomain
+      description: The name of the domain of the detection machine.
+      type: String
+    - contextPath: CrowdStrike.Detection.ID
+      description: The detection ID.
+      type: String
+    - contextPath: CrowdStrike.Detection.ProcessStartTime
+      description: The start time of the process that generated the detection.
+      type: Date
+  - arguments:
+    - description: ' A CSV list of one or more IDs to resolve.'
+      name: ids
+      required: true
+    - auto: PREDEFINED
+      description: The status to which you want to transition a detection.
+      name: status
+      predefined:
+      - new
+      - in_progress
+      - true_positive
+      - false_positive
+      - ignored
+    - description: ' A user ID, for example: 1234567891234567891. '
+      name: assigned_to_uuid
+    - auto: PREDEFINED
+      description: If set to true, will display the dectection in the UI.
+      name: show_in_ui
+      predefined:
+      - "true"
+      - "false"
+    description: Resolves and updates a detection.
+    name: cs-falcon-resolve-detection
+  - arguments:
+    - description: The host agent ID (AID) of the host to contain. Get an agent ID
+        from a detection.
+      isArray: true
+      name: ids
+      required: true
+    description: Contains or lifts containment for a specified host. When contained,
+      a host can only communicate with the CrowdStrike cloud and any IPs specified
+      in your containment policy.
+    name: cs-falcon-contain-host
+  - arguments:
+    - description: The host agent ID (AID) of the host you want to contain. Get an
+        agent ID from a detection
+      isArray: true
+      name: ids
+      required: true
+    description: Lifts containment on the host, which returns its network communications
+      to normal.
+    name: cs-falcon-lift-host-containment
+  dockerimage: demisto/python3:3.7.2.200
+  isfetch: true
+  runonce: false
+  script: |2-
+
+
+
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    import base64
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    CLIENT_ID = demisto.params().get('client_id')
+    SECRET = demisto.params().get('secret')
+    # Remove trailing slash to prevent wrong URL path to service
+    SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
+        demisto.params()['url']
+    # Should we use SSL
+    USE_SSL = not demisto.params().get('insecure', False)
+    # How many time before the first fetch to retrieve incidents
+    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    BYTE_CREDS = '{name}:{password}'.format(name=CLIENT_ID, password=SECRET).encode('utf-8')
+    # Headers to be sent in requests
+    HEADERS = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Basic {}'.format(base64.b64encode(BYTE_CREDS).decode())
+    }
+    # Note: True life time is actually 30 mins
+    TOKEN_LIFE_TIME = 28
+    INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' KEY DICTIONARY '''
+
+    DETECTIONS_BASE_KEY_MAP = {
+        'device.hostname': 'System',
+        'device.cid': 'CustomerID',
+        'hostinfo.domain': 'MachineDomain',
+        'detection_id': 'ID',
+        'created_timestamp': 'ProcessStartTime',
+        'max_severity': 'MaxSeverity',
+        'show_in_ui': 'ShowInUi',
+        'status': 'Status'
+    }
+
+    DETECTIONS_BEHAVIORS_KEY_MAP = {
+        'filename': 'FileName',
+        'scenario': 'Scenario',
+        'md5': 'MD5',
+        'sha256': 'SHA256',
+        'ioc_type': 'IOCType',
+        'ioc_value': 'IOCValue',
+        'cmdline': 'CommandLine',
+        'user_name': 'UserName',
+        'behavior_id': 'ID',
+    }
+
+    SEARCH_IOC_KEY_MAP = {
+        'type': 'Type',
+        'value': 'Value',
+        'policy': 'Policy',
+        'source': 'Source',
+        'share_level': 'ShareLevel',
+        'expiration_timestamp': 'Expiration',
+        'description': 'Description',
+        'created_timestamp': 'CreatedTime',
+        'created_by': 'CreatedBy',
+        'modified_timestamp': 'ModifiedTime',
+        'modified_by': 'ModifiedBy'
+    }
+
+    SEARCH_DEVICE_KEY_MAP = {
+        'device_id': 'ID',
+        'external_ip': 'ExternalIP',
+        'local_ip': 'LocalIP',
+        'hostname': 'Hostname',
+        'os_version': 'OS',
+        'mac_address': 'MacAddress',
+        'first_seen': 'FirstSeen',
+        'last_seen': 'LastSeen'
+    }
+
+    ''' SPLIT KEY DICTIONARY '''
+
+    """
+        Pattern:
+        {
+            'Path': 'Path to item',
+            'NewKey': 'Value of output key',
+            'Delim': 'Delimiter char',
+            'Index': Split Array Index
+        }
+    """
+    DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
+        {
+            'Path': 'parent_details.parent_process_graph_id',
+            'NewKey': 'SensorID',
+            'Delim': ':',
+            'Index': 1
+        },
+        {
+            'Path': 'parent_details.parent_process_graph_id',
+            'NewKey': 'ParentProcessID',
+            'Delim': ':',
+            'Index': 2
+        },
+        {
+            'Path': 'triggering_process_graph_id',
+            'NewKey': 'ProcessID',
+            'Delim': ':',
+            'Index': 2
+        },
+    ]
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, safe=False, get_token_flag=True):
+        """
+            A wrapper for requests lib to send our requests and handle requests and responses better.
+
+            :type method: ``str``
+            :param method: HTTP method for the request.
+
+            :type url_suffix: ``str``
+            :param url_suffix: The suffix of the URL (endpoint)
+
+            :type params: ``dict``
+            :param params: The URL params to be passed.
+
+            :type data: ``str``
+            :param data: The body data of the request.
+
+            :type headers: ``dict``
+            :param headers: Request headers
+
+            :type safe: ``bool``
+            :param safe: If set to true will return None in case of http error
+
+            :type get_token_flag: ``bool``
+            :param get_token_flag: If set to True will call get_token()
+
+            :return: Returns the http request response json
+            :rtype: ``dict``
+        """
+        if get_token_flag:
+            token = get_token()
+            headers['Authorization'] = 'Bearer {}'.format(token)
+        url = SERVER + url_suffix
+        try:
+            res = requests.request(
+                method,
+                url,
+                verify=USE_SSL,
+                params=params,
+                data=data,
+                headers=headers,
+            )
+        except requests.exceptions.RequestException:
+            return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
+        # Handle error responses gracefully
+        if res.status_code not in {200, 201, 202}:
+            err_msg = 'Error in API call. code:{code}; reason: {reason}'.format(code=res.status_code, reason=res.reason)
+            # try to create a new token
+            if res.status_code == 403 and get_token_flag:
+                LOG(err_msg)
+                token = get_token(new_token=True)
+                headers['Authorization'] = 'Bearer {}'.format(token)
+                return http_request(method, url_suffix, params, data, headers, safe, get_token_flag=False)
+            elif safe:
+                return None
+            return_error(err_msg)
+        return res.json()
+
+
+    def create_entry_object(contents='', ec=None, hr=''):
+        """
+            Creates an entry object
+
+            :type contents: ``dict``
+            :param contents: Raw response to output
+
+            :type ec: ``dict``
+            :param ec: Entry context of the entry object
+
+            :type hr: ``str``
+            :param hr: Human readable
+
+            :return: Entry object
+            :rtype: ``dict``
+        """
+        return {
+            'Type': entryTypes['note'],
+            'Contents': contents,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        }
+
+
+    def detection_to_incident(detection):
+        """
+            Creates an incident of a detection.
+
+            :type detection: ``dict``
+            :param detection: Single detection object
+
+            :return: Incident representation of a detection
+            :rtype ``dict``
+        """
+        incident = {
+            'name': 'Detection ID: ' + str(detection.get('detection_id')),
+            'occurred': str(detection.get('first_behavior')),
+            'rawJSON': json.dumps(detection),
+            'severity': severity_string_to_int(detection.get('max_severity_displayname'))
+        }
+        return incident
+
+
+    def severity_string_to_int(severity):
+        """
+            Converts a severity string to DBot score representation
+
+            :type severity: ``str``
+            :param severity: String representation of a severity
+
+            :return: DBot score representation of the severity
+            :rtype ``int``
+        """
+        if severity in ('Critical', 'High'):
+            return 3
+        elif severity in ('Medium', 'Low'):
+            return 2
+        return 0
+
+
+    def get_trasnformed_dict(old_dict, transformation_dict):
+        """
+            Returns a dictionary with the same values as old_dict, with the correlating key:value in transformation_dict
+
+            :type old_dict: ``dict``
+            :param old_dict: Old dictionary to pull values from
+
+            :type transformation_dict: ``dict``
+            :param transformation_dict: Transformation dictionary that contains oldkeys:newkeys
+
+            :return Transformed dictionart (according to transformation_dict values)
+            :rtype ``dict``
+        """
+        new_dict = {}
+        for k in list(old_dict.keys()):
+            if k in transformation_dict:
+                new_dict[transformation_dict[k]] = old_dict[k]
+        return new_dict
+
+
+    def extract_transformed_dict_with_split(old_dict, transformation_dict_arr):
+        """
+            Extracts new values out of old_dict using a json structure of:
+            {'Path': 'Path to item', 'NewKey': 'Value of output key', 'Delim': 'Delimiter char', 'Index': Split Array Index}
+        """
+        new_dict = {}
+        for trans_dict in transformation_dict_arr:
+            try:
+                val = demisto.get(old_dict, trans_dict['Path'])
+                if 'split' in dir(val):
+                    i = trans_dict['Index']
+                    new_dict[trans_dict['NewKey']] = val.split(trans_dict['Delim'])[i]
+            except Exception as ex:
+                LOG('Error {exception} with: {tdict}'.format(exception=ex, tdict=trans_dict))
+        return new_dict
+
+
+    def get_passed_mins(start_time, end_time_str):
+        """
+            Returns the time passed in mins
+            :param start_time: Start time in datetime
+            :param end_time_str: End time in str
+            :return: The passed mins in int
+        """
+        time_delta = start_time - datetime.fromtimestamp(end_time_str)
+        return time_delta.seconds / 60
+
+
+    ''' COMMAND SPECIFIC FUNCTIONS '''
+
+
+    def get_token(new_token=False):
+        """
+            Retrieves the token from the server if it's expired and updates the global HEADERS to include it
+
+            :param new_token: If set to True will generate a new token regardless of time passed
+
+            :rtype: ``str``
+            :return: Token
+        """
+        now = datetime.now()
+        ctx = demisto.getIntegrationContext()
+        if ctx and not new_token:
+            passed_mins = get_passed_mins(now, ctx.get('time'))
+            if passed_mins >= TOKEN_LIFE_TIME:
+                # token expired
+                auth_token = get_token_request()
+                demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
+            else:
+                # token hasn't expired
+                auth_token = ctx.get('auth_token')
+        else:
+            # there is no token
+            auth_token = get_token_request()
+            demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
+        return auth_token
+
+
+    def get_token_request():
+        """
+            Sends token request
+
+            :rtype ``str``
+            :return: Access token
+        """
+        body = {
+            'client_id': CLIENT_ID,
+            'client_secret': SECRET
+        }
+        headers = {
+            'Authorization': HEADERS['Authorization']
+        }
+        token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True,
+                                 get_token_flag=False)
+        if not token_res:
+            err_msg = 'Authorization Error: User has no authorization to create a token. Please make sure you entered the' \
+                      ' credentials correctly.'
+            raise Exception(err_msg)
+        return token_res.get('access_token')
+
+
+    def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
+        """
+            Sends detections request. The function will ignore the arguments passed according to priority:
+            filter_arg > behavior_id > last_behavior_time
+
+            :param last_behavior_time: 3rd priority. The last behavior time of results will be greater than this value
+            :param behavior_id: 2nd priority. The result will only contain the detections with matching behavior id
+            :param filter_arg: 1st priority. The result will be filtered using this argument.
+            :return: Response json of the get detection endpoint (IDs of the detections)
+        """
+        endpoint_url = '/detects/queries/detects/v1'
+        params = {
+            'sort': 'first_behavior.asc'
+        }
+        if filter_arg:
+            params['filter'] = filter_arg
+        elif behavior_id:
+            params['filter'] = "behaviors.behavior_id:'{0}'".format(behavior_id)
+        elif last_behavior_time:
+            params['filter'] = "first_behavior:>'{0}'".format(last_behavior_time)
+
+        response = http_request('GET', endpoint_url, params)
+        return response
+
+
+    def get_detections_entities(detections_ids):
+        """
+            Sends detection entities request
+            :param detections_ids: IDs of the requested detections.
+            :return: Response json of the get detection entities endpoint (detection objects)
+        """
+        ids_json = {'ids': detections_ids}
+        if detections_ids:
+            response = http_request(
+                'POST',
+                '/detects/entities/summaries/GET/v1',
+                data=json.dumps(ids_json)
+            )
+            return response
+        return detections_ids
+
+
+    def create_ioc():
+        """
+            UNTESTED - Creates an IoC
+            :return: Response json of create IoC request
+        """
+        args = demisto.args()
+        input_args = {}
+        # req args:
+        input_args['type'] = args['ioc_type']
+        input_args['value'] = args['ioc_value']
+        input_args['policy'] = args['policy']
+        # opt args:
+        input_args['expiration_days'] = args.get('expiration_days')
+        input_args['source'] = args.get('source')
+        input_args['description'] = args.get('description')
+
+        payload = {k: str(v) for k, v in input_args.items() if v}
+        headers = {'Authorization': HEADERS['Authorization']}
+        return http_request('POST', '/indicators/entities/iocs/v1', params=payload, headers=headers)
+
+
+    def search_iocs():
+        """
+            UNTESTED IN OAUTH 2- Searches an IoC
+            :return: IoCs that were found in the search
+        """
+        args = demisto.args()
+        ids = args.get('ids')
+        if not ids:
+            search_args = {
+                'types': str(args.get('ioc_types', '')).split(','),
+                'values': str(args.get('ioc_values', '')).split(','),
+                'policies': str(args.get('policy', '')),
+                'sources': str(args.get('sources', '')).split(','),
+                'from.expiration_timestamp': str(args.get('expiration_from', '')),
+                'to.expiration_timestamp': str(args.get('expiration_to', '')),
+                'limit': str(args.get('limit', 50))
+            }
+            payload = {}
+            for k, arg in search_args.items():
+                if type(arg) is list:
+                    if arg[0]:
+                        payload[k] = arg
+                elif arg:
+                    payload[k] = arg
+            ids = http_request('GET', '/indicators/queries/iocs/v1', payload).get('resources')
+            if not ids:
+                return None
+        else:
+            ids = str(ids)
+        payload = {
+            'ids': ids
+        }
+        return http_request('GET', '/indicators/entities/iocs/v1', params=payload)
+
+
+    def enrich_ioc_dict_with_ids(ioc_dict):
+        """
+            Enriches the provided ioc_dict with IoC ID
+            :param ioc_dict: IoC dict transformed using the SEARCH_IOC_KEY_MAP
+            :return: ioc_dict with its ID key:value updated
+        """
+        for ioc in ioc_dict:
+            ioc['ID'] = '{type}:{val}'.format(type=ioc.get('Type'), val=ioc.get('Value'))
+        return ioc_dict
+
+
+    def delete_ioc():
+        """
+            UNTESTED - Sends a delete IoC request
+            :return: Response json of delete IoC
+        """
+        ids = str(demisto.args().get('ids'))
+        payload = {
+            'ids': ids
+        }
+        return http_request('DELETE', '/indicators/entities/iocs/v1', payload)
+
+
+    def update_iocs():
+        """
+            UNTESTED - Updates the values one or more IoC
+            :return: Response json of update IoC request
+        """
+        args = demisto.args()
+        input_args = {
+            'ids': args.get('ids'),
+            'policy': args.get('policy', ''),
+            'expiration_days': args.get('expiration_days', ''),
+            'source': args.get('source'),
+            'description': args.get('description')
+        }
+        payload = {k: str(v) for k, v in input_args.items() if v}
+        headers = {'Authorization': HEADERS['Authorization']}
+        return http_request('PATCH', '/indicators/entities/iocs/v1', params=payload, headers=headers)
+
+
+    def search_device():
+        """
+            Searches for devices using the argument provided by the command execution. Returns empty
+            result of no device was found
+            :return: Search device response json
+        """
+        args = demisto.args()
+        input_arg_dict = {
+            'device_id': str(args.get('ids', '')).split(','),
+            'status': str(args.get('status', '')).split(','),
+            'hostname': str(args.get('hostname', '')).split(','),
+            'platform_name': str(args.get('platform_name', '')).split(','),
+            'site_name': str(args.get('site_name', '')).split(',')
+        }
+        url_filter = '{}'.format(str(args.get('filter', '')))
+        for k, arg in input_arg_dict.items():
+            if arg:
+                if type(arg) is list:
+                    arg_filter = ''
+                    for arg_elem in arg:
+                        if arg_elem:
+                            first_arg = '{filter},{inp_arg}'.format(filter=arg_filter, inp_arg=k) if arg_filter else k
+                            arg_filter = "{first}:'{second}'".format(first=first_arg, second=arg_elem)
+                    if arg_filter:
+                        url_filter = "{url_filter}{arg_filter}".format(url_filter=url_filter + '+' if url_filter else '',
+                                                                       arg_filter=arg_filter)
+                else:
+                    # All args should be a list. this is a fallback
+                    url_filter = "{url_filter}+{inp_arg}:'{arg_val}'".format(url_filter=url_filter, inp_arg=k, arg_val=arg)
+        raw_res = http_request('GET', '/devices/queries/devices/v1', params={'filter': url_filter})
+        device_ids = raw_res.get('resources')
+        if not device_ids:
+            return None
+        return http_request('GET', '/devices/entities/devices/v1', params={'ids': device_ids})
+
+
+    def behavior_to_entry_context(behavior):
+        """
+            Transforms a behavior to entry context representation
+            :param behavior: Behavior dict in the format of crowdstrike's API response
+            :return: Behavior in entry context representation
+        """
+        raw_entry = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
+        raw_entry.update(extract_transformed_dict_with_split(behavior, DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP))
+        return raw_entry
+
+
+    def resolve_detection(ids, status, assigned_to_uuid, show_in_ui):
+        """
+            Sends a resolve detection request
+            :param ids: Single or multiple ids in an array string format
+            :param status: New status of the detection
+            :param assigned_to_uuid: uuid to assign the detection to
+            :param show_in_ui: Boolean flag in string format (true/false)
+            :return: Resolve detection response json
+        """
+        payload = {
+            'ids': ids
+        }
+        if status:
+            payload['status'] = status
+        if assigned_to_uuid:
+            payload['assigned_to_uuid'] = assigned_to_uuid
+        if show_in_ui:
+            payload['show_in_ui'] = show_in_ui
+        # We do this so show_in_ui value won't contain ""
+        data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"',
+                                                                                                   '"show_in_ui": true')
+        return http_request('PATCH', '/detects/entities/detects/v2', data=data)
+
+
+    def contain_host(ids):
+        """
+            Contains host(s) with matching ids
+            :param ids: IDs of host to contain
+            :return: Contain host response json
+        """
+        payload = {
+            'ids': ids
+        }
+        data = json.dumps(payload)
+        params = {
+            'action_name': 'contain'
+        }
+        return http_request('POST', '/devices/entities/devices-actions/v2', data=data, params=params)
+
+
+    def lift_host_containment(ids):
+        """
+            Lifts off containment from host(s) with matchind ids
+            :param ids: IDs of host to lift off containment from
+            :return: Lift off containment response json
+        """
+        payload = {
+            'ids': ids
+        }
+        data = json.dumps(payload)
+        params = {
+            'action_name': 'lift_containment'
+        }
+        return http_request('POST', '/devices/entities/devices-actions/v2', data=data, params=params)
+
+
+    ''' COMMANDS FUNCTIONS '''
+
+
+    def fetch_incidents():
+        """
+            Fetches incident using the detections API
+            :return: Fetched detections in incident format
+        """
+        last_run = demisto.getLastRun()
+        # Get the last fetch time, if exists
+        last_fetch = last_run.get('first_behavior_time')
+
+        # Handle first time fetch, fetch incidents retroactively
+        if last_fetch is None:
+            last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
+        last_fetch_timestamp = date_to_timestamp(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
+        fetch_query = demisto.params().get('fetch_query')
+        if fetch_query:
+            fetch_query = "first_behavior:>'{time}'+{query}".format(time=last_fetch, query=fetch_query)
+            detections_ids = demisto.get(get_detections(filter_arg=fetch_query), 'resources')
+        else:
+            detections_ids = demisto.get(get_detections(last_behavior_time=last_fetch), 'resources')
+        incidents = []
+        if detections_ids:
+            # Limit the results to INCIDENTS_PER_FETCH`z
+            detections_ids = detections_ids[0:INCIDENTS_PER_FETCH]
+            raw_res = get_detections_entities(detections_ids)
+            if "resources" in raw_res:
+                for detection in demisto.get(raw_res, "resources"):
+                    incident = detection_to_incident(detection)
+                    incident_date = incident['occurred']
+                    incident_date_timestamp = date_to_timestamp(incident_date, date_format='%Y-%m-%dT%H:%M:%SZ')
+                    # Update last run and add incident if the incident is newer than last fetch
+                    if incident_date_timestamp > last_fetch_timestamp:
+                        last_fetch = incident_date
+                    incidents.append(incident)
+            demisto.setLastRun({'first_behavior_time': last_fetch})
+        return incidents
+
+
+    def create_ioc_command():
+        """
+            UNTESTED - Creates an IoC
+            :return: EntryObject of create IoC command
+        """
+        raw_res = create_ioc()
+        return create_entry_object(contents=raw_res, hr="Custom IoC was created successfully.")
+
+
+    def search_iocs_command():
+        """
+            UNTESTED IN OAUTH 2 - Searches for an ioc
+            :return: EntryObject of search IoC command
+        """
+        raw_res = search_iocs()
+        if not raw_res:
+            return create_entry_object(hr='Could not find any Indicators of Compromise.')
+        iocs = raw_res.get('resources')
+        ec = [get_trasnformed_dict(ioc, SEARCH_IOC_KEY_MAP) for ioc in iocs]
+        enrich_ioc_dict_with_ids(ec)
+        return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec},
+                                   hr=tableToMarkdown('Indicators of Compromise', ec))
+
+
+    def delete_iocs_command():
+        """
+            UNTESTED - Deletes an IoC
+            :return: EntryObject of delete IoC command
+        """
+        raw_res = delete_ioc()
+        ids = demisto.args().get('ids')
+        return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully deleted.".format(ids))
+
+
+    def update_iocs_command():
+        """
+            UNTESTED - Updates an IoC
+            :return: EntryObject of update IoC command
+        """
+        raw_res = update_iocs()
+        ids = demisto.args().get('ids')
+        return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully updated.".format(ids))
+
+
+    def search_device_command():
+        """
+            Searches for a device
+            :return: EntryObject of search device command
+        """
+        raw_res = search_device()
+        if not raw_res:
+            return create_entry_object(hr='Could not find any devices.')
+        devices = raw_res.get('resources')
+        entries = [get_trasnformed_dict(device, SEARCH_DEVICE_KEY_MAP) for device in devices]
+        headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen']
+        hr = tableToMarkdown('Devices', entries, headers=headers, headerTransform=pascalToSpace)
+        ec = {'CrowdStrike.Device(val.ID === obj.ID)': entries}
+        return create_entry_object(contents=raw_res, ec=ec, hr=hr)
+
+
+    def get_behavior_command():
+        """
+            Gets a behavior by ID
+            :return: EntryObject of get behavior command
+        """
+        behavior_id = demisto.args().get('behavior_id')
+        detections_ids = demisto.get(get_detections(behavior_id=behavior_id), 'resources')
+        raw_res = get_detections_entities(detections_ids)
+        entries = []
+        if "resources" in raw_res:
+            for resource in demisto.get(raw_res, "resources"):
+                for behavior in demisto.get(resource, 'behaviors'):
+                    entries.append(behavior_to_entry_context(behavior))
+        hr = tableToMarkdown('Behavior ID: {}'.format(behavior_id), entries, headerTransform=pascalToSpace)
+        # no dt since behavior vary by more than their ID
+        ec = {'CrowdStrike.Behavior': entries}
+        return create_entry_object(contents=raw_res, ec=ec, hr=hr)
+
+
+    def search_detections_command():
+        """
+            Searches for a detection
+            :return: EntryObject of search detections command
+        """
+        d_args = demisto.args()
+        detections_ids = argToList(d_args.get('ids'))
+        if not detections_ids:
+            filter_arg = d_args.get('filter')
+            if not filter_arg:
+                return_error('Command Error: Please provide at least one argument.')
+            detections_ids = get_detections(filter_arg=filter_arg).get('resources')
+        raw_res = get_detections_entities(detections_ids)
+        entries = []
+        headers = ['ID', 'Status', 'System', 'ProcessStartTime', 'CustomerID', 'MaxSeverity']
+        if "resources" in raw_res:
+            for detection in demisto.get(raw_res, "resources"):
+                detection_entry = {}
+                for path, new_key in DETECTIONS_BASE_KEY_MAP.items():
+                    detection_entry[new_key] = demisto.get(detection, path)
+                behaviors = []
+                for behavior in demisto.get(detection, 'behaviors'):
+                    behaviors.append(behavior_to_entry_context(behavior))
+                detection_entry['Behavior'] = behaviors
+                entries.append(detection_entry)
+        hr = tableToMarkdown('Detections Found:', entries, headers=headers, removeNull=True, headerTransform=pascalToSpace)
+        ec = {'CrowdStrike.Detection(val.ID === obj.ID)': entries}
+        return create_entry_object(contents=raw_res, ec=ec, hr=hr)
+
+
+    def resolve_detection_command():
+        """
+            Resolves single or multiple detections
+            :return: EntryObject of resolve detection command
+        """
+        args = demisto.args()
+        ids = argToList(args.get('ids'))
+        status = args.get('status')
+        assigned_to_uuid = args.get('assigned_to_uuid')
+        show_in_ui = args.get('show_in_ui')
+        raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui)
+        args.pop('ids')
+        hr = "Detection {0} updated\n".format(str(ids)[1:-1])
+        hr += 'With the following values:\n'
+        for k, arg in args.items():
+            hr += '\t{name}:{val}\n'.format(name=k, val=arg)
+        return create_entry_object(contents=raw_res, hr=hr)
+
+
+    def contain_host_command():
+        """
+            Contains hosts with user arg ids
+            :return: EntryObject of contain host command
+        """
+        ids = argToList(demisto.args().get('ids'))
+        raw_res = contain_host(ids)
+        hr = "Host {} contained".format(str(ids)[1:-1])
+        return create_entry_object(contents=raw_res, hr=hr)
+
+
+    def lift_host_containment_command():
+        """
+            Lifts containment off a host
+            :return: EntryObject of lift host containment
+        """
+        ids = argToList(demisto.args().get('ids'))
+        raw_res = lift_host_containment(ids)
+        hr = "Containment has been lift off host {}".format(str(ids)[1:-1])
+        return create_entry_object(contents=raw_res, hr=hr)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is {}'.format(demisto.command()))
+
+    # should raise error in case of issue
+    if demisto.command() == 'fetch-incidents':
+        demisto.incidents(fetch_incidents())
+
+    try:
+        if demisto.command() == 'test-module':
+            get_token(new_token=True)
+            demisto.results('ok')
+        elif demisto.command() == 'cs-falcon-search-device':
+            demisto.results(search_device_command())
+        elif demisto.command() == 'cs-falcon-get-behavior':
+            demisto.results(get_behavior_command())
+        elif demisto.command() == 'cs-falcon-search-detection':
+            demisto.results(search_detections_command())
+        elif demisto.command() == 'cs-falcon-resolve-detection':
+            demisto.results(resolve_detection_command())
+        elif demisto.command() == 'cs-falcon-contain-host':
+            demisto.results(contain_host_command())
+        elif demisto.command() == 'cs-falcon-lift-host-containment':
+            demisto.results(lift_host_containment_command())
+        # Log exceptions
+    except Exception as e:
+        return_error(str(e))
+  subtype: python3
+  type: python
+system: true

@@ -1,0 +1,1168 @@
+category: Analytics & SIEM
+commonfields:
+  id: LogRhythmRest
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Hostname, IP address, or server URL.
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: "False"
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: "False"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Search API cluster ID.
+  name: cluster-id
+  required: false
+  type: 0
+description: LogRhythm security intelligence.
+detaileddescription: "Integration with LogRhythm with REST api. You can execute queries
+  on logs, get hosts information, add new hosts and update host status.\n\n## Configuration
+  Parameters\n\n**Hostname**  \nThis is the network address of the LogRhythm server
+  host.\n\n**API Token**  \nThe credentials entered here should be those created in
+  the LogRhythm console for REST api.\n\n**Search API cluster ID**  \nEnter `http://localhost:8500/ui/#/dc1/services/lr-legacy-search-api`
+  in LogRhythm host, the cluster ID is under `TAGS` header\n"
+display: LogRhythmRest
+image: data:image/png;base64,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
+name: LogRhythmRest
+script:
+  commands:
+  - arguments:
+    - description: Filter log messages by this argument.
+      name: keyword
+      required: true
+    - defaultValue: "100"
+      description: Number of logs to return.
+      name: page-size
+    - auto: PREDEFINED
+      defaultValue: Custom
+      description: If time_frame is "Custom", specify the start time for the time
+        range.
+      name: time-frame
+      predefined:
+      - Today
+      - Last2Days
+      - LastWeek
+      - LastMonth
+      - Custom
+    - description: 'Start date for the data query, for example: "2018-04-20". Only
+        use this argument if the time-frame argument is "Custom".'
+      name: start-date
+    - description: 'End date for the data query, for example: "2018-04-20". Only use
+        this argument if the time-frame argument is "Custom".'
+      name: end-date
+    description: Executes a query for logs that match query parameters.
+    name: lr-execute-query
+    outputs:
+    - contextPath: Logrhythm.Log.Channel
+      description: Channel
+      type: string
+    - contextPath: Logrhythm.Log.Computer
+      description: Computer
+      type: string
+    - contextPath: Logrhythm.Log.EventData
+      description: Event data
+      type: string
+    - contextPath: Logrhythm.Log.EventID
+      description: Event ID
+      type: string
+    - contextPath: Logrhythm.Log.Keywords
+      description: Keywords
+      type: string
+    - contextPath: Logrhythm.Log.Level
+      description: Level
+      type: string
+    - contextPath: Logrhythm.Log.Opcode
+      description: Opcode
+      type: string
+    - contextPath: Logrhythm.Log.Task
+      description: Task
+      type: string
+  - arguments:
+    - description: The entity name.
+      name: entity-name
+      required: true
+    - defaultValue: "100"
+      description: Number of hosts to return.
+      name: count
+    description: Retrieves a list of hosts for a given entity, or an empty list if
+      none is found.
+    name: lr-get-hosts-by-entity
+    outputs:
+    - contextPath: Logrhythm.Host.EntityId
+      description: The entity ID.
+      type: String
+    - contextPath: Logrhythm.Host.EntityName
+      description: The entity name.
+      type: String
+    - contextPath: Logrhythm.Host.OS
+      description: The host OS.
+      type: String
+    - contextPath: Logrhythm.Host.ThreatLevel
+      description: The host threat level.
+      type: String
+    - contextPath: Logrhythm.Host.UseEventlogCredentials
+      description: Use event log credentials
+      type: String
+    - contextPath: Logrhythm.Host.Name
+      description: The name of the host.
+      type: String
+    - contextPath: Logrhythm.Host.DateUpdated
+      description: The last update date of the host.
+      type: String
+    - contextPath: Logrhythm.Host.HostZone
+      description: The host zone.
+      type: String
+    - contextPath: Logrhythm.Host.RiskLevel
+      description: The risk level.
+      type: String
+    - contextPath: Logrhythm.Host.Location
+      description: The host location.
+      type: String
+    - contextPath: Logrhythm.Host.Status
+      description: The host status.
+      type: String
+    - contextPath: Logrhythm.Host.ID
+      description: The unique ID of the host object.
+      type: String
+    - contextPath: Logrhythm.Host.OSType
+      description: The type of the host OS.
+      type: String
+  - arguments:
+    - description: The entity ID.
+      name: entity-id
+      required: true
+    - description: The entity name.
+      name: entity-name
+      required: true
+    - description: The LogRhythm host name.
+      name: name
+      required: true
+    - defaultValue: None
+      description: The short description.
+      name: short-description
+    - defaultValue: None
+      description: The long description.
+      name: long-description
+    - auto: PREDEFINED
+      defaultValue: The host risk level.
+      description: The short description.
+      name: risk-level
+      predefined:
+      - None
+      - Low-Low
+      - Low-Medium
+      - Low-High
+      - Medium-Low
+      - Medium-Medium
+      - Medium-High
+      - High-Low
+      - High-Medium
+      - High-High
+      required: true
+    - auto: PREDEFINED
+      defaultValue: None
+      description: The host threat level.
+      name: threat-level
+      predefined:
+      - None
+      - Low-Low
+      - Low-Medium
+      - Low-High
+      - Medium-Low
+      - Medium-Medium
+      - Medium-High
+      - High-Low
+      - High-Medium
+      - High-High
+    - defaultValue: None
+      description: Comments for the host threat level.
+      name: threat-level-comments
+    - auto: PREDEFINED
+      description: The host status.
+      name: host-status
+      predefined:
+      - New
+      - Retired
+      - Active
+      required: true
+    - auto: PREDEFINED
+      description: The host zone.
+      name: host-zone
+      predefined:
+      - Unknown
+      - Internal
+      - DMZ
+      - External
+      required: true
+    - description: The host OS.
+      name: os
+      required: true
+    - auto: PREDEFINED
+      description: Use eventlog credentials.
+      name: use-eventlog-credentials
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    - auto: PREDEFINED
+      defaultValue: Unknown
+      description: The host OS.
+      name: os-type
+      predefined:
+      - Unknown
+      - Other
+      - WindowsNT4
+      - Windows2000Professional
+      - Windows2000Server
+      - Windows2003Standard
+      - Windows2003Enterprise
+      - Windows95
+      - WindowsXP
+      - WindowsVista
+      - Linux
+      - Solaris
+      - AIX
+      - HPUX
+      - Windows
+    description: Add a new host to an entity.
+    name: lr-add-host
+    outputs:
+    - contextPath: Logrhythm.Host.EntityId
+      description: The entity ID.
+      type: string
+    - contextPath: Logrhythm.Host.EntityName
+      description: The entity name.
+      type: string
+    - contextPath: Logrhythm.Host.OS
+      description: The host OS.
+      type: string
+    - contextPath: Logrhythm.Host.ThreatLevel
+      description: The host threat level.
+      type: string
+    - contextPath: Logrhythm.Host.UseEventlogCredentials
+      description: Use event log credentials
+      type: string
+    - contextPath: Logrhythm.Host.Name
+      description: The name of the host.
+      type: string
+    - contextPath: Logrhythm.Host.DateUpdated
+      description: The last update date of the host.
+      type: string
+    - contextPath: Logrhythm.Host.HostZone
+      description: The host zone.
+      type: string
+    - contextPath: Logrhythm.Host.RiskLevel
+      description: The risk level.
+      type: string
+    - contextPath: Logrhythm.Host.Location
+      description: The host location.
+      type: string
+    - contextPath: Logrhythm.Host.Status
+      description: The host status.
+      type: string
+    - contextPath: Logrhythm.Host.ID
+      description: The unique ID of the host object.
+      type: string
+    - contextPath: Logrhythm.Host.OSType
+      description: The type of the host OS.
+      type: string
+  - arguments:
+    - description: The unique ID of the host.
+      name: host-id
+      required: true
+    - auto: PREDEFINED
+      description: The enumeration status of the host.
+      name: status
+      predefined:
+      - Retired
+      - Active
+      required: true
+    description: Updates an host status.
+    name: lr-update-host-status
+    outputs:
+    - contextPath: Logrhythm.Host.EntityId
+      description: The entity ID.
+      type: string
+    - contextPath: Logrhythm.Host.EntityName
+      description: The entity name.
+      type: string
+    - contextPath: Logrhythm.Host.OS
+      description: The host OS.
+      type: string
+    - contextPath: Logrhythm.Host.ThreatLevel
+      description: The host threat level.
+      type: string
+    - contextPath: Logrhythm.Host.UseEventlogCredentials
+      description: Use event log credentials
+      type: string
+    - contextPath: Logrhythm.Host.Name
+      description: The name of the host.
+      type: string
+    - contextPath: Logrhythm.Host.DateUpdated
+      description: The last update date of the host.
+      type: string
+    - contextPath: Logrhythm.Host.HostZone
+      description: The host zone.
+      type: string
+    - contextPath: Logrhythm.Host.RiskLevel
+      description: The risk level.
+      type: string
+    - contextPath: Logrhythm.Host.Location
+      description: The host location.
+      type: string
+    - contextPath: Logrhythm.Host.Status
+      description: The host status.
+      type: string
+    - contextPath: Logrhythm.Host.ID
+      description: The unique ID of the host object.
+      type: string
+    - contextPath: Logrhythm.Host.OSType
+      description: The type of the host OS.
+      type: string
+  - arguments:
+    - description: The LogRhythm person ID.
+      name: person-id
+    - defaultValue: "30"
+      description: Number of persons to return. Default is 30.
+      name: count
+    description: Retrieves a list of persons.
+    name: lr-get-persons
+    outputs:
+    - contextPath: Logrhythm.Person.DateUpdated
+      description: Date that the person was updated.
+      type: String
+    - contextPath: Logrhythm.Person.FirstName
+      description: First name.
+      type: String
+    - contextPath: Logrhythm.Person.LastName
+      description: Last name.
+      type: String
+    - contextPath: Logrhythm.Person.HostStatus
+      description: Host status.
+      type: string
+    - contextPath: Logrhythm.Person.ID
+      description: Person ID.
+      type: String
+    - contextPath: Logrhythm.Person.IsAPIPerson
+      description: Whether the API is a person.
+      type: Boolean
+    - contextPath: Logrhythm.Person.UserID
+      description: User ID.
+      type: String
+    - contextPath: Logrhythm.Person.UserLogin
+      description: User login.
+      type: String
+  - arguments:
+    - description: The LogRhythm network ID.
+      name: network-id
+    - defaultValue: "30"
+      description: Number of networks to return.
+      name: count
+    description: Retrieves a list of networks.
+    name: lr-get-networks
+    outputs:
+    - contextPath: Logrhythm.Network.BIP
+      description: Began IP address.
+      type: String
+    - contextPath: Logrhythm.Network.ThreatLevel
+      description: Threat level.
+      type: String
+    - contextPath: Logrhythm.Network.Name
+      description: Network name.
+      type: String
+    - contextPath: Logrhythm.Network.EIP
+      description: End IP address.
+      type: String
+    - contextPath: Logrhythm.Network.DateUpdated
+      description: Date updated.
+      type: String
+    - contextPath: Logrhythm.Network.EntityName
+      description: Entity name.
+      type: String
+    - contextPath: Logrhythm.Network.HostZone
+      description: Host zone.
+      type: String
+    - contextPath: Logrhythm.Network.RiskLevel
+      description: Risk level.
+      type: String
+    - contextPath: Logrhythm.Network.Location
+      description: Network location.
+      type: String
+    - contextPath: Logrhythm.Network.HostStatus
+      description: Host status.
+      type: String
+    - contextPath: Logrhythm.Network.ID
+      description: Network ID.
+      type: String
+    - contextPath: Logrhythm.Network.EntityId
+      description: Entity ID.
+      type: String
+  - arguments:
+    - description: The LogRhythm host ID.
+      name: host-id
+    - defaultValue: "30"
+      description: Number of hosts to return. Default is 30.
+      name: count
+    description: Returns a list of hosts.
+    name: lr-get-hosts
+    outputs:
+    - contextPath: Logrhythm.Host.EntityId
+      description: The entity ID.
+      type: String
+    - contextPath: Logrhythm.Host.EntityName
+      description: The entity name.
+      type: String
+    - contextPath: Logrhythm.Host.OS
+      description: The host OS.
+      type: String
+    - contextPath: Logrhythm.Host.ThreatLevel
+      description: The host threat level.
+      type: String
+    - contextPath: Logrhythm.Host.UseEventlogCredentials
+      description: Use event log credentials.
+      type: String
+    - contextPath: Logrhythm.Host.Name
+      description: The name of the host.
+      type: String
+    - contextPath: Logrhythm.Host.DateUpdated
+      description: Date that the host was last updated.
+      type: String
+    - contextPath: Logrhythm.Host.HostZone
+      description: The host zone.
+      type: String
+    - contextPath: Logrhythm.Host.RiskLevel
+      description: The risk level.
+      type: String
+    - contextPath: Logrhythm.Host.Location
+      description: The host location.
+      type: String
+    - contextPath: Logrhythm.Host.Status
+      description: The host status.
+      type: String
+    - contextPath: Logrhythm.Host.ID
+      description: The unique ID of the host object.
+      type: String
+    - contextPath: Logrhythm.Host.OSType
+      description: Host OS type.
+      type: String
+  - arguments:
+    - description: The alarm ID.
+      name: alarm-id
+      required: true
+    description: Returns data for an alarm.
+    name: lr-get-alarm-data
+    outputs:
+    - contextPath: Logrhythm.Alarm.Status
+      description: The alarm status.
+      type: String
+    - contextPath: Logrhythm.Alarm.EventID
+      description: The alarm event ID.
+      type: String
+    - contextPath: Logrhythm.Alarm.LastDxTimeStamp
+      description: The timestamp when the drilldown returned new results from the
+        Data Indexer.
+      type: String
+    - contextPath: Logrhythm.Alarm.DateInserted
+      description: The alarm date inserted.
+      type: String
+    - contextPath: Logrhythm.Alarm.AIERuleName
+      description: The alarm AI engine (AIE) rule.
+      type: String
+    - contextPath: Logrhythm.Alarm.Priority
+      description: The alarm priority.
+      type: String
+    - contextPath: Logrhythm.Alarm.AIERuleID
+      description: The alarm AI engine (AIE) rule ID.
+      type: String
+    - contextPath: Logrhythm.Alarm.ID
+      description: The alarm ID.
+      type: String
+    - contextPath: Logrhythm.Alarm.NotificationSent
+      description: Whether an alarm notification was sent.
+      type: Boolean
+    - contextPath: Logrhythm.Alarm.AlarmGuid
+      description: The alarm GUID.
+      type: String
+    - contextPath: Logrhythm.Alarm.RetryCount
+      description: The alarm retry count.
+      type: String
+    - contextPath: Logrhythm.Alarm.NormalMessageDate
+      description: The alarm message date.
+      type: String
+    - contextPath: Logrhythm.Alarm.WebConsoleIds
+      description: The alarm web console IDs.
+      type: String
+    - contextPath: Logrhythm.Alarm.Summary.PIFType
+      description: Alarm Primary Inspection Field (the original name for "Summary
+        Field").
+      type: String
+    - contextPath: Logrhythm.Alarm.Summary.DrillDownSummaryLogs
+      description: Drill down summary logs.
+      type: String
+  - arguments:
+    - description: The alarm ID.
+      name: alarm-id
+      required: true
+    - defaultValue: "10"
+      description: Number of events to return. Default is 10.
+      name: count
+    - description: A CSV list of fields (outputs) to return to the context. If empty,
+        all fields are returned.
+      name: fields
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Returns the log message from the event.
+      name: get-log-message
+      predefined:
+      - "True"
+      - "False"
+    description: Returns a list of events, by alarm ID.
+    name: lr-get-alarm-events
+    outputs:
+    - contextPath: Logrhythm.Alarm.Event
+      description: Alarm event information.
+      type: String
+    - contextPath: Logrhythm.Alarm.ID
+      description: The alarm ID.
+      type: String
+  runonce: false
+  script: |2-
+
+
+
+
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    import random
+    import string
+    from datetime import datetime, timedelta
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+
+    ''' GLOBALS/PARAMS '''
+
+    TOKEN = demisto.params().get('token', '')
+    BASE_URL = demisto.params().get('url', '').strip('/')
+    INSECURE = not demisto.params().get('insecure')
+    CLUSTER_ID = demisto.params().get('cluster-id')
+
+    # Headers to be sent in requests
+    HEADERS = {
+        'Authorization': 'Bearer ' + TOKEN
+    }
+
+    HOSTS_HEADERS = ["ID", "Name", "EntityId", "EntityName", "OS", "Status", "Location", "RiskLevel", "ThreatLevel",
+                     "ThreatLevelComments", "DateUpdated", "HostZone"]
+    LOGS_HEADERS = ["Level", "Computer", "Channel", "Keywords", "EventData"]
+    PERSON_HEADERS = ["ID", "HostStatus", "IsAPIPerson", "FirstName", "LastName", "UserID", "UserLogin", "DateUpdated"]
+    NETWORK_HEADERS = ["ID", "BeganIP", "EndIP", "HostStatus", "Name", "RiskLevel", "EntityId", "EntityName", "Location",
+                       "ThreatLevel", "DateUpdated", "HostZone"]
+    ALARM_SUMMARY_HEADERS = ["PIFType", "DrillDownSummaryLogs"]
+
+    PIF_TYPES = {
+        "1": "Direction",
+        "2": "Priority",
+        "3": "Normal Message Date",
+        "4": "First Normal Message Date",
+        "5": "Last Normal Message Date",
+        "6": "Count",
+        "7": "MessageDate",
+        "8": "Entity",
+        "9": "Log Source",
+        "10": "Log Source Host",
+        "11": "Log Source Type",
+        "12": "Log Class Type",
+        "13": "Log Class",
+        "14": "Common Event",
+        "15": "MPE Rule",
+        "16": "Source",
+        "17": "Destination",
+        "18": "Service",
+        "19": "Known Host",
+        "20": "Known Host (Origin)",
+        "21": "Known Host (Impacted)",
+        "22": "Known Service",
+        "23": "IP",
+        "24": "IP Address (Origin)",
+        "25": "IP Address (Impacted)",
+        "26": "Host Name",
+        "27": "Host Name (Origin)",
+        "28": "Host Name (Impacted)",
+        "29": "Port (Origin)",
+        "30": "Port (Impacted)",
+        "31": "Protocol",
+        "32": "User (Origin)",
+        "33": "User (Impacted)",
+        "34": "Sender",
+        "35": "Recipient",
+        "36": "Subject",
+        "37": "Object",
+        "38": "Vendor Message ID",
+        "39": "Vendor Message Name",
+        "40": "Bytes In",
+        "41": "Bytes Out",
+        "42": "Items In",
+        "43": "Items Out",
+        "44": "Duration",
+        "45": "Time Start",
+        "46": "Time End",
+        "47": "Process",
+        "48": "Amount",
+        "49": "Quantity",
+        "50": "Rate",
+        "51": "Size",
+        "52": "Domain (Impacted)",
+        "53": "Group",
+        "54": "URL",
+        "55": "Session",
+        "56": "Sequence",
+        "57": "Network (Origin)",
+        "58": "Network (Impacted)",
+        "59": "Location (Origin)",
+        "60": "Country (Origin)",
+        "61": "Region (Origin)",
+        "62": "City (Origin)",
+        "63": "Location (Impacted)",
+        "64": "Country (Impacted)",
+        "65": "Region (Impacted)",
+        "66": "City (Impacted)",
+        "67": "Entity (Origin)",
+        "68": "Entity (Impacted)",
+        "69": "Zone (Origin)",
+        "70": "Zone (Impacted)",
+        "72": "Zone",
+        "73": "User",
+        "74": "Address",
+        "75": "MAC",
+        "76": "NATIP",
+        "77": "Interface",
+        "78": "NATPort",
+        "79": "Entity (Impacted or Origin)",
+        "80": "RootEntity",
+        "100": "Message",
+        "200": "MediatorMsgID",
+        "201": "MARCMsgID",
+        "1040": "MAC (Origin)",
+        "1041": "MAC (Impacted)",
+        "1042": "NATIP (Origin)",
+        "1043": "NATIP (Impacted)",
+        "1044": "Interface (Origin)",
+        "1045": "Interface (Impacted)",
+        "1046": "PID",
+        "1047": "Severity",
+        "1048": "Version",
+        "1049": "Command",
+        "1050": "ObjectName",
+        "1051": "NATPort (Origin)",
+        "1052": "NATPort (Impacted)",
+        "1053": "Domain (Origin)",
+        "1054": "Hash",
+        "1055": "Policy",
+        "1056": "Vendor Info",
+        "1057": "Result",
+        "1058": "Object Type",
+        "1059": "CVE",
+        "1060": "UserAgent",
+        "1061": "Parent Process Id",
+        "1062": "Parent Process Name",
+        "1063": "Parent Process Path",
+        "1064": "Serial Number",
+        "1065": "Reason",
+        "1066": "Status",
+        "1067": "Threat Id",
+        "1068": "Threat Name",
+        "1069": "Session Type",
+        "1070": "Action",
+        "1071": "Response Code",
+        "1072": "User (Origin) Identity ID",
+        "1073": "User (Impacted) Identity ID",
+        "1074": "Sender Identity ID",
+        "1075": "Recipient Identity ID",
+        "1076": "User (Origin) Identity",
+        "1077": "User (Impacted) Identity",
+        "1078": "Sender Identity",
+        "1079": "Recipient Identity",
+        "1080": "User (Origin) Identity Domain",
+        "1081": "User (Impacted) Identity Domain",
+        "1082": "Sender Identity Domain",
+        "1083": "Recipient Identity Domain",
+        "1084": "User (Origin) Identity Company",
+        "1085": "User (Impacted) Identity Company",
+        "1086": "Sender Identity Company",
+        "1087": "Recipient Identity Company",
+        "1088": "User (Origin) Identity Department",
+        "1089": "User (Impacted) Identity Department",
+        "1090": "Sender Identity Department",
+        "1091": "Recipient Identity Department",
+        "1092": "User (Origin) Identity Title",
+        "1093": "User (Impacted) Identity Title",
+        "1094": "Sender Identity Title",
+        "1095": "Recipient Identity Title",
+        "10001": "Source Or Destination",
+        "10002": "Port (Origin or Impacted)",
+        "10003": "Network (Origin or Impacted)",
+        "10004": "Location (Origin or Impacted)",
+        "10005": "Country (Origin or Impacted)",
+        "10006": "Region (Origin or Impacted)",
+        "10007": "City (Origin or Impacted)",
+        "10008": "Bytes In/Out",
+        "10009": "Items In/Out"
+    }
+
+    ALARM_STATUS = {
+        "0": "Waiting",
+        "1": "In queue",
+        "2": "Sent to SvcHost",
+        "3": "Queued for retry",
+        "4": "Completed",
+    }
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def fix_date_values(item):
+        date_keys = ['normalDateMin', 'normalDate', 'normalMsgDateMax', 'logDate']
+
+        for key in date_keys:
+            if item.get(key):
+                item[key] = datetime.fromtimestamp(item.get(key) / 1000.0).\
+                    strftime('%Y-%m-%d %H:%M:%S')
+
+
+    def fix_location_value(items):
+        for item in items:
+            location_val = str(item.get('location'))
+            if location_val == '{u\'id\': -1}':
+                item['location'] = 'NA'
+
+        return items
+
+
+    def get_time_frame(time_frame, start_arg, end_arg):
+        start = datetime.now()
+        end = datetime.now()
+
+        if time_frame == 'Today':
+            start = datetime(end.year, end.month, end.day)
+        elif time_frame == 'Last2Days':
+            start = end - timedelta(days=2)
+        elif time_frame == 'LastWeek':
+            start = end - timedelta(days=7)
+        elif time_frame == 'LastMonth':
+            start = end - timedelta(days=30)
+        elif time_frame == 'Custom':
+            if not start_arg:
+                return_error('start-date argument is missing')
+            if not end_arg:
+                return_error('end-date argument is missing')
+            start = datetime.strptime(start_arg, '%Y-%m-%d')
+            end = datetime.strptime(end_arg, '%Y-%m-%d')
+
+        return start, end
+
+
+    def http_request(method, url_suffix, data=None, headers=HEADERS):
+        try:
+            res = requests.request(
+                method,
+                BASE_URL + '/' + url_suffix,
+                headers=headers,
+                verify=INSECURE,
+                data=data
+            )
+        except Exception as e:
+            return_error(e)
+
+        # Handle error responses gracefully
+        if res.headers['Content-Type'] != 'application/json':
+            return_error('invalid url or port: ' + BASE_URL)
+
+        if res.status_code == 404:
+            if res.json().get('message'):
+                return_error(res.json().get('message'))
+            else:
+                return_error('No data returned')
+
+        if res.status_code not in {200, 201, 202, 207}:
+            return_error(
+                'Error in API call to {}, status code: {}, reason: {}'.format(BASE_URL + '/' + url_suffix, res.status_code,
+                                                                              res.json()['message']))
+
+        return res.json()
+
+
+    def get_host_by_id(host_id):
+        res = http_request('GET', 'lr-admin-api/hosts/' + host_id)
+        return fix_location_value([res])
+
+
+    def update_hosts_keys(hosts):
+        new_hosts = []
+
+        for host in hosts:
+            tmp_host = {
+                'EntityId': host.get('entity').get('id'),
+                'EntityName': host.get('entity').get('name'),
+                'OS': host.get('os'),
+                'ThreatLevel': host.get('threatLevel'),
+                'UseEventlogCredentials': host.get('useEventlogCredentials'),
+                'Name': host.get('name'),
+                'DateUpdated': host.get('dateUpdated'),
+                'HostZone': host.get('hostZone'),
+                'RiskLevel': host.get('riskLevel'),
+                'Location': host.get('location'),
+                'Status': host.get('recordStatusName'),
+                'ThreatLevelComments': host.get('threatLevelComments'),
+                'ID': host.get('id'),
+                'OSType': host.get('osType')
+            }
+            new_hosts.append(tmp_host)
+        return new_hosts
+
+
+    def update_networks_keys(networks):
+        new_networks = []
+
+        for network in networks:
+            tmp_network = {
+                'EndIP': network.get('eip'),
+                'HostStatus': network.get('recordStatusName'),
+                'Name': network.get('name'),
+                'RiskLevel': network.get('riskLevel'),
+                'EntityId': network.get('entity').get('id'),
+                'EntityName': network.get('entity').get('name'),
+                'Location': network.get('location'),
+                'ThreatLevel': network.get('threatLevel'),
+                'DateUpdated': network.get('dateUpdated'),
+                'HostZone': network.get('hostZone'),
+                'ID': network.get('id'),
+                'BeganIP': network.get('bip')
+            }
+            new_networks.append(tmp_network)
+        return new_networks
+
+
+    def update_persons_keys(persons):
+        new_persons = []
+
+        for person in persons:
+            tmp_person = {
+                'ID': person.get('id'),
+                'DateUpdated': person.get('dateUpdated'),
+                'HostStatus': person.get('recordStatusName'),
+                'LastName': person.get('lastName'),
+                'FirstName': person.get('firstName'),
+                'IsAPIPerson': person.get('isAPIPerson'),
+                'UserID': person.get('user').get('id'),
+                'UserLogin': person.get('user').get('login')
+            }
+            new_persons.append(tmp_person)
+        return new_persons
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        http_request('GET', 'lr-admin-api/hosts')
+        demisto.results('ok')
+
+
+    def add_host(data_args):
+        data = {
+            "id": -1,
+            "entity": {
+                "id": int(data_args.get('entity-id')),
+                "name": data_args.get('entity-name')
+            },
+            "name": data_args.get('name'),
+            "shortDesc": data_args.get('short-description'),
+            "longDesc": data_args.get('long-description'),
+            "riskLevel": data_args.get('risk-level'),
+            "threatLevel": data_args.get('threat-level'),
+            "threatLevelComments": data_args.get('threat-level-comments'),
+            "recordStatusName": data_args.get('host-status'),
+            "hostZone": data_args.get('host-zone'),
+            "os": data_args.get('os'),
+            "useEventlogCredentials": bool(data_args.get('use-eventlog-credentials')),
+            "osType": data_args.get('os-type')
+        }
+
+        res = http_request('POST', 'lr-admin-api/hosts/', json.dumps(data))
+        res = fix_location_value([res])
+        context = createContext(update_hosts_keys(res), removeNull=True)
+        outputs = {'Logrhythm.Host(val.ID === obj.ID)': context}
+        return_outputs(readable_output=data_args.get('name') + " added successfully to " + data_args.get('entity-name'),
+                       outputs=outputs, raw_response=res)
+
+
+    def get_hosts_by_entity(data_args):
+        res = http_request('GET', 'lr-admin-api/hosts?entity=' + data_args['entity-name'] + '&count=' + data_args['count'])
+        res = fix_location_value(res)
+        res = update_hosts_keys(res)
+        context = createContext(res, removeNull=True)
+        human_readable = tableToMarkdown('Hosts for ' + data_args.get('entity-name'), res, HOSTS_HEADERS)
+        outputs = {'Logrhythm.Host(val.Name && val.ID === obj.ID)': context}
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+    def get_hosts(data_args):
+        id = data_args.get('host-id')
+        if id:
+            res = get_host_by_id(id)
+        else:
+            res = http_request('GET', 'lr-admin-api/hosts?count=' + data_args['count'])
+
+        res = fix_location_value(res)
+        res = update_hosts_keys(res)
+        context = createContext(res, removeNull=True)
+        human_readable = tableToMarkdown('Hosts information:', res, HOSTS_HEADERS)
+        outputs = {'Logrhythm.Host(val.Name && val.ID === obj.ID)': context}
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+    def change_status(data_args):
+        data = [{
+            "hostId": int(data_args.get('host-id')),
+            "status": data_args.get('status')
+        }]
+
+        res = http_request('PUT', 'lr-admin-api/hosts/status', json.dumps(data))
+
+        host_info = get_host_by_id(data_args.get('host-id'))
+        context = createContext(update_hosts_keys(host_info), removeNull=True)
+        outputs = {'Logrhythm.Host(val.ID === obj.ID)': context}
+        return_outputs(readable_output='Status updated to ' + data_args.get('status'), outputs=outputs, raw_response=res)
+
+
+    def execute_query(data_args):
+        # generate random string for request id
+        req_id = ''.join(random.choice(string.ascii_letters) for x in range(8))
+        start, end = get_time_frame(data_args.get('time-frame'), data_args.get('start-date'), data_args.get('end-date'))
+        delta = end - start
+        dates = []
+
+        for i in range(delta.days + 1):
+            dates.append((start + timedelta(days=i)).strftime("logs-%Y-%m-%d"))
+
+        data = {
+            "indices": dates,
+            "searchType": "DFS_QUERY_THEN_FETCH",
+            "source": {
+                "size": data_args.get('page-size'),
+                "query": {
+                    "query_string": {
+                        "default_field": "logMessage",
+                        "query": data_args.get('keyword')
+                    }
+                },
+                "stored_fields": "logMessage",
+                "sort": [
+                    {
+                        "normalDate": {
+                            "order": "asc"
+                        }
+                    }
+                ]
+            }
+        }
+
+        headers = dict(HEADERS)
+        headers['Content-Type'] = 'application/json'
+        headers['Request-Id'] = req_id
+        headers['Request-Origin-Date'] = str(datetime.now())
+        headers['x-gateway-route-to-tag'] = CLUSTER_ID
+
+        res = http_request('POST', 'lr-legacy-search-api/esquery', json.dumps(data), headers)
+        logs = res['hits']['hits']
+        logs_response = []
+
+        xml_ns = './/{http://schemas.microsoft.com/win/2004/08/events/event}'
+
+        for log in logs:
+            message = str(log['fields']['logMessage'])
+            message = message[3:-2]
+
+            try:
+                root = ET.fromstring(message)
+
+                log_item = {
+                    "EventID": str(root.find(xml_ns + 'EventID').text),  # type: ignore
+                    "Level": str(root.find(xml_ns + 'Level').text),  # type: ignore
+                    "Task": str(root.find(xml_ns + 'Task').text),  # type: ignore
+                    "Opcode": str(root.find(xml_ns + 'Opcode').text),  # type: ignore
+                    "Keywords": str(root.find(xml_ns + 'Keywords').text),  # type: ignore
+                    "Channel": str(root.find(xml_ns + 'Channel').text),  # type: ignore
+                    "Computer": str(root.find(xml_ns + 'Computer').text),  # type: ignore
+                    "EventData": str(root.find(xml_ns + 'EventData').text)  # type: ignore
+                    .replace('\\r\\n', '\n').replace('\\t', '\t')
+                }
+                logs_response.append(log_item)
+            except Exception:
+                continue
+
+        context = createContext(logs_response, removeNull=True)
+        human_readable = tableToMarkdown('logs results', logs_response, LOGS_HEADERS)
+        outputs = {'Logrhythm.Log': context}
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=logs_response)
+
+
+    def get_persons(data_args):
+        id = data_args.get('person-id')
+        if id:
+            res = [http_request('GET', 'lr-admin-api/persons/' + id)]
+        else:
+            res = http_request('GET', 'lr-admin-api/persons?count=' + data_args['count'])
+        res = update_persons_keys(res)
+        context = createContext(res, removeNull=True)
+        outputs = {'Logrhythm.Person(val.ID === obj.ID)': context}
+        human_readable = tableToMarkdown('Persons information', context, PERSON_HEADERS)
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+    def get_networks(data_args):
+        id = data_args.get('network-id')
+        if id:
+            res = [http_request('GET', 'lr-admin-api/networks/' + id)]
+        else:
+            res = http_request('GET', 'lr-admin-api/networks?count=' + data_args['count'])
+        res = fix_location_value(res)
+        res = update_networks_keys(res)
+        context = createContext(res, removeNull=True)
+        outputs = {'Logrhythm.Network(val.ID === obj.ID)': context}
+        human_readable = tableToMarkdown('Networks information', context, NETWORK_HEADERS)
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+    def get_alarm_data(data_args):
+        id = data_args.get('alarm-id')
+        res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
+
+        alarm_data = res['Data']['DrillDownResults']
+        alarm_summaries = res['Data']['DrillDownResults']['RuleBlocks']
+        del alarm_data['RuleBlocks']
+        aie_message = xml2json(str(alarm_data.get('AIEMsgXml'))).replace('\"@', '\"')
+        alarm_data['AIEMsgXml'] = json.loads(aie_message).get('aie')
+        alarm_data['Status'] = ALARM_STATUS[str(alarm_data['Status'])]
+        alarm_data['ID'] = alarm_data['AlarmID']
+        del alarm_data['AlarmID']
+
+        dds_summaries = []
+        for block in alarm_summaries:
+            for item in block['DDSummaries']:
+                item['PIFType'] = PIF_TYPES[str(item['PIFType'])]
+                m = re.findall(r'"field": "(([^"]|\\")*)"', item['DrillDownSummaryLogs'])
+                fields = [k[0] for k in m]
+                item['DrillDownSummaryLogs'] = ", ".join(fields)
+                del item['DefaultValue']
+                dds_summaries.append(item)
+
+        alarm_data['Summary'] = dds_summaries
+
+        context = createContext(alarm_data, removeNull=True)
+        outputs = {'Logrhythm.Alarm(val.ID === obj.ID)': context}
+
+        del alarm_data['AIEMsgXml']
+        del alarm_data['Summary']
+        human_readable = tableToMarkdown('Alarm information for alarm id ' + id, alarm_data) + tableToMarkdown(
+            'Alarm summaries', dds_summaries, ALARM_SUMMARY_HEADERS)
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+    def get_alarm_events(data_args):
+        id = data_args.get('alarm-id')
+        count = int(data_args.get('count'))
+        fields = data_args.get('fields')
+        show_log_message = data_args.get('get-log-message') == 'True'
+
+        res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
+        res = res['Data']['DrillDownResults']['RuleBlocks']
+
+        events = []
+
+        for block in res:
+            if not block.get('DrillDownLogs'):
+                continue
+            logs = json.loads(block['DrillDownLogs'])
+            for log in logs:
+                fix_date_values(log)
+                if not show_log_message:
+                    del log['logMessage']
+                events.append((log))
+
+        events = events[:count]
+        human_readable = tableToMarkdown('Events information for alarm ' + id, events)
+
+        if fields:
+            fields = string.split(fields, ',')
+            for event in events:
+                for key in event.keys():
+                    if key not in fields:
+                        del event[key]
+
+        ec = {"ID": int(id), "Event": events}
+        context = createContext(ec, removeNull=True)
+        outputs = {'Logrhythm.Alarm(val.ID === obj.ID)': context}
+
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+
+    def main():
+        LOG('Command being called is %s' % (demisto.command()))
+
+        try:
+            handle_proxy()
+            if demisto.command() == 'test-module':
+                # This is the call made when pressing the integration test button.
+                test_module()
+            elif demisto.command() == 'lr-add-host':
+                add_host(demisto.args())
+            elif demisto.command() == 'lr-get-hosts-by-entity':
+                get_hosts_by_entity(demisto.args())
+            elif demisto.command() == 'lr-get-hosts':
+                get_hosts(demisto.args())
+            elif demisto.command() == 'lr-execute-query':
+                execute_query(demisto.args())
+            elif demisto.command() == 'lr-update-host-status':
+                change_status(demisto.args())
+            elif demisto.command() == 'lr-get-persons':
+                get_persons(demisto.args())
+            elif demisto.command() == 'lr-get-networks':
+                get_networks(demisto.args())
+            elif demisto.command() == 'lr-get-alarm-data':
+                get_alarm_data(demisto.args())
+            elif demisto.command() == 'lr-get-alarm-events':
+                get_alarm_events(demisto.args())
+        except Exception as e:
+            return_error('error has occurred: {}'.format(str(e)))
+
+
+    # python2 uses __builtin__ python3 uses builtins
+    if __name__ == "__builtin__" or __name__ == "builtins":
+        main()
+  subtype: python3
+  type: python
+system: true

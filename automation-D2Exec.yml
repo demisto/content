@@ -1,0 +1,18 @@
+args:
+- default: true
+  description: System command to execute
+  name: cmd
+  required: true
+comment: Execute the command and pack the output back to server
+commonfields:
+  id: D2Exec
+  version: -1
+name: D2Exec
+runonce: false
+script: packOutput(args.cmd);
+scripttarget: 1
+system: true
+tags:
+- agent
+- endpoint
+type: javascript

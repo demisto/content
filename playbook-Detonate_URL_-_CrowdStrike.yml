@@ -1,0 +1,349 @@
+description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration.
+  This playbook returns relevant reports to the War Room and file reputations to the
+  context data.
+id: detonate_url_-_crowdstrike
+inputs:
+- description: URL to detonate.
+  key: URL
+  required: false
+  value:
+    complex:
+      accessor: Data
+      root: URL
+- description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
+    command.
+  key: EnvironmentID
+  required: false
+  value:
+    simple: "100"
+- description: Polling frequency - how often the polling command should run (minutes)
+  key: Interval
+  required: false
+  value:
+    simple: "5"
+- description: How much time to wait before a timeout occurs  (minutes)
+  key: Timeout
+  required: false
+  value:
+    simple: "30"
+name: Detonate URL - CrowdStrike
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: unknown
+- contextPath: File.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: File.Size
+  description: File size
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.Name
+  description: Filename
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File
+  description: The File object
+  type: unknown
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VxStream
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |
+        Verify that there is a valid instance of CrowdStrike enabled.
+      id: 3e2a6ea9-7f88-4d10-8d29-3ed2d10eba4f
+      iscommand: false
+      name: Is CrowdStrike enabled?
+      type: condition
+      version: -1
+    taskid: 3e2a6ea9-7f88-4d10-8d29-3ed2d10eba4f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1140
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    scriptarguments:
+      file:
+        complex:
+          accessor: SHA256
+          root: File
+    separatecontext: false
+    task:
+      brand: VxStream
+      description: Download the pdf report to the War Room.
+      id: 7226fb9e-9b1c-4e40-8823-428a6ef19aaa
+      iscommand: true
+      name: CrowdStrike Scan
+      script: VxStream|||crowdstrike-scan
+      type: regular
+      version: -1
+    taskid: 7226fb9e-9b1c-4e40-8823-428a6ef19aaa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 925
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    scriptarguments:
+      environmentID:
+        complex:
+          root: inputs.EnvironmentID
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    task:
+      brand: VxStream
+      description: Upload samle to crowdstrike.
+      id: b34f751c-44b6-4bd9-8e69-dbcb9ea04e46
+      iscommand: true
+      name: CrowdStrike Upload Sample
+      script: VxStream|||crowdstrike-submit-url
+      type: regular
+      version: -1
+    taskid: b34f751c-44b6-4bd9-8e69-dbcb9ea04e46
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 550
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.URL
+          operator: isExists
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks whether there's a file to detonate.
+      id: 6ffba508-37e1-4647-88ea-265cd5475d61
+      iscommand: false
+      name: Is there a URL to detonate?
+      type: condition
+      version: -1
+    taskid: 6ffba508-37e1-4647-88ea-265cd5475d61
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      Ids:
+        complex:
+          accessor: SHA256
+          root: File
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: file
+      PollingCommandName:
+        simple: crowdstrike-scan
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: File(val.state === 'NO_CONTENT').hash
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: e34dd0a0-2806-4f3e-8c17-f4a05504222d
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: e34dd0a0-2806-4f3e-8c17-f4a05504222d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 740
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1155,
+        "width": 677.5,
+        "x": 162.5,
+        "y": 50
+      }
+    }
+  }

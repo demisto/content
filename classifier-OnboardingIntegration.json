@@ -1,0 +1,129 @@
+{
+	"brandName": "OnboardingIntegration",
+	"custom": false,
+	"defaultIncidentType": "Phishing",
+	"id": "OnboardingIntegration",
+	"incidentSamples": null,
+	"instanceId": "",
+	"instanceName": "",
+	"isDefault": true,
+	"keyTypeMap": {},
+	"mapping": {
+		"Phishing": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Email BCC": {
+					"complex": null,
+					"simple": "BCC"
+				},
+				"Email Body": {
+					"complex": null,
+					"simple": "Text"
+				},
+				"Email Body HTML": {
+					"complex": null,
+					"simple": "Body"
+				},
+				"Email CC": {
+					"complex": null,
+					"simple": "CC"
+				},
+				"Email From": {
+					"complex": null,
+					"simple": "From"
+				},
+				"Email HTML": {
+					"complex": null,
+					"simple": "Body"
+				},
+				"Email Message ID": {
+					"complex": null,
+					"simple": "Message-ID"
+				},
+				"Email Received": {
+					"complex": null,
+					"simple": "Received"
+				},
+				"Email Reply To": {
+					"complex": null,
+					"simple": "Reply-To"
+				},
+				"Email Sender IP": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "Received",
+						"transformers": [
+							{
+								"args": {
+									"from": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "("
+										}
+									}
+								},
+								"operator": "substringFrom"
+							},
+							{
+								"args": {
+									"to": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ")"
+										}
+									}
+								},
+								"operator": "substringTo"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"Email Subject": {
+					"complex": null,
+					"simple": "Subject"
+				},
+				"Email To": {
+					"complex": null,
+					"simple": "To"
+				},
+				"Email To Count": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "To",
+						"transformers": [
+							{
+								"args": {
+									"delimiter": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "splitAndTrim"
+							},
+							{
+								"args": {},
+								"operator": "count"
+							}
+						]
+					},
+					"simple": ""
+				}
+			}
+		}
+	},
+	"sortValues": null,
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"unclassifiedCases": {},
+	"version": -1
+}

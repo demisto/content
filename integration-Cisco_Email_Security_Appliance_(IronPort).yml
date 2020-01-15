@@ -1,0 +1,200 @@
+category: Network Security
+commonfields:
+  id: Cisco Email Security Appliance (IronPort)
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Port
+  name: port
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: ""
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Cisco Email Security protects against ransomware, business email compromise,
+  spoofing, and phishing
+display: Cisco Email Security Appliance (IronPort)
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAF4AAAAyCAYAAADV5GxPAAAJrElEQVR42u2cf3BU1RXH971zAsovKaVVwWpBaFEY22k71dpKHadMy1A7Au0wrTo6LYqDQjvjUKq1rT9mrGBHqwYh2X333Le7SQzhlz/KgJ1pdfxR21KGHwnvnvveIwkEArSmRfAHFdz+kS3se7ub3ZC3umlzZ94fSc7e972fd969555zN7FYBZu5ufs6rHfSkOJ7Yo8eGx6r8makWgFILcGEaoCmvXNig7GZG9unoNTvIHEGSWUg7j9Y9ZolL+7VyxmU+gOz+cCXBh14TOr5KLKD6L1eqXrN5K7N0ZtBy7lr0IGvsXheYBDEL1U/eG4Kab5z8IEX/xPgFw+BHwI/BP6jE2g5IysBHkidi8KBqPVCotVAckZUAjxaPLLiwI3fHBsJ0rdRqE5s8DYY/rFxUYFH270NifeiUDuN1JGvRKb5t0emIzl/QVLtIDuWRQXeIH80EqdQcCdIXhfzjp5XOU9v0gtRqDPC6tQ9UYAHUhch8b/P2Kq/gfQi8Xyw3a25OqBJXxYFeEg4t+fozUCde28l58CHcoXVEK+JAnwN8RUh2w4kPiciza3BvvXXIwFP6oGQbV0lwd8fAr8qIvAzQrZ+hOB3BPoW+pqIwP8yZLtqCPxgAQ/SnYGWngvCnTAYwBtNhw1IqlnQ4M2G1btwMIA3icejpeZC0v1i7y+2ds1Cyb3JLKE6jCe2f6rawUOq87HeRV5nIL5HxGq3GdUM3kio8afXGsknYXPXvBjGVUtg1be9H1YzeLORR6DkwzlZxONmsze+msGj4DkB23q1MYbEmwLgpbqjmsED6dFIfCjH9i0gPaGqwZOaG7LdFEPiDSHwi6oavNSjkbg7x/YoSH1hlYO/IWS7cQj8Rwj+2RD4xR/6BkoW2EDJouDHIOXM8cTHSkw1u0PgK7OBstSaPsCHWTwXQ0s9kVspMhPu9cU70AsDD8ly7o0CvBnXwZSBUNuhqXDKwCRvGJJ2zyyufMhs8UcVBST4xRw4GUg4kaQMzAa96IxezkCz9/PiD4mvDj2keMxoffNClHozCu5GwU8bv36taFHaqN83CgXbSHwQbb3BaNwzPqokGdS13Y623odxtdt84/DVfcbEDQdnIymFpH1Ys3tBn7apPTPQ1n/FuOqCLfujS5Kt/NMYlJxC4m4UvC62xR9btOP0LgCpHkHBB5H0S8bOnsk5IY8eU/aGS7glbc8qLZz2R8FqrilLQ5KHg/DOLcs27ZpYx6MrkRaGZPnc+sN4IIWQ74UGUf3FbsnBYjepJYOuAgX1zjVoqdNzIKa5peo1kxtY7zDuzx904A3VA7Cp40lMqDeReJv5xD+mV71ma/clmNKvIHEPkCIzqYfHBmvDeufjKDQMKs3CHR8bakNtqA21oTbUhtr/UYO0OxJIT0Liy5D400A8IvJ7pPQITOrJKPhyJDUJ0nrsWfUj3HFAeioST0OpJgJ52O9oJ+1OQFtPA+ldCqRHf/jAU/p6tN3G7DGME0h8Conf6/1Zr6sh/cm8nSzx55F4e87VWGIrPh0trkfi9mwC7QMkPoGSu5H4VTPpzSwdFqqRKN1FIPWLKPgIEp/Maj2GxA6mvYdLjrVRT85mZbdnP3cqq6cLk3odWO68ygPf3DkJ4s7vQqmA/EvkZwCHST0zZNdW7D7m1q65mFBH+7qHKXhRn1obvG+gUG0ltLp99hF3fozEPSXHS3oLxJ3JldnVbT1+KT7j+qfTAMWv91E4ny0A/mshu+2Ft+18MRIfLTVYU/BtRbWuOvIdtHNPphW5JO8o+vA3djyKiZJjzc3rdBrSmxYt9NpDNbDafz1wfO/M9V62BvpmCY8vD7zQPwnd5yQKboG0uxAl34hCL0eh15uk5hbUKr2pKJ1iD+6trNajWfBeQehr+AdIRaH/Kzvm8EPMQNzfFqvtii7NYEr/R3lCLD4OSX0fSj0FyR+LQn8CE86XkXglCDXpbMGj9OzcewHpTf1MdDWHPDGDpDRYfBMInojEY5F4ApKeg1I/WGPrwCJrpA+ch0J3FQC+FiRfjcQXgODJKPQSJN0dvpdp+UujmdebfQOT+vWQiLfNls7r+tNP2eCFppCdZ6a9L5TlIAl1MZJ6J3CYlNq1ae+/oOiHhBs4k4MpfWNwveKM2eQ/VvB+tQcuQ8vtRnm6cpbBpN5lrNuLA/f2Ru8SJH43UOZqcJ/qbz9lg0/wwgKv+Qm09e9B8lKz3p1U1Elsd0HYA0G239CvkJHYCpQ3ib2Y5Qwryqe+/a6Q3lNgOVcM3OMbvGvDHoAN7bMrBd5IdY5B6bUWnWMFH8V04fomCLU8ZP9PEDyuf5lJfjnUR22fjpl2p2ZD6pz6qz934CnShPOt8OBB6JmVAt+7QHZPQlIvF49GdMZcs/uRAtPUL0K2B4FUv76xATb/+XQxRHAGGvT9fc8I7RdkF+0c51ALBu7xgq/KA2/xTZUE3/umuSaQ+30U/ELB8FLqk6btTw9FREtDdu+aou2SfjlaSm/OrUIBqfV9byYPXIlCnQp9+eGbA5/j61rHoVB/D5694T9UGnxwcJ0XQ8pdgYLfD+iIe8sDdlLNCod45mqnX98oh6S3IhDOSn3MbPKnFn1QLe3xgL3g42Z878RoIpukbsnzett7HNJ78w4docUjzZVvnBsl+JzFc1uojxUBJ2nxR6OtDgZfe/cEWP7NhUPPjo8Zz7wTqI4Z1r6v5r1dCd6OKZ0HH+N8NwoOeDsm3eeji+Nf6LoK486pAlvlHSj4ISS+FYnvROI1SMxI6vKz3kBJdQ0KvhKEGotCIwptglCjQOj5SLonsIg1enfkv6H7f4ay4MK8GYmXIalbwdbL0HbXIvEfhyU5CL6+1QDRtvV0iHjm7elB6cbR1ndjUj+Akl8tuKOmPTNjUTazuWtFH7u5cK7mrFMGpq1T2b8fQWInewRvf4Et+ttmXUf+Wf6nD58DQr9Slk7JrQUX98f9z6Bwe8pPF2SntbjzWPS5mvbjJtY7q8sQ8f4AwdeXHqSTMWu7lxVfl/T5KPVrZcDaWTxB1nEtSnWobPBCxw3yK1fUh5R3K0qtS3h8XrJoWFJdi6T/O0UVzQyatk4W77f3TYBk6f+qAYJHIOmHUebkkPLBqxI5/Cko1PpsOrlwH7buAFk8YRctfNsfhaS+DcQrkbgZiZ9H4iYUvBKS7ncNsT9v0YWnDl9kptqWmcm2ZWay7aemrW4pnBfSV6FQ96GtV+f0vR6lroVG92awvPP7FR42+RNA8C1IXJs9kv4sEtso9a/AKm8/Amn3cyjd5UjaRuLnkHgdCvU4Snc+NLef1ReL/wO/ZPX1E6BaswAAAABJRU5ErkJggg==
+name: Cisco Email Security Appliance (IronPort)
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      description: Use this attribute to retrieve report(s) for a specified duration.
+        Must provide either this or duration argument
+      name: time_range
+      predefined:
+      - 1d
+      - 1h
+    - auto: PREDEFINED
+      description: The type of report to fetch
+      name: report_type
+      predefined:
+      - mail_authentication_summary
+      - mail_dlp_outgoing_traffic_summary
+      - mail_incoming_malware_threat_file_detail_summary
+      - mail_incoming_traffic_summary
+      - mail_mailbox_auto_remediation
+      - mail_outgoing_traffic_summary
+      - mail_security_summary
+      - mail_sender_group_summary
+      - mail_system_capacity
+      - mail_authentication_incoming_domain_ip
+      - mail_content_filter_incoming
+      - mail_dmarc_incoming_traffic_summary
+      - mail_env_sender_rate_limit
+      - mail_env_sender_stats
+      - mail_fed_content_filter_incoming
+      - mail_hvm_msg_filter_stats
+      - mail_incoming_hat_connections
+      - mail_incoming_malware_threat_file_detail
+      - mail_incoming_web_interaction_track_malicious_users
+      - mail_incoming_web_interaction_track_urls
+      - mail_md_attachment_incoming_file_type
+      - mail_md_attachment_outgoing_file_type
+      - mail_outgoing_web_interaction_track_malicious_users
+      - mail_outgoing_web_interaction_track_urls
+      - mail_msg_filter_stats
+      - mail_sender_group_detail
+      - mail_subject_stats
+      - mail_url_category_summary
+      - mail_url_domain_summary
+      - mail_url_reputation_summary
+      - mail_vof_threat_summary
+      - mail_vof_threats_by_level
+      - mail_vof_threats_by_threat_type
+      - mail_vof_threats_by_time_threshold
+      - mail_vof_threats_by_type
+      - mail_vof_threats_rewritten_url
+      - mail_authentication_incoming_domain
+      - mail_content_filter_outgoing
+      - mail_destination_domain_detail
+      - mail_dlp_outgoing_policy_detail
+      - mail_incoming_domain_detail
+      - mail_incoming_ip_hostname_detail
+      - mail_incoming_network_detail
+      - mail_sender_domain_detail
+      - mail_sender_ip_hostname_detail
+      - mail_users_detail
+      - mail_virus_type_detail
+      required: true
+    - defaultValue: "30"
+      description: Use this attribute to limit the number of results returned by the
+        report. n is the number of results that you want the report to return and
+        can assume values from 1 through 1000. Default is 30
+      name: max
+    - description: Aggregate report(s) for the specified duration. Supported values
+        of TZD are Z , +hh:mm , or -hh:mm. Format should be YYYY-MM-DDThh:mmTZD/YYYY-MM-DDThh:mmTZD
+      name: duration
+    - description: Use this attribute to retrieve reports based on a specified entity
+        such as email address, IP address, and so on. You can choose whether to exactly
+        match the specified text or look for items starting with the specified text
+        (for instance, starts with "ex" will match "example.com").
+      name: entity
+    - description: Use this attribute to retrieve items starting with the specified
+        entity value. This attribute must be used in conjunction with the entity attribute
+        and value must be set to true , for example, entity=us&starts_with=true .
+      name: starts_with
+    description: Retrieve email security appliance statistical reports
+    name: ironport-report
+  runonce: false
+  script: |-
+    var host = params.server.replace(/[\/]+$/, '') + ':'+params.port;
+
+    var sendRequest = function(url, method) {
+        var res = http(
+            url,
+            {
+                Method: method,
+                Headers: {
+                    Accept: ['application/json'],
+                    Host: [host]
+                },
+                Username: params.credentials.identifier,
+                Password: params.credentials.password
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        return res;
+    };
+
+    var underscoreToCapital = function(string){
+        var ret_string = '_'+string;
+        return ret_string.replace(/_([a-z])/g, function (g) { return ' '+g[1].toUpperCase(); });
+    };
+
+    var convertResKeys = function(res){
+        var ret = {};
+        var keys = Object.keys(res);
+        keys.forEach(function(key){
+            ret[underscoreToCamelCase(key)] = res[key];
+        });
+        return ret;
+    };
+
+    function getReport(command, args){
+        delete args.report_type;
+        requestURL = host+'/api/v1.0/stats/'+command;
+
+        var time_range = args.time_range;
+        delete args.time_range;
+        var attributes = encodeToURLQuery(args);
+
+        if(time_range){
+            attributes += (attributes.length > 0) ? '&'+time_range : '?' + time_range;
+        }
+        else if(!args.duration){
+                throw 'Time range missing. Must provide either time_range or duration arguments.';
+        }
+        rawResponse = sendRequest(requestURL + attributes, 'GET');
+        try{
+            res = JSON.parse(rawResponse.Body).data;
+        }
+        catch (err){
+            return rawResponse;
+        }
+        context = {};
+        context['IronPort.'+underscoreToCamelCase(command)] = convertResKeys(res);
+        return {
+            Type: entryTypes.note,
+            Contents: res,
+            ContentsFormat: formats.json,
+            ReadableContentsFormat : formats.markdown,
+            EntryContext : context,
+            HumanReadable: tableToMarkdown('IronPort Report', res, undefined, undefined, underscoreToCapital)
+        };
+    }
+
+    switch (command) {
+        case 'test-module':
+            res = getReport('mail_authentication_summary', {time_range: '1d'});
+            if(!res.Contents){
+                return res;
+            }
+            return 'ok';
+        default:
+            return getReport(args.report_type, args);
+    }
+  type: javascript
+system: true

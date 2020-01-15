@@ -1,0 +1,42 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"Phishing"
+	],
+	"breachScript": "",
+	"caseInsensitive": false,
+	"cliName": "emailbodyhtml",
+	"closeForm": false,
+	"columns": null,
+	"content": true,
+	"defaultRows": null,
+	"description": "",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_emailbodyhtml",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "Email Body HTML",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": null,
+	"sla": 0,
+	"sortValues": null,
+	"system": false,
+	"systemAssociatedTypes": [
+		"Phishing"
+	],
+	"threshold": 0,
+	"type": "html",
+	"unmapped": false,
+	"unsearchable": true,
+	"useAsKpi": true,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}

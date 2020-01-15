@@ -1,0 +1,376 @@
+description: |-
+  Uses Demisto D2 agent to scan a host using Intezer scanner.
+
+  Input:
+  * Hostname (default: ${Endpoint.Hostname})
+  * OS (default: windows)
+  * Credentials (default: Admin)
+id: Intezer - scan host
+inputs:
+- description: Deploy Demist D2 agent on the target Host.
+  key: Host
+  required: true
+  value:
+    simple: 10.254.7.24
+- description: The default OS type of target host.
+  key: OS
+  required: false
+  value:
+    simple: windows
+- description: The Intezer api-key
+  key: INTEZER_API_KEY
+  required: true
+  value: {}
+- description: 'Name of the credential set. Credentials are located in Demisto: Settings
+    > Integrations > Credentials.'
+  key: Credentials
+  required: false
+  value:
+    simple: Admin
+name: Intezer - scan host
+outputs: []
+rolename:
+- Administrator
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: start
+      id: 209ca9d9-6cd1-43d6-8917-34828b27d69a
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 209ca9d9-6cd1-43d6-8917-34828b27d69a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    scriptarguments:
+      arch: {}
+      credentialSet:
+        simple: ${inputs.Credentials}
+      dmbPort: {}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: ${inputs.Host}
+      os:
+        simple: ${inputs.OS}
+      password: {}
+      sshPort: {}
+      username: {}
+      workgroup: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Adds the relevant endpoint to the System.
+      id: 85dde700-9f3a-41c8-8e00-028cf4b91808
+      iscommand: false
+      name: Add the endpoint as a System to this incident
+      scriptName: IncidentAddSystem
+      type: regular
+      version: -1
+    taskid: 85dde700-9f3a-41c8-8e00-028cf4b91808
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    scriptarguments:
+      host:
+        simple: ${inputs.Host}
+      intezer_api_key:
+        complex:
+          root: inputs.INTEZER_API_KEY
+      os:
+        simple: ${inputs.OS}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Runs IntezerScanHost script
+      id: 24cabd05-fad2-4940-8241-3ee3763d4f8d
+      iscommand: false
+      name: d2 agent - Scan host by Intezer
+      scriptName: IntezerScanHost
+      type: regular
+      version: -1
+    taskid: 24cabd05-fad2-4940-8241-3ee3763d4f8d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "3"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${inputs.Host}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 33071f86-45fc-4c71-8fa3-ad933acbe3a8
+      iscommand: false
+      name: Does 'Host' input exist?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 33071f86-45fc-4c71-8fa3-ad933acbe3a8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Done
+      id: 3a2e28f7-a697-4281-8285-cd2dad5e7a63
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 3a2e28f7-a697-4281-8285-cd2dad5e7a63
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "6"
+    note: false
+    results:
+    - AreValuesEqual
+    scriptarguments:
+      left:
+        simple: ${inputs.OS}
+      right:
+        simple: windows
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if OS type is windows
+      id: 2e1213d1-3ff8-41c7-8ec9-d1c50ced85e8
+      iscommand: false
+      name: Is the OS type Windows?
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: 2e1213d1-3ff8-41c7-8ec9-d1c50ced85e8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: analysis_type
+      AdditionalPollingCommandArgValues:
+        simple: Endpoint
+      Ids:
+        complex:
+          accessor: Analysis.ID
+          root: Intezer
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: analysis_id
+      PollingCommandName:
+        simple: intezer-get-analysis-result
+      Timeout:
+        simple: "15"
+      dt:
+        simple: Intezer.Analysis(val.Status !== 'Done').Status
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 98eeed9c-3ef1-4a28-8347-537ae2c48945
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 98eeed9c-3ef1-4a28-8347-537ae2c48945
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    scriptarguments:
+      analysis_id:
+        complex:
+          accessor: Analysis.ID
+          root: Intezer
+      analysis_type:
+        simple: Endpoint
+      indicator_name:
+        complex:
+          root: inputs.Host
+      result_url: {}
+    separatecontext: false
+    task:
+      brand: Intezer v2
+      description: Runs intezer-get-analysis-result command
+      id: d9b795b6-6dfe-4dca-80d4-2b988df75f76
+      iscommand: true
+      name: get-analysis-result
+      script: Intezer v2|||intezer-get-analysis-result
+      type: regular
+      version: -1
+    taskid: d9b795b6-6dfe-4dca-80d4-2b988df75f76
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    scriptarguments:
+      system:
+        complex:
+          root: inputs.Host
+      system_name:
+        complex:
+          root: inputs.Host
+    separatecontext: false
+    task:
+      brand: ""
+      description: Runs D2Remove script
+      id: 60302e3d-4e42-4237-8050-eb4ae370d90e
+      iscommand: false
+      name: D2-remove
+      script: D2Remove
+      type: regular
+      version: -1
+    taskid: 60302e3d-4e42-4237-8050-eb4ae370d90e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1245
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_12_#default#": 0.11,
+      "15_6_yes": 0.58,
+      "7_12_no": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

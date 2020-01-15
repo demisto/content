@@ -1,0 +1,202 @@
+description: Hunt for endpoint activity involving hash and domain IOCs, using Carbon
+  black Protection (Bit9).
+id: playbook17
+inputs: []
+name: Carbon black Protection Rapid IOC Hunting
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: a68f66e4-9f00-4be5-82d5-66a604a8e127
+      iscommand: false
+      name: start_task
+      type: start
+      version: -1
+    taskid: a68f66e4-9f00-4be5-82d5-66a604a8e127
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      md5:
+        simple: ${File.MD5}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Searching The Bit9 file catalog for the hashes
+      id: ee3ec982-b1ea-4c96-81d6-6b1ea068cfb4
+      iscommand: false
+      name: Search observed hashes in the Bit9 file catalog
+      scriptName: CBPCatalogFindHash
+      type: regular
+      version: -1
+    taskid: ee3ec982-b1ea-4c96-81d6-6b1ea068cfb4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 572
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    scriptarguments:
+      hash:
+        simple: ${File.MD5}
+    separatecontext: false
+    task:
+      brand: ""
+      description: If the hashes have been approved or blocked in the past, they will
+        be in existing rules. It is useful to see whether the hash was in some blacklist
+        or whitelist or a person marked them as such, possibly with a comment explaining
+        their reasons.
+      id: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
+      iscommand: false
+      name: Check if the hashes are included in any Bit9 rules
+      scriptName: CBPFindRule
+      type: regular
+      version: -1
+    taskid: 0f461a0b-6e31-4537-8b10-564d6c2e0dfa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 734
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "12"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${modules(val.brand == 'carbonblackprotection' && val.state == 'active')}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: ec572e1b-78cf-4daf-8185-688d7b04041b
+      iscommand: false
+      name: Is CarbonBlack Protection enabled?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: ec572e1b-78cf-4daf-8185-688d7b04041b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Done
+      id: b403c310-7926-4e04-8c81-ce7a9defb5c4
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: b403c310-7926-4e04-8c81-ce7a9defb5c4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 902
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "8"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${File.MD5}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 71e0a3f7-355e-41b2-8623-b6a606e9e79f
+      iscommand: false
+      name: Do we have files to hunt?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 71e0a3f7-355e-41b2-8623-b6a606e9e79f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 382
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_#default#": 0.36,
+      "12_11_#default#": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 917,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,87 @@
+args:
+- default: true
+  description: The value of the email's "From" attribute.
+  name: from
+- description: The value of the email's "Subject" attribute.
+  name: subject
+- description: The value of the email's "attachmentName" attribute.
+  name: attachmentName
+- description: The value of the email's "Body" attribute.
+  name: body
+- auto: PREDEFINED
+  defaultValue: "true"
+  description: Limit the search to the current week (true/false).
+  name: searchThisWeek
+  predefined:
+  - "true"
+  - "false"
+- auto: PREDEFINED
+  defaultValue: "true"
+  description: Removes the prefix from the subject of reply and forward messages (e.g.,
+    FW:).
+  name: stripSubject
+  predefined:
+  - "true"
+  - "false"
+comment: Returns an EWS query according to the automation's arguments.
+commonfields:
+  id: BuildEWSQuery
+  version: -1
+name: BuildEWSQuery
+outputs:
+- contextPath: EWS.Query
+  description: The result query
+  type: string
+runonce: false
+script: |-
+  import re
+  import sys
+  reload(sys)
+  sys.setdefaultencoding("utf-8")
+
+  # Regex for removing forward/replay prefixes
+  p = re.compile('([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$', re.IGNORECASE)
+
+  args = {}
+
+  if demisto.args().get("from"):
+      args["From"] = demisto.args().get("from")
+  if demisto.args().get("subject"):
+      args["Subject"] = demisto.args().get("subject")
+  if demisto.args().get("attachmentName"):
+      args["Attachment"] = demisto.args().get("attachmentName")
+  if demisto.args().get("body"):
+      args["Body"] = demisto.args().get("body")
+
+  stripSubject = True if demisto.args().get("stripSubject").lower() == "true" else False
+  if stripSubject and args.get("Subject"):
+      # Recursively remove the regex matches only from the beginning of the string
+      match_string = args["Subject"]
+      location_match = p.match(match_string)
+      location = location_match.start() if location_match else -1
+
+      while(location==0 and match_string):
+          match_string = p.sub("",match_string,1)
+          location_match = p.match(match_string)
+          location = location_match.start() if location_match else -1
+
+      args["Subject"] = match_string
+
+  query = " AND ".join('{0}:"{1}"'.format(key,value) for (key,value) in args.items())
+
+  search_last_week = True if demisto.args().get("searchThisWeek").lower() == "true" else False
+  if search_last_week:
+      query = query + ' AND Received:"this week"'
+
+  demisto.results({
+      'ContentsFormat': formats["json"],
+      'Type': entryTypes["note"],
+      'Contents':  {"EWS":{"Query": query or ' '}},
+      "HumanReadable": query or ' ',
+      "EntryContext": {"EWS":{"Query": query or ' '}}
+  });
+scripttarget: 0
+system: true
+tags:
+- ews
+type: python

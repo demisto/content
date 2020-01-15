@@ -1,0 +1,27 @@
+args:
+- description: Include these AD attributes of the resulting objects in addition to
+    the default ones
+  name: attributes
+comment: Retrieve the list of User objects stored in Active Directory and include
+  an extended list of attributes and information about each user. Use the "attributes"
+  argument to include additional specific attributes in the results.
+commonfields:
+  id: ADListUsersEx
+  version: -1
+dependson:
+  must:
+  - ad-search
+deprecated: true
+name: ADListUsersEx
+runonce: false
+script: |-
+  # Optional arguments and default values
+  attrs = 'name,displayname,memberOf,lastlogon,lastlogoff,logoncount,badPasswordTime,badPwdCount,lastLogonTimestamp,pwdLastSet,whenCreated,whenChanged'
+  if demisto.get(demisto.args(), 'attributes'):
+      attrs += "," + demisto.args()['attributes']
+  demisto.results( demisto.executeCommand( 'AdSearch', { 'filter' : "(objectClass=User)", 'attributes' : attrs } ) )
+scripttarget: 0
+system: true
+tags:
+- active directory
+type: python

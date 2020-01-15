@@ -1,0 +1,278 @@
+category: Endpoint
+commonfields:
+  id: Cyber Triage
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Hostname of Cyber Triage server (e.g. 192.168.1.2)
+  name: server
+  required: true
+  type: 0
+- defaultvalue: "9443"
+  display: REST Port
+  name: rest_port
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: API Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: "true"
+  display: Use proxy
+  name: use_proxy
+  required: false
+  type: 8
+description: 'Allows you to conduct a mini-forensic investigation on an endpoint.
+  It pushes a collection tool to the remote endpoint, collects volatile and file system
+  data, and analyzes the data. '
+detaileddescription: "This integration allows you to collect and analyze endpoint
+  data using Cyber Triage.  It will send an agentless collection tool to the remote
+  endpoint, retrieve volatile and file system data, and analyze it for evidence of
+  an intrusion. \n\n### SETUP\nTo use this integration, you need the Team version
+  of Cyber Triage (and not the Standalone desktop version). \n\nTo configure the integration,
+  you will need to enter: \n* **hostname** where the Cyber Triage server has been
+  setup.\n* **REST Port** of your Cyber Triage server. This currently cannot be changed
+  in Cyber Triage. The port should be left as 9443. \n* **API Key** for the Cyber
+  Triage REST API. You can find this in the \"Deployment Mode\"  tab of the server's
+  option panel.\n* **Username/Password** an administrative Windows account that can
+  be used to run the collection tool on endpoints that need to be investigated. \n\n###
+  STARTING A COLLECTION\nAfter setting up an instance, you can start a collection
+  by using the “ct-triage-endpoint\" command. The hostname or IP of the target endpoint
+  must be provided. \n\nAfter the collection has started, open a Cyber Triage client
+  to review the data.  \n\n### SUPPORT\nIf you have any problems or need an evaluation
+  copy of Cyber Triage, then please email support@cybertriage.com."
+display: Cyber Triage
+image: data:image/png;base64,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
+name: Cyber Triage
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: IP or hostname of a windows endpoint
+      name: endpoint
+      required: true
+    - defaultValue: pr,nw,nc,st,sc,ru,co,lo,ns,wb,fs
+      description: Comma separated list of data types that Cyber Triage will collect.
+        Processes (pr), Network (nw),  Network Caches (nc), Startup Items (st), Scheduled
+        Tasks (sc), Program Run (ru),  System Config (co), User Logins (lo), Network
+        Shares (ns), Web Artifacts (wb), Full File System Scan (fs)
+      name: scan_options
+    - auto: PREDEFINED
+      defaultValue: "yes"
+      description: Send MD5 hashes to external malware analysis service
+      name: malware_hash_upload
+      predefined:
+      - "yes"
+      - "no"
+    - auto: PREDEFINED
+      defaultValue: "no"
+      description: Send unknown files to external malware analysis service. Hash upload
+        must be enabled for file uploads to occur.
+      name: malware_file_upload
+      predefined:
+      - "yes"
+      - "no"
+    - defaultValue: Default
+      description: Cyber Triage incident name that the collection will belong to
+      name: incident_name
+    description: initiates a cyber triage collection on an endpoint
+    name: ct-triage-endpoint
+    outputs:
+    - contextPath: CyberTriage.SessionId
+      description: The session ID for the newly created session
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint IP address that Cyber Triage investigated
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: The endpoint hostname that Cyber Triage investigated
+      type: string
+  runonce: false
+  script: |
+    import requests
+    import traceback
+    import urllib3
+    import os
+
+    # Disable warning for insecure requests when cert validation is disabled
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    # Get dict of CT instance parameters and command args
+    CT_PARAMS = demisto.params()
+    CMD_ARGS = demisto.args()
+
+    SCAN_OPTIONS = ['pr', 'nw', 'nc', 'st', 'sc', 'ru', 'co', 'lo', 'ns', 'wb', 'fs']
+    CT_SERVER = CT_PARAMS['server']
+    REST_PORT = CT_PARAMS['rest_port']
+    API_KEY = CT_PARAMS['api_key']
+    USER = CT_PARAMS['credentials']['identifier']
+    PASSWORD = CT_PARAMS['credentials']['password']
+    VERIFY_SERVER_CERT = False
+    REQ_HEADERS = {'restApiKey' : API_KEY}
+    USE_PROXY = CT_PARAMS['use_proxy']
+    IS_2XX = lambda x: (x/100) == 2 # Returns true if status code (int) is 2xx
+
+    # Delete request proxy environment variables if user does not want to use proxy
+    if not USE_PROXY:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    # Dict of Cyber Triage REST APIs currently used
+    REST_APIS = {
+        'check_creds' : 'https://{0}:{1}/api/correlation/checkcredentials'.format(CT_SERVER, REST_PORT),
+        'start_collection' : 'https://{0}:{1}/api/livesessions'.format(CT_SERVER, REST_PORT)
+    }
+
+    # Method to make rest calls (using requests) and handle error scenarios.
+    #
+    # Args: rest_api    - a string that represents a url to a rest api
+    #       method      - a string that represents an http methods supported by requests (get, put, post, ...)
+    #       json_data   - same as requests json arg
+    #       headers     - same as requests headers arg
+    #       verify_cert - same as requests verify arg
+    #
+    # Return: Dictionary with response, status_code, and exception keys. status_code will be -1 or status code returned in
+    # response object. Exception will be empty unless an exception occurred. Response will contain the json response from CT if a 2xx response
+    # occurred, otherwise it will represent an error message string.
+    def make_rest_call(rest_api, method, json_data=None, headers=REQ_HEADERS, verify_cert=VERIFY_SERVER_CERT):
+        ret_msg = ''
+        http_status_code = -1
+        e_str = ''
+        e = None
+
+        # Get the request function associate with the type of http request we want to make (ex. GET or POST)
+        try:
+            request_func = getattr(requests, method)
+        except AttributeError:
+            ret_msg = 'Invalid requests method: {0}'.format(method)
+            return_error(ret_msg)
+            sys.exit(1)
+
+        # Attempt to make the rest API call and get data from response
+        try:
+            response = request_func(rest_api, json=json_data, headers=headers, verify=verify_cert)
+            http_status_code = response.status_code
+
+            # Raises ValueError exception if response cannot be converted to json
+            resp_json = response.json()
+
+            # Raises HTTPError exception if we get a non successful http status code (4xx/5xx)
+            response.raise_for_status()
+
+            ret_msg = resp_json
+
+        except ValueError as e:
+            ret_msg = 'Response did not contain valid json data. Response: {}'.format(response.text)
+            demisto.error(traceback.format_exc())
+
+        except requests.exceptions.SSLError as e:
+            ret_msg = 'Unable to verify the Cyber Triage server certificate'
+            demisto.error(traceback.format_exc())
+
+        except requests.exceptions.HTTPError as e:
+            # Format error message based on error response in json
+            ret_msg = 'No Error Message found'
+
+            if 'Error' in resp_json:
+                ret_msg = resp_json['Error']
+            elif 'message' in resp_json:
+                ret_msg = resp_json['message']
+
+            demisto.error(resp_json)
+            demisto.error(traceback.format_exc())
+
+        except requests.exceptions.ConnectionError as e:
+            ret_msg = 'Error while connecting to ({})'.format(rest_api)
+            demisto.error(traceback.format_exc())
+
+        except requests.exceptions.RequestException as e:
+            ret_msg = 'An unexpected error has occurred'
+            demisto.error(traceback.format_exc())
+
+        # If an exception occurred then update the exception string
+        if (e):
+            e_str = '{}: {}'.format(type(e).__name__, e)
+
+        return {
+            'response' : ret_msg,
+            'status_code' : http_status_code,
+            'exception' : e_str
+        }
+
+    # Format non 2xx responses from make_rest_call(). These are cases where an error has occurred.
+    def format_err_resp(json_resp):
+        return 'Error message: {0}\nHTTP Status code: {1}\nExceptions: {2}'.format(json_resp['response'],
+                                                                                   json_resp['status_code'],
+                                                                                   json_resp['exception'])
+
+    def test_connection():
+        response = make_rest_call(REST_APIS['check_creds'], 'get')
+
+        if IS_2XX(response['status_code']):
+            demisto.results('ok')
+        else:
+            return_error(format_err_resp(response))
+
+    def triage_endpoint():
+        is_true = lambda x: x == 'yes'
+        is_hash_upload_on = is_true(CMD_ARGS['malware_hash_upload']) # arg value = 'yes' or 'no'
+        is_file_upload_on = is_true(CMD_ARGS['malware_file_upload']) # arg value = 'yes' or 'no'
+        endpoint = CMD_ARGS['endpoint']
+        scan_options = CMD_ARGS['scan_options']
+        incident_name = CMD_ARGS['incident_name']
+
+        # Validate scan options
+        invalid_options = [opt for opt in scan_options.split(',') if opt not in SCAN_OPTIONS]
+        if invalid_options:
+            return_error('The following are not valid scan options: {0}'.format(','.join(invalid_options)))
+
+        # Make data dict for rest call
+        api_data = {'incidentName' : incident_name}
+        api_data.update({'hostName': endpoint})
+        api_data.update({'userId': USER})
+        api_data.update({'password': PASSWORD})
+        api_data.update({'scanOptions': scan_options})
+        api_data.update({'malwareScanRequested': is_hash_upload_on})
+        api_data.update({'sendContent': is_file_upload_on})
+        api_data.update({'sendIpAddress': False})
+        response = make_rest_call(REST_APIS['start_collection'], 'post', api_data)
+
+        if is_ip_valid(endpoint):
+            endpoint_context = {'IPAddress': endpoint}
+        else:
+            endpoint_context = {'Hostname': endpoint}
+
+        ec = {
+            'CyberTriage' : response['response'],
+            'Endpoint' : endpoint_context
+        }
+
+        if IS_2XX(response['status_code']):
+            demisto.results({
+                'Type' : entryTypes['note'],
+                'ContentsFormat' : formats['json'],
+                'Contents' : response,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable' : 'A collection has been scheduled for {0}'.format(endpoint),
+                'EntryContext' : ec
+            })
+        else:
+            return_error(format_err_resp(response))
+
+    # This is the call made when running the ct-triage-endpoint command.
+    if demisto.command() == 'ct-triage-endpoint':
+        triage_endpoint()
+
+    # This is the call made when pressing the integration test button.
+    elif demisto.command() == 'test-module':
+        test_connection()
+  type: python
+system: true

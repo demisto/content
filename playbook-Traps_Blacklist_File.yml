@@ -1,0 +1,207 @@
+description: This playbook accepts a file SHA256 and adds it to a blacklist using
+  Traps integration.
+id: Traps Blacklist File
+inputs:
+- description: Malicious file SHA256.
+  key: SHA256
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      filters:
+      - - left:
+            iscontext: true
+            value:
+              simple: File.Malicious
+          operator: isExists
+      root: File
+      transformers:
+      - operator: uniq
+name: Traps Blacklist File
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: db8c61b1-9887-4c83-82f8-16e173bff1de
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: db8c61b1-9887-4c83-82f8-16e173bff1de
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Traps
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 51601fa9-ee3f-427a-84ac-aee609d05d44
+      iscommand: false
+      name: Is Traps integration enabled?
+      type: condition
+      version: -1
+    taskid: 51601fa9-ee3f-427a-84ac-aee609d05d44
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 56243283-6b5a-4157-89f8-8c9399bac654
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 56243283-6b5a-4157-89f8-8c9399bac654
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.SHA256
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: c98ef076-0bae-46a3-8a52-32a96299c94b
+      iscommand: false
+      name: Is there a file to blacklist?
+      type: condition
+      version: -1
+    taskid: c98ef076-0bae-46a3-8a52-32a96299c94b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 350
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      hash_id:
+        complex:
+          root: inputs.SHA256
+    separatecontext: false
+    task:
+      brand: ""
+      description: Adds the specified file hash to the blacklist.
+      id: a69e5150-8a07-47ee-8bfb-36ccd79095a7
+      iscommand: true
+      name: Traps - Blacklist file
+      script: '|||traps-hash-blacklist'
+      type: regular
+      version: -1
+    taskid: a69e5150-8a07-47ee-8bfb-36ccd79095a7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 520
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.57,
+      "3_2_#default#": 0.3
+    },
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 930,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }

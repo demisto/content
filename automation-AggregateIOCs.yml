@@ -1,0 +1,22 @@
+comment: DEPRECATED - Aggregating several context items for IOCs into a single list
+commonfields:
+  id: AggregateIOCs
+  version: -1
+deprecated: true
+name: AggregateIOCs
+runonce: false
+script: |-
+  foundIocs = []
+  for k in ['found_ips', 'found_hashes', 'found_domains']:
+      i = demisto.get(demisto.context(), k)
+      if i:
+          foundIocs += [m for m in (i.split(',') if type(i) in [str, unicode] else i) if m]
+  if foundIocs:
+      appendContext('found_iocs', ','.join(foundIocs))
+  else:
+      demisto.setContext('found_iocs', '')
+scripttarget: 0
+system: true
+tags:
+- Utility
+type: python

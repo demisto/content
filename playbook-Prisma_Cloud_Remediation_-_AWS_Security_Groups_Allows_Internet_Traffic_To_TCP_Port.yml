@@ -1,0 +1,637 @@
+description: This playbook extracts the TCP public Security Groups rule and provides
+  manual/automatic options to have the rules revoked.
+id: Prisma Cloud Remediation - AWS Security Groups Allows Internet Traffic To TCP
+inputs:
+- description: "If set to:\n- yes: public security group rules will be automatically
+    revoked\n- no: analyst will be prompted whether or not to allow automatic removal
+    of the rules. "
+  key: AutoRevokeRule
+  required: true
+  value:
+    simple: "no"
+name: Prisma Cloud Remediation - AWS Security Groups Allows Internet Traffic To TCP
+  Port
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 71d4aa73-20de-444e-8e36-37a1f01e8507
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 71d4aa73-20de-444e-8e36-37a1f01e8507
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 340
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    scriptarguments:
+      fromPort:
+        complex:
+          accessor: labels.policy
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: name
+            operator: getField
+          - args:
+              groups:
+                value:
+                  simple: "0"
+              keys: {}
+              regex:
+                value:
+                  simple: \((\d+)\)\s?$
+            operator: RegexGroups
+      groupId:
+        complex:
+          accessor: labels.resource
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: id
+            operator: getField
+      includeIPv6: {}
+      ipPermissions:
+        complex:
+          accessor: labels.resource
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: data
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: ipPermissions
+            operator: getField
+      protocol:
+        simple: tcp
+      region:
+        complex:
+          accessor: labels.resource
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: regionId
+            operator: getField
+      toPort:
+        complex:
+          accessor: labels.policy
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: name
+            operator: getField
+          - args:
+              groups:
+                value:
+                  simple: "0"
+              keys: {}
+              regex:
+                value:
+                  simple: \((\d+)\)\s?$
+            operator: RegexGroups
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get the TCP public security group rule which is recommended to
+        be removed/revoked. As EC2 integration is not fully setup, this task relies
+        on the incident data to provide the IpPermissions of the Security Group.
+      id: 1e14b68c-206f-4925-8be3-5614db1dbc1d
+      iscommand: false
+      name: Get TCP public Security Group rules from incident data
+      scriptName: AwsEC2GetPublicSGRules
+      type: regular
+      version: -1
+    taskid: 1e14b68c-206f-4925-8be3-5614db1dbc1d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    message:
+      bcc: null
+      body:
+        simple: Run command to revoke public Security Group rules?
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - "YES"
+      - "NO"
+      subject: null
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#default#':
+      - "12"
+      "YES":
+      - "19"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Ask the analyst whether or not the public security group rules
+        should be automatically revoked using a command.
+      id: 940ce5be-bfa7-4d57-8dd2-3ea599939d63
+      iscommand: false
+      name: Run command to automatically revoke public Security Group rules?
+      type: condition
+      version: -1
+    taskid: 940ce5be-bfa7-4d57-8dd2-3ea599939d63
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1250
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AWS - EC2
+                root: modules
+          operator: StringContainsArray
+          right:
+            value:
+              simple: AWS - EC2
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "14"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check to see if the EC2 integration is enabled. If EC2 integration
+        is not configured, automation cannot be performed.
+      id: 0686f462-5117-4462-879f-ad026bf49b94
+      iscommand: false
+      name: Is AWS - EC2 enabled?
+      type: condition
+      version: -1
+    taskid: 0686f462-5117-4462-879f-ad026bf49b94
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    scriptarguments:
+      cidrIp:
+        simple: ${AWS.EC2.SecurityGroup.PublicRules.cidrIp}
+      fromPort:
+        simple: ${AWS.EC2.SecurityGroup.PublicRules.fromPort}
+      groupId:
+        simple: ${AWS.EC2.SecurityGroup.PublicRules.groupId}
+      ipProtocol:
+        simple: ${AWS.EC2.SecurityGroup.PublicRules.ipProtocol}
+      region:
+        simple: ${AWS.EC2.SecurityGroup.PublicRules.region}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      sourceSecurityGroupName: {}
+      toPort:
+        simple: ${AWS.EC2.SecurityGroup.PublicRules.toPort}
+    separatecontext: false
+    task:
+      brand: AWS - EC2
+      description: Revoke TCP public security group rules
+      id: 02956e95-5454-4c2d-80b3-dbc064976db6
+      iscommand: true
+      name: Revoke public TCP ingress rules
+      script: AWS - EC2|||aws-ec2-revoke-security-group-ingress-rule
+      type: regular
+      version: -1
+    taskid: 02956e95-5454-4c2d-80b3-dbc064976db6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1700
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Manually inspect and remove public ingress rules.
+      id: 945e7ff2-80b9-4e1d-8d0f-9efb035b806c
+      iscommand: false
+      name: Manually remove public TCP ingress rules
+      type: regular
+      version: -1
+    taskid: 945e7ff2-80b9-4e1d-8d0f-9efb035b806c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1430
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    scriptarguments:
+      filters: {}
+      groupIds:
+        complex:
+          accessor: labels.resource
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: id
+            operator: getField
+      groupNames: {}
+      region:
+        complex:
+          accessor: labels.resource
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: regionId
+            operator: getField
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    task:
+      brand: AWS - EC2
+      description: 'Obtain the latest/current ipPermission to make sure that the automation
+        uses the latest ipPermissions. '
+      id: 3d6f253d-bc63-4355-89a2-faf3e88ec2d9
+      iscommand: true
+      name: Get the latest Security Group IP permissions
+      script: AWS - EC2|||aws-ec2-describe-security-groups
+      type: regular
+      version: -1
+    taskid: 3d6f253d-bc63-4355-89a2-faf3e88ec2d9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 720
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    scriptarguments:
+      fromPort:
+        complex:
+          accessor: labels.policy
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: name
+            operator: getField
+          - args:
+              groups:
+                value:
+                  simple: "0"
+              keys: {}
+              regex:
+                value:
+                  simple: \((\d+)\)\s?$
+            operator: RegexGroups
+      groupId:
+        complex:
+          accessor: labels.resource
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: id
+            operator: getField
+      includeIPv6: {}
+      ipPermissions:
+        complex:
+          accessor: EC2.SecurityGroups.IpPermissions
+          root: AWS
+      protocol:
+        simple: tcp
+      region:
+        complex:
+          accessor: labels.resource
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: regionId
+            operator: getField
+      toPort:
+        complex:
+          accessor: labels.policy
+          root: incident
+          transformers:
+          - operator: ParseJSON
+          - args:
+              field:
+                value:
+                  simple: name
+            operator: getField
+          - args:
+              groups:
+                value:
+                  simple: "0"
+              keys: {}
+              regex:
+                value:
+                  simple: \((\d+)\)\s?$
+            operator: RegexGroups
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get TCP public security group rule which is recommended to be removed/revoked
+      id: 08e30ab7-fc75-4a78-80e0-44cd5114cb91
+      iscommand: false
+      name: Get TCP public Security Group Rules
+      scriptName: AwsEC2GetPublicSGRules
+      type: regular
+      version: -1
+    taskid: 08e30ab7-fc75-4a78-80e0-44cd5114cb91
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 895
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: EC2.SecurityGroup.PublicRules
+                root: AWS
+          operator: isNotEmpty
+      label: "yes"
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "10"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Ensure that there is at least one public Security Group rule to
+        be revoked
+      id: f0353b92-bfa5-4bfb-8774-8005101f8542
+      iscommand: false
+      name: Are there any public rules?
+      type: condition
+      version: -1
+    taskid: f0353b92-bfa5-4bfb-8774-8005101f8542
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1430
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id:
+        complex:
+          accessor: id
+          root: incident
+      mndadone: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 990fecaa-6d51-472c-844b-c2a252387f89
+      iscommand: true
+      name: Close investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 990fecaa-6d51-472c-844b-c2a252387f89
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1870
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: ebb9e96f-2401-4c4e-8567-c134b01e2438
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: ebb9e96f-2401-4c4e-8567-c134b01e2438
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2050
+        }
+      }
+  "22":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.AutoRevokeRule
+                transformers:
+                - operator: toLowerCase
+          operator: isEqualString
+          right:
+            value:
+              simple: "yes"
+      label: "yes"
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "19"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Allow automatic revocation of public security group rules based
+        on the playbook's input
+      id: 4a844aab-0fd5-4ef0-8af9-4a1ea5c34958
+      iscommand: false
+      name: Auto removal of public Security Group rules?
+      type: condition
+      version: -1
+    taskid: 4a844aab-0fd5-4ef0-8af9-4a1ea5c34958
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1070
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "22_19_yes": 0.52,
+      "22_3_#default#": 0.59,
+      "3_12_#default#": 0.5,
+      "3_19_YES": 0.58
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1775,
+        "width": 830,
+        "x": 50,
+        "y": 340
+      }
+    }
+  }

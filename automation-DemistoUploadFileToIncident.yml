@@ -1,0 +1,40 @@
+args:
+- description: ID of incident to upload to
+  name: incident_id
+  required: true
+- description: Entry ID of file to upload
+  name: entryID
+- description: Request body
+  name: body
+comment: Copies a file from this incident to the specified incident. The file is uploaded
+  as an attachment to the specified incident’s Summary page, and recorded as an entry
+  in the War Room.
+commonfields:
+  id: DemistoUploadFileToIncident
+  version: -1
+dependson:
+  must:
+  - demisto-api-multipart
+enabled: true
+name: DemistoUploadFileToIncident
+runas: DBotWeakRole
+runonce: false
+script: |-
+  args = demisto.args()
+  incident_id = args.get('incident_id')
+  entry_id = args.get('entryID')
+  body = args.get('body', None)
+
+  response = demisto.executeCommand("demisto-api-multipart", {"uri":"incident/upload/{}".format(incident_id),"entryID":entry_id,"body":body})[0]
+  if isError(response):
+      demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "There was an issue uploading file.  Check API key and input arguments."})
+  else:
+      if body:
+          demisto.results("Successfully uploaded file to incident. Comment is:" + body)
+      else:
+          demisto.results("Successfully uploaded file to incident")
+scripttarget: 0
+system: true
+tags:
+- DemistoAPI
+type: python

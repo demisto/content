@@ -1,0 +1,1030 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: Joe Security
+  version: -1
+configuration:
+- defaultvalue: https://jbxcloud.joesecurity.org
+  display: Joe Security Url
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: API Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: "300"
+  display: 'Max. Polling Time (in seconds):'
+  name: maxpolls
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Verbose (show log in case of error)
+  name: verbose
+  required: false
+  type: 8
+- defaultvalue: "true"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Sandbox Cloud
+display: Joe Security
+image: data:image/png;base64,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
+name: Joe Security
+script:
+  commands:
+  - arguments: []
+    description: Check if Joe Sandbox is online or in maintenance mode.
+    name: joe-is-online
+  - arguments:
+    - default: true
+      description: sample url
+      name: url
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Should the command poll for the result of the analysis
+      name: should_wait
+      predefined:
+      - "True"
+      - "False"
+    - description: 'Comments for the analysis '
+      name: comments
+    - defaultValue: w7x64
+      description: 'Operating System to run analysis on(comma separated). possible
+        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
+        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
+        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
+        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+      name: systems
+    - auto: PREDEFINED
+      defaultValue: "True"
+      description: Enable full internet access. Default is True
+      name: internet-access
+      predefined:
+      - "True"
+      - "False"
+    description: Submit a url for analysis.
+    name: joe-analysis-submit-url
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - arguments:
+    - default: true
+      description: sample url
+      name: url
+      required: true
+    - description: 'Comments for the analysis '
+      name: comments
+    - defaultValue: w7x64
+      description: 'Operating System to run analysis on(comma separated). possible
+        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
+        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
+        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
+        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+      name: systems
+    - auto: PREDEFINED
+      defaultValue: "True"
+      description: Enable full internet access. Default is True
+      name: internet-access
+      predefined:
+      - "True"
+      - "False"
+    deprecated: true
+    description: Submit a url for analysis.
+    name: joe-detonate-url
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - arguments:
+    - default: true
+      description: Web IDs, supports comma-seperated arrays.
+      isArray: true
+      name: webid
+      required: true
+    description: Show information about an analysis.
+    name: joe-analysis-info
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - arguments: []
+    description: List all analyses.
+    name: joe-list-analysis
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - arguments:
+    - default: true
+      description: War Room entry of a file (for example, 3245@4)
+      name: file_id
+    - description: Url to a sample file, supports comma-seperated arrays
+      name: sample_url
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: Should the command poll for the result of the analysis
+      name: should_wait
+      predefined:
+      - "True"
+      - "False"
+    - description: Comments for the analysis
+      name: comments
+    - description: 'Operating System to run analysis on(comma separated). possible
+        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
+        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
+        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
+        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+      name: systems
+    - auto: PREDEFINED
+      defaultValue: "True"
+      description: Enable full internet access. Default is True
+      name: internet-access
+      predefined:
+      - "True"
+      - "False"
+    description: Submit a sample for analysis.
+    name: joe-analysis-submit-sample
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - arguments:
+    - default: true
+      description: Web ID
+      name: webid
+      required: true
+    - auto: PREDEFINED
+      defaultValue: html
+      description: The resource type to download. Defaults to html.
+      name: type
+      predefined:
+      - html
+      - json
+      - pcap
+      - pdf
+      - xml
+    description: Download a resource belonging to a report. This can be the full report,
+      dropped binaries, etc.
+    name: joe-download-report
+    outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: File.Extension
+      description: File Extension
+      type: string
+  - arguments:
+    - default: true
+      description: War Room entry of a file (for example, 3245@4)
+      name: file_id
+    - description: Url to a sample file
+      name: sample_url
+    - description: Comments for the analysis
+      name: comments
+    - description: 'Operating System to run analysis on(comma separated). possible
+        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
+        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
+        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
+        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+      name: systems
+    - auto: PREDEFINED
+      defaultValue: "True"
+      description: Enable full internet access. Default is True
+      name: internet-access
+      predefined:
+      - "True"
+      - "False"
+    deprecated: true
+    description: Submit a sample for analysis.
+    name: joe-detonate-file
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - arguments:
+    - default: true
+      description: 'Search string which will search in the following fields only:
+        webid, md5, sha1, sha256, filename, URL, comments.'
+      name: query
+      required: true
+    description: Search through all analyses.
+    name: joe-search
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - arguments:
+    - default: true
+      description: Web ID
+      name: webid
+      required: true
+    description: Download the sample file of an analysis. for security reasons, the
+      extension will be "dontrun"
+    name: joe-download-sample
+    outputs:
+    - contextPath: File.Size
+      description: File Size
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: File.Name
+      description: The sample name
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file
+      type: string
+    - contextPath: File.EntryID
+      description: War-Room Entry ID of the file
+      type: string
+    - contextPath: File.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: File MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.Extension
+      description: File Extension
+      type: string
+  runonce: false
+  script: |2-
+
+
+
+    ''' IMPORTS '''
+    import time
+    import shutil
+    import requests
+    from distutils.util import strtobool
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+
+    ''' GLOBAL VARS '''
+    BASE_URL = urljoin(demisto.params().get('url'), 'api/')
+    USE_SSL = not demisto.params().get('insecure', False)
+    MAX_POLLS = int(demisto.params().get('maxpolls', 300))
+    USE_PROXY = demisto.params().get('proxy', True)
+
+    nothing_to_analyze_message = 'We found nothing to analyze in your uploaded email' \
+                                 '(possibly all elements where whitelisted, check Input filtering in your Settings).'
+    nothing_to_analyze_output = {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': 'We found nothing to analyze in your uploaded email',
+        'HumanReadable': 'We found nothing to analyze in your uploaded email'
+    }
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_post(url_suffix, data=None, files=None, parse_json=True):
+        data = {} if data is None else data
+
+        LOG('running request with url=%s\n\tdata=%s\n\tfiles=%s' % (BASE_URL + url_suffix,
+            data, files, ))
+        data.setdefault('apikey', demisto.params()['api_key'])
+
+        res = requests.post(BASE_URL + url_suffix, verify=USE_SSL, data=data, files=files)
+
+        if res.status_code == 403:
+            raise Exception('API Key is incorrect')
+
+        if res.status_code != 200:
+            error_msg = res.json()['errors'][0]['message']
+            if error_msg == nothing_to_analyze_message:
+                return 'nothing_to_analyze'
+
+            LOG('result is: %s' % (res.json(), ))
+            error_msg = res.json()['errors'][0]['message']
+            raise Exception('Your request failed with the following error: %s.\n%s' % (res.reason, error_msg, ))
+
+        if parse_json:
+            return res.json()
+        else:
+            return res.content
+
+
+    def analysis_to_entry(title, info):
+        if not isinstance(info, list):
+            info = [info]
+
+        context = []
+        table = []
+        dbot_scores = []
+        for analysis in info:
+            analysis_info = {
+                'ID': analysis['webid'],  # for detonate generic polling
+                'WebID': analysis['webid'],
+                'SampleName': analysis['filename'],
+                'Status': analysis['status'],
+                'Comments': analysis['comments'],
+                'Time': analysis['time'],
+                'MD5': analysis['md5'],
+                'SHA1': analysis['sha1'],
+                'SHA256': analysis['sha256'],
+                'Systems': [run['system'] for run in analysis['runs']],
+                'Result': ', '.join([run['detection'] for run in analysis['runs']]),
+                'Errors': [run['error'] for run in analysis['runs']],
+            }
+
+            analysis_context = dict(analysis_info)
+            analysis_context['Runs'] = analysis['runs']
+
+            analysis_table = dict(analysis_info)
+            if not any(analysis_table['Errors']):
+                analysis_table['Errors'] = None
+
+            dbot_score = 0
+            malicious = None
+            if 'malicious' in analysis_info['Result']:
+                dbot_score = 3
+                malicious = {
+                    'Vendor': 'JoeSecurity',
+                    'Detections': ', '.join(set([run['detection'] for run in analysis['runs']])),
+                    'SHA1': analysis_info['SHA1'],
+                }
+            elif 'suspicious' in analysis_info['Result']:
+                dbot_score = 2
+            elif 'clean' in analysis_info['Result']:
+                dbot_score = 1
+
+            dbot_scores.append({
+                'Vendor': 'JoeSecurity',
+                'Indicator': analysis_info['MD5'],
+                'Type': 'file' if analysis_info['MD5'] else 'url',
+                'Score': dbot_score,
+                'Malicious': malicious,
+            })
+            context.append(analysis_context)
+            table.append(analysis_table)
+
+        entry = {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': context,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, table, removeNull=True),
+            'EntryContext': {'Joe.Analysis(val.ID && val.ID == obj.ID)': createContext(context, removeNull=True),
+                             'DBotScore': createContext(dbot_scores, removeNull=True), }
+        }
+
+        return entry
+
+
+    def poll_webid(web_id):
+        result = {'data': {'status': 'pending'}}
+        max_polls = MAX_POLLS
+
+        while (max_polls >= 0) and result['data']['status'] != 'finished':
+            if result['data']['status'] != 'pending':
+                LOG('error while polling: result is %s' % (result, ))
+            result = info_request(web_id)
+            time.sleep(1)
+            max_polls -= 1
+
+        LOG('reached max_polls #%d' % (max_polls, ))
+        if max_polls < 0:
+            return analysis_to_entry('Polling timeout on Analysis #' + web_id, result['data'])
+        else:
+            return analysis_to_entry('Analysis #' + web_id, result['data'])
+
+
+    ''' FUNCTIONS '''
+
+
+    def is_online():
+        cmd_url = 'v2/server/online'
+        res = http_post(cmd_url)
+        return res['data']['online']
+
+
+    def list_analysis():
+        cmd_url = 'v2/analysis/list'
+        res = http_post(cmd_url)
+
+        data = [info_request(web_id['webid'])['data'] for web_id in res['data']]
+        return analysis_to_entry('All Analyses:', data)
+
+
+    def analysis_info():
+        ids = demisto.args().get('webid')
+        if type(ids) in STRING_TYPES:
+            ids = ids.split(',')
+        LOG('info: web_id = %s' % (ids, ))
+        res = [info_request(webid)['data'] for webid in ids]
+        return analysis_to_entry('Analyses:', res)
+
+
+    def info_request(web_id):
+        cmd_url = 'v2/analysis/info'
+        return http_post(cmd_url, data={'webid': web_id})
+
+
+    def search():
+        cmd_url = 'v2/analysis/search'
+        query = demisto.args().get('query')
+        res = http_post(cmd_url, data={'q': query})
+        if len(res['data']) == 0:
+            return 'No Result was found.'
+
+        data = [info_request(web_id['webid'])['data'] for web_id in res['data']]
+        return analysis_to_entry('Analysis Search Results:', data)
+
+
+    def analyse_url():
+        args = demisto.args()
+        url = args.get('url')
+        internet_access = bool(strtobool(args.get('internet-access', 'true')))
+        comments = args.get('comments')
+        systems = args.get('systems')
+
+        should_wait = bool(strtobool(demisto.get(args, 'should_wait')))
+
+        return analyse_url_request(url, should_wait, internet_access, comments, systems)
+
+
+    def analyse_url_request(url, should_wait, internet_access, comments='', systems=''):
+        data = {
+            'accept-tac': 1,
+            'url': url,
+            'internet-access': 1 if internet_access else 0,
+        }
+        if comments != '':
+            data['comments'] = comments
+        if systems != '':
+            data['systems[]'] = [s.strip() for s in systems.split(',')]
+        res = http_post('v2/analysis/submit', data=data)
+
+        if 'errors' in res:
+            LOG('Error! in command analyse_url: url=%s' % (url, ))
+            LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
+            raise Exception('command failed to run.')
+
+        if should_wait:
+            return poll_webid(res['data']['webids'][0])
+
+        web_id = res['data']['webids'][0]
+        result = info_request(web_id)
+        return analysis_to_entry('Analysis #%s' % (web_id, ), result['data'])
+
+
+    def analyse_sample():
+        args = demisto.args()
+        file_entry = args.get('file_id', '')
+        if type(file_entry) in STRING_TYPES:
+            file_entry = [f for f in file_entry.split(',') if f != '']
+        sample_url = args.get('sample_url', '')
+        if type(sample_url) in STRING_TYPES:
+            sample_url = [f for f in sample_url.split(',') if f != '']
+        internet_access = bool(strtobool(args.get('internet-access', 'true')))
+        should_wait = bool(strtobool(demisto.get(args, 'should_wait')))
+        comments = args.get('comments', '')
+        systems = args.get('systems', '')
+
+        if (len(file_entry) == 0 and len(sample_url) == 0) or ([] not in [file_entry, sample_url]):
+            raise ValueError('You must specify one (and only one) of the following: sample_url, file_id.')
+
+        LOG('analysing sample')
+        if len(file_entry) != 0:
+            return [analyse_sample_file_request(f, should_wait, internet_access, comments, systems) for f in file_entry]
+        else:
+            return [analyse_sample_url_request(s, should_wait, internet_access, comments, systems) for s in sample_url]
+
+
+    def analyse_sample_file_request(file_entry, should_wait, internet_access, comments='', systems=''):
+        data = {
+            'accept-tac': 1,
+            'internet-access': 1 if internet_access else 0,
+        }
+        if comments != '':
+            data['comments'] = comments
+        if systems != '':
+            data['systems[]'] = [s.strip() for s in systems.split(',')]  # type: ignore
+
+        shutil.copy(demisto.getFilePath(file_entry)['path'], demisto.getFilePath(file_entry)['name'])
+
+        with open(demisto.getFilePath(file_entry)['name'], 'rb') as f:
+            res = http_post('v2/analysis/submit', data=data, files={'sample': f})
+
+        if res == 'nothing_to_analyze':
+            return nothing_to_analyze_output
+
+        if 'errors' in res:
+            LOG('Error! in command sample file: file_entry=%s' % (file_entry, ))
+            LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
+            raise Exception('command failed to run.')
+
+        shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
+
+        if should_wait:
+            return poll_webid(res['data']['webids'][0])
+
+        web_id = res['data']['webids'][0]
+        result = info_request(web_id)
+        return analysis_to_entry('Analysis #%s' % (web_id, ), result['data'])
+
+
+    def analyse_sample_url_request(sample_url, should_wait, internet_access, comments, systems):
+        data = {
+            'accept-tac': 1,
+            'sample-url': sample_url,
+            'internet-access': 1 if internet_access else 0,
+        }
+        if comments != '':
+            data['comments'] = comments
+        if systems != '':
+            data['systems[]'] = [s.strip() for s in systems.split(',')]
+
+        res = http_post('v2/analysis/submit', data=data)
+
+        if res == 'nothing_to_analyze':
+            return nothing_to_analyze_output
+
+        if 'errors' in res:
+            LOG('Error! in command sample file: file url=%s' % (sample_url, ))
+            LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
+            raise Exception('command failed to run.')
+
+        if should_wait:
+            return poll_webid(res['data']['webids'][0])
+
+        web_id = res['data']['webids'][0]
+        result = info_request(res['data']['webids'][0])
+        return analysis_to_entry('Analysis #%s' % (web_id, ), result['data'])
+
+
+    def download_report():
+        args = demisto.args()
+        webid = args.get('webid')
+        rsc_type = args.get('type')
+        return download_request(webid, rsc_type)
+
+
+    def download_sample():
+        args = demisto.args()
+        webid = args.get('webid')
+        rsc_type = 'sample'
+        return download_request(webid, rsc_type)
+
+
+    def download_request(webid, rsc_type):
+        res = http_post('v2/analysis/download', data={'webid': webid, 'type': rsc_type.lower()}, parse_json=False)
+
+        info = info_request(webid)
+        if rsc_type == 'sample':
+            return fileResult('%s.dontrun' % (info.get('filename', webid), ), res)
+        else:
+            return fileResult('%s_report.%s' % (info.get('filename', webid), rsc_type, ), res, entryTypes['entryInfoFile'])
+
+
+    ''' EXECUTION CODE '''
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        handle_proxy()
+        if demisto.command() in ['test-module', 'joe-is-online']:
+            # This is the call made when pressing the integration test button.
+            if is_online():
+                demisto.results('ok')
+            else:
+                demisto.results('not online')
+        elif demisto.command() == 'joe-list-analysis':
+            demisto.results(list_analysis())
+        elif demisto.command() == 'joe-analysis-info':
+            demisto.results(analysis_info())
+        elif demisto.command() == 'joe-analysis-submit-url':
+            demisto.results(analyse_url())
+        elif demisto.command() == 'joe-detonate-url':
+            demisto.args()['should_wait'] = 'True'
+            demisto.results(analyse_url())
+        elif demisto.command() == 'joe-analysis-submit-sample':
+            demisto.results(analyse_sample())
+        elif demisto.command() == 'joe-detonate-file':
+            demisto.args()['should_wait'] = 'True'
+            demisto.results(analyse_sample())
+        elif demisto.command() == 'joe-download-report':
+            demisto.results(download_report())
+        elif demisto.command() == 'joe-download-sample':
+            demisto.results(download_sample())
+        elif demisto.command() == 'joe-search':
+            demisto.results(search())
+
+    except Exception as e:
+        if demisto.params().get('verbose'):
+            LOG(e.message)
+            if demisto.command() != 'test-module':
+                LOG.print_log()
+
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'error has occurred: %s' % (e.message, ),
+        })
+  type: python
+system: true

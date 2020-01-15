@@ -1,0 +1,42 @@
+args:
+- default: true
+  description: One of sha256, sha1, md5, domain
+  name: type
+  required: true
+- description: The IOC to find
+  name: value
+  required: true
+comment: |
+  List the number devices that match each IOC in query - limited to sha256, sha1, md5 and domain types
+commonfields:
+  id: CSCountDevicesForIOC
+  version: -1
+dependson:
+  must:
+  - cs-device-count-ioc
+deprecated: true
+name: CSCountDevicesForIOC
+runonce: false
+script: |-
+  res = []
+  t = []
+  for v in argToList(demisto.args()['value']):
+      e = demisto.executeCommand("cs-device-count-ioc", {"type": demisto.args()['type'], "value": v})[0]
+      if isError(e):
+          if not '404 (Not Found)' in e['Contents']: # Skip 404 errors - it just means the IOC wasn't found
+              res += [e]
+      else:
+          myData = demisto.get(e, 'Contents.resources')
+          if myData:
+              myData = [{k: formatCell(row[k]) for k in row} for row in myData]
+              t += myData
+  if t:
+      res.append({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': t} )
+  else:
+      res.append('No results.')
+  demisto.results(res)
+scripttarget: 0
+system: true
+tags:
+- crowdstrike
+type: python

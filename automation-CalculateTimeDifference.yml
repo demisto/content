@@ -1,0 +1,55 @@
+args:
+- description: The time at which travel started.
+  name: start_time
+  required: true
+- description: The time at which travel ended.
+  name: end_time
+  required: true
+comment: Calculate the time difference, in minutes
+commonfields:
+  id: CalculateTimeDifference
+  version: -1
+enabled: true
+name: CalculateTimeDifference
+outputs:
+- contextPath: Time.Difference
+  description: Calculated time difference in minutes.
+- contextPath: Time.Start
+  description: Start time.
+- contextPath: Time.End
+  description: End time.
+runas: DBotWeakRole
+runonce: false
+script: |2-
+
+
+
+
+  start_time = demisto.args()['start_time'].replace('"', '')
+  end_time = demisto.args()['end_time'].replace('"', '')
+
+  try:
+      # Strip microseconds and convert to datetime object
+      start_time_obj = datetime.strptime(start_time.split(".")[0], "%Y-%m-%dT%H:%M:%S")
+      end_time_obj = datetime.strptime(end_time.split(".")[0], "%Y-%m-%dT%H:%M:%S")
+      # Calculate the difference in minutes
+      time_diff = end_time_obj - start_time_obj
+      mins = round((time_diff.total_seconds() / 60), 2)
+
+      hr = 'Calculated Time Difference: {} minutes.'.format(str(mins))
+      context = {
+          "Time.Difference": mins,
+          "Time.Start": start_time,
+          "Time.End": end_time
+      }
+
+      return_outputs(hr, context, mins)
+
+
+  except Exception as ex:
+      return_error('Error occurred while parsing output from command. Exception info:\n' + str(ex))
+scripttarget: 0
+system: true
+tags:
+- Utilities
+type: python

@@ -1,0 +1,540 @@
+description: |-
+  Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+
+  You must have the necessary permissions in the EWS integration to execute global search: eDiscovery
+id: get_original_email_-_ews
+inputs:
+- description: Email address of the reporting user.
+  key: Mailbox
+  required: false
+  value:
+    complex:
+      accessor: labels.Email/from
+      root: incident
+- description: The InReplyTo header in the forwarded email.
+  key: InReplyTo
+  required: false
+  value:
+    complex:
+      accessor: labels.Email/Header/In-Reply-To
+      root: incident
+- description: The ThreadTopic header in the forwarded email.
+  key: ThreadTopic
+  required: false
+  value:
+    complex:
+      accessor: labels.Email/Header/Thread-Topic
+      root: incident
+name: Get Original Email - EWS
+outputs:
+- contextPath: Email
+  description: The email object
+  type: unknown
+- contextPath: Email.To
+  description: The recipient of the email
+  type: string
+- contextPath: Email.From
+  description: The sender of the email
+  type: string
+- contextPath: Email.HTML
+  description: The email HTML
+  type: string
+- contextPath: Email.Body
+  description: The email text body
+  type: string
+- contextPath: Email.Headers
+  description: The email headers
+  type: unknown
+- contextPath: Email.Subject
+  description: The email subject
+  type: string
+- contextPath: File
+  description: Original attachments
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 5607d1c6-85b0-4181-8b10-bb3a5b113c6f
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 5607d1c6-85b0-4181-8b10-bb3a5b113c6f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: EWS v2
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |
+        Verifies that there is an active instance of the EWS v2 integration enabled.
+      id: 03f2c080-1995-42fc-82ce-16d474fb5438
+      iscommand: false
+      name: Is EWS v2 enabled?
+      type: condition
+      version: -1
+    taskid: 03f2c080-1995-42fc-82ce-16d474fb5438
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: d2eca123-db35-4b27-88d8-a8b77ffd6784
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: d2eca123-db35-4b27-88d8-a8b77ffd6784
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -54,
+          "y": 1744
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.InReplyTo
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.ThreadTopic
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Mailbox
+          operator: isExists
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that the required input values for retrieving the original
+        email exists.
+      id: b2617aaf-5e54-43f5-89fe-82fc78cd099b
+      iscommand: false
+      name: Verify required inputs
+      type: condition
+      version: -1
+    taskid: b2617aaf-5e54-43f5-89fe-82fc78cd099b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    reputationcalc: 2
+    scriptarguments:
+      folder-path: {}
+      is-public: {}
+      limit: {}
+      query:
+        simple: subject:"${inputs.ThreadTopic}"
+      target-mailbox:
+        complex:
+          root: inputs.Mailbox
+    separatecontext: false
+    task:
+      brand: EWS v2
+      description: Retrieve all messages found in the thread of the forwarded email.
+      id: f3c1bfda-b3c0-4c7c-8fce-fb180ff6fd07
+      iscommand: true
+      name: Search for messages by Thread-Topic
+      script: EWS v2|||ews-search-mailbox
+      type: regular
+      version: -1
+    taskid: f3c1bfda-b3c0-4c7c-8fce-fb180ff6fd07
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 357.5,
+          "y": 545
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: messageId
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: EWSItem.messageId
+                    operator: isEqualString
+                    right:
+                      iscontext: true
+                      value:
+                        simple: inputs.InReplyTo
+                root: EWSItem
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verify that an email object with a Message-Id that matches the
+        InReplayTo ID of the forwarded email was found.
+      id: 25f6439f-778f-45a5-841a-53efe77d590c
+      iscommand: false
+      name: Was a matching email found?
+      type: condition
+      version: -1
+    taskid: 25f6439f-778f-45a5-841a-53efe77d590c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 357.5,
+          "y": 1070
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: EWSItem
+      value:
+        complex:
+          accessor: Items
+          root: EWS
+    separatecontext: false
+    task:
+      brand: ""
+      description: Set email object to context.
+      id: c729f95f-bc75-477e-8000-14c99346873d
+      iscommand: false
+      name: Set context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: c729f95f-bc75-477e-8000-14c99346873d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 357.5,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    reputationcalc: 2
+    scriptarguments:
+      item-ids:
+        complex:
+          accessor: itemId
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: EWSItem.messageId
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.InReplyTo
+          root: EWSItem
+      target-mailbox:
+        complex:
+          root: inputs.Mailbox
+    separatecontext: false
+    task:
+      brand: EWS v2
+      description: Get the original email from the EWS server.
+      id: 6f28ff90-80ff-414e-819b-310a51183da4
+      iscommand: true
+      name: Get original email
+      script: EWS v2|||ews-get-items
+      type: regular
+      version: -1
+    taskid: 6f28ff90-80ff-414e-819b-310a51183da4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1245
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: EWS
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    task:
+      brand: ""
+      description: Delete the email objects from context.
+      id: 8764cbb0-dd56-4095-8df2-e77035713e2e
+      iscommand: false
+      name: Delete old context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 8764cbb0-dd56-4095-8df2-e77035713e2e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 357.5,
+          "y": 895
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      append: {}
+      key:
+        simple: Email
+      value:
+        simple: '${EWS.Items={Subject: val[''subject''], To: val[''toRecipients''],
+          From: val[''sender''], Text: val[''textBody''],HTML: val[''body''], Headers:
+          val[''headers'']}}'
+    separatecontext: false
+    task:
+      brand: ""
+      description: Set the playbook outputs to context.
+      id: fab3c34b-010a-4203-830a-7dbf0dde26e5
+      iscommand: false
+      name: Set output
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: fab3c34b-010a-4203-830a-7dbf0dde26e5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 1595
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Items.itemId
+                root: EWS
+          operator: isExists
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "11"
+      - "9"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Verifies that the original email is in context.
+      id: 75ab61a9-a6cf-4d74-842f-67436507b8f4
+      iscommand: false
+      name: Was the original email found?
+      type: condition
+      version: -1
+    taskid: 75ab61a9-a6cf-4d74-842f-67436507b8f4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1420
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    reputationcalc: 2
+    scriptarguments:
+      attachment-ids: {}
+      item-id:
+        complex:
+          accessor: Items.itemId
+          root: EWS
+      target-mailbox:
+        complex:
+          root: inputs.Mailbox
+    separatecontext: false
+    task:
+      brand: EWS v2
+      description: Retrieve the attachments of the original email from EWS, including
+        file attachments and item attachments (other email, calendar item, etc.).
+      id: 427d5e37-2e56-4522-8e69-caabe8fd70d9
+      iscommand: true
+      name: Get attachments of the original email
+      script: EWS v2|||ews-get-attachment
+      type: regular
+      version: -1
+    taskid: 427d5e37-2e56-4522-8e69-caabe8fd70d9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 1595
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1759,
+        "width": 1261.5,
+        "x": -54,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,351 @@
+description: Upload a file to Intezer Analyze to analyze and enrich the file reputation.
+  (up to 32mb)
+id: Intezer - Analyze Uploaded file
+inputs:
+- description: File object of the file to detonate.
+  key: File
+  required: false
+  value:
+    complex:
+      accessor: EntryID
+      root: File
+- description: How often the polling command should run (in minutes).
+  key: Interval
+  required: true
+  value:
+    simple: "1"
+- description: Amount of time to wait before a timeout occurs (in minutes).
+  key: Timeout
+  required: true
+  value:
+    simple: "30"
+name: Intezer - Analyze Uploaded file
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 hash of the file.
+  type: string
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: unknown
+- contextPath: File.Type
+  description: 'File type, for example: "PE".'
+  type: string
+- contextPath: File.Size
+  description: File size.
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.Name
+  description: File name.
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file.
+  type: string
+- contextPath: File
+  description: The file object.
+  type: unknown
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision.
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object.
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: start
+      id: 7d1e59fe-b551-41d6-8337-9d0f413c1d9b
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 7d1e59fe-b551-41d6-8337-9d0f413c1d9b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Intezer v2
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is an instance of the Intezer v2 integration enabled.
+      id: f9a353d1-22d1-4c1b-81eb-a78a88c3dde1
+      iscommand: false
+      name: Is Intezer enabled
+      type: condition
+      version: -1
+    taskid: f9a353d1-22d1-4c1b-81eb-a78a88c3dde1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Done
+      id: e3072dee-dd42-416e-804e-d15c5e66ac48
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: e3072dee-dd42-416e-804e-d15c5e66ac48
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    scriptarguments:
+      file_entry_id:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks the file reputation for the uploaded file. Max file size
+        is 32 MB.
+      id: 44c99bce-45d2-4786-8fee-87fe1be01165
+      iscommand: true
+      name: Intezer - Analyze uploaded file
+      script: '|||intezer-analyze-by-file'
+      type: regular
+      version: -1
+    taskid: 44c99bce-45d2-4786-8fee-87fe1be01165
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.File
+          operator: isExists
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is a file to analyze.
+      id: bc19a3b7-7876-4f90-8ce2-cf6e1da5016d
+      iscommand: false
+      name: Is there a file to analyze?
+      type: condition
+      version: -1
+    taskid: bc19a3b7-7876-4f90-8ce2-cf6e1da5016d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          accessor: Analysis.ID
+          root: Intezer
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: analysis_id
+      PollingCommandName:
+        simple: intezer-get-analysis-result
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: Intezer.Analysis(val.Status !== 'Done').Status
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: be960d68-1a06-455f-8676-5d1b04402dc5
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: be960d68-1a06-455f-8676-5d1b04402dc5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+  "17":
+    continueonerror: true
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    scriptarguments:
+      analysis_id:
+        complex:
+          accessor: Analysis.ID
+          root: Intezer
+      analysis_type: {}
+      indicator_name: {}
+      result_url:
+        complex:
+          accessor: Analysis.ResultUrl
+          root: Intezer
+    separatecontext: false
+    task:
+      brand: Intezer v2
+      description: Wait and get analysis results. Supports file analysis and endpoint
+        analysis.
+      id: 139f25d7-9d3b-4bf9-8e3b-10eaf6325eef
+      iscommand: true
+      name: Intezer - get analysis result
+      script: Intezer v2|||intezer-get-analysis-result
+      type: regular
+      version: -1
+    taskid: 139f25d7-9d3b-4bf9-8e3b-10eaf6325eef
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

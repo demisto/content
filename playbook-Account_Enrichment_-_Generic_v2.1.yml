@@ -1,0 +1,226 @@
+description: |-
+  Enrich accounts using one or more integrations.
+  Supported integrations:
+  - Active Directory
+id: Account Enrichment - Generic v2.1
+inputs:
+- description: The username to enrich.
+  key: Username
+  required: false
+  value:
+    complex:
+      accessor: Username
+      root: Account
+      transformers:
+      - operator: uniq
+name: Account Enrichment - Generic v2.1
+outputs:
+- contextPath: Account
+  description: The account object.
+  type: unknown
+- contextPath: ActiveDirectory.Users.sAMAccountName
+  description: The user's samAccountName.
+- contextPath: ActiveDirectory.Users.userAccountControl
+  description: The user's account control flag.
+- contextPath: ActiveDirectory.Users.mail
+  description: The user's email address.
+- contextPath: ActiveDirectory.Users.memberOf
+  description: Groups the user is a member of.
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Username
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there is at least one username to enrich.
+      id: f4d7cbdd-cd4a-48bd-8360-740b97fba2e0
+      iscommand: false
+      name: Is there an account to enrich?
+      type: condition
+      version: -1
+    taskid: f4d7cbdd-cd4a-48bd-8360-740b97fba2e0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 203
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: ee0fc2dd-d3aa-4e72-82ac-f12d9bd4a9fa
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: ee0fc2dd-d3aa-4e72-82ac-f12d9bd4a9fa
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 765
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if there’s an active instance of the Active Directory Query
+        v2 integration enabled.
+      id: 98e13761-b371-4380-8815-9081204309db
+      iscommand: false
+      name: Is Active Directory Query v2 enabled?
+      type: condition
+      version: -1
+    taskid: 98e13761-b371-4380-8815-9081204309db
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 395
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    reputationcalc: 1
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit: {}
+      name: {}
+      user-account-control-out: {}
+      username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    task:
+      brand: ""
+      description: Queries Active Directory and returns information for the specified
+        username.
+      id: 97ec5ca3-8754-49ff-8797-627ef7e6cd33
+      iscommand: true
+      name: Get account info from Active Directory
+      script: '|||ad-get-user'
+      type: regular
+      version: -1
+    taskid: 97ec5ca3-8754-49ff-8797-627ef7e6cd33
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 580
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_3_#default#": 0.62
+    },
+    "paper": {
+      "dimensions": {
+        "height": 780,
+        "width": 650,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

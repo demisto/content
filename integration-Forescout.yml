@@ -1,0 +1,1316 @@
+category: Network Security
+commonfields:
+  id: Forescout
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: |-
+    The network address of the Forescout Enterprise Manager or
+    standalone Appliance, e.g., 'https://10.0.0.8'. #disable-secrets-detection
+  name: url
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: Web API Username (see Detailed Instructions (?))
+  name: web_api_credentials
+  required: false
+  type: 9
+- defaultvalue: ""
+  display: Data Exchange (DEX) Username (see Detailed Instructions (?))
+  name: dex_credentials
+  required: false
+  type: 9
+- defaultvalue: ""
+  display: Data Exchange (DEX) Account (see Detailed Instructions (?))
+  name: dex_account
+  required: false
+  type: 0
+- defaultvalue: "true"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Unified device visibility and control platform for IT and OT Security.
+detaileddescription: "# Instructions\n\n## Forescout Module Requirements\nBefore you
+  can use this integration in Demisto, you need to enable certain modules in your
+  Forescout environment.\n1. In the Forescout console, from the navigation bar select
+  *Tools > Options*.\n2. In the dialog that appears, from the categories section on
+  the left, click *Modules*. \n3. In the main area of the dialog, from the drop-down
+  menu, select *Open Integration Module*. \nMake sure that the integration module
+  and the following submodules are installed and enabled: *Data Exchange (DEX)* and
+  *Web API* are all installed and enabled. If they aren't, install and enable them.\n\n##
+  Configuration Parameters\n\n**url**  \nThis is the network address of the Forescout
+  Enterprise Manager or standalone Appliance. (The host on which the the Forescout
+  Appliance is hosted.) For example, if the Forescout Appliance is hosted at the IP
+  address *192.168.10.23*, then you enter *https://192.168.10.23*.\n\n**Web API Username**
+  and **Password**  \nThe credentials entered here should be those created in the
+  Forescout console for the *Web API*.\n1. In the Forescout console, from the top
+  navigation bar,  click *Tools > Options*. \n2. From the dialog that appears, in
+  the categories section on the left, click *Web API*, and select *User Settings*.\n3.
+  Create a username and password by clicking the *Add* button, and completing the
+  fields. These are the credentials that you will enter when configuring the Demisto-Forescout
+  integration: *Web API Username* and *Password*. \n4. Select *Client IPs* towards
+  the top of the main area of the dialog, next to *User Settings*. \n5. Add the IP
+  address where your Demisto instance is hosted or allow requests from all IP addresses
+  to make sure that requests made by the Demisto-Forescout integration will be permitted.
+  \n5. Click the *Apply* button to save the changes you made.\n\n**Data Exchange (DEX)
+  Username** and **Password**  \nThe credentials entered here should be those created
+  in the Forescout console for *Data Exchange (DEX)*.\n1. In the Forescout console,
+  from the top navigation bar,  click *Tools > Options*.\n2. From the dialog that
+  appears, in the categories section on the left, click *Data Exchange (DEX)*. \n3.
+  Select *CounterACT Web Service > Accounts*. \n4. Create a username and password
+  by clicking the *Add* button, and completing the fields. **Note**: The value you
+  entered for the *Name* field in the account-creation pop-up window is the value
+  that you should enter for the *Data Exchange (DEX) Account* configuration parameter.
+  \n5. Click the *Apply* button to save the changes you made. \n\nThe username and
+  password entered in the account-creation dialog are the credentials that you will
+  enter when configuring the Demisto-Forescout integration: *Data Exchange (DEX) Username*
+  and *Password*.\n\n**Data Exchange (DEX) Account**  \nThe *Data Exchange (DEX)*
+  credentials *Name* field. This can be found by navigating to *Tools > Options >
+  Data Exchange (DEX) > CounterACT Web Service > Accounts*.\n\n## Important Usage
+  Notes\nThis integration allows the user to update host properties and Forescout
+  Lists.\nTo create Forescout properties, which can then be updated using the Demisto-Forescout
+  integration, from the Forescout console, navigate to *Tools > Options > Data Exchange
+  (DEX) > CounterACT Web Console > Properties*. This is where you create new properties.
+  Make sure to associate the properties with the account you created, and which you
+  used in the configuration parameters of the Forescout integration in Demisto.\nLists
+  must also be defined and created in the Forescout console before you can update
+  them using the Demisto-Forescout integration. For more information, reference the
+  *Defining and Managing Lists* section in the [Forescout Administration Guide](https://www.forescout.com/wp-content/uploads/2018/04/CounterACT_Administration_Guide_8.0.pdf).\n"
+display: Forescout
+image: data:image/png;base64,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
+name: Forescout
+script:
+  commands:
+  - arguments:
+    - description: Filter hosts by those selected by policies or policy sub-rules.
+        Policies and/or rules should be specified by their IDs. To find policy and
+        rule IDs by which you can filter, run the 'forescout-get-policies' command.
+        If multiple policy and/or rule IDs are entered, only hosts that are selected
+        by all of the policies and/or rules specifed will be returned. Multiple policy
+        or rule IDs should be separated by a comma.
+      isArray: true
+      name: rule_ids
+    - description: Filter hosts based on host field values. Enter fields with their
+        associated values in the following format, '{field_1}={val_1}&{field_2}={val_2}
+        … &{field_n}={val_n}' where '{field_1}' through '{field_n}' are replaced by
+        actual field names and '{val_1}' through '{val_n}' are replaced by the desired
+        matching values. Note that a list field may be specified with the values separated
+        by commas. Only hosts whose properties match all the specified values will
+        be returned. For a list of potential host fields that may be specified, try
+        executing the 'forescout-get-hostfields' command. A composite property may
+        also be specified. If entered in the format where all the field-value pairs
+        are in a single set of square brackets, for example, '{composite_prop}=[{field_1},{val_1},..,{field_n},{val_n}]'
+        then only hosts for which the specified composite property's fields all match
+        the values entered will be returned. If entered in the format, '{composite_prop}=[{field_1},{val}_1],..,[{field_n},{val_n}]'
+        where each field-value pair is enclosed in its own set of brackets, then hosts
+        for which the composite property contains any of the field-values specified
+        will be returned. Note that for composite properties, sub-fields should be
+        entered as their internal representation in Forescout. To find internal representation
+        for a composite property's sub-fields try executing 'forescout-get-host' command
+        with the host specified in the 'identifier' argument and the name of the composite
+        property entered in the 'fields'  argument of the command.
+      name: fields
+    description: Retrieves a list of active endpoints.
+    name: forescout-get-hosts
+    outputs:
+    - contextPath: Forescout.Host.ID
+      description: Forescout ID for the host.
+      type: Number
+    - contextPath: Forescout.Host.IPAddress
+      description: IP address of the host.
+      type: String
+    - contextPath: Forescout.Host.MACAddress
+      description: MAC address of the host.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: IP address of the host.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: MAC address of the host.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: name
+      description: Each host field has three searchable parts, the 'name', 'label',
+        and 'description'. By default only the 'name' will be searched. If you want
+        to expand the search to include the description, you would enter 'name,description'
+        for this argument.
+      isArray: true
+      name: search_in
+      predefined:
+      - name
+      - description
+      - label
+    - auto: PREDEFINED
+      default: true
+      defaultValue: "false"
+      description: Determines whether to match the case of the entered search term.
+      name: case_sensitive
+      predefined:
+      - "false"
+      - "true"
+    - auto: PREDEFINED
+      default: true
+      defaultValue: "False"
+      description: Determines whether the search term is matched against the entirety
+        of the potential host field instead of just seeing whether the host field
+        contains the search term.
+      name: match_exactly
+      predefined:
+      - "False"
+      - "True"
+    - description: The term by which to filter host fields. By default, the search
+        will be case insensitive and checked to see if a host field contains the search
+        term unless otherwise specified in the 'case_sensitive' and 'match_exactly'
+        arguments respectively.
+      name: search_term
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all_types
+      description: Limit the search to host fields whose values are of a certain type.
+        For example, to limit the search to host properties whose values are either
+        boolean, ip, or a date, enter 'boolean,ip,date'.
+      isArray: true
+      name: host_field_type
+      predefined:
+      - string
+      - boolean
+      - appliance
+      - port
+      - service
+      - list_change
+      - change
+      - ip
+      - composite
+      - ipv6
+      - session
+      - date
+      - integer
+      - tree_path
+    description: Retrieves an index of Forescout host fields that match the specified
+      criteria.
+    name: forescout-get-host-fields
+    outputs:
+    - contextPath: Forescout.HostField
+      description: List index of host properties.
+      type: Unknown
+  - arguments:
+    - description: List of host properties to include in the output for the targeted
+        endpoint. If a specified host property is not found, the property is omitted
+        from the outputs. For a list of potential host properties that can be specified,
+        run the 'forescout-get-host-fields' command. Requested fields should be comma
+        separated.
+      isArray: true
+      name: fields
+    - description: IP (ipv4) of the endpoint. To get the Endpoint identifiers - IPs,
+        MAC addresses, and object IDs, run the `forescout-get-hosts` command.
+      name: ip
+    - description: MAC address of the endpoint. To get the Endpoint identifiers -
+        IPs, MAC addresses, and object IDs, run the `forescout-get-hosts` command.
+      name: mac
+    - description: Forescout ID of the endpoint. To get the Endpoint identifiers -
+        IPs, MAC addresses, and object IDs, run the `forescout-get-hosts` command.
+      name: id
+    description: Retrieves details of specified host.
+    name: forescout-get-host
+    outputs:
+    - contextPath: Forescout.Host.MatchedFingerprint
+      description: An endpoint might match multiple profiles. This property indicates
+        all the classification profiles that this endpoint matches.
+      type: Unknown
+    - contextPath: Forescout.Host.EngineSeenPacket
+      description: Indicates the host was seen by CounterACT.
+      type: String
+    - contextPath: Forescout.Host.Online
+      description: Host is online.
+      type: String
+    - contextPath: Forescout.Host.PrimClassification
+      description: Indicates the most specific endpoint function detected. If CounterACT
+        detects multiple endpoint functions, the property is resolved as the most
+        specific value that is common to all the detected functions. If there is no
+        common value, the property is resolved as 'Multiple Suggestions'.
+      type: String
+    - contextPath: Forescout.Host.MacVendorString
+      description: Indicates a value associated with the NIC Vendor.
+      type: String
+    - contextPath: Forescout.Host.SambaOpenPort
+      description: NetBIOS ports that are open.
+      type: String
+    - contextPath: Forescout.Host.UserDefFp
+      description: Indicates the operating system of the endpoint, as determined by
+        classification tools.
+      type: String
+    - contextPath: Forescout.Host.Vendor
+      description: Network Device Vendor, Type, and Model.
+      type: String
+    - contextPath: Forescout.Host.AgentVersion
+      description: Indicates the SecureConnector version installed on a Windows host.
+      type: String
+    - contextPath: Forescout.Host.Fingerprint
+      description: Passive OS detection based on Syn packets.
+      type: String
+    - contextPath: Forescout.Host.AccessIP
+      description: Indicates the last IP that was investigated for this host.
+      type: String
+    - contextPath: Forescout.Host.VendorClassification
+      description: Indicates the most specific vendor and model detected.
+      type: String
+    - contextPath: Forescout.Host.ManageAgent
+      description: Indicates if the host is running SecureConnector.
+      type: String
+    - contextPath: Forescout.Host.Onsite
+      description: Indicates that a host is connected to the organizational network.
+      type: String
+    - contextPath: Forescout.Host.MacPrefix32
+      description: MAC prefix.
+      type: String
+    - contextPath: Forescout.Host.VaNetfunc
+      description: Reported CDP VoIP device description for VA netfunc.
+      type: String
+    - contextPath: Forescout.Host.NmapDefFp7
+      description: Nmap-OS Fingerprint (Ver. 7.01).
+      type: String
+    - contextPath: Forescout.Host.NmapDefFp5
+      description: Nmap-OS Fingerprint (Ver. 5.3).
+      type: String
+    - contextPath: Forescout.Host.AgentInstallMode
+      description: Indicates the SecureConnector deployment mode installed on the
+        host.
+      type: String
+    - contextPath: Forescout.Host.NmapFp7
+      description: Nmap-OS Class(Ver. 7.01) (Obsolete).
+      type: String
+    - contextPath: Forescout.Host.ClType
+      description: Indicates how CounterACT determines the Network Function property
+        of the endpoint.
+      type: String
+    - contextPath: Forescout.Host.ClRule
+      description: Indicates the rule responsible for classifying the host.
+      type: String
+    - contextPath: Forescout.Host.AgentVisibleMode
+      description: Indicates the SecureConnector visible mode installed on the host.
+      type: String
+    - contextPath: Forescout.Host.OSClassification
+      description: Operating system.
+      type: String
+    - contextPath: Forescout.Host.ClassificationSourceOS
+      description: Indicates how the OS classification property was determined for
+        this endpoint.
+      type: String
+    - contextPath: Forescout.Host.LastNbtReportTime
+      description: Last time the NBT name was reported.
+      type: String
+    - contextPath: Forescout.Host.Misc
+      description: Miscellaneous.
+      type: String
+    - contextPath: Forescout.Host.ClassificationSourceFunc
+      description: Indicates how the Function classification property was determined
+        for this endpoint.
+      type: String
+    - contextPath: Forescout.Host.NmapNetfunc7
+      description: Nmap-Network Function (Ver. 7.01).
+      type: String
+    - contextPath: Forescout.Host.MAC
+      description: ARP spoofing (Obsolete).
+      type: Unknown
+    - contextPath: Forescout.Host.OpenPort
+      description: Open ports.
+      type: Unknown
+    - contextPath: Forescout.Host.GstSignedInStat
+      description: Logged in status.
+      type: String
+    - contextPath: Forescout.Host.DhcpClass
+      description: The device class, according to the DHCP fingerprint.
+      type: String
+    - contextPath: Forescout.Host.ADM
+      description: Admission events.
+      type: String
+    - contextPath: Forescout.Host.DhcpReqFingerprint
+      description: The host DHCP request fingerprint.
+      type: String
+    - contextPath: Forescout.Host.DhcpOptFingerprint
+      description: The host DHCP options fingerprint.
+      type: String
+    - contextPath: Forescout.Host.Ipv4ReportTime
+      description: Indicates the last time that IPv4 reported to the infrastructure.
+      type: String
+    - contextPath: Forescout.Host.DhcpOS
+      description: The device OS, according to the DHCP fingerprint.
+      type: String
+    - contextPath: Forescout.Host.DhcpHostname
+      description: The device host name, as advertised by DHCP.
+      type: String
+    - contextPath: Forescout.Host.IPAddress
+      description: Host IP address.
+      type: String
+    - contextPath: Forescout.Host.MACAddress
+      description: Host MAC address.
+      type: String
+    - contextPath: Forescout.Host.ID
+      description: Forescout ID number for the host.
+      type: Number
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the host.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: MAC address of the host.
+      type: String
+    - contextPath: Endpoint.DHCPServer
+      description: Endpoint DHCP server.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: Hostname of the endpoint.
+      type: String
+    - contextPath: Endpoint.OS
+      description: Endpoint OS.
+      type: String
+    - contextPath: Endpoint.Model
+      description: Vendor and model of the endpoint.
+      type: String
+    - contextPath: Endpoint.Domain
+      description: Domain of the endpoint.
+      type: String
+  - arguments: []
+    description: |-
+      Retrieves a list of all policies defined in the Forescout platform and
+      their sub-rules.
+    name: forescout-get-policies
+    outputs:
+    - contextPath: Forescout.Policy.ID
+      description: Forescout ID for the policy.
+      type: String
+    - contextPath: Forescout.Policy.Name
+      description: Forescout name of the policy.
+      type: String
+    - contextPath: Forescout.Policy.Description
+      description: Description of the policy.
+      type: String
+    - contextPath: Forescout.Policy.Rule
+      description: List of rules that make up the policy.
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: update
+      description: The type of update to perform on a host field.
+      name: update_type
+      predefined:
+      - update
+      - delete
+    - description: The IP address of the target host. Required if 'updated_type' is
+        "update" or "delete".
+      name: host_ip
+      required: true
+    - description: Enter the the name of the field to update. Composite fields should
+        be updated using the 'fields_json' command argument.
+      name: field
+    - description: Value to be assigned to the field specified in the 'field' argument.
+        If the value is a list of items, then items should be separated using a comma.
+      isArray: true
+      name: value
+    - description: 'One may perform multiple field-value assignments using this command
+        argument. The argument should be entered in valid JSON format. This argument
+        is useful for setting composite fields although other fields may be entered
+        as well. For example, ''{"Example_Composite": [{"Shape": "Triangle", "Color":
+        "Beige"}, {"Shape": "Square", "Color": "Violet"}], "String_Field": "Example"}''
+        where ''Example_Composite'' is the name of the Composite field in Forescout
+        and ''Shape'' and ''Color'' are sub fields. In the example, ''String_Field''
+        is a regular host field of type string whose value will be assigned ''Example''.
+        If the composite field was defined in Forescout as an aggregate property then
+        additional records will be appended, otherwise they will be overwritten. '
+      name: fields_json
+    description: Update a host's field. If a List field or Composite field has not
+      been defined in Forescout to 'Aggregate new values from each update' then performing
+      an update operation on a field will overwrite previous data written to that
+      field.
+    name: forescout-update-host-fields
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: add_list_values
+      description: The type of update to perform on a Forescout list.
+      name: update_type
+      predefined:
+      - add_list_values
+      - delete_list_values
+      - delete_all_list_values
+    - description: Names of lists defined in the Forescout platform that you wish
+        to update. If the 'update_type' is set to 'delete_all_list_values' then it
+        is unnecessary to fill in the 'values' command argument. Multiple list names
+        should be separated by a comma. To find names of lists that may be updated,
+        navigate to *Tools* > *Options* > *Lists* in the Forescout platform.
+      isArray: true
+      name: list_names
+      required: true
+    - description: The values to add or delete from the lists entered in the 'list_names'
+        command argument. Multiple values should separated by a comma. Note that the
+        values entered here will be updated for all of the lists entered in the 'list_names'
+        command argument.
+      isArray: true
+      name: values
+    description: Update Forescout lists.
+    name: forescout-update-lists
+  dockerimage: demisto/python3:3.7.3.221
+  runonce: false
+  script: |2-
+
+
+
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    from typing import Dict, List, Tuple, Any, Union, cast
+    import xml.etree.ElementTree as ET_PHONE_HOME
+    from copy import deepcopy
+    from datetime import datetime, timedelta, timezone
+    from dateutil.parser import parse as parsedate
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    PARAMS = demisto.params()
+    WEB_API_CREDENTIALS = PARAMS.get('web_api_credentials')
+    WEB_API_CREDENTIALS = {} if not WEB_API_CREDENTIALS else WEB_API_CREDENTIALS
+    WEB_API_USERNAME = WEB_API_CREDENTIALS.get('identifier', '')
+    WEB_API_PASSWORD = WEB_API_CREDENTIALS.get('password', '')
+
+    DEX_CREDENTIALS = PARAMS.get('dex_credentials')
+    DEX_CREDENTIALS = {} if not DEX_CREDENTIALS else DEX_CREDENTIALS
+    DEX_USERNAME = DEX_CREDENTIALS.get('identifier', '')
+    DEX_PASSWORD = DEX_CREDENTIALS.get('password', '')
+    DEX_ACCOUNT = PARAMS.get('dex_account', '')
+    DEX_ACCOUNT = '' if not DEX_ACCOUNT else DEX_ACCOUNT
+
+    # Remove trailing slash to prevent wrong URL path to service
+    BASE_URL = PARAMS.get('url', '').strip().rstrip('/')
+    # Should we use SSL
+    USE_SSL = not PARAMS.get('insecure', False)
+
+    WEB_AUTH = ''
+    LAST_JWT_FETCH = None
+    # Default JWT validity time set in Forescout Web API
+    JWT_VALIDITY_TIME = timedelta(minutes=5)
+
+    DEX_AUTH = (DEX_USERNAME + '@' + DEX_ACCOUNT, DEX_PASSWORD)
+    DEX_HEADERS = {
+        'Content-Type': 'application/xml',
+        'Accept': 'application/xml'
+    }
+
+    # Host fields to be included in output of get_host_command
+    HOSTFIELDS_TO_INCLUDE = {
+        'os_classification': 'OSClassification',
+        'classification_source_os': 'ClassificationSourceOS',
+        'onsite': 'Onsite',
+        'access_ip': 'AccessIP',
+        'macs': 'MAC',
+        'openports': 'OpenPort',
+        'mac_vendor_string': 'MacVendorString',
+        'cl_type': 'ClType',
+        'cl_rule': 'ClRule',
+        'vendor': 'Vendor',
+        'fingerprint': 'Fingerprint',
+        'gst_signed_in_stat': 'GstSignedInStat',
+        'misc': 'Misc',
+        'prim_classification': 'PrimClassification',
+        'agent_install_mode': 'AgentInstallMode',
+        'vendor_classification': 'VendorClassification',
+        'user_def_fp': 'UserDefFp',
+        'agent_visible_mode': 'AgentVisibleMode',
+        'classification_source_func': 'ClassificationSourceFunc',
+        'dhcp_class': 'DhcpClass',
+        'samba_open_ports': 'SambaOpenPort',
+        'mac_prefix32': 'MacPrefix32',
+        'adm': 'ADM',
+        'last_nbt_report_time': 'LastNbtReportTime',
+        'agent_version': 'AgentVersion',
+        'matched_fingerprints': 'MatchedFingerprint',
+        'manage_agent': 'ManageAgent',
+        'dhcp_req_fingerprint': 'DhcpReqFingerprint',
+        'dhcp_opt_fingerprint': 'DhcpOptFingerprint',
+        'online': 'Online',
+        'nmap_def_fp7': 'NmapDefFp7',
+        'ipv4_report_time': 'Ipv4ReportTime',
+        'nmap_def_fp5': 'NmapDefFp5',
+        'va_netfunc': 'VaNetfunc',
+        'dhcp_os': 'DhcpOS',
+        'engine_seen_packet': 'EngineSeenPacket',
+        'nmap_netfunc7': 'NmapNetfunc7',
+        'nmap_fp7': 'NmapFp7',
+        'dhcp_hostname': 'DhcpHostname'
+    }
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def check_web_api_credentials():
+        """
+        Verify that credentials were entered for Data Exchange (DEX)
+        """
+        if not (WEB_API_USERNAME and WEB_API_PASSWORD):
+            err_msg = 'Error in Forescout Integration - Web API credentials must' \
+                      ' be entered in the Forescout integration configuration in order to execute this command.'
+            return_error(err_msg)
+
+
+    def check_dex_credentials():
+        """
+        Verify that credentials were entered for Data Exchange (DEX)
+        """
+        if not (DEX_USERNAME and DEX_PASSWORD and DEX_ACCOUNT):
+            err_msg = 'Error in Forescout Integration - Data Exchange (DEX) credentials must' \
+                      ' be entered in the Forescout integration configuration in order to execute this command.'
+            return_error(err_msg)
+
+
+    def create_update_lists_request_body(update_type: str, lists: str) -> ET_PHONE_HOME.Element:
+        """
+        Create XML request body formatted to DEX expectations
+
+        Parameters
+        ----------
+        update_type : str
+            The type of update to execute.
+        lists : str
+            The list names and associated values to update the list with.
+
+        Returns
+        -------
+            XML Request Body Element
+        """
+        root = ET_PHONE_HOME.Element('FSAPI', attrib={'TYPE': 'request', 'API_VERSION': '2.0'})
+        transaction = ET_PHONE_HOME.SubElement(root, 'TRANSACTION', attrib={'TYPE': update_type})
+        lists_xml = ET_PHONE_HOME.SubElement(transaction, 'LISTS')
+        if lists:
+            list_val_pairs = lists.split('&')
+            for list_val_pair in list_val_pairs:
+                list_name, *values = list_val_pair.split('=')
+                list_xml = ET_PHONE_HOME.SubElement(lists_xml, 'LIST', attrib={'NAME': list_name})
+                if update_type != 'delete_all_list_values' and values:
+                    list_of_vals = '='.join(values).split(':')
+                    for val in list_of_vals:
+                        val_xml = ET_PHONE_HOME.SubElement(list_xml, 'VALUE')
+                        val_xml.text = val
+
+        return root
+
+
+    def create_update_hostfields_request_body(host_ip: str, update_type: str,
+                                              field: str, value: str, fields_json: str) -> ET_PHONE_HOME.Element:
+        """
+        Create XML request body formatted to DEX expectations
+
+        Parameters
+        ----------
+        host_ip : str
+            IP address of the target host.
+        update_type : str
+            The type of update to execute.
+        field : str
+            The host field to update.
+        value : str
+            The value to assign to the specified host field.
+        fields_json: str
+            Field-value pairs in valid JSON format. Useful for Forescout composite fields.
+
+        Returns
+        -------
+            XML Request Body Element
+        """
+        root = ET_PHONE_HOME.Element('FSAPI', attrib={'TYPE': 'request', 'API_VERSION': '2.0'})
+        transaction = ET_PHONE_HOME.SubElement(root, 'TRANSACTION', attrib={'TYPE': update_type})
+        if update_type == 'update':
+            ET_PHONE_HOME.SubElement(transaction, 'OPTIONS', attrib={'CREATE_NEW_HOST': 'false'})
+
+        ET_PHONE_HOME.SubElement(transaction, 'HOST_KEY', attrib={'NAME': 'ip', 'VALUE': host_ip})
+        props_xml = ET_PHONE_HOME.SubElement(transaction, 'PROPERTIES')
+
+        # parse fields_json
+        non_composite_fields = {}
+        composite_fields: Dict[Any, Any] = {}
+        if fields_json:
+            fields_json_dict = json.loads(fields_json)
+            for key, val in fields_json_dict.items():
+                if isinstance(val, dict):
+                    composite_fields[key] = val
+                elif isinstance(val, list):
+                    if len(val) >= 1 and isinstance(val[0], dict):
+                        composite_fields[key] = val
+                    else:
+                        non_composite_fields[key] = val
+                else:
+                    non_composite_fields[key] = val
+
+        # put non-composite fields all together
+        if field:
+            non_composite_fields[field] = argToList(value)
+
+        for key, val in non_composite_fields.items():
+            prop_xml = ET_PHONE_HOME.SubElement(props_xml, 'PROPERTY', attrib={'NAME': key})
+            if update_type != 'delete':
+                if isinstance(val, list):
+                    for sub_val in val:
+                        val_xml = ET_PHONE_HOME.SubElement(prop_xml, 'VALUE')
+                        val_xml.text = sub_val
+                else:
+                    val_xml = ET_PHONE_HOME.SubElement(prop_xml, 'VALUE')
+                    val_xml.text = val
+
+        if composite_fields:
+            for table_prop_name, values in composite_fields.items():
+                table_property_xml = ET_PHONE_HOME.SubElement(props_xml, 'TABLE_PROPERTY',
+                                                              attrib={'NAME': table_prop_name})
+                if update_type == 'update':
+                    if isinstance(values, list):
+
+                        for row in values:
+                            row_xml = ET_PHONE_HOME.SubElement(table_property_xml, 'ROW')
+
+                            for key, val in row.items():
+                                key_xml = ET_PHONE_HOME.SubElement(row_xml, 'CPROPERTY', attrib={'NAME': key})
+
+                                if isinstance(val, list):
+                                    for sub_val in val:
+                                        value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
+                                        value_xml.text = sub_val
+
+                                else:
+                                    value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
+                                    value_xml.text = val
+                    else:
+                        row_xml = ET_PHONE_HOME.SubElement(table_property_xml, 'ROW')
+                        for key, val in values.items():
+                            key_xml = ET_PHONE_HOME.SubElement(row_xml, 'CPROPERTY', attrib={'NAME': key})
+                            if isinstance(val, list):
+                                for sub_val in val:
+                                    value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
+                                    value_xml.text = sub_val
+                            else:
+                                value_xml = ET_PHONE_HOME.SubElement(key_xml, 'CVALUE')
+                                value_xml.text = val
+
+        return root
+
+
+    def filter_hostfields_data(args: Dict, data: Dict) -> List:
+        """
+        Filter host fields data by get_host_fields_command arguments.
+
+        Parameters
+        ----------
+        args : dict
+            The get_host_fields_command arguments.
+        data : dict
+            The data to filter.
+
+        Returns
+        -------
+        list
+            Filtered list of hostfields
+        """
+        search_term = args.get('search_term')
+        host_fields = data.get('hostFields', [])
+        host_field_type = args.get('host_field_type', 'all_types')
+        if not search_term:
+            # Still check to see if should filter host fields by their type
+            if host_field_type == 'all_types':
+                return host_fields
+            else:
+                host_field_types = argToList(host_field_type)
+                filtered_hostfields = []
+                for host_field in host_fields:
+                    if host_field.get('type') in host_field_types:
+                        filtered_hostfields.append(host_field)
+                return filtered_hostfields
+        case_sensitive = args.get('case_sensitive', 'false')
+        case_sensitive = False if case_sensitive.casefold() == 'false' else True
+        if not case_sensitive:
+            search_term = search_term.casefold()
+        match_exactly = args.get('match_exactly', 'False')
+        match_exactly = False if match_exactly.casefold() == 'false' else True
+        if host_field_type != 'all_types':
+            host_field_type = argToList(host_field_type)
+        search_in = args.get('search_in', 'name')
+        search_in = argToList(search_in)
+
+        filtered_hostfields = []
+        for host_field in host_fields:
+            if isinstance(host_field_type, list):
+                if host_field.get('type') not in host_field_type:
+                    continue
+            vals_to_search = [host_field.get(part) for part in search_in]
+            vals_to_search = ['' if val is None else val for val in vals_to_search]
+            for val in vals_to_search:
+                val_to_search = val
+                if not case_sensitive:
+                    val_to_search = val.casefold()
+                if match_exactly:
+                    if search_term == val_to_search:
+                        filtered_hostfields.append(host_field)
+                        break
+                    else:
+                        continue
+                else:
+                    if search_term in val_to_search:
+                        filtered_hostfields.append(host_field)
+                        break
+
+        return filtered_hostfields
+
+
+    def dict_to_formatted_string(dictionary: Union[Dict, List]) -> str:
+        """
+        Return dictionary as clean string for war room output.
+
+        Parameters
+        ----------
+        dictionary : dict | list
+            The dictionary or list to format as a string.
+
+        Returns
+        -------
+        str
+            Clean string version of a dictionary
+
+        Examples
+        --------
+        >>> example_dict = {'again': 'FsoD',
+        ...                 'church': {'go': 'pArcB', 'month': '2009-08-11 16:42:51'},
+        ...                 'production': 5507,
+        ...                 'so': [9350, 'awzn', 7105, 'mMRxc']}
+        >>> dict_to_formatted_string(example_dict)
+        'again: FsoD, church: {go: pArcB, month: 2009-08-11 16:42:51}, production: 5507, so: [9350, awzn, 7105, mMRxc]'
+        """
+        return json.dumps(dictionary).lstrip('{').rstrip('}').replace('\'', '').replace('\"', '')
+
+
+    def format_policies_data(data: Dict) -> List:
+        """
+        Return policies formatted to Demisto standards.
+
+        Parameters
+        ----------
+        data : dict
+            The data returned from making API call to Forescout Web API policies endpoint.
+
+        Returns
+        -------
+        list
+            Formatted Policies
+        """
+        formatted_policies = []
+        policies = data.get('policies', [])
+        for policy in policies:
+            formatted_policy = {
+                'ID': str(policy.get('policyId')),
+                'Name': policy.get('name'),
+                'Description': policy.get('description')
+            }
+            formatted_rules = []
+            rules = policy.get('rules', [])
+            for rule in rules:
+                formatted_rule = {
+                    'ID': str(rule.get('ruleId')),
+                    'Name': rule.get('name'),
+                    'Description': rule.get('description')
+                }
+                formatted_rules.append(formatted_rule)
+            formatted_policy['Rule'] = formatted_rules
+            formatted_policies.append(formatted_policy)
+        return formatted_policies
+
+
+    def create_web_api_headers() -> Dict:
+        """
+        Update JWT if it has expired and return headers object that formats to Forescout Web API expectations
+
+        Returns
+        -------
+        dict
+            Headers object for the Forescout Web API calls
+        """
+        web_api_login()
+        headers = {
+            'Authorization': WEB_AUTH,
+            'Accept': 'application/hal+json'
+        }
+        return headers
+
+
+    def web_api_login():
+        """
+        Get a JWT (Javascript Web Token) for authorization in calls to Web API
+        """
+        global LAST_JWT_FETCH
+        global WEB_AUTH
+        if not LAST_JWT_FETCH or datetime.now(timezone.utc) >= LAST_JWT_FETCH + JWT_VALIDITY_TIME:
+            url_suffix = '/api/login'
+            headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+            params = {'username': WEB_API_USERNAME, 'password': WEB_API_PASSWORD}
+            response = http_request('POST', url_suffix, headers=headers, params=params, resp_type='response')
+            fetch_time = parsedate(response.headers.get('Date', ''))
+            WEB_AUTH = response.text
+            LAST_JWT_FETCH = fetch_time
+
+
+    def http_request(method: str, url_suffix: str, full_url: str = None, headers: Dict = None,
+                     auth: Tuple = None, params: Dict = None, data: Dict = None, files: Dict = None,
+                     timeout: float = 10, resp_type: str = 'json') -> Any:
+        """
+        A wrapper for requests lib to send our requests and handle requests
+        and responses better
+
+        Parameters
+        ----------
+        method : str
+            HTTP method, e.g. 'GET', 'POST' ... etc.
+        url_suffix : str
+            API endpoint.
+        full_url : str
+            Bypasses the use of BASE_URL + url_suffix. Useful if there is a need to
+            make a request to an address outside of the scope of the integration
+            API.
+        headers : dict
+            Headers to send in the request.
+        auth : tuple
+            Auth tuple to enable Basic/Digest/Custom HTTP Auth.
+        params : dict
+            URL parameters.
+        data : dict
+            Data to be sent in a 'POST' request.
+        files : dict
+            File data to be sent in a 'POST' request.
+        timeout : int
+            The amount of time in seconds a Request will wait for a client to
+            establish a connection to a remote machine.
+        resp_type : str
+            Determines what to return from having made the HTTP request. The default
+            is 'json'. Other options are 'text', 'content' or 'response' if the user
+            would like the full response object returned.
+
+        Returns
+        -------
+        dict | str | bytes | obj
+            Response JSON from having made the request.
+        """
+        try:
+            address = full_url if full_url else BASE_URL + url_suffix
+            res = requests.request(
+                method,
+                address,
+                verify=USE_SSL,
+                params=params,
+                data=data,
+                files=files,
+                headers=headers,
+                auth=auth,
+                timeout=timeout
+            )
+
+            # Handle error responses gracefully
+            if res.status_code not in {200, 304}:
+                err_msg = 'Error in Forescout Integration API call [{}] - {}'.format(res.status_code, res.reason)
+                try:
+                    # Try to parse json error response
+                    res_json = res.json()
+                    message = res_json.get('message')
+                    if message.endswith(' See log for more details.'):
+                        message = message.replace(' See log for more details.', '')
+                    err_msg += '\n{}'.format(message)
+                    return_error(err_msg)
+                except json.decoder.JSONDecodeError:
+                    if res.status_code in {400, 401, 501}:
+                        # Try to parse xml error response
+                        resp_xml = ET_PHONE_HOME.fromstring(res.content)
+                        codes = [child.text for child in resp_xml.iter() if child.tag == 'CODE']
+                        messages = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE']
+                        err_msg += ''.join([f'\n{code}: {msg}' for code, msg in zip(codes, messages)])
+                    return_error(err_msg)
+
+            resp_type = resp_type.casefold()
+            try:
+                if resp_type == 'json':
+                    return res.json()
+                elif resp_type == 'text':
+                    return res.text
+                elif resp_type == 'content':
+                    return res.content
+                else:
+                    return res
+            except json.decoder.JSONDecodeError:
+                return_error(f'Failed to parse json object from response: {res.content}')
+
+        except requests.exceptions.ConnectTimeout:
+            err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
+                      ' is incorrect or that the Server is not accessible from your host.'
+            return_error(err_msg)
+        except requests.exceptions.SSLError:
+            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
+                      ' the integration configuration.'
+            return_error(err_msg)
+        except requests.exceptions.ProxyError:
+            err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
+                      ' selected, try deselecting it.'
+            return_error(err_msg)
+        except requests.exceptions.ConnectionError as e:
+            # Get originating Exception in Exception chain
+            while '__context__' in dir(e) and e.__context__:
+                e = cast(Any, e.__context__)
+
+            error_class = str(e.__class__)
+            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+            err_msg = f'\nERRTYPE: {err_type}\nERRNO: [{e.errno}]\nMESSAGE: {e.strerror}\n' \
+                      f'ADVICE: Check that the Server URL parameter is correct and that you' \
+                      f' have access to the Server from your host.'
+            return_error(err_msg)
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        """
+        Performs API calls to Forescout Web API and DEX that require proper authentication
+        """
+        if WEB_API_USERNAME and WEB_API_PASSWORD:
+            get_hosts({})
+        if DEX_USERNAME and DEX_PASSWORD and DEX_ACCOUNT:
+            update_lists({'update_type': 'add_list_values'})
+        demisto.results('ok')
+
+
+    def get_host(args):
+        fields = args.get('fields', '')
+        ip = args.get('ip', '')
+        mac = args.get('mac', '')
+        id = args.get('id', '')
+        url_suffix = '/api/hosts/'
+        if not (ip or mac or id):
+            err_msg = 'One of the command arguments, \'ip\', \'mac\' or \'id\' must be entered in order to identify the ' \
+                      'endpoint to retrieve. '
+            return_error(err_msg)
+
+        if ip:
+            # API endpoint format - https://{EM.IP}/api/hosts/ip/{ipv4}?fields={prop},..,{prop_n}
+            url_suffix += 'ip/' + ip
+        elif mac:
+            # API endpoint format - https://{EM.IP}/api/hosts/mac/{mac}?fields={prop},..,{prop_n}
+            url_suffix += 'mac/' + mac
+        elif id:
+            # API endpoint format - https://{EM.IP}/api/hosts/{obj_ID}?fields={prop},..,{prop_n}
+            url_suffix += id
+
+        params = {'fields': fields} if fields != '' else None
+        headers = create_web_api_headers()
+        response_data = http_request('GET', url_suffix, headers=headers, params=params, resp_type='json')
+        return response_data
+
+
+    def get_host_command():
+        check_web_api_credentials()
+        args = demisto.args()
+        ip = args.get('ip', '')
+        mac = args.get('mac', '')
+        id = args.get('id', '')
+        identifier = 'IP=' + ip if ip else ('MAC=' + mac if mac else 'ID=' + id)
+        requested_fields = argToList(args.get('fields', ''))
+        data = get_host(args)
+        host = data.get('host', {})
+        fields = host.get('fields', {})
+
+        included_fields = {HOSTFIELDS_TO_INCLUDE.get(key, key): val for key, val in fields.items()}
+        for key, val in included_fields.items():
+            if isinstance(val, list):
+                new_val = [item.get('value') for item in val]
+                included_fields[key] = new_val
+            else:
+                included_fields[key] = val.get('value')
+
+        if not requested_fields:
+            for key in list(included_fields.keys()):
+                if key not in HOSTFIELDS_TO_INCLUDE.values():
+                    del included_fields[key]
+
+        included_fields_readable = {}
+        for key, val in included_fields.items():
+            included_fields_readable[key] = dict_to_formatted_string(val) if isinstance(val, (dict, list)) else val
+
+        content = {
+            'ID': str(host.get('id')),
+            'IPAddress': host.get('ip', ''),
+            'MACAddress': host.get('mac', ''),
+            **included_fields
+        }
+
+        # Construct endpoint object from API data according to Demisto conventions
+        endpoint = {
+            'IPAddress': host.get('ip', ''),
+            'MACAddress': host.get('mac', '')
+        }
+        dhcp_server = fields.get('dhcp_server', {}).get('value')
+        if dhcp_server:
+            endpoint['DHCPServer'] = dhcp_server
+        hostname = fields.get('hostname', {}).get('value')
+        nbt_host = fields.get('nbthost', {}).get('value')
+        hostname = hostname if hostname else nbt_host
+        if hostname:
+            endpoint['Hostname'] = hostname
+        os = fields.get('os_classification', {}).get('value')
+        if os:
+            endpoint['OS'] = os
+        vendor_and_model = fields.get('vendor_classification', {}).get('value')
+        if vendor_and_model:
+            endpoint['Model'] = vendor_and_model
+        domain = fields.get('nbtdomain', {}).get('value')
+        if domain:
+            endpoint['Domain'] = domain
+
+        human_readable_content = deepcopy(content)
+        human_readable_content.update(included_fields_readable)
+
+        context = {
+            'Forescout.Host(val.ID && val.ID === obj.ID)': content,
+            'Endpoint(val.ID && val.ID === obj.ID)': endpoint
+        }
+
+        title = 'Endpoint Details for {}'.format(identifier) if identifier else 'Endpoint Details'
+        human_readable = tableToMarkdown(title, human_readable_content, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
+
+
+    def get_hosts(args={}):
+        url_suffix = '/api/hosts'
+        headers = create_web_api_headers()
+        rule_ids = args.get('rule_ids')
+        fields = args.get('fields')
+        if rule_ids and fields:
+            url_suffix += '?matchRuleId=' + rule_ids + '&' + fields
+        elif rule_ids:
+            url_suffix += '?matchRuleId=' + rule_ids
+        elif fields:
+            url_suffix += '?' + fields
+        response_data = http_request('GET', url_suffix, headers=headers, resp_type='json')
+        return response_data
+
+
+    def get_hosts_command():
+        check_web_api_credentials()
+        args = demisto.args()
+        response_data = get_hosts(args)
+        content = [
+            {
+                'ID': str(x.get('hostId')),
+                'IPAddress': x.get('ip', ''),
+                'MACAddress': x.get('mac', '')
+            } for x in response_data.get('hosts', [])
+        ]
+        endpoints = [
+            {
+                'IPAddress': x.get('ip', ''),
+                'MACAddress': x.get('mac', '')
+            } for x in response_data.get('hosts', [])
+        ]
+        context = {
+            'Forescout.Host(val.ID && val.ID === obj.ID)': content,
+            'Endpoint(val.ID && val.ID === obj.ID)': endpoints
+        }
+        title = 'Active Endpoints'
+        human_readable = tableToMarkdown(title, content, removeNull=True)
+        if not content:
+            demisto.results('No hosts found for the specified filters.')
+        else:
+            return_outputs(readable_output=human_readable, outputs=context, raw_response=response_data)
+
+
+    def get_host_fields():
+        url_suffix = '/api/hostfields'
+        headers = create_web_api_headers()
+        response_data = http_request('GET', url_suffix, headers=headers, resp_type='json')
+        return response_data
+
+
+    def get_host_fields_command():
+        check_web_api_credentials()
+        args = demisto.args()
+        data = get_host_fields()
+        filtered_data = filter_hostfields_data(args, data)
+        if not filtered_data:
+            demisto.results('No host fields matched the specified filters.')
+        else:
+            content = [{key.title(): val for key, val in x.items()} for x in filtered_data]
+            context = {'Forescout.HostField': content}
+            title = 'Index of Host Fields'
+            table_headers = ['Label', 'Name', 'Description', 'Type']
+            human_readable = tableToMarkdown(title, content, headers=table_headers, removeNull=True)
+            return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
+
+
+    def get_policies():
+        url_suffix = '/api/policies'
+        headers = create_web_api_headers()
+        response_data = http_request('GET', url_suffix, headers=headers, resp_type='json')
+        return response_data
+
+
+    def get_policies_command():
+        check_web_api_credentials()
+        data = get_policies()
+        content = format_policies_data(data)
+        readable_content = deepcopy(content)
+        for policy in readable_content:
+            readable_rules = []
+            for rule in policy.get('Rule', []):
+                readable_rules.append(dict_to_formatted_string(rule))
+            policy['Rule'] = readable_rules
+        context = {'Forescout.Policy(val.ID && val.ID === obj.ID)': content}
+        title = 'Forescout Policies'
+        human_readable = tableToMarkdown(title, readable_content, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=context, raw_response=data)
+
+
+    def update_lists(args={}):
+        update_type = args.get('update_type', '')
+        list_names = argToList(args.get('list_names', ''))
+        values = ':'.join(argToList(args.get('values', '')))
+        if values:
+            lists = '&'.join([list_name + '=' + values for list_name in list_names])
+        else:
+            lists = '&'.join(list_names)
+        req_body = create_update_lists_request_body(update_type, lists)
+        data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
+        url_suffix = '/fsapi/niCore/Lists'
+        resp_content = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='content')
+        return resp_content
+
+
+    def update_lists_command():
+        check_dex_credentials()
+        args = demisto.args()
+        response_content = update_lists(args)
+        resp_xml = ET_PHONE_HOME.fromstring(response_content)
+        msg_list = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE']
+        if len(msg_list) >= 1 and msg_list[0] is not None:
+            msg = msg_list[0]
+            msg = msg.replace('[', '').replace(']', '')
+        else:
+            err_msg = 'The response from Forescout could not be parsed correctly. It is uncertain if the list updates ' \
+                      'were successfully executed.'
+            return_error(err_msg)
+        demisto.results(msg)
+
+
+    def update_host_fields(args={}):
+        host_ip = args.get('host_ip', '')
+        update_type = args.get('update_type', '')
+        field = args.get('field', '')
+        value = args.get('value', '')
+        fields_json = args.get('fields_json', '')
+        req_body = create_update_hostfields_request_body(host_ip, update_type, field, value, fields_json)
+        data = ET_PHONE_HOME.tostring(req_body, encoding='UTF-8', method='xml')
+        url_suffix = '/fsapi/niCore/Hosts'
+        resp_content = http_request('POST', url_suffix, headers=DEX_HEADERS, auth=DEX_AUTH, data=data, resp_type='content')
+        return resp_content
+
+
+    def update_host_fields_command():
+        check_dex_credentials()
+        args = demisto.args()
+        update_type = args.get('update_type', '')
+        field = args.get('field', '')
+        host_ip = args.get('host_ip', '')
+        fields_json = args.get('fields_json', '{}')
+        try:
+            fields_json_dict = json.loads(fields_json)
+        except json.decoder.JSONDecodeError:
+            return_error(f'Failed to parse \'fields_json\' command argument - invalid JSON format.')
+
+        # Because the API has an error and says it deletes multiple things when it only deletes one
+        # have to take care of it behind the curtains
+        if update_type == 'delete':
+            temp_args = {'update_type': update_type, 'host_ip': host_ip}
+            for key, val in fields_json_dict.items():
+                temp_args['fields_json'] = json.dumps({key: val})
+                update_host_fields(temp_args)
+            if field:
+                temp_args['fields_json'] = json.dumps({field: ''})
+                update_host_fields(temp_args)
+            temp_args['field'] = ''
+            update_host_fields(args)  # Takes care of composite_field
+
+        response_content = update_host_fields(args)
+
+        resp_xml = ET_PHONE_HOME.fromstring(response_content)
+        msg_list = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE']
+        if len(msg_list) >= 1 and msg_list[0] is not None:
+            msg = msg_list[0]
+            msg = msg.replace('[', '').replace(']', '')
+        else:
+            err_msg = 'The response from Forescout could not be parsed correctly. It is uncertain if the host fields ' \
+                      'were successfully updated.'
+            return_error(err_msg)
+        demisto.results(msg)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    COMMANDS = {
+        'test-module': test_module,
+        'forescout-get-host': get_host_command,
+        'forescout-get-hosts': get_hosts_command,
+        'forescout-get-host-fields': get_host_fields_command,
+        'forescout-get-policies': get_policies_command,
+        'forescout-update-lists': update_lists_command,
+        'forescout-update-host-fields': update_host_fields_command
+    }
+
+    ''' EXECUTION '''
+
+
+    def main():
+        """Main execution block"""
+
+        try:
+            ''' SETUP '''
+
+            if not ((WEB_API_USERNAME and WEB_API_PASSWORD) or (DEX_USERNAME and DEX_PASSWORD)):
+                err_msg = 'The username and password for at least one of the \'Data Exchange (DEX)\' or the \'Web API\' ' \
+                          'credentials are required though it is advisable to enter both in order for the integration to' \
+                          ' be fully functional.'
+                return_error(err_msg)
+
+            if (DEX_USERNAME and DEX_PASSWORD) and not DEX_ACCOUNT:
+                err_msg = 'When entering your \'Data Exchange (DEX)\' credentials, the \'Data Exchange (DEX) Account\' ' \
+                          'configuration parameter is also required. For information on the correct value to enter here' \
+                          ' - see Detailed Instructions (?).'
+                return_error(err_msg)
+
+            # Remove proxy if not set to true in params
+            handle_proxy()
+
+            cmd_name = demisto.command()
+            LOG('Command being called is {}'.format(cmd_name))
+
+            if cmd_name in COMMANDS.keys():
+                COMMANDS[cmd_name]()
+
+        except Exception as e:
+            return_error(str(e))
+
+
+    # python2 uses __builtin__ python3 uses builtins
+    if __name__ == '__builtin__' or __name__ == 'builtins':
+        main()
+  subtype: python3
+  type: python
+system: true

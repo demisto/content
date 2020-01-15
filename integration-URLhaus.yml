@@ -1,0 +1,771 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: URLhaus
+  version: -1
+configuration:
+- defaultvalue: https://urlhaus-api.abuse.ch/v1/
+  display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: "1"
+  display: Blacklists appearances threshold
+  name: threshold
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Compromised (is malicious)
+  name: compromised_is_malicious
+  required: false
+  type: 8
+description: URLhaus has the goal of sharing malicious URLs that are being used for
+  malware distribution.
+detaileddescription: |
+  ## How DBot Score is Calculated
+
+  A URL or domain can have one of the following statuses in a blacklist.
+  - Malicious: the site is a known malware site.
+  - Compromised: the site is legitimate but has been compromised.
+  - Not listed
+
+  If the `compromised_is_malicious` parameter is set to True, then compromised URLs or domains are treated as malicious.
+
+  If the `compromised_is_malicious` parameter is set to False, then compromised URLs or domains are treated as legitimate.
+
+  ### DBot Score: Bad
+  URLs and domains receive a DBot score of Bad if their total number of appearances in blacklists exceeds the `threshold` parameter.
+
+  ### DBot Score: Suspicious
+  URLs and domains receive a DBot score of Suspicious if they appear on at least on blacklist, but their total number of appearances in blacklists does not exceed the `threshold` parameter.
+  If the URL or domain appeared in at least one blacklist, but not enough blacklists to exceed the threshold, it is considered suspicious.
+
+  ### DBot Score: Good
+  URLs and domains receive a DBot score of Good if they do not appear on any blacklists.their total number of appearances in blacklists exceeds the `threshold` parameter.
+
+  ### DBot Score: Empty
+  If there is no information for the URLs and domains, they will not receive a DBot score.
+display: URLhaus
+image: data:image/png;base64,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
+name: URLhaus
+script:
+  commands:
+  - arguments:
+    - description: URL to query.
+      name: url
+      required: true
+    description: Retrieves URL information from URLhaus.
+    name: url
+    outputs:
+    - contextPath: URL.Data
+      description: The URL.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: Vendor that reported the URL as malicious.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: Description of the malicious URL.
+      type: string
+    - contextPath: URLhaus.URL.ID
+      description: Unique identifier of the URLhaus database entry.
+      type: string
+    - contextPath: URLhaus.URL.Status
+      description: The current status of the URL.
+      type: string
+    - contextPath: URLhaus.URL.Host
+      description: The extracted host of the malware URL (IP address or domain name/FQDN).
+      type: string
+    - contextPath: URLhaus.URL.DateAdded
+      description: Date the URL was added to URLhaus.
+      type: date
+    - contextPath: URLhaus.URL.Threat
+      description: The threat corresponding to this malware URL.
+      type: string
+    - contextPath: URLhaus.URL.Blacklist.Name
+      description: Name of the blacklist.
+      type: String
+    - contextPath: URLhaus.URL.Tags
+      description: A list of tags associated with the queried malware URL.
+      type: string
+    - contextPath: URLhaus.URL.Payload.Name
+      description: Payload file name.
+      type: String
+    - contextPath: URLhaus.URL.Payload.Type
+      description: Payload file type.
+      type: String
+    - contextPath: URLhaus.URL.Payload.MD5
+      description: MD5 hash of the HTTP response body (payload).
+      type: String
+    - contextPath: URLhaus.URL.Payload.VT.Result
+      description: VirusTotal results for the payload.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: URLhaus.URL.Blacklist.Status
+      description: Status of the URL in the blacklist.
+      type: String
+    - contextPath: URLhaus.URL.Payload.VT.Link
+      description: Link to the VirusTotal report.
+      type: String
+  - arguments:
+    - description: Domain to query.
+      name: domain
+      required: true
+    description: Retrieves domain information from URLhaus.
+    name: domain
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name, for example, google.com.
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: URLhaus.Domain.FirstSeen
+      description: Date that the IP was seen for the first time (UTC).
+      type: Date
+    - contextPath: URLhaus.Domain.Blacklist.Name
+      description: The status of the domain in different blacklists.
+      type: String
+    - contextPath: URLhaus.Domain.URL
+      description: URLs observed on this domain.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor that reported the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: Description of the malicious domain.
+      type: String
+    - contextPath: URLhaus.Domain.Blacklist.Status
+      description: Status of the URL in the blacklist.
+      type: String
+  - arguments:
+    - description: MD5 hash or SHA256 hash of the file to query.
+      name: file
+      required: true
+    description: Retrieves file information from URLhaus.
+    name: file
+    outputs:
+    - contextPath: File.Size
+      description: File size (in bytes).
+      type: Number
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: URLhaus.File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: URLhaus.File.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: URLhaus.File.Type
+      description: 'File type guessed by URLhaus, for example: .exe, .doc.'
+      type: String
+    - contextPath: URLhaus.File.Size
+      description: File size (in bytes).
+      type: Number
+    - contextPath: URLhaus.File.Signature
+      description: Malware family.
+      type: String
+    - contextPath: URLhaus.File.FirstSeen
+      description: Date and time (UTC) that URLhaus first saw this file (payload).
+      type: Date
+    - contextPath: URLhaus.File.LastSeen
+      description: Date and time (UTC) that URLhaus last saw this file (payload).
+      type: Date
+    - contextPath: URLhaus.File.DownloadLink
+      description: Location (URL) where you can download a copy of this file.
+      type: String
+    - contextPath: URLhaus.File.VirusTotal.Percent
+      description: 'AV detection (percentage), for example: 24.14.'
+      type: Number
+    - contextPath: URLhaus.File.VirusTotal.Link
+      description: Link to the VirusTotal report.
+      type: String
+    - contextPath: URLhaus.File.URL
+      description: A list of malware URLs associated with this payload (max. 100).
+      type: Unknown
+  - arguments:
+    - description: SHA256 hash of the file to download.
+      name: file
+      required: true
+    description: Downloads a malware sample from URLhaus.
+    execution: true
+    name: urlhaus-download-sample
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.Name
+      description: File name.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: string
+    - contextPath: File.EntryID
+      description: File entry ID.
+      type: string
+    - contextPath: File.Info
+      description: File information.
+      type: string
+    - contextPath: File.Type
+      description: File type.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.Extension
+      description: File extension.
+      type: string
+  dockerimage: demisto/python3:3.7.3.286
+  runonce: false
+  script: |2-
+
+
+
+
+    ''' IMPORTS '''
+    import os
+    import traceback
+    import requests
+    import zipfile
+    import io
+    from datetime import datetime as dt
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+
+    # Remove trailing slash to prevent wrong URL path to service
+    API_URL = demisto.params()['url'].rstrip('/')
+
+    # Should we use SSL
+    USE_SSL = not demisto.params().get('insecure', False)
+
+    # Remove proxy if not set to true in params
+    if not demisto.params().get('proxy'):
+        os.environ.pop('HTTP_PROXY', None)
+        os.environ.pop('HTTPS_PROXY', None)
+        os.environ.pop('http_proxy', None)
+        os.environ.pop('https_proxy', None)
+
+    THRESHOLD = int(demisto.params().get('threshold', 1))
+
+    # disable-secrets-detection-start
+    # Whether compromised websites are considered malicious or not. See the blacklists output in
+    # https://urlhaus-api.abuse.ch/
+    # disable-secrets-detection-end
+    COMPROMISED_IS_MALICIOUS = demisto.params().get('compromised_is_malicious', False)
+
+    # Headers to be sent in requests
+    HEADERS = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json'
+    }
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_request(method, command, data=None):
+        url = f'{API_URL}/{command}/'
+        res = requests.request(method,
+                               url,
+                               verify=USE_SSL,
+                               data=data,
+                               headers=HEADERS)
+
+        if res.status_code != 200:
+            raise Exception(f'Error in API call {url} [{res.status_code}] - {res.reason}')
+
+        return res
+
+
+    def reformat_date(date):
+        try:
+            return dt.strptime(date.rstrip(' UTC'), '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S')
+        except Exception:
+            return 'Unknown'
+
+
+    def extract_zipped_buffer(buffer):
+        with io.BytesIO() as bio:
+            bio.write(buffer)
+            with zipfile.ZipFile(bio) as z:
+                return z.read(z.namelist()[0])
+
+
+    def query_url_information(url):
+        return http_request('POST',
+                            'url',
+                            f'url={url}')
+
+
+    def query_host_information(host):
+        return http_request('POST',
+                            'host',
+                            f'host={host}')
+
+
+    def query_payload_information(hash_type, hash):
+        return http_request('POST',
+                            'payload',
+                            f'{hash_type}_hash={hash}')
+
+
+    def download_malware_sample(sha256):
+        return http_request('GET',
+                            f'download/{sha256}')
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        http_request('POST', 'url')
+
+
+    def calculate_dbot_score(blacklists, threshold, compromised_is_malicious):
+        dbot_score = 0
+        description = 'Not listed in any blacklist'
+        blacklist_appearances = []
+        for blacklist, status in blacklists.items():
+            if blacklist == 'spamhaus_dbl':
+                if status.endswith('domain') or (status.startswith('abused') and compromised_is_malicious):
+                    blacklist_appearances.append((blacklist, status))
+            elif status == 'listed':
+                blacklist_appearances.append((blacklist, None))
+
+        if len(blacklist_appearances) >= threshold:
+            description = ''
+            for appearance in blacklist_appearances:
+                if appearance[1] is not None:
+                    description += f'Listed in {appearance[0]}. '
+                else:
+                    description += f'Listed as {appearance[1]} in {appearance[0]}. '
+            dbot_score = 3
+        elif len(blacklist_appearances) > 0:
+            dbot_score = 2
+        else:
+            dbot_score = 1
+
+        return dbot_score, description
+
+
+    def url_command():
+        url = demisto.args().get('url')
+        try:
+            url_information = query_url_information(url).json()
+
+            ec = {
+                'URL': {
+                    'Data': url
+                },
+                'DBotScore': {
+                    'Type': 'url',
+                    'Vendor': 'URLhaus',
+                    'Indicator': url
+                }
+            }
+
+            if url_information['query_status'] == 'ok':
+                # URLhaus output
+                blacklist_information = []
+                blacklists = url_information.get('blacklists', {})
+                for bl_name, bl_status in blacklists.items():
+                    blacklist_information.append({'Name': bl_name,
+                                                  'Status': bl_status})
+
+                date_added = reformat_date(url_information.get('date_added'))
+                urlhaus_data = {
+                    'ID': url_information.get('id', ''),
+                    'Status': url_information.get('url_status', ''),
+                    'Host': url_information.get('host', ''),
+                    'DateAdded': date_added,
+                    'Threat': url_information.get('threat', ''),
+                    'Blacklist': blacklist_information,
+                    'Tags': url_information.get('tags', [])
+                }
+
+                payloads = []
+                for payload in url_information.get('payloads', []):
+                    vt_data = payload.get('virustotal', None)
+                    vt_information = None
+                    if vt_data:
+                        vt_information = {
+                            'Result': float(vt_data.get('percent', 0)),
+                            'Link': vt_data.get('link', '')
+                        }
+                    payloads.append({
+                        'Name': payload.get('filename', 'unknown'),
+                        'Type': payload.get('file_type', ''),
+                        'MD5': payload.get('response_md5', ''),
+                        'VT': vt_information
+                    })
+
+                urlhaus_data['Payload'] = payloads
+
+                # DBot score calculation
+                dbot_score, description = calculate_dbot_score(url_information.get('blacklists', {}), THRESHOLD,
+                                                               COMPROMISED_IS_MALICIOUS)
+
+                ec['DBotScore']['Score'] = dbot_score
+                if dbot_score == 3:
+                    ec['URL']['Malicious'] = {
+                        'Vendor': 'URLhaus',
+                        'Description': description
+                    }
+
+                ec['URLhaus.URL(val.ID && val.ID === obj.ID)'] = urlhaus_data
+
+                human_readable = tableToMarkdown(f'URLhaus reputation for {url}',
+                                                 {
+                                                     'URLhaus link': url_information.get("urlhaus_reference", "None"),
+                                                     'Description': description,
+                                                     'URLhaus ID': urlhaus_data['ID'],
+                                                     'Status': urlhaus_data['Status'],
+                                                     'Threat': url_information.get("threat", ""),
+                                                     'Date added': date_added
+                                                 })
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': url_information,
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                    'EntryContext': ec
+                })
+            elif url_information['query_status'] == 'no_results':
+                ec['DBotScore']['Score'] = 0
+
+                human_readable = f'## URLhaus reputation for {url}\n' \
+                    f'No results!'
+
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': url_information,
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                    'EntryContext': ec
+                })
+            elif url_information['query_status'] == 'invalid_url':
+                human_readable = f'## URLhaus reputation for {url}\n' \
+                    f'Invalid URL!'
+
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': url_information,
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                    'EntryContext': ec
+                })
+            else:
+                demisto.results({
+                    'Type': entryTypes['error'],
+                    'ContentsFormat': formats['text'],
+                    'Contents': f'Query results = {url_information["query_status"]}'
+                })
+
+        except Exception:
+            demisto.debug(traceback.format_exc())
+            return_error('Failed getting url data, please verify the arguments and parameters')
+
+
+    def domain_command():
+        domain = demisto.args()['domain']
+
+        try:
+            domain_information = query_host_information(domain).json()
+
+            ec = {
+                'Domain': {
+                    'Name': domain
+                },
+                'DBotScore': {
+                    'Type': 'domain',
+                    'Vendor': 'URLhaus',
+                    'Indicator': domain
+                }
+            }
+
+            if domain_information['query_status'] == 'ok':
+                # URLHaus output
+                blacklist_information = []
+                blacklists = domain_information.get('blacklists', {})
+                for bl_name, bl_status in blacklists.items():
+                    blacklist_information.append({'Name': bl_name,
+                                                  'Status': bl_status})
+
+                first_seen = reformat_date(domain_information.get('firstseen'))
+
+                urlhaus_data = {
+                    'FirstSeen': first_seen,
+                    'Blacklist': blacklists,
+                    'URL': domain_information.get('urls', [])
+                }
+
+                # DBot score calculation
+                dbot_score, description = calculate_dbot_score(domain_information.get('blacklists', {}), THRESHOLD,
+                                                               COMPROMISED_IS_MALICIOUS)
+
+                ec['DBotScore']['Score'] = dbot_score
+                if dbot_score == 3:
+                    ec['domain']['Malicious'] = {
+                        'Vendor': 'URLhaus',
+                        'Description': description
+                    }
+
+                ec['URLhaus.Domain(val.Name && val.Name === obj.Name)'] = urlhaus_data
+
+                human_readable = tableToMarkdown(f'URLhaus reputation for {domain}',
+                                                 {
+                                                     'URLhaus link': domain_information.get('urlhaus_reference', 'None'),
+                                                     'Description': description,
+                                                     'First seen': first_seen,
+                                                 })
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': domain_information,
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                    'EntryContext': ec
+                })
+            elif domain_information['query_status'] == 'no_results':
+                ec['DBotScore']['Score'] = 0
+
+                human_readable = f'## URLhaus reputation for {domain}\n' \
+                    f'No results!'
+
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': domain_information,
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                    'EntryContext': ec
+                })
+            elif domain_information['query_status'] == 'invalid_host':
+                human_readable = f'## URLhaus reputation for {domain}\n' \
+                    f'Invalid domain!'
+
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': domain_information,
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                    'EntryContext': ec
+                })
+            else:
+                demisto.results({
+                    'Type': entryTypes['error'],
+                    'ContentsFormat': formats['text'],
+                    'Contents': f'Query results = {domain_information["query_status"]}'
+                })
+
+        except Exception:
+            demisto.debug(traceback.format_exc())
+            return_error('Failed getting domain data, please verify the arguments and parameters')
+
+
+    def file_command():
+        hash = demisto.args()['file']
+        if len(hash) == 32:
+            hash_type = 'md5'
+        elif len(hash) == 64:
+            hash_type = 'sha256'
+        else:
+            return_error('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types')
+
+        try:
+            file_information = query_payload_information(hash_type, hash).json()
+
+            if file_information['query_status'] == 'ok' and file_information['md5_hash']:
+                # URLhaus output
+                first_seen = reformat_date(file_information.get('firstseen'))
+                last_seen = reformat_date(file_information.get('lastseen'))
+
+                urlhaus_data = {
+                    'MD5': file_information.get('md5_hash', ''),
+                    'SHA256': file_information.get('sha256_hash', ''),
+                    'Type': file_information.get('file_type', ''),
+                    'Size': int(file_information.get('file_size', '')),
+                    'Signature': file_information.get('signature', ''),
+                    'FirstSeen': first_seen,
+                    'LastSeen': last_seen,
+                    'DownloadLink': file_information.get('urlhaus_download', ''),
+                    'URL': file_information.get('urls', [])
+                }
+
+                virus_total_data = file_information.get('virustotal')
+                if virus_total_data:
+                    urlhaus_data['VirusTotal'] = {
+                        'Percent': float(file_information.get('virustotal', {'percent': 0})['percent']),
+                        'Link': file_information.get('virustotal', {'link': ''})['link']
+                    }
+
+                ec = {
+                    'File': {
+                        'Size': urlhaus_data.get('Size', 0),
+                        'MD5': urlhaus_data.get('MD5', ''),
+                        'SHA256': urlhaus_data.get('SHA256')
+                    },
+                    'URLhaus.File(val.MD5 && val.MD5 === obj.MD5)': urlhaus_data
+                }
+
+                human_readable = tableToMarkdown(f'URLhaus reputation for {hash_type.upper()} : {hash}',
+                                                 {
+                                                     'URLhaus link': urlhaus_data.get('DownloadLink', ''),
+                                                     'Signature': urlhaus_data.get('Signature', ''),
+                                                     'MD5': urlhaus_data.get('MD5', ''),
+                                                     'SHA256': urlhaus_data.get('SHA256', ''),
+                                                     'First seen': first_seen,
+                                                     'Last seen': last_seen
+                                                 })
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': file_information,
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                    'EntryContext': ec
+                })
+            elif (file_information['query_status'] == 'ok' and not file_information['md5_hash']) or \
+                    file_information['query_status'] == 'no_results':
+                human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \
+                    f'No results!'
+
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': file_information,
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                })
+            elif file_information['query_status'] in ['invalid_md5', 'invalid_sha256']:
+                human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \
+                    f'Invalid {file_information["query_status"].lstrip("invalid_").upper()}!'
+
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': file_information,
+                    'HumanReadable': human_readable,
+                    'HumanReadableFormat': formats['markdown'],
+                })
+            else:
+                demisto.results({
+                    'Type': entryTypes['error'],
+                    'ContentsFormat': formats['text'],
+                    'Contents': f'Query results = {file_information["query_status"]}'
+                })
+
+        except Exception:
+            print(traceback.format_exc())
+            demisto.debug(traceback.format_exc())
+            return_error('Failed getting file data, please verify the arguments and parameters')
+
+
+    def urlhaus_download_sample_command():
+        """
+        The response can be either the zipped sample (content-type = application/zip), or JSON (content-type = text/html)
+        containing the query status.
+        """
+        file_sha256 = demisto.args()['file']
+        res = download_malware_sample(file_sha256)
+
+        try:
+            if len(res.content) == 0:
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'HumanReadable': f'No results for SHA256: {file_sha256}',
+                    'HumanReadableFormat': formats['markdown']
+                })
+            elif res.headers['content-type'] == 'text/html' and res.json()['query_status'] == 'not_found':
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': res.json(),
+                    'HumanReadable': f'No results for SHA256: {file_sha256}',
+                    'HumanReadableFormat': formats['markdown']
+                })
+            elif res.headers['content-type'] == 'application/zip':
+                demisto.results(fileResult(file_sha256, extract_zipped_buffer(res.content)))
+            else:
+                raise Exception
+                # Handle like an exception
+        except Exception:
+            demisto.results({
+                'Type': entryTypes['error'],
+                'ContentsFormat': formats['text'],
+                'Contents': res.content
+            })
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() == 'url':
+            url_command()
+        elif demisto.command() == 'domain':
+            domain_command()
+        elif demisto.command() == 'file':
+            file_command()
+        elif demisto.command() == 'urlhaus-download-sample':
+            urlhaus_download_sample_command()
+
+    # Log exceptions
+    except Exception as e:
+        LOG(str(e))
+        LOG.print_log()
+        raise
+  type: python
+system: true

@@ -1,0 +1,318 @@
+description: Deprecated. Use the Failed Login - Slack v2 playbook instead.
+id: Failed Login Playbook With Slack
+inputs: []
+name: Failed Login Playbook With Slack
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: e0772674-d7ff-43df-8075-a871655a3f9b
+      iscommand: false
+      name: start_task
+      type: start
+      version: -1
+    taskid: e0772674-d7ff-43df-8075-a871655a3f9b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      message:
+        simple: We noticed failed-login attempts with your user ID, please confirm
+          it was your attempts
+      option1: {}
+      option2: {}
+      task:
+        simple: "3"
+      user:
+        simple: ${incident.labels.Email}
+    separatecontext: false
+    task:
+      brand: ""
+      clonedfrom: 7a39f05d-23c9-412d-8e36-3dd1ba0dd2f2
+      description: Ask user regarding his/her failed login attempts
+      id: cdd77c13-ca81-4c68-8679-19d08de8fb71
+      iscommand: false
+      name: Confirm failed login with user
+      scriptName: SlackAskUser
+      type: regular
+      version: -1
+    taskid: cdd77c13-ca81-4c68-8679-19d08de8fb71
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 200
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Answer `yes` if failed login attempt made by the user
+      id: 58679e35-4e24-4d2a-89ba-22fbd161f308
+      iscommand: false
+      name: Was the failed login attempt by the user?
+      version: -1
+    taskid: 58679e35-4e24-4d2a-89ba-22fbd161f308
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      addLabels: {}
+      customFieldName: {}
+      customFieldValue: {}
+      details: {}
+      labels: {}
+      name: {}
+      owner: {}
+      playbook: {}
+      severity:
+        simple: High
+      stage: {}
+      type: {}
+      updatePlaybookForType: {}
+    separatecontext: false
+    task:
+      brand: ""
+      id: ce32bc35-0679-4b9b-842f-e4b0c942a157
+      iscommand: false
+      name: Raise Incident Severity to High
+      scriptName: IncidentSet
+      type: regular
+      version: -1
+    taskid: ce32bc35-0679-4b9b-842f-e4b0c942a157
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 48,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    scriptarguments:
+      message:
+        simple: Should we reset your password?
+      option1: {}
+      option2: {}
+      task:
+        simple: "6"
+      user:
+        simple: ${incident.labels.Email}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 987f04ae-98f1-4e27-8ef3-1a4f459acaa2
+      iscommand: false
+      name: Ask user should we reset her password
+      scriptName: SlackAskUser
+      type: regular
+      version: -1
+    taskid: 987f04ae-98f1-4e27-8ef3-1a4f459acaa2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "9"
+      "yes":
+      - "7"
+    note: false
+    scriptarguments:
+      message:
+        simple: Would you like us to reset your password?
+      option1: {}
+      option2: {}
+      task:
+        simple: "6"
+      user:
+        simple: ${incident.labels.Email}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Answer `yes` if password should be reset
+      id: 6b4648d9-512a-417c-86e6-d468d05c5b63
+      iscommand: false
+      name: Should we reset the password?
+      type: condition
+      version: -1
+    taskid: 6b4648d9-512a-417c-86e6-d468d05c5b63
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      username:
+        simple: ${incident.labels.User}
+    separatecontext: false
+    task:
+      brand: ""
+      clonedfrom: b061d5be-194d-4413-804b-ea47a7f05317
+      description: Expire user password
+      id: a12faaf4-cbbe-49ce-8539-f4ed61279deb
+      iscommand: false
+      name: Expire Password
+      scriptName: ADExpirePassword
+      type: regular
+      version: -1
+    taskid: a12faaf4-cbbe-49ce-8539-f4ed61279deb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 732,
+          "y": 894
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      IgnoreAddURL: {}
+      channel: {}
+      entry: {}
+      group: {}
+      message:
+        simple: Your password was reset
+      to:
+        simple: ${incident.labels.Email}
+    separatecontext: false
+    task:
+      brand: slack
+      clonedfrom: 5e3d77e5-2172-4f74-87b6-c54e0f70fa62
+      description: Notify user that his/her password has been reset
+      id: 0531af1c-0b85-40c8-89c3-e1d22b064ad6
+      iscommand: true
+      name: Notify User on Slack
+      script: slack|||slack-send
+      type: regular
+      version: -1
+    taskid: 0531af1c-0b85-40c8-89c3-e1d22b064ad6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 732,
+          "y": 1069
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      notes:
+        simple: User verified he did the attempt
+      reason:
+        simple: Not an attack
+    separatecontext: false
+    task:
+      brand: ""
+      id: abd944e7-152b-4e45-8e2f-92cd19ea6bb4
+      iscommand: false
+      name: Close the incident
+      scriptName: CloseInvestigation
+      type: regular
+      version: -1
+    taskid: abd944e7-152b-4e45-8e2f-92cd19ea6bb4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_9_no": 0.71
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 1064,
+        "x": 48,
+        "y": 50
+      }
+    }
+  }

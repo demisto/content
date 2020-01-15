@@ -1,0 +1,28 @@
+args:
+- default: true
+  description: The system name
+  name: system
+  required: true
+comment: Removes the Demisto D2 agent from the system using d2_remove command.
+commonfields:
+  id: D2Remove
+  version: -1
+enabled: true
+name: D2Remove
+runas: DBotWeakRole
+runonce: false
+script: |2-
+
+
+
+
+  result = demisto.executeCommand('d2_remove', demisto.args())
+
+  if isError(result[0]):
+      demisto.results(result)
+  else:
+      demisto.results('D2 agent removed successfully')
+scripttarget: 0
+system: true
+tags: []
+type: python

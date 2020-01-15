@@ -1,0 +1,23 @@
+args:
+- default: true
+  description: The System to remote execute on, can be a list of systems
+  name: system
+  required: true
+comment: Returns processes details from a remote system using OSQuery
+commonfields:
+  id: OSQueryProcesses
+  version: -1
+dependson:
+  must:
+  - OSQueryBasicQuery
+name: OSQueryProcesses
+runonce: false
+script: |-
+  QUERY = "select * from processes"
+
+  demisto.results(demisto.executeCommand("OSQueryBasicQuery", {'query':QUERY, 'system':demisto.args()['system']}))
+scripttarget: 0
+system: true
+tags:
+- OSQuery
+type: python

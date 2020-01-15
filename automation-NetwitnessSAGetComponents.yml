@@ -1,0 +1,30 @@
+args:
+- default: true
+  description: '[optional string] Query must contain page, start, limit'
+  name: query
+comment: Get a list of components in the NetWitness architecture
+commonfields:
+  id: NetwitnessSAGetComponents
+  version: -1
+dependson:
+  must:
+  - nw-get-components
+name: NetwitnessSAGetComponents
+runonce: false
+script: |-
+  resp = demisto.executeCommand("nw-get-components", demisto.args())
+
+  if isError(resp[0]):
+    demisto.results(resp)
+  else:
+    data = demisto.get(resp[0], "Contents.components")
+    if data:
+        data = flattenTable(data)
+        demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+    else:
+        demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- RSA NetWitness Security Analytics
+type: python

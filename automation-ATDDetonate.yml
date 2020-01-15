@@ -1,0 +1,195 @@
+args:
+- default: true
+  description: Analyzer profile ID. The profile ID number can be found in the UI Policy/Analyzer
+    Profile page, OR using command atd-list-analyzer-profiles, under vmProfileid key
+    result
+  name: vmProfileList
+- auto: PREDEFINED
+  description: This parameter accepts four values — '0', '1', '2' and '3'. • 0 — Regular
+    file upload • 1 — URL submission — URL link is processed inside analyzer VM •
+    2 — Submit file with URL • 3 — URL Download — File from URL is firstly downloaded
+    and then analyzed
+  name: submitType
+  predefined:
+  - "0"
+  - "1"
+  - "2"
+  - "3"
+  required: true
+- description: Any valid web URL.
+  name: url
+- description: Maximum 128-character string.
+  name: messageId
+- description: ' IPv4 address of the source system or gateway from where the file
+    is downloaded.'
+  name: srcIp
+- description: ' IPv4 address of the target endpoint.'
+  name: dstIp
+- auto: PREDEFINED
+  description: Value '0' indicates corresponding taskid in API response. Value '1'
+    indicates -1 as taskid in API response.
+  name: skipTaskId
+  predefined:
+  - "0"
+  - "1"
+- auto: PREDEFINED
+  description: Value '0' indicates skip sample analysis if it is analyzed previously
+    . Value '1' indicates do not skip sample analysis if it is not analyzed previously.
+  name: analyzeAgain
+  predefined:
+  - "0"
+  - "1"
+- auto: PREDEFINED
+  description: Value '0' indicates no user interaction is needed during sample analysis.
+    Value '1' indicates user interaction is needed during sample analysis.
+  name: xMode
+  predefined:
+  - "0"
+  - "1"
+- auto: PREDEFINED
+  description: ' This parameter indicates priority of sample analysis. run_now assigns
+    highest priority (i.e., sample is analyzed right away), add_to_q puts sample in
+    waiting state if there is a waiting queue of samples, default is run_now'
+  name: filePriorityQ
+  predefined:
+  - run_now
+  - add_to_q
+- description: entry ID
+  name: entryID
+- auto: PREDEFINED
+  defaultValue: json
+  description: 'iType can be one of the following types: • html — HTML report • txt
+    — Text report • xml — XML report • zip — All files packaged in a single zip file
+    • json — Same as xml but in the JSON format • ioc - Indicators of Compromise format
+    • stix - Structured Threat Information expression. Stix generation is disabled,
+    by default. Use set stixreportstatus enable to enable it. • pdf - Portable Document
+    Format • sample - Download sample from McAfee Advanced Threat Defense'
+  name: reportType
+  predefined:
+  - html
+  - txt
+  - xml
+  - zip
+  - json
+  - ioc
+  - stix
+  - pdf
+  - sample
+  required: true
+- description: Timeout in seconds. Default is 10 minutes.
+  name: timeout
+- description: Interval to poll for results. Default is 10 seconds.
+  name: interval
+comment: Detonate File or URL through McAfee ATD
+commonfields:
+  id: ATDDetonate
+  version: -1
+dependson:
+  must:
+  - atd-file-upload
+  - atd-check-status
+  - atd-get-report
+name: ATDDetonate
+outputs:
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+runonce: false
+script: |-
+  import json
+  from time import sleep
+
+  res = []
+  timeout = 960
+  dArgs = demisto.args()
+
+  if 'timeout' in demisto.args():
+      timeout = int(demisto.args()['timeout'])
+  interval = 10
+  if 'interval' in demisto.args():
+      interval = int(demisto.args()['interval'])
+
+  file = demisto.get(demisto.args(),'file')
+
+  atdDone = False
+  taskID = ""
+
+  ### Upload file/url and get taskID
+  resp = demisto.executeCommand('atd-file-upload', dArgs)
+  if isError(resp[0]):
+      demisto.results(resp)
+      sys.exit(0)
+  else:
+      upload_res = demisto.get(resp[0],'Contents.results')
+      if upload_res and isinstance(upload_res,list):
+          taskID = demisto.get(upload_res[0],'taskId')
+      else:
+          demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Coudn't extract TaskID from upload" })
+          sys.exit(0)
+
+  if taskID == "-1":
+      demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "File type not supported" })
+      sys.exit(0)
+
+  ############ Poll stage ############
+  status = None
+  istate = None
+  sec = 0
+
+  while sec < timeout and not atdDone:
+      ######## Get status
+      resp = demisto.executeCommand('atd-check-status',{'taskId':taskID})
+      if isError(resp[0]):
+          demisto.results(resp)
+          sys.exit(0)
+
+      status = demisto.get(resp[0],'Contents.results.status')
+      istate = demisto.get(resp[0],'Contents.results.istate')
+
+      ##### find status
+      if int(istate) in [1,2]:
+          atdDone = True
+      ### continue loop
+      else:
+          sec += interval
+          sleep(interval)
+  ############ Get results ############
+  if not atdDone:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not retrieve results from ATD (may be due to timeout). last status = {0}'.format(status) } )
+      sys.exit(0)
+  if istate and int(istate) in [1,2]:
+      reportType = 'json'
+      if demisto.get(demisto.args(),'reportType'):
+          reportType = demisto.args()['reportType']
+      demisto.results(demisto.executeCommand('atd-get-report',{'taskId':taskID, 'type' : reportType}))
+  else:
+      demisto.results({ "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'ATD: Failed to detonate source, exit status = {0}'.format(status) })
+scripttarget: 0
+system: true
+tags:
+- file
+- enhancement
+- atd
+timeout: 960ns
+type: python

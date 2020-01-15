@@ -1,0 +1,701 @@
+description: |-
+  Detonates a File using the McAfee Advanced Threat Defense sandbox.
+  Advanced Threat Defense supports the following File Types:
+  32-bit Portable Executables (PE)files; 64-bit PE+files
+  exe, sys, dll, com, scr, cpl, ocx, cgi
+  Microsoft Office Suite documents
+  doc,dotm, docx, dotx, xls, ppam, xlsx, pps, xlsb, ppsx, xlsm, ppsm, ppt, ppt, pptx, pptm, rtf, shs, xltm, sldm, xltx, sldx, xlam, thmx, docm, xar
+  Just Systems Ichitaro documents
+  jtd, jtdc
+  Adobe
+  pdf, swf
+  Compressed files
+  gz, 7z, tgz, msi, zip, lzh, cab, lzma, rar
+  Android application package
+  apk, Java, JAR, CLASS, Java Script, Java bin files
+  Image files
+  jpeg, png, gif
+  Other file types
+  cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
+id: ATD - Detonate File
+inputs:
+- description: The file to detonate. File is taken from the context.
+  key: File
+  required: false
+  value:
+    complex:
+      root: File
+- description: Polling frequency - how often the polling command should run (minutes)
+  key: Interval
+  required: false
+  value:
+    simple: "1"
+- description: How much time to wait before a timeout occurs (minutes)
+  key: Timeout
+  required: false
+  value:
+    simple: "15"
+name: ATD - Detonate File
+outputs:
+- contextPath: ATD.Task.taskId
+  description: The task ID of the sample uploaded
+  type: string
+- contextPath: ATD.Task.jobId
+  description: The job ID of the sample uploaded
+  type: string
+- contextPath: ATD.Task.messageId
+  description: The message Id relevant to the sample uploaded
+  type: string
+- contextPath: ATD.Task.srcIp
+  description: Source IPv4 address
+  type: string
+- contextPath: ATD.Task.destIp
+  description: Destination IPv4 address
+  type: string
+- contextPath: ATD.Task.MD5
+  description: MD5 of the sample uploaded
+  type: string
+- contextPath: ATD.Task.SHA1
+  description: SHA1 of the sample uploaded
+  type: string
+- contextPath: ATD.Task.SHA256
+  description: SHA256 of the sample uploaded
+  type: string
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: string
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+  type: string
+- contextPath: File.EntryID
+  description: The Entry ID of the sample
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score (only in case of report type=json)
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score (only in case of report type=json)
+  type: number
+- contextPath: IP.Address
+  description: IP's relevant to the sample
+  type: string
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report file
+  type: string
+- contextPath: InfoFile.Extension
+  description: The extension of the report file
+  type: string
+- contextPath: InfoFile.Name
+  description: The name of the report file
+  type: string
+- contextPath: InfoFile.Info
+  description: The info of the report file
+  type: string
+- contextPath: InfoFile.Size
+  description: The size of the report file
+  type: number
+- contextPath: InfoFile.Type
+  description: The type of the report file
+  type: string
+- contextPath: File
+  description: File object
+  type: unknown
+- contextPath: File.Malicious
+  description: File Malicious object
+  type: unknown
+- contextPath: DBotScore
+  description: DBotScore object
+  type: unknown
+- contextPath: InfoFile
+  description: Report file object
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: '-'
+      id: 489b704c-bef9-40e7-8aa8-f74cca308a94
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 489b704c-bef9-40e7-8aa8-f74cca308a94
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ATD.Task.taskId
+              operator: isNotEqualNumber
+              right:
+                value:
+                  simple: "-1"
+          root: ATD.Task.taskId
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: taskId
+      PollingCommandName:
+        simple: atd-check-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: ATD.Task(val.status != 'Completed').taskId
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: a846a181-2b08-4280-8508-58e628e10a73
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: a846a181-2b08-4280-8508-58e628e10a73
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1245
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    scriptarguments:
+      jobId: {}
+      taskId:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ATDTask.status
+              operator: isEqualString
+              right:
+                value:
+                  simple: Completed
+          root: ATDTask
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: taskId
+            operator: getField
+      threshold: {}
+      type:
+        simple: pdf
+    separatecontext: false
+    task:
+      brand: ""
+      description: Retrieve the reports from McAfee ATD.
+      id: e73794b6-a925-4e53-83f5-d1d764b62a48
+      iscommand: true
+      name: McAfee ATD Get Report
+      script: '|||atd-get-report'
+      type: regular
+      version: -1
+    taskid: e73794b6-a925-4e53-83f5-d1d764b62a48
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1770
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: finished
+      id: e589b774-3cee-4dff-8e14-788ef3590dfa
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: e589b774-3cee-4dff-8e14-788ef3590dfa
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1945
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: McAfee Advanced Threat Defense
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |
+        Verify that there is a valid instance of McAfee ATD enabled.
+      id: fddc93e3-f6fc-481c-8696-1bdaaf591562
+      iscommand: false
+      name: Is McAfee ATD sandbox enabled?
+      type: condition
+      version: -1
+    taskid: fddc93e3-f6fc-481c-8696-1bdaaf591562
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ATD.Task.taskId(val != -1)
+          operator: isExists
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks that valid files only have been sent to detonation.
+      id: ac109c6f-fb89-498f-8ba7-877e50ee9019
+      iscommand: false
+      name: Filter taskId
+      type: condition
+      version: -1
+    taskid: ac109c6f-fb89-498f-8ba7-877e50ee9019
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1070
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    scriptarguments:
+      jobId: {}
+      taskId:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ATD.Task.taskId
+              operator: isNotEqualNumber
+              right:
+                value:
+                  simple: "-1"
+          root: ATD.Task.taskId
+    separatecontext: false
+    task:
+      brand: ""
+      description: Updates the status of the tasks in the context.
+      id: 7543cf0f-a33a-4bf3-8bac-7a5669cb4f44
+      iscommand: true
+      name: atd-check-status
+      script: '|||atd-check-status'
+      type: regular
+      version: -1
+    taskid: 7543cf0f-a33a-4bf3-8bac-7a5669cb4f44
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1420
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: EntryID
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Type
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Extension
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+                  - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: File.Info
+                    operator: match
+                    right:
+                      value:
+                        simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+                root: File
+          operator: isExists
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "14"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if file type is supported.
+      id: d8e19b0c-3dfa-41f8-86fa-2d12ff711340
+      iscommand: false
+      name: Is File type supported?
+      type: condition
+      version: -1
+    taskid: d8e19b0c-3dfa-41f8-86fa-2d12ff711340
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    task:
+      brand: ""
+      description: Set the file object into context.
+      id: 3814f559-a639-4e80-8d6e-c74b9e96e495
+      iscommand: false
+      name: Set File to context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 3814f559-a639-4e80-8d6e-c74b9e96e495
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.File
+          operator: isExists
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks that there is a file in the playbook’s input.
+      id: 9b8022fc-dfd0-4806-8ead-65f53804065f
+      iscommand: false
+      name: Is there a File to Detonate?
+      type: condition
+      version: -1
+    taskid: 9b8022fc-dfd0-4806-8ead-65f53804065f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      append: {}
+      key:
+        simple: ATDTask
+      value:
+        complex:
+          accessor: Task
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ATD.Task.taskId
+              operator: isNotEqualNumber
+              right:
+                value:
+                  simple: "-1"
+          root: ATD
+    separatecontext: false
+    task:
+      brand: ""
+      description: '-'
+      id: 5ae9c6b1-314f-44c8-8f95-8aa76fc6e658
+      iscommand: false
+      name: Set Context
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 5ae9c6b1-314f-44c8-8f95-8aa76fc6e658
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1595
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      analyzeAgain: {}
+      dstIp: {}
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: inputs.File.Type
+              operator: match
+              right:
+                value:
+                  simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+            - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: inputs.File.Info
+              operator: match
+              right:
+                value:
+                  simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+            - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: inputs.File.Extension
+              operator: match
+              right:
+                value:
+                  simple: .*(?:EXE|SYS|DLL|COM|SCR|CPL|OCX|CGI|DOC|DOTM|DOCX|DOTX|XLS|PPAM|XSLX|PPS|XLSB|PPSX|XLSM|PPSM|PPT|PPTX|PPTM|RTF|SHS|XLTM|SLDM|XLTX|SLDX|XLAM|THMX|DOCM|XAR|JTD|JTDC|PDF|SWF|GZ|7Z|TGZ|MSI|ZIP|LZH|CAB|LZMA|APK|JAR|CLASS|JPEG|PNG|GIF|CMD|ACE|BAT|ARJ|VBS|CHM|XML|LNK|URL|MOF|HTM|OCX|HTML|POTM|EML|POTX|MSG|PS1|VB|REG|VBA|WSC|VBE|WSF|VBS|WSH)\b
+          root: inputs.File
+      fileName: {}
+      filePriorityQ: {}
+      messageId: {}
+      skipTaskId: {}
+      srcIp: {}
+      submitType:
+        simple: "0"
+      url: {}
+      vmProfileList: {}
+      xMode: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: upload a file/web URL for dynamic analysis by using the provided
+        Analyzer Profile. Only single file/web URL can be submitted at a time.
+      id: 6e299488-408a-4b9d-82d0-cb053caf322e
+      iscommand: true
+      name: Mcafee ATD Upload File
+      script: '|||atd-file-upload'
+      type: regular
+      version: -1
+    taskid: 6e299488-408a-4b9d-82d0-cb053caf322e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 830,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,31 @@
+{
+	"category": "",
+	"dataType": "indicators",
+	"dateRange": {
+		"fromDate": "0001-01-01T00:00:00Z",
+		"fromDateLicense": "0001-01-01T00:00:00Z",
+		"period": {
+			"by": "",
+			"byFrom": "days",
+			"byTo": "",
+			"field": "",
+			"fromValue": 7,
+			"toValue": null
+		},
+		"toDate": "0001-01-01T00:00:00Z"
+	},
+	"id": "indicators-manual-user",
+	"isPredefined": true,
+	"name": "Manual Reputation Indicators by User",
+	"params": {
+		"groupBy": [
+			"setBy"
+		]
+	},
+	"query": "manualScore:T",
+	"size": 10,
+	"sort": null,
+	"sortValues": null,
+	"version": -1,
+	"widgetType": "bar"
+}

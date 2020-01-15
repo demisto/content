@@ -1,0 +1,44 @@
+args:
+- default: true
+  description: Hash value to look up
+  name: input
+  required: true
+- auto: PREDEFINED
+  defaultValue: "no"
+  description: Whether to calculate reputation even if it is manual set - yes/no
+  name: forceCalc
+  predefined:
+  - "yes"
+  - "no"
+comment: Evaluate reputation of a hash and return a score between 0 and 3 (0 - unknown,
+  1 - known good, 2 - suspicious, 3 - known bad). If the indicator reputation was
+  manually set, the manual value will be returned.
+commonfields:
+  id: DataHashReputation
+  version: -1
+dependson:
+  must:
+  - file
+deprecated: true
+name: DataHashReputation
+runonce: false
+script: |-
+  var score = -1;
+  var res = executeCommand("findIndicators", {"query": "type:File* and value:\"" + args.input + "\" and manualScore:T"})
+  if (args.forceCalc != 'yes' && res[0] && res[0].Contents[0]) {
+      score = res[0].Contents[0].score;
+  } else {
+      var rep = executeCommand('file', {file: args.input});
+      var scores = dq(rep, 'EntryContext.DBotScore.Score');
+      for (var i = 0; scores && i < scores.length; i++) {
+          if (scores[i] && score < scores[i]) {
+            score = scores[i];
+          }
+      }
+  }
+  return score < 0 ? 0 : score;
+scripttarget: 0
+system: true
+tags:
+- reputation
+type: javascript

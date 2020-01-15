@@ -1,0 +1,67 @@
+args:
+- default: true
+  description: CSV list of IP addresses to identify.
+  name: ip
+  required: true
+comment: Search Carbon Black for connection to specified IP addresses.
+commonfields:
+  id: CBFindIP
+  version: -1
+dependson:
+  must: []
+enabled: true
+name: CBFindIP
+outputs:
+- contextPath: Process.Path
+  description: Process path.
+  type: String
+- contextPath: Process.PID
+  description: Process PID.
+  type: Number
+- contextPath: Process.MD5
+  description: Process MD5 hash.
+  type: String
+- contextPath: Process.Hostname
+  description: Process hostname.
+  type: String
+- contextPath: Process.Name
+  description: Process name.
+  type: String
+- contextPath: Process.CbSegmentID
+  description: Carbon Black "segment" where this process instance is stored. Required
+    to fetch additional information for a process.
+  type: String
+- contextPath: Process.CbID
+  description: Carbon Black unique ID for this process instance. Required (together
+    with CbSegmentID) to fetch additional information for a process.
+  type: String
+- contextPath: Process.Endpoint
+  description: The endpoint of the process.
+  type: String
+runas: DBotWeakRole
+runonce: false
+script: |2-
+
+
+
+  t = []  # type: list
+  found = []
+  ips = argToList(demisto.args()['ip'])
+  for ip in ips:
+      for e in demisto.executeCommand('cb-get-processes', {'query': 'ipaddr:' + ip}):
+          if isError(e):
+              return_error(e['Contents'])
+          else:
+              found.append(ip)
+              t += e['HumanReadable']
+  if t:
+      appendContext("found_ips", ','.join(found), dedup=True)
+      demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': e['HumanReadable'],
+                       'EntryContext': e['EntryContext']})
+scripttarget: 0
+system: true
+tags:
+- carbon-black
+- endpoint
+- enhancement
+type: python

@@ -1,0 +1,404 @@
+description: Ensures that ePO servers are updated to the latest McAfee published AV
+  signatures (DAT file version).
+id: playbook11
+inputs: []
+name: McAfee ePO Repository Compliance Playbook
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+      - "2"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: ee018e04-2610-4998-87d0-f5217127bbad
+      iscommand: false
+      name: start_task
+      type: start
+      version: -1
+    taskid: ee018e04-2610-4998-87d0-f5217127bbad
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: epo
+      id: 4d3e8911-2cd9-4f8c-89fa-1d1418bc3dfa
+      iscommand: true
+      name: Retrieve DAT version and date from McAfee
+      script: epo|||epo-get-latest-dat
+      type: regular
+      version: -1
+    taskid: 4d3e8911-2cd9-4f8c-89fa-1d1418bc3dfa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 284,
+          "y": 186
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    scriptarguments:
+      repos:
+        simple: ${olddatrepos}
+    separatecontext: false
+    task:
+      brand: epo
+      id: b7e28ac8-487e-4946-8316-7361f08ac1c5
+      iscommand: true
+      name: Initiate update task in each local repository
+      script: epo|||epo-update-repository
+      type: regular
+      version: -1
+    taskid: b7e28ac8-487e-4946-8316-7361f08ac1c5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 284,
+          "y": 524
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    scriptarguments:
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: ePO Update Successful.
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      subject:
+        simple: 'Demisto: ePO Update Results'
+      to:
+        simple: ${incident.labels.adminEmail}
+    separatecontext: false
+    task:
+      brand: ""
+      id: 620023d1-63b0-4834-81a2-74dd20437dda
+      iscommand: false
+      name: Send report to admin with update results
+      scriptName: SendEmail
+      type: regular
+      version: -1
+    taskid: 620023d1-63b0-4834-81a2-74dd20437dda
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 115,
+          "y": 1177
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    scriptarguments:
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: ePO Update Error. Please review status of Demisto incident ${incident.id}
+          - ${incident.name}
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      subject:
+        simple: 'Demisto: Faulty ePO Repositories Alert'
+      to:
+        simple: ${incident.labels.adminEmail}
+    separatecontext: false
+    task:
+      brand: ""
+      id: dccfaaf4-cca5-44d3-8818-6a5131b502ed
+      iscommand: false
+      name: Send email alert with list of faulty repositories to admin
+      scriptName: SendEmail
+      type: regular
+      version: -1
+    taskid: dccfaaf4-cca5-44d3-8818-6a5131b502ed
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 1177
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      notes: {}
+      reason:
+        simple: AuditCompleted
+    separatecontext: false
+    task:
+      brand: ""
+      id: 220a0d1d-b7cc-403f-8750-526d3bf55b51
+      iscommand: false
+      name: Close the investigation
+      scriptName: CloseInvestigation
+      type: regular
+      version: -1
+    taskid: 220a0d1d-b7cc-403f-8750-526d3bf55b51
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -204,
+          "y": 1356
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    separatecontext: false
+    task:
+      brand: epo
+      description: check the existing DAT file version in ePO
+      id: dd5d9578-ca9e-4a3b-8088-940627f3fe9e
+      iscommand: true
+      name: epo-get-current-dat
+      script: epo|||epo-get-current-dat
+      type: regular
+      version: -1
+    taskid: dd5d9578-ca9e-4a3b-8088-940627f3fe9e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -175,
+          "y": 186
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "10"
+    note: false
+    results:
+    - AreValuesEqual
+    scriptarguments:
+      left:
+        simple: ${mcafee.latestDAT}
+      right:
+        simple: ${mcafee.epoDAT=val.substr(0,val.indexOf('.'))}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal.
+      id: 4405829c-0e70-4c29-8a33-3c17a9644b00
+      iscommand: false
+      name: Check if ePO has latest DAT from McAfee
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: 4405829c-0e70-4c29-8a33-3c17a9644b00
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 355
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    scriptarguments:
+      seconds:
+        simple: "300"
+    separatecontext: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: 8de9cf55-b3d6-46d0-8aa6-3de9bcd2a64b
+      iscommand: false
+      name: Wait for 5 minutes
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: 8de9cf55-b3d6-46d0-8aa6-3de9bcd2a64b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 284,
+          "y": 683
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    scriptarguments:
+      extend-context:
+        simple: mcafee.newEpoDAT=productDetectionProductVersion
+    separatecontext: false
+    task:
+      brand: epo
+      description: check the existing DAT file version in ePO
+      id: b766e4a2-8988-46e1-84ab-d91d118d48a7
+      iscommand: true
+      name: Get ePO current DAT version
+      script: epo|||epo-get-current-dat
+      type: regular
+      version: -1
+    taskid: b766e4a2-8988-46e1-84ab-d91d118d48a7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 284,
+          "y": 837
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    note: false
+    results:
+    - AreValuesEqual
+    scriptarguments:
+      left:
+        simple: ${mcafee.latestDAT}
+      right:
+        simple: ${mcafee.newEpoDAT=val.substr(1,val.indexOf('.'))}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal.
+      id: 5b82d2b7-4ac6-4759-8f19-4810dff0b0ad
+      iscommand: false
+      name: Check if ePO has latest DAT from McAfee
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: 5b82d2b7-4ac6-4759-8f19-4810dff0b0ad
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 284,
+          "y": 1003
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      addLabels: {}
+      customFieldName: {}
+      customFieldValue: {}
+      details: {}
+      labels: {}
+      name: {}
+      owner: {}
+      playbook: {}
+      severity:
+        simple: High
+      stage: {}
+      type: {}
+      updatePlaybookForType: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Modify incident info such as name, owner, type, etc.
+      id: 5e480762-0617-4ad1-80e3-8bead4c6adf5
+      iscommand: false
+      name: Set incident to High severity
+      scriptName: IncidentSet
+      type: regular
+      version: -1
+    taskid: 5e480762-0617-4ad1-80e3-8bead4c6adf5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 1356
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1401,
+        "width": 1187,
+        "x": -204,
+        "y": 50
+      }
+    }
+  }

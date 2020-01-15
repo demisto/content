@@ -1,0 +1,27 @@
+args:
+- default: true
+  description: the string value to convert to JSON.
+  name: value
+  required: true
+comment: 'Parse a given JSON string "value" to a representative object. Example: "{''a'':''value''}"
+  => { a: "value"}.'
+commonfields:
+  id: ParseJSON
+  version: -1
+enabled: true
+name: ParseJSON
+runonce: false
+script: |-
+  var value = args.value;
+  try {
+    return JSON.parse(value);
+  } catch(err) {
+    return err;
+  }
+  return null;
+scripttarget: 0
+system: true
+tags:
+- transformer
+- string
+type: javascript

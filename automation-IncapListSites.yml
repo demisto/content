@@ -1,0 +1,36 @@
+args:
+- description: Numeric identifier of the account to operate on. If not specified,
+    operation will be performed on the account identified by the authentication parameters
+  name: account_id
+- description: The number of objects to return in the response. Defaults to 50
+  name: page_size
+- description: The page to return starting from 0. Default to 0
+  name: page_num
+comment: List sites for an account
+commonfields:
+  id: IncapListSites
+  version: -1
+dependson:
+  must:
+  - incap-list-sites
+name: IncapListSites
+runonce: false
+script: |2
+
+  resp = demisto.executeCommand("incap-list-sites", demisto.args())
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.sites")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+scripttarget: 0
+system: true
+tags:
+- Incapsula
+type: python

@@ -1,0 +1,388 @@
+description: Detonate one or more URLs using the Threat Grid integration. This playbook
+  returns relevant reports to the War Room and URL reputations to the context data.
+id: detonate_url_-_threatgrid
+inputs:
+- description: URL of the sites to detonate.
+  key: URL
+  required: false
+  value:
+    complex:
+      accessor: Data
+      root: URL
+- description: Name of the file to detonate.
+  key: FileName
+  required: false
+  value:
+    simple: file-detonated-via-demisto
+- description: The VM to use (string)
+  key: VM
+  required: false
+  value: {}
+- description: Name of the Threat Grid playbook to apply to this sample run
+  key: Playbook
+  required: false
+  value:
+    simple: default
+- description: The sample is marked private if this is present, and set to any value
+    other than false. private
+  key: Private
+  required: false
+  value: {}
+- description: a string used for identifying the source of the detonation (user defined)
+  key: Source
+  required: false
+  value: {}
+- description: A comma-separated list of tags applied to the sample.
+  key: Tags
+  required: false
+  value: {}
+- description: Polling frequency - how often the polling command should run (minutes)
+  key: Interval
+  required: false
+  value:
+    simple: "1"
+- description: How much time to wait before a timeout occurs (minutes)
+  key: Timeout
+  required: false
+  value:
+    simple: "15"
+name: Detonate URL - ThreatGrid
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: unknown
+- contextPath: File.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: File.Size
+  description: File size
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.Name
+  description: Filename
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File
+  description: The File object
+  type: unknown
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: Sample.State
+  description: The sample state
+- contextPath: Sample.ID
+  description: The sample ID
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 220
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Threat Grid
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: |
+        Verify that there is a valid instance of Threat Grid enabled.
+      id: cacefc85-644c-48de-8ff3-545308a282eb
+      iscommand: false
+      name: Is ThreatGrid enabled?
+      type: condition
+      version: -1
+    taskid: cacefc85-644c-48de-8ff3-545308a282eb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 390
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Done
+      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1280
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    scriptarguments:
+      ids:
+        complex:
+          accessor: Sample.ID
+          root: ThreatGrid
+    separatecontext: false
+    task:
+      brand: Threat Grid
+      description: Download the pdf report to the War Room.
+      id: 1c8055d2-4a2e-46cb-8022-90113cbf80c1
+      iscommand: true
+      name: ThreatGrid Get Samples State
+      script: Threat Grid|||threat-grid-get-samples-state
+      type: regular
+      version: -1
+    taskid: 1c8055d2-4a2e-46cb-8022-90113cbf80c1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1101
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    scriptarguments:
+      Ids:
+        complex:
+          accessor: Sample.ID
+          root: ThreatGrid
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: ids
+      PollingCommandName:
+        simple: threat-grid-get-samples-state
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: ThreatGrid.Sample(val.State!=='succ' && val.State!=='fail').ID
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 7bd8d248-92aa-4d9f-8133-a468f9c72d21
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 7bd8d248-92aa-4d9f-8133-a468f9c72d21
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 940
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    scriptarguments:
+      file-id:
+        complex:
+          accessor: EntryID
+          root: File
+      filename:
+        complex:
+          root: inputs.FileName
+      playbook:
+        complex:
+          root: inputs.Playbook
+      private:
+        complex:
+          root: inputs.Private
+      source:
+        complex:
+          root: inputs.Source
+      tags:
+        complex:
+          root: inputs.Tags
+      vm:
+        complex:
+          root: inputs.VM
+    separatecontext: false
+    task:
+      brand: Threat Grid
+      description: Uplads a sample to threat grid
+      id: 409321e3-f6ef-4943-8dae-3bf0f34b6a8d
+      iscommand: true
+      name: ThreatGrid Upload File
+      script: Threat Grid|||threat-grid-upload-sample
+      type: regular
+      version: -1
+    taskid: 409321e3-f6ef-4943-8dae-3bf0f34b6a8d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 780
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    scriptarguments:
+      urls:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    task:
+      brand: Threat Grid
+      description: Create a file from url
+      id: 41ac2f94-eae1-4116-8773-8912d1f99d37
+      iscommand: true
+      name: URL to File
+      script: Threat Grid|||threat-grid-url-to-file
+      type: regular
+      version: -1
+    taskid: 41ac2f94-eae1-4116-8773-8912d1f99d37
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 610
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_14_yes": 0.58,
+      "5_6_#default#": 0.87
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1125,
+        "width": 380,
+        "x": 140,
+        "y": 220
+      }
+    }
+  }

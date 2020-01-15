@@ -1,0 +1,23 @@
+args:
+- default: true
+  description: The System to remote execute on, can be a list of systems
+  name: system
+  required: true
+comment: Returns open sockets details from a remote system using OSQuery
+commonfields:
+  id: OSQueryOpenSockets
+  version: -1
+dependson:
+  must:
+  - OSQueryBasicQuery
+name: OSQueryOpenSockets
+runonce: false
+script: |-
+  QUERY = "select distinct pid, family, protocol, local_address, local_port, remote_address, remote_port, path from process_open_sockets where path <> '' or remote_address <> '';"
+
+  demisto.results(demisto.executeCommand("OSQueryBasicQuery", {'query':QUERY, 'system':demisto.args()['system']}))
+scripttarget: 0
+system: true
+tags:
+- OSQuery
+type: python

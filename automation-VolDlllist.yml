@@ -1,0 +1,30 @@
+args:
+- description: Path to memory dump file on the system being used
+  name: memdump
+  required: true
+- description: System with Volatility installed to be used for the analysis
+  name: system
+  required: true
+- description: Process ID to pass to volatility as a parameter of the dlllist command
+  name: pid
+  required: true
+- description: Volatility profile to use
+  name: profile
+comment: Volatility script for command ldrmodules
+commonfields:
+  id: VolDlllist
+  version: -1
+name: VolDlllist
+runonce: false
+script: |-
+  var cmdline = 'dlllist -p ' + args.pid;
+  var out = executeCommand('Volatility', {memdump:args.memdump, profile:args.profile, system: args.system, cmd:cmdline});
+  return out;
+scripttarget: 0
+system: true
+tags:
+- memory
+- forensics
+- volatility
+- server
+type: javascript

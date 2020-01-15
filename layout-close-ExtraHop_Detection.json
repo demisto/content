@@ -1,0 +1,42 @@
+{
+	"id": "ExtraHop Detection",
+	"kind": "close",
+	"name": "",
+	"sections": [
+		{
+			"description": "",
+			"fields": [
+				{
+					"fieldId": "incident_closereason",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				},
+				{
+					"fieldId": "incident_closenotes",
+					"id": "",
+					"isVisible": true,
+					"modified": "0001-01-01T00:00:00Z",
+					"sortValues": null,
+					"version": 0
+				}
+			],
+			"id": "",
+			"isVisible": true,
+			"modified": "0001-01-01T00:00:00Z",
+			"name": "Basic Information",
+			"query": null,
+			"queryType": "",
+			"readOnly": false,
+			"sortValues": null,
+			"type": "",
+			"version": 0
+		}
+	],
+	"sortValues": null,
+	"system": true,
+	"typeId": "ExtraHop Detection",
+	"version": -1
+}

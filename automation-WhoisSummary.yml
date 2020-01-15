@@ -1,0 +1,52 @@
+args:
+- default: true
+  description: Input for the WHOIS query
+  name: query
+  required: true
+comment: A simple script that outputs a shorter summary of the !whois command output
+commonfields:
+  id: WhoisSummary
+  version: -1
+dependson:
+  must:
+  - whois
+deprecated: true
+name: WhoisSummary
+runonce: false
+script: |-
+  // A simple example script for parsing WHOIS data
+  // Regexp for matching "<key>: <value>" pattern
+  var re = /^([a-zA-Z\s]+):\s(.+)$/;
+  function stringStartsWith (string, prefix) {
+      return string.slice(0, prefix.length) == prefix;
+  }
+  var res = executeCommand('whois', {'using-brand': 'whois', 'query':args.query});
+  var lines = res[0].Contents.split('\n');
+  var out = '';
+  for (var i=0; i < lines.length; ++i) {
+      var str = lines[i];
+      str.trim();
+      if (str.length === 0) {
+          continue;
+      }
+      // Skip '%' lines
+      if (stringStartsWith(str, '%')) {
+          continue;
+      }
+      // Stop when reaching the "last update" line
+      if (stringStartsWith(str, '>>> Last update')) {
+          break;
+      }
+      // See if the line matches the regex
+      if (re.test(str)) {
+          out += str + '\n';
+      }
+  }
+  return out;
+scripttarget: 0
+system: true
+tags:
+- threat-intel
+- whois
+- server
+type: javascript

@@ -1,0 +1,26 @@
+args:
+- description: Include these AD attributes of the resulting objects in addition to
+    the default ones
+  name: attributes
+comment: 'Retrieve the list of Computer objects stored in Active Directory. Use the
+  "attributes" argument to include specific attributes in the results. '
+commonfields:
+  id: ADListComputers
+  version: -1
+dependson:
+  must:
+  - ad-search
+deprecated: true
+name: ADListComputers
+runonce: false
+script: |-
+  # Optional arguments and default values
+  attrs = 'name'
+  if demisto.get(demisto.args(), 'attributes'):
+      attrs += "," + demisto.args()['attributes']
+  demisto.results( demisto.executeCommand( 'AdSearch', { 'filter' : "(objectCategory=Computer)", 'attributes' : attrs } ) )
+scripttarget: 0
+system: true
+tags:
+- active directory
+type: python

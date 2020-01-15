@@ -1,0 +1,33 @@
+args:
+- default: true
+  defaultValue: Investigation Summary
+  description: Report name to generate (should correspond with report type)
+  name: name
+- defaultValue: pdf
+  description: Report type to generate (should correspond with report name)
+  name: type
+- description: Incident ID to generate report for
+  name: incidentId
+comment: |-
+  A script to generate investigation summary report in an automated way
+  Can be used in post-processing flow as well.
+commonfields:
+  id: GenerateInvestigationSummaryReport
+  version: -1
+enabled: true
+name: GenerateInvestigationSummaryReport
+outputs:
+- contextPath: Report.Name
+  description: Report file name
+  type: string
+- contextPath: Report.FileID
+  description: File ID of the report
+  type: string
+runonce: false
+script: 'return executeCommand("generateSummaryReport", {name: args.name, type: args.type,
+  incidentId: args.incidentId})'
+scripttarget: 0
+system: true
+tags:
+- post-processing
+type: javascript

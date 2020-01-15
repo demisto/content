@@ -1,0 +1,463 @@
+description: |
+  Launches a C2sec scan by domain name and waits for the scan to finish by polling its status in pre-defined intervals.
+id: C2SEC-Domain Scan
+inputs:
+- description: Domain Name
+  key: DomainName
+  required: true
+  value: {}
+- description: How often the polling command should run (in minutes).
+  key: interval
+  required: false
+  value:
+    simple: "1"
+- description: How much time to wait before a timeout occurs (minutes)
+  key: timeout
+  required: false
+  value:
+    simple: "600"
+name: C2SEC-Domain Scan
+outputs: []
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: start
+      id: d1afa5d6-4a69-47ca-84a6-202ed4d1140f
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d1afa5d6-4a69-47ca-84a6-202ed4d1140f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    scriptarguments:
+      domain:
+        simple: ${inputs.DomainName}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Initiates a re-scan of a domain that was already scanned.
+      id: c787c282-0901-4da4-81a5-7d0361be8707
+      iscommand: true
+      name: Re-scan a domain
+      script: '|||irisk-rescan-domain'
+      type: regular
+      version: -1
+    taskid: c787c282-0901-4da4-81a5-7d0361be8707
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    scriptarguments:
+      Ids:
+        simple: ${C2sec.Scan.workitemid}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: irisk-get-scan-status
+      Timeout:
+        simple: "15"
+      dt:
+        simple: C2sec.Scan(val.status!='completed').workitemid
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 469ba851-6113-4383-8abc-1fde81438f0f
+      iscommand: false
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 469ba851-6113-4383-8abc-1fde81438f0f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+      - "10"
+      - "13"
+    note: true
+    scriptarguments:
+      domain:
+        simple: ${inputs.DomainName}
+      severity: {}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Get the issues located under the provided domain.
+      id: 2312cdca-7415-418f-8702-6c03401bf3db
+      iscommand: true
+      name: Get domain issues
+      script: '|||irisk-get-domain-issues'
+      type: regular
+      version: -1
+    taskid: 2312cdca-7415-418f-8702-6c03401bf3db
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 895
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Domain.Issue.Component
+                root: C2sec
+          operator: containsGeneral
+          right:
+            value:
+              simple: credential
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "9"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if leaked credentials were reported.
+      id: b571543e-e4af-488c-8b0d-af3806f7ccc4
+      iscommand: false
+      name: Leaked credentials reported?
+      type: condition
+      version: -1
+    taskid: b571543e-e4af-488c-8b0d-af3806f7ccc4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    scriptarguments:
+      component:
+        simple: credential
+      domain:
+        simple: ${inputs.DomainName}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Retrieves a report for leaked credentials.
+      id: 4c4aaef8-4481-4daf-840d-a5e72041c222
+      iscommand: true
+      name: Get leaked credentials report
+      script: '|||irisk-get-scan-results'
+      type: regular
+      version: -1
+    taskid: 4c4aaef8-4481-4daf-840d-a5e72041c222
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: C2sec.Issue.component
+          operator: containsGeneral
+          right:
+            value:
+              simple: application
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "11"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if application vulnerabilities were reported.
+      id: 0eda1184-3b5b-4e9a-8510-56cdd0bd4c38
+      iscommand: false
+      name: Application vulnerabilities reported?
+      type: condition
+      version: -1
+    taskid: 0eda1184-3b5b-4e9a-8510-56cdd0bd4c38
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1070
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    scriptarguments:
+      component:
+        simple: application
+      domain:
+        simple: ${inputs.DomainName}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Retrieves a report for application vulnerabilities.
+      id: b530da9b-d948-4749-876d-455a61a35a6e
+      iscommand: true
+      name: Get application vulnerabilities report
+      script: '|||irisk-get-scan-results'
+      type: regular
+      version: -1
+    taskid: b530da9b-d948-4749-876d-455a61a35a6e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1245
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    scriptarguments:
+      component:
+        simple: network
+      domain:
+        simple: ${inputs.DomainName}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Retrieves a report for exposed network services.
+      id: 637adabc-b7f4-4227-88b8-fdba3ab17bd3
+      iscommand: true
+      name: Get network services exposed report
+      script: '|||irisk-get-scan-results'
+      type: regular
+      version: -1
+    taskid: 637adabc-b7f4-4227-88b8-fdba3ab17bd3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 1245
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Playbook finishes.
+      id: 60398f3f-7ea9-4f3b-8b2f-51ceba4f8560
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 60398f3f-7ea9-4f3b-8b2f-51ceba4f8560
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1420
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: C2sec irisk
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks is there is an active instance of the C2sec integration
+        enabled.
+      id: 8538fb1e-092a-4708-8dac-91aab140bf80
+      iscommand: false
+      name: Is C2sec enabled?
+      type: condition
+      version: -1
+    taskid: 8538fb1e-092a-4708-8dac-91aab140bf80
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 195
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    scriptarguments:
+      id:
+        simple: ${C2sec.Scan.workitemid}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Retrieves the latest scan results from C2sec.
+      id: 0bb2491c-c83a-43b3-8266-57462038006e
+      iscommand: true
+      name: Query scan result
+      script: '|||irisk-get-scan-status'
+      type: regular
+      version: -1
+    taskid: 0bb2491c-c83a-43b3-8266-57462038006e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_yes": 0.55,
+      "8_9_yes": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 1372.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

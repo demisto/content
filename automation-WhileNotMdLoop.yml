@@ -1,0 +1,62 @@
+args:
+- default: true
+  description: Command or Automation script to execute each while loop iteration
+  name: cmdToRun
+  required: true
+- description: 'comma separated list of command/automation arguments and values to
+    run: key=val,key=val,key=val'
+  name: cmdArguments
+  required: true
+- description: the value that keyToWatch needs to be equal to
+  name: value
+  required: true
+- description: max numbers of iteration loop to preform (default is 100)
+  name: maxIterations
+- description: time to sleep/wait between iterations in seconds (default is 10)
+  name: sleepTime
+comment: |
+  While not MD loop is utility script, to do while loops on specific commands, it will allow you to loop over until some condition is fulfilled (Contents (MD) != value).
+  Please make sure timeout of the script also sufficient for the loop.
+commonfields:
+  id: WhileNotMdLoop
+  version: -1
+deprecated: true
+enabled: true
+name: WhileNotMdLoop
+runonce: false
+script: |2-
+
+  var argumentsVal = args.cmdArguments;
+  var argsArr = argumentsVal.split(",");
+  var maxIterations = 100;
+  var lastEntry = {};
+
+  if ((args.maxIterations) && (args.maxIterations.length > 0)) {
+      maxIterations = parseInt(args.maxIterations);
+  }
+  sleepTime = 10;
+  if ((args.sleepTime) && (args.sleepTime.length > 0)) {
+      sleepTime = parseInt(args.sleepTime);
+  }
+
+  var argsToCmd = {};
+  for (i = 0; i < argsArr.length ; i++) {
+      var keyval = argsArr[i].split("=");
+      if (keyval.length == 2) {
+          argsToCmd[keyval[0]] = keyval[1];
+      }
+  }
+  for (i = 0; i < maxIterations; i++) {
+      lastEntry = executeCommand(args.cmdToRun, argsToCmd );
+      if (lastEntry[0].Contents !== args.value) {
+          break;
+      }
+      wait(sleepTime);
+  }
+  return lastEntry;
+scripttarget: 0
+system: true
+tags:
+- Utility
+timeout: 900ns
+type: javascript

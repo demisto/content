@@ -1,0 +1,41 @@
+args:
+- description: The string to search in, e.g., "string1"
+  name: left
+- description: The array of substrings to search in the string, e.g., ["string1","string2"]
+  name: right
+comment: |
+  Checks whether a substring or an array of substrings is within a string array(each item will be checked). Supports single strings as well. For example, for substrings ['a','b','c'] in a string 'a' the script will return true.
+commonfields:
+  id: StringContainsArray
+  version: -1
+enabled: true
+name: StringContainsArray
+runonce: false
+script: |
+  var str = args.left;
+  var substring = args.right;
+
+  if(!str || !substring){
+      return false;
+  }
+
+  if (Array.isArray(substring)) {
+      var arr = substring;
+      for (var i = 0; i < arr.length; ++i) {
+          if (arr[i] && str.indexOf(arr[i]) > -1) {
+                  return true;
+          }
+      }
+  } else {
+      if (str.indexOf(substring) > -1) {
+          return true;
+      }
+  }
+
+  return false;
+scripttarget: 0
+system: true
+tags:
+- filter
+- string
+type: javascript

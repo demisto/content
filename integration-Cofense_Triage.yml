@@ -1,0 +1,634 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Cofense Triage
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL (e.g., https://192.168.0.1)
+  name: host
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: User
+  name: user
+  required: true
+  type: 0
+- defaultvalue: ""
+  display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 3 days
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
+    1 year)
+  name: date_range
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Category ID to fetch - corresponds to the ranking that determines the Cofense
+    Triage prioritization (1-5)
+  name: category_id
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Match Priority - the highest match priority based on rule hits for the
+    report
+  name: match_priority
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: 'Tags - CSV list of tags of processed reports by which to filter '
+  name: tags
+  required: false
+  type: 0
+- defaultvalue: "30"
+  display: Maximum number of incidents to fetch each time
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: "false"
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Use the Cofense Triage integration to manage reports and attachments.
+detaileddescription: "Cofense Triage provides an API that superusers can use to \nprogrammatically
+  extract data from Cofense Triage in JSON format.\n\nThis integration was tested
+  with Cofense Triage version 1.14.0.\n"
+display: Cofense Triage
+image: data:image/png;base64,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
+name: Cofense Triage
+script:
+  commands:
+  - arguments:
+    - description: File hash, MD5 or SHA256.
+      name: file_hash
+    - description: The reported URLs.
+      name: url
+    - description: Report's subject
+      name: subject
+    - defaultValue: 60 days
+      description: 'Retrieve reports that were reported after this time, for example:
+        "2 hours, 4 minutes, 6 month, 1 day".'
+      name: reported_at
+    - defaultValue: 60 days
+      description: 'Retrieve reports that were created after this time, for example:
+        "2 hours, 4 minutes, 6 month, 1 day".'
+      name: created_at
+    - description: Name or ID of the reporter.
+      name: reporter
+    - default: true
+      defaultValue: "30"
+      description: Maximum number of matches to fetch. Default is 30.
+      name: max_matches
+    - auto: PREDEFINED
+      description: Returns all fields of a report.
+      name: verbose
+      predefined:
+      - "true"
+      - "false"
+    description: Runs a query for reports.
+    name: cofense-search-reports
+    outputs:
+    - contextPath: Report.ID
+      description: ID number of the report.
+    - contextPath: Report.EmailAttachments
+      description: Email attachments.
+    - contextPath: Report.EmailAttachments.id
+      description: Email attachment ID.
+    - contextPath: Report.Tags
+      description: Report tags.
+      type: string
+    - contextPath: Report.ClusterId
+      description: Cluster ID number.
+      type: number
+    - contextPath: Report.CategoryId
+      description: Report category.
+      type: number
+    - contextPath: Report.CreatedAt
+      description: Report creation date.
+      type: date
+    - contextPath: Report.ReportedAt
+      description: Reporting time.
+      type: string
+    - contextPath: Report.MatchPriority
+      description: The highest match priority based on rule hits for the report.
+      type: number
+    - contextPath: Report.ReporterId
+      description: Reporter ID.
+      type: number
+    - contextPath: Report.Location
+      description: Location of the report.
+      type: string
+    - contextPath: Report.Reporter
+      description: Reporter email address.
+      type: string
+    - contextPath: Report.SuspectFromAddress
+      description: Suspect from address.
+      type: string
+    - contextPath: Report.ReportSubject
+      description: Report subject.
+      type: string
+    - contextPath: Report.ReportBody
+      description: Report body.
+      type: string
+    - contextPath: Report.Md5
+      description: MD5 hash of the file.
+      type: number
+    - contextPath: Report.Sha256
+      description: SHA256 hash of the file.
+  - arguments:
+    - description: ID of the attachment.
+      name: attachment_id
+      required: true
+    description: 'Retrieves an attachment by the attachment ID number. '
+    name: cofense-get-attachment
+    outputs:
+    - contextPath: Attachment.ID
+      description: The ID number of the report that contains the attachment.
+      type: string
+    - contextPath: File.Size
+      description: The date and time (in UTC) when the threat was found on the device.
+      type: string
+    - contextPath: File.EntryID
+      description: The file path where the threat was found on the device.
+      type: string
+    - contextPath: File.Name
+      description: The name of the threat.
+      type: string
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the threat.
+      type: string
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the threat.
+      type: string
+    - contextPath: File.MD5
+      description: The MD5 hash of the threat.
+      type: string
+  - arguments:
+    - description: ID of the reporter.
+      name: reporter_id
+      required: true
+    description: Retrieves Email address of the reporter by ID
+    name: cofense-get-reporter
+    outputs:
+    - contextPath: Report.ID
+      description: ID of the reporter.
+    - contextPath: Report.Email
+      description: Reporter email address.
+  - arguments:
+    - description: ID of the report
+      name: report_id
+      required: true
+    description: 'Retrieves a report by the report ID number. '
+    name: cofense-get-report-by-id
+    outputs:
+    - contextPath: Report.ID
+      description: ID number of the report
+    - contextPath: Report.EmailAttachments
+      description: Email attachments.
+    - contextPath: Report.EmailAttachments.id
+      description: Email attachment ID.
+    - contextPath: Report.Tags
+      description: Report tags.
+      type: string
+    - contextPath: Report.ClusterId
+      description: Cluster ID number.
+      type: number
+    - contextPath: Report.CategoryId
+      description: Report category.
+      type: number
+    - contextPath: Report.CreatedAt
+      description: Report creation date.
+      type: date
+    - contextPath: Report.ReportedAt
+      description: Reporting time.
+      type: string
+    - contextPath: Report.MatchPriority
+      description: The highest match priority based on rule hits for the report.
+      type: number
+    - contextPath: Report.ReporterId
+      description: Reporter ID.
+      type: number
+    - contextPath: Report.Location
+      description: Location of the report.
+      type: string
+    - contextPath: Report.Reporter
+      description: Reporter email address.
+      type: string
+    - contextPath: Report.SuspectFromAddress
+      description: Suspect from address.
+      type: string
+    - contextPath: Report.ReportSubject
+      description: Report subject.
+      type: string
+    - contextPath: Report.ReportBody
+      description: Report body.
+      type: string
+    - contextPath: Report.Md5
+      description: MD5 hash of the file.
+      type: number
+    - contextPath: Report.Sha256
+      description: SHA256 hash of the file.
+  dockerimage: demisto/python3:3.7.2.200
+  isfetch: true
+  runonce: false
+  script: |2-
+
+
+    '''IMPORTS'''
+    import requests
+    from typing import Any, List, Dict
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS '''
+    BASE_URL = demisto.getParam('host').rstrip('/') + '/api/public/v1'  # type: str
+    TOKEN = demisto.getParam('token')  # type: str
+    USER = demisto.getParam('user')  # type: str
+    USE_SSL = not demisto.params().get('insecure', False)  # type: bool
+
+    HEADERS = {
+        "Authorization": f"Token token={USER}:{TOKEN}",
+        "Accept": "application/json"
+    }  # type: dict
+    DEFAULT_TIME_RANGE = '7 days'  # type: str
+    TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # type: str
+
+    CATEGORIES = {
+        1: 'Non-Malicious',
+        2: 'Spam',
+        3: 'Crimeware',
+        4: 'Advanced Threats',
+        5: 'Phishing Simulation'
+    }
+
+    # Severity levels are 4 - Critical, 3 - High, 2 - Medium, 1 - Low, 0 - Unknown
+    CATEGORIES_SEVERITY = {
+        1: 1,  # non malicious -> low
+        2: 0,  # spam -> unknown
+        3: 2,  # crimeware -> medium
+        4: 2,  # advanced threats -> medium
+        5: 1  # phishing simulation -> low
+    }
+
+    TERSE_FIELDS = [
+        'id',
+        'cluster_id',
+        'reporter_id',
+        'location',
+        'created_at',
+        'reported_at',
+        'report_subject',
+        'report_body',
+        'md5',
+        'sha256',
+        'category_id',
+        'match_priority',
+        'tags',
+        'email_attachments'
+    ]
+
+
+    # HELPER FUNCTIONS #
+    def snake_to_camel_keys(snake_list: List[Dict]) -> List[Dict]:
+        def snake_to_camel(snake_str) -> str:
+            if snake_str == 'id':
+                return 'ID'
+            components = snake_str.split('_')
+            return ''.join(x.title() for x in components)
+
+        return [{snake_to_camel(k): v for k, v in snake_d.items()} for snake_d in snake_list]
+
+
+    def split_snake(string: str) -> str:
+        return string.replace("_", " ").title()
+
+
+    # MAIN FUNCTIONS #
+    def http_request(url_suffix: str, params=None, body=None, raw_response=False) -> Any:
+        """
+        Generic request to Cofense Triage. Client applications can make 25 requests to Cofense Triage
+        within a five-minute interval using the Cofense Triage API.
+        """
+        response = requests.get(
+            BASE_URL + url_suffix,
+            headers=HEADERS,
+            params=params,
+            data=body,
+            verify=USE_SSL,
+        )
+        try:
+            if not response.ok:
+                return_error(f'Call to Cofense Triage failed [{response.status_code}] - [{response.text}]')
+
+            elif response.status_code == 206:  # 206 indicates Partial Content, reason will be in the warning header
+                demisto.debug(str(response.headers))
+
+            if raw_response:
+                return response
+            data = response.json() if response.text and response.text != '[]' else {}  # type: Any
+            return data
+
+        except TypeError as ex:
+            demisto.debug(str(ex))
+            return_error(f'Error in API call to Cofense Triage, could not parse result [{response.status_code}]')
+            return {}
+
+
+    def test_function() -> None:
+        try:
+            response = requests.get(
+                BASE_URL + '/processed_reports',
+                headers=HEADERS,
+                params="",
+                verify=USE_SSL,
+            )
+            if demisto.getParam("isFetch"):
+                fetch_reports()
+
+            if response.ok:
+                demisto.results('ok')
+
+            else:
+                return_error(
+                    f'API call to Cofense Triage failed. Please check Server URL, or authentication related parameters.'
+                    f' [{response.status_code}] - {response.reason}')
+
+        except Exception as ex:
+            demisto.debug(str(ex))
+            return_error(f'API call to Cofense Triage failed, please check URL, or authentication related parameters.')
+
+
+    def fetch_reports() -> None:
+        # parameters importing
+        start_date, _ = parse_date_range(demisto.getParam('date_range'), date_format=TIME_FORMAT)
+        max_fetch = int(demisto.getParam('max_fetch'))  # type: int
+        params = {
+            'category_id': demisto.getParam('category_id'),
+            'match_priority': demisto.getParam('match_priority'),
+            'tags': demisto.getParam('tags'),
+            'start_date': start_date,
+        }
+
+        # running the API command
+        reports = http_request(url_suffix='/processed_reports', params=params)
+
+        # loading last_run
+        last_run = json.loads(demisto.getLastRun().get('value', '{}'))
+        already_fetched = last_run.get('already_fetched', [])
+
+        # parsing outputs
+        incidents = []
+        for report in reports:
+            if report.get('id') not in already_fetched:
+                category_id, report_id = report.get('category_id'), report['id']
+                report_body = report.pop('report_body')
+                incident = {
+                    'name': f"cofense triage report {report_id}: {CATEGORIES.get(category_id, 'Unknown')}",
+                    'occurred': report.get('created_at'),
+                    'rawJSON': json.dumps(report),
+                    'severity': CATEGORIES_SEVERITY.get(category_id, 0)
+                }
+
+                # load HTML attachment into the incident
+                attachment = load_attachment(report_body, report_id)
+                if attachment:
+                    incident['attachment'] = attachment
+                else:
+                    # attachment is not HTML file, keep it as plain text
+                    report['report_body'] = report_body
+                    incident['rawJSON'] = json.dumps(report)
+
+                incidents.append(incident)
+                already_fetched.append(report_id)
+                if len(incidents) >= max_fetch:
+                    break
+
+        demisto.incidents(incidents)
+        last_run = {'already_fetched': already_fetched}
+        demisto.setLastRun({'value': json.dumps(last_run)})
+
+
+    def load_attachment(report_body: Any, report_id: int) -> list:
+        if report_body and 'HTML' in report_body:
+            html_attachment = fileResult(filename=f'{report_id}-report.html', data=report_body.encode())
+            attachment = {
+                'path': html_attachment.get('FileID'),
+                'name': html_attachment.get('FileName')
+            }
+            return [attachment]
+        return []
+
+
+    def search_reports_command() -> None:
+        # arguments importing
+        subject = demisto.getArg('subject')  # type: str
+        url = demisto.getArg('url')  # type: str
+        file_hash = demisto.getArg('file_hash')  # type: str
+        reported_at, _ = parse_date_range(demisto.args().get('reported_at', DEFAULT_TIME_RANGE))
+        created_at, _ = parse_date_range(demisto.args().get('created_at', DEFAULT_TIME_RANGE))
+        reporter = demisto.getArg('reporter')  # type: str
+        max_matches = int(demisto.getArg('max_matches'))  # type: int
+        verbose = demisto.getArg('verbose') == "true"
+
+        # running the API command
+        results = search_reports(subject, url, file_hash, reported_at, created_at, reporter, verbose, max_matches)
+
+        # parsing outputs
+        if results:
+            ec = {'Cofense.Report(val.ID && val.ID == obj.ID)': snake_to_camel_keys(results)}
+            hr = tableToMarkdown("Reports:", results, headerTransform=split_snake, removeNull=True)
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['markdown'],
+                'Contents': results if results else "no results were found",
+                'HumanReadable': hr,
+                'EntryContext': ec
+            })
+        else:
+            return_outputs("no results were found.", {})
+
+
+    def search_reports(subject=None, url=None, file_hash=None, reported_at=None, created_at=None, reporter=None,
+                       verbose=False, max_matches=30) -> list:
+        params = {'start_date': datetime.strftime(reported_at, TIME_FORMAT)}
+        reports = http_request(url_suffix='/processed_reports', params=params)
+
+        if not isinstance(reports, list):
+            reports = [reports]
+
+        reporters = []  # type: list
+        if reporter:
+            reporters = get_all_reporters(time_frame=min(reported_at, created_at))
+
+        matches = []
+
+        for report in reports:
+            if subject and subject != report.get('subject'):
+                continue
+            if url and url != report.get('url'):
+                continue
+            if created_at and 'created_at' in report and created_at >= datetime.strptime(report['created_at'], TIME_FORMAT):
+                continue
+            if file_hash and file_hash != report.get('md5') and file_hash != report.get('sha256'):
+                continue
+            if reporter and int(reporter) != report.get('reporter_id') and reporter not in reporters:
+                continue
+
+            if not verbose:
+                # extract only relevant fields
+                report = {key: report[key] for key in report.keys() & TERSE_FIELDS}
+
+            matches.append(report)
+            if len(matches) >= max_matches:
+                break
+
+        return matches
+
+
+    def get_all_reporters(time_frame) -> list:
+        res = http_request(f'/reporters', params={'start_date': time_frame})
+        if not isinstance(res, list):
+            res = [res]
+        reporters = [reporter.get('email') for reporter in res]
+
+        return reporters
+
+
+    def get_reporter_command() -> None:
+        # arguments importing
+        reporter_id = demisto.getArg('reporter_id')  # type: str
+
+        # running the API command
+        res = get_reporter(reporter_id)
+
+        # parsing outputs
+        ec = {'Cofense.Reporter(val.ID && val.ID == obj.ID)': {'ID': reporter_id, 'Email': res}}
+        hr = f'Reporter: {res}' if res else 'Could not find reporter with matching ID'
+        return_outputs(readable_output=hr, outputs=ec)
+
+
+    def get_reporter(reporter_id) -> str:
+        res = http_request(url_suffix=f'/reporters/{reporter_id}')
+        if not isinstance(res, list):
+            res = [res]
+        reporter = res[0].get('email')
+
+        return reporter
+
+
+    def get_attachment_command() -> None:
+        # arguments importing
+        attachment_id = demisto.getArg('attachment_id')  # type: str
+        file_name = demisto.getArg('file_name') or attachment_id  # type: str
+
+        # running the command
+        res = get_attachment(attachment_id)
+
+        # parsing outputs
+        context_data = {'ID': attachment_id}
+        demisto.results(fileResult(file_name, res.content))
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': '',
+            'HumanReadable': '',
+            'EntryContext': {'Cofense.Attachment(val.ID == obj.ID)': context_data}
+        })
+
+
+    def get_attachment(attachment_id):
+        response = http_request(f'/attachment/{attachment_id}', params={'attachment_id': attachment_id}, raw_response=True)
+        if not response.ok:
+            return_error(f'Call to Cofense Triage failed [{response.status_code}]')
+        else:
+            return response
+
+
+    def get_report_by_id_command() -> None:
+        # arguments importing
+        report_id = int(demisto.getArg('report_id'))  # type: int
+        verbose = demisto.getArg('verbose') == "true"
+
+        # running the command
+        res = get_report_by_id(report_id)[0]
+
+        # parsing outputs
+        if not verbose:
+            # extract only relevant fields
+            res = {k: res[k] for k in res.keys() & TERSE_FIELDS}
+
+        # get the report body, and create html file if necessary
+        if res:
+            parse_report_body(res)
+            res['reporter'] = get_reporter(res.get('reporter_id'))  # enrich: id -> email
+            hr = tableToMarkdown("Report Summary:", res, headerTransform=split_snake, removeNull=True)
+            ec = {'Cofense.Report(val.ID && val.ID == obj.ID)': snake_to_camel_keys([res])}
+            return_outputs(readable_output=hr, outputs=ec)
+
+        else:
+            return_error('Could not find report with matching ID')
+
+
+    def parse_report_body(report) -> None:
+        if 'report_body' in report and 'HTML' in report['report_body']:
+            attachment = fileResult(
+                filename=f'{report.get("id")}-report.html',
+                data=report.get('report_body').encode(),
+            )
+            attachment['HumanReadable'] = '### Cofense HTML Report:\nHTML report download request has been completed'
+            demisto.results(attachment)
+            del report['report_body']
+
+
+    def get_report_by_id(report_id):
+        response = http_request(url_suffix=f'/reports/{report_id}', params={'report_id': report_id})
+        return response
+
+
+    try:
+        handle_proxy()
+
+        # COMMANDS
+        if demisto.command() == 'test-module':
+            test_function()
+
+        if demisto.command() == 'fetch-incidents':
+            fetch_reports()
+
+        elif demisto.command() == 'cofense-search-reports':
+            search_reports_command()
+
+        elif demisto.command() == 'cofense-get-attachment':
+            get_attachment_command()
+
+        elif demisto.command() == 'cofense-get-reporter':
+            get_reporter_command()
+
+        elif demisto.command() == 'cofense-get-report-by-id':
+            get_report_by_id_command()
+
+    except Exception as e:
+        return_error(str(e))
+        raise
+  subtype: python3
+  type: python
+system: true

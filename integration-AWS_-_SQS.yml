@@ -1,0 +1,543 @@
+category: IT Services
+commonfields:
+  id: AWS - SQS
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: AWS Default Region
+  name: defaultRegion
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Role Arn
+  name: roleArn
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Role Session Name
+  name: roleSessionName
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Role Session Duration
+  name: sessionDuration
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: QueueURL
+  name: queueUrl
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Amazon Web Services Simple Queuing Service (SQS)
+display: AWS - SQS
+image: data:image/png;base64,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
+name: AWS - SQS
+script:
+  commands:
+  - arguments:
+    - description: The name of the queue.
+      name: queueName
+      required: true
+    - description: The AWS account ID of the account that created the queue.
+      name: queueOwnerAWSAccountId
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Returns the URL of an existing queue. To access a queue that belongs
+      to another AWS account, use the queueOwnerAWSAccountId parameter to specify
+      the account ID of the queues owner. The queues owner must grant you permission
+      to access the queue.
+    name: aws-sqs-get-queue-url
+    outputs:
+    - contextPath: AWS.SQS.Queues.QueueUrl
+      description: The URL of the queue.
+      type: string
+  - arguments:
+    - description: A string to use for filtering the list results. Only those queues
+        whose name begins with the specified string are returned.  Queue names are
+        case-sensitive.
+      name: queueNamePrefix
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Returns a list of your queues. The maximum number of queues that
+      can be returned is 1,000. If you specify a value for the optional QueueNamePrefix
+      parameter, only queues with a name that begins with the specified value are
+      returned.
+    name: aws-sqs-list-queues
+    outputs:
+    - contextPath: AWS.SQS.Queues.QueueUrl
+      description: The URL of the queue.
+      type: string
+  - arguments:
+    - description: The URL of the Amazon SQS queue to which a message is sent.
+      name: queueUrl
+      required: true
+    - description: The message to send. The maximum string size is 256 KB.
+      name: messageBody
+      required: true
+    - description: The length of time, in seconds, for which to delay a specific message.
+        Valid values 0 to 900. Maximum 15 minutes.
+      name: delaySeconds
+    - description: This parameter applies only to FIFO queues. The tag that specifies
+        that a message belongs to a specific message group.
+      name: messageGroupId
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Delivers a message to the specified queue.
+    name: aws-sqs-send-message
+    outputs:
+    - contextPath: AWS.SQS.Queues.SentMessages.MD5OfMessageBody
+      description: An MD5 digest of the non-URL-encoded message attribute string.
+      type: string
+    - contextPath: AWS.SQS.Queues.SentMessages.MD5OfMessageAttributes
+      description: An MD5 digest of the non-URL-encoded message attribute string.
+      type: string
+    - contextPath: AWS.SQS.Queues.SentMessages.MessageId
+      description: An attribute containing the MessageId of the message sent to the
+        queue.
+      type: string
+    - contextPath: AWS.SQS.Queues.SentMessages.SequenceNumber
+      description: This parameter applies only to FIFO (first-in-first-out) queues.
+        The large, non-consecutive number that Amazon SQS assigns to each message.
+      type: string
+  - arguments:
+    - description: The name of the new queue.
+      name: queueName
+      required: true
+    - description: The length of time, in seconds, for which the delivery of all messages
+        in the queue is delayed. Valid values An integer from 0 to 900 seconds (15
+        minutes). The default is 0 (zero).
+      name: delaySeconds
+    - description: The limit of how many bytes a message can contain before Amazon
+        SQS rejects it. Valid values An integer from 1,024 bytes (1 KiB) to 262,144
+        bytes (256 KiB). The default is 262,144 (256 KiB).
+      name: maximumMessageSize
+    - description: The length of time, in seconds, for which Amazon SQS retains a
+        message. Valid values An integer from 60 seconds (1 minute) to 1,209,600 seconds
+        (14 days). The default is 345,600 (4 days).
+      name: messageRetentionPeriod
+    - description: The length of time, in seconds, for which a ReceiveMessage  action
+        waits for a message to arrive. Valid values An integer from 0 to 20 (seconds).
+        The default is 0 (zero).
+      name: receiveMessageWaitTimeSeconds
+    - description: The visibility timeout for the queue. Valid values An integer from
+        0 to 43,200 (12 hours). The default is 30.
+      name: visibilityTimeout
+    - description: The length of time, in seconds, for which Amazon SQS can reuse
+        a data key to encrypt or decrypt messages before calling AWS KMS again. An
+        integer representing seconds, between 60 seconds (1 minute) and 86,400 seconds
+        (24 hours). The default is 300 (5 minutes). A shorter time period provides
+        better security but results in more calls to KMS which might incur charges
+        after Free Tier.
+      name: kmsDataKeyReusePeriodSeconds
+    - description: The ID of an AWS-managed customer master key (CMK) for Amazon SQS
+        or a custom CMK.
+      name: kmsMasterKeyId
+    - description: The queues policy. A valid AWS policy.
+      name: policy
+    - auto: PREDEFINED
+      description: Designates a queue as FIFO.
+      name: fifoQueue
+      predefined:
+      - "True"
+      - "False"
+    - auto: PREDEFINED
+      description: Enables content-based deduplication.
+      name: contentBasedDeduplication
+      predefined:
+      - "True"
+      - "False"
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Creates a new standard or FIFO queue. You can pass one or more attributes
+      in the request.
+    name: aws-sqs-create-queue
+    outputs:
+    - contextPath: AWS.SQS.Queues.QueueUrl
+      description: The URL of the created Amazon SQS queue.
+  - arguments:
+    - description: The URL of the Amazon SQS queue to delete.
+      name: queueUrl
+      required: true
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Deletes the queue specified by the QueueUrl , regardless of the queue's
+      contents. If the specified queue doesn't exist, Amazon SQS returns a successful
+      response.
+    name: aws-sqs-delete-queue
+  - arguments:
+    - description: The URL of the queue from which the PurgeQueue action deletes messages.
+      name: queueUrl
+      required: true
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      name: roleSessionDuration
+    description: Deletes the messages in a queue specified by the QueueURL parameter.
+    name: aws-sqs-purge-queue
+  dockerimage: demisto/boto3
+  isfetch: true
+  runonce: false
+  script: |+
+    import boto3
+    import json
+    import datetime
+
+    AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
+    AWS_roleArn = demisto.params()['roleArn']
+    AWS_roleSessionName = demisto.params()['roleSessionName']
+    AWS_roleSessionDuration = demisto.params()['sessionDuration']
+    AWS_rolePolicy = None
+    AWS_QUEUEURL = demisto.params()['queueUrl']
+
+    def aws_session(service='sqs',region=None,roleArn=None,roleSessionName=None,roleSessionDuration=None,rolePolicy=None):
+        kwargs = {}
+        if roleArn and roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':roleArn,
+                'RoleSessionName':roleSessionName,
+                })
+        elif AWS_roleArn and AWS_roleSessionName is not None:
+            kwargs.update({
+                'RoleArn':AWS_roleArn,
+                'RoleSessionName':AWS_roleSessionName,
+                })
+
+        if roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':int(roleSessionDuration)})
+        elif AWS_roleSessionDuration is not None:
+            kwargs.update({'DurationSeconds':int(AWS_roleSessionDuration)})
+
+        if rolePolicy is not None:
+            kwargs.update({'Policy':rolePolicy})
+        elif AWS_rolePolicy is not None:
+            kwargs.update({'Policy':AWS_rolePolicy})
+
+        if kwargs:
+            sts_client = boto3.client('sts')
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken']
+                    )
+        else:
+            if region is not None:
+                client = boto3.client(service_name=service,region_name=region)
+            else:
+                client = boto3.client(service_name=service,region_name=AWS_DEFAULT_REGION)
+
+        return client
+
+    def create_entry(title,data, ec):
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': data,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
+            'EntryContext': ec
+        }
+
+    def raise_error(error):
+        return {
+            'Type' : entryTypes['error'],
+            'ContentsFormat' : formats['text'],
+            'Contents' : str(error)
+        }
+
+    def get_queue_url(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+
+            kwargs = {'QueueName':args.get('queueName')}
+            if args.get('queueOwnerAWSAccountId'):
+                kwargs.update({'QueueOwnerAWSAccountId':args.get('queueOwnerAWSAccountId')})
+
+            response = client.get_queue_url(**kwargs)
+            data = ({'QueueUrl':response['QueueUrl']})
+
+            ec = {'AWS.SQS.Queues': data}
+            return  create_entry('AWS SQS Queues',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def list_queues(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+
+            data = []
+            kwargs = {}
+            if args.get('queueNamePrefix') is not None:
+                kwargs.update({'QueueNamePrefix':args.get('queueNamePrefix')})
+            response = client.list_queues(**kwargs)
+            for queue in response['QueueUrls']:
+                data.append({'QueueUrl':queue})
+
+            ec = {'AWS.SQS.Queues': data}
+            return  create_entry('AWS SQS Queues',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def send_message(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+
+            kwargs = {
+                'QueueUrl':args.get('queueUrl'),
+                'MessageBody':args.get('messageBody'),
+                }
+            if args.get('delaySeconds') is not None:
+                kwargs.update({'DelaySeconds':int(args.get('delaySeconds'))})
+            if args.get('messageGroupId') is not None:
+                kwargs.update({'MessageGroupId':int(args.get('messageGroupId'))})
+
+            response = client.send_message(**kwargs)
+            data = ({
+                'QueueUrl': args.get('queueUrl'),
+                'MessageId': response['MessageId'],
+            })
+            if 'SequenceNumber' in response: data.update({'SequenceNumber': response['SequenceNumber']})
+            if 'MD5OfMessageBody' in response: data.update({'MD5OfMessageBody': response['MD5OfMessageBody']})
+            if 'MD5OfMessageAttributes' in response: data.update({'MD5OfMessageAttributes': response['MD5OfMessageAttributes']})
+
+            ec = {'AWS.SQS.Queues(obj.QueueUrl === val.QueueUrl).SentMessages': data}
+            return  create_entry('AWS SQS Queues sent messages',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def create_queue(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            attributes = {}
+            kwargs = {'QueueName':args.get('queueName')}
+            if args.get('delaySeconds') is not None:
+                attributes.update({'DelaySeconds':args.get('delaySeconds')})
+            if args.get('maximumMessageSize') is not None:
+                attributes.update({'MaximumMessageSize':args.get('maximumMessageSize')})
+            if args.get('messageRetentionPeriod') is not None:
+                attributes.update({'MessageRetentionPeriod':args.get('messageRetentionPeriod')})
+            if args.get('receiveMessageWaitTimeSeconds') is not None:
+                attributes.update({'ReceiveMessageWaitTimeSeconds':args.get('receiveMessageWaitTimeSeconds')})
+            if args.get('visibilityTimeout') is not None:
+                attributes.update({'VisibilityTimeout':int(args.get('visibilityTimeout'))})
+            if args.get('kmsDataKeyReusePeriodSeconds') is not None:
+                attributes.update({'KmsDataKeyReusePeriodSeconds':args.get('kmsDataKeyReusePeriodSeconds')})
+            if args.get('kmsMasterKeyId') is not None:
+                attributes.update({'KmsMasterKeyId':args.get('kmsMasterKeyId')})
+            if args.get('policy') is not None:
+                attributes.update({'Policy':args.get('policy')})
+            if args.get('fifoQueue') is not None:
+                attributes.update({'FifoQueue':args.get('fifoQueue')})
+            if args.get('contentBasedDeduplication') is not None:
+                attributes.update({'ContentBasedDeduplication':args.get('contentBasedDeduplication')})
+            if attributes:
+                kwargs.update({'Attributes':attributes})
+
+            response = client.create_queue(**kwargs)
+            data = ({'QueueUrl': response['QueueUrl']})
+            ec = {'AWS.SQS.Queues': data}
+            return  create_entry('AWS SQS Queues',data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+    def delete_queue(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.delete_queue(QueueUrl=args.get('queueUrl'))
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return 'The Queue has been deleted'
+
+        except Exception as e:
+            return raise_error(e)
+
+    def purge_queue(args):
+        try:
+            client = aws_session(
+                    region = args.get('region'),
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+            response = client.purge_queue(QueueUrl=args.get('queueUrl'))
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return 'The Queue has been Purged'
+
+        except Exception as e:
+            return raise_error(e)
+
+
+    def parse_incident_from_finding(message):
+        incident = {}
+        incident['name'] = "SQS MessageId: " + message["MessageId"]
+        incident['rawJSON'] = json.dumps(message)
+        return incident
+
+    def fetch_incidents():
+        try:
+            client = aws_session()
+            messages = client.receive_message(
+                QueueUrl=AWS_QUEUEURL,
+                MaxNumberOfMessages=10,
+                VisibilityTimeout=5,
+                WaitTimeSeconds=5,
+            )
+
+            receipt_handles = []
+            incidents = []
+
+            if "Messages" not in messages.keys():
+                if demisto.command() == 'fetch-incidents':
+                    demisto.incidents([])
+                return messages,incidents,receipt_handles
+
+            for message in messages["Messages"]:
+                receipt_handles.append(message['ReceiptHandle'])
+                incidents.append(parse_incident_from_finding(message))
+
+            demisto.incidents(incidents)
+            if receipt_handles is not None:
+                #Archive findings
+                for receipt_handle in receipt_handles:
+                    client.delete_message(QueueUrl=AWS_QUEUEURL, ReceiptHandle=receipt_handle)
+
+
+        except Exception as e:
+            return raise_error(e)
+
+    def test_function():
+        try:
+            client = aws_session()
+            response = client.list_queues()
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "ok"
+        except Exception as e:
+            return raise_error(e)
+
+    # The command demisto.command() holds the command sent from the user.
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        result = test_function()
+
+    if demisto.command() == 'aws-sqs-get-queue-url':
+        result = get_queue_url(demisto.args())
+
+    if demisto.command() == 'aws-sqs-list-queues':
+        result = list_queues(demisto.args())
+
+    if demisto.command() == 'aws-sqs-send-message':
+        result = send_message(demisto.args())
+
+    if demisto.command() == 'aws-sqs-create-queue':
+        result = create_queue(demisto.args())
+
+    if demisto.command() == 'aws-sqs-delete-queue':
+        result = delete_queue(demisto.args())
+
+    if demisto.command() == 'aws-sqs-purge-queue':
+        result = purge_queue(demisto.args())
+
+    if demisto.command() == 'fetch-incidents':
+        fetch_incidents()
+        sys.exit(0)
+
+    demisto.results(result)
+    sys.exit(0)
+
+  type: python
+system: true

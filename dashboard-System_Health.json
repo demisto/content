@@ -1,0 +1,291 @@
+{
+	"fromDate": "0001-01-01T00:00:00Z",
+	"fromDateLicense": "0001-01-01T00:00:00Z",
+	"id": "health-status-dashboard",
+	"isCommon": true,
+	"layout": [
+		{
+			"forceRange": false,
+			"h": 3,
+			"i": "2a235a60-2ead-11e8-be34-cd9a232a8686",
+			"id": "2a235a60-2ead-11e8-be34-cd9a232a8686",
+			"w": 2,
+			"widget": {
+				"category": "",
+				"commitMessage": "",
+				"dataType": "system",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": 1,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"id": "3",
+				"isPredefined": true,
+				"modified": "2018-03-23T18:16:10.634227+03:00",
+				"name": "Disk Used Percentage",
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": -1
+							},
+							"#FAC100": {
+								"value": 50
+							},
+							"#FF1B15": {
+								"value": 80
+							}
+						},
+						"type": "above"
+					},
+					"sign": "%",
+					"signAlignment": "right",
+					"timeFrame": "minutes"
+				},
+				"prevName": "",
+				"query": "disk.usedPercent",
+				"shouldCommit": false,
+				"size": 60,
+				"sort": null,
+				"sortValues": null,
+				"vcShouldIgnore": false,
+				"version": 1,
+				"widgetType": "number"
+			},
+			"x": 0,
+			"y": 0
+		},
+		{
+			"forceRange": false,
+			"h": 1,
+			"i": "4b2ab4b0-2ead-11e8-be34-cd9a232a8686",
+			"id": "4b2ab4b0-2ead-11e8-be34-cd9a232a8686",
+			"w": 5,
+			"widget": {
+				"category": "",
+				"commitMessage": "",
+				"dataType": "system",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": 1,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"id": "4",
+				"isPredefined": true,
+				"modified": "2018-03-23T18:17:18.728545+03:00",
+				"name": "CPU Use Percentage",
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": -1
+							},
+							"#FAC100": {
+								"value": 50
+							},
+							"#FF1B15": {
+								"value": 80
+							}
+						},
+						"type": "above"
+					},
+					"sign": "%",
+					"signAlignment": "right",
+					"timeFrame": "minutes"
+				},
+				"prevName": "",
+				"query": "cpu.usedPercent",
+				"shouldCommit": false,
+				"size": 60,
+				"sort": null,
+				"sortValues": null,
+				"vcShouldIgnore": false,
+				"version": 1,
+				"widgetType": "number"
+			},
+			"x": 2,
+			"y": 0
+		},
+		{
+			"forceRange": false,
+			"h": 1,
+			"i": "fbd3e590-2eb0-11e8-be34-cd9a232a8686",
+			"id": "fbd3e590-2eb0-11e8-be34-cd9a232a8686",
+			"w": 5,
+			"widget": {
+				"category": "",
+				"commitMessage": "",
+				"dataType": "system",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "minutes",
+						"byTo": "",
+						"field": "",
+						"fromValue": 60,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"id": "12",
+				"isPredefined": true,
+				"modified": "2018-03-23T18:43:35.777902+03:00",
+				"name": "Memory Use Percentage",
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": -1
+							},
+							"#FAC100": {
+								"value": 70
+							},
+							"#FF1B15": {
+								"value": 90
+							}
+						},
+						"type": "above"
+					},
+					"sign": "%",
+					"signAlignment": "right",
+					"timeFrame": "minutes"
+				},
+				"prevName": "",
+				"query": "memory.usedPercent",
+				"shouldCommit": false,
+				"size": 61,
+				"sort": null,
+				"sortValues": null,
+				"vcShouldIgnore": false,
+				"version": 1,
+				"widgetType": "number"
+			},
+			"x": 7,
+			"y": 0
+		},
+		{
+			"forceRange": false,
+			"h": 2,
+			"i": "a9a8aba0-b288-11e8-913c-f7dc2aeedf6e",
+			"id": "a9a8aba0-b288-11e8-913c-f7dc2aeedf6e",
+			"w": 5,
+			"widget": {
+				"category": "",
+				"commitMessage": "",
+				"dataType": "system",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "minutes",
+						"byTo": "",
+						"field": "",
+						"fromValue": 60,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"description": "Server CPU usage in the previous 24 hours",
+				"id": "cpu-percentage-trend",
+				"isPredefined": true,
+				"modified": "2018-09-07T13:26:12.309081+03:00",
+				"name": "Server CPU Usage % (last 24h)",
+				"params": {
+					"timeFrame": "minutes"
+				},
+				"prevName": "",
+				"query": "cpu.usedPercent",
+				"shouldCommit": false,
+				"size": 1440,
+				"sort": null,
+				"sortValues": null,
+				"vcShouldIgnore": false,
+				"version": 1,
+				"widgetType": "line"
+			},
+			"x": 2,
+			"y": 1
+		},
+		{
+			"forceRange": false,
+			"h": 2,
+			"i": "b5c9d580-b288-11e8-913c-f7dc2aeedf6e",
+			"id": "b5c9d580-b288-11e8-913c-f7dc2aeedf6e",
+			"w": 5,
+			"widget": {
+				"category": "",
+				"commitMessage": "",
+				"dataType": "system",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "minutes",
+						"byTo": "",
+						"field": "",
+						"fromValue": 60,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"description": "Server memory usage % (previous 24 hours)",
+				"id": "memory-percentage-trend",
+				"isPredefined": true,
+				"modified": "2018-09-07T13:26:12.335105+03:00",
+				"name": "Server Memory Usage % (last 24h)",
+				"params": {
+					"timeFrame": "minutes"
+				},
+				"prevName": "",
+				"query": "memory.usedPercent",
+				"shouldCommit": false,
+				"size": 1440,
+				"sort": null,
+				"sortValues": null,
+				"vcShouldIgnore": false,
+				"version": 1,
+				"widgetType": "line"
+			},
+			"x": 7,
+			"y": 1
+		}
+	],
+	"name": "System Health",
+	"owner": "",
+	"period": {
+		"by": "",
+		"byFrom": "minutes",
+		"byTo": "days",
+		"field": "",
+		"fromValue": 60,
+		"toValue": 0
+	},
+	"shared": false,
+	"sortValues": null,
+	"system": true,
+	"toDate": "0001-01-01T00:00:00Z",
+	"version": -1
+}

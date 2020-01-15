@@ -1,0 +1,212 @@
+description: Returns a file sample to the war-room from a path on an endpoint using
+  Carbon Black Enterprise Response
+id: get_file_sample_from_path_-_carbon_black_enterprise_response
+inputs:
+- description: The host to get file from
+  key: Hostname
+  required: false
+  value:
+    simple: ${Endpoint.Hostname}
+- description: Path of the file on the endpoint
+  key: Path
+  required: false
+  value:
+    simple: ${File.Path}
+name: Get File Sample From Path - Carbon Black Enterprise Response
+outputs:
+- contextPath: File
+  description: The file to sample.
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6b09e12d-a699-4b98-8f93-0ee2fb3904df
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 6b09e12d-a699-4b98-8f93-0ee2fb3904df
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 48
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    note: false
+    scriptarguments:
+      extend-context: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: brand
+              operator: isEqualString
+              right:
+                value:
+                  simple: carbonblack
+          - - left:
+                iscontext: true
+                value:
+                  simple: state
+              operator: isEqualString
+              right:
+                value:
+                  simple: active
+          root: modules
+    separatecontext: false
+    task:
+      brand: ""
+      description: Check if  Carbon Black Enterprise Response active in the system.
+      id: 40ec070b-2ab3-432a-86fa-eb02b381398a
+      iscommand: false
+      name: Is Carbon Black Enterprise Response enabled?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 40ec070b-2ab3-432a-86fa-eb02b381398a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 196
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 347006fd-60f5-4233-8c40-9b941735dd2a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 347006fd-60f5-4233-8c40-9b941735dd2a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    scriptarguments:
+      hostname:
+        simple: ${inputs.Hostname}
+      ip: {}
+      path:
+        simple: ${inputs.Path}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Use Carbon black Response Live session to retrieve a file from
+        an endpoint. Endpoint needs to have a CbResponse sensor deployed.
+      id: 6361a341-4a5c-4735-8ffe-ce13d9539b91
+      iscommand: false
+      name: Get File
+      scriptName: CBLiveGetFile
+      type: regular
+      version: -1
+    taskid: 6361a341-4a5c-4735-8ffe-ce13d9539b91
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 514,
+          "y": 544
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Path
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Hostname
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    note: false
+    scriptarguments:
+      value:
+        simple: ${inputs.Path}
+    separatecontext: false
+    task:
+      brand: ""
+      description: Checks if a file path exists in playbook inputs.
+      id: 69aeb053-04ea-4853-872a-adf410c08c5e
+      iscommand: false
+      name: Is there a file path and hostname?
+      type: condition
+      version: -1
+    taskid: 69aeb053-04ea-4853-872a-adf410c08c5e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 301,
+          "y": 367
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_3_#default#": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 737,
+        "width": 844,
+        "x": 50,
+        "y": 48
+      }
+    }
+  }

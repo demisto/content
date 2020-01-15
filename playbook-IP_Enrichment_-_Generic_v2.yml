@@ -1,0 +1,230 @@
+description: |-
+  Enrich IP addresses using one or more integrations.
+
+  - Resolve IP addresses to hostnames (DNS)
+  - Provide threat information
+  - Separate internal and external IP addresses
+  - For internal IP addresses, get host information
+id: IP Enrichment - Generic v2
+inputs:
+- description: The IP address to enrich.
+  key: IP
+  required: false
+  value:
+    complex:
+      accessor: Address
+      root: IP
+      transformers:
+      - operator: uniq
+- description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR notation, separated by commas. An example of a list
+    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
+    If a list is not provided, will use default list provided in the IsIPInRanges
+    script (the known IPv4 private address ranges).'
+  key: InternalRange
+  required: false
+  value:
+    complex:
+      root: inputs.InternalRange
+      transformers:
+      - operator: uniq
+- description: Determines whether to convert the IP address to a hostname using a
+    DNS query (True/ False).
+  key: ResolveIP
+  required: true
+  value:
+    complex:
+      root: inputs.ResolveIP
+name: IP Enrichment - Generic v2
+outputs:
+- contextPath: IP
+  description: The IP objects
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor
+  type: unknown
+- contextPath: Endpoint
+  description: The Endpoint's object
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname to enrich
+  type: string
+- contextPath: Endpoint.OS
+  description: Endpoint OS
+  type: string
+- contextPath: Endpoint.IP
+  description: List of endpoint IP addresses
+- contextPath: Endpoint.MAC
+  description: List of endpoint MAC addresses
+- contextPath: Endpoint.Domain
+  description: Endpoint domain name
+  type: string
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+      - "25"
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 6635b28b-bdf1-42cf-88bc-14ad75e9ebe0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    note: false
+    separatecontext: false
+    task:
+      brand: ""
+      id: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 8149db7c-af8d-41e2-85ee-c9fe2efd5040
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        complex:
+          root: inputs.ResolveIP
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Enrich IP using one or more integrations.
+
+        IP enrichment includes:
+        * Resolve IP to Hostname (DNS)
+        * Threat information
+        * Separate internal and external addresses
+        * IP reputation
+        * For internal addresses, get host information
+      id: 777ec369-d05d-4f8f-8c43-8068566e3ed0
+      iscommand: false
+      name: IP Enrichment - External - Generic v2
+      playbookName: IP Enrichment - External - Generic v2
+      type: playbook
+      version: -1
+    taskid: 777ec369-d05d-4f8f-8c43-8068566e3ed0
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        complex:
+          root: inputs.ResolveIP
+    separatecontext: true
+    task:
+      brand: ""
+      description: |-
+        Enrich IP using one or more integrations.
+
+        IP enrichment includes:
+        * Resolve IP to Hostname (DNS)
+        * Threat information
+        * Separate internal and external addresses
+        * IP reputation
+        * For internal addresses, get host information
+      id: 6d0d48a2-7a07-400b-8f98-9c832a56ff8f
+      iscommand: false
+      name: IP Enrichment - Internal - Generic v2
+      playbookName: IP Enrichment - Internal - Generic v2
+      type: playbook
+      version: -1
+    taskid: 6d0d48a2-7a07-400b-8f98-9c832a56ff8f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
