@@ -3229,22 +3229,22 @@ There are no context output for this command.
   <tbody>
     <tr>
       <td>policy_id</td>
-      <td>policy id</td>
+      <td>Policy id</td>
       <td>Required</td>
     </tr>
     <tr>
       <td>description</td>
-      <td>Policy Description</td>
+      <td>Policy description</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>fromType</td>
-      <td>Blocked Sender type. *Most times you will have to change fromValue according to fromType</td>
+      <td>Blocked Sender type. Most times you will have to change fromValue according to fromType</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>toType</td>
-      <td>Blocked Receiver type. *Most times you will have to change fromValue according to fromType</td>
+      <td>Blocked Receiver type. Most times you will have to change fromValue according to fromType</td>
       <td>Optional</td>
     </tr>
     <tr>
@@ -3254,12 +3254,12 @@ There are no context output for this command.
     </tr>
     <tr>
       <td>fromValue</td>
-      <td>Blocked Sender value. *fromValue depends on fromType</td>
+      <td>Blocked Sender value. FromValue depends on fromType</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>toValue</td>
-      <td>Blocked Receiver value. *toValue depends on toType</td>
+      <td>Blocked Receiver value. ToValue depends on toType</td>
       <td>Optional</td>
     </tr>
     <tr>
