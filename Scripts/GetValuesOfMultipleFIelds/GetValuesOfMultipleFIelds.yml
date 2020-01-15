@@ -7,6 +7,9 @@ args:
   description: The list of fields to get from context. The list can contain comma
     seperated values. For example key1,key1
   isArray: true
+- name: Value
+  required: false
+  description: The value of the key to set in context.
 commonfields:
   id: GetValuesOfMultipleFields
   version: -1
