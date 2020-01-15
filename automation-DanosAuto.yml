@@ -1,0 +1,13 @@
+commonfields:
+  id: 8f290c67-5810-4d6b-8e3f-2d830b7a6406
+  version: -1
+dockerimage: demisto/python3:3.7.5.5420
+enabled: true
+name: DanosAuto
+runas: DBotWeakRole
+runonce: false
+script: ""
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
