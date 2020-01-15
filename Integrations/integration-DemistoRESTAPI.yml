@@ -19,12 +19,12 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (insecure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
-- display: User system proxy settings
+- display: Use system proxy settings
   name: proxy
   defaultvalue: "true"
   type: 8
