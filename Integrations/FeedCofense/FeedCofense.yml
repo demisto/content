@@ -1,6 +1,6 @@
 category: Vulnerability Management
 commonfields:
-  id: FeedCofense
+  id: CofenseFeed
   version: -1
 fromversion: 5.5.0
 configuration:
@@ -50,7 +50,7 @@ configuration:
 description: Cofense Feed Integration
 detaileddescription: ""
 display: Cofense Feed
-name: FeedCofense
+name: CofenseFeed
 script:
   commands:
   - deprecated: false

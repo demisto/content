@@ -31,8 +31,8 @@ class Client(BaseClient):
         url: str,
         auth: Tuple[str, str],
         threat_type: Optional[str] = None,
-        verify: Optional[bool] = False,
-        proxy: Optional[bool] = False,
+        verify: bool = False,
+        proxy: bool = False,
     ):
         """Constructor of Client and BaseClient
 
@@ -42,8 +42,8 @@ class Client(BaseClient):
 
         Keyword Arguments:
             threat_type {Optional[str]} -- One of available_fields (default: {None})
-            verify {Optional[bool]} -- Should verify certificate. (default: {False})
-            proxy {Optional[bool]} -- Should (default: {False})
+            verify {bool} -- Should verify certificate. (default: {False})
+            proxy {bool} -- Should (default: {False})
         """
         self.threat_type = (
             threat_type if threat_type in self.available_fields else "all"
