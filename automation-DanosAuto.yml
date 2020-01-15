@@ -6,7 +6,7 @@ enabled: true
 name: DanosAuto
 runas: DBotWeakRole
 runonce: false
-script: '# hello'
+script: '# hello 123123'
 scripttarget: 0
 subtype: python3
 tags: []
