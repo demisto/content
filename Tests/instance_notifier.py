@@ -52,7 +52,7 @@ def test_instances(secret_conf_path, server, username, password):
             instance_id, failure_message = __create_integration_instance(
                 c, integration_name, integration_instance_name, integration_params, is_byoi
             )
-            if failure_message is 'No configuration':
+            if failure_message == 'No configuration':
                 print_warning("Warning: The integration {} exists in content-test-conf conf.json but not "
                               "in content repo".format(integration_instance_name))
                 continue
