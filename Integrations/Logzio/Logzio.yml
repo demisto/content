@@ -1,0 +1,54 @@
+commonfields:
+  id: Logz.io
+  version: -1
+name: Logz.io
+display: Logz.io
+category: Analytics & SIEM
+description: Manage Logz.io rules with CLI
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Security API Token
+  name: api_token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Region Code
+  name: region
+  defaultvalue: us
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: logz-fetch-triggered-rules
+    arguments:
+    - name: from_page
+      description: Start page of rules to return
+    - name: search
+      description: Part of the alert name to filter by name (case insensitive)
+    - name: severities
+      auto: PREDEFINED
+      predefined:
+      - SEVERE
+      - HIGH
+      - MEDIUM
+      - LOW
+      - INFO
+      description: Filter by triggered severities (SEVERE/HIGH/MEDIUM/LOW/INFO) of
+        alerts
+    - name: tags
+      description: List of tags the alert is related to
+    description: Fetch triggered rules from Logz.io
+  dockerimage: demisto/python3:3.7.4.1150
+  isfetch: true
+  runonce: false
