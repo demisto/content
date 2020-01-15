@@ -49,7 +49,7 @@ def safe_load_json(o):
             with open(path['path'], 'rb') as data:
                 try:
                     kwargs = json.load(data)
-                except:
+                except:  # lgtm [py/catch-base-exception]
                     kwargs = json.loads(data.read())
         except Exception as e:
             return_error('Unable to parse JSON file. Please verify the JSON is valid or the Entry'
