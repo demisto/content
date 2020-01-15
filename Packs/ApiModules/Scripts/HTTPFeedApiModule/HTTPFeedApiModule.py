@@ -5,7 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import urllib3
 import requests
-from typing import Optional, Pattern
+from typing import Optional, Pattern, List
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -14,9 +14,9 @@ urllib3.disable_warnings()
 class Client(BaseClient):
     def __init__(self, url: str, feed_name: str = 'http', insecure: bool = False, credentials: dict = None,
                  ignore_regex: str = None, encoding: str = None, indicator_type: str = '',
-                 indicator: str = None, fields: str = '{}', polling_timeout: int = 20,
+                 feed_types: dict = None, polling_timeout: int = 20,
                  user_agent: str = None, proxy: bool = False, **kwargs):
-        """Implements class for miners of plain text feeds over http/https.
+        """Implements class for miners of plain text feeds over HTTP.
         **Config parameters**
         :param: url: URL of the feed.
         :param: polling_timeout: timeout of the polling request in seconds.
@@ -28,14 +28,22 @@ class Client(BaseClient):
             ignored. Default: *null*
         :param: verify_cert: boolean, if *true* feed HTTPS server certificate is
             verified. Default: *true*
-        :param: indicator: an *extraction dictionary* to extract the indicator from
-            the line. If *null*, the text until the first whitespace or newline
-            character is used as indicator. Default: *null*
-        :param: fields: a dicionary of *extraction dictionaries* to extract
-            additional attributes from each line. Default: {}
         :param: encoding: encoding of the feed, if not UTF-8. See
             ``str.decode`` for options. Default: *null*, meaning do
             nothing, (Assumes UTF-8).
+        :param: feed_types: For each sub-feed, a dictionary to process indicators by.
+        For example, ASN feed:
+        'https://www.spamhaus.org/drop/asndrop.txt': {
+            'indicator_type': ASN,
+            'regex': r'^AS[0-9]+',
+            'fields': {
+                'asndrop_country': {
+                    'regex': '^.*;\\W([a-zA-Z]+)\\W+',
+                    'transform: r'\1'
+                }
+            }
+        }
+        :param: indicator_type: Default indicator type
         :param: proxy: Use proxy in requests.
         **Extraction dictionary**
             Extraction dictionaries contain the following keys:
@@ -89,33 +97,10 @@ class Client(BaseClient):
         self.username = credentials.get('identifier', None)
         self.password = credentials.get('password', None)
         self.indicator_type = indicator_type
+        self.feed_types = feed_types if feed_types else {}
         self.ignore_regex: Optional[Pattern] = None
         if ignore_regex is not None:
             self.ignore_regex = re.compile(ignore_regex)
-
-        if indicator is not None:
-            self.indicator = json.loads(indicator)
-            if 'regex' in self.indicator:
-                self.indicator['regex'] = re.compile(self.indicator['regex'])
-            else:
-                raise ValueError(f'{self.feed_name} - indicator stanza should have a regex')
-            if 'transform' not in self.indicator:
-                if self.indicator['regex'].groups > 0:
-                    LOG(f'{self.feed_name} - no transform string for indicator but pattern contains groups')
-                self.indicator['transform'] = r'\g<0>'
-        else:
-            self.indicator = None
-
-        self.fields = json.loads(fields)
-        for f, fattrs in self.fields.items():
-            if 'regex' in fattrs:
-                fattrs['regex'] = re.compile(fattrs['regex'])
-            else:
-                raise ValueError(f'{self.feed_name} - {f} field does not have a regex')
-            if 'transform' not in fattrs:
-                if fattrs['regex'].groups > 0:
-                    LOG(f'{self.feed_name} - no transform string for field {f} but pattern contains groups')
-                fattrs['transform'] = r'\g<0>'
 
     def build_iterator(self, **kwargs):
         """
@@ -136,7 +121,7 @@ class Client(BaseClient):
             kwargs['auth'] = (self.username, self.password)
         try:
             urls = self._base_url
-            rs = []
+            rs: List[dict] = []
             if not isinstance(urls, list):
                 urls = [urls]
             for url in urls:
@@ -150,78 +135,113 @@ class Client(BaseClient):
                     LOG(f'{self.feed_name} - exception in request:'  # type: ignore[str-bytes-safe]
                         f' {r.status_code} {r.content}')
                     raise
-                rs.append(r)
+                rs.append({url: r})
         except requests.ConnectionError:
             raise requests.ConnectionError('Failed to establish a new connection. Please make sure your URL is valid.')
 
         results = []
-        for r in rs:
-            result = r.iter_lines()
-            if self.encoding is not None:
-                result = map(
-                    lambda x: x.decode(self.encoding).encode('utf_8'),
-                    result
-                )
-            else:
-                result = map(
-                    lambda x: x.decode('utf_8'),
-                    result
-                )
-            if self.ignore_regex is not None:
-                result = filter(
-                    lambda x: self.ignore_regex.match(x) is None,  # type: ignore[union-attr]
-                    result
-                )
-            results.append(result)
+        for url_to_response in rs:
+            for url, lines in url_to_response.items():
+                result = lines.iter_lines()
+                if self.encoding is not None:
+                    result = map(
+                        lambda x: x.decode(self.encoding).encode('utf_8'),
+                        result
+                    )
+                else:
+                    result = map(
+                        lambda x: x.decode('utf_8'),
+                        result
+                    )
+                if self.ignore_regex is not None:
+                    result = filter(
+                        lambda x: self.ignore_regex.match(x) is None,  # type: ignore[union-attr]
+                        result
+                    )
+                results.append({url: result})
         return results
 
 
-def get_indicator_fields(itype, line, client):
+def get_indicator_fields(line, url, client: Client):
+    """
+    Extract indicators according to the feed type
+    :param line: The current line in the feed
+    :param url: The feed URL
+    :param client: The client
+    :return: The indicator
+    """
     attributes = None
     value = None
+    indicator = None
+    fields_to_extract = []
+    feed_type = client.feed_types.get(url, {})
+    if feed_type:
+        if 'indicator' in feed_type:
+            indicator = feed_type['indicator']
+            if 'regex' in indicator:
+                indicator['regex'] = re.compile(indicator['regex'])
+            if 'transform' not in indicator:
+                indicator['transform'] = r'\g<0>'
+    else:
+        indicator = None
+
+    if 'fields' in feed_type:
+        fields = feed_type['fields']
+        for field in fields:
+            for f, fattrs in field.items():
+                field = {f: {}}
+                if 'regex' in fattrs:
+                    field[f]['regex'] = re.compile(fattrs['regex'])
+                if 'transform' not in fattrs:
+                    field[f]['transform'] = r'\g<0>'
+                else:
+                    field[f]['transform'] = fattrs['transform']
+                fields_to_extract.append(field)
+
     line = line.strip()
     if line:
-        if client.indicator is None:
-            indicator = line.split()[0]
-
-        else:
-            indicator = client.indicator['regex'].search(line)
-            if indicator is None:
+        extracted_indicator = line.split()[0]
+        if indicator:
+            extracted_indicator = indicator['regex'].search(line)
+            if extracted_indicator is None:
                 return attributes, value
-            indicator = indicator.expand(client.indicator['transform'])
+            if 'transform' in indicator:
+                extracted_indicator = extracted_indicator.expand(indicator['transform'])
         attributes = {}
-        for f, fattrs in client.fields.items():
-            m = fattrs['regex'].search(line)
+        for field in fields_to_extract:
+            for f, fattrs in field.items():
+                m = fattrs['regex'].search(line)
 
-            if m is None:
-                continue
+                if m is None:
+                    continue
 
-            attributes[f] = m.expand(fattrs['transform'])
+                attributes[f] = m.expand(fattrs['transform'])
 
-            try:
-                i = int(attributes[f])
-            except Exception:
-                pass
-            else:
-                attributes[f] = i
-        attributes['value'] = value = indicator
-        attributes['type'] = itype
+                try:
+                    i = int(attributes[f])
+                except Exception:
+                    pass
+                else:
+                    attributes[f] = i
+        attributes['value'] = value = extracted_indicator
+        attributes['type'] = feed_type['indicator_type']
     return attributes, value
 
 
 def fetch_indicators_command(client, itype, **kwargs):
     iterators = client.build_iterator(**kwargs)
+    indicators = []
     for iterator in iterators:
-        indicators = []
-        for line in iterator:
-            attributes, value = get_indicator_fields(itype, line, client)
-            if value:
-                indicators.append({
-                    "value": value,
-                    "type": itype,
-                    "rawJSON": attributes,
-                })
-        return indicators
+        for url, lines in iterator.items():
+            for line in lines:
+                attributes, value = get_indicator_fields(line, url, client)
+                if value:
+                    indicators.append({
+                        "value": value,
+                        "type": client.feed_types.get(url, {}).get('indicator_type', itype),
+                        "rawJSON": attributes,
+                    })
+    return indicators
 
 
 def get_indicators_command(client: Client, args):
@@ -239,9 +259,7 @@ def test_module(client, args):
     return 'ok', {}, {}
 
 
-def feed_main(feed_name):
-    # Write configure here
-    params = {k: v for k, v in demisto.params().items() if v is not None}
+def feed_main(feed_name, params):
     params['feed_name'] = feed_name
     client = Client(**params)
     command = demisto.command()

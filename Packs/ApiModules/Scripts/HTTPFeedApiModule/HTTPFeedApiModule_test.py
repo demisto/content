@@ -7,10 +7,32 @@ def test_get_indicators():
         asn_ranges = asn_ranges_txt.read().encode('utf8')
 
     with requests_mock.Mocker() as m:
-        itype = 'IP'
+        itype = 'ASN'
         args = {
             'indicator_type': itype,
             'limit': 35
+        }
+        feed_type = {
+            'https://www.spamhaus.org/drop/asndrop.txt': {
+                'indicator_type': 'ASN',
+                'indicator': {
+                    'regex': '^AS[0-9]+'
+                },
+                'fields': [
+                    {
+                        'asndrop_country': {
+                            'regex': r'^.*;\W([a-zA-Z]+)\W+',
+                            'transform': r'\1'
+                        }
+                    },
+                    {
+                        'asndrop_org': {
+                            'regex': r'^.*\|\W+(.*)',
+                            'transform': r'\1'
+                        }
+                    }
+                ]
+            }
         }
         m.get('https://www.spamhaus.org/drop/asndrop.txt', content=asn_ranges)
         client = Client(
@@ -18,11 +40,9 @@ def test_get_indicators():
             source_name='spamhaus',
             fieldnames='indicator',
             ignore_regex='^;.*',
-            indicator='{"regex": "^AS[0-9]+"}',
-            fields=r'{"asndrop_country": {"regex": "^.*;\\W([a-zA-Z]+)\\W+", "transform": "\\1"}, "asndrop_org":'
-                   r' {"regex": "^.*\\|\\W+(.*)", "transform": "\\1"}}'
+            feed_types=feed_type
         )
-        args['default_indicator_type'] = 'IP'
+        args['indicator_type'] = 'ASN'
         hr, indicators_ec, raw_json = get_indicators_command(client, args)
         indicators_ec = indicators_ec.get('HTTP.Indicator')
         assert len(indicators_ec) == 35
