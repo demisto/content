@@ -99,7 +99,7 @@ tasks:
       version: -1
       name: delete_case_status
       description: Delete a case status
-      script: '|||esm-delete-case-status
+      script: '|||esm-delete-case-status'
       type: regular
       iscommand: true
     nexttasks:
