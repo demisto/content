@@ -5,15 +5,17 @@ import json
 import CommonServerPython
 from MicrosoftGraphFiles import epoch_seconds, get_encrypted, remove_identity_key, url_validation, parse_key_to_context, test_module, delete_file_command,\
     download_file_command, list_tenant_sites_command, list_drive_children_command, create_new_folder_command, replace_an_existing_file_command, list_drives_in_site_command,\
-    upload_new_file_command
-
+    upload_new_file_command, BASE_URL, Client
 
 
 with open('test_data/response.json', 'rb') as test_data:
     commands_responses = json.load(test_data)
 
-with open('test_data/inputs1.json', 'rb') as test_data:
+with open('test_data/test_inputs.json', 'rb') as test_data:
     arguments = json.load(test_data)
+
+with open('test_data/expected_results.json', 'rb') as test_data:
+    commands_expected_results = json.load(test_data)
 
 EXCLUDE_LIST = ['eTag']
 
@@ -21,7 +23,19 @@ RESPONSE_KEYS_DICTIONARY = {
     "@odata.context": "OdataContext",
 }
 
-@pytest.mark.commands
+class File(object):
+    content = b'12345'
+
+class TestClient(Client):
+    def __init__(self):
+        self.http_call = ''
+        self.access_token = '1234'
+        self.headers = {'Authorization': f'Bearer {self.access_token}'}
+
+    def get_access_token(self):
+        return self.get_access_token
+
+
 @freeze_time(time.ctime(1576009202))
 def test_epoch_seconds():
     """
@@ -166,21 +180,118 @@ def test_parse_key_to_context_exclude_keys_from_list():
     assert parsed_response.get('ETag', True) is True
 
 
-# @pytest.mark.parametrize('command, args, response, expected_result', [
-#     (test_module, {}, RESPONSE_LIST_GROUPS, EXPECTED_LIST_GROUPS),
-#     (delete_file_command, {'group_id': '123'}, RESPONSE_GET_GROUP, EXPECTED_GET_GROUP),
-#     (download_file_command, {'group_id': '123', 'mail_nickname': 'nick', 'security_enabled': True},
-#     (list_tenant_sites_command, {'group_id': '123', 'mail_nickname': 'nick', 'security_enabled': True},
-#     (list_drive_children_command, {'group_id': '123', 'mail_nickname': 'nick', 'security_enabled': True},
-#     (create_new_folder_command, {'group_id': '123', 'mail_nickname': 'nick', 'security_enabled': True},
-#     (replace_an_existing_file_command, {'group_id': '123', 'mail_nickname': 'nick', 'security_enabled': True},
-#     (list_drives_in_site_command, {'group_id': '123', 'mail_nickname': 'nick', 'security_enabled': True},
-#     (upload_new_file_command, {'group_id': '123', 'mail_nickname': 'nick', 'security_enabled': True},
-#      RESPONSE_CREATE_GROUP, EXPECTED_CREATE_GROUP),
-# ])  # noqa: E124
-# def test_commands(command, args, response, expected_result, mocker):
-#     client = Client('https://graph.microsoft.com/v1.0', 'tenant-id', 'auth_and_token_url', 'auth_id',
-#                     'token_retrieval_url', 'enc_key', 'use_ssl', 'proxies')
-#   mocker.patch.object(client, 'http_request', return_value=response)
-#     result = command(client, args)
-#     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
+def test_test_module(mocker):
+    """
+    Given:
+        -
+    When
+        - Clicking on "Test" when setting a new integration instance
+    Then
+        - Returns "OK" if found token
+    """
+    client = TestClient()
+    mocker.patch.object(client, 'http_call', return_value=commands_responses['test_module'])
+    result = test_module(client)
+    assert commands_expected_results['test_module'] == result
+
+
+@pytest.mark.parametrize('command, args, response, expected_result', [(download_file_command,
+                                                                       {'object_type': 'drives', 'object_type_id': '123', 'item_id': '232'}, File, commands_expected_results['download_file'])])# noqa: E124
+def test_download_file(command, args, response, expected_result, mocker):
+    """
+    Given:
+        - Location to where to upload file to Graph Api
+    When
+        - Using download file command in Demisto
+    Then
+        - return FileResult object
+    """
+    client = TestClient()
+    mocker.patch.object(client, 'http_call', return_value=response)
+    result = command(client, args)
+    assert 'Contents' in list(result.keys())
+
+@pytest.mark.parametrize('command, args, response, expected_result',
+                         [(delete_file_command, {'object_type': 'drives', 'object_type_id': '123', 'item_id': '232'}, commands_responses['download_file'], commands_expected_results['download_file'])])# noqa: E124
+def test_delete_file(command, args, response, expected_result, mocker):
+    """
+    Given:
+        - Location to where to upload file to Graph Api
+    When
+        - Using download file command in Demisto
+    Then
+        - return FileResult object
+    """
+    client = TestClient()
+    mocker.patch.object(client, 'http_call', return_value=response)
+    human_readable, result = command(client, args)
+    assert expected_result == result
+
+@pytest.mark.parametrize('command, args, response, expected_result',
+                         [(list_tenant_sites_command, {}, commands_responses['list_tenant_sites'], commands_expected_results['list_tenant_sites'])])# noqa: E124
+def test_list_tenant_sites(command, args, response, expected_result, mocker):
+    """
+    Given:
+        - Location to where to upload file to Graph Api
+    When
+        - Using download file command in Demisto
+    Then
+        - return FileResult object
+    """
+    client = TestClient()
+    mocker.patch.object(client, 'http_call', return_value=response)
+    result = command(client, args)
+    assert expected_result == result[1]
+
+
+@pytest.mark.parametrize('command, args, response, expected_result',
+                         [(list_drive_children_command, {'object_type':'sites', 'object_type_id': '12434', 'item_id': '123'},
+                           commands_responses['list_drive_children'], commands_expected_results['list_drive_children'])])# noqa: E124
+def test_list_drive_children(command, args, response, expected_result, mocker):
+    """
+    Given:
+        - Location to where to upload file to Graph Api
+    When
+        - Using download file command in Demisto
+    Then
+        - return FileResult object
+    """
+    client = TestClient()
+    mocker.patch.object(client, 'http_call', return_value=response)
+    result = command(client, args)
+    assert expected_result == result[1]
+
+
+@pytest.mark.parametrize('command, args, response, expected_result',
+                         [(create_new_folder_command, {'object_type': 'groups', 'object_type_id': '1234', 'parent_id': '1234', 'folder_name': 'name'},
+                           commands_responses['create_new_folder'], commands_expected_results['create_new_folder'])])# noqa: E124
+def test_create_name_folder(command, args, response, expected_result, mocker):
+    """
+    Given:
+        - Location to where to upload file to Graph Api
+    When
+        - Using download file command in Demisto
+    Then
+        - return FileResult object
+    """
+    client = TestClient()
+    mocker.patch.object(client, 'http_call', return_value=response)
+    result = command(client, args)
+    assert expected_result == result[1]
+
+@pytest.mark.parametrize('command, args, response, expected_result',
+                         [(list_drives_in_site_command, {'site_id': 'site_id'},
+                           commands_responses['list_drives_in_a_site'], commands_expected_results['list_drives_in_a_site'])])# noqa: E124
+def test_list_drives_in_site(command, args, response, expected_result, mocker):
+    """
+    Given:
+        - Location to where to upload file to Graph Api
+    When
+        - Using download file command in Demisto
+    Then
+        - return FileResult object
+    """
+    client = TestClient()
+    mocker.patch.object(client, 'http_call', return_value=response)
+    result = command(client, args)
+    assert expected_result == result[1]

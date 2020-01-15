@@ -7,13 +7,13 @@
       }
     }
   },
-    "remove_identifier_data_user_type": {
+  "remove_identifier_data_user_type": {
     "CreatedBy": {
       "User": {
         "DisplayName": "MS Graph Files Dev"
       }
     }
   },
-  "valid_next_link_url" : "https://graph.microsoft.com/v1.0/drives/1234/root/children?top=1&$skiptoken=1234fsff",
-  "invalid_next_link_url": "https://not_graph/v1.0/drives/1234/root/children?top=1&$"
+  "valid_next_link_url": "https://graph.microsoft.com/v1.0/drives/1234/root/children?top=1&$skiptoken=1234fsff",
+  "invalid_next_link_url": "https://not_graph/v1.0/drives/1234/root/children?top=1&"
 }

@@ -1,5 +1,6 @@
+
 {
-  "list_tenant_sites_response": {
+  "list_tenant_sites": {
     "@odata.context": "test",
     "value": [
       {
@@ -29,9 +30,8 @@
       }
     ]
   },
-  "list_drive_children_response": {
+  "list_drive_children": {
     "@odata.context": "test",
-    "@odata.nextLink": "test",
     "value": [
       {
         "createdDateTime": "2019-12-08T13:24:58Z",
@@ -70,7 +70,7 @@
       }
     ]
   },
-  "create_new_folder_response": {
+  "create_new_folder": {
     "@odata.context": "test",
     "createdDateTime": "2020-01-12T09:35:50Z",
     "eTag": "\"{test-test},1\"",
@@ -106,7 +106,7 @@
       "childCount": 0
     }
   },
-  "replace_existing_file_context_response": {
+  "replace_existing_file_context": {
     "@odata.context": "test",
     "@microsoft.graph.downloadUrl": "test",
     "createdDateTime": "2020-01-05T15:30:21Z",
@@ -138,7 +138,7 @@
     "file": {
       "mimeType": "text/plain",
       "hashes": {
-        "quickXorHash": "7MnpZNdLNXuZVoexyoIpMyy3CEg="
+        "quickXorHash": "test1"
       }
     },
     "fileSystemInfo": {
@@ -146,7 +146,7 @@
       "lastModifiedDateTime": "2020-01-12T09:48:02Z"
     }
   },
-  "list_drives_in_a_site_response": {
+  "list_drives_in_a_site": {
     "@odata.context": "test",
     "value": [
       {
@@ -179,7 +179,7 @@
       }
     ]
   },
-  "upload_new_file_response": {
+  "upload_new_file": {
     "@odata.context": "test",
     "@microsoft.graph.downloadUrl": "test",
     "createdDateTime": "2020-01-12T09:57:04Z",
@@ -211,13 +211,15 @@
     "file": {
       "mimeType": "text/plain",
       "hashes": {
-        "quickXorHash": "JSLclnw4KOmNvDoLqa2eo6YAYt0="
+        "quickXorHash": "test1"
       }
     },
     "fileSystemInfo": {
       "createdDateTime": "2020-01-12T09:57:04Z",
       "lastModifiedDateTime": "2020-01-12T09:57:04Z"
     }
-  }
+  },
+  "test_module": "123",
+  "download_file": ""
 
 }

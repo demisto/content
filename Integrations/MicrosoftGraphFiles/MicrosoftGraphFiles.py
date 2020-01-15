@@ -147,6 +147,7 @@ def url_validation(url):
         raise DemistoException(f'Url: {url} is not valid. Please provide another one. missing $skiptoken')
     return url
 
+
 class Client(BaseClient):
     """
     Client will implement the service API, should not contain Demisto logic.
@@ -586,7 +587,7 @@ def main():
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module(client):
+def test_module(client, args=None):
     """
     Performs basic get request to get item samples
     """
