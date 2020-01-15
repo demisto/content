@@ -597,10 +597,23 @@ script:
       type: Date
   - arguments:
     - default: false
-      defaultValue: '5'
+      defaultValue: '50'
       description: The maximin number of files to return.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Offset to start getting file downloads.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Filter by host.
+      isArray: false
+      name: host
       required: false
       secret: false
     deprecated: false
@@ -803,17 +816,17 @@ script:
       description: The path of the file.
       isArray: false
       name: path
-      required: true
+      required: false
       secret: false
     - default: false
-      defaultValue: '5'
-      description: The maximin number of downloaded files to return.
+      description: File download ID.
       isArray: false
-      name: limit
+      name: id
       required: false
       secret: false
     deprecated: false
-    description: Get file download metadata.
+    description: Get file download metadata. At least one of the arguments `path`
+      or `id` must be set in order to run the command successfully.
     execution: false
     name: tanium-tr-get-file-download-info
     outputs:
@@ -1112,9 +1125,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns all available evidences in the system.
+    description: Returns a list of all available evidence in the system.
     execution: false
-    name: tanium-tr-list-evidences
+    name: tanium-tr-list-evidence
   - arguments:
     - default: false
       isArray: false
@@ -1152,6 +1165,118 @@ script:
     deprecated: false
     execution: false
     name: tanium-tr-delete-evidence
+  - arguments:
+    - default: false
+      description: Path to file.
+      isArray: false
+      name: path
+      required: true
+      secret: false
+    - default: false
+      description: Connection ID.
+      isArray: false
+      name: connection-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Request a new file download
+    execution: false
+    name: tanium-tr-request-file-download
+    outputs:
+    - type: Unknown
+  - arguments:
+    - default: false
+      description: File download ID.
+      isArray: false
+      name: file-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a file download.
+    execution: false
+    name: tanium-tr-delete-file-download
+  - arguments:
+    - default: false
+      description: Path to directory.
+      isArray: false
+      name: path
+      required: true
+      secret: false
+    - default: false
+      description: Connection ID.
+      isArray: false
+      name: connection-id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Max number of files to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Offset to start getting files
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: List files in the given directory.
+    execution: false
+    name: tanium-tr-list-files-in-directory
+  - arguments:
+    - default: false
+      defaultValue: Connection ID.
+      isArray: false
+      name: connection-id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: Path to file.
+      isArray: false
+      name: path
+      required: true
+      secret: false
+    deprecated: false
+    description: Get information about file from a remote connection.
+    execution: false
+    name: tanium-tr-get-file-info
+  - arguments:
+    - default: false
+      description: Connection ID.
+      isArray: false
+      name: connection-id
+      required: true
+      secret: false
+    - default: false
+      description: Path to file.
+      isArray: false
+      name: path
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete file from endpoint
+    execution: false
+    name: tanium-tr-delete-file-from-endpoint
+  - arguments:
+    - default: false
+      description: Connection ID.
+      isArray: false
+      name: connection-id
+      required: true
+      secret: false
+    - default: false
+      description: Process instance ID.
+      isArray: false
+      name: ptid
+      required: true
+      secret: false
+    deprecated: false
+    description: Get process timeline.
+    execution: false
+    name: tanium-tr-get-process-timeline
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   longRunning: false

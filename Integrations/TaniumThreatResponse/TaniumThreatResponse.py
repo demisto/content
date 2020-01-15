@@ -6,20 +6,12 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import json
 import urllib3
+import urllib.parse
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBALS/PARAMS '''
 FETCH_TIME = demisto.params().get('fetch_time')
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
-
-ALERT_TYPE_FROM_REQUEST = {'unresolved': 'Unresolved', 'inprogress': 'In Progress', 'ignored': 'Ignored', 'resolved': 'Resolved'}
-ALERT_TYPE_TO_REQUEST = {'Unresolved': 'unresolved', 'In Progress': 'inprogress', 'Ignored': 'ignored', 'Resolved': 'resolved'}
-
-
-EVENT_TYPE_FROM_REQUEST = {'combined': 'Combined', 'dns': 'DNS', 'driver': 'Driver', 'file': 'File', 'image': 'Image',
-                           'network': 'Network', 'process': 'Process', 'registry': 'Registry', 'sid': 'SID'}
-EVENT_TYPE_TO_REQUEST = {'Combined': 'combined', 'DNS': 'dns', 'Driver': 'driver', 'File': 'file', 'Image': 'image',
-                         'Network': 'network', 'Process': 'process', 'Registry': 'registry', 'SID': 'sid'}
 
 PROCESS_TEXT = 'Process information for process with PTID'
 PARENT_PROCESS_TEXT = 'Parent process for process with PTID'
@@ -116,7 +108,7 @@ class Client(BaseClient):
             'IntelDocId': alert.get('intelDocId'),
             'Priority': alert.get('priority'),
             'Severity': alert.get('severity'),
-            'State': ALERT_TYPE_FROM_REQUEST[alert.get('state')],
+            'State': alert.get('state').title(),
             'Type': alert.get('type'),
             'UpdatedAt': alert.get('updatedAt')}
 
@@ -175,7 +167,7 @@ class Client(BaseClient):
             'CreatedAt': label.get('createdAt'),
             'UpdatedAt': label.get('updatedAt')}
 
-    def get_file_item(self, file):
+    def get_file_download_item(self, file):
         return {
             'ID': file.get('id'),
             'Host': file.get('host'),
@@ -193,6 +185,17 @@ class Client(BaseClient):
             'Comments': file.get('comments'),
             'Tags': file.get('tags')
         }
+
+    def get_file_item(self, file):
+        file_item = {
+            'Created': file.get('created'),
+            'FilePath': file.get('file-path'),
+            'IsDirectory': file.get('is-directory'),
+            'LastModified': file.get('last-modified'),
+            'Permissions': file.get('permissions'),
+            'Size': file.get('size')
+        }
+        return {key: val for key, val in file_item.items() if val is not None}
 
     def get_event_item(self, raw_event, event_type):
         event = {
@@ -228,10 +231,10 @@ class Client(BaseClient):
             'Response': raw_event.get('response')
         }
 
-        if(event_type == 'combined'):
+        if event_type == 'combined':
             event['Type'] = raw_event.get('type')
         else:
-            event['Type'] = EVENT_TYPE_FROM_REQUEST[event_type]
+            event['Type'] = event_type.upper() if event_type in ['dns', 'sid'] else event_type.title()
 
         # remove empty values from the event item
         return {k: v for k, v in event.items() if v is not None}
@@ -369,7 +372,7 @@ def get_alerts(client, data_args):
               'limit': limit,
               'offset': offset}
     if state:
-        params['state'] = ALERT_TYPE_TO_REQUEST[state]
+        params['state'] = state.lower()
 
     raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/alerts/', params=params)
 
@@ -399,7 +402,7 @@ def alert_update_state(client, data_args):
     alert_id = data_args.get('alert-id')
     state = data_args.get('state')
 
-    body = {"state": ALERT_TYPE_TO_REQUEST[state]}
+    body = {"state": state.lower()}
     raw_response = client.do_request('PUT', f'/plugin/products/detect3/api/v1/alerts/{alert_id}', data=body)
     alert = client.get_alert_item(raw_response)
 
@@ -537,12 +540,12 @@ def get_label(client, data_args):
 
 
 def get_file_downloads(client, data_args):
-    limit = int(data_args.get('limit'))
-    raw_response = client.do_request('GET', '/plugin/products/trace/filedownloads/', params={'limit': limit})
+    data_args = {key: val for key, val in data_args.items() if val is not None}
+    raw_response = client.do_request('GET', '/plugin/products/trace/filedownloads/', params=data_args)
 
     files = []
     for item in raw_response:
-        file = client.get_file_item(item)
+        file = client.get_file_download_item(item)
         files.append(file)
 
     context = createContext(files, removeNull=True)
@@ -555,11 +558,9 @@ def get_downloaded_file(client, data_args):
     file_id = data_args.get('file-id')
     file_content, content_desc = client.do_request('GET', f'/plugin/products/trace/filedownloads/{file_id}', resp_type='text')
 
-    content_disposition = content_desc.split(';')[1]
-    filename = re.findall(r"[A-Za-z0-9_-]*\.*[A-Za-z0-9]{3,4}", content_disposition)[-1]
+    filename = re.findall(r"filename\*=UTF-8\'\'(.+)", content_desc)[0]
 
-    demisto.results(
-        fileResult(filename, file_content))
+    demisto.results(fileResult(filename, file_content))
 
 
 def get_events_by_connection(client, data_args):
@@ -568,7 +569,7 @@ def get_events_by_connection(client, data_args):
     connection = data_args.get('connection-name')
     event_type = data_args.get('event-type')
 
-    event_type = EVENT_TYPE_TO_REQUEST[event_type]
+    event_type = event_type.lower()
 
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{connection}/{event_type}/events/',
                                      params={'limit': limit, 'offset': offset})
@@ -585,21 +586,19 @@ def get_events_by_connection(client, data_args):
 
 
 def get_file_download_info(client, data_args):
-    limit = int(data_args.get('limit'))
-    path = data_args.get('path')
-    host = data_args.get('host')
+    if not data_args.get('path') and not data_args.get('id'):
+        raise ValueError('At least one of the arguments `path` or `id` must be set.')
 
-    raw_response = client.do_request('GET', f'/plugin/products/trace/filedownloads/',
-                                     params={'limit': limit, 'path': path, 'host': host})
+    data_args = {key: val for key, val in data_args.items() if val is not None}
 
-    files = []
-    for item in raw_response:
-        file = client.get_file_item(item)
-        files.append(file)
+    raw_response = client.do_request('GET', f'/plugin/products/trace/filedownloads/', params=data_args)
+    if not raw_response:
+        raise ValueError('File download does not exist.')
 
-    context = createContext(files, removeNull=True)
+    file = client.get_file_download_item(raw_response[0])
+    context = createContext(file, removeNull=True)
     outputs = {'Tanium.FileDownload(val.ID && val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown(f'File information for {path}', files)
+    human_readable = tableToMarkdown(f'File download metadata for file `{file["Path"]}`', file)
     return human_readable, outputs, raw_response
 
 
@@ -715,7 +714,7 @@ def get_process_tree(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def get_evidences(client, data_args):
+def list_evidence(client, data_args):
     limit = int(data_args.get('limit'))
     offset = int(data_args.get('offset'))
     sort = data_args.get('sort')
@@ -778,6 +777,66 @@ def delete_evidence(client, data_args):
     evidence_id = data_args.get('evidence-id')
     client.do_request('DELETE', f'/plugin/products/trace/evidence/{evidence_id}', resp_type='content')
     return f"Evidence {evidence_id} deleted successfully.", {}, {}
+
+
+def request_file_download(client, data_args):
+    con_id = data_args.get('connection-id')
+    path = data_args.get('path')
+    data = {
+        'path': path,
+        'connId': con_id
+    }
+    client.do_request('POST', f'/plugin/products/trace/filedownloads', data=data, resp_type='text')
+    filename = os.path.basename(path)
+    return f"Download request of file {filename} has been sent successfully.", {}, {}
+
+
+def delete_file_download(client, data_args):
+    file_id = data_args.get('file-id')
+    client.do_request('DELETE', f'/plugin/products/trace/filedownloads/{file_id}', resp_type='text')
+    return f"Delete request of file with ID {file_id} has been sent successfully.", {}, {}
+
+
+def list_files_in_dir(client, data_args):
+    con_id = data_args.get('connection-id')
+    dir_path = urllib.parse.quote(data_args.get('path'))
+    limit = int(data_args.get('limit'))
+    offset = int(data_args.get('offset'))
+
+    raw_response = client.do_request('GET', f'/plugin/products/trace/filedownloads/{con_id}/list/{dir_path}')
+
+    files = []
+    for file in raw_response[offset:offset + limit]:
+        files.append(client.get_file_item(file))
+
+    context = createContext(files, removeNull=True)
+    outputs = {'Tanium.File(val.ID && val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown(f'Files in directory `{dir_path}`', files)
+    return human_readable, outputs, raw_response
+
+
+def get_file_info(client, data_args):
+    con_id = data_args.get('connection-id')
+    path = data_args.get('path')
+
+    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_id}/fileinfo/{path}')
+    fileinfo = client.get_file_item(raw_response)
+
+    context = createContext(fileinfo, removeNull=True)
+    outputs = {'Tanium.File(val.ID && val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown(f'Information for file `{path}`', fileinfo)
+    return human_readable, outputs, raw_response
+
+
+def delete_file_from_endpoint(client, data_args):
+    con_id = data_args.get('connection-id')
+    path = urllib.parse.quote(data_args.get('path'))
+    client.do_request('DELETE', f'/plugin/products/trace/filedownloads/{con_id}/{path}', resp_type='text')
+    return f"Delete request of file {path} from endpoint {con_id} has been sent successfully.", {}, {}
+
+
+def get_process_timeline(client, data_args):
+    pass
 
 
 def fetch_incidents(client):
@@ -855,19 +914,25 @@ def main():
         f'tanium-tr-delete-connection': delete_connection,
         f'tanium-tr-list-labels': get_labels,
         f'tanium-tr-get-label-by-id': get_label,
-        f'tanium-tr-list-file-downloads': get_file_downloads,
         f'tanium-tr-list-events-by-connection': get_events_by_connection,
-        f'tanium-tr-get-file-download-info': get_file_download_info,
         f'tanium-tr-get-process-info': get_process_info,
         f'tanium-tr-get-events-by-process': get_events_by_process,
         f'tanium-tr-get-process-children': get_process_children,
         f'tanium-tr-get-parent-process': get_parent_process,
         f'tanium-tr-get-parent-process-tree': get_parent_process_tree,
         f'tanium-tr-get-process-tree': get_process_tree,
-        f'tanium-tr-list-evidences': get_evidences,
+        f'tanium-tr-list-evidence': list_evidence,
         f'tanium-tr-get-evidence-by-id': get_evidence,
         f'tanium-tr-create-evidence': create_evidence,
-        f'tanium-tr-delete-evidence': delete_evidence
+        f'tanium-tr-delete-evidence': delete_evidence,
+        f'tanium-tr-list-file-downloads': get_file_downloads,
+        f'tanium-tr-get-file-download-info': get_file_download_info,
+        f'tanium-tr-request-file-download': request_file_download,
+        f'tanium-tr-delete-file-download': delete_file_download,
+        f'tanium-tr-list-files-in-directory': list_files_in_dir,
+        f'tanium-tr-get-file-info': get_file_info,
+        f'tanium-tr-delete-file-from-endpoint': delete_file_from_endpoint,
+        f'tanium-tr-get-process-timeline': get_process_timeline
     }
 
     try:
