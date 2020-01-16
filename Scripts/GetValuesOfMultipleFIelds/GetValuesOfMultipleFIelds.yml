@@ -1,13 +1,13 @@
 args:
-- name: Key
+- name: key
   required: true
   description: The base context path under which to find the fields. For example Demisto.Results.
-- name: List
+- name: list
   required: true
   description: The list of fields to retrieve from context. The list can contain comma
     seperated values. For example key1,key1
   isArray: true
-- name: Value
+- name: value
   required: false
   description: The value to set in context for the key.
 commonfields:
