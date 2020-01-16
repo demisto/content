@@ -1,8 +1,4 @@
-## Overview
----
-
 Use the Kenna v2 integration to search and update vulnerabilities, schedule a run connector, and manage tags and attributes.
-
 
 ## Configure KennaV2 on Demisto
 ---
@@ -16,28 +12,25 @@ Use the Kenna v2 integration to search and update vulnerabilities, schedule a ru
     * __Use system proxy settings__
     * __Trust any certificate (not secure)__
 4. Click __Test__ to validate the URLs, token, and connection.
-## Fetched Incidents Data
----
 
 ## Commands
 ---
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. kenna-search-vulnerabilities
-2. kenna-run-connector
-3. kenna-search-fixes
-4. kenna-update-asset
-5. kenna-update-vulnerability
-6. kenna-get-connectors
-7. kenna-search-assets
-8. kenna-get-asset-vulnerabilities
-9. kenna-add-tag
-10. kenna-delete-tag
-### 1. kenna-search-vulnerabilities
+1. [Search vulnerabilities: kenna-search-vulnerabilities](#1-search-vulnerabilities)
+2. [Run a connector: kenna-run-connector](#2-search-vulnerabilities)
+3. [Search fixes: kenna-search-fixes](31-search-fixes)
+4. [Update an asset: kenna-update-asset](#4-update-an-asset)
+5. [Update a vulnerability: kenna-update-vulnerability](#5-update-a-vulnerability)
+6. [Get a list of all connectors: kenna-get-connectors](#6-get-a-list-of-all-connectors)
+7. [Search assets: kenna-search-assets](#7-search-assets)
+8. [Get an asset's vulnerability: kenna-get-asset-vulnerabilities](#8-get-an-assets-vulnerability)
+9. [Add a tag to an asset: kenna-add-tag](#9-add-a-tag-to-an-asset)
+10. [Delete a tag from an asset: kenna-delete-tag](#10-delete-a-tag-from-an-asset)
+### 1. Search vulnerabilities
 ---
 Searches for vulnerabilities in Kenna.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `kenna-search-vulnerabilities`
@@ -292,11 +285,10 @@ Searches for vulnerabilities in Kenna.
 | CVE-2017-8917 | 100 | 631927 |
 
 
-### 2. kenna-run-connector
+### 2. Run a connector
 ---
 Executes a run of the specified connector. If file based, it will use the most recently uploaded data file.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `kenna-run-connector`
@@ -307,11 +299,10 @@ Executes a run of the specified connector. If file based, it will use the most r
 | id | The connector ID to run. | Required | 
 
 
-### 3. kenna-search-fixes
+### 3. Search fixes
 ---
 Filters fixes by a given set of vulnerability and asset parameters and returns the filtered fixes.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `kenna-search-fixes`
@@ -437,11 +428,10 @@ CVE-2019-18393
 &nbsp;
 
 
-### 4. kenna-update-asset
+### 4. Update an asset
 ---
 Updates the attributes of a single asset.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `kenna-update-asset`
@@ -460,19 +450,14 @@ There is no context output for this command.
 ##### Command Example
 ```!kenna-update-asset id={asset_id} notes="My personal asset."```
 
-##### Context Example
-```
-{}
-```
 
 ##### Human Readable Output
 Asset {asset_id} was updated
 
-### 5. kenna-update-vulnerability
+### 5. Update a vulnerability
 ---
 Updates the attributes of a single vulnerability.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `kenna-update-vulnerability`
@@ -492,19 +477,14 @@ There is no context output for this command.
 ##### Command Example
 ```!kenna-update-vulnerability id=631199 status=risk_accepted```
 
-##### Context Example
-```
-{}
-```
 
 ##### Human Readable Output
 Asset 631199 was updated
 
-### 6. kenna-get-connectors
+### 6. Get a list of all connectors
 ---
 Returns all connectors.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `kenna-get-connectors`
@@ -576,11 +556,10 @@ Returns all connectors.
 | 8080 | 152929 | AppScan Enterprise | false |
 
 
-### 7. kenna-search-assets
+### 7. Search assets
 ---
 Searches for assets.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `kenna-search-assets`
@@ -702,11 +681,10 @@ Searches for assets.
 | {ip} | Windows | 1000 | {asset_id} |
 
 
-### 8. kenna-get-asset-vulnerabilities
+### 8. Get an asset's vulnerabilities
 ---
 Gets vulnerabilities of the specified asset.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `kenna-get-asset-vulnerabilities`
@@ -769,11 +747,10 @@ Gets vulnerabilities of the specified asset.
 | CVE-2018-0866 | 85 | 631231 |
 
 
-### 9. kenna-add-tag
+### 9. Add a tag to an asset
 ---
 Adds a tag to the specified asset.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `kenna-add-tag`
@@ -792,19 +769,15 @@ There is no context output for this command.
 ##### Command Example
 ```!kenna-add-tag id={asset_id} tag="My test tag"```
 
-##### Context Example
-```
-{}
-```
+
 
 ##### Human Readable Output
 Tag My test tag was added to asset {asset_id}
 
-### 10. kenna-delete-tag
+### 10. Delete a tag from an asset
 ---
 Deletes tags from the specified asset.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `kenna-delete-tag`
@@ -823,10 +796,7 @@ There is no context output for this command.
 ##### Command Example
 ```!kenna-delete-tag id={asset_id} tag="My test tag"```
 
-##### Context Example
-```
-{}
-```
+
 
 ##### Human Readable Output
 Tag My test tag was deleted to asset {asset_id}
