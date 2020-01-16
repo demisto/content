@@ -32,7 +32,7 @@ class Client(BaseClient):
             threat_type: Optional[str] = None,
             verify: bool = False,
             proxy: bool = False,
-            read_time_out: Optional[float] = 120.0
+            read_time_out: Optional[float] = 120.0,
     ):
         """Constructor of Client and BaseClient
 
@@ -157,9 +157,7 @@ class Client(BaseClient):
             block["type"] = indicator
             block["threat_id"] = thread_id
             if indicator:
-                results.append(
-                    {"value": value, "type": indicator, "rawJSON": block}
-                )
+                results.append({"value": value, "type": indicator, "rawJSON": block})
 
         return results
 
@@ -208,6 +206,27 @@ def fetch_indicators_command(
     return indicators
 
 
+def fetch_indicators_builder(client: Client, fetch_time: str) -> None:
+    """Build the fetch_indicators and saves timestamp to lastRun
+
+    Args:
+        client: Client derives from BaseClient
+        fetch_time: fetch time (for example: "3 days")
+    """
+    last_fetch = demisto.getLastRun()
+    if isinstance(last_fetch, dict) and "timestamp" in last_fetch:
+        begin_time = last_fetch.get("timestamp")
+        end_time = get_now()
+    else:  # First fetch
+        begin_time, end_time = parse_date_range_no_milliseconds(fetch_time)
+    indicators = fetch_indicators_command(client, begin_time, end_time)
+    # Send indicators to demisto
+    for b in batch(indicators, batch_size=2000):
+        demisto.createIndicators(b)
+    # set last run is end time
+    demisto.setLastRun({"timestamp": end_time})
+
+
 def parse_date_range_no_milliseconds(from_time: str) -> Tuple[int, int]:
     """Gets a range back and return time before the string and to now.
     Without milliseconds.
@@ -226,7 +245,7 @@ def parse_date_range_no_milliseconds(from_time: str) -> Tuple[int, int]:
     return int(begin_time / 1000), int(end_time / 1000)
 
 
-def get_indicators_command(client: Client, args: dict) -> Tuple[dict, list]:
+def get_indicators_command(client: Client, args: dict) -> Tuple[dict, str]:
     """Getting indicators into Demisto's incident.
 
     Arguments:
@@ -243,7 +262,12 @@ def get_indicators_command(client: Client, args: dict) -> Tuple[dict, list]:
         client, begin_time=begin_time, end_time=end_time, limit=limit
     )
     context_output = {"Cofense.Indicator": indicators[:limit]}
-    return context_output, [indicator.get("rawJSON") for indicator in indicators]
+    human_readable = tableToMarkdown(
+        f"Results from {INTEGRATION_NAME}:",
+        [indicator.get("rawJSON") for indicator in indicators],
+        ["threat_id", "type", "value", "impact", "confidence", "roleDescription"],
+    )
+    return context_output, human_readable
 
 
 def get_now() -> int:
@@ -268,45 +292,17 @@ def main(params: dict):
     verify = not params.get("insecure")
     proxy = bool(params.get("proxy"))
     threat_type = params.get("threat_type")
-    client = Client(
-        url, auth=auth, verify=verify, proxy=proxy, threat_type=threat_type
-    )
+    client = Client(url, auth=auth, verify=verify, proxy=proxy, threat_type=threat_type)
 
     demisto.info(f"Command being called is {demisto.command()}")
     try:
         if demisto.command() == "test-module":
             return_outputs(test_module(client))
-
         elif demisto.command() == "fetch-indicators":
-            last_fetch = demisto.getLastRun()
-            if isinstance(last_fetch, dict) and "timestamp" in last_fetch:
-                begin_time = last_fetch.get("timestamp")
-                end_time = get_now()
-            else:  # First fetch
-                begin_time, end_time = parse_date_range_no_milliseconds(params.get("fetch_time", "3 days"))
-            indicators = fetch_indicators_command(client, begin_time, end_time)
-            # Send indicators to demisto
-            for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
-            # set last run is now
-            demisto.setLastRun({"timestamp": end_time})
+            fetch_indicators_builder(client, params.get("fetch_time", "3 days"))
         elif demisto.command() == "get-indicators":
             # dummy command for testing
-            context, indicators = get_indicators_command(client, demisto.args())
-            human_readable = tableToMarkdown(
-                f"Results from {INTEGRATION_NAME}:",
-                indicators,
-                [
-                    "threat_id",
-                    "type",
-                    "value",
-                    "impact",
-                    "confidence",
-                    "roleDescription",
-                ],
-            )
-            return_outputs(human_readable, context)
-
+            return_outputs(*get_indicators_command(client, demisto.args()))
     except Exception as err:
         return_error(str(err))
 
