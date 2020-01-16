@@ -24,6 +24,26 @@ ENTRY_TYPE_ERROR = 4
 
 # ----- Functions ----- #
 
+# TODO: remove this function
+def get_open_fds():
+    '''
+    return the number of open file descriptors for current process
+
+    .. warning: will only work on UNIX-like os-es.
+    '''
+    import subprocess
+    import os
+
+    pid = os.getpid()
+    procs = subprocess.check_output(
+        [ "lsof", '-w', '-Ff', "-p", str( pid ) ] )
+
+    nprocs = len(
+        filter(
+            lambda s: s and s[ 0 ] == 'f' and s[1: ].isdigit(),
+            procs.split( '\n' ) )
+        )
+    return nprocs
 
 # get integration configuration
 def __get_integration_config(client, integration_name, thread_index=0, prints_manager=None):
@@ -35,8 +55,6 @@ def __get_integration_config(client, integration_name, thread_index=0, prints_ma
         res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
                                                       method='POST', body=body)
     except ApiException as conn_error:
-        # TODO: delete next line
-        print("GET INTEGRATION CONFIG - API EXCEPTION: {}".format(conn_error))
         prints_manager.add_print_job(conn_error, print, thread_index)
         return None
 
@@ -49,23 +67,15 @@ def __get_integration_config(client, integration_name, thread_index=0, prints_ma
             error_message = "Timeout - failed to get integration {} configuration. Error: {}".format(integration_name,
                                                                                                      res)
             prints_manager.add_print_job(error_message, print_error, thread_index)
-            # TODO: delete next
-            print("GET INTEGRATION CONFIG - TIMEOUT")
             return None
 
         time.sleep(SLEEP_INTERVAL)
         total_sleep += SLEEP_INTERVAL
     all_configurations = res['configurations']
-    # with open('outputs.json', "w") as f:
-    #     f.write(str(all_configurations))
-
-    # print("ALL CONFIGURATIONS: {}".format(all_configurations))
     match_configurations = [x for x in all_configurations if x['name'] == integration_name]
-    # print("Integration name: {}, is on match config? {}".format(integration_name, match_configurations))
 
     if not match_configurations or len(match_configurations) == 0:
         prints_manager.add_print_job('integration was not found', print_error, thread_index)
-        # TODO: delete print("GET INTEGRATION CONFIG - INTEGRATION NOT FOUND")
         return None
 
     # print(match_configurations[0])
@@ -74,6 +84,7 @@ def __get_integration_config(client, integration_name, thread_index=0, prints_ma
 
 # __test_integration_instance
 def __test_integration_instance(client, module_instance, thread_index=0, prints_manager=None):
+    print("\nOpen files: {}".format(get_open_fds()))
     connection_retries = 3
     response_code = 0
     prints_manager.add_print_job("trying to connect.", print_warning, thread_index)

@@ -38,6 +38,29 @@ SERVICE_RESTART_POLLING_INTERVAL = 5
 SLACK_MEM_CHANNEL_ID = 'CM55V7J8K'
 
 
+# TODO: remove this function
+def get_open_fds():
+    '''
+    return the number of open file descriptors for current process
+
+    .. warning: will only work on UNIX-like os-es.
+    '''
+    import subprocess
+    import os
+
+    pid = os.getpid()
+    procs = subprocess.check_output(
+        [ "lsof", '-w', '-Ff', "-p", str( pid ) ] )
+
+    nprocs = len(
+        filter(
+            lambda s: s and s[ 0 ] == 'f' and s[1: ].isdigit(),
+            procs.split( '\n' ) )
+        )
+    return nprocs
+
+
+
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
     parser.add_argument('-k', '--apiKey', help='The Demisto API key for the server', required=True)
@@ -559,20 +582,24 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
         prints_manager.add_print_job('\n------ Test {} start ------'.format(test_message), print, thread_index)
         prints_manager.add_print_job('Skip test', print, thread_index)
         prints_manager.add_print_job('------ Test {} end ------\n'.format(test_message), print, thread_index)
+        print("\n\n\n SKIP NIGHTLY \n\n\n")  # TODO: remove
         return
 
     if not run_all_tests:
         # Skip filtered test
         if is_filter_configured and playbook_id not in filtered_tests:
+            print("\n\n\n FILTER \n\n\n")  # TODO: remove
             return
 
     # Skip bad test
     if playbook_id in skipped_tests_conf:
         skipped_tests.add("{0} - reason: {1}".format(playbook_id, skipped_tests_conf[playbook_id]))
+        print("\n\n\n SKIPPED TEST \n\n\n")  # TODO: remove
         return
 
     # Skip integration
     if has_skipped_integration:
+        print("\n\n\n HAS SKIPPED INTEGRATION \n\n\n")  # TODO: remove
         return
 
     # Skip version mismatch test
@@ -586,12 +613,14 @@ def run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_te
                                                                                                   test_to_version)
         prints_manager.add_print_job(warning_message, print_warning, thread_index)
         prints_manager.add_print_job('------ Test {} end ------\n'.format(test_message), print, thread_index)
+        print("\n\n\n VERSION MISMATCH \n\n\n")  # TODO: remove
         return
 
     are_params_set = set_integration_params(demisto_api_key, integrations, secret_params, instance_names_conf,
                                             playbook_id, thread_index=thread_index, prints_manager=prints_manager)
     if not are_params_set:
         failed_playbooks.append(playbook_id)
+        print("\n\n\n TEST PARAMS NOT SET \n\n\n") # TODO: remove
         return
 
     test_message = update_test_msg(integrations, test_message)
@@ -715,7 +744,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
     if is_ami and mockable_tests:
         proxy.configure_proxy_in_demisto(demisto_api_key, server, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
         for t in mockable_tests:
-            print("current t: {}\n\n\n".format(t))
+            print("Open file num: {}, current t: {}\n\n\n".format(get_open_fds(),t))
             run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                               skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                               is_filter_configured,
@@ -736,7 +765,7 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
             sys.exit(1)
         sleep(10)
     for t in unmockable_tests:
-        print("current t: {}\n\n\n".format(t))
+        print("Open file num: {}, current t: {}\n\n\n".format(get_open_fds(),t))
         run_test_scenario(tests_settings, t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                           is_filter_configured,
@@ -744,6 +773,8 @@ def execute_testing(tests_settings, server_ip, mockable_tests_names, unmockable_
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name, server_numeric_version, demisto_api_key, is_ami,
                           thread_index=thread_index, prints_manager=prints_manager)
+
+        print("ENDED current t: {}\n\n\n".format(t)) # TODO: remove
         prints_manager.execute_thread_prints(thread_index)
 
     tests_data_keeper.add_tests_data(succeed_playbooks, failed_playbooks, skipped_tests,
@@ -830,19 +861,24 @@ def manage_tests(tests_settings):
                     mockable_tests = [test for test in tests_allocation_for_instance if test not in unmockable_tests]
                     print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
                     print("Starts tests with server url - https://{}".format(ami_instance_ip))
-                    thread_kwargs = {
-                        "tests_settings": tests_settings,
-                        "server_ip": current_instance,
-                        "mockable_tests_names": mockable_tests,
-                        "unmockable_tests_names": unmockable_tests,
-                        "thread_index": current_thread_index,
-                        "prints_manager": prints_manager,
-                        "tests_data_keeper": tests_data_keeper
-                    }
-                    t = threading.Thread(target=execute_testing, kwargs=thread_kwargs)
-                    threads_array.append(t)
-                    t.start()
-                    current_thread_index += 1
+
+                    if number_of_instances == 1:
+                        execute_testing(tests_settings, current_instance, mockable_tests, unmockable_tests,
+                                        True, 0, prints_manager, tests_data_keeper)
+                    else:
+                        thread_kwargs = {
+                            "tests_settings": tests_settings,
+                            "server_ip": current_instance,
+                            "mockable_tests_names": mockable_tests,
+                            "unmockable_tests_names": unmockable_tests,
+                            "thread_index": current_thread_index,
+                            "prints_manager": prints_manager,
+                            "tests_data_keeper": tests_data_keeper
+                        }
+                        t = threading.Thread(target=execute_testing, kwargs=thread_kwargs)
+                        threads_array.append(t)
+                        t.start()
+                        current_thread_index += 1
             for t in threads_array:
                 t.join()
 
