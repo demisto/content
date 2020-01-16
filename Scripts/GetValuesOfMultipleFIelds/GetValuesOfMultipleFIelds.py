@@ -12,11 +12,11 @@ def update_list(_list: List, update_with):
 
 def main():
     args: Dict = demisto.args()
-    root = args.get('Key')
+    root = args.get('key')
     if root:
         if not isinstance(root, list):
             root = [root]
-        keys: List = args.get('List', '').split(',')
+        keys: List = args.get('list', '').split(',')
 
         t: List = []
         for obj in root:
