@@ -160,7 +160,9 @@ def get_indicators_command(client, args):
     return hr, {f'{feed_name_context}.Indicator': entry_result}, indicators_list
 
 
-def feed_main(feed_name, params):
+def feed_main(feed_name, params=None):
+    if not params:
+        params = {k: v for k, v in demisto.params().items() if v is not None}
     handle_proxy()
     client = Client(**params)
     command = demisto.command()
