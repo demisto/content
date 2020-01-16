@@ -110,6 +110,7 @@ def incident_priority_to_dbot_score(priority_str: str):
         return 2
     if priority == 'high':
         return 3
+    demisto.info(f'Securonix incident priority: {priority} is not known. Setting as unknown(DBotScore of 0).')
     return 0
 
 
