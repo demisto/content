@@ -94,21 +94,21 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Test.result
                 iscontext: true
-              List:
+              list:
                 value:
-                  simple: inputs.List
+                  simple: inputs.list
                 iscontext: true
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Test.results
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: key3
     separatecontext: false
@@ -315,7 +315,7 @@ view: |-
     }
   }
 inputs:
-- key: List
+- key: list
   value:
     simple: key1,key2
   required: false
