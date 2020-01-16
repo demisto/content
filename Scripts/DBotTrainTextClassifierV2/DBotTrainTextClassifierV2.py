@@ -233,7 +233,8 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
         err += ['Make sure that enough incidents exist in the environment per each of these labels.']
         missing_labels = ', '.join(missing_labels_counter.keys())
         err += ['The following labels were not mapped to any label in the labels mapping: {}.'.format(missing_labels)]
-        err += ['The given mapped labels are: {}.'.format(', '.join(labels_mapping.keys()))]
+        if labels_mapping != ALL_LABELS:
+            err += ['The given mapped labels are: {}.'.format(', '.join(labels_mapping.keys()))]
         return_error('\n'.join(err))
     if len(missing_labels_counter) > 0:
         human_readable = tableToMarkdown("Skip labels - did not match any of specified labels", missing_labels_counter)
