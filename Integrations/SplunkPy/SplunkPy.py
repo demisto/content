@@ -497,7 +497,9 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     args = {}
     args['event'] = event
     if fields:
-        args['fields'] = fields
+        args['fields'] = {
+            'fields': fields
+        }
     if host:
         args['host'] = host
     if index:
@@ -514,8 +516,8 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
         'Content-Type': 'application/json'
     }
 
-    response = requests.post(baseurl + '/services/collector', data=json.dumps(args), headers=headers)
-
+    response = requests.post(baseurl + '/services/collector/event', data=json.dumps(args), headers=headers,
+                             verify=VERIFY_CERTIFICATE)
     return response
 
 
@@ -529,14 +531,14 @@ def splunk_submit_event_hec_command():
     host = demisto.args().get('host')
     fields = demisto.args().get('fields')
     index = demisto.args().get('index')
-    source_type = demisto.args().get('sourcetype')
+    source_type = demisto.args().get('source_type')
     source = demisto.args().get('source')
     time_ = demisto.args().get('time')
 
     response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_)
 
     if 'Success' not in response_info.text:
-        return_error('Could not send event to Splunk', response_info.text.encode('utf8'))
+        return_error('Could not send event to Splunk ' + response_info.text.encode('utf8'))
     else:
         demisto.results('The event was sent successfully to Splunk.')
 
