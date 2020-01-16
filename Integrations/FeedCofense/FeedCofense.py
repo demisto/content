@@ -57,8 +57,9 @@ class Client(BaseClient):
         super().__init__(url, verify=verify, proxy=proxy, auth=auth)
 
     def _http_request(self, *args, **kwargs) -> dict:
-        timeout = (5.0, self.read_time_out)
-        return super()._http_request(timeout=timeout, *args, **kwargs)
+        if "timeout" not in kwargs:
+            kwargs["timeout"] = (5.0, self.read_time_out)
+        return super()._http_request(*args, **kwargs)
 
     def build_iterator(
             self, begin_time: Optional[int] = None, end_time: Optional[int] = None
@@ -148,7 +149,7 @@ class Client(BaseClient):
 {'data_1': 'ip', 'blockType': 'IPv4 Address', 'value': 'ip', 'type': 'IP', 'threat_id': 123}}]
         """
         results = list()
-        block_set: Optional[List[dict]] = threat.get("blockSet", [])
+        block_set: List[dict] = threat.get("blockSet", [])
         thread_id = threat.get("id")
         for block in block_set:
             indicator, value = cls._convert_block(block)
