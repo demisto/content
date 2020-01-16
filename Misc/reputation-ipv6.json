@@ -23,6 +23,7 @@
     "contextPath": "IPv6(val.Address \u0026\u0026 val.Address === obj.Address)",
     "contextValue": "Address",
     "excludedBrands": [],
+    "expiration": 10080,
     "defaultMapping": {
         "asn": {
             "simple": "",
