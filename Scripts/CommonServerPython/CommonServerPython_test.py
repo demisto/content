@@ -966,7 +966,7 @@ def test_encode_string_results():
     s = "test"
     assert s == encode_string_results(s)
     s2 = u"בדיקה"
-    assert s2.encode("utf-8") == encode_string_results(s2)
+    assert encode_string_results(s2) == str(s2)
     not_string = [1, 2, 3]
     assert not_string == encode_string_results(not_string)
 
