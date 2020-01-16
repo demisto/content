@@ -1,5 +1,5 @@
 # pylint: disable=no-member
-from collections import defaultdict
+from collections import defaultdict, Counter
 from io import BytesIO, StringIO
 
 import demisto_ml
@@ -19,7 +19,7 @@ GENERAL_SCORES = {
 }
 
 DBOT_TAG_FIELD = "dbot_internal_tag_field"
-MIN_INCIDENTS_THRESHOLD = 5
+MIN_INCIDENTS_THRESHOLD = 50
 
 
 def canonize_label(label):
@@ -223,14 +223,16 @@ def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, deta
 
 
 def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing_labels_counter):
-    if len(data) < MIN_INCIDENTS_THRESHOLD:
-        err = ['Only {} incident(s) correspond to the given label mapping.'.format(len(data))]
-        err += ['Minimum number of incidents required for training is {} ({}<{}).'.format(MIN_INCIDENTS_THRESHOLD,
-                                                                                          len(data),
-                                                                                          MIN_INCIDENTS_THRESHOLD)]
-        err += ['Make sure that the label mapping is correct and includes all existing labels.']
+    labels_counter = Counter([x[DBOT_TAG_FIELD] for x in data])
+    labels_below_thresh = [l for l, count in labels_counter.items() if count < MIN_INCIDENTS_THRESHOLD]
+    if len(labels_below_thresh) > 0:
+        err = ['Minimum number of incidents per label required for training is {}.'.format(MIN_INCIDENTS_THRESHOLD)]
+        err += ['The following labels have less than {} incidents: '.format(MIN_INCIDENTS_THRESHOLD)]
+        for l in labels_below_thresh:
+            err += ['- {}: {}'.format(l, str(labels_counter[l]))]
+        err += ['Make sure that enough incidents exist in the environment per each of these labels.']
         missing_labels = ', '.join(missing_labels_counter.keys())
-        err += ['The following existing labels could not be found in the labels mapping: {}.'.format(missing_labels)]
+        err += ['The following labels were not mapped to any label in the labels mapping: {}.'.format(missing_labels)]
         err += ['The given mapped labels are: {}.'.format(', '.join(labels_mapping.keys()))]
         return_error('\n'.join(err))
     if len(missing_labels_counter) > 0:
@@ -262,15 +264,21 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
     demisto.results(set([x[DBOT_TAG_FIELD] for x in data]))
     if len(set([x[DBOT_TAG_FIELD] for x in data])) == 1:
         single_label = [x[DBOT_TAG_FIELD] for x in data][0]
-        err = ['All received incidents have the same label: {}.'.format(single_label)]
+        if labels_mapping == ALL_LABELS:
+            err = ['All received incidents have the same label: {}.'.format(single_label)]
+        else:
+            err = ['All received incidents mapped to the same label: {}.'.format(single_label)]
         err += ['At least 2 different labels are required to train a classifier.']
         if labels_mapping == ALL_LABELS:
             err += ['Please make sure that incidents of at least 2 labels exist in the environment.']
         else:
-            unfound_mapped_label = [l for l in labels_mapping if l not in exist_labels_counter
-                                    or exist_labels_counter[l] == 0]
-            missing = ', '.join(unfound_mapped_label)
-            err += ['Notice that the following mapped labels were not found among all incidents: {}.'.format(missing)]
+            err += ['The following labels were not mapped to any label in the labels mapping:']
+            err += [', '.join([l for l in missing_labels_counter])]
+            not_found_mapped_label = [l for l in labels_mapping if l not in exist_labels_counter
+                                      or exist_labels_counter[l] == 0]
+            if len(not_found_mapped_label) > 0:
+                miss = ', '.join(not_found_mapped_label)
+                err += ['Notice that the following mapped labels were not found among all incidents: {}.'.format(miss)]
         return_error('\n'.join(err))
 
 
@@ -297,9 +305,7 @@ def main():
         return_error(' '.join(err))
     if len(data) < MIN_INCIDENTS_THRESHOLD:
         err = ['Only {} incident(s) were received.'.format(len(data))]
-        err += ['Minimum number of incidents required for training is {} ({}<{}).'.format(MIN_INCIDENTS_THRESHOLD,
-                                                                                          len(data),
-                                                                                          MIN_INCIDENTS_THRESHOLD)]
+        err += ['Minimum number of incidents per label required for training is {}.'.format(MIN_INCIDENTS_THRESHOLD)]
         err += ['Make sure that all arguments are set correctly and that enough incidents exist in the environment.']
         return_error('\n'.join(err))
 
