@@ -107,6 +107,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, update_context
         indicators.append(indicator)
 
     if update_context:
+        feed_name = feed_name.replace(' ', '')
         context_output = {f"{feed_name}.Indicator": jmespath.search(expression='[].rawJSON',
                                                                     data=indicators)[:limit or 50]}
         return context_output
