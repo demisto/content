@@ -12,13 +12,11 @@ configuration:
   name: feedFetchInterval
   required: true
   type: 19
-- defaultvalue: IP
+- additionalinfo: Type of the indicator in the feed.
   display: Indicator Type
   name: indicator_type
-  options:
-  - IP
   required: true
-  type: 15
+  type: 0
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
   name: feedInstanceReliability
@@ -31,12 +29,10 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- display: expiration
-  name: expiration
+- name: expiration
   required: false
   type: 17
-- display: skipExclusionList
-  name: skipExclusionList
+- name: skipExclusionList
   required: false
   type: 8
 - defaultvalue: feedInstanceReputationNotSet
@@ -50,11 +46,11 @@ configuration:
   required: false
   type: 18
 - defaultvalue: indicatorType
-  display: expirationPolicy
+  hidden: true
   name: expirationPolicy
   required: false
   type: 0
-- display: expirationInterval
+- hidden: true
   name: expirationInterval
   required: false
   type: 1
@@ -66,12 +62,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: '20'
+- additionalinfo: Timeout of the polling request in seconds.
+  defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: false
   type: 0
-- display: Ignore Regex
+- additionalinfo: Regular expression for lines that should be ignored.
+  display: Ignore Regex
   name: ignore_regex
   required: false
   type: 0
@@ -84,11 +82,13 @@ configuration:
   - https://www.spamhaus.org/drop/drop.txt
   required: false
   type: 16
-- display: Encoding
+- additionalinfo: Encoding of the feed (UTF-8 by default).
+  display: Encoding
   name: encoding
   required: false
   type: 0
-- display: User Agent
+- additionalinfo: Optional User Agent header.
+  display: User Agent
   name: user_agent
   required: false
   type: 0
@@ -126,11 +126,12 @@ script:
       description: The indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/python3:3.7.5.4583
+  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 fromversion: 5.5.0
