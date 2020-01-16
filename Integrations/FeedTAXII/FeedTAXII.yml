@@ -7,11 +7,11 @@ configuration:
   name: feed
   required: false
   type: 8
-- display: Fetch Interval
+- defaultvalue: '240'
+  display: Fetch Interval
   name: feedFetchInterval
-  defaultvalue: 240
-  type: 19
   required: true
+  type: 19
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
   name: feedInstanceReliability
@@ -45,15 +45,18 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Discovery Service
+- additionalinfo: TAXII discovery service endpoint.
+  display: Discovery Service
   name: discovery_service
   required: true
   type: 0
-- display: Collection
+- additionalinfo: Collection name to fetch indicators from.
+  display: Collection
   name: collection
   required: true
   type: 0
-- display: Subscription ID
+- additionalinfo: Subscription ID for the TAXII consumer.
+  display: Subscription ID
   name: subscription_id
   required: false
   type: 0
@@ -61,20 +64,24 @@ configuration:
   name: credentials
   required: false
   type: 9
-- defaultvalue: '20'
+- additionalinfo: Time in seconds before http requests timeout.
+  defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: false
   type: 0
-- display: Poll Service
+- additionalinfo: Used by a TAXII Client to request information from a TAXII Server.
+  display: Poll Service
   name: poll_service
   required: false
   type: 0
-- display: API Key
+- additionalinfo: API key used for authentication with the TAXII server.
+  display: API Key
   name: api_key
   required: false
   type: 0
-- display: API Header Name
+- additionalinfo: API key header to be used to provide API key to the TAXII server.
+  display: API Header Name
   name: api_header
   required: false
   type: 0
@@ -100,7 +107,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '1 day'
+      defaultValue: 1 day
       description: Limit how long back to look indicators for.
       isArray: false
       name: initial_interval
@@ -130,4 +137,4 @@ script:
   subtype: python3
   type: python
 tests:
-  - TAXII_Feed_Test
+- TAXII_Feed_Test
