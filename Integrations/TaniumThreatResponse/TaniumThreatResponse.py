@@ -4,6 +4,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
+import ast
 import json
 import urllib3
 import urllib.parse
@@ -188,10 +189,10 @@ class Client(BaseClient):
 
     def get_file_item(self, file):
         file_item = {
-            'Created': file.get('created'),
-            'FilePath': file.get('file-path'),
+            'Created': timestamp_to_datestring(file.get('created'), '%Y-%m-%d %H:%M:%S'),
+            'Path': file.get('file-path'),
             'IsDirectory': file.get('is-directory'),
-            'LastModified': file.get('last-modified'),
+            'LastModified': timestamp_to_datestring(file.get('last-modified'), '%Y-%m-%d %H:%M:%S'),
             'Permissions': file.get('permissions'),
             'Size': file.get('size')
         }
@@ -293,7 +294,7 @@ class Client(BaseClient):
         return tree_item, human_readable
 
     def get_evidence_item(self, raw_item):
-        return {
+        evidence_item = {
             'ID': raw_item.get('id'),
             'CreatedAt': raw_item.get('created'),
             'UpdatedAt': raw_item.get('lastModified'),
@@ -301,12 +302,13 @@ class Client(BaseClient):
             'Host': raw_item.get('host'),
             'ConnectionID': raw_item.get('connId'),
             'Type': raw_item.get('type'),
-            'sID': raw_item.get('sID'),
+            'ProcessTableId': raw_item.get('sID'),
             'Timestamp': raw_item.get('sTimestamp'),
             'Summary': raw_item.get('summary'),
             'Comments': raw_item.get('comments'),
             'Tags': raw_item.get('tags')
         }
+        return {key: val for key, val in evidence_item.items() if val is not None}
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -563,16 +565,44 @@ def get_downloaded_file(client, data_args):
     demisto.results(fileResult(filename, file_content))
 
 
+def filter_to_tanium_api_syntax(filter_str):
+    filter_dict = {}
+    try:
+        if filter_str:
+            filter_expressions = ast.literal_eval(filter_str)
+            for i, expression in enumerate(filter_expressions):
+                filter_dict['f' + str(i)] = expression[0]
+                filter_dict['o' + str(i)] = expression[1]
+                filter_dict['v' + str(i)] = expression[2]
+        return filter_dict
+    except IndexError:
+        raise ValueError('Invalid filter argument.')
+
+
 def get_events_by_connection(client, data_args):
     limit = int(data_args.get('limit'))
     offset = data_args.get('offset')
     connection = data_args.get('connection-name')
-    event_type = data_args.get('event-type')
+    sort = data_args.get('sort')
+    fields = data_args.get('fields')
+    event_type = data_args.get('event-type').lower()
+    filter_dict = filter_to_tanium_api_syntax(data_args.get('filter'))
+    match = data_args.get('match')
 
-    event_type = event_type.lower()
+    g1 = ','.join([str(i) for i in range(len(filter_dict)//3)])  # A weird param that must be passed
+
+    params = {
+        'limit': limit,
+        'offset': offset,
+        'sort': sort,
+        'fields': fields,
+        'gm1': match,
+        'g1': g1
+    }
+    params.update(filter_dict)
 
     raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{connection}/{event_type}/events/',
-                                     params={'limit': limit, 'offset': offset})
+                                     params=params)
 
     events = []
     for item in raw_response:
@@ -770,13 +800,13 @@ def create_evidence(client, data_args):
     }
 
     client.do_request('POST', '/plugin/products/trace/evidence', data=data, resp_type='content')
-    return "Initiated an evidence creation request.", {}, {}
+    return "Evidence have been created.", {}, {}
 
 
 def delete_evidence(client, data_args):
     evidence_id = data_args.get('evidence-id')
     client.do_request('DELETE', f'/plugin/products/trace/evidence/{evidence_id}', resp_type='content')
-    return f"Evidence {evidence_id} deleted successfully.", {}, {}
+    return f"Evidence {evidence_id} has been deleted successfully.", {}, {}
 
 
 def request_file_download(client, data_args):

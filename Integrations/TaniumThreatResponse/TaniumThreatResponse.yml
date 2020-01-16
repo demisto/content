@@ -503,8 +503,8 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '5'
-      description: connection timeout.
+      defaultValue: '30000'
+      description: connection timeout, in milliseconds.
       isArray: false
       name: connection-timeout
       required: false
@@ -702,7 +702,7 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '5'
+      defaultValue: '50'
       description: The maximin number of events to return.
       isArray: false
       name: limit
@@ -713,6 +713,47 @@ script:
       description: Offset into the result set.
       isArray: false
       name: offset
+      required: false
+      secret: false
+    - default: false
+      description: 'Advanced search by filtering according to event fields. For example:
+        [[''process_id'', ''gt'', ''30''], [''username'', ''ne'', ''administrator'']].
+        Optional fields: process_id, process_name, process_hash, process_command_line,
+        username, process_name, create_time (UTC). Optional operators: eq (equals),
+        ne (does not equal); for integers/date: gt (greater than), gte (greater than
+        or equals), ls (less than), lse (less than or equals); for strings: co (contains),
+        nc (does not contain). '
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: all
+      description: If you filter the search results, choose whether the results should
+        fit all of the constrains or to at least one of them.
+      isArray: false
+      name: match
+      predefined:
+      - all
+      - any
+      required: false
+      secret: false
+    - default: false
+      description: 'Comma-separated list of fields to sort on prefixed by +/- for
+        ascending or descending and ordered by priority left to right. Optional fields:
+        process_id, process_name, process_hash, process_command_line, username, process_name,
+        create_time (UTC).'
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: 'Comma-separated list of fields to search on. Optional fields:
+        process_id, process_name, process_hash, process_command_line, username, process_name,
+        create_time.'
+      isArray: false
+      name: fields
       required: false
       secret: false
     deprecated: false
@@ -1104,7 +1145,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      defaultValue: '5'
+      defaultValue: '50'
       description: The maximum number of evidences to return.
       isArray: false
       name: limit
@@ -1128,6 +1169,43 @@ script:
     description: Returns a list of all available evidence in the system.
     execution: false
     name: tanium-tr-list-evidence
+    outputs:
+    - contextPath: Tanium.Evidence.ID
+      description: The evidence ID.
+      type: Number
+    - contextPath: Tanium.Evidence.CreatedAt
+      description: Time when the process was created.
+      type: Date
+    - contextPath: Tanium.Evidence.LastModified
+      description: The date that the file was last modified.
+      type: Date
+    - contextPath: Tanium.Evidence.User
+      description: The user of the evidence.
+      type: String
+    - contextPath: Tanium.Evidence.Host
+      description: The evidence host.
+      type: String
+    - contextPath: Tanium.Evidence.ConnectionID
+      description: The evidence connection ID.
+      type: String
+    - contextPath: Tanium.Evidence.Type
+      description: The evidence type.
+      type: Number
+    - contextPath: Tanium.Evidence.ProcessTableId
+      description: The evidence process table ID.
+      type: Number
+    - contextPath: Tanium.Evidence.Timestamp
+      description: The evidence timestamp.
+      type: Date
+    - contextPath: Tanium.Evidence.Summary
+      description: The evidence summary.
+      type: String
+    - contextPath: Tanium.Evidence.Comments
+      description: The evidence comments.
+      type: String
+    - contextPath: Tanium.Evidence.Tags
+      description: The evidence tags.
+      type: String
   - arguments:
     - default: false
       isArray: false
@@ -1137,6 +1215,43 @@ script:
     deprecated: false
     execution: false
     name: tanium-tr-get-evidence-by-id
+    outputs:
+    - contextPath: Tanium.Evidence.ID
+      description: The evidence ID.
+      type: Number
+    - contextPath: Tanium.Evidence.CreatedAt
+      description: Time when the process was created.
+      type: Date
+    - contextPath: Tanium.Evidence.LastModified
+      description: The date that the file was last modified.
+      type: Date
+    - contextPath: Tanium.Evidence.User
+      description: The user of the evidence.
+      type: String
+    - contextPath: Tanium.Evidence.Host
+      description: The evidence host.
+      type: String
+    - contextPath: Tanium.Evidence.ConnectionID
+      description: The evidence connection ID.
+      type: String
+    - contextPath: Tanium.Evidence.Type
+      description: The evidence type.
+      type: Number
+    - contextPath: Tanium.Evidence.ProcessTableId
+      description: The evidence process table ID.
+      type: Number
+    - contextPath: Tanium.Evidence.Timestamp
+      description: The evidence timestamp.
+      type: Date
+    - contextPath: Tanium.Evidence.Summary
+      description: The evidence summary.
+      type: String
+    - contextPath: Tanium.Evidence.Comments
+      description: The evidence comments.
+      type: String
+    - contextPath: Tanium.Evidence.Tags
+      description: The evidence tags.
+      type: String
   - arguments:
     - default: false
       isArray: false
@@ -1183,7 +1298,24 @@ script:
     execution: false
     name: tanium-tr-request-file-download
     outputs:
-    - type: Unknown
+    - contextPath: Tanium.File.Created
+      description: The file creation time.
+      type: Date
+    - contextPath: Tanium.File.Size
+      description: The file size.
+      type: Number
+    - contextPath: Tanium.File.IsDirectory
+      description: Whether or not the file is a directory.
+      type: Boolean
+    - contextPath: Tanium.File.LastModified
+      description: The date that the file was last modified.
+      type: Date
+    - contextPath: Tanium.File.Path
+      description: The file path.
+      type: Boolean
+    - contextPath: Tanium.File.Permissions
+      description: The file permissions.
+      type: Date
   - arguments:
     - default: false
       description: File download ID.
@@ -1243,6 +1375,19 @@ script:
     description: Get information about file from a remote connection.
     execution: false
     name: tanium-tr-get-file-info
+    outputs:
+    - contextPath: Tanium.File.Created
+      description: The file creation timestamp.
+      type: Date
+    - contextPath: Tanium.File.Size
+      description: The file size.
+      type: Number
+    - contextPath: Tanium.File.IsDirectory
+      description: Whether or not the file is a directory.
+      type: Boolean
+    - contextPath: Tanium.File.LastModified
+      description: The date that the file was last modified.
+      type: Date
   - arguments:
     - default: false
       description: Connection ID.
