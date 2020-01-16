@@ -3,9 +3,6 @@
 
 Use the Bambenek Consulting feed integration to fetch indicators from the feed.
 
-## Bambenek Consulting Feed Playbook
----
-
 
 ## Configure Bambenek Consulting Feed on Demisto
 ---
