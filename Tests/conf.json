@@ -3,6 +3,12 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "PAN-OS DAG Configuration Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "timeout": 1000
+        },
+        {
             "integrations": "Digital Defense FrontlineVM",
             "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
         },
@@ -1736,12 +1742,6 @@
             "integrations": "palo_alto_networks_pan_os_edl_management"
         },
         {
-            "playbookID": "PAN-OS DAG Configuration Test",
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "timeout": 1000
-        },
-        {
             "playbookID": "PAN-OS Create Or Edit Rule Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
@@ -2144,7 +2144,6 @@
         "IntSights Mssp Test": "Issue #16351",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
-        "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "PANW - Hunting and threat detection by indicator type Test": "Issue 20952",
