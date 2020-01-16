@@ -187,9 +187,6 @@
             "playbookID": "TestAwsEC2GetPublicSGRules-Test"
         },
         {
-            "playbookID": "TestParseEmailHeaders"
-        },
-        {
             "playbookID": "TestParseEmailFile-deprecated-script"
         },
         {
