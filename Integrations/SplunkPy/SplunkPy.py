@@ -303,7 +303,7 @@ def build_search_human_readable(args, parsed_search_results):
         if not isinstance(parsed_search_results[0], dict):
             headers = "results"
 
-    human_readable = tableToMarkdown("Splunk Search results \n\n Results for query: {}".format(args['query']),
+    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(args['query']),
                                      parsed_search_results, headers)
     return human_readable
 
