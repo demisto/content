@@ -31,10 +31,12 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- name: expiration
+- display: expiration
+  name: expiration
   required: false
   type: 17
-- name: skipExclusionList
+- display: skipExclusionList
+  name: skipExclusionList
   required: false
   type: 8
 - defaultvalue: feedInstanceReputationNotSet
@@ -48,18 +50,14 @@ configuration:
   required: false
   type: 18
 - defaultvalue: indicatorType
-  hidden: true
+  display: expirationPolicy
   name: expirationPolicy
   required: false
   type: 0
-- hidden: true
+- display: expirationInterval
   name: expirationInterval
   required: false
   type: 1
-- display: Username
-  name: credentials
-  required: false
-  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -68,14 +66,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: timeout of the polling request in seconds.
-  defaultvalue: '20'
+- defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: false
   type: 0
-- additionalinfo: Python regular expression for lines that should be ignored.
-  display: Ignore Regex
+- display: Ignore Regex
   name: ignore_regex
   required: false
   type: 0
@@ -88,8 +84,7 @@ configuration:
   - https://www.spamhaus.org/drop/drop.txt
   required: false
   type: 16
-- additionalinfo: Encoding of the feed (UTF-8 by default).
-  display: Encoding
+- display: Encoding
   name: encoding
   required: false
   type: 0

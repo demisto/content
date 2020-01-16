@@ -1,6 +1,4 @@
 def main():
-    # Call the main execution of the HTTP API module.
-    # This function also allows to add to or override that execution.
     params = {k: v for k, v in demisto.params().items() if v is not None}
 
     feed_types = {
@@ -39,6 +37,8 @@ def main():
     }
 
     params['feed_types'] = feed_types
+
+    # Call the main execution of the HTTP API module.
     feed_main('Spamhaus Feed', params)
 
 
