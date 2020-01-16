@@ -36,7 +36,7 @@ configuration:
   name: expirationInterval
   required: false
   type: 1
-- defaultvalue: 'true'
+- defaultvalue: ''
   display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -45,7 +45,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: TAXII discovery service endpoint.
+- additionalinfo: TAXII discovery service endpoint. For example, http://hailataxii.com/taxii-discovery-service
   display: Discovery Service
   name: discovery_service
   required: true
@@ -64,7 +64,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Time in seconds before http requests timeout.
+- additionalinfo: Time (in seconds) before HTTP requests timeout.
   defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
@@ -80,20 +80,20 @@ configuration:
   name: api_key
   required: false
   type: 0
-- additionalinfo: API key header to be used to provide API key to the TAXII server.
+- additionalinfo: API key header to be used to provide API key to the TAXII server. For example, "Authorization".
   display: API Header Name
   name: api_header
   required: false
   type: 0
-- additionalinfo: <number> <time unit> of type minute/hour/day, e.g., 1 minute, 12
-    hours, 7 days
+- additionalinfo: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day. For example, 1 minute, 12
+    hours, 7 days.
   defaultvalue: 1 day
   display: First Fetch Time
   hidden: false
   name: initial_interval
   required: false
   type: 0
-description: Ingest indicator feeds from TAXII 1.x servers
+description: Ingests indicator feeds from TAXII 1.x servers.
 display: TAXII Feed
 name: TAXIIFeed
 script:
@@ -101,31 +101,32 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Limit results returned to the output.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: 1 day
-      description: Limit how long back to look indicators for.
+      description: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day. For example, 1 minute, 12
+    hours, 7 days.
       isArray: false
       name: initial_interval
       required: false
       secret: false
     deprecated: false
-    description: Get the feed indicators.
+    description: Gets indicators from the the feed.
     execution: false
     name: get-indicators
     outputs:
     - contextPath: TAXII.Indicator.Value
-      description: Indicator value.
+      description: The indicator value.
       type: String
     - contextPath: TAXII.Indicator.Type
-      description: Indicator type.
+      description: The indicator type.
       type: String
     - contextPath: TAXII.Indicator.Rawjson
-      description: Indicator rawJSON value.
+      description: The indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/taxii:1.0.0.5214
   feed: true
