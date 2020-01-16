@@ -1,5 +1,7 @@
-TAXII Feed integration is a TAXII client built to ingest indicators from TAXII feeds. The integration will fetch new indicators after they are published.
-In order to connect it to a TAXII server you'll need to configure the following parameters:
+TAXII Feed integration is a TAXII client that is built to ingest indicators from TAXII feeds. The integration will fetch new indicators after they are published.
+
+# Connect the TAXII Feed Integration to a TAXII Server
+To connect the TAXII Feed integration to a TAXII server you'll need to configure the following parameters.
 * **Discovery Service** - Available TAXII services and their use can be communicated via the TAXII Discovery Service. The Discovery Service provides a requester with a list of TAXII Services and how these Services can be invoked.
 * **Collection** - A Collection is an interface to a logical repository of CTI objects provided by a TAXII Server. This will usually be the feed name.
 * **Username/Passowrd** (Optional) - Username and Password for TAXII servers that require basic authentication. 
