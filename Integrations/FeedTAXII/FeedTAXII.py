@@ -27,10 +27,12 @@ urllib3.disable_warnings()
 EPOCH = datetime.utcfromtimestamp(0).replace(tzinfo=pytz.UTC)
 INTEGRATION_NAME = 'TAXII1'
 
-''' addressobject.py '''
-
 
 class AddressObject(object):
+    """
+    Implements address object indicator decoding
+    based on: https://stixproject.github.io/data-model/1.2/AddressObj/AddressObjectType/
+    """
     @staticmethod
     def decode(props, **kwargs):
         indicator = props.find('Address_Value')
@@ -69,10 +71,11 @@ class AddressObject(object):
         }]
 
 
-''' domainnameobject.py '''
-
-
 class DomainNameObject(object):
+    """
+    Implements domain object indicator decoding
+    based on: https://stixproject.github.io/data-model/1.2/DomainNameObj/DomainNameObjectType/
+    """
     @staticmethod
     def decode(props, **kwargs):
         dtype = props.get('type', 'FQDN')
@@ -89,10 +92,11 @@ class DomainNameObject(object):
         }]
 
 
-''' fileobject.py '''
-
-
 class FileObject(object):
+    """
+    Implements file object indicator decoding
+    based on: https://stixproject.github.io/data-model/1.2/FileObj/FileObjectType/
+    """
     @staticmethod
     def _decode_basic_props(props):
         result = {}
@@ -149,10 +153,11 @@ class FileObject(object):
         return result
 
 
-''' uriobject.py '''
-
-
 class URIObject(object):
+    """
+    Implements URI object indicator decoding
+    based on: https://stixproject.github.io/data-model/1.2/URIObj/URIObjectType/
+    """
     @staticmethod
     def decode(props, **kwargs):
         utype = props.get('type', 'URL')
@@ -174,6 +179,10 @@ class URIObject(object):
 
 
 class SocketAddressObject(object):
+    """
+    Implements socket address object indicator decoding
+    based on: https://stixproject.github.io/data-model/1.2/SocketAddressObj/SocketAddressObjectType/
+    """
     @staticmethod
     def decode(props, **kwargs):
         ip = props.get('ip_address', None)
@@ -183,6 +192,10 @@ class SocketAddressObject(object):
 
 
 class LinkObject(object):
+    """
+    Implements link object indicator decoding
+    based on: https://stixproject.github.io/data-model/1.2/LinkObj/LinkObjectType/
+    """
     @staticmethod
     def decode(props, **kwargs):
         ltype = props.get('type', 'URL')
@@ -205,6 +218,10 @@ class LinkObject(object):
 
 
 class HTTPSessionObject(object):
+    """
+    Implements http session object indicator decoding
+    based on: https://stixproject.github.io/data-model/1.2/HTTPSessionObj/HTTPSessionObjectType/
+    """
     @staticmethod
     def decode(props, **kwargs):
         if 'http_request_response' in props.keys():
@@ -229,6 +246,9 @@ class HTTPSessionObject(object):
 
 
 class StixDecode(object):
+    """
+    Decode STIX strings formatted as xml, and extract indicators from them
+    """
     DECODERS = {
         'DomainNameObjectType': DomainNameObject.decode,
         'FileObjectType': FileObject.decode,
@@ -322,6 +342,9 @@ class StixDecode(object):
 
 
 class Taxii11(object):
+    """
+    TAXII 1 client utilities class
+    """
     MESSAGE_BINDING = 'urn:taxii.mitre.org:message:xml:1.1'
     SERVICES = 'urn:taxii.mitre.org:services:1.1'
     PROTOCOLS = {
@@ -436,7 +459,7 @@ class Taxii11(object):
             return None
 
 
-class Client(object):
+class TAXIIClient(object):
     def __init__(self, insecure: bool = True, polling_timeout: int = 20, initial_interval: str = '1 day',
                  discovery_service: str = '', poll_service: str = None, collection: str = None, api_key: str = None,
                  api_header: str = None, credentials: dict = None, **kwargs):
@@ -713,6 +736,7 @@ class Client(object):
             )
 
     def _incremental_poll_collection(self, poll_service, begin, end):
+        """Polls collection in increments of 10 days"""
         cbegin = begin
         dt = timedelta(days=10)
 
@@ -737,6 +761,7 @@ class Client(object):
             cbegin = cend
 
     def build_iterator(self, now):
+        """Creates an indicator iterator from the TAXII feed"""
         if self.poll_service is not None:
             discovered_poll_service = self.poll_service
         else:
@@ -764,7 +789,11 @@ class Client(object):
         )
 
 
+""" Helper Methods """
+
+
 def package_extract_properties(package):
+    """Extracts properties from the STIX package"""
     result: Dict[str, str] = {}
 
     header = package.find_all('STIX_Header')
@@ -817,6 +846,7 @@ def package_extract_properties(package):
 
 
 def observable_extract_properties(observable):
+    """Extracts properties from observable"""
     result = {}
 
     title = next((c for c in observable if c.name == 'Title'), None)
@@ -833,6 +863,7 @@ def observable_extract_properties(observable):
 
 
 def interval_in_sec(val):
+    """Translates interval string to seconds int"""
     if val is None:
         return None
     if isinstance(val, int):
@@ -891,7 +922,7 @@ def main():
     # Write configure here
     params = {k: v for k, v in demisto.params().items() if v is not None}
     handle_proxy()
-    client = Client(**params)
+    client = TAXIIClient(**params)
     command = demisto.command()
     demisto.info('Command being called is {command}'.format(command=command))
     # Switch case
