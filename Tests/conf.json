@@ -3,6 +3,14 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Digital Defense FrontlineVM",
+            "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
+        },
+        {
+            "integrations": "Digital Defense FrontlineVM",
+            "playbookID": "Digital Defense FrontlineVM - Test Playbook"
+        },
+        {
             "integrations": "CSVFeed",
             "playbookID": "CSV_Feed_Test"
         },
@@ -1655,6 +1663,10 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
+            "integrations": "TAXIIFeed",
+            "playbookID": "TAXII_Feed_Test"
+        },
+        {
             "integrations": "Traps",
             "playbookID": "Traps test",
             "timeout": 600
@@ -2111,8 +2123,6 @@
         }
     ],
     "skipped_tests": {
-        "Phishing - Core - Test": "Issue 20983",
-        "Phishing v2 Test - Attachment": "Issue 20983",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
