@@ -182,7 +182,8 @@ def parse_data_from_response(resp_obj, operation_name=None):
     new_data_obj = {}  # type: dict
     outputs_obj = OUTPUTS[operation_name]
     for key, val in outputs_obj.items():
-        new_data_obj[key] = resp_obj.get(val)
+        if val in resp_obj:
+            new_data_obj[key] = resp_obj.get(val)
 
     return new_data_obj
 
