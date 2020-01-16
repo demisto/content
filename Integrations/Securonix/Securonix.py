@@ -617,7 +617,6 @@ def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     from_ = args.get('from')
     to_ = args.get('to')
     query = args.get('query')
-
     activity_data = client.list_activity_data_request(from_, to_, query)
 
     if activity_data.get('error'):
@@ -653,13 +652,11 @@ def list_violation_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     from_ = args.get('from')
     to_ = args.get('to')
     query = args.get('query')
-
     violation_data = client.list_violation_data_request(from_, to_, query)
 
     if violation_data.get('error'):
         raise Exception(f'Failed to get violation data in the given time frame.\n'
                         f'Error from Securonix is: {violation_data.get("errorMessage")}')
-
     violation_events = violation_data.get('events')
     fields_to_include = ['Accountname', 'Baseeventid', 'Category', 'Categorybehavior', 'Categoryobject',
                          'Categoryseverity', 'Destinationaddress', 'Destinationntdomain', 'Destinationuserid',
@@ -723,7 +720,6 @@ def get_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         Outputs.
     """
     incident_id = str(args.get('incident_id'))
-
     incident = client.get_incident_request(incident_id)
 
     incident_items = incident.get('incidentItems')
@@ -869,7 +865,6 @@ def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
         Outputs.
     """
     watchlist_name = args.get('watchlist_name')
-
     watchlist = client.get_watchlist_request(watchlist_name)
 
     watchlist_events = watchlist.get('events')
@@ -892,8 +887,7 @@ def get_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, watchlist
 
 
-def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: str,
-                    last_run: Dict) -> Tuple[List, Dict]:
+def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: str, last_run: Dict) -> list:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -911,33 +905,29 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
         new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
         new_last_run = last_run
-    demisto.setLastRun(last_run)
 
     demisto_incidents: List = list()
     from_epoch = date_to_timestamp(new_last_run.get('time'), date_format=timestamp_format)
     to_epoch = date_to_timestamp(datetime.now(), date_format=timestamp_format)
-
     # Get incidents from Securonix
+    demisto.info(f'Fetching Securonix incidents. From: {from_epoch}. To: {to_epoch}')
     securonix_incidents = client.list_incidents_request(from_epoch, to_epoch, incident_types)
 
     if securonix_incidents:
         incidents_items = list(securonix_incidents.get('incidentItems'))  # type: ignore
-        last_incident_id = last_run.get('incidentId', '0')
-        # Creates incident entry
+        last_incident_id = last_run.get('id', '0')
         demisto_incidents = [{
             'name': f"Securonix Incident: {incident.get('incidentId')}",
             'occurred': timestamp_to_datestring(incident.get('lastUpdateDate')),
             'severity': incident_priority_to_dbot_score(incident.get('priority')),
             'rawJSON': json.dumps(incident)
         } for incident in incidents_items if incident.get('incidentId') > last_incident_id]
-        # New incidents fetched
         if demisto_incidents:
-            last_incident_timestamp = demisto_incidents[-1].get('occurred')
             last_incident_id = securonix_incidents[-1].get('incidentId')
-            new_last_run = {'time': last_incident_timestamp, 'id': last_incident_id}
+            new_last_run.update({'id': last_incident_id})
 
-    # Return results
-    return demisto_incidents, new_last_run
+    demisto.setLastRun(new_last_run)
+    return demisto_incidents
 
 
 def main():
@@ -987,8 +977,7 @@ def main():
         if command == 'fetch-incidents':
             fetch_time = params.get('fetch_time')
             incident_types = params.get('incident_types') if 'incident_types' in params else 'opened'
-            incidents, last_run = fetch_incidents(client, fetch_time, incident_types,
-                                                  last_run=demisto.getLastRun())  # type: ignore
+            incidents = fetch_incidents(client, fetch_time, incident_types, last_run=demisto.getLastRun())
             demisto.incidents(incidents)
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
