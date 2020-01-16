@@ -109,7 +109,7 @@ script:
     - default: false
       defaultValue: 1 day
       description: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day. For example, 1 minute, 12
-    hours, 7 days.
+        hours, 7 days.
       isArray: false
       name: initial_interval
       required: false
