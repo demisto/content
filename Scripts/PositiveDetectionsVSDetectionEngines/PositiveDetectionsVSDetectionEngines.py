@@ -6,8 +6,7 @@ from CommonServerUserPython import *
 def extract_engines_data_from_indicator(indicator_data):
     if not (indicator_data and 'detectionengines' in indicator_data['CustomFields']
             and 'positivedetections' in indicator_data['CustomFields']):
-        demisto.results("None")
-        sys.exit(0)
+        ext_no_wrn()
 
     detection_engines = indicator_data['CustomFields']['detectionengines']
     positive_detections = indicator_data['CustomFields']['positivedetections']
@@ -45,9 +44,18 @@ def extract_engines_data_from_indicator(indicator_data):
     return data
 
 
+def ext_no_wrn():
+    demisto.results("None")
+    sys.exit(0)
+
+
 def main():
-    indicator_data = demisto.args().get('indicator')
-    demisto.results(extract_engines_data_from_indicator(indicator_data))
+    try:
+        indicator_data = demisto.args().get('indicator')
+        demisto.results(extract_engines_data_from_indicator(indicator_data))
+    except Exception as e:
+        demisto.debug(f'PostiveDetectionsVSDetectiongEngines failed with [{e}]')
+        ext_no_wrn()
 
 
 # python2 uses __builtin__ python3 uses builtins
