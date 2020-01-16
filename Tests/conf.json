@@ -1663,6 +1663,10 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
+            "integrations": "TAXIIFeed",
+            "playbookID": "TAXII_Feed_Test"
+        },
+        {
             "integrations": "Traps",
             "playbookID": "Traps test",
             "timeout": 600
