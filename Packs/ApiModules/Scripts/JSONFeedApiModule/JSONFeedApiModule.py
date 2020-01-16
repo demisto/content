@@ -11,8 +11,8 @@ FEED_NAME: str
 
 
 class Client:
-    def __init__(self, url: str, credentials: Dict[str, str], extractors: list = None, indicator: str = 'indicator',
-                 fields: Union[List, str] = None, insecure: bool = False,
+    def __init__(self, url: str, credentials: Dict[str, str] = None, extractors: list = None,
+                 indicator: str = 'indicator', fields: Union[List, str] = None, insecure: bool = False,
                  cert_file: str = None, key_file: str = None, headers: str = None, **_):
         """
         Implements class for miners of JSON feeds over http/https.
@@ -48,19 +48,23 @@ class Client:
         # Request related attributes
         self.url = url
         self.verify = not insecure
-        self.auth = (credentials.get('username'), credentials.get('password'))
+        if credentials:
+            self.auth = (credentials.get('username'), credentials.get('password'))
+        else:
+            self.auth = None
 
         # Hidden params
         self.headers = headers
         self.cert = (cert_file, key_file) if cert_file and key_file else None
 
-    def build_iterator(self) -> List:
+    def build_iterator(self, **kwargs) -> List:
         r = requests.get(
             url=self.url,
             verify=self.verify,
             auth=self.auth,
             cert=self.cert,
-            headers=self.headers
+            headers=self.headers,
+            **kwargs
         )
 
         results = []
@@ -83,7 +87,7 @@ def test_module(client) -> str:
 
 
 def fetch_indicators_command(client: Client, indicator_type: str, update_context: bool = False,
-                             limit: int = None, feed_name: str = 'JSON') -> Union[Dict, List[Dict]]:
+                             limit: int = None, feed_name: str = 'JSON', **kwargs) -> Union[Dict, List[Dict]]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
@@ -93,7 +97,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, update_context
     :param feed_name: The name of the feed
     """
     indicators = []
-    for item in client.build_iterator():
+    for item in client.build_iterator(**kwargs):
         indicator_value = item.get(client.indicator)
 
         attributes = {'source_name': feed_name}
@@ -136,8 +140,9 @@ def feed_main(params, feed_name):
 
         elif command == 'get-indicators':
             # dummy command for testing
-            limit = demisto.args().get('limit', 50)
-            indicators = fetch_indicators_command(client, indicator_type, update_context=True, limit=limit)
+            limit = int(demisto.args().get('limit', 50))
+            indicators = fetch_indicators_command(client, indicator_type, update_context=True, limit=limit,
+                                                  feed_name=feed_name)
             return_outputs('', indicators)
 
     except Exception as err:
