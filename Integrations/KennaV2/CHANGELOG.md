@@ -1,5 +1,6 @@
 ## [Unreleased]
- - KennaV2 moved to python and added 4 new commands:
+ - Rewrote the integration in Python.
+ - Added 4 commands.
     - ***search assets*** 
     - ***get vulnerabilities of a specific asset***
     - ***add new tag to asset***
