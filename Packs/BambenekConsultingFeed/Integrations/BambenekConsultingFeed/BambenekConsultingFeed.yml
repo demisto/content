@@ -7,7 +7,13 @@ configuration:
   name: feed
   required: false
   type: 8
-- display: Indicator Type
+- display: Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: 240
+  type: 19
+  required: true
+- additionalinfo: Type of the indicator in the feed.
+  display: Indicator Type
   name: indicator_type
   required: true
   type: 0
@@ -26,11 +32,26 @@ configuration:
 - name: expiration
   required: false
   type: 17
+- name: skipExclusionList
+  required: false
+  type: 8
+- defaultvalue: feedInstanceReputationNotSet
+  display: Mark as reputation
+  name: feedInstanceReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
 - defaultvalue: indicatorType
+  hidden: true
   name: expirationPolicy
   required: false
   type: 0
-- name: expirationInterval
+- hidden: true
+  name: expirationInterval
   required: false
   type: 1
 - display: Sub-Feeds
@@ -55,47 +76,53 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: '20'
+- additionalinfo: Time in seconds before http requests timeout.
+  defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: true
   type: 0
-- defaultvalue: ^#
+- additionalinfo: Python regular expression for lines that should be ignored.
+  defaultvalue: ^#
   display: Ignore Regex
   name: ignore_regex
   required: false
   type: 0
-- defaultvalue: indicator
+- additionalinfo: Name of the field names in the CSV feed. If several are given, will use
+    "indicator" as the default indicator value field.
+  defaultvalue: indicator
   display: Field Names
   name: fieldnames
   required: false
   type: 0
-- defaultvalue: ','
+- additionalinfo: A one-character string used to separate fields. For example, a comma ",".
+  defaultvalue: ','
   display: Delimiter
   name: delimiter
   required: false
   type: 0
-- display: Doublequote
+- additionalinfo: Controls how instances of quotechar in a field should
+    themselves be quoted. When True, the character is doubled.
+  display: Doublequote
   name: doublequote
   required: false
   type: 8
-- display: Escape Character
+- additionalinfo: A one-character string used by the writer to escape the delimiter.
+  display: Escape character
   name: escapechar
   required: false
   type: 0
-- defaultvalue: '"'
+- additionalinfo: A one-character string used to quote fields containing special characters.
+  defaultvalue: '"'
   display: Quote Character
   name: quotechar
   required: false
   type: 0
-- display: Skip Initial Space
+- additionalinfo: When True, whitespace immediately following the delimiter is ignored.
+  display: Skip Initial Space
   name: skipinitialspace
   required: false
   type: 8
-- defaultvalue: CSV
-  name: source_name
-  required: false
-  type: 0
 description: Use the Bambenek Consulting feed integration to fetch indicators from the feed.
 display: Bambenek Consulting Feed
 name: Bambenek Consulting Feed
@@ -130,6 +157,7 @@ script:
       description: Indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/python3:3.7.5.4583
+  feed: true
   isfetch: false
   longRunning: false
   longRunningPort: false
