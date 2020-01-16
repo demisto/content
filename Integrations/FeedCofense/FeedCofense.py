@@ -6,12 +6,11 @@ from CommonServerUserPython import *
 from typing import List, Dict, Union, Optional, Tuple, Generator
 import urllib3
 
-
 # disable insecure warnings
 urllib3.disable_warnings()
 
 INTEGRATION_NAME = "Cofense Feed"
-_RESULTS_PER_PAGE = 25
+_RESULTS_PER_PAGE = 50  # Max for Cofense is 100
 
 
 class Client(BaseClient):
@@ -27,12 +26,13 @@ class Client(BaseClient):
     }
 
     def __init__(
-        self,
-        url: str,
-        auth: Tuple[str, str],
-        threat_type: Optional[str] = None,
-        verify: bool = False,
-        proxy: bool = False,
+            self,
+            url: str,
+            auth: Tuple[str, str],
+            threat_type: Optional[str] = None,
+            verify: bool = False,
+            proxy: bool = False,
+            read_time_out: Optional[float] = 120.0
     ):
         """Constructor of Client and BaseClient
 
@@ -43,8 +43,10 @@ class Client(BaseClient):
         Keyword Arguments:
             threat_type {Optional[str]} -- One of available_fields (default: {None})
             verify {bool} -- Should verify certificate. (default: {False})
-            proxy {bool} -- Should (default: {False})
+            proxy {bool} -- Should use proxy. (default: {False})
+            read_time_out {int} -- Read time out in seconds. (default: {30})
         """
+        self.read_time_out = read_time_out
         self.threat_type = (
             threat_type if threat_type in self.available_fields else "all"
         )
@@ -54,8 +56,12 @@ class Client(BaseClient):
 
         super().__init__(url, verify=verify, proxy=proxy, auth=auth)
 
+    def _http_request(self, *args, **kwargs) -> dict:
+        timeout = (5.0, self.read_time_out)
+        return super()._http_request(timeout=timeout, *args, **kwargs)
+
     def build_iterator(
-        self, begin_time: Optional[int] = None, end_time: Optional[int] = None
+            self, begin_time: Optional[int] = None, end_time: Optional[int] = None
     ) -> Generator:
         """builds iterator from given timestamp, or by url
 
@@ -84,30 +90,28 @@ class Client(BaseClient):
             payload["beginTimestamp"] = str(end_time)
             del payload["endTimestamp"]
 
+        demisto.debug(f"{INTEGRATION_NAME} - polling {begin_time}/{end_time}")
         cur_page = 0
         total_pages = 1
-        demisto.debug(f"{INTEGRATION_NAME} - polling {begin_time}/{end_time}")
         while cur_page < total_pages:
-            demisto.debug(f"{INTEGRATION_NAME} - polling {cur_page}/{total_pages}")
-
             payload["page"] = cur_page
             cjson = self._http_request("post", self.suffix, params=payload)
-
             data = cjson.get("data", {})
-            if not data:
+            if data:
+                if total_pages <= 1:
+                    # Call to get all pages.
+                    total_pages = data.get("page", {}).get("totalPages")
+                    if total_pages is None:
+                        return_error(f'No "totalPages" in response')
+                    demisto.debug(f"total_pages set to {total_pages}")
+
+                threats = data.get("threats", [])
+                for t in threats:
+                    yield t
+                demisto.debug(f"{INTEGRATION_NAME} - polling {cur_page}/{total_pages}")
+                cur_page += 1
+            else:
                 return_error(f'{INTEGRATION_NAME} - no "data" in response')
-
-            total_pages = data.get("page", {}).get("totalPages")
-            if total_pages is None:
-                return_error(f'{INTEGRATION_NAME} - no "totalPages" in response')
-
-            demisto.debug(f"{INTEGRATION_NAME} - total_pages set to {total_pages}")
-
-            threats = data.get("threats", [])
-            for t in threats:
-                yield t
-
-            cur_page += 1
 
     @classmethod
     def _convert_block(cls, block: dict) -> Tuple[str, str]:
@@ -130,7 +134,7 @@ class Client(BaseClient):
 
     @classmethod
     def process_item(cls, threat: dict) -> List[dict]:
-        """Gets a threat and proccesses them.
+        """Gets a threat and processes them.
 
         Arguments:
             threat {dict} -- A threat from Cofense ("threats" key)
@@ -144,21 +148,17 @@ class Client(BaseClient):
 {'data_1': 'ip', 'blockType': 'IPv4 Address', 'value': 'ip', 'type': 'IP', 'threat_id': 123}}]
         """
         results = list()
-
-        block_set: Optional[List[dict]] = threat.get("blockSet", None)
+        block_set: Optional[List[dict]] = threat.get("blockSet", [])
         thread_id = threat.get("id")
-        if block_set:
-            for block in block_set:
-                indicator, value = cls._convert_block(block)
-                block.update({"value": value, "type": indicator})
-                block["threat_id"] = thread_id
-                if indicator:
-                    results.append(
-                        {"value": value, "type": indicator, "rawJSON": block}
-                    )
-
-        else:
-            demisto.debug(f'{INTEGRATION_NAME} - no "blockSet" in item')
+        for block in block_set:
+            indicator, value = cls._convert_block(block)
+            block["value"] = value
+            block["type"] = indicator
+            block["threat_id"] = thread_id
+            if indicator:
+                results.append(
+                    {"value": value, "type": indicator, "rawJSON": block}
+                )
 
         return results
 
@@ -177,10 +177,10 @@ def test_module(client: Client) -> str:
 
 
 def fetch_indicators_command(
-    client: Client,
-    begin_time: Optional[int] = None,
-    end_time: Optional[int] = None,
-    limit: Optional[int] = None,
+        client: Client,
+        begin_time: Optional[int] = None,
+        end_time: Optional[int] = None,
+        limit: Optional[int] = None,
 ) -> Union[Dict, List[Dict]]:
     """Fetches the indicators from client.
 
@@ -267,7 +267,9 @@ def main(params: dict):
     verify = not params.get("insecure")
     proxy = bool(params.get("proxy"))
     threat_type = params.get("threat_type")
-    client = Client(url, auth=auth, verify=verify, proxy=proxy, threat_type=threat_type)
+    client = Client(
+        url, auth=auth, verify=verify, proxy=proxy, threat_type=threat_type
+    )
 
     demisto.info(f"Command being called is {demisto.command()}")
     try:
@@ -275,11 +277,12 @@ def main(params: dict):
             return_outputs(test_module(client))
 
         elif demisto.command() == "fetch-indicators":
-            end_time = get_now()
             last_fetch = demisto.getLastRun()
-            begin_time = (
-                last_fetch.get("timestamp") if isinstance(last_fetch, dict) else None
-            )
+            if isinstance(last_fetch, dict) and "timestamp" in last_fetch:
+                begin_time = last_fetch.get("timestamp")
+                end_time = get_now()
+            else:  # First fetch
+                begin_time, end_time = parse_date_range_no_milliseconds(params.get("fetch_time", "3 days"))
             indicators = fetch_indicators_command(client, begin_time, end_time)
             # Send indicators to demisto
             for b in batch(indicators, batch_size=2000):

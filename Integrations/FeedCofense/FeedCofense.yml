@@ -2,7 +2,6 @@ category: Vulnerability Management
 commonfields:
   id: CofenseFeed
   version: -1
-fromversion: 5.5.0
 configuration:
 - defaultvalue: https://threathq.com
   display: URL
@@ -21,9 +20,15 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: F - Reliability cannot be judged
-  display: Reliability
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- display: Reliability
   name: feedInstanceReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -31,12 +36,23 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
-  type: 15
-- display: Fetch indicators
-  name: feed
+- display: ""
+  name: expiration
+  defaultvalue: ""
+  type: 17
   required: false
-  type: 8
+- display: ""
+  name: expirationPolicy
+  defaultvalue: indicatorType
+  type: 0
+  required: false
+  hidden: true
+- display: ""
+  name: expirationInterval
+  defaultvalue: ""
+  type: 1
+  required: false
+  hidden: true
 - additionalinfo: To fetch malware and phishing indicators select "all".
   defaultvalue: all
   display: The threat type for which to fetch indicators.
@@ -47,8 +63,32 @@ configuration:
   - phish
   required: false
   type: 15
+- defaultvalue: 3 days
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  hidden: false
+  name: fetch_time
+  required: false
+  type: 0
+- display: Bypass exclusion list
+  name: bypassExclusionList
+  defaultvalue: ""
+- display: Mark as reputation
+  name: feedInstanceReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+- display: Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+  additionalinfo: The frequency for fetching indicators from this feed (in minutes).
 description: Use the Cofense Feed Integration to fetch indicators from the feed.
-detaileddescription: ""
 display: Cofense Feed
 name: CofenseFeed
 script:
@@ -60,14 +100,16 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of context indicators to return. The default value is 10.
+      description: The maximum number of context indicators to return. The default
+        value is 10.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: 3 days
-      description: The time period (previous) for which to fetch indicators. For example, a value of 3 days will return indicators from the previous three days. The default value is "3 days".
+      description: The time period (previous) for which to fetch indicators. For example,
+        a value of 3 days will return indicators from the previous three days.
       isArray: false
       name: from_time
       required: false
@@ -90,4 +132,5 @@ script:
   subtype: python3
   type: python
 tests:
-  - TestCofenseFeed
+- TestCofenseFeed
+fromversion: 5.5.0
