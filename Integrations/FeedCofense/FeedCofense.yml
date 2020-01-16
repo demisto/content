@@ -37,9 +37,9 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: '''all'' will fetch both malware and phish.'
+- additionalinfo: To fetch malware and phishing indicators select "all".
   defaultvalue: all
-  display: Threat type to pull.
+  display: The threat type for which to fetch indicators.
   name: threat_type
   options:
   - all
@@ -47,38 +47,38 @@ configuration:
   - phish
   required: false
   type: 15
-description: Cofense Feed Integration
+description: Use the Cofense Feed Integration to fetch indicators from the feed.
 detaileddescription: ""
 display: Cofense Feed
 name: CofenseFeed
 script:
   commands:
   - deprecated: false
-    description: Test the pull command
+    description: Tests the command that pulls indicators.
     execution: false
     name: test-pull
   - arguments:
     - default: false
       defaultValue: '10'
-      description: limits the number of context indicators to output
+      description: The maximum number of context indicators to return. The default value is 10.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: 3 days
-      description: Since what time to pull indicators from.
+      description: The time period (previous) for which to fetch indicators. For example, a value of 3 days will return indicators from the previous three days. The default value is "3 days".
       isArray: false
       name: from_time
       required: false
       secret: false
     deprecated: false
-    description: Get indicators
+    description: Gets indicators from the feed.
     execution: false
     name: get-indicators
     outputs:
     - contextPath: Cofense.Indicator
-      description: The indicators from client.
+      description: The indicators returned from the feed.
       type: Unknown
   dockerimage: demisto/python3:3.7.5.5271
   feed: true
