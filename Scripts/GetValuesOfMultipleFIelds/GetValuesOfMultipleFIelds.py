@@ -1,4 +1,5 @@
 import demistomock as demisto
+
 from typing import List, Dict
 
 
@@ -20,7 +21,7 @@ def main():
         t: List = []
         for obj in root:
             for _key in keys:
-                temp = obj.get(_key)
+                temp = obj.get(_key) if obj else None
                 if temp:
                     update_list(t, temp)
 
