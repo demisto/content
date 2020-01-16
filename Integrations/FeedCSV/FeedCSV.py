@@ -102,14 +102,14 @@ class Client(BaseClient):
         response = r.content.decode('latin-1').split('\n')
         if self.ignore_regex is not None:
             response = filter(
-                lambda x: self.ignore_regex.match(x) is None,
+                lambda x: self.ignore_regex.match(x) is None,  # type: ignore
                 response
             )
 
         csvreader = csv.DictReader(
             response,
             fieldnames=self.fieldnames,
-            **self.dialect
+            **self.dialect  # type: ignore
         )
 
         return csvreader
@@ -117,7 +117,7 @@ class Client(BaseClient):
 
 def module_test_command(client, args):
     fieldnames = argToList(demisto.params().get('fieldnames'))
-    if len(fieldnames) == 1 or any(field in fieldnames for field in ('indicator,', ',indicator')):
+    if len(fieldnames) == 1 or 'indicator' in fieldnames:
         client.build_iterator()
         return 'ok', {}, {}
     return_error('Please provide a column named "indicator" in fieldnames')
