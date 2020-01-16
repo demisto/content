@@ -205,13 +205,13 @@ def test_fetch_incidents(requests_mock):
     expected_incidents = [
         {'name': 'Prisma Cloud Compute Alert - Host Runtime Audit', 'occurred': '2020-01-09T10:49:24.675Z',
          'severity': 0,
-         'rawJSON': '{"_id": "5e170534776710d48a0812f5", "activityType": "", "appID": "", "category": "customRule", '
+         'rawJSON': '{"_id": "5e170534776710d48a0812f5", "activityType": "", "appID": "", "category": "Custom Rule", '
                     '"command": "", "container": "", "forensicLink": "", "fqdn": "devbox", "function": "", '
                     '"host": "devbox", "image": "", "interactive": false, "kind": "audit", "kubernetesResource": "", '
                     '"labels": {}, "line": "", "logfile": "", "message": "unexpected ls was spawned", "region": "", '
                     '"rule": "koko", "runtime": "", "service": "", "time": "2020-01-09T10:49:24.675Z", '
                     '"type": "hostRuntime", "user": "", "rawJSONAlert": "{\\"_id\\": \\"5e170534776710d48a0812f5\\", '
-                    '\\"activityType\\": \\"\\", \\"appID\\": \\"\\", \\"category\\": \\"customRule\\", '
+                    '\\"activityType\\": \\"\\", \\"appID\\": \\"\\", \\"category\\": \\"Custom Rule\\", '
                     '\\"command\\": \\"\\", \\"container\\": \\"\\", \\"forensicLink\\": \\"\\", \\"fqdn\\": '
                     '\\"devbox\\", \\"function\\": \\"\\", \\"host\\": \\"devbox\\", \\"image\\": \\"\\", '
                     '\\"interactive\\": false, \\"kind\\": \\"audit\\", \\"kubernetesResource\\": \\"\\", '
@@ -220,7 +220,7 @@ def test_fetch_incidents(requests_mock):
                     '\\"\\", \\"time\\": \\"2020-01-09T10:49:24.675Z\\", \\"type\\": \\"hostRuntime\\", \\"user\\": '
                     '\\"\\"}"}'},
         {'name': 'Prisma Cloud Compute Alert - Incident', 'occurred': '2020-01-09T10:49:24.675Z', 'severity': 0,
-         'rawJSON': '{"_id": "5e170535776710d48a0812ff", "activityType": "", "appID": "", "category": "customRule", '
+         'rawJSON': '{"_id": "5e170535776710d48a0812ff", "activityType": "", "appID": "", "category": "Custom Rule", '
                     '"command": "", "container": "", "forensicLink": '
                     '"https://test.com", '
                     '"fqdn": "devbox", "function": "", "host": "devbox", "image": "", "interactive": false, '
@@ -228,7 +228,7 @@ def test_fetch_incidents(requests_mock):
                     '"Audit #1: unexpected ls was spawned\\n\\n", "region": "", "rule": "", "runtime": "", '
                     '"service": "", "time": "2020-01-09T10:49:24.675Z", "type": "incident", "user": "", '
                     '"rawJSONAlert": "{\\"_id\\": \\"5e170535776710d48a0812ff\\", \\"activityType\\": \\"\\", '
-                    '\\"appID\\": \\"\\", \\"category\\": \\"customRule\\", \\"command\\": \\"\\", \\"container\\": '
+                    '\\"appID\\": \\"\\", \\"category\\": \\"Custom Rule\\", \\"command\\": \\"\\", \\"container\\": '
                     '\\"\\", \\"forensicLink\\": '
                     '\\"https://test.com\\", \\"fqdn\\": '
                     '\\"devbox\\", \\"function\\": \\"\\", \\"host\\": \\"devbox\\", \\"image\\": \\"\\", '

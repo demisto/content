@@ -116,7 +116,7 @@ def camel_case_transformer(s):
     """
     Converts a camel case string into space separated words starting with a capital letters
     E.g. input: 'camelCase' output: 'Camel Case'
-    REMARK: the exceptions list below is returned uppercase, e.g. "cve" => "ID"
+    REMARK: the exceptions list below is returned uppercase, e.g. "cve" => "CVE"
     """
 
     str = re.sub('([a-z])([A-Z])', r'\g<1> \g<2>', s)
@@ -157,6 +157,10 @@ def fetch_incidents(client):
             alert_type = a.get('kind')
             name = ALERT_TITLE
             severity = 0
+
+            # fix the audit category from camel case to display properly
+            if alert_type == ALERT_TYPE_AUDIT:
+                a['category'] = camel_case_transformer(a.get('category'))
 
             # always save the raw JSON data under this argument (used in scripts)
             a['rawJSONAlert'] = json.dumps(a)
