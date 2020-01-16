@@ -1438,7 +1438,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: mimecastapi@demistolab.com
+              simple: johnnydepp@gmail.com
     view: |-
       {
         "position": {
