@@ -102,6 +102,52 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ctph': 'file',
     'ssdeep': 'file'
 }
+
+
+class FeedIndicatorType(object):
+    """Type of Indicator (Reputations), used in TIP integrations"""
+    Account = "Account"
+    CVE = "CVE"
+    Domain = "Domain"
+    Email = "Email"
+    File = "File"
+    FQDN = "Domain"
+    MD5 = "File MD5"
+    SHA1 = "File SHA-1"
+    SHA256 = "File SHA-256"
+    Host = "Host"
+    IP = "IP"
+    CIDR = "CIDR"
+    IPv6 = "IPv6"
+    IPv6CIDR = "IPv6CIDR"
+    Registry = "Registry Key"
+    SSDeep = "ssdeep"
+    URL = "URL"
+
+    @staticmethod
+    def is_valid_type(_type):
+        return _type in (
+            FeedIndicatorType.Account,
+            FeedIndicatorType.CVE,
+            FeedIndicatorType.Domain,
+            FeedIndicatorType.Email,
+            FeedIndicatorType.File,
+            FeedIndicatorType.MD5,
+            FeedIndicatorType.SHA1,
+            FeedIndicatorType.SHA256,
+            FeedIndicatorType.Host,
+            FeedIndicatorType.IP,
+            FeedIndicatorType.CIDR,
+            FeedIndicatorType.IPv6,
+            FeedIndicatorType.IPv6CIDR,
+            FeedIndicatorType.Registry,
+            FeedIndicatorType.SSDeep,
+            FeedIndicatorType.URL
+        )
+
+
+
+
 # ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
 try:
@@ -2326,7 +2372,7 @@ if 'requests' in sys.modules:
             """
             try:
                 # Replace params if supplied
-                address = full_url if full_url else self._base_url + url_suffix
+                address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
                 # Execute
@@ -2432,4 +2478,4 @@ def batch(iterable, batch_size=1):
     while current_batch:
         yield current_batch
         current_batch = not_batched[:batch_size]
-        not_batched = current_batch[batch_size:]
+        not_batched = not_batched[batch_size:]
