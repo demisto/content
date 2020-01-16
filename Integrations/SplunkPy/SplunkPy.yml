@@ -208,7 +208,7 @@ script:
     name: splunk-get-indexes
   - arguments:
     - default: false
-      description: A CSV list of event IDs of notable events.s
+      description: A comma-separated list of event IDs of notable events.
       isArray: false
       name: eventIDs
       required: true
@@ -298,19 +298,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Index name
+      description: The index name.
       isArray: false
       name: index
       required: false
       secret: false
     - default: false
-      description: Host name.
+      description: The hostname.
       isArray: false
       name: host
       required: false
       secret: false
     - default: false
-      description: User-defined event sourcetype
+      description: User-defined event source type.
       isArray: false
       name: source_type
       required: false
@@ -328,7 +328,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Send events to HTTP Event Collector using the Splunk platform JSON
+    description: Sends events to an HTTP Event Collector using the Splunk platform JSON
       event protocol.
     execution: false
     name: splunk-submit-event-hec
