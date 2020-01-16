@@ -162,7 +162,7 @@ def handle_filters(found_date_from=None):
         time_delta_in_days = demisto.getArg('time-delta')
         update_params_dict_according_to_delta_arg(params, int(time_delta_in_days))
     elif found_date_from:
-        params['foundDateFrom'] = int(found_date_from)
+        params['foundDateFrom'] = found_date_from
     return params
 
 
