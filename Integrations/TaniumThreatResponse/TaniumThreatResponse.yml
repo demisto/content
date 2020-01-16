@@ -426,7 +426,7 @@ script:
     name: tanium-tr-delete-local-snapshot
   - arguments:
     - default: false
-      defaultValue: '5'
+      defaultValue: '50'
       description: The maximum number of connections to return.
       isArray: false
       name: limit
@@ -1298,24 +1298,21 @@ script:
     execution: false
     name: tanium-tr-request-file-download
     outputs:
-    - contextPath: Tanium.File.Created
-      description: The file creation time.
+    - contextPath: Tanium.FileDownload.Path
+      description: File download path.
+      type: String
+    - contextPath: Tanium.FileDownload.Host
+      description: File download host.
+      type: String
+    - contextPath: Tanium.FileDownload.Downloaded
+      description: Date of the download request.
       type: Date
-    - contextPath: Tanium.File.Size
-      description: The file size.
+    - contextPath: Tanium.FileDownload.Status
+      description: Status of the file download request.
+      type: String
+    - contextPath: Tanium.FileDownload.ID
+      description: ID of the file download.
       type: Number
-    - contextPath: Tanium.File.IsDirectory
-      description: Whether or not the file is a directory.
-      type: Boolean
-    - contextPath: Tanium.File.LastModified
-      description: The date that the file was last modified.
-      type: Date
-    - contextPath: Tanium.File.Path
-      description: The file path.
-      type: Boolean
-    - contextPath: Tanium.File.Permissions
-      description: The file permissions.
-      type: Date
   - arguments:
     - default: false
       description: File download ID.
@@ -1358,6 +1355,25 @@ script:
     description: List files in the given directory.
     execution: false
     name: tanium-tr-list-files-in-directory
+    outputs:
+    - contextPath: Tanium.File.Created
+      description: The file creation time.
+      type: Date
+    - contextPath: Tanium.File.Size
+      description: The file size.
+      type: Number
+    - contextPath: Tanium.File.IsDirectory
+      description: Whether or not the file is a directory.
+      type: Boolean
+    - contextPath: Tanium.File.LastModified
+      description: The date that the file was last modified.
+      type: Date
+    - contextPath: Tanium.File.Path
+      description: The file path.
+      type: Boolean
+    - contextPath: Tanium.File.Permissions
+      description: The file permissions.
+      type: Date
   - arguments:
     - default: false
       defaultValue: Connection ID.
@@ -1422,6 +1438,45 @@ script:
     description: Get process timeline.
     execution: false
     name: tanium-tr-get-process-timeline
+  - arguments:
+    - default: false
+      description: Date of the download file request
+      isArray: false
+      name: request-date
+      required: true
+      secret: false
+    - default: false
+      description: The host to which the request was made.
+      isArray: false
+      name: host
+      required: false
+      secret: false
+    - default: false
+      description: The file path.
+      isArray: false
+      name: path
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the status of the download file request.
+    execution: false
+    name: tanium-tr-get-download-file-request-status
+    outputs:
+    - contextPath: Tanium.DownloadFile.ID
+      description: ID of the file download.
+      type: Number
+    - contextPath: Tanium.DownloadFile.Host
+      description: Host of the file.
+      type: String
+    - contextPath: Tanium.DownloadFile.Path
+      description: Path of the file.
+      type: String
+    - contextPath: Tanium.DownloadFile.Status
+      description: Status of the file download request.
+      type: String
+    - contextPath: Tanium.DownloadFile.Downloaded
+      description: The date of the download request.
+      type: Date
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   longRunning: false

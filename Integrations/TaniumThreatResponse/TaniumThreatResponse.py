@@ -812,13 +812,57 @@ def delete_evidence(client, data_args):
 def request_file_download(client, data_args):
     con_id = data_args.get('connection-id')
     path = data_args.get('path')
+
+    # context object will help us to verify the request has succeed in the download file playbook.
+    context = {
+        'Host': con_id,
+        'Path': path,
+        'Status': 'Pending',
+        'Downloaded': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')
+    }
+    outputs = {'Tanium.FileDownload(val.Path === obj.Path && val.Host === obj.Host)': context}
+
     data = {
         'path': path,
         'connId': con_id
     }
     client.do_request('POST', f'/plugin/products/trace/filedownloads', data=data, resp_type='text')
     filename = os.path.basename(path)
-    return f"Download request of file {filename} has been sent successfully.", {}, {}
+    return f"Download request of file {filename} has been sent successfully.", outputs, {}
+
+
+def get_file_download_request_status(client, data_args):
+    downloaded = data_args.get('request-date')
+    host = data_args.get('host')
+    path = data_args.get('path')
+    params = {'downloaded>': downloaded}
+    if host:
+        params['host'] = host
+    if path:
+        params['path'] = path
+
+    raw_response = client.do_request('GET', f'/plugin/products/trace/filedownloads', params=params)
+    if raw_response:
+        file_id = raw_response[0].get('id')
+        status = 'Completed'
+        host = raw_response[0].get('host')
+        path = raw_response[0].get('path')
+    else:
+        file_id = None
+        status = 'Pending'
+
+    file_download_request = {
+        'ID': file_id,
+        'Host': host,
+        'Path': path,
+        'Status': status,
+        'Downloaded': downloaded
+    }
+
+    context = createContext(file_download_request, removeNull=True)
+    outputs = {'Tanium.FileDownload(val.Path === obj.Path && val.Host === obj.Host)': context}
+    human_readable = tableToMarkdown('File download request status', file_download_request)
+    return human_readable, outputs, raw_response
 
 
 def delete_file_download(client, data_args):
@@ -958,6 +1002,7 @@ def main():
         f'tanium-tr-list-file-downloads': get_file_downloads,
         f'tanium-tr-get-file-download-info': get_file_download_info,
         f'tanium-tr-request-file-download': request_file_download,
+        f'tanium-tr-get-download-file-request-status': get_file_download_request_status,
         f'tanium-tr-delete-file-download': delete_file_download,
         f'tanium-tr-list-files-in-directory': list_files_in_dir,
         f'tanium-tr-get-file-info': get_file_info,
