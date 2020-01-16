@@ -2351,10 +2351,11 @@ if 'requests' in sys.modules:
             :type files: ``dict``
             :param files: The file data to send in a 'POST' request.
 
-            :type timeout: ``float``
+            :type timeout: ``float`` or ``tuple``
             :param timeout:
                 The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
+                can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
 
             :type resp_type: ``str``
             :param resp_type:
