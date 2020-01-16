@@ -32,13 +32,13 @@ tasks:
     skipunavailable: false
   "1":
     id: "1"
-    taskid: 32aeb9c5-9df2-4b63-8fd8-0f71dbbdc0f8
+    taskid: f7c21a7b-4e7c-4bfb-8af9-a63dc117e650
     type: regular
     task:
-      id: 32aeb9c5-9df2-4b63-8fd8-0f71dbbdc0f8
+      id: f7c21a7b-4e7c-4bfb-8af9-a63dc117e650
       version: -1
       name: Get Indicators
-      description: Get the feed indicators.
+      description: Gets the feed indicators.
       script: Bambenek Consulting Feed|||get-indicators
       type: regular
       iscommand: true
@@ -197,3 +197,4 @@ view: |-
   }
 inputs: []
 outputs: []
+sourceplaybookid: BambenekConsultingFeed_Test
