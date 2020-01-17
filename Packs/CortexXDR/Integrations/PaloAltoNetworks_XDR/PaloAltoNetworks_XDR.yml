@@ -1216,12 +1216,12 @@ script:
       isArray: true
       name: type
       predefined:
-      - INSTALLATION
-      - POLICY
-      - ACTION
-      - AGENT_SERVICE
-      - AGENT_MODULES
-      - AGENT_STATUS
+      - Installation
+      - Policy
+      - Action
+      - Agent Service
+      - Agent Modules
+      - Agent Status
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1230,38 +1230,38 @@ script:
       isArray: true
       name: sub_type
       predefined:
-      - INSTALL
-      - UNINSTALL
-      - UPGRADE
-      - LOCAL_CONFIGURATION
-      - CONTENT_UPDATE
-      - POLICY_UPDATE
-      - PROCESS_EXCEPTION
-      - HASH_EXCEPTION
-      - SCAN
-      - FILE_RETRIEVAL
-      - FILE_SCAN
-      - TERMINATE_PROCESS
-      - ISOLATE
-      - CANCEL_ISOLATION
-      - PAYLOAD_EXECUTION
-      - QUARANTINE
-      - RESTORE
-      - STOP
-      - START
-      - MODULE_INITIALIZATION
-      - LOCAL_ANALYSIS_MODEL
-      - LOCAL_ANALYSIS_FEATURE_EXTRACTION
-      - FULLY_PROTECTED
-      - OS_INCOMPATIBLE
-      - SOFTWARE_INCOMPATIBLE
-      - KERNEL_DRIVER_INITIALIZATION
-      - KERNEL_EXTENSION_INITIALIZATION
-      - PROXY_COMMUNICATION
-      - QUOTA_EXCEEDED
-      - MINIMAL_CONTENT
-      - REBOOT_REQUIRED
-      - MISSING_DISC_ACCESS
+      - Install
+      - Uninstall
+      - Upgrade
+      - Local Configuration
+      - Content Update
+      - Policy Update
+      - Process Exception
+      - Hash Exception
+      - Scan
+      - File Retrieval
+      - File Scan
+      - Terminate Process
+      - Isolate
+      - Cancel Isolation
+      - Payload Execution
+      - Quarantine
+      - Restore
+      - Stop
+      - Start
+      - Module Initialization
+      - Local Analysis Model
+      - Local Analysis Feature Extraction
+      - Fully Protected
+      - OS Incompatible
+      - Software Incompatible
+      - Kernel Driver Initialization
+      - Kernel Extension Initialization
+      - Proxy Communication
+      - Quota Exceeded
+      - Minimal Content
+      - Reboot Eequired
+      - Missing Disc Access
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1270,8 +1270,8 @@ script:
       isArray: true
       name: result
       predefined:
-      - SUCCESS
-      - FAIL
+      - Success
+      - Fail
       required: false
       secret: false
     - default: false
