@@ -53,8 +53,8 @@ def http_request(method, path, params=None, data=None):
             data=json.dumps(data, sort_keys=True),
             headers=HEADERS)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
-            requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
-        return return_error('Could not connect to Symantec MC: {}'.format(str(e)))
+            requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as exc:
+        return_error('Could not connect to Symantec MC: {}'.format(str(exc)))
 
     if res.status_code < 200 or res.status_code > 300:
         status = res.status_code
@@ -76,7 +76,7 @@ def http_request(method, path, params=None, data=None):
     except Exception:
         if res.status_code == 204:
             return res
-        return_error('Failed parsing the response from Symantec MC API: {}'.format(res.content))
+        return_error('Failed parsing the response from Symantec MC API: {!r}'.format(res.content))
 
 
 def verify_policy_content(content_type, ips, categories, urls):
