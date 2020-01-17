@@ -7,16 +7,66 @@ import collections
 requests.packages.urllib3.disable_warnings()
 
 BASE_URL = demisto.params().get('url')
-INSECURE = demisto.params().get('check_certificate')
+USE_SSL = not demisto.params().get('insecure', False)
 PROXY = demisto.params().get('proxy')
 API_KEY = demisto.params().get('apikey')
 
 '''HELPER FUNCTIONS'''
+capture_info_outputs = {
+    'id': 'CaptureID',
+    'group_write?': 'GroupWrite',
+    'size': 'Size',
+    'data_byte_rate': 'DataByteRate',
+    'tag_list': 'TagList',
+    'data_bit_rate': 'DataBitRate',
+    'filename': 'FileName',
+    'sha1_hash': 'SHA1',
+    'avg_packet_rate': 'AvgPacketRate',
+    'start_time': 'StartTime',
+    'created_at': 'CreatedAt',
+    'avg_packet_size': 'AvgPacketSize',
+    'user': 'User',
+    'last_accessed': 'LastAccessed',
+    'disable_autodelete': 'DisableAutodelete',
+    'cap_file_id': 'CapFileID',
+    'end_time': 'EndTime',
+    'num_packets': 'NumPackets',
+    'encapsulation': 'Encapsulation',
+    'duration': 'Duration',
+    'comments': 'Comments',
+    'public?': 'Public',
+    'data_size': 'DataSize',
+    'file': 'File',
+    'file_type': 'FileType',
+    'file_source': 'FileSource',
+    'truncated': 'Truncated',
+    'group': 'Group',
+}
+
+
+# Translates the capture info field names to standard outputs
+def transalte_capture_info(capture_info):
+    translated_output = {}
+    for field_name, standard_name in capture_info_outputs.items():
+        if field_name in capture_info:
+            translated_output[standard_name] = capture_info.get(field_name)
+    return translated_output
+
+
 # Allows nested keys to be accesible
-
-
 def makehash():
     return collections.defaultdict(makehash)
+
+
+def parse_error_response(http_response):
+    try:
+        response = http_response.json()
+    except ValueError:
+        return f'Error in API call. Recived status code: {http_response.status_code};' \
+            f' Reason: {http_response.reason}; contents: {http_response.content}'
+    exceptions = response.get('exceptions', '')
+    if exceptions:
+        return f'Call Failed. status code:{http_response.status_code}, reason: {exceptions}'
 
 
 def http(method, url_suffix, params=None, data=None, files=None):
@@ -24,7 +74,7 @@ def http(method, url_suffix, params=None, data=None, files=None):
         response = requests.request(
             method,
             BASE_URL + '/api/v1/' + API_KEY + url_suffix,
-            verify=INSECURE,
+            verify=USE_SSL,
             params=params,
             data=data,
             files=files)
@@ -35,9 +85,9 @@ def http(method, url_suffix, params=None, data=None, files=None):
             # If testing toekn is valid using the /search/ endpoint this is ok
             return response
         elif response.status_code == 404:
-            return_error("Server responded with 404. Check to make sure API token is correct")
+            return_error(parse_error_response(response))
         else:
-            return_error('Error in API call [%d] - %s: %s ' % (response.status_code, response.reason, response.content))
+            return_error(parse_error_response(response))
     except requests.exceptions.ConnectionError as err:
         return_error("Could not connect to CS Enterprise URL ", str(err))
     except requests.exceptions.MissingSchema:
@@ -114,13 +164,13 @@ def info_command():
 
     # Request meta-info from CloudShark
     file_info = info(capture_id)
-
     # Set Demisto Context
-    contxt['CloudShark']['CaptureInfo'] = file_info
+    capture_info = transalte_capture_info(file_info)
+    contxt['CloudShark.CaptureInfo(val.CaptureID && val.CaptureID == obj.CaptureID)'] = capture_info
     ec = contxt
 
     # Create table with capture info
-    info_table = tableToMarkdown('Capture file info', file_info)
+    info_table = tableToMarkdown('Capture file info', capture_info)
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -168,7 +218,7 @@ def delete_command():
     # Delete capture
     result = delete(capture_id)
 
-    # Set resulot
+    # Set result
     contents = result
     human_readable['Response'] = result
     contxt['CloudShark']['Result'] = result
