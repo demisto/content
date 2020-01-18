@@ -100,6 +100,41 @@ def get_bot_access_token(requests_mock):
     )
 
 
+def test_mentioned_users_to_entities():
+    from MicrosoftTeams import mentioned_users_to_entities
+    mentioned_users = ['Bruce Willis', 'Denzel Washington']
+    bruce_entity = {
+        'type': 'mention',
+        'mentioned': {
+            'id': '29:1KZccCJRTxlPdHnwcKfxHAtYvPLIyHgkSLhFSnGXLGVFlnltovdZPmZAduPKQP6NrGqOcde7FXAF7uTZ_8FQOqg',
+            'name': 'Bruce Willis'
+        },
+        'text': '<at>@Bruce Willis</at>'
+    }
+    denzel_entity = {
+        'type': 'mention',
+        'mentioned': {
+            'id': '29:1pBMMC85IyjM3tr_MCZi7KW4pw4EULxLN4C7R_xoi3Wva_lOn3VTf7xJlCLK-r-pMumrmoz9agZxsSrCf7__u9R',
+            'name': 'Denzel Washington'
+        },
+        'text': '<at>@Denzel Washington</at>'
+    }
+    assert mentioned_users_to_entities(mentioned_users, integration_context) == [bruce_entity, denzel_entity]
+
+    mentioned_users = ['Bruce Willis', 'demisto']
+    with pytest.raises(ValueError, match='Team member demisto was not found'):
+        mentioned_users_to_entities(mentioned_users, integration_context)
+
+
+def test_process_mentioned_users_in_message():
+    from MicrosoftTeams import process_mentioned_users_in_message
+    raw_message = '@demisto dev; @demisto; a@demisto.com; a@demisto.com hi; @hi @wow;'
+    parsed_message = '<at>@demisto dev</at> <at>@demisto</at> a@demisto.com; a@demisto.com hi; @hi <at>@wow</at>'
+    users, message = process_mentioned_users_in_message(raw_message)
+    assert users == ['demisto dev', 'demisto', 'wow']
+    assert message == parsed_message
+
+
 def test_message_handler(mocker):
     from MicrosoftTeams import message_handler
     mocker.patch.object(demisto, 'addEntry')
@@ -832,7 +867,7 @@ def test_get_team_member_id():
     requested_team_member = 'TheRock'
     with pytest.raises(ValueError) as e:
         get_team_member_id(requested_team_member, integration_context)
-    assert str(e.value) == 'Team member was not found'
+    assert str(e.value) == 'Team member TheRock was not found'
 
 
 def test_create_adaptive_card():
