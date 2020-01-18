@@ -113,46 +113,70 @@ script:
     name: msgraph-upload-new-file
     outputs:
     - contextPath: MsGraphFiles.UploadedFiles.ParentReference.DriveId
+      description: Unique identifier of the drive that contains the item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.ParentReference.DriveType
+      description: Identifies the type of drive.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.ParentReference.ID
+      description: Unique identifier of the item in the drive.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.ParentReference.Path
+      description: Path to navigate to the item
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.LastModifiedDateTime
+      description: Date and time that the item was last modified.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.File.MimeType
+      description: File type
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.File.Hashes
+      description: Hash type
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.CreatedDateTime
+      description: Timestamp of item creation.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.WebUrl
+      description: URL to the resource in the browser
       type: String
-    - contextPath: MsGraphFiles.UploadedFiles.Odata.context
+    - contextPath: MsGraphFiles.UploadedFiles.OdataContext
+      description: Resource type
       type: String
-    - contextPath: MsGraphFiles.UploadedFiles.FileSystemInfo.createdDateTime
+    - contextPath: MsGraphFiles.UploadedFiles.FileSystemInfo.CreatedDateTime
+      description: The date and time the item was created on a client.
       type: String
-    - contextPath: MsGraphFiles.UploadedFiles.FileSystemInfo.lastModifiedDateTime
+    - contextPath: MsGraphFiles.UploadedFiles.FileSystemInfo.LastModifiedDateTime
+      description: The date and time the item was last modified on a client.
       type: String
-    - contextPath: MsGraphFiles.UploadedFiles.LastModifiedBy.displayName
+    - contextPath: MsGraphFiles.UploadedFiles.LastModifiedBy.DisplayName
+      description: The item display name
       type: String
-    - contextPath: MsGraphFiles.UploadedFiles.LastModifiedBy.application.id
+    - contextPath: MsGraphFiles.UploadedFiles.LastModifiedBy.Type
+      description: Application, user or device
       type: String
-    - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.displayName
+    - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.DisplayName
+      description: Identity of the user, device,or application which created the item
       type: String
-    - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.id
+    - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.ID
+      description: The ID of the creator
+      type: String
+    - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.Type
+      description: Application, user or device
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.DownloadUrl
+      description: URL to download this file's content
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.Size
+      description: File's size
       type: Number
     - contextPath: MsGraphFiles.UploadedFiles.ID
+      description: File ID
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.Name
+      description: The file's name
       type: String
     - contextPath: MsGraph.UploadedFiles.File
+      description: Graph's file object
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -191,46 +215,70 @@ script:
     name: msgraph-replace-existing-file
     outputs:
     - contextPath: MsGraphFiles.ReplacedFiles.ParentReference.DriveId
+      description: Unique identifier of the drive that contains the item.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.ParentReference.DriveType
+      description: Identifies the type of drive.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.ParentReference.ID
+      description: Unique identifier of the item in the drive.
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.ParentReference.Path
+      description: Path to navigate to the item
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.LastModifiedDateTime
-      type: String
+      description: Date and time that the item was last modified.
+      type: Date
     - contextPath: MsGraphFiles.ReplacedFiles.File.MimeType
+      description: File type
       type: String
-    - contextPath: MsGraphFiles.ReplacedFiles.File.Hashes.QuickXorHash
+    - contextPath: MsGraphFiles.ReplacedFiles.File.Hashes
+      description: Hash type
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.CreatedDateTime
+      description: Timestamp of item creation
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.WebUrl
+      description: URL to the resource in the browser
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.OdataContext
+      description: Resource type
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.FileSystemInfo.CreatedDateTime
-      type: String
+      description: The date and time the item was created on a client
+      type: Date
     - contextPath: MsGraphFiles.ReplacedFiles.FileSystemInfo.LastModifiedDateTime
-      type: String
+      description: The date and time the item was last modified on a client
+      type: Date
     - contextPath: MsGraphFiles.ReplacedFiles.LastModifiedBy.DisplayName
+      description: The item display name
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.LastModifiedBy.ID
+      description: Identity of the application which last modified the item
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.CreatedBy.DisplayName
+      description: Identity of the user, device,or application which created the item
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.CreatedBy.ID
+      description: The ID of the creator
+      type: String
+    - contextPath: MsGraphFiles.ReplacedFiles.CreatedBy.Type
+      description: Application, user or device
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.DownloadUrl
+      description: URL to download the file's content
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.Size
+      description: File's size
       type: Number
     - contextPath: MsGraphFiles.ReplacedFiles.Id
+      description: File ID
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.Name
+      description: The file's name
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.File
+      description: Graph's file object
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -269,42 +317,61 @@ script:
     name: msgraph-create-new-folder
     outputs:
     - contextPath: MsGraph.Folder
+      description: Graph's folder object
       type: Unknown
     - contextPath: Msgraphfiles.CreatedFolder.ParentReference.DriveId
+      description: Unique identifier of the drive that contains the item.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.ParentReference.DriveType
+      description: Identifies the type of drive.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.ParentReference.ID
+      description: Unique identifier of the item in the drive.
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.ParentReference.Path
+      description: Path to navigate to the item
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.LastModifiedDateTime
-      type: String
+      description: Date and time that the item was last modified.
+      type: Date
     - contextPath: Msgraphfiles.CreatedFolder.Name
+      description: The folder's name
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.CreatedDateTime
-      type: String
+      description: Timestamp of item creation.
+      type: Date
     - contextPath: Msgraphfiles.CreatedFolder.WebUrl
+      description: URL to the resource in the browser
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.OdataContext
+      description: Resource type
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.FileSystemInfo.CreatedDateTime
-      type: String
+      description: The date and time the item was created on a client.
+      type: Date
     - contextPath: Msgraphfiles.CreatedFolder.FileSystemInfo.LastModifiedDateTime
-      type: String
+      description: The date and time the item was last modified on a client
+      type: Date
     - contextPath: Msgraphfiles.CreatedFolder.LastModifiedBy.DisplayName
+      description: The item display name
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.LastModifiedBy.ID
+      description: The item display name
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.CreatedBy.DisplayName
+      description: Identity of the user, device,or application which created the item
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.CreatedBy.ID
+      description: The ID of the creator
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.ChildCount
+      description: The number of the folder's sub items
       type: Number
     - contextPath: Msgraphfiles.CreatedFolder.ID
+      description: Folder ID
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.Size
+      description: Folder size
       type: Number
   - arguments:
     - default: false
@@ -331,28 +398,41 @@ script:
     name: msgraph-list-drives-in-site
     outputs:
     - contextPath: MsGraphFiles.ListDrives.Value.LastModifiedDateTime
-      type: String
+      description: Date and time that the item was last modified
+      type: Date
     - contextPath: MsGraphFiles.ListDrives.Value.Description
+      description: A user visible description of the drive
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.CreatedDateTime
-      type: String
+      description: Timestamp of Drive creation
+      type: Date
     - contextPath: MsGraphFiles.ListDrives.Value.WebUrl
+      description: URL to the resource in the browser
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.CreatedBy
+      description: Identity of the user, application, or device  which created the
+        Drive.
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.Owner.DisplayName
+      description: DisplayName of the user, device or application which owns the Drive
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.Owner.ID
+      description: ID of the user, device or application which owns the Drive
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.Owner.Type
+      description: user, device or application
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.DriveType
+      description: Identifies the type of drive
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.ID
+      description: Drive ID
       type: String
     - contextPath: MsGraphFiles.ListDrives.Value.Name
+      description: The drive's name
       type: String
     - contextPath: MsGraphFiles.ListDrives.OdataContext
+      description: Resource type
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -392,46 +472,67 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: This command list all the drive's files and folders
     execution: false
     name: msgraph-list-drive-children
     outputs:
     - contextPath: MsGraphFiles.ListChildren.Children.Value.OdataNextLink
+      description: The URL for the next results page.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.ParentReference.DriveId
+      description: Unique identifier of the drive that contains the item.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.ParentReference.DriveType
+      description: Identifies the type of drive.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.ParentReference.ID
+      description: Unique identifier of the item in the drive.
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.ParentReference.Path
+      description: Path to navigate to the item
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.LastModifiedDateTime
-      type: String
+      description: Date and time that the item was last modified.
+      type: Date
     - contextPath: MsGraphFiles.ListChildren.Children.Value.Name
+      description: The file's name
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.CreatedDateTime
-      type: String
+      description: Timestamp of item creation.
+      type: Date
     - contextPath: MsGraphFiles.ListChildren.Children.Value.WebUrl
+      description: URL to the resource in the browser
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.FileSystemInfo.CreatedDateTime
-      type: String
+      description: The date and time the item was created on a client.
+      type: Date
     - contextPath: MsGraphFiles.ListChildren.Children.Value.FileSystemInfo.LastModifiedDateTime
-      type: String
+      description: The date and time the item was last modified on a client.
+      type: Date
     - contextPath: MsGraphFiles.ListChildren.Children.Value.LastModifiedBy.DisplayName
+      description: The item display name
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.LastModifiedBy.ID
+      description: Identity of the application, user or device which last modified
+        the item
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.CreatedBy.DisplayName
+      description: Identity of the user, device,or application which created the item
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.CreatedBy.ID
+      description: The ID of the creator
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Value.CreatedBy.Type
+      description: application, user or device
       type: String
     - contextPath: MsGraphFiles.ListChildren.ID
+      description: File or folder ID
       type: String
     - contextPath: MsGraphFiles.ListChildren.Children.Size
+      description: File or folder size
       type: Number
     - contextPath: MsGraphFiles.ListChildren.Children.OdataContext
+      description: Resource type
       type: String
   - arguments:
     - default: false
@@ -444,28 +545,40 @@ script:
     name: msgraph-list-tenant-sites
     outputs:
     - contextPath: MsGraph.Sites
-      type: String
+      description: Graph's site object
+      type: Unknown
     - contextPath: MsGraphFiles.OdataContext
+      description: Resource type
       type: String
     - contextPath: MsGraphFiles.OdataNextLink
+      description: The URL for the next results page.
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.LastModifiedDateTime
+      description: Date and time that the item was last modified.
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.DisplayName
+      description: The item display name
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.Description
+      description: The item description
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.CreatedDateTime
-      type: String
+      description: imestamp of site creation
+      type: Date
     - contextPath: MsGraphFiles.ListSites.Value.WebUrl
+      description: URL to the resource in the browser
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.OdataContext
+      description: Resource type
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.SiteCollection.Hostname
+      description: The hostname for the site collection
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.ID
+      description: Site id
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.Name
+      description: Site name
       type: String
   - arguments:
     - auto: PREDEFINED
