@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Add email body html field
 
 ## [20.1.0] - 2020-01-07
     -
