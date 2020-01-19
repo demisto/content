@@ -204,4 +204,3 @@ def get_tests_allocation_for_threads(number_of_instances, tests_file_path):
 
         tests_allocation.append(current_allocation)
     return tests_allocation
-
