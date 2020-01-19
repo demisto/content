@@ -494,25 +494,18 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
-    args = {}
-    args['event'] = event
-    if fields:
-        args['fields'] = {
-            'fields': fields
-        }
-    if host:
-        args['host'] = host
-    if index:
-        args['index'] = index
-    if source_type:
-        args['sourcetype'] = source_type
-    if source:
-        args['source'] = source
-    if time_:
-        args['time'] = time_
+    args = assign_params(
+        event=event,
+        host=host,
+        fields={'fields': fields} if fields else None,
+        index=index,
+        sourcetype=source_type,
+        source=source,
+        time=time_
+    )
 
     headers = {
-        'Authorization': 'Splunk %s' % hec_token,
+        'Authorization': 'Splunk {}'.format(hec_token),
         'Content-Type': 'application/json'
     }
 
@@ -525,6 +518,9 @@ def splunk_submit_event_hec_command():
 
     hec_token = demisto.params().get('hec_token')
     hec_port = demisto.params().get('hec_port')
+    if hec_port is None:
+        raise Exception('The HEC Port was not provided.')
+
     baseurl = 'https://' + demisto.params()['host'] + ':' + hec_port
 
     event = demisto.args().get('event')
