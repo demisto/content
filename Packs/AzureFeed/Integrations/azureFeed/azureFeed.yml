@@ -43,11 +43,12 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: ""
-  name: skipExclusionList
+- display: Bypass exclusion list
+  name: bypassExclusionList
   defaultvalue: ""
   type: 8
   required: false
+  additionalinfo: When selected, the exclusion list will be ignored for this feed.
 - display: Mark as reputation
   name: feedInstanceReputation
   defaultvalue: feedInstanceReputationNotSet
