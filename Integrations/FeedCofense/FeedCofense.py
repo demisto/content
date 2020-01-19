@@ -245,7 +245,7 @@ def parse_date_range_no_milliseconds(from_time: str) -> Tuple[int, int]:
     return int(begin_time / 1000), int(end_time / 1000)
 
 
-def get_indicators_command(client: Client, args: dict) -> Tuple[dict, str]:
+def get_indicators_command(client: Client, args: dict) -> Tuple[str, dict]:
     """Getting indicators into Demisto's incident.
 
     Arguments:
@@ -267,7 +267,7 @@ def get_indicators_command(client: Client, args: dict) -> Tuple[dict, str]:
         [indicator.get("rawJSON") for indicator in indicators],
         ["threat_id", "type", "value", "impact", "confidence", "roleDescription"],
     )
-    return context_output, human_readable
+    return human_readable, context_output
 
 
 def get_now() -> int:
