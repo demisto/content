@@ -392,13 +392,13 @@ def delete_network_list_command(client: Client, network_list_id: str) -> Tuple[o
 
 
 @logger
-def activate_network_list_command(client: Client, network_list_id: str, env: str, comment: Optional[str] = None,
+def activate_network_list_command(client: Client, network_list_ids: str, env: str, comment: Optional[str] = None,
                                   notify: Optional[str] = None) -> Tuple[object, dict, Union[List, Dict]]:
     """Activate network list by ID
 
     Args:
         client: Client object with request
-        network_list_id: Unique ID of network list
+        network_list_ids: Unique ID of network list
         env: STAGING or PRODUCTION
         comment: Comment to be logged
         notify: Email to notify on activation
@@ -406,20 +406,29 @@ def activate_network_list_command(client: Client, network_list_id: str, env: str
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response = client.activate_network_list(network_list_id=network_list_id,
-                                                env=env,
-                                                comment=comment,
-                                                notify=argToList(notify))
-    if raw_response:
-        human_readable = f'**{INTEGRATION_NAME} - network list {network_list_id} activated on {env} successfully**'
-        return human_readable, {}, {}
-    else:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+    network_list_ids = argToList(network_list_ids)
+    human_readable = ""
+    for network_list_id in network_list_ids:
+        try:
+            raw_response = client.activate_network_list(network_list_id=network_list_id,
+                                                        env=env,
+                                                        comment=comment,
+                                                        notify=argToList(notify))
+            if raw_response:
+                human_readable += f'{INTEGRATION_NAME} - network list **{network_list_id}** activated on {env} **successfully**\n'
+        except DemistoException as e:
+            if "This list version is already active" in e.args[0]:
+                human_readable += f'**{INTEGRATION_NAME} - network list {network_list_id} already active on {env}**\n'
+        except requests.exceptions.RequestException as e:
+            human_readable += f'{INTEGRATION_NAME} - Could not find any results for given query\n'
+
+    return human_readable, {}, {}
 
 
 @logger
 def add_elements_to_network_list_command(client: Client, network_list_id: str, entry_id: Optional[str] = None,
-                                         elements: Optional[Union[str, list]] = None) -> Tuple[object, dict, Union[List, Dict]]:
+                                         elements: Optional[Union[str, list]] = None) -> Tuple[
+    object, dict, Union[List, Dict]]:
     """Add elements to network list by ID
 
     Args:
@@ -470,34 +479,43 @@ def remove_element_from_network_list_command(client: Client, network_list_id: st
 
 
 @logger
-def get_activation_status_command(client: Client, network_list_id: str, env: str) \
+def get_activation_status_command(client: Client, network_list_ids: Union[str, list], env: str) \
         -> Tuple[object, dict, Union[List, Dict]]:
     """Get activation status
 
     Args:
         client: Client object with request
-        network_list_id: Unique ID of network list
+        network_list_ids: Unique ID of network list (can be list as a string)
         env: STAGING or PRODUCTION
 
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response: dict = client.get_activation_status(network_list_id=network_list_id,
-                                                      env=env)
-    if raw_response:
-        context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.ActivationStatus(val.UniqueID && val.UniqueID == obj.UniqueID)":
-                assign_params(**{
+    network_list_ids = argToList(network_list_ids)
+    raws = []
+    ecs = []
+    human_readable = ""
+    for network_list_id in network_list_ids:
+        try:
+            raw_response: dict = client.get_activation_status(network_list_id=network_list_id,
+                                                              env=env)
+            if raw_response:
+                raws.append(raw_response)
+                ecs.append({
                     "UniqueID": raw_response.get('uniqueId'),
                     "Status": raw_response.get('activationStatus')
                 })
-        }
-        human_readable = f"{INTEGRATION_NAME} - network list **{network_list_id}** is " \
-                         f"**{raw_response.get('activationStatus')}** in **{env}**"
+                human_readable += f"{INTEGRATION_NAME} - network list **{network_list_id}** is **{raw_response.get('activationStatus')}** in **{env}**\n"
+        except DemistoException as e:
+            if "The Network List ID should be of the format" in e.args[0]:
+                human_readable += f"{INTEGRATION_NAME} - network list **{network_list_id}** canot be found\n"
+        except requests.exceptions.RequestException as e:
+            human_readable += f'{INTEGRATION_NAME} - Could not find any results for given query\n'
 
-        return human_readable, context_entry, raw_response
-    else:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.NetworkLists.ActivationStatus(val.UniqueID && val.UniqueID == obj.UniqueID)": ecs
+    }
+    return human_readable, context_entry, raws
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''

@@ -53,8 +53,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of all network lists available for an authenticated user
-      who belongs to a group.
+    description: Returns a list of all network lists available for an authenticated
+      user who belongs to a group.
     execution: false
     name: akamai-get-network-lists
     outputs:
@@ -216,9 +216,9 @@ script:
     name: akamai-delete-network-list
   - arguments:
     - default: false
-      description: The ID of the network list to be activated.
-      isArray: false
-      name: network_list_id
+      description: The ID of the network list to be activated -can be list (list1,list2)
+      isArray: true
+      name: network_list_ids
       required: true
       secret: false
     - auto: PREDEFINED
@@ -290,9 +290,10 @@ script:
     name: akamai-remove-element-from-network-list
   - arguments:
     - default: false
-      description: The ID of the network list for which to get the activation status.
-      isArray: false
-      name: network_list_id
+      description: The ID of the network list for which to get the activation status
+        (suport list - list1,list2).
+      isArray: true
+      name: network_list_ids
       required: true
       secret: false
     - auto: PREDEFINED
@@ -310,6 +311,7 @@ script:
     execution: false
     name: akamai-get-network-list-activation-status
   dockerimage: demisto/akamai:1.0.0.5063
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false

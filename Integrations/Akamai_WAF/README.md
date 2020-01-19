@@ -14,17 +14,13 @@ The Akamai WAF integration allows you to manage a common set of lists for use in
 
 ## API keys generating steps
 
-1.  Go to `WEB & DATA CENTER SECURITY`>`Security Configuration`>choose you configuration>`Advanced settings`> Enable SIEM integration.
-2.  [Open Control panel](https://control.akamai.com/) and login with admin account.
-3.  Open `identity and access management` menu.
-4.  Create user with assign roles `Network List` or make sure the admin has rights for manage SIEM.
-5.  Log in to new account you created in the last step.
-6.  Open `identity and access management` menu.
-7.  Create `new api client for me`
-8.  Assign API key to the relevant users group, and assign on next page `Read/Write` access for `SIEM`.
-9.  Save configuration and go to API detail you created.
-10.  Press `new credentials` and download or copy it.
-11.  Now use the credentials for configure Akamai WAF in Demisto
+1.  [Open Control panel](https://control.akamai.com/) and login with admin account.
+2.  Open `identity and access management` menu.
+3.  Create `new api client for me`
+4.  Assign API key to the relevant users group, and assign on next page `Read/Write` access for `Network Lists`.
+5.  Save configuration and go to API detail you created.
+6. Press `new credentials` and download or copy it.
+7. Now use the credentials for configure Akamai WAF in Demisto
 
 ## Configure Akamai WAF on Demisto
 
@@ -90,7 +86,7 @@ Returns a list of all network lists available for an authenticated user who belo
 
 ##### Command Example
 
-`!akamai-get-network-lists`
+`!akamai-get-network-lists`, `!akamai-get-network-lists type=IP search="192.168.0.1"`, `!akamai-get-network-lists type=GEO search=IL`
 
 ##### Context Example
    
@@ -337,7 +333,7 @@ Activates a network list on the specified environment.
 
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
-|network_list_id|The ID of the network to activate.|Required|
+|network_list_id|The ID of the network to activate-can be list of network lists|Required|
 |env|The environment type to activate the network list. Can be "STAGING" OR 'PRODUCTION".|Required|
 |comment|A comment to be logged.|Optional|
 |notify|A comma-separated list of email addresses.|Optional|
@@ -348,7 +344,7 @@ There are no context output for this command.
 
 ##### Command Example
 
-`!akamai-activate-network-list network_list_id=69988_TEST env=PRODUCTION comment=test`
+`!akamai-activate-network-list network_list_id=69988_TEST,69989_TEST env=PRODUCTION comment=test`
 
 ##### Context Example
 
@@ -358,7 +354,8 @@ There are no context output for this command.
 
 ##### Human Readable Output
 
-**Akamai WAF - network list 69988_TEST activated on PRODUCTION successfully**
+Akamai WAF - network list **69988_TEST** activated on **PRODUCTION** successfully
+Akamai WAF  - network list **69989_TEST** already active on **PRODUCTION**
 
 * * *
 
@@ -451,7 +448,7 @@ Gets the activation status of the specified network list
 
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
-|network_list_id|The ID of the network list for which to get the activation status.|Required|
+|network_list_ids|The ID of the network list for which to get the activation status - Accept list of network lists|Required|
 |env|The environment type. Can be "PRODUCTION" or "STAGING".|Required|
 
 ##### Context Output
@@ -460,7 +457,7 @@ There are no context output for this command.
 
 ##### Command Example
 
-`!akamai-get-network-list-activation-status network_list_id=69988_TEST env=PRODUCTION`
+`!akamai-get-network-list-activation-status network_list_id=69988_TEST env=PRODUCTION`, `!akamai-get-network-list-activation-status network_list_id=69988_TEST, 69989_TEST env=PRODUCTION`
 
 ##### Context Example
 
@@ -480,3 +477,4 @@ There are no context output for this command.
 ##### Human Readable Output
 
 Akamai WAF - network list **69988_TEST** is **PENDING_ACTIVATION** in **PRODUCTION**
+Akamai WAF - network list **69989_TEST** canot be found
