@@ -1,10 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
-
+import urllib3
 
 from cloakensdk.client import SyncClient
 from cloakensdk.resources import Url
 from cloakensdk import utility
+
+# Disable insecure warnings
+urllib3.disable_warnings()
+
 
 PROXY = handle_proxy("proxy", False)
 

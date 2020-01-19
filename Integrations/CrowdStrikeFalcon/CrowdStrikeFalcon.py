@@ -2,11 +2,12 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
-
 import json
 import requests
 import base64
+from typing import List
 from dateutil.parser import parse
+from typing import Dict, Tuple, Any
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -29,7 +30,7 @@ HEADERS = {
     'Accept': 'application/json',
     'Authorization': 'Basic {}'.format(base64.b64encode(BYTE_CREDS).decode())
 }
-# Note: True life time is actually 30 mins
+# Note: True life time of token is actually 30 mins
 TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
 # Remove proxy if not set to true in params
@@ -124,7 +125,8 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, safe=False, get_token_flag=True):
+def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
+                 get_token_flag=True):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -164,22 +166,42 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
             params=params,
             data=data,
             headers=headers,
+            files=files
         )
     except requests.exceptions.RequestException:
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
-    # Handle error responses gracefully
-    if res.status_code not in {200, 201, 202}:
-        err_msg = 'Error in API call. code:{code}; reason: {reason}'.format(code=res.status_code, reason=res.reason)
-        # try to create a new token
-        if res.status_code == 403 and get_token_flag:
-            LOG(err_msg)
-            token = get_token(new_token=True)
-            headers['Authorization'] = 'Bearer {}'.format(token)
-            return http_request(method, url_suffix, params, data, headers, safe, get_token_flag=False)
-        elif safe:
-            return None
-        return_error(err_msg)
-    return res.json()
+    try:
+        res_json = res.json()
+        if res.status_code not in {200, 201, 202}:
+            reason = res.reason
+            resources = res_json.get('resources', {})
+            if resources:
+                for host_id, resource in resources.items():
+                    errors = resource.get('errors', [])
+                    if errors:
+                        error_message = errors[0].get('message')
+                        reason += f'\nHost ID {host_id} - {error_message}'
+            elif res_json.get('errors'):
+                errors = res_json.get('errors', [])
+                for error in errors:
+                    reason += f"\n{error.get('message')}"
+            err_msg = 'Error in API call to CrowdStrike Falcon: code: {code} - reason: {reason}'.format(
+                code=res.status_code,
+                reason=reason
+            )
+            # try to create a new token
+            if res.status_code == 403 and get_token_flag:
+                LOG(err_msg)
+                token = get_token(new_token=True)
+                headers['Authorization'] = 'Bearer {}'.format(token)
+                return http_request(method, url_suffix, params, data, headers, safe, get_token_flag=False)
+            elif safe:
+                return None
+            return_error(err_msg)
+        return res_json
+    except ValueError as exception:
+        raise ValueError(
+            f'Failed to parse json object from response: {exception} - {res.content}')  # type: ignore[str-bytes-safe]
 
 
 def create_entry_object(contents='', ec=None, hr=''):
@@ -295,6 +317,210 @@ def get_passed_mins(start_time, end_time_str):
 ''' COMMAND SPECIFIC FUNCTIONS '''
 
 
+def init_rtr_session(host_ids: list) -> str:
+    """
+        Start a session with one or more hosts
+        :param host_ids: List of host agent ID’s to initialize a RTR session on.
+        :return: The session batch ID to execute the command on
+    """
+    endpoint_url = '/real-time-response/combined/batch-init-session/v1'
+    body = json.dumps({
+        'host_ids': host_ids
+    })
+    response = http_request('POST', endpoint_url, data=body)
+    return response.get('batch_id')
+
+
+def run_batch_read_cmd(host_ids: list, command_type: str, full_command: str):
+    """
+        Sends RTR command scope with read access
+        :param host_ids: List of host agent ID’s to run RTR command on.
+        :param command_type: Read-only command type we are going to execute, for example: ls or cd.
+        :param full_command: Full command string for the command.
+        :return: Response JSON which contains errors (if exist) and retrieved resources
+    """
+    endpoint_url = '/real-time-response/combined/batch-command/v1'
+    batch_id = init_rtr_session(host_ids)
+    body = json.dumps({
+        'base_command': command_type,
+        'batch_id': batch_id,
+        'command_string': full_command
+    })
+    response = http_request('POST', endpoint_url, data=body)
+    return response
+
+
+def run_batch_write_cmd(host_ids: list, command_type: str, full_command: str):
+    """
+        Sends RTR command scope with write access
+        :param host_ids: List of host agent ID’s to run RTR command on.
+        :param command_type: Read-only command type we are going to execute, for example: ls or cd.
+        :param full_command: Full command string for the command.
+        :return: Response JSON which contains errors (if exist) and retrieved resources
+    """
+    endpoint_url = '/real-time-response/combined/batch-active-responder-command/v1'
+    batch_id = init_rtr_session(host_ids)
+    body = json.dumps({
+        'base_command': command_type,
+        'batch_id': batch_id,
+        'command_string': full_command
+    })
+    response = http_request('POST', endpoint_url, data=body)
+    return response
+
+
+def run_batch_admin_cmd(host_ids: list, command_type: str, full_command: str):
+    """
+        Sends RTR command scope with write access
+        :param host_ids: List of host agent ID’s to run RTR command on.
+        :param command_type: Read-only command type we are going to execute, for example: ls or cd.
+        :param full_command: Full command string for the command.
+        :return: Response JSON which contains errors (if exist) and retrieved resources
+    """
+    endpoint_url = '/real-time-response/combined/batch-admin-command/v1'
+    batch_id = init_rtr_session(host_ids)
+
+    body = json.dumps({
+        'base_command': command_type,
+        'batch_id': batch_id,
+        'command_string': full_command
+    })
+    response = http_request('POST', endpoint_url, data=body)
+
+    return response
+
+
+def upload_script(name: str, permission_type: str, content: str, entry_id: str) -> Dict:
+    """
+        Uploads a script by either given content or file
+        :param name: Script name to upload
+        :param permission_type: Permissions type of script to upload
+        :param content: PowerShell script content
+        :param entry_id: Script file to upload
+        :return: Response JSON which contains errors (if exist) and how many resources were affected
+    """
+    endpoint_url = '/real-time-response/entities/scripts/v1'
+    body: Dict[str, Tuple[Any, Any]] = {
+        'name': (None, name),
+        'permission_type': (None, permission_type)
+    }
+
+    if content:
+        body['content'] = (None, content)
+    else:  # entry_id was provided
+        file_ = demisto.getFilePath(entry_id)
+        file_name = file_.get('name')
+        body['file'] = (file_name, open(file_.get('path'), 'rb'))
+
+    headers = {
+        'Authorization': HEADERS['Authorization'],
+        'Accept': 'application/json'
+    }
+
+    response = http_request('POST', endpoint_url, files=body, headers=headers)
+    return response
+
+
+def get_script(script_id: list) -> Dict:
+    """
+        Retrieves a script given its ID
+        :param script_id: ID of script to get
+        :return: Response JSON which contains errors (if exist) and retrieved resource
+    """
+    endpoint_url = '/real-time-response/entities/scripts/v1'
+    params = {
+        'ids': script_id
+    }
+    response = http_request('GET', endpoint_url, params=params)
+    return response
+
+
+def delete_script(script_id: str) -> Dict:
+    """
+        Deletes a script given its ID
+        :param script_id: ID of script to delete
+        :return: Response JSON which contains errors (if exist) and how many resources were affected
+    """
+    endpoint_url = '/real-time-response/entities/scripts/v1'
+    params = {
+        'ids': script_id
+    }
+    response = http_request('DELETE', endpoint_url, params=params)
+    return response
+
+
+def list_scripts() -> Dict:
+    """
+        Retrieves list of scripts
+        :return: Response JSON which contains errors (if exist) and retrieved resources
+    """
+    endpoint_url = '/real-time-response/entities/scripts/v1'
+    response = http_request('GET', endpoint_url)
+    return response
+
+
+def upload_file(entry_id: str, description: str) -> Tuple:
+    """
+        Uploads a file given entry ID
+        :param entry_id: The entry ID of the file to upload
+        :param description: String description of file to upload
+        :return: Response JSON which contains errors (if exist) and how many resources were affected and the file name
+    """
+    endpoint_url = '/real-time-response/entities/put-files/v1'
+
+    file_ = demisto.getFilePath(entry_id)
+    file_name = file_.get('name')
+    body = {
+        'name': (None, file_name),
+        'description': (None, description),
+        'file': (file_name, open(file_.get('path'), 'rb'))
+    }
+    headers = {
+        'Authorization': HEADERS['Authorization'],
+        'Accept': 'application/json'
+    }
+    response = http_request('POST', endpoint_url, files=body, headers=headers)
+    return response, file_name
+
+
+def delete_file(file_id: str) -> Dict:
+    """
+        Delete a put-file based on the ID given
+        :param file_id: ID of file to delete
+        :return: Response JSON which contains errors (if exist) and how many resources were affected
+    """
+    endpoint_url = '/real-time-response/entities/put-files/v1'
+    params = {
+        'ids': file_id
+    }
+    response = http_request('DELETE', endpoint_url, params=params)
+    return response
+
+
+def get_file(file_id: list) -> Dict:
+    """
+        Get put-files based on the ID's given
+        :param file_id: ID of file to get
+        :return: Response JSON which contains errors (if exist) and retrieved resources
+    """
+    endpoint_url = '/real-time-response/entities/put-files/v1'
+    params = {
+        'ids': file_id
+    }
+    response = http_request('GET', endpoint_url, params=params)
+    return response
+
+
+def list_files() -> Dict:
+    """
+        Get a list of put-file ID's that are available to the user for the put command.
+        :return: Response JSON which contains errors (if exist) and retrieved resources
+    """
+    endpoint_url = '/real-time-response/entities/put-files/v1'
+    response = http_request('GET', endpoint_url)
+    return response
+
+
 def get_token(new_token=False):
     """
         Retrieves the token from the server if it's expired and updates the global HEADERS to include it
@@ -372,11 +598,9 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
 
 def get_fetch_detections(last_created_timestamp=None, filter_arg=None):
     """ Sends detection request, based on the created_timestamp field. Used for fetch-incidents
-
     Args:
         last_created_timestamp: last created timestamp of the results will be greater than this value.
         filter_arg: The result will be filtered using this argument.
-
     Returns:
         Response json of the get detection endpoint (IDs of the detections)
     """
@@ -556,6 +780,19 @@ def behavior_to_entry_context(behavior):
     return raw_entry
 
 
+def get_username_uuid(username: str):
+    """
+    Obtain CrowdStrike user’s UUId by email.
+    :param username: Username to get UUID of.
+    :return: The user UUID
+    """
+    response = http_request('GET', '/users/queries/user-uuids-by-email/v1', params={'uid': username})
+    resources: list = response.get('resources', [])
+    if not resources:
+        raise ValueError(f'User {username} was not found')
+    return resources[0]
+
+
 def resolve_detection(ids, status, assigned_to_uuid, show_in_ui):
     """
         Sends a resolve detection request
@@ -618,15 +855,24 @@ def timestamp_length_equalization(timestamp1, timestamp2):
     Args:
         timestamp1: First timestamp to compare.
         timestamp2: Second timestamp to compare.
-
     Returns:
-        the two timestamps in the same length (the shorter one)
+        the two timestamps in the same length (the longer one)
     """
-    if len(str(timestamp1)) > len(str(timestamp2)):
-        timestamp1 = str(timestamp1)[:len(str(timestamp2))]
+    diff_len = len(str(timestamp1)) - len(str(timestamp2))
 
+    # no difference in length
+    if diff_len == 0:
+        return int(timestamp1), int(timestamp2)
+
+    # length of timestamp1 > timestamp2
+    if diff_len > 0:
+        ten_times = pow(10, diff_len)
+        timestamp2 = int(timestamp2) * ten_times
+
+    # length of timestamp2 > timestamp1
     else:
-        timestamp2 = str(timestamp2)[:len(str(timestamp1))]
+        ten_times = pow(10, diff_len * -1)
+        timestamp1 = int(timestamp1) * ten_times
 
     return int(timestamp1), int(timestamp2)
 
@@ -647,14 +893,9 @@ def fetch_incidents():
     if last_fetch is None:
         last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
 
-    # timestamp creation excepts only '%Y-%m-%dT%H:%M:%SZ' date format
-    if '.' in last_fetch:
-        last_fetch_for_timestamp = last_fetch.split('.')[0] + 'Z'
+    last_fetch_timestamp = int(parse(last_fetch).timestamp() * 1000)
 
-    else:
-        last_fetch_for_timestamp = last_fetch
-
-    last_fetch_timestamp = date_to_timestamp(last_fetch_for_timestamp, date_format='%Y-%m-%dT%H:%M:%SZ')
+    last_detection_id = str(last_run.get('last_detection_id'))
 
     fetch_query = demisto.params().get('fetch_query')
 
@@ -664,18 +905,33 @@ def fetch_incidents():
 
     else:
         detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=last_fetch), 'resources')
-    incidents = []
+    incidents = []  # type:List
 
     if detections_ids:
+
+        # make sure we do not fetch the same detection again.
+        if last_detection_id == detections_ids[0]:
+            first_index_to_fetch = 1
+
+            # if this is the only detection - dont fetch.
+            if len(detections_ids) == 1:
+                return incidents
+
+        # if the first detection in this pull is different than the last detection fetched we bring it as well
+        else:
+            first_index_to_fetch = 0
+
         # Limit the results to INCIDENTS_PER_FETCH`z
-        detections_ids = detections_ids[0:INCIDENTS_PER_FETCH]
+        last_index_to_fetch = INCIDENTS_PER_FETCH + first_index_to_fetch
+        detections_ids = detections_ids[first_index_to_fetch:last_index_to_fetch]
         raw_res = get_detections_entities(detections_ids)
 
         if "resources" in raw_res:
             for detection in demisto.get(raw_res, "resources"):
                 incident = detection_to_incident(detection)
                 incident_date = incident['occurred']
-                incident_date_timestamp = int(parse(incident_date).timestamp())
+
+                incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
 
                 # make sure that the two timestamps are in the same length
                 if len(str(incident_date_timestamp)) != len(str(last_fetch_timestamp)):
@@ -686,10 +942,11 @@ def fetch_incidents():
                 if incident_date_timestamp > last_fetch_timestamp:
                     last_fetch = incident_date
                     last_fetch_timestamp = incident_date_timestamp
+                    last_detection_id = json.loads(incident['rawJSON']).get('detection_id')
 
                 incidents.append(incident)
 
-        demisto.setLastRun({'first_behavior_time': last_fetch})
+        demisto.setLastRun({'first_behavior_time': last_fetch, 'last_detection_id': last_detection_id})
 
     return incidents
 
@@ -810,6 +1067,17 @@ def resolve_detection_command():
     """
     args = demisto.args()
     ids = argToList(args.get('ids'))
+    usernames = argToList(args.get('username'))
+    if usernames and ids:
+        raise ValueError('Only one of the arguments ids or username should be provided, not both.')
+    if not usernames and not ids:
+        raise ValueError('One of the arguments ids or username must be provided, none given.')
+    if usernames:
+        ids = []
+        for username in usernames:
+            username_uuid = get_username_uuid(username)
+            ids.append(username_uuid)
+
     status = args.get('status')
     assigned_to_uuid = args.get('assigned_to_uuid')
     show_in_ui = args.get('show_in_ui')
@@ -844,30 +1112,362 @@ def lift_host_containment_command():
     return create_entry_object(contents=raw_res, hr=hr)
 
 
+def run_command():
+    args = demisto.args()
+    host_ids = argToList(args.get('host_ids'))
+    command_type = args.get('command_type')
+    full_command = args.get('full_command')
+    scope = args.get('scope', 'read')
+
+    if scope == 'read':
+
+        response = run_batch_read_cmd(host_ids, command_type, full_command)
+    elif scope == 'write':
+        response = run_batch_write_cmd(host_ids, command_type, full_command)
+    else:  # scope = admin
+        response = run_batch_admin_cmd(host_ids, command_type, full_command)
+
+    resources: dict = response.get('combined', {}).get('resources', {})
+
+    output = []
+
+    for _, resource in resources.items():
+        errors = resource.get('errors', [])
+        if errors:
+            error_message = errors[0].get('message', '')
+            if not error_message:
+                error_message = f'Could not run command\n{errors}'
+            return_error(error_message)
+        output.append({
+            'HostID': resource.get('aid'),
+            'Stdout': resource.get('stdout'),
+            'Stderr': resource.get('stderr'),
+            'BaseCommand': resource.get('base_command'),
+            'Command': full_command
+        })
+
+    human_readable = tableToMarkdown(f'Command {full_command} results', output, removeNull=True)
+    entry_context = {
+        'CrowdStrike': {
+            'Command': output
+        }
+    }
+
+    return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
+
+
+def upload_script_command():
+    args = demisto.args()
+    name = args.get('name')
+    permission_type = args.get('permission_type', 'private')
+    content = args.get('content')
+    entry_id = args.get('entry_id')
+
+    if content and entry_id:
+        raise ValueError('Only one of the arguments entry_id or content should be provided, not both.')
+    elif not content and not entry_id:
+        raise ValueError('One of the arguments entry_id or content must be provided, none given.')
+
+    response = upload_script(name, permission_type, content, entry_id)
+
+    return create_entry_object(contents=response, hr='The script was uploaded successfully')
+
+
+def get_script_command():
+    script_id = argToList(demisto.args().get('script_id'))
+
+    response = get_script(script_id)
+
+    resources: list = response.get('resources', [])
+    if resources and isinstance(resources, list):
+        resource = resources[0]
+        script = {
+            'ID': resource.get('id'),
+            'CreatedBy': resource.get('created_by'),
+            'CreatedTime': resource.get('created_timestamp'),
+            'Description': resource.get('description'),
+            'ModifiedBy': resource.get('modified_by'),
+            'ModifiedTime': resource.get('modified_timestamp'),
+            'Name': resource.get('name'),
+            'Permission': resource.get('permission_type'),
+            'SHA256': resource.get('sha256'),
+            'RunAttemptCount': resource.get('run_attempt_count'),
+            'RunSuccessCount': resource.get('run_success_count'),
+            'WriteAccess': resource.get('write_access')
+        }
+
+        human_readable = tableToMarkdown(f'CrowdStrike Falcon script {script_id}', script)
+
+        entry_context = {
+            'CrowdStrike': {
+                'Script(val.ID === obj.ID)': script
+            }
+        }
+
+        script_content = resource.get('content')
+        if script_content:
+            demisto.results(
+                fileResult(
+                    f"{resource.get('name', 'script')}.ps1",
+                    script_content
+                )
+            )
+
+        return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
+    else:
+        return 'No script found.'
+
+
+def delete_script_command():
+    script_id = demisto.args().get('script_id')
+
+    response = delete_script(script_id)
+
+    return create_entry_object(contents=response, hr=f'Script {script_id} was deleted successfully')
+
+
+def list_scripts_command():
+    response = list_scripts()
+
+    resources: list = response.get('resources', [])
+
+    scripts = []
+
+    for resource in resources:
+        scripts.append({
+            'ID': resource.get('id'),
+            'CreatedBy': resource.get('created_by'),
+            'CreatedTime': resource.get('created_timestamp'),
+            'Description': resource.get('description'),
+            'ModifiedBy': resource.get('modified_by'),
+            'ModifiedTime': resource.get('modified_timestamp'),
+            'Name': resource.get('name'),
+            'Permission': resource.get('permission_type'),
+            'SHA256': resource.get('sha256'),
+            'RunAttemptCount': resource.get('run_attempt_count'),
+            'RunSuccessCount': resource.get('run_success_count'),
+            'Platform': resource.get('platform'),
+            'WriteAccess': resource.get('write_access')
+        })
+
+    human_readable = tableToMarkdown('CrowdStrike Falcon scripts', scripts)
+
+    entry_context = {
+        'CrowdStrike': {
+            'Script(val.ID === obj.ID)': scripts
+        }
+    }
+
+    return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
+
+
+def upload_file_command():
+    entry_id = demisto.args().get('entry_id')
+    description = demisto.args().get('description', 'File uploaded from Demisto')
+
+    response, file_name = upload_file(entry_id, description)
+
+    return create_entry_object(contents=response, hr=f'File was uploaded successfully')
+
+
+def delete_file_command():
+    file_id = demisto.args().get('file_id')
+
+    response = delete_file(file_id)
+
+    return create_entry_object(contents=response, hr=f'File {file_id} was deleted successfully')
+
+
+def get_file_command():
+    file_id = argToList(demisto.args().get('file_id'))
+
+    response = get_file(file_id)
+
+    resources: list = response.get('resources', [])
+    if resources and isinstance(resources, list):
+        # will always be a list of one resource
+        resource = resources[0]
+        file_ = {
+            'ID': resource.get('id'),
+            'CreatedBy': resource.get('created_by'),
+            'CreatedTime': resource.get('created_timestamp'),
+            'Description': resource.get('description'),
+            'Type': resource.get('file_type'),
+            'ModifiedBy': resource.get('modified_by'),
+            'ModifiedTime': resource.get('modified_timestamp'),
+            'Name': resource.get('name'),
+            'Permission': resource.get('permission_type'),
+            'SHA256': resource.get('sha256'),
+        }
+        file_standard_context = {
+            'Type': resource.get('file_type'),
+            'Name': resource.get('name'),
+            'SHA256': resource.get('sha256'),
+            'Size': resource.get('size'),
+        }
+
+        human_readable = tableToMarkdown(f'CrowdStrike Falcon file {file_id}', file_)
+
+        entry_context = {
+            'CrowdStrike': {
+                'File(val.ID === obj.ID)': file_,
+            },
+            outputPaths['file']: file_standard_context
+        }
+
+        file_content = resource.get('content')
+        if file_content:
+            demisto.results(
+                fileResult(
+                    resource.get('name'),
+                    file_content
+                )
+            )
+
+        return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
+    else:
+        return 'No file found.'
+
+
+def list_files_command():
+    response = list_files()
+
+    resources: list = response.get('resources', [])
+
+    files_output = []
+    file_standard_context = []
+
+    for resource in resources:
+        files_output.append({
+            'ID': resource.get('id'),
+            'CreatedBy': resource.get('created_by'),
+            'CreatedTime': resource.get('created_timestamp'),
+            'Description': resource.get('description'),
+            'Type': resource.get('file_type'),
+            'ModifiedBy': resource.get('modified_by'),
+            'ModifiedTime': resource.get('modified_timestamp'),
+            'Name': resource.get('name'),
+            'Permission': resource.get('permission_type'),
+            'SHA256': resource.get('sha256'),
+        })
+        file_standard_context.append({
+            'Type': resource.get('file_type'),
+            'Name': resource.get('name'),
+            'SHA256': resource.get('sha256'),
+            'Size': resource.get('size'),
+        })
+
+    human_readable = tableToMarkdown('CrowdStrike Falcon files', files_output)
+
+    entry_context = {
+        'CrowdStrike': {
+            'File(val.ID === obj.ID)': files_output
+        },
+        outputPaths['file']: file_standard_context
+    }
+
+    return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
+
+
+def run_script_command():
+    args = demisto.args()
+    script_name = args.get('script_name')
+    raw = args.get('raw')
+    host_ids = argToList(args.get('host_ids'))
+
+    if script_name and raw:
+        raise ValueError('Only one of the arguments script_name or raw should be provided, not both.')
+    elif not script_name and not raw:
+        raise ValueError('One of the arguments script_name or raw must be provided, none given.')
+    elif script_name:
+        full_command = f'runscript -CloudFile={script_name}'
+    elif raw:
+        full_command = f'runscript -Raw=```{raw}```'
+
+    command_type = 'runscript'
+
+    response = run_batch_admin_cmd(host_ids, command_type, full_command)
+
+    resources: dict = response.get('combined', {}).get('resources', {})
+
+    output = []
+
+    for _, resource in resources.items():
+        errors = resource.get('errors', [])
+        if errors:
+            error_message = errors[0].get('message', '')
+            if not error_message:
+                error_message = f'Could not run command\n{errors}'
+            return_error(error_message)
+        full_command = full_command.replace('`', '')
+        output.append({
+            'HostID': resource.get('aid'),
+            'Stdout': resource.get('stdout'),
+            'Stderr': resource.get('stderr'),
+            'BaseCommand': resource.get('base_command'),
+            'Command': full_command
+        })
+
+    human_readable = tableToMarkdown(f'Command {full_command} results', output)
+    entry_context = {
+        'CrowdStrike': {
+            'Command': output
+        }
+    }
+
+    return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('Command being called is {}'.format(demisto.command()))
 
-# should raise error in case of issue
-if demisto.command() == 'fetch-incidents':
-    demisto.incidents(fetch_incidents())
+def main():
+    LOG('Command being called is {}'.format(demisto.command()))
 
-try:
-    if demisto.command() == 'test-module':
-        get_token(new_token=True)
-        demisto.results('ok')
-    elif demisto.command() == 'cs-falcon-search-device':
-        demisto.results(search_device_command())
-    elif demisto.command() == 'cs-falcon-get-behavior':
-        demisto.results(get_behavior_command())
-    elif demisto.command() == 'cs-falcon-search-detection':
-        demisto.results(search_detections_command())
-    elif demisto.command() == 'cs-falcon-resolve-detection':
-        demisto.results(resolve_detection_command())
-    elif demisto.command() == 'cs-falcon-contain-host':
-        demisto.results(contain_host_command())
-    elif demisto.command() == 'cs-falcon-lift-host-containment':
-        demisto.results(lift_host_containment_command())
-    # Log exceptions
-except Exception as e:
-    return_error(str(e))
+    # should raise error in case of issue
+    if demisto.command() == 'fetch-incidents':
+        demisto.incidents(fetch_incidents())
+
+    try:
+        if demisto.command() == 'test-module':
+            get_token(new_token=True)
+            demisto.results('ok')
+        elif demisto.command() == 'cs-falcon-search-device':
+            demisto.results(search_device_command())
+        elif demisto.command() == 'cs-falcon-get-behavior':
+            demisto.results(get_behavior_command())
+        elif demisto.command() == 'cs-falcon-search-detection':
+            demisto.results(search_detections_command())
+        elif demisto.command() == 'cs-falcon-resolve-detection':
+            demisto.results(resolve_detection_command())
+        elif demisto.command() == 'cs-falcon-contain-host':
+            demisto.results(contain_host_command())
+        elif demisto.command() == 'cs-falcon-lift-host-containment':
+            demisto.results(lift_host_containment_command())
+        elif demisto.command() == 'cs-falcon-run-command':
+            demisto.results(run_command())
+        elif demisto.command() == 'cs-falcon-upload-script':
+            demisto.results(upload_script_command())
+        elif demisto.command() == 'cs-falcon-get-script':
+            demisto.results(get_script_command())
+        elif demisto.command() == 'cs-falcon-delete-script':
+            demisto.results(delete_script_command())
+        elif demisto.command() == 'cs-falcon-list-scripts':
+            demisto.results(list_scripts_command())
+        elif demisto.command() == 'cs-falcon-upload-file':
+            demisto.results(upload_file_command())
+        elif demisto.command() == 'cs-falcon-delete-file':
+            demisto.results(delete_file_command())
+        elif demisto.command() == 'cs-falcon-get-file':
+            demisto.results(get_file_command())
+        elif demisto.command() == 'cs-falcon-list-files':
+            demisto.results(list_files_command())
+        elif demisto.command() == 'cs-falcon-run-script':
+            demisto.results(run_script_command())
+        # Log exceptions
+    except Exception as e:
+        return_error(str(e))
+
+
+if __name__ in ('__main__', 'builtin', 'builtins'):
+    main()

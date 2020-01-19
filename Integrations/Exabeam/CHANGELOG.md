@@ -1,4 +1,7 @@
 ## [Unreleased]
+- 
+
+## [19.12.0] - 2019-12-10
   - Improve error handling
   - Prefixed all commands with *exabeam-*
   - Added 2 new commands:

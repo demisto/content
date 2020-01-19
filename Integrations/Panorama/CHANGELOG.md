@@ -1,5 +1,26 @@
 ## [Unreleased]
-  - Added support for get, create and edit custom URL categories objects, including using categories in PAN-OS v9.x and above.
+
+
+## [20.1.0] - 2020-01-07
+  - Fixed an issue when trying to download a threat-pcap without the necessary arguments.
+  - Improved the error message when trying to download PCAPs from a Panorama instance.
+  - Fixed an issue in the ***panorama-list-pcaps*** command when there are no PCAPs in PAN-OS.
+  - You can now specify multiple values (list) for the *source*, *destination*, and *application* arguments in the following commands. 
+    - ***panorama-create-rule***
+    - ***panorama-custom-block-rule***
+    - ***panorama-edit-rule***
+  - Added 4 commands.
+    - ***panorama-list-static-routes***
+    - ***panorama-get-static-route***
+    - ***panorama-add-static-route***
+    - ***panorama-delete-static-route***
+
+## [19.12.0] - 2019-12-10
+  - Fixed an issue where the status log queries that returned zero results did not update to *Completed*.
+  - Added 2 commands.
+    - ***panorama-get-url-category-from-cloud***
+    - ***panorama-get-url-category-from-host***
+  - Added support to get, create, and edit custom URL category objects, including using the categories attribute in PAN-OS v9.x and above.
 
 
 ## [19.11.1] - 2019-11-26

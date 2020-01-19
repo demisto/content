@@ -27,7 +27,7 @@ configuration:
   defaultvalue: v1
   type: 0
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -245,11 +245,16 @@ script:
         return createTableEntry('All Environments:', response, table, context, ['ID', 'description', 'architecture', 'total VMS', 'busy VMS', 'analysis mode', 'group icon']);
     }
 
-    function submitFile (entryId, environmentId) {
+    function submitFile(entryId, environmentId) {
         var requestUrl = version === 'v1' ? serverUrl + '/api/submit' : serverUrl + '/api/v2/submit/file';
+        var multipart_content = null;
         if (version === 'v2') {
             HEADERS['Content-Type'] = ['application/x-www-form-urlencoded'];
+            multipart_content = {environment_id: environmentId}; // For API v2
+        } else {
+            multipart_content = {environmentId: environmentId}; // For API v1
         }
+
         // submit file
         var res = httpMultipart(
                     requestUrl, // URL
@@ -258,10 +263,7 @@ script:
                         Method: 'POST',
                         Headers: HEADERS
                     },
-                    { // Multipart Contents
-                        environmentId: environmentId, // For API v1
-                        environment_id: environmentId // For API v2
-                    },
+                    multipart_content,
                     insecure,
                     proxy
                 );
