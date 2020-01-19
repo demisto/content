@@ -136,7 +136,7 @@ script:
       description: URL to the resource in the browser
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.OdataContext
-      description: Resource type
+      description: OData query
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.FileSystemInfo.CreatedDateTime
       description: The date and time the item was created on a client.
@@ -238,7 +238,7 @@ script:
       description: URL to the resource in the browser
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.OdataContext
-      description: Resource type
+      description: OData query
       type: String
     - contextPath: MsGraphFiles.ReplacedFiles.FileSystemInfo.CreatedDateTime
       description: The date and time the item was created on a client
@@ -340,7 +340,7 @@ script:
       description: URL to the resource in the browser
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.OdataContext
-      description: Resource type
+      description: OData query
       type: String
     - contextPath: Msgraphfiles.CreatedFolder.FileSystemInfo.CreatedDateTime
       description: The date and time the item was created on a client.
@@ -428,7 +428,7 @@ script:
       description: The drive's name
       type: String
     - contextPath: MsGraphFiles.ListDrives.OdataContext
-      description: Resource type
+      description: OData query
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -528,7 +528,7 @@ script:
       description: File or folder size
       type: Number
     - contextPath: MsGraphFiles.ListChildren.Children.OdataContext
-      description: Resource type
+      description: OData query
       type: String
   - deprecated: false
     description: Returns a list of the tenant Sites
@@ -539,7 +539,7 @@ script:
       description: Graph's site object
       type: Unknown
     - contextPath: MsGraphFiles.OdataContext
-      description: Resource type
+      description: OData query
       type: String
     - contextPath: MsGraphFiles.OdataNextLink
       description: The URL for the next results page.
@@ -560,7 +560,7 @@ script:
       description: URL to the resource in the browser
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.OdataContext
-      description: Resource type
+      description: OData query
       type: String
     - contextPath: MsGraphFiles.ListSites.Value.SiteCollection.Hostname
       description: The hostname for the site collection
