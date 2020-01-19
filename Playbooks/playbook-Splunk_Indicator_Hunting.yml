@@ -3734,20 +3734,17 @@ inputs:
   description: Limit number of events returned by query. This argument is not mandatory
     for the command but is needed for the playbook.
 - key: InvestigationIPFields
-  value:
-    simple: dest_ip,src_ip,src,dst
+  value: {}
   required: true
   description: The values of these Splunk fields will be used for the playbook IP
     outputs.
 - key: InvestigationUserFields
-  value:
-    simple: user_identity
+  value: {}
   required: true
   description: The values of these Splunk fields will be used for the playbook user
     outputs.
 - key: InvestigationInternalHostFields
-  value:
-    simple: dest_nt_host
+  value: {}
   required: true
   description: The values of these Splunk fields will be used for the playbook host
     name outputs.
