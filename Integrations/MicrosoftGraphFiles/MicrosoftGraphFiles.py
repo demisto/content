@@ -196,6 +196,10 @@ class Client(BaseClient):
         return res
 
     def return_valid_access_token_if_exist_in_context(self):
+        """
+        this function returns a valid access token from Demisto context if exists
+        :return: valid access token or None
+        """
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get("access_token")
         valid_until = integration_context.get("valid_until")
@@ -204,6 +208,11 @@ class Client(BaseClient):
                 return access_token
 
     def return_token_and_save_it_in_context(self, access_token_response):
+        """
+        this function saves the received access token in demisto context
+        :param access_token_response: access token
+        :return: the new access token
+        """
         access_token = access_token_response.get("access_token")
 
         if not access_token:
@@ -220,6 +229,11 @@ class Client(BaseClient):
         return access_token
 
     def get_access_token(self):
+        """Get the Microsoft Graph Access token from the instance token or generates a new one if needed.
+
+        Returns:
+            The access token.
+        """
         context_access_token = self.return_valid_access_token_if_exist_in_context()
         if context_access_token:
             return context_access_token
@@ -246,6 +260,10 @@ class Client(BaseClient):
             return self.return_token_and_save_it_in_context(access_token_res)
 
     def list_tenant_sites(self):
+        """
+        This function returns a list of the tenant sites
+        :return:
+        """
         url = "https://graph.microsoft.com/v1.0/sites"
         query_string = {"search": "*"}
         return self.http_call(
