@@ -189,9 +189,11 @@ class Client(BaseClient):
         :return: raw response from api
         """
         demisto.log(f"Sending: ")
+        kwargs["timeout"] = 15
         res = self._http_request(*args, **kwargs)
         if "status_code" in res and res.status_code == 401:
             self.access_token = self.get_access_token()
+
             res = self._http_request(*args, **kwargs)
         return res
 
@@ -262,7 +264,7 @@ class Client(BaseClient):
     def list_tenant_sites(self):
         """
         This function returns a list of the tenant sites
-        :return:
+        :return: graph api raw response
         """
         url = "https://graph.microsoft.com/v1.0/sites"
         query_string = {"search": "*"}
@@ -275,6 +277,13 @@ class Client(BaseClient):
         )
 
     def list_drives_in_site(self, site_id=None, limit=None, next_page_url=None):
+        """
+        Returns the list of Drive resources available for a target Site
+        :param site_id: selected Site ID.
+        :param limit: sets the page size of results.
+        :param next_page_url: the URL for the next results page.
+        :return:
+        """
         if not any([site_id, next_page_url]):
             raise DemistoException(
                 "Please pass at least one argument to this command: \n"
@@ -300,6 +309,15 @@ class Client(BaseClient):
     def list_drive_children(
         self, object_type, object_type_id, item_id=None, limit=None, next_page_url=None
     ):
+        """
+        This command list all the drive's files and folders
+        :param object_type: ms graph resource.
+        :param object_type_id: ms graph resource id.
+        :param item_id: ms graph item_id. optional.
+        :param limit: sets the page size of results. optional.
+        :param next_page_url: the URL for the next results page. optional.
+        :return: graph api raw response
+        """
         if next_page_url:
             url = url_validation(next_page_url)
         else:
@@ -327,6 +345,14 @@ class Client(BaseClient):
         )
 
     def replace_existing_file(self, object_type, object_type_id, item_id, entry_id):
+        """
+        replace file context in MS Graph resource
+        :param object_type: ms graph resource.
+        :param object_type_id: ms graph resource id.
+        :param item_id: item_id: ms graph item_id.
+        :param entry_id: demisto file entry id
+        :return: graph api raw response
+        """
 
         file_path = demisto.getFilePath(entry_id).get("path", None)
         if not file_path:
@@ -349,6 +375,13 @@ class Client(BaseClient):
             )
 
     def delete_file(self, object_type, object_type_id, item_id):
+        """
+        Delete a DriveItem by using its ID
+        :param object_type: ms graph resource.
+        :param object_type_id: ms graph resource id.
+        :param item_id: ms graph item_id.
+        :return: graph api raw response
+        """
         if object_type == "drives":
             url = f"{object_type}/{object_type_id}/items/{item_id}"
 
@@ -377,10 +410,10 @@ class Client(BaseClient):
         this function upload new file to a selected folder(parent_id)
         :param object_type: drive/ group/ me/ site/ users
         :param object_type_id: the selected object type id.
-        :param parent_id:
-        :param file_name:
-        :param entry_id:
-        :return:
+        :param parent_id: an ID of the folder to upload the file to.
+        :param file_name: file name
+        :param entry_id: demisto file entry ID
+        :return: graph api raw response
         """
         file_path = demisto.getFilePath(entry_id).get("path")
 
@@ -398,6 +431,13 @@ class Client(BaseClient):
             )
 
     def download_file(self, object_type, object_type_id, item_id):
+        """
+        Download the contents of the file of a DriveItem.
+        :param object_type: ms graph resource.
+        :param object_type_id: the selected object type id.
+        :param item_id: ms graph item_id.
+        :return: graph api raw response
+        """
         if object_type == "drives":
             url = f"{object_type}/{object_type_id}/items/{item_id}/content"
 
@@ -414,6 +454,14 @@ class Client(BaseClient):
         return res
 
     def create_new_folder(self, object_type, object_type_id, parent_id, folder_name):
+        """
+        Create a new folder in a Drive with a specified parent item or path.
+        :param object_type: ms graph resource.
+        :param object_type_id: the selected object type id.
+        :param parent_id: an ID of the Drive to upload the folder to.
+        :param folder_name: folder name
+        :return: graph api raw response
+        """
         if object_type == "drives":
             url = f"{object_type}/{object_type_id}/items/{parent_id}/children"
 
