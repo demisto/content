@@ -19,11 +19,11 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-BASE_URL = demisto.params()['baseUrl']
-ACCESS_KEY = demisto.params()['accessKey']
-SECRET_KEY = demisto.params()['secretKey']
-APP_ID = demisto.params()['appId']
-APP_KEY = demisto.params()['appKey']
+BASE_URL = demisto.params().get('baseUrl')
+ACCESS_KEY = demisto.params().get('accessKey')
+SECRET_KEY = demisto.params().get('secretKey')
+APP_ID = demisto.params().get('appId')
+APP_KEY = demisto.params().get('appKey')
 USE_SSL = None  # assigned in determine_ssl_usage
 PROXY = True if demisto.params().get('proxy') else False
 # Flags to control which type of incidents are being fetched
@@ -502,7 +502,7 @@ def create_policy():
         'Bidirectional': policy.get('bidirectional'),
         'FromDate': policy.get('fromDate'),
         'ToDate': policy.get('toDate')
-    } # type: Dict[Any, Any]
+    }  # type: Dict[Any, Any]
 
     context['Mimecast.Policy(val.ID && val.ID == obj.ID)'] = policies_context
 
@@ -586,7 +586,7 @@ def update_policy():
         'Bidirectional': policy.get('bidirectional'),
         'Start': policy.get('fromDate'),
         'End': policy.get('toDate')
-    } # type: Dict[Any, Any]
+    }  # type: Dict[Any, Any]
     policies_context = {
         'ID': policy_id,
         'Description': description,
@@ -605,7 +605,7 @@ def update_policy():
         'Bidirectional': policy.get('bidirectional'),
         'FromDate': policy.get('fromDate'),
         'ToDate': policy.get('toDate')
-    } # type: Dict[Any, Any]
+    }  # type: Dict[Any, Any]
 
     context['Mimecast.Policy(val.ID && val.ID == obj.ID)'] = policies_context
 
