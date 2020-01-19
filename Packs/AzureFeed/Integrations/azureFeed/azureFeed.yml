@@ -3,68 +3,63 @@ commonfields:
   id: azureFeed
   version: -1
 configuration:
-- display: Reliability
+- defaultvalue: F - Reliability cannot be judged
+  display: Reliability
   name: feedInstanceReliability
-  defaultvalue: F - Reliability cannot be judged
-  type: 15
-  required: true
   options:
-  - ""
-  - ""
-  - ""
-  - ""
-  - ""
-  - ""
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
   - A - Completely reliable
   - B - Usually reliable
   - C - Fairly reliable
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-- display: ""
-  name: expiration
-  defaultvalue: ""
+  required: true
+  type: 15
+- name: expiration
+  required: false
   type: 17
-  required: false
-- display: ""
+- defaultvalue: indicatorType
+  hidden: true
   name: expirationPolicy
-  defaultvalue: indicatorType
+  required: false
   type: 0
-  required: false
-  hidden: true
-- display: ""
+- hidden: true
   name: expirationInterval
-  defaultvalue: ""
-  type: 1
   required: false
-  hidden: true
+  type: 1
 - display: Fetch indicators
   name: feed
-  defaultvalue: ""
-  type: 8
   required: false
-- display: Bypass exclusion list
+  type: 8
+- additionalInfo: When selected, the exclusion list will be ignored for this feed.
+  display: Bypass exclusion list
   name: bypassExclusionList
-  defaultvalue: ""
+  required: false
   type: 8
-  required: false
-  additionalinfo: When selected, the exclusion list will be ignored for this feed.
-- display: Mark as reputation
-  name: feedInstanceReputation
+- additionalInfo: Indicators from this integration instance will be marked with this
+    reputation.
   defaultvalue: feedInstanceReputationNotSet
-  type: 18
-  required: false
+  display: Indicator reputation
+  name: feedInstanceReputation
   options:
   - None
   - Good
   - Suspicious
   - Bad
-- display: Fetch Interval
+  required: false
+  type: 18
+- defaultvalue: '240'
+  display: Fetch Interval
   name: feedFetchInterval
-  defaultvalue: 240
-  type: 19
   required: true
-- defaultvalue: 'All'
+  type: 19
+- defaultvalue: All
   display: Regions
   name: regions
   options:
@@ -150,13 +145,11 @@ configuration:
   - SqlManagement
   required: false
   type: 16
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- defaultvalue: ''
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
