@@ -189,16 +189,6 @@ def init_params():
     }
 
 
-def test_is_ioc():
-    from Sixgill import is_ioc
-
-    output = is_ioc(incidents_list[0])
-    assert output is False
-
-    output = is_ioc(iocs_list[0])
-    assert output is True
-
-
 def test_handle_indicator():
     from Sixgill import handle_indicator
 
@@ -214,20 +204,6 @@ def test_handle_indicator():
     assert output is True
     assert indicator == {'IP(val.Address == obj.Address)': [{'Address': '1.1.1.1'}]}
     assert readable_iocs == [{'ID': '123456789', 'Type': 'IP', 'Indicator Value': '1.1.1.1', 'Tags': 'DarkWeb'}]
-
-
-def test_handle_alerts():
-    from Sixgill import handle_alerts
-
-    incidents = []
-
-    output = handle_alerts(incidents, iocs_list[0])
-    assert output is False
-    assert incidents == []
-
-    output = handle_alerts(incidents, incidents_list[0])
-    assert output is True
-    assert incidents == [expected_alert_output[0]]
 
 
 def test_test_module_raise_exception(mocker):
@@ -257,10 +233,10 @@ def test_fetch_incidents(mocker):
     mocker.patch.object(demisto, 'getLastRun', return_value={'time': '1547567249000'})
     mocker.patch.object(demisto, 'incidents')
 
-    from sixgill.sixgill_darkfeed_client import SixgillDarkFeedClient
+    from sixgill.sixgill_alert_client import SixgillAlertClient
 
-    mocker.patch.object(SixgillDarkFeedClient, 'get_incidents', return_value=incidents_list)
-    mocker.patch.object(SixgillDarkFeedClient, 'mark_digested_item', return_value=None)
+    mocker.patch.object(SixgillAlertClient, 'get_alert', return_value=incidents_list)
+    mocker.patch.object(SixgillAlertClient, 'mark_digested_item', return_value=None)
 
     from Sixgill import fetch_incidents
     fetch_incidents()

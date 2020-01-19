@@ -15,23 +15,54 @@ configuration:
   name: fetch_incidents_limit
   required: false
   type: 0
+- display: Sort alerts by field
+  name: sort_by
+  options:
+  - date
+  - alert_name
+  - severity
+  - threat_level
+  required: false
+  type: 15
+- display: Alerts sort order
+  name: sort_order
+  options:
+  - asc
+  - desc
+  required: false
+  type: 15
+- display: Filter alerts by field read
+  name: is_read
+  options:
+  - read
+  - unread
+  required: false
+  type: 15
+- display: Filter by alert template severity
+  name: severity
+  options:
+  - low
+  - med
+  - high
+  required: false
+  type: 15
+- display: Filter by alert threat level
+  name: threat_level
+  options:
+  - imminent
+  - emerging
+  required: false
+  type: 15
+- display: Filter by alert threat type
+  name: threat_type
+  required: false
+  type: 0
 description: Fetching Sixgill's alerts as incidents
 display: Sixgill
 name: Sixgill
 script:
   commands:
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: Should previously-delivered items be included in the response
-      isArray: false
-      name: include_delivered_items
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: false
       defaultValue: '1000'
       description: Max number of indicators that can be fetched

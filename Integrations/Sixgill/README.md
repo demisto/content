@@ -79,13 +79,38 @@ This integration was integrated and tested with version 0.0.4 of Sixgill
   </thead>
   <tbody>
     <tr>
-      <td>include_delivered_items</td>
-      <td>Should previously-delivered items be included in the response</td>
+      <td>fetch_incidents_limit</td>
+      <td>Max number of incidents that can be fetched</td>
       <td>Optional</td>
     </tr>
     <tr>
-      <td>fetch_incidents_limit</td>
-      <td>Max number of incidents that can be fetched</td>
+      <td>sort_by</td>
+      <td>Sort alerts by field</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>sort_order</td>
+      <td>Alerts sort order</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>is_read</td>
+      <td>Filter alerts by field read</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>severity</td>
+      <td>Filter by alert template severity</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>threat_level</td>
+      <td>Filter by alert threat level</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>threat_type</td>
+      <td>Filter by alert threat type</td>
       <td>Optional</td>
     </tr>
   </tbody>
@@ -140,11 +165,6 @@ There are no context output for this command.
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td>include_delivered_items</td>
-      <td>Should previously-delivered items be included in the response</td>
-      <td>Optional</td>
-    </tr>
      <tr>
       <td>fetch_indicators_limit</td>
       <td>Max number of indicators that can be fetched</td>
