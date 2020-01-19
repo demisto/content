@@ -110,6 +110,18 @@ script:
       name: limit
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The indicator type
+      isArray: false
+      name: indicator_type
+      predefined:
+      - ip
+      - domain
+      - hash
+      - url
+      required: false
+      secret: false
     deprecated: false
     description: Get indicators from the feed
     execution: false
@@ -123,7 +135,7 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      default: true
+      default: false
       description: The indicator type
       isArray: false
       name: indicator_type
@@ -132,12 +144,22 @@ script:
       - domain
       - hash
       - url
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Get a list of the risk rules available for an indicator
     execution: false
     name: get-risk-rules
+    outputs:
+    - contextPath: RecordedFutureFeed.RiskRule.Name
+      description: The risk rule name
+      type: String
+    - contextPath: RecordedFutureFeed.RiskRule.Description
+      description: The risk rule description
+      type: String
+    - contextPath: RecordedFutureFeed.RiskRule.Criticality
+      description: The risk tule criticality
+      type: String
   dockerimage: demisto/python3:3.7.5.4583
   feed: true
   isfetch: false
