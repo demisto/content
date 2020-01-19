@@ -7,6 +7,7 @@ from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
 import yaml
 import requests
+import glob
 
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES, PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_GITHUB_LINK, \
     PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX, PACKS_DIR_REGEX, PACKS_DIR
@@ -346,3 +347,85 @@ def get_pack_name(file_path):
 
 def pack_name_to_path(pack_name):
     return os.path.join(PACKS_DIR, pack_name)
+
+
+def extract_tags_from_script(script_path):
+    script_yml_path = glob.glob(os.path.join(script_path, '*.yml'))[0]
+    with open(script_yml_path, 'r') as file_data:
+        new_data = yaml.safe_load(file_data)
+
+    return set(new_data.get('tags'))
+
+
+def collect_pack_script_tags(pack_path):
+    if 'Scripts' not in os.listdir(pack_path):
+        return []
+
+    script_tags = set([])
+    scripts_dir_path = os.path.join(pack_path, 'Scripts')
+    for script_name in os.listdir(scripts_dir_path):
+        if script_name.endswith('.yml'):
+            script_path = os.path.join(scripts_dir_path, script_name)
+            with open(script_path, 'r') as yaml_file:
+                yaml_data = yaml.safe_load(yaml_file)
+                tags = yaml_data.get('tags', [])
+                script_tags.update(tags)
+
+    return list(script_tags)
+
+
+def collect_content_items_data(pack_path):
+    YML_SUPPORTED_DIRS = [
+        "Scripts",
+        "Integrations",
+        "Playbooks"
+    ]
+    data = {}
+
+    for directory in os.listdir(pack_path):
+        if not os.path.isdir(os.path.join(pack_path, directory)) or directory == "TestPlaybooks":
+            continue
+
+        dir_data = []
+        dir_path = os.path.join(pack_path, directory)
+
+        for dir_file in os.listdir(dir_path):
+            file_path = os.path.join(dir_path, dir_file)
+            if dir_file.endswith('.json') or dir_file.endswith('.yml'):
+                file_info = {}
+
+                with open(file_path, 'r') as file_data:
+                    if directory in YML_SUPPORTED_DIRS:
+                        new_data = yaml.safe_load(file_data)
+                    else:
+                        new_data = json.load(file_data)
+
+                    file_info['name'] = new_data.get('TypeName', '') if directory == "Layouts" \
+                        else new_data.get('name', '')
+
+                    if new_data.get('description', ''):
+                        file_info['description'] = new_data.get('description', '')
+                    if new_data.get('comment', ''):
+                        file_info['description'] = new_data.get('comment', '')
+
+                    dir_data.append(file_info)
+
+        data[directory] = dir_data
+
+    return data
+
+# def collect_integration_display_names(pack_path):
+#     if 'Integrations' not in os.listdir(pack_path):
+#         return []
+#
+#     integration_display_names = set([])
+#     integration_dir = os.path.join(pack_path, 'Integrations')
+#     for integration_name in os.listdir(integration_dir):
+#         if integration_name.endswith('.yml'):
+#             integration_yml_path = os.path.join(integration_dir, integration_name)
+#             with open(integration_yml_path, 'r') as integration_file:
+#                 yaml_data = yaml.safe_load(integration_file)
+#                 display_name = yaml_data.get('display', '')
+#                 integration_display_names.add(display_name)
+#
+#     return integration_display_names
