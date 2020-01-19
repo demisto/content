@@ -8,7 +8,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 import json
 import requests
-from urllib.parse import urlencode, urlparse, parse_qs
+from urllib.parse import urlencode, parse_qs, urlparse
 from datetime import datetime
 
 # Disable insecure warnings
@@ -138,11 +138,12 @@ def get_encrypted(content: str, key: str) -> str:
     encrypted = encrypt(f"{now}:{content}", key).decode("utf-8")
     return encrypted
 
-def url_validation(url):
-    # test if netloc
 
+def url_validation(url):
+
+    parsed_url = urlparse(url)
     # test if exits $skiptoken
-    url_parameters = parse_qs(url.query)
+    url_parameters = parse_qs(parsed_url.query)
     if not url_parameters.get("$skiptoken") or not url_parameters["$skiptoken"]:
         raise DemistoException(
             f"Url: {url} is not valid. Please provide another one. missing $skiptoken"
@@ -160,7 +161,9 @@ class Client(BaseClient):
         super().__init__(**kwargs)
         auth_and_token_url = demisto.params().get("auth_id").split("@")
         if len(auth_and_token_url) != 2:
-            token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
+            token_retrieval_url = (
+                "https://oproxy.demisto.ninja/obtain-token"  # guardrails-disable-line
+            )
         else:
             token_retrieval_url = auth_and_token_url[1]
         self.base_url = kwargs["base_url"]
@@ -171,8 +174,6 @@ class Client(BaseClient):
         self.auto_url = token_retrieval_url
         self.access_token = self.get_access_token()
         self.headers = {"Authorization": f"Bearer {self.access_token}"}
-
-
 
     def http_call(self, *args, **kwargs):
         demisto.log(f"Sending: ")

@@ -44,12 +44,13 @@ class TestClient(Client):
         self.http_call = ""
         self.access_token = "1234"
         self.headers = {"Authorization": f"Bearer {self.access_token}"}
+        self.base_url = '12435'
 
     def get_access_token(self):
         return self.get_access_token
 
 
-@freeze_time('2015-01-16T20:00:00+00:00')
+@freeze_time("2015-01-16T20:00:00+00:00")
 def test_epoch_seconds():
     """
     Given:
