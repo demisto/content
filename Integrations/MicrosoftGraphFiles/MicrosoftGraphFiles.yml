@@ -21,11 +21,11 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 'true'
-  display: Trust any certificate (insecure)
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -67,9 +67,6 @@ script:
     description: Delete a DriveItem by using its ID
     execution: false
     name: msgraph-delete-file
-    outputs:
-    - contextPath: MsGraph.File
-      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -534,12 +531,7 @@ script:
     - contextPath: MsGraphFiles.ListChildren.Children.OdataContext
       description: Resource type
       type: String
-  - arguments:
-    - default: false
-      isArray: false
-      required: false
-      secret: false
-    deprecated: false
+  - deprecated: false
     description: Returns a list of the tenant Sites
     execution: false
     name: msgraph-list-tenant-sites
@@ -610,8 +602,6 @@ script:
     execution: false
     name: msgraph-download-file
     outputs:
-    - contextPath: MsGraph.File
-      type: Unknown
     - contextPath: File.Size
       description: File's size
       type: String

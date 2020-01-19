@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-''' IMPORTS '''
+""" IMPORTS """
 
 import json
 import requests
@@ -14,28 +14,28 @@ from datetime import datetime
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' GLOBALS/PARAMS '''
+""" GLOBALS/PARAMS """
 
 # Service base URL
 
 
 # Headers to be sent in requests
-VERSION = 'v1.0'
-NETLOC = 'graph.microsoft.com'
-BASE_URL = f'https://{NETLOC}/{VERSION}'
+VERSION = "v1.0"
+NETLOC = "graph.microsoft.com"
+BASE_URL = f"https://{NETLOC}/{VERSION}"
 
-INTEGRATION_NAME = 'MsGraphFiles'
+INTEGRATION_NAME = "MsGraphFiles"
 
-APP_NAME = 'ms-graph-files'
+APP_NAME = "ms-graph-files"
 
 RESPONSE_KEYS_DICTIONARY = {
     "@odata.context": "OdataContext",
     "@microsoft.graph.downloadUrl": "DownloadUrl",
     "id": "ID",
-    "@odata.nextLink": "OdataNextLink"
+    "@odata.nextLink": "OdataNextLink",
 }
 
-EXCLUDE_LIST = ['eTag', 'cTag', 'quota']
+EXCLUDE_LIST = ["eTag", "cTag", "quota"]
 
 
 def parse_key_to_context(obj):
@@ -52,32 +52,34 @@ def parse_key_to_context(obj):
     context_entry = createContext(under_score_obj, keyTransform=string_to_context_key)
 
     if "Id" in list(context_entry.keys()):
-        context_entry['ID'] = context_entry['Id']
-        del context_entry['Id']
-    if 'CreatedBy' in list(context_entry.keys()):
-        context_entry['CreatedBy'] = remove_identity_key(context_entry['CreatedBy'])
-    if 'LastModifiedBy' in list(context_entry.keys()):
-        context_entry['LastModifiedBy'] = remove_identity_key(context_entry['LastModifiedBy'])
+        context_entry["ID"] = context_entry["Id"]
+        del context_entry["Id"]
+    if "CreatedBy" in list(context_entry.keys()):
+        context_entry["CreatedBy"] = remove_identity_key(context_entry["CreatedBy"])
+    if "LastModifiedBy" in list(context_entry.keys()):
+        context_entry["LastModifiedBy"] = remove_identity_key(
+            context_entry["LastModifiedBy"]
+        )
     return context_entry
 
 
 def remove_identity_key(source):
     if not isinstance(source, dict):
-        LOG('Input is not dictionary. Exist function.')
+        LOG("Input is not dictionary. Exist function.")
         return source
 
     dict_keys = list(source.keys())
     if len(dict_keys) != 1:
-        demisto.log('Got more then one identity creator. Exit function')
+        demisto.log("Got more then one identity creator. Exit function")
         return source
 
     identity_key = dict_keys[0]
     new_source = {}
-    if source[identity_key].get('ID'):
-        new_source['ID'] = source[identity_key].get('ID')
+    if source[identity_key].get("ID"):
+        new_source["ID"] = source[identity_key].get("ID")
 
-    new_source['DisplayName'] = source[identity_key].get('DisplayName')
-    new_source['Type'] = identity_key
+    new_source["DisplayName"] = source[identity_key].get("DisplayName")
+    new_source["Type"] = identity_key
 
     return new_source
 
@@ -122,7 +124,7 @@ def get_encrypted(content: str, key: str) -> str:
         return base64.b64encode(nonce + ct_)
 
     now = epoch_seconds()
-    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
+    encrypted = encrypt(f"{now}:{content}", key).decode("utf-8")
     return encrypted
 
 
@@ -130,9 +132,13 @@ def validate_url_netloc(url):
     try:
         parsed_url = urlparse(url)
         if NETLOC not in parsed_url.netloc:
-            raise DemistoException(f'Url: {url} is not valid. Please provide another one.')
+            raise DemistoException(
+                f"Url: {url} is not valid. Please provide another one."
+            )
     except ValueError:
-        raise DemistoException(f'Value Error has occurred.\n Url: {url} is not valid. Please provide another one.')
+        raise DemistoException(
+            f"Value Error has occurred.\n Url: {url} is not valid. Please provide another one."
+        )
     else:
         return parsed_url
 
@@ -143,8 +149,10 @@ def url_validation(url):
 
     # test if exits $skiptoken
     url_parameters = parse_qs(parsed_url.query)
-    if not url_parameters.get('$skiptoken') or not url_parameters['$skiptoken']:
-        raise DemistoException(f'Url: {url} is not valid. Please provide another one. missing $skiptoken')
+    if not url_parameters.get("$skiptoken") or not url_parameters["$skiptoken"]:
+        raise DemistoException(
+            f"Url: {url} is not valid. Please provide another one. missing $skiptoken"
+        )
     return url
 
 
@@ -156,46 +164,53 @@ class Client(BaseClient):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.auth_id = demisto.params().get('auth_id')
-        self.tenant_id = demisto.params().get('tenant_id')
-        self.enc_key = demisto.params().get('enc_key')
-        self.host = demisto.params().get('host')
-        self.auto_url = f"https://login.microsoftonline.com/{demisto.params().get('tenant_id')}/oauth2/v2.0/token"
-        self.tenant_domain = demisto.params().get('share_point_domain')
+        auth_and_token_url = demisto.params().get("auth_id").split("@")
+        if len(auth_and_token_url) != 2:
+            token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
+        else:
+            token_retrieval_url = auth_and_token_url[1]
+
+        self.auth_id = auth_and_token_url[0]
+        self.tenant_id = demisto.params().get("tenant_id")
+        self.enc_key = demisto.params().get("enc_key")
+        self.host = demisto.params().get("host")
+        self.auto_url = token_retrieval_url
+        self.tenant_domain = demisto.params().get("share_point_domain")
         self.access_token = self.get_access_token()
-        self.headers = {'Authorization': f'Bearer {self.access_token}'}
+        self.headers = {"Authorization": f"Bearer {self.access_token}"}
+
+
 
     def http_call(self, *args, **kwargs):
-        demisto.log(f'Sending: ')
-        res = self._http_request(timeout=5, *args, **kwargs)
-        if 'status_code' in res and res.status_code == 401:
+        demisto.log(f"Sending: ")
+        res = self._http_request(*args, **kwargs)
+        if "status_code" in res and res.status_code == 401:
             self.access_token = self.get_access_token()
             res = self._http_request(*args, **kwargs)
         return res
 
     def return_valid_access_token_if_exist_in_context(self):
         integration_context = demisto.getIntegrationContext()
-        access_token = integration_context.get('access_token')
-        valid_until = integration_context.get('valid_until')
+        access_token = integration_context.get("access_token")
+        valid_until = integration_context.get("valid_until")
         if access_token and valid_until:
             if epoch_seconds() < valid_until:
                 return access_token
 
     def return_token_and_save_it_in_context(self, access_token_response):
-        access_token = access_token_response.get('access_token')
+        access_token = access_token_response.get("access_token")
 
         if not access_token:
-            return demisto.error('Access Token returned empty')
-        expires_in = access_token_response.get('expires_in', 3595)
+            return demisto.error("Access Token returned empty")
+        expires_in = access_token_response.get("expires_in", 3595)
         time_buffer = 5  # seconds by which to shorten the validity period
         if expires_in - time_buffer > 0:
             # err on the side of caution with a slightly shorter access token validity period
             expires_in = expires_in - time_buffer
 
-        demisto.setIntegrationContext({
-            'access_token': access_token,
-            'valid_until': epoch_seconds() + expires_in
-        })
+        demisto.setIntegrationContext(
+            {"access_token": access_token, "valid_until": epoch_seconds() + expires_in}
+        )
         return access_token
 
     def get_access_token(self):
@@ -203,98 +218,137 @@ class Client(BaseClient):
         if context_access_token:
             return context_access_token
 
-        body = json.dumps({
-            'app_name': APP_NAME,
-            'registration_id': self.auth_id,
-            'encrypted_token': get_encrypted(self.tenant_id, self.enc_key)
-        })
+        body = json.dumps(
+            {
+                "app_name": APP_NAME,
+                "registration_id": self.auth_id,
+                "encrypted_token": get_encrypted(self.tenant_id, self.enc_key),
+            }
+        )
         try:
-            access_token_res = self._http_request(method='POST', full_url=self.host, data=body,
-                                                  headers={'Accept': 'application/json'}, url_suffix='')
+            access_token_res = self._http_request(
+                method="POST",
+                full_url=self.auto_url,
+                data=body,
+                headers={"Accept": "application/json"},
+                url_suffix="",
+            )
         except DemistoException as error:
-            title = 'Error in authentication. Try checking the credentials you entered.'
+            title = "Error in authentication. Try checking the credentials you entered."
             raise DemistoException(title, error)
         else:
             return self.return_token_and_save_it_in_context(access_token_res)
 
     def list_tenant_sites(self):
-        url = 'https://graph.microsoft.com/v1.0/sites'
+        url = "https://graph.microsoft.com/v1.0/sites"
         query_string = {"search": "*"}
-        return self.http_call(method='GET', full_url=url, headers=self.headers, url_suffix='', params=query_string)
+        return self.http_call(
+            method="GET",
+            full_url=url,
+            headers=self.headers,
+            url_suffix="",
+            params=query_string,
+        )
 
     def list_drives_in_site(self, site_id=None, limit=None, next_page_url=None):
         if not any([site_id, next_page_url]):
-            raise DemistoException('Please pass at least one argument to this command: \n'
-                                   'site_id: if you want to get all sites.\n'
-                                   'limit: if you want to limit the number of command\'s results. \n'
-                                   'next_page_url: if you have used the limit argument.')
+            raise DemistoException(
+                "Please pass at least one argument to this command: \n"
+                "site_id: if you want to get all sites.\n"
+                "limit: if you want to limit the number of command's results. \n"
+                "next_page_url: if you have used the limit argument."
+            )
 
         if limit:
-            params = urlencode({'$top': limit})
+            params = urlencode({"$top": limit})
         else:
-            params = ''
+            params = ""
 
         if next_page_url:
             url = url_validation(next_page_url)
         else:
-            url = f'{BASE_URL}/sites/{site_id}/drives'
+            url = f"{BASE_URL}/sites/{site_id}/drives"
 
-        return self.http_call('GET', full_url=url, params=params, headers=self.headers, url_suffix='')
+        return self.http_call(
+            "GET", full_url=url, params=params, headers=self.headers, url_suffix=""
+        )
 
-    def list_drive_children(self, object_type, object_type_id, item_id=None, limit=None, next_page_url=None):
+    def list_drive_children(
+        self, object_type, object_type_id, item_id=None, limit=None, next_page_url=None
+    ):
         if next_page_url:
             url = url_validation(next_page_url)
         else:
             if not item_id:
-                item_id = 'root'
-            if object_type == 'drives':
-                url = f'{object_type}/{object_type_id}/items/{item_id}/children'
+                item_id = "root"
+            if object_type == "drives":
+                url = f"{object_type}/{object_type_id}/items/{item_id}/children"
 
-            elif object_type in ['groups', 'sites', 'users']:
-                url = f'{object_type}/{object_type_id}/drive/items/{item_id}/children'
+            elif object_type in ["groups", "sites", "users"]:
+                url = f"{object_type}/{object_type_id}/drive/items/{item_id}/children"
 
-            url = BASE_URL + f'/{url}'
+            url = BASE_URL + f"/{url}"
 
         if limit:
-            params = urlencode({'$top': limit})
+            params = urlencode({"$top": limit})
         else:
-            params = ''
+            params = ""
 
-        return self.http_call(method='GET', full_url=url, url_suffix='', params=params, headers=self.headers)
+        return self.http_call(
+            method="GET",
+            full_url=url,
+            url_suffix="",
+            params=params,
+            headers=self.headers,
+        )
 
     def replace_existing_file(self, object_type, object_type_id, item_id, entry_id):
 
-        file_path = demisto.getFilePath(entry_id).get('path', None)
+        file_path = demisto.getFilePath(entry_id).get("path", None)
         if not file_path:
-            raise DemistoException(f'Could not find file path to the next entry id: {entry_id}. \n'
-                                   f'Please provide another one.')
-        if object_type == 'drives':
-            url = f'{object_type}/{object_type_id}/items/{item_id}/content'
+            raise DemistoException(
+                f"Could not find file path to the next entry id: {entry_id}. \n"
+                f"Please provide another one."
+            )
+        if object_type == "drives":
+            url = f"{object_type}/{object_type_id}/items/{item_id}/content"
 
-        elif object_type in ['groups', 'sites', 'users']:
-            url = f'{object_type}/{object_type_id}/drive/items/{item_id}/content'
+        elif object_type in ["groups", "sites", "users"]:
+            url = f"{object_type}/{object_type_id}/drive/items/{item_id}/content"
 
         # send request
-        url = BASE_URL + f'/{url}'
-        with open(file_path, 'rb') as file:
-            self.headers['Content-Type'] = 'application/octet-stream'
-            return self.http_call('PUT', full_url=url, data=file, headers=self.headers, url_suffix='')
+        url = BASE_URL + f"/{url}"
+        with open(file_path, "rb") as file:
+            self.headers["Content-Type"] = "application/octet-stream"
+            return self.http_call(
+                "PUT", full_url=url, data=file, headers=self.headers, url_suffix=""
+            )
 
     def delete_file(self, object_type, object_type_id, item_id):
-        if object_type == 'drives':
-            url = f'{object_type}/{object_type_id}/items/{item_id}'
+        if object_type == "drives":
+            url = f"{object_type}/{object_type_id}/items/{item_id}"
 
-        elif object_type in ['groups', 'sites', 'users']:
-            url = f'{object_type}/{object_type_id}/drive/items/{item_id}'
+        elif object_type in ["groups", "sites", "users"]:
+            url = f"{object_type}/{object_type_id}/drive/items/{item_id}"
 
         # send request
-        url = BASE_URL + f'/{url}'
-        self.headers['Content-Type'] = 'text/plain'  # request returned empty and can not decoded to json
-        if '' == self.http_call('DELETE', full_url=url, headers=self.headers, url_suffix='', resp_type='text'):
+        url = BASE_URL + f"/{url}"
+        self.headers[
+            "Content-Type"
+        ] = "text/plain"  # request returned empty and can not decoded to json
+        if "" == self.http_call(
+            "DELETE",
+            full_url=url,
+            headers=self.headers,
+            url_suffix="",
+            resp_type="text",
+        ):
             # resp_type='text' returned empty and can not decoded to json
-            return f'Item was deleted successfully'
+            return f"Item was deleted successfully"
 
-    def upload_new_file(self, object_type, object_type_id, parent_id, file_name, entry_id):
+    def upload_new_file(
+        self, object_type, object_type_id, parent_id, file_name, entry_id
+    ):
         """
         this function upload new file to a selected folder(parent_id)
         :param object_type: drive/ group/ me/ site/ users
@@ -304,299 +358,304 @@ class Client(BaseClient):
         :param entry_id:
         :return:
         """
-        file_path = demisto.getFilePath(entry_id).get('path')
+        file_path = demisto.getFilePath(entry_id).get("path")
 
-        if 'drives' == object_type:
-            url = f'{object_type}/{object_type_id}/items/{parent_id}:/{file_name}:/content'
+        if "drives" == object_type:
+            url = f"{object_type}/{object_type_id}/items/{parent_id}:/{file_name}:/content"
 
-        elif object_type in ['groups', 'users', 'sites']:
-            url = f'{object_type}/{object_type_id}/drive/items/{parent_id}:/{file_name}:/content'
+        elif object_type in ["groups", "users", "sites"]:
+            url = f"{object_type}/{object_type_id}/drive/items/{parent_id}:/{file_name}:/content"
             # for sites, groups, users
-        url = BASE_URL + f'/{url}'
-        with open(file_path, 'rb') as file:
-            self.headers['Content-Type'] = 'application/octet-stream'
-            return self.http_call('PUT', full_url=url, headers=self.headers, url_suffix='', data=file)
+        url = BASE_URL + f"/{url}"
+        with open(file_path, "rb") as file:
+            self.headers["Content-Type"] = "application/octet-stream"
+            return self.http_call(
+                "PUT", full_url=url, headers=self.headers, url_suffix="", data=file
+            )
 
     def download_file(self, object_type, object_type_id, item_id):
-        if object_type == 'drives':
-            url = f'{object_type}/{object_type_id}/items/{item_id}/content'
+        if object_type == "drives":
+            url = f"{object_type}/{object_type_id}/items/{item_id}/content"
 
-        elif object_type in ['groups', 'sites', 'users']:
-            url = f'{object_type}/{object_type_id}/drive/items/{item_id}/content'
+        elif object_type in ["groups", "sites", "users"]:
+            url = f"{object_type}/{object_type_id}/drive/items/{item_id}/content"
 
         # send request
-        url = BASE_URL + f'/{url}'
-        res = self.http_call('GET', full_url=url, headers=self.headers, url_suffix='', resp_type='')  # it needs
+        url = BASE_URL + f"/{url}"
+        res = self.http_call(
+            "GET", full_url=url, headers=self.headers, url_suffix="", resp_type=""
+        )  # it needs
         # resp_type='' to stay empty because if response type is empty http_requests returned the raw response.
         # I need it because graph api returnes an response as text without content so res.text fails
         return res
 
     def create_new_folder(self, object_type, object_type_id, parent_id, folder_name):
-        if object_type == 'drives':
-            url = f'{object_type}/{object_type_id}/items/{parent_id}/children'
+        if object_type == "drives":
+            url = f"{object_type}/{object_type_id}/items/{parent_id}/children"
 
-        elif object_type in ['groups', 'sites', 'users']:
-            url = f'{object_type}/{object_type_id}/drive/items/{parent_id}/children'
+        elif object_type in ["groups", "sites", "users"]:
+            url = f"{object_type}/{object_type_id}/drive/items/{parent_id}/children"
 
         # send request
-        url = BASE_URL + f'/{url}'
+        url = BASE_URL + f"/{url}"
 
         payload = {
-            'name': folder_name,
-            'folder': {},
-            '@microsoft.graph.conflictBehavior': 'rename'
+            "name": folder_name,
+            "folder": {},
+            "@microsoft.graph.conflictBehavior": "rename",
         }
-        self.headers['Content-Type'] = 'application/json'
-        demisto.log(f'sending POST to {url}, with the next payload: {payload}')
-        return self.http_call('POST', full_url=url, json_data=payload, headers=self.headers, url_suffix='')
+        self.headers["Content-Type"] = "application/json"
+        demisto.log(f"sending POST to {url}, with the next payload: {payload}")
+        return self.http_call(
+            "POST", full_url=url, json_data=payload, headers=self.headers, url_suffix=""
+        )
 
 
 def download_file_command(client, args):
-    object_type = args.get('object_type')
-    object_type_id = args.get('object_type_id')
-    item_id = args.get('item_id')
+    object_type = args.get("object_type")
+    object_type_id = args.get("object_type_id")
+    item_id = args.get("item_id")
 
-    result = client.download_file(object_type=object_type, object_type_id=object_type_id, item_id=item_id)
+    result = client.download_file(
+        object_type=object_type, object_type_id=object_type_id, item_id=item_id
+    )
     stored_img = fileResult(item_id, result.content)
     return stored_img
 
 
 def list_drive_children_command(client, args):
-    object_type = args.get('object_type')
-    object_type_id = args.get('object_type_id')
-    item_id = args.get('item_id')
-    limit = args.get('limit')
-    next_page_url = args.get('next_page_url')
+    object_type = args.get("object_type")
+    object_type_id = args.get("object_type_id")
+    item_id = args.get("item_id")
+    limit = args.get("limit")
+    next_page_url = args.get("next_page_url")
 
     if not item_id:
-        item_id = 'root'
+        item_id = "root"
 
-    result = client.list_drive_children(object_type=object_type, object_type_id=object_type_id, item_id=item_id,
+    result = client.list_drive_children(
+        object_type=object_type,
+        object_type_id=object_type_id,
+        item_id=item_id,
+        limit=limit,
+        next_page_url=next_page_url,
+    )
 
-                                        limit=limit, next_page_url=next_page_url)
+    title = f"{INTEGRATION_NAME} - drivesItems information:"
 
-    title = f'{INTEGRATION_NAME} - drivesItems information:'
+    parsed_drive_items = [parse_key_to_context(item) for item in result["value"]]
+    human_readable = tableToMarkdown(
+        title, parsed_drive_items, headerTransform=pascalToSpace
+    )
 
-    parsed_drive_items = [parse_key_to_context(item) for item in result['value']]
-    human_readable = tableToMarkdown(title, parsed_drive_items, headerTransform=pascalToSpace)
-
-    drive_items_outputs = {'OdataContext': result['@odata.context'],
-                           'Value': parsed_drive_items
-                           }
+    drive_items_outputs = {
+        "OdataContext": result["@odata.context"],
+        "Value": parsed_drive_items,
+    }
     context = {
-        f'{INTEGRATION_NAME}.ListChildren(val.ItemID == obj.ItemID)': {"ParentID": item_id,
-                                                                      "Children": drive_items_outputs}
+        f"{INTEGRATION_NAME}.ListChildren(val.ItemID == obj.ItemID)": {
+            "ParentID": item_id,
+            "Children": drive_items_outputs,
+        }
     }
 
-    return (
-        human_readable,
-        context,
-        result
-    )
+    return (human_readable, context, result)
 
 
 def list_tenant_sites_command(client, args):
     result = client.list_tenant_sites()
 
-    parsed_sites_items = [parse_key_to_context(item) for item in result['value']]
+    parsed_sites_items = [parse_key_to_context(item) for item in result["value"]]
 
     context_entry = {
-        'OdataContext': result.get('@odata.context'),
-        'Value': parsed_sites_items
+        "OdataContext": result.get("@odata.context"),
+        "Value": parsed_sites_items,
     }
-    context = {
-        f'{INTEGRATION_NAME}.ListSites(val.ID === obj.ID)': context_entry
-    }
+    context = {f"{INTEGRATION_NAME}.ListSites(val.ID === obj.ID)": context_entry}
 
-    title = 'List Sites:'
-    human_readable = tableToMarkdown(title, parsed_sites_items, headerTransform=pascalToSpace)
-
-    return (
-        human_readable,
-        context,
-        result
+    title = "List Sites:"
+    human_readable = tableToMarkdown(
+        title, parsed_sites_items, headerTransform=pascalToSpace
     )
+
+    return (human_readable, context, result)
 
 
 def list_drives_in_site_command(client, args):
-    site_id = args.get('site_id')
-    limit = args.get('limit')
-    next_page_url = args.get('next_page_url')
+    site_id = args.get("site_id")
+    limit = args.get("limit")
+    next_page_url = args.get("next_page_url")
 
     if next_page_url:
         url_validation(next_page_url)
 
-    result = client.list_drives_in_site(site_id=site_id, limit=limit, next_page_url=next_page_url)
-    parsed_drive_items = [parse_key_to_context(item) for item in result['value']]
+    result = client.list_drives_in_site(
+        site_id=site_id, limit=limit, next_page_url=next_page_url
+    )
+    parsed_drive_items = [parse_key_to_context(item) for item in result["value"]]
 
     context_entry = {
-        'OdataContext': result.get('@odata.context', None),
-        'Value': parsed_drive_items
+        "OdataContext": result.get("@odata.context", None),
+        "Value": parsed_drive_items,
     }
 
-    title = f'{INTEGRATION_NAME} - Drives information:'
+    title = f"{INTEGRATION_NAME} - Drives information:"
     # Creating human readable for War room
-    human_readable = tableToMarkdown(title, parsed_drive_items, headerTransform=pascalToSpace)
+    human_readable = tableToMarkdown(
+        title, parsed_drive_items, headerTransform=pascalToSpace
+    )
 
     # context == output
-    context = {
-        f'{INTEGRATION_NAME}.ListDrives(val.ID === obj.ID)': context_entry
-    }
+    context = {f"{INTEGRATION_NAME}.ListDrives(val.ID === obj.ID)": context_entry}
 
-    return (
-        human_readable,
-        context,
-        result
-    )
+    return (human_readable, context, result)
 
 
 def replace_an_existing_file_command(client, args):
-    object_type = args.get('object_type')
-    item_id = args.get('item_id')
-    entry_id = args.get('entry_id')
-    object_type_id = args.get('object_type_id')
+    object_type = args.get("object_type")
+    item_id = args.get("item_id")
+    entry_id = args.get("entry_id")
+    object_type_id = args.get("object_type_id")
 
-    result = client.replace_existing_file(object_type, object_type_id, item_id, entry_id)
+    result = client.replace_existing_file(
+        object_type, object_type_id, item_id, entry_id
+    )
     context_entry = parse_key_to_context(result)
 
-    title = f'{INTEGRATION_NAME} - File information:'
+    title = f"{INTEGRATION_NAME} - File information:"
     # Creating human readable for War room
-    human_readable = tableToMarkdown(title, context_entry, headerTransform=pascalToSpace)
+    human_readable = tableToMarkdown(
+        title, context_entry, headerTransform=pascalToSpace
+    )
 
     # context == output
-    context = {
-        f'{INTEGRATION_NAME}.ReplacedFiles(val.ID === obj.ID)': context_entry
-    }
+    context = {f"{INTEGRATION_NAME}.ReplacedFiles(val.ID === obj.ID)": context_entry}
 
-    return (
-        human_readable,
-        context,
-        result
-    )
+    return (human_readable, context, result)
 
 
 def upload_new_file_command(client, args):
-    object_type = args.get('object_type')
-    object_type_id = args.get('object_type_id')
-    parent_id = args.get('parent_id')
-    file_name = args.get('file_name')
-    entry_id = args.get('entry_id')
+    object_type = args.get("object_type")
+    object_type_id = args.get("object_type_id")
+    parent_id = args.get("parent_id")
+    file_name = args.get("file_name")
+    entry_id = args.get("entry_id")
 
-    result = client.upload_new_file(object_type, object_type_id, parent_id, file_name, entry_id)
+    result = client.upload_new_file(
+        object_type, object_type_id, parent_id, file_name, entry_id
+    )
     context_entry = parse_key_to_context(result)
-    title = f'{INTEGRATION_NAME} - File information:'
+    title = f"{INTEGRATION_NAME} - File information:"
     # Creating human readable for War room
     human_readable = tableToMarkdown(title, context_entry)
 
     # context == output
-    context = {
-        f'{INTEGRATION_NAME}.UploadedFiles(val.ID === obj.ID)': context_entry
-    }
+    context = {f"{INTEGRATION_NAME}.UploadedFiles(val.ID === obj.ID)": context_entry}
 
-    return (
-        human_readable,
-        context,
-        result
-    )
+    return (human_readable, context, result)
 
 
 def create_new_folder_command(client, args):
-    object_type = args.get('object_type')
-    parent_id = args.get('parent_id')
-    folder_name = args.get('folder_name')
-    object_type_id = args.get('object_type_id')
+    object_type = args.get("object_type")
+    parent_id = args.get("parent_id")
+    folder_name = args.get("folder_name")
+    object_type_id = args.get("object_type_id")
 
-    result = client.create_new_folder(object_type, object_type_id, parent_id, folder_name)
+    result = client.create_new_folder(
+        object_type, object_type_id, parent_id, folder_name
+    )
 
     context_entry = parse_key_to_context(result)
 
-    title = f'{INTEGRATION_NAME} - Folder information:'
+    title = f"{INTEGRATION_NAME} - Folder information:"
     # Creating human readable for War room
-    human_readable = tableToMarkdown(title, context_entry, headerTransform=pascalToSpace)
+    human_readable = tableToMarkdown(
+        title, context_entry, headerTransform=pascalToSpace
+    )
 
     # context == output
-    context = {
-        f'{INTEGRATION_NAME}.CreatedFolders(val.ID === obj.ID)': context_entry
-    }
+    context = {f"{INTEGRATION_NAME}.CreatedFolders(val.ID === obj.ID)": context_entry}
 
-    return (
-        human_readable,
-        context,
-        result
-    )
+    return (human_readable, context, result)
 
 
 def delete_file_command(client, args):
-    object_type = args.get('object_type')
-    item_id = args.get('item_id')
-    object_type_id = args.get('object_type_id')
+    object_type = args.get("object_type")
+    item_id = args.get("item_id")
+    object_type_id = args.get("object_type_id")
 
     text = client.delete_file(object_type, object_type_id, item_id)
 
     context_entry = text
 
-    title = f'{INTEGRATION_NAME} - File information:'
+    title = f"{INTEGRATION_NAME} - File information:"
     # Creating human readable for War room
     human_readable = tableToMarkdown(title, context_entry, headers=item_id)
 
-    return (
-        human_readable,
-        text  # == raw response
-    )
+    return (human_readable, text)  # == raw response
 
 
 def main():
     # Should we use SSL
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
-
-    LOG(f'Command being called is {demisto.command()}')
+    verify_certificate = not demisto.params().get("insecure", False)
+    proxy = demisto.params().get("proxy", False)
+    base_url = demisto.params().get("host", False)
+    LOG(f"Command being called is {demisto.command()}")
     try:
         # client = Client(BASE_URL, proxy=proxy, verify=verify_certificate)
-        client = Client(base_url=BASE_URL, verify=verify_certificate, proxy=proxy, ok_codes=(200, 204, 201))
-        if demisto.command() == 'test-module':
+        client = Client(
+            base_url=base_url + "/v1.0",
+            verify=verify_certificate,
+            proxy=proxy,
+            ok_codes=(200, 204, 201),
+        )
+        if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = module_test(client)
             demisto.results(result)
 
-        elif demisto.command() == 'msgraph-delete-file':
+        elif demisto.command() == "msgraph-delete-file":
             readable_output, raw_response = delete_file_command(client, demisto.args())
             return_outputs(readable_output=readable_output)
-        elif demisto.command() == 'msgraph-download-file':
-            demisto.results(download_file_command(client, demisto.args()))  # it has to be demisto.results instead
+        elif demisto.command() == "msgraph-download-file":
+            demisto.results(
+                download_file_command(client, demisto.args())
+            )  # it has to be demisto.results instead
             # of return_outputs. because fileResult contains 'content': '' and if that key is empty return_outputs
             # returns error
-        elif demisto.command() == 'msgraph-list-tenant-sites':
+        elif demisto.command() == "msgraph-list-tenant-sites":
             return_outputs(*list_tenant_sites_command(client, demisto.args()))
-        elif demisto.command() == 'msgraph-list-drive-children':
+        elif demisto.command() == "msgraph-list-drive-children":
             return_outputs(*list_drive_children_command(client, demisto.args()))
-        elif demisto.command() == 'msgraph-create-new-folder':
+        elif demisto.command() == "msgraph-create-new-folder":
             return_outputs(*create_new_folder_command(client, demisto.args()))
-        elif demisto.command() == 'msgraph-replace-existing-file':
+        elif demisto.command() == "msgraph-replace-existing-file":
             return_outputs(*replace_an_existing_file_command(client, demisto.args()))
-        elif demisto.command() == 'msgraph-list-drives-in-site':
+        elif demisto.command() == "msgraph-list-drives-in-site":
             return_outputs(*list_drives_in_site_command(client, demisto.args()))
-        elif demisto.command() == 'msgraph-upload-new-file':
+        elif demisto.command() == "msgraph-upload-new-file":
             return_outputs(*upload_new_file_command(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}', e)
+        return_error(
+            f"Failed to execute {demisto.command()} command. Error: {str(e)}", e
+        )
 
 
-''' COMMANDS + REQUESTS FUNCTIONS '''
+""" COMMANDS + REQUESTS FUNCTIONS """
 
 
-def test_module(client, args=None):
+def module_test(client, args=None):
     """
     Performs basic get request to get item samples
     """
     result = client.get_access_token()
     if result:
-        return 'ok'
+        return "ok"
     else:
-        return 'Test failed because could not get access token'
+        return "Test failed because could not get access token"
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
