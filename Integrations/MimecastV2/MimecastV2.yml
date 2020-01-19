@@ -1569,7 +1569,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: Policy id
+      description: Policy ID
       isArray: false
       name: policy_id
       required: true
