@@ -630,7 +630,8 @@ def create_or_update_policy_request(policy, option, policy_id=None):
             'option': option
         }]
     }
-    # Policy ID is not None if it is an update policy request
+    # Policy ID isnt None if it is an update policy request cause its required to
+    # write a policy ID on update policy command
     if policy_id:
         payload['data'][0]['id'] = policy_id
     response = http_request('POST', api_endpoint, str(payload))
