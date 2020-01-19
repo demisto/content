@@ -189,7 +189,7 @@ script:
     name: akamai-create-network-list
     outputs:
     - contextPath: Akamai.NetworkLists.Name
-      description: The network list ID.
+      description: The network list name.
       type: String
     - contextPath: Akamai.NetworkLists.UniqueID
       description: The network list ID.
@@ -310,6 +310,16 @@ script:
     description: Gets the activation status of the specified network list.
     execution: false
     name: akamai-get-network-list-activation-status
+    outputs:
+    - contextPath: Akamai.NetworkLists.ActivationStatus.UniqueID
+      description: The network list ID.
+      type: String
+    - contextPath: Akamai.NetworkLists.ActivationStatus.UniqueID.Enviorment
+      description: The network list enviorment.
+      type: String
+    - contextPath: Akamai.NetworkLists.ActivationStatus.UniqueID.Status
+      description: The network list enviorment activation status
+      type: String
   dockerimage: demisto/akamai:1.0.0.5063
   feed: false
   isfetch: false
