@@ -1663,6 +1663,10 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
+            "integrations": "TAXIIFeed",
+            "playbookID": "TAXII_Feed_Test"
+        },
+        {
             "integrations": "Traps",
             "playbookID": "Traps test",
             "timeout": 600
@@ -2055,7 +2059,7 @@
             "playbookID": "PolySwarm-Test"
         },
         {
-            "integrations": "Kenna",
+            "integrations": "Kennav2",
             "playbookID": "Kenna Test"
         },
         {
@@ -2113,6 +2117,10 @@
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "GetValuesOfMultipleFIelds Test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "BPA",
             "playbookID": "Test-BPA_Integration",
             "fromversion": "4.5.0"
@@ -2125,7 +2133,6 @@
         "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
-        "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
@@ -2285,6 +2292,7 @@
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
-        "GoogleCloudTranslate": "google translate sdk does not support proxy"
+        "GoogleCloudTranslate": "google translate sdk does not support proxy",
+        "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233"
     }
 }
