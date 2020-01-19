@@ -1,4 +1,13 @@
-# from HelloWorld import Client, say_hello_command, say_hello_over_http_command
+# from FeedRecordedFuture import build_request, Client
+#
+# IP_CONNECT_API_FEED = [
+# ]
+#
+# IP_FUSION_FEED = [
+#
+# ]
+#
+#
 #
 #
 # def test_say_hello():
@@ -6,7 +15,7 @@
 #     args = {
 #         'name': 'Dbot'
 #     }
-#     _, outputs, _ = say_hello_command(client, args)
+#     _, outputs, _ = build_request(client, args)
 #
 #     assert outputs['hello'] == 'Hello Dbot'
 #

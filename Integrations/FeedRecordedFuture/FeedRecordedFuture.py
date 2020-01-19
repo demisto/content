@@ -7,18 +7,21 @@ import requests
 import ipaddress
 import csv
 
-
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 INTEGRATION_NAME = 'Recorded Future'
 
 # CONSTANTS
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 SOURCE_NAME = 'recordedfuture.masterrisklist'
 BASE_URL = 'https://api.recordedfuture.com/v2/'
 PARAMS = {'output_format': 'csv/splunk'}
 HEADERS = {'X-RF-User-Agent': 'Demisto',
            'content-type': 'application/json'}
+HASH_DT = {
+    'MD5': 'File.MD5(val.MD5 && obj.MD5 == val.MD5)',
+    'SHA256': 'File.SHA256(val.SHA256 && obj.SHA256 == val.SHA256)',
+    'SHA1': 'File.SHA1(val.SHA1 && obj.SHA1 == val.SHA1)'
+}
 
 
 class Client(BaseClient):
@@ -27,13 +30,16 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, indicator_type: str, api_token: str, feed_source: str, risk_rule: str = None,
+    def __init__(self, indicator_type: str, api_token: str, sub_feed: str, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
-                 polling_timeout: int = 20, proxy: bool = False, path: str = None, **kwargs):
+                 polling_timeout: int = 20, proxy: bool = False, **kwargs):
         """
+        :param indicator_type: string, the indicator type of the feed.
+        :param api_token: string, the api token for RecordedFuture.
+        :param sub_feed: list, the sub feeds from RecordedFuture.
+        :param risk_rule: string, an optional argument to the 'ConnectApi' sub feed request.
+        :param fusion_file_path: string, an optional argument to the 'Fusion' sub feed request.
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
-        :param credentials: username and password used for basic authentication
-        :param ignore_regex: python regular expression for lines that should be ignored. Default: *null*
         :param polling_timeout: timeout of the polling request in seconds. Default: 20
         :param proxy: Sets whether use proxy when sending requests
         :param kwargs:
@@ -49,13 +55,11 @@ class Client(BaseClient):
         self.risk_rule = risk_rule
         self.fusion_file_path = fusion_file_path
         self.api_token = HEADERS['X-RFToken'] = api_token
-        self.feed_source = feed_source
+        self.sub_feed = sub_feed
         self.indicator_type = indicator_type
-        self.path = path
 
-    def _build_request(self):
-
-        if self.feed_source == 'connectApi':
+    def _build_request(self, sub_feed):
+        if sub_feed == 'connectApi':
             if self.risk_rule is None:
                 url = BASE_URL + str(self.indicator_type) + '/risklist'
             else:
@@ -69,7 +73,7 @@ class Client(BaseClient):
             )
             return r.prepare()
 
-        if self.feed_source == 'fusion':
+        if sub_feed == 'fusion':
             url = BASE_URL + 'fusion/files/?path='
             if self.fusion_file_path is None:
                 fusion_path = '/public/risklists/default_' + str(self.indicator_type) + '_risklist.csv'
@@ -83,7 +87,7 @@ class Client(BaseClient):
                                  params=PARAMS)
             return r.prepare()
 
-    def build_iterator(self):
+    def build_iterator(self, sub_feed):
         """Retrieves all entries from the feed.
         Args:
 
@@ -91,8 +95,7 @@ class Client(BaseClient):
         csv iterator
         """
         _session = requests.Session()
-
-        prepreq = self._build_request()
+        prepreq = self._build_request(sub_feed)
         # this is to honour the proxy environment variables
         rkwargs = _session.merge_environment_settings(
             prepreq.url,
@@ -120,18 +123,18 @@ class Client(BaseClient):
 
 
 # # simple function to iterate list in batches
-# def batch(iterable, batch_size=1):
-#     current_batch = []
-#     for item in iterable:
-#         current_batch.append(item)
-#         if len(current_batch) == batch_size:
-#             yield current_batch
-#             current_batch = []
-#     if current_batch:
-#         yield current_batch
+def old_batch(iterable, batch_size=1):
+    current_batch = []
+    for item in iterable:
+        current_batch.append(item)
+        if len(current_batch) == batch_size:
+            yield current_batch
+            current_batch = []
+    if current_batch:
+        yield current_batch
 
 
-def test_module(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def test_module(client: Client, args: Dict):
     """Builds the iterator to check that the feed is accessible.
     Args:
         client: Client object.
@@ -139,7 +142,7 @@ def test_module(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         Outputs.
     """
 
-    client.build_iterator()
+    client.build_iterator('connectApi')
     return 'ok', {}, {}
 
 
@@ -182,9 +185,11 @@ def get_indicator_type(indicator_type, item):
     if indicator_type == 'ip':
         return get_ip_type(item.get('Name'))
     elif indicator_type == 'hash':
-        return item.get('Algorithm')
-    else:
-        return indicator_type
+        return 'File ' + item.get('Algorithm')
+    elif indicator_type == 'domain':
+        return 'Domain'
+    elif indicator_type == 'url':
+        return 'URL'
 
 
 def fetch_indicators_command(client):
@@ -195,20 +200,61 @@ def fetch_indicators_command(client):
         Indicators.
     """
     indicators = []
-    iterator = client.build_iterator()
-    for item in iterator:
-        raw_json = dict(item)
-        raw_json['value'] = value = item.get('Name')
-        raw_json['type'] = get_indicator_type(client.indicator_type, item)
-        indicators.append({
-            "value": value,
-            "type": raw_json['type'],
-            "rawJSON": raw_json,
-        })
-    return indicators
+    indicator_context = []
+    for feed in client.sub_feed:
+        iterator = client.build_iterator(feed)
+        for item in iterator:
+            raw_json = dict(item)
+            raw_json['value'] = value = item.get('Name')
+            raw_json['type'] = indicator_type = get_indicator_type(client.indicator_type, item)
+            indicators.append({
+                "value": value,
+                "type": raw_json['type'],
+                "rawJSON": raw_json,
+            })
+
+            indicator_context.append(get_indicators_context(indicator_type, value))
+
+    return indicators, indicator_context
 
 
-def get_indicators_command(client, args):
+def get_indicators_context(indicator_type, value):
+    if indicator_type == 'IP':
+        return {'Address': value}
+
+    elif indicator_type == 'Domain':
+        return {'Name': value}
+
+    elif indicator_type == 'SHA256':
+        return {'SHA256': value}
+
+    elif indicator_type == 'MD5':
+        return {'MD5': value}
+
+    elif indicator_type == 'SHA-1':
+        return {'SHA-1': value}
+
+    elif indicator_type == 'URL':
+        return {'Data': value}
+
+
+def split_hash_context(entry_result):
+    sha256_context = []
+    md5_context = []
+    sha1_context = []
+
+    for entry in entry_result:
+        if entry['Type'] == 'MD5':
+            md5_context.append(entry['Value'])
+        elif entry['Type'] == 'SHA-1':
+            sha1_context.append(entry['Value'])
+        else:
+            sha256_context.append(entry['Value'])
+
+    return sha256_context, md5_context, sha1_context
+
+
+def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
     """Retrieves indicators from the feed to the war-room.
         Args:
             client: Client object with request
@@ -218,20 +264,32 @@ def get_indicators_command(client, args):
         """
     # indicator_types = args.get('indicator_types', demisto.params().get('indicator_types'))
     limit = int(args.get('limit'))
-    indicators_list = fetch_indicators_command(client)
+    indicators_list, indicator_context = fetch_indicators_command(client)
     entry_result = camelize(indicators_list[:limit])
+    indicator_context = indicator_context[:limit]
     hr = tableToMarkdown('Indicators from RecordedFuture Feed:', entry_result, headers=['Value', 'Type'])
-    return hr, {'RecordedFutureFeed.Indicator': entry_result}, indicators_list
+    result_dict = None  # type: ignore
+    if client.indicator_type == 'hash':
+        sha256_context, md5_context, sha1_context = split_hash_context(entry_result)
+        result_dict = {'RecordedFutureFeed.Indicator': entry_result,
+                       HASH_DT['MD5']: md5_context,
+                       HASH_DT['SHA256']: sha256_context,
+                       HASH_DT['SHA1']: sha1_context}
+
+    else:
+        result_dict = {'RecordedFutureFeed.Indicator': entry_result,
+                       outputPaths[client.indicator_type]: indicator_context}
+
+    return hr, result_dict, indicators_list
 
 
-def get_risk_rules_command(client: Client, args):
-    indicator_type = args.get('indicator_type')
+def get_risk_rules_command(client: Client):
+    indicator_type = client.indicator_type
     result = client._http_request(
         method='GET',
         url_suffix=indicator_type + '/riskrules',
-        params={'output_format': 'csv/splunk'},
-        headers={'X-RFToken': client.api_token, 'X-RF-User-Agent': 'Demisto',
-                 'content-type': 'application/json'}
+        params=PARAMS,
+        headers=HEADERS
     )
     entry_result = []
     for entry in result['data']['results']:
@@ -246,9 +304,8 @@ def get_risk_rules_command(client: Client, args):
 
 
 def main():
-    params = {k: v for k, v in demisto.params().items() if v is not None}
     handle_proxy()
-    client = Client(**params)
+    client = Client(**demisto.params())
     command = demisto.command()
     demisto.info('Command being called is {}'.format(command))
     # Switch case
@@ -259,12 +316,12 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
+            indicators, _ = fetch_indicators_command(client)
             # we submit the indicators in batches
-            for b in batch(indicators, batch_size=2000):
+            for b in old_batch(indicators, batch_size=2000):  # TODO change to commonserverpython batch
                 demisto.createIndicators(b)
         else:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args())
+            readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type:ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
