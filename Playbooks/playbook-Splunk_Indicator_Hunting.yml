@@ -2250,11 +2250,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationIPFields
                 iscontext: true
@@ -2299,11 +2299,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationUserFields
                 iscontext: true
@@ -2348,11 +2348,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationInternalHostFields
                 iscontext: true
@@ -2438,11 +2438,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationIPFields
                 iscontext: true
@@ -2487,11 +2487,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationUserFields
                 iscontext: true
@@ -2536,11 +2536,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationInternalHostFields
                 iscontext: true
@@ -2626,11 +2626,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationIPFields
                 iscontext: true
@@ -2675,11 +2675,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationUserFields
                 iscontext: true
@@ -2724,11 +2724,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationInternalHostFields
                 iscontext: true
@@ -2814,11 +2814,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationIPFields
                 iscontext: true
@@ -2863,11 +2863,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationUserFields
                 iscontext: true
@@ -2912,11 +2912,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationInternalHostFields
                 iscontext: true
@@ -3002,11 +3002,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationIPFields
                 iscontext: true
@@ -3051,11 +3051,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationUserFields
                 iscontext: true
@@ -3100,11 +3100,11 @@ tasks:
           transformers:
           - operator: GetValuesOfMultipleFields
             args:
-              Key:
+              key:
                 value:
                   simple: Splunk.Result
                 iscontext: true
-              List:
+              list:
                 value:
                   simple: inputs.InvestigationInternalHostFields
                 iscontext: true
