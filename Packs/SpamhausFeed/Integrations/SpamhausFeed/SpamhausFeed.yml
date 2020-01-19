@@ -24,8 +24,10 @@ configuration:
   defaultvalue: IP
   display: Indicator Type
   name: indicator_type
+  options:
+  - IP
   required: false
-  type: 0
+  type: 15
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
   name: feedInstanceReliability
@@ -46,7 +48,8 @@ configuration:
   name: skipExclusionList
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation.
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator reputation
   name: feedInstanceReputation
