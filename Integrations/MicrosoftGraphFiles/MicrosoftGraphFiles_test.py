@@ -8,7 +8,6 @@ from MicrosoftGraphFiles import (
     remove_identity_key,
     url_validation,
     parse_key_to_context,
-    module_test,
     delete_file_command,
     download_file_command,
     list_tenant_sites_command,
@@ -44,7 +43,7 @@ class TestClient(Client):
         self.http_call = ""
         self.access_token = "1234"
         self.headers = {"Authorization": f"Bearer {self.access_token}"}
-        self.base_url = '12435'
+        self.base_url = "12435"
 
     def get_access_token(self):
         return self.get_access_token
@@ -198,23 +197,6 @@ def test_parse_key_to_context_exclude_keys_from_list():
     )
     assert parsed_response.get("eTag", True) is True
     assert parsed_response.get("ETag", True) is True
-
-
-def test_module_test(mocker):
-    """
-    Given:
-        -
-    When
-        - Clicking on "Test" when setting a new integration instance
-    Then
-        - Returns "OK" if found token
-    """
-    client = TestClient()
-    mocker.patch.object(
-        client, "http_call", return_value=commands_responses["test_module"]
-    )
-    result = module_test(client)
-    assert commands_expected_results["test_module"] == result
 
 
 @pytest.mark.parametrize(

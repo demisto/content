@@ -1,3 +1,5 @@
+import binascii
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -125,9 +127,13 @@ def get_encrypted(content, key):
         Returns:
             encrypted timestamp:content
         """
-        # String to bytes
-        enc_key = base64.b64decode(enc_key)
-        # Create key
+        try:
+            # String to bytes
+            enc_key = base64.b64decode(enc_key)
+        except binascii.Error:
+            raise DemistoException(
+                "It looks like 'Key' value is incorrect. please " "provide another one."
+            )
         aes_gcm = AESGCM(enc_key)
         # Create nonce
         nonce = create_nonce()
@@ -266,7 +272,7 @@ class Client(BaseClient):
         This function returns a list of the tenant sites
         :return: graph api raw response
         """
-        url = "https://graph.microsoft.com/v1.0/sites"
+        url = f"{self.base_url}/sites"
         query_string = {"search": "*"}
         return self.http_call(
             method="GET",
@@ -750,13 +756,28 @@ def main():
 """ COMMANDS + REQUESTS FUNCTIONS """
 
 
+def list_drives_site_for_test_module(token):
+    query_string = {"search": "*", "top": "1"}
+    requests.get(
+        url=demisto.params().get("host"),
+        headers={"Authorization": f"Bearer {token}"},
+        params=query_string,
+        timeout=7,
+    )
+
+
 def module_test(client, args=None):
     """
     Performs basic get request to get item samples
     """
     result = client.get_access_token()
     if result:
-        return "ok"
+        try:
+            list_drives_site_for_test_module(result)
+        except Exception:
+            raise DemistoException("Test failed. please check if Server Url is correct")
+        else:
+            return "ok"
     else:
         return "Test failed because could not get access token"
 
