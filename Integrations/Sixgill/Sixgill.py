@@ -87,7 +87,7 @@ def fetch_incidents():
                                       FETCH_INCIDENTS_LIMIT)
 
     sixgill_alerts_client = SixgillAlertClient(demisto.params()['client_id'], demisto.params()['client_secret'],
-                                               CHANNEL_CODE, bulk_size=fetch_incidents_limit)
+                                               CHANNEL_CODE, bulk_size=fetch_incidents_limit, logger=demisto)
 
     filter_alerts_kwargs = get_incident_init_params()
 
@@ -112,7 +112,7 @@ def get_indicators():
                                        FETCH_INDICATORS_LIMIT)
 
     sixgill_darkfeed_client = SixgillDarkFeedClient(demisto.params()['client_id'], demisto.params()['client_secret'],
-                                                    CHANNEL_CODE, bulk_size=fetch_indicators_limit)
+                                                    CHANNEL_CODE, bulk_size=fetch_indicators_limit, logger=demisto)
 
     bundle = sixgill_darkfeed_client.get_bundle()
     sixgill_darkfeed_client.commit_indicators()
