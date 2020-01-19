@@ -197,10 +197,12 @@ def get_tests_allocation_for_threads(number_of_instances, tests_file_path):
 
         del dependent_tests_clusters[:clusters_added]
 
-        num_of_tests_to_add = desired_tests_per_allocation - len(current_allocation)
+        num_of_tests_to_add = int(desired_tests_per_allocation - len(current_allocation))
         independent_tests_to_add = independent_tests[:num_of_tests_to_add]
         current_allocation.extend(independent_tests_to_add)
         del independent_tests[:num_of_tests_to_add]
 
         tests_allocation.append(current_allocation)
     return tests_allocation
+
+get_tests_allocation_for_threads(10, './conf.json')
