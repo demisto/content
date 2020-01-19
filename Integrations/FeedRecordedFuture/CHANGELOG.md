@@ -1,2 +1,1 @@
 ## [Unreleased]
-    - new feed integration
