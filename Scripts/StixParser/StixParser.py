@@ -276,7 +276,6 @@ def extract_indicators(data):
     """
     must_have_in_stix = [
         "created",
-        "firstSeen",
         "id",
         "labels",
         "modified",
@@ -291,7 +290,7 @@ def extract_indicators(data):
         if "objects" in data:
             objects = data.get("objects")
         # If its STIX
-        elif all([key in data for key in must_have_in_stix]):
+        elif all(key in data for key in must_have_in_stix):
             objects = data
         else:
             return_error("No STIX2 object could be parsed")
