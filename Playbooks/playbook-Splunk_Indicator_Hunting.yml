@@ -1,9 +1,10 @@
 id: Splunk Indicator Hunting
 version: -1
+fromversion: 5.0.0
 name: Splunk Indicator Hunting
-fromversion: 4.5.0
-description: 'The Playbook queries Splunk for indicators such as file hashes, IP addresses,
-  Domains or urls. '
+description: The Playbook queries Splunk for indicators such as file hashes, IP addresses,
+  domains or urls. and outputs detected users, ip addresses and hostnames related
+  to the indicators.
 starttaskid: '0'
 tasks:
   '0':
@@ -25,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 780,
-          "y": -290
+          "y": -280
         }
       }
     note: false
@@ -102,7 +103,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2100,
+          "x": 2070,
           "y": 200
         }
       }
@@ -115,7 +116,6 @@ tasks:
     type: condition
     task:
       id: 70780084-0b31-4b12-866f-125352d4ddf2
-      description: Is there an IP to search?
       version: -1
       name: Is there an IP to search?
       type: condition
@@ -125,7 +125,7 @@ tasks:
       '#default#':
       - '48'
       'yes':
-      - '49'
+      - '50'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -151,7 +151,6 @@ tasks:
     type: condition
     task:
       id: 45687543-bac0-47cd-858d-19e2268ed132
-      description: Is there a hash to search?
       version: -1
       name: Is there a hash to search?
       type: condition
@@ -199,7 +198,6 @@ tasks:
     type: condition
     task:
       id: 0c440cf7-d657-4778-830b-6a85b01e8370
-      description: Is there an Domain/Url to search?
       version: -1
       name: Is there an Domain/Url to search?
       type: condition
@@ -209,7 +207,7 @@ tasks:
       '#default#':
       - '10'
       'yes':
-      - '15'
+      - '11'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -222,7 +220,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2100,
+          "x": 2070,
           "y": 420
         }
       }
@@ -231,22 +229,25 @@ tasks:
     ignoreworker: false
   '10':
     id: '10'
-    taskid: 305767c1-6dc1-40fb-8338-eb8550d03b1b
+    taskid: 55831a03-03c8-4234-87e2-ba3e15124f7e
     type: title
     task:
-      id: 305767c1-6dc1-40fb-8338-eb8550d03b1b
+      id: 55831a03-03c8-4234-87e2-ba3e15124f7e
       version: -1
-      name: Done
+      name: Domain/Url hunting done
       type: title
       iscommand: false
       brand: ''
       description: ''
+    nexttasks:
+      '#none#':
+      - '116'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2100,
-          "y": 2000
+          "x": 2070,
+          "y": 2570
         }
       }
     note: false
@@ -254,11 +255,10 @@ tasks:
     ignoreworker: false
   '11':
     id: '11'
-    taskid: 9df75b15-7824-4677-87e1-9b5ecd172f44
+    taskid: ea5cc6c2-a8fc-423d-8f79-fa0c335e207e
     type: condition
     task:
-      id: 9df75b15-7824-4677-87e1-9b5ecd172f44
-      description: Was there a custom domain/url field?
+      id: ea5cc6c2-a8fc-423d-8f79-fa0c335e207e
       version: -1
       name: Was there a custom domain/url field?
       type: condition
@@ -266,9 +266,9 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '74'
+      - '89'
       'yes':
-      - '16'
+      - '90'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -281,91 +281,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2640,
-          "y": 1010
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '15':
-    id: '15'
-    taskid: 668b7d58-a94c-4870-8d6f-d3b50460bd91
-    type: regular
-    task:
-      id: 668b7d58-a94c-4870-8d6f-d3b50460bd91
-      version: -1
-      name: Set DomainUrl to array
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '11'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: DomainURL
-      value:
-        complex:
-          root: inputs.URLDomain
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2640,
-          "y": 810
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '16':
-    id: '16'
-    taskid: e583940f-03b6-46e7-8486-c42831be3b4e
-    type: regular
-    task:
-      id: e583940f-03b6-46e7-8486-c42831be3b4e
-      version: -1
-      name: Set DomainUrlFields to Array
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '10'
-      - '57'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: DomainURLFields
-      value:
-        complex:
-          root: inputs.URLDomainField
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2530,
-          "y": 1365
+          "x": 2490,
+          "y": 1130
         }
       }
     note: false
@@ -386,7 +303,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '21'
+      - '69'
     scriptarguments:
       append:
         simple: 'true'
@@ -405,8 +322,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2340,
-          "y": 950
+          "x": -2590,
+          "y": 1510
         }
       }
     note: false
@@ -418,7 +335,6 @@ tasks:
     type: condition
     task:
       id: 8d394926-0f4e-4d5d-8d0c-7f31d935a6c3
-      description: Was there a custom MD5 field?
       version: -1
       name: Was there a custom MD5 field?
       type: condition
@@ -426,9 +342,9 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '69'
+      - '82'
       'yes':
-      - '77'
+      - '81'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -441,8 +357,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2340,
-          "y": 1120
+          "x": -2390,
+          "y": 1140
         }
       }
     note: false
@@ -454,9 +370,8 @@ tasks:
     type: condition
     task:
       id: a9d31dda-dd5a-49ad-8a4e-f9b118462a46
-      description: Is there an MD5 to search?
       version: -1
-      name: Is there an MD5 to search?
+      name: Is there an MD5 to search
       type: condition
       iscommand: false
       brand: ''
@@ -464,7 +379,7 @@ tasks:
       '#default#':
       - '25'
       'yes':
-      - '20'
+      - '21'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -486,22 +401,25 @@ tasks:
     ignoreworker: false
   '25':
     id: '25'
-    taskid: 232fed4f-2cff-4b50-816f-5e42d7b7b9d1
+    taskid: 89114e4b-5f78-4764-8f08-1b183a2ad647
     type: title
     task:
-      id: 232fed4f-2cff-4b50-816f-5e42d7b7b9d1
+      id: 89114e4b-5f78-4764-8f08-1b183a2ad647
       version: -1
-      name: Done
+      name: Hash hunting done
       type: title
       iscommand: false
       brand: ''
       description: ''
+    nexttasks:
+      '#none#':
+      - '116'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -660,
-          "y": 1980
+          "y": 2570
         }
       }
     note: false
@@ -565,9 +483,8 @@ tasks:
     type: condition
     task:
       id: 219caccb-356b-4f28-8598-3a2b208c75c1
-      description: Is there an SHA1 to search?
       version: -1
-      name: Is there an SHA1 to search?
+      name: Is there an SHA1 to search
       type: condition
       iscommand: false
       brand: ''
@@ -575,7 +492,7 @@ tasks:
       '#default#':
       - '25'
       'yes':
-      - '30'
+      - '31'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -595,54 +512,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '30':
-    id: '30'
-    taskid: 763ac864-d770-43ba-876b-446ccc1c61d8
-    type: regular
-    task:
-      id: 763ac864-d770-43ba-876b-446ccc1c61d8
-      version: -1
-      name: Set SHA1 to array
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '31'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: File.SHA1
-      value:
-        complex:
-          root: inputs.SHA1
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1070,
-          "y": 950
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   '31':
     id: '31'
     taskid: 15b68e09-d066-4d44-8ff4-8e3f9e91f215
     type: condition
     task:
       id: 15b68e09-d066-4d44-8ff4-8e3f9e91f215
-      description: Was there a custom SHA1 field?
       version: -1
       name: Was there a custom SHA1 field?
       type: condition
@@ -650,9 +525,9 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '71'
+      - '84'
       'yes':
-      - '44'
+      - '83'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -705,9 +580,8 @@ tasks:
     type: condition
     task:
       id: 30cf6a20-efcf-48d0-80d5-31523a3e284e
-      description: Is there an SHA256 to search?
       version: -1
-      name: Is there an SHA256 to search?
+      name: Is there an SHA256 to search
       type: condition
       iscommand: false
       brand: ''
@@ -715,7 +589,7 @@ tasks:
       '#default#':
       - '25'
       'yes':
-      - '40'
+      - '41'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -729,48 +603,7 @@ tasks:
       {
         "position": {
           "x": -240,
-          "y": 800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '40':
-    id: '40'
-    taskid: 3bf58284-60cf-4386-8c20-0ec858cff115
-    type: regular
-    task:
-      id: 3bf58284-60cf-4386-8c20-0ec858cff115
-      version: -1
-      name: Set SHA256 to array
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '41'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: File.SHA256
-      value:
-        complex:
-          root: inputs.SHA256
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -240,
-          "y": 1120
+          "y": 775
         }
       }
     note: false
@@ -782,7 +615,6 @@ tasks:
     type: condition
     task:
       id: 4619958a-880f-4406-86e8-45a9f7155fb0
-      description: Was there a custom SHA256 field?
       version: -1
       name: Was there a custom SHA256 field?
       type: condition
@@ -790,9 +622,9 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '72'
+      - '86'
       'yes':
-      - '45'
+      - '85'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -807,89 +639,7 @@ tasks:
       {
         "position": {
           "x": -240,
-          "y": 1270
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '44':
-    id: '44'
-    taskid: 2b5cc5f5-53f0-40ad-82f6-932638f8ae0a
-    type: regular
-    task:
-      id: 2b5cc5f5-53f0-40ad-82f6-932638f8ae0a
-      version: -1
-      name: Set SHA1Fields to Array
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '78'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: SHA1Fields
-      value:
-        complex:
-          root: inputs.SplunkSHA1Field
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -870,
-          "y": 1480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '45':
-    id: '45'
-    taskid: 9f4a9009-17bb-4ff0-8ede-52a74ea2db19
-    type: regular
-    task:
-      id: 9f4a9009-17bb-4ff0-8ede-52a74ea2db19
-      version: -1
-      name: Set SHA256Fields to Array
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '79'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: SHA256Fields
-      value:
-        complex:
-          root: inputs.SplunkSHA256Field
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 30,
-          "y": 1480
+          "y": 1130
         }
       }
     note: false
@@ -897,63 +647,25 @@ tasks:
     ignoreworker: false
   '48':
     id: '48'
-    taskid: cc1ceab4-fe3c-486c-8cf8-367b46b765ac
+    taskid: 6a0238aa-af6f-40b2-8ee7-c62eafe818ed
     type: title
     task:
-      id: cc1ceab4-fe3c-486c-8cf8-367b46b765ac
+      id: 6a0238aa-af6f-40b2-8ee7-c62eafe818ed
       version: -1
-      name: Done
+      name: IP hunting done
       type: title
       iscommand: false
       brand: ''
       description: ''
+    nexttasks:
+      '#none#':
+      - '116'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 780,
-          "y": 1990
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '49':
-    id: '49'
-    taskid: 6c488296-9fc4-4424-8c23-af498d09d685
-    type: regular
-    task:
-      id: 6c488296-9fc4-4424-8c23-af498d09d685
-      version: -1
-      name: Set IP to array
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '50'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: IP
-      value:
-        complex:
-          root: inputs.IPAddress
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1380,
-          "y": 840
+          "y": 2570
         }
       }
     note: false
@@ -965,7 +677,6 @@ tasks:
     type: condition
     task:
       id: c8f395df-f676-4d66-858d-037fec1bd956
-      description: Was there a custom IP field?
       version: -1
       name: Was there a custom IP field?
       type: condition
@@ -973,9 +684,9 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '80'
+      - '88'
       'yes':
-      - '51'
+      - '87'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -990,48 +701,7 @@ tasks:
       {
         "position": {
           "x": 1380,
-          "y": 1010
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '51':
-    id: '51'
-    taskid: e5eb6a18-a083-4e6e-8737-5026d4904673
-    type: regular
-    task:
-      id: e5eb6a18-a083-4e6e-8737-5026d4904673
-      version: -1
-      name: Set IPFields to Array
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '64'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: IPFields
-      value:
-        complex:
-          root: inputs.SplunkIPField
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1150,
-          "y": 1480
+          "y": 1130
         }
       }
     note: false
@@ -1043,9 +713,8 @@ tasks:
     type: condition
     task:
       id: 3a34151e-f6ba-4406-82aa-137d5968b47d
-      description: Is Splunk enabled?
       version: -1
-      name: Is Splunk enabled?
+      name: Is Splunk enabled
       type: condition
       iscommand: false
       brand: ''
@@ -1053,9 +722,9 @@ tasks:
       '#default#':
       - '48'
       'yes':
+      - '2'
       - '5'
       - '6'
-      - '2'
     separatecontext: false
     conditions:
     - label: 'yes'
@@ -1085,7 +754,7 @@ tasks:
       {
         "position": {
           "x": 780,
-          "y": -90
+          "y": -140
         }
       }
     note: false
@@ -1093,10 +762,10 @@ tasks:
     ignoreworker: false
   '57':
     id: '57'
-    taskid: 3b6d9024-6f55-4537-88be-bcb2cf9d0ea0
+    taskid: 495bfdd5-ab80-45db-8c9f-85378eb36cfc
     type: regular
     task:
-      id: 3b6d9024-6f55-4537-88be-bcb2cf9d0ea0
+      id: 495bfdd5-ab80-45db-8c9f-85378eb36cfc
       version: -1
       name: Splunk search with custom fields
       description: Searches Splunk for events.
@@ -1106,8 +775,9 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '10'
+      - '107'
     scriptarguments:
+      batch_limit: {}
       earliest_time:
         simple: ${inputs.earliest_time}
       event_limit:
@@ -1116,17 +786,25 @@ tasks:
         simple: ${inputs.latest_time}
       query:
         complex:
-          root: .
+          root: inputs.URLDomainField
           transformers:
-          - operator: DT
+          - operator: ProductJoin
             args:
-              dt:
+              join:
                 value:
-                  simple: '.=function(val){var fields = Array.isArray(val.DomainURLFields)
-                    ? val.DomainURLFields : [val.DomainURLFields]; var domainurls
-                    = Array.isArray(val.DomainURL) ? val.DomainURL : [val.DomainURL];
-                    return fields.map(field => domainurls.map(domainurl => field +
-                    " *" + domainurl + "*" ).join('' OR ''))}(val)'
+                  simple: ' *'
+              list2:
+                value:
+                  simple: inputs.SplunkURLDomainField
+                iscontext: true
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1*
           - operator: join
             args:
               separator:
@@ -1137,7 +815,13 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' | table '
+                  simple: ')  | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix: {}
@@ -1145,11 +829,70 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' ('
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.IndexNames
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: index=
+              suffix: {}
+      update_context: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2460,
+          "x": 2470,
           "y": 1710
         }
       }
@@ -1158,10 +901,10 @@ tasks:
     ignoreworker: false
   '64':
     id: '64'
-    taskid: a6bb0469-b769-451f-8ef0-a77c3025fc79
+    taskid: 639d2c54-566d-47a6-8e87-d728d44b6b01
     type: regular
     task:
-      id: a6bb0469-b769-451f-8ef0-a77c3025fc79
+      id: 639d2c54-566d-47a6-8e87-d728d44b6b01
       version: -1
       name: Splunk search with custom fields
       description: Searches Splunk for events.
@@ -1171,8 +914,9 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '48'
+      - '103'
     scriptarguments:
+      batch_limit: {}
       earliest_time:
         simple: ${inputs.earliest_time}
       event_limit:
@@ -1181,16 +925,17 @@ tasks:
         simple: ${inputs.latest_time}
       query:
         complex:
-          root: .
+          root: inputs.SplunkIPField
           transformers:
-          - operator: DT
+          - operator: ProductJoin
             args:
-              dt:
+              join:
                 value:
-                  simple: '.=function(val){var fields = Array.isArray(val.IPFields)
-                    ? val.IPFields : [val.IPFields]; var ips = Array.isArray(val.IP)
-                    ? val.IP : [val.IP]; return fields.map(field => ips.map(ip =>
-                    field +"="+ ip).join('' OR ''))}(val)'
+                  simple: '='
+              list2:
+                value:
+                  simple: inputs.IPAddress
+                iscontext: true
           - operator: join
             args:
               separator:
@@ -1201,7 +946,13 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' | table '
+                  simple: ')  | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix: {}
@@ -1209,6 +960,65 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' ('
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.IndexNames
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: index=
+              suffix: {}
+      update_context: {}
     separatecontext: false
     view: |-
       {
@@ -1222,10 +1032,10 @@ tasks:
     ignoreworker: false
   '69':
     id: '69'
-    taskid: c6adb992-2d10-4e82-8e05-11626da73672
+    taskid: fb833c21-b53b-4ce3-8ea4-f1e3fabb627f
     type: regular
     task:
-      id: c6adb992-2d10-4e82-8e05-11626da73672
+      id: fb833c21-b53b-4ce3-8ea4-f1e3fabb627f
       version: -1
       name: Splunk search without custom fields
       description: Searches Splunk for events.
@@ -1235,8 +1045,9 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '25'
+      - '91'
     scriptarguments:
+      batch_limit: {}
       earliest_time:
         simple: ${inputs.earliest_time}
       event_limit:
@@ -1258,7 +1069,13 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' | table '
+                  simple: ') | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix: {}
@@ -1266,6 +1083,58 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' ('
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: Index
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: index=
+              suffix: {}
+      update_context: {}
     separatecontext: false
     view: |-
       {
@@ -1279,10 +1148,10 @@ tasks:
     ignoreworker: false
   '71':
     id: '71'
-    taskid: 12cf4d67-5c79-4cad-8847-96e765be4c53
+    taskid: 898168d2-2593-461e-80a9-cd3626d95f4e
     type: regular
     task:
-      id: 12cf4d67-5c79-4cad-8847-96e765be4c53
+      id: 898168d2-2593-461e-80a9-cd3626d95f4e
       version: -1
       name: Splunk search without custom fields
       description: Searches Splunk for events.
@@ -1292,8 +1161,9 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '25'
+      - '95'
     scriptarguments:
+      batch_limit: {}
       earliest_time:
         simple: ${inputs.earliest_time}
       event_limit:
@@ -1315,7 +1185,13 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' | table '
+                  simple: ')  | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix: {}
@@ -1323,6 +1199,65 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' ('
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.IndexNames
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: index=
+              suffix: {}
+      update_context: {}
     separatecontext: false
     view: |-
       {
@@ -1336,10 +1271,10 @@ tasks:
     ignoreworker: false
   '72':
     id: '72'
-    taskid: 479a0dba-6d39-481c-84c3-9192804379aa
+    taskid: 4951f992-b5eb-4f5a-8200-26a0f72c367b
     type: regular
     task:
-      id: 479a0dba-6d39-481c-84c3-9192804379aa
+      id: 4951f992-b5eb-4f5a-8200-26a0f72c367b
       version: -1
       name: Splunk search without custom fields
       description: Searches Splunk for events.
@@ -1349,8 +1284,9 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '25'
+      - '99'
     scriptarguments:
+      batch_limit: {}
       earliest_time:
         simple: ${inputs.earliest_time}
       event_limit:
@@ -1372,7 +1308,13 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' | table '
+                  simple: ')  | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix: {}
@@ -1380,6 +1322,65 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' ('
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.IndexNames
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: index=
+              suffix: {}
+      update_context: {}
     separatecontext: false
     view: |-
       {
@@ -1393,10 +1394,10 @@ tasks:
     ignoreworker: false
   '74':
     id: '74'
-    taskid: 62e78a1c-7391-4c37-8bd8-aa8153856445
+    taskid: e01ebdb8-7e0e-4dcf-83d5-1c4bf81556fb
     type: regular
     task:
-      id: 62e78a1c-7391-4c37-8bd8-aa8153856445
+      id: e01ebdb8-7e0e-4dcf-83d5-1c4bf81556fb
       version: -1
       name: Splunk search without custom fields
       description: Searches Splunk for events.
@@ -1406,8 +1407,9 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '10'
+      - '107'
     scriptarguments:
+      batch_limit: {}
       earliest_time:
         simple: ${inputs.earliest_time}
       event_limit:
@@ -1436,7 +1438,13 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' | table '
+                  simple: ')  | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix: {}
@@ -1444,121 +1452,71 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2870,
-          "y": 1710
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '76':
-    id: '76'
-    taskid: f103c031-9fc2-4dee-816b-3b017c68481b
-    type: regular
-    task:
-      id: f103c031-9fc2-4dee-816b-3b017c68481b
-      version: -1
-      name: Splunk search with custom fields
-      description: Searches Splunk for events.
-      script: '|||splunk-search'
-      type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '25'
-    scriptarguments:
-      earliest_time:
-        simple: ${inputs.earliest_time}
-      event_limit:
-        simple: ${inputs.event_limit}
-      latest_time:
-        simple: ${inputs.latest_time}
-      query:
-        complex:
-          root: .
-          transformers:
-          - operator: DT
-            args:
-              dt:
-                value:
-                  simple: '.=function(val){var fields = Array.isArray(val.MD5Fields)
-                    ? val.MD5Fields : [val.MD5Fields]; var md5s = Array.isArray(val.File.MD5)
-                    ? val.File.MD5 : [val.File.MD5]; return fields.map(field => md5s.map(md5
-                    => field +"="+ md5).join('' OR ''))}(val)'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
           - operator: concat
             args:
-              prefix:
-                value:
-                  simple: ' '
+              prefix: {}
               suffix:
                 value:
-                  simple: ' | table '
+                  simple: ' '
           - operator: concat
             args:
-              prefix:
-                value:
-                  simple: ' '
+              prefix: {}
               suffix:
                 value:
-                  simple: inputs.SelectFields
+                  simple: inputs.InvestigationIPFields
                 iscontext: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2190,
-          "y": 1710
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '77':
-    id: '77'
-    taskid: 4fbd9c40-473c-4f89-81d4-3682cbf207cb
-    type: regular
-    task:
-      id: 4fbd9c40-473c-4f89-81d4-3682cbf207cb
-      version: -1
-      name: Set MD5Fields to Array
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '76'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: MD5Fields
-      value:
-        complex:
-          root: inputs.SplunkMD5Field
-          transformers:
-          - operator: split
+          - operator: concat
             args:
-              delimiter:
+              prefix: {}
+              suffix:
                 value:
-                  simple: ','
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' ('
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.IndexNames
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: index=
+              suffix: {}
+      update_context: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -2190,
-          "y": 1470
+          "x": 2920,
+          "y": 1710
         }
       }
     note: false
@@ -1566,10 +1524,10 @@ tasks:
     ignoreworker: false
   '78':
     id: '78'
-    taskid: f9bd286b-60f3-407d-858d-82bfe3d1b17b
+    taskid: 1b729bc6-9db4-4c63-8153-4c59611d5789
     type: regular
     task:
-      id: f9bd286b-60f3-407d-858d-82bfe3d1b17b
+      id: 1b729bc6-9db4-4c63-8153-4c59611d5789
       version: -1
       name: Splunk search with custom fields
       description: Searches Splunk for events.
@@ -1579,8 +1537,9 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '25'
+      - '95'
     scriptarguments:
+      batch_limit: {}
       earliest_time:
         simple: ${inputs.earliest_time}
       event_limit:
@@ -1589,16 +1548,17 @@ tasks:
         simple: ${inputs.latest_time}
       query:
         complex:
-          root: .
+          root: inputs.SplunkSHA1Field
           transformers:
-          - operator: DT
+          - operator: ProductJoin
             args:
-              dt:
+              join:
                 value:
-                  simple: '.=function(val){var fields = Array.isArray(val.SHA1Fields)
-                    ? val.SHA1Fields : [val.SHA1Fields]; var sha1s = Array.isArray(val.File.SHA1)
-                    ? val.File.SHA1 : [val.File.SHA1]; return fields.map(field =>
-                    sha1s.map(sha1 => field +"="+ sha1).join('' OR ''))}(val)'
+                  simple: '='
+              list2:
+                value:
+                  simple: inputs.SHA1
+                iscontext: true
           - operator: join
             args:
               separator:
@@ -1609,7 +1569,13 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' | table '
+                  simple: ')  | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix: {}
@@ -1617,6 +1583,65 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' ('
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.IndexNames
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: index=
+              suffix: {}
+      update_context: {}
     separatecontext: false
     view: |-
       {
@@ -1630,10 +1655,10 @@ tasks:
     ignoreworker: false
   '79':
     id: '79'
-    taskid: 1ce7b0f9-17c2-432d-8509-d73312057aa2
+    taskid: 38dcbf43-2671-4e89-8082-54fd66440e58
     type: regular
     task:
-      id: 1ce7b0f9-17c2-432d-8509-d73312057aa2
+      id: 38dcbf43-2671-4e89-8082-54fd66440e58
       version: -1
       name: Splunk search with custom fields
       description: Searches Splunk for events.
@@ -1643,8 +1668,9 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '25'
+      - '99'
     scriptarguments:
+      batch_limit: {}
       earliest_time:
         simple: ${inputs.earliest_time}
       event_limit:
@@ -1653,16 +1679,17 @@ tasks:
         simple: ${inputs.latest_time}
       query:
         complex:
-          root: .
+          root: inputs.SplunkSHA256Field
           transformers:
-          - operator: DT
+          - operator: ProductJoin
             args:
-              dt:
+              join:
                 value:
-                  simple: '.=function(val){var fields = Array.isArray(val.SHA256Fields)
-                    ? val.SHA256Fields : [val.SHA256Fields]; var sha256s = Array.isArray(val.File.SHA256)
-                    ? val.File.SHA256 : [val.File.SHA256]; return fields.map(field
-                    => sha256s.map(sha256 => field +"="+ sha256).join('' OR ''))}(val)'
+                  simple: '='
+              list2:
+                value:
+                  simple: inputs.SHA256
+                iscontext: true
           - operator: join
             args:
               separator:
@@ -1673,7 +1700,13 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' | table '
+                  simple: ')  | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix: {}
@@ -1681,11 +1714,70 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' ('
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.IndexNames
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: index=
+              suffix: {}
+      update_context: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 30,
+          "x": 10,
           "y": 1710
         }
       }
@@ -1694,10 +1786,10 @@ tasks:
     ignoreworker: false
   '80':
     id: '80'
-    taskid: a0f17ffd-291b-469d-8bd7-0a4112fa537e
+    taskid: 5a7819d1-808e-4ffd-8d94-3d35eac5aedc
     type: regular
     task:
-      id: a0f17ffd-291b-469d-8bd7-0a4112fa537e
+      id: 5a7819d1-808e-4ffd-8d94-3d35eac5aedc
       version: -1
       name: Splunk search without custom fields
       description: Searches Splunk for events.
@@ -1707,8 +1799,9 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '48'
+      - '103'
     scriptarguments:
+      batch_limit: {}
       earliest_time:
         simple: ${inputs.earliest_time}
       event_limit:
@@ -1730,7 +1823,13 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ' | table '
+                  simple: ')  | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
           - operator: concat
             args:
               prefix: {}
@@ -1738,6 +1837,65 @@ tasks:
                 value:
                   simple: inputs.SelectFields
                 iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' ('
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.IndexNames
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: index=
+              suffix: {}
+      update_context: {}
     separatecontext: false
     view: |-
       {
@@ -1749,15 +1907,1722 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  '81':
+    id: '81'
+    taskid: b4998eca-5617-4a69-8d9f-6fde3e67e1a8
+    type: title
+    task:
+      id: b4998eca-5617-4a69-8d9f-6fde3e67e1a8
+      version: -1
+      name: Splunk query with custom fields
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '122'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2190,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '82':
+    id: '82'
+    taskid: 544cebf0-17ea-436d-8af1-17013ec9bb75
+    type: title
+    task:
+      id: 544cebf0-17ea-436d-8af1-17013ec9bb75
+      version: -1
+      name: Splunk free text query
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2590,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '83':
+    id: '83'
+    taskid: 3071057a-075c-4cc3-8d9a-4d89662a6fe9
+    type: title
+    task:
+      id: 3071057a-075c-4cc3-8d9a-4d89662a6fe9
+      version: -1
+      name: Splunk query with custom fields
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '78'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '84':
+    id: '84'
+    taskid: 28407ef8-72d6-4667-8d9e-7fb1f3255cd9
+    type: title
+    task:
+      id: 28407ef8-72d6-4667-8d9e-7fb1f3255cd9
+      version: -1
+      name: Splunk free text query
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '112'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1280,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '85':
+    id: '85'
+    taskid: 4096da5f-fdda-4dce-8ccf-65cacc168a7d
+    type: title
+    task:
+      id: 4096da5f-fdda-4dce-8ccf-65cacc168a7d
+      version: -1
+      name: Splunk query with custom fields
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '79'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '86':
+    id: '86'
+    taskid: bdc4f04c-99d6-49ff-8cc5-c56a9461bbd1
+    type: title
+    task:
+      id: bdc4f04c-99d6-49ff-8cc5-c56a9461bbd1
+      version: -1
+      name: Splunk free text query
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '113'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '87':
+    id: '87'
+    taskid: 20f2a299-2d3d-4cef-89b9-f8128c24c9c9
+    type: title
+    task:
+      id: 20f2a299-2d3d-4cef-89b9-f8128c24c9c9
+      version: -1
+      name: Splunk query with custom fields
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '64'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '88':
+    id: '88'
+    taskid: 084034f7-7f62-4e40-838f-e0b04b2ce0bd
+    type: title
+    task:
+      id: 084034f7-7f62-4e40-838f-e0b04b2ce0bd
+      version: -1
+      name: Splunk free text query
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '114'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '89':
+    id: '89'
+    taskid: 1e86e491-b889-48dc-8fe0-a5a2a22a8069
+    type: title
+    task:
+      id: 1e86e491-b889-48dc-8fe0-a5a2a22a8069
+      version: -1
+      name: Splunk free text query
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '115'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2920,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '90':
+    id: '90'
+    taskid: df5ab634-da64-450b-80e9-3ad8f6fd93fe
+    type: title
+    task:
+      id: df5ab634-da64-450b-80e9-3ad8f6fd93fe
+      version: -1
+      name: Splunk query with custom fields
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '57'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2470,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '91':
+    id: '91'
+    taskid: 8d981267-254f-4feb-8267-8ad20a93a8e9
+    type: condition
+    task:
+      id: 8d981267-254f-4feb-8267-8ad20a93a8e9
+      version: -1
+      name: Is MD5 file hash detected by Splunk?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '92'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Splunk.Result
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Splunk.Result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2390,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '92':
+    id: '92'
+    taskid: 94b84a05-2fa4-4ff1-8fcc-f636d6abd6f3
+    type: regular
+    task:
+      id: 94b84a05-2fa4-4ff1-8fcc-f636d6abd6f3
+      version: -1
+      name: Set detected IP addresses
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '93'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2630,
+          "y": 2065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '93':
+    id: '93'
+    taskid: 6eda5e85-d4bc-4823-875e-9970bac10e5e
+    type: regular
+    task:
+      id: 6eda5e85-d4bc-4823-875e-9970bac10e5e
+      version: -1
+      name: Set detected usernames
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '94'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2630,
+          "y": 2215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '94':
+    id: '94'
+    taskid: 336ec037-669b-4eeb-8bb9-b26c787ded68
+    type: regular
+    task:
+      id: 336ec037-669b-4eeb-8bb9-b26c787ded68
+      version: -1
+      name: Set detected internal hostnames
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedHosts
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2630,
+          "y": 2365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '95':
+    id: '95'
+    taskid: 92ef76c6-1a0b-439b-8819-35b0c062c6c4
+    type: condition
+    task:
+      id: 92ef76c6-1a0b-439b-8819-35b0c062c6c4
+      version: -1
+      name: Is SHA1 file hash detected by Splunk?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '96'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Splunk.Result
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Splunk.Result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1040,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '96':
+    id: '96'
+    taskid: b97817c4-b589-428f-8138-44ceaa186b24
+    type: regular
+    task:
+      id: b97817c4-b589-428f-8138-44ceaa186b24
+      version: -1
+      name: Set detected IP addresses
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '97'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1240,
+          "y": 2065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '97':
+    id: '97'
+    taskid: 7dbd17dc-dbef-4226-88a6-a97686ba8704
+    type: regular
+    task:
+      id: 7dbd17dc-dbef-4226-88a6-a97686ba8704
+      version: -1
+      name: Set detected usernames
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '98'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1240,
+          "y": 2215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '98':
+    id: '98'
+    taskid: 38c75384-c2ea-4ca9-8ba1-7fd406f58c02
+    type: regular
+    task:
+      id: 38c75384-c2ea-4ca9-8ba1-7fd406f58c02
+      version: -1
+      name: Set internal detected hostnames
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedHosts
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1240,
+          "y": 2365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '99':
+    id: '99'
+    taskid: 8669c6d1-b8cf-4b20-8360-08f82c40e17c
+    type: condition
+    task:
+      id: 8669c6d1-b8cf-4b20-8360-08f82c40e17c
+      version: -1
+      name: Is SHA256 file hash detected by Splunk?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '25'
+      'yes':
+      - '100'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Splunk.Result
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Splunk.Result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '100':
+    id: '100'
+    taskid: a221d901-f40f-402a-87b6-e1df22ee8f9d
+    type: regular
+    task:
+      id: a221d901-f40f-402a-87b6-e1df22ee8f9d
+      version: -1
+      name: Set detected IP addresses
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '101'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 2065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '101':
+    id: '101'
+    taskid: a7f7303d-aeed-4852-8f05-f9a403457a7a
+    type: regular
+    task:
+      id: a7f7303d-aeed-4852-8f05-f9a403457a7a
+      version: -1
+      name: Set detected usernames
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '102'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 2215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '102':
+    id: '102'
+    taskid: 7f51ee03-b000-48b2-80a4-935d2bf3bd39
+    type: regular
+    task:
+      id: 7f51ee03-b000-48b2-80a4-935d2bf3bd39
+      version: -1
+      name: Set detected internal hostnames
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedHosts
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 2365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '103':
+    id: '103'
+    taskid: 71e0cc33-a934-44a2-825b-c946df97daf8
+    type: condition
+    task:
+      id: 71e0cc33-a934-44a2-825b-c946df97daf8
+      version: -1
+      name: Is ip detected by Splunk?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '48'
+      'yes':
+      - '104'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Splunk.Result
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Splunk.Result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '104':
+    id: '104'
+    taskid: 4b14e9bc-81ca-4c92-80a7-2b910ed21980
+    type: regular
+    task:
+      id: 4b14e9bc-81ca-4c92-80a7-2b910ed21980
+      version: -1
+      name: Set detected IP addresses
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '105'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 2065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '105':
+    id: '105'
+    taskid: 7fc7ed62-428a-474f-8a49-10b1e4b0b08e
+    type: regular
+    task:
+      id: 7fc7ed62-428a-474f-8a49-10b1e4b0b08e
+      version: -1
+      name: Set detected usernames
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '106'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 2215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '106':
+    id: '106'
+    taskid: ef498832-a6dc-406b-8a50-19fb2ae44a0d
+    type: regular
+    task:
+      id: ef498832-a6dc-406b-8a50-19fb2ae44a0d
+      version: -1
+      name: Set detected internal hostnames
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '48'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedHosts
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 2365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '107':
+    id: '107'
+    taskid: 48e88921-e6e6-4982-84ce-22ef329a6b02
+    type: condition
+    task:
+      id: 48e88921-e6e6-4982-84ce-22ef329a6b02
+      version: -1
+      name: Is domain or url detected by Splunk?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '10'
+      'yes':
+      - '108'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Splunk.Result
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Splunk.Result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2600,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '108':
+    id: '108'
+    taskid: 2de1cfc9-1da0-47e1-8b53-370bd65f1d49
+    type: regular
+    task:
+      id: 2de1cfc9-1da0-47e1-8b53-370bd65f1d49
+      version: -1
+      name: Set detected IP addresses
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '109'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedIPs
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2810,
+          "y": 2065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '109':
+    id: '109'
+    taskid: dfbde74c-b316-4bde-80a5-0b4e41bbd93f
+    type: regular
+    task:
+      id: dfbde74c-b316-4bde-80a5-0b4e41bbd93f
+      version: -1
+      name: Set detected usernames
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '110'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedUsers
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2810,
+          "y": 2225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '110':
+    id: '110'
+    taskid: 94a5f71b-4ae1-463a-859f-cf60fe6a3f26
+    type: regular
+    task:
+      id: 94a5f71b-4ae1-463a-859f-cf60fe6a3f26
+      version: -1
+      name: Set detected internal hostnames
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedHosts
+      stringify: {}
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              Key:
+                value:
+                  simple: Splunk.Result
+                iscontext: true
+              List:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2810,
+          "y": 2375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '112':
+    id: '112'
+    taskid: b6ce6e08-69ea-4517-8ac1-da4eb3487294
+    type: regular
+    task:
+      id: b6ce6e08-69ea-4517-8ac1-da4eb3487294
+      version: -1
+      name: Set SHA1 to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '71'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: File.SHA1
+      value:
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1280,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '113':
+    id: '113'
+    taskid: 548fe013-8333-45de-80db-e415d70b6e16
+    type: regular
+    task:
+      id: 548fe013-8333-45de-80db-e415d70b6e16
+      version: -1
+      name: Set SHA256 to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '72'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: File.SHA256
+      stringify: {}
+      value:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '114':
+    id: '114'
+    taskid: 53d80aaa-cbac-4944-8949-7286084013b5
+    type: regular
+    task:
+      id: 53d80aaa-cbac-4944-8949-7286084013b5
+      version: -1
+      name: Set IP to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '80'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: IP
+      stringify: {}
+      value:
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '115':
+    id: '115'
+    taskid: cbdaeae0-6502-4e16-8aa7-3bfdbaa87597
+    type: regular
+    task:
+      id: cbdaeae0-6502-4e16-8aa7-3bfdbaa87597
+      version: -1
+      name: Set DomainUrl to array
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '74'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: DomainURL
+      value:
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2920,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '116':
+    id: '116'
+    taskid: 4cbc556a-ce98-4838-8deb-baf463ee4b5f
+    type: title
+    task:
+      id: 4cbc556a-ce98-4838-8deb-baf463ee4b5f
+      version: -1
+      name: Sort internal and external IP addresses
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '117'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '117':
+    id: '117'
+    taskid: c307d82f-5918-4a15-8a01-8e9f56ad6ec6
+    type: condition
+    task:
+      id: c307d82f-5918-4a15-8a01-8e9f56ad6ec6
+      version: -1
+      name: Are there detected IP addresses?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '121'
+      'yes':
+      - '118'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Splunk.DetectedIPs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 2990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '118':
+    id: '118'
+    taskid: 4e2ab47f-d7b4-486a-8de1-323b8afa43f3
+    type: regular
+    task:
+      id: 4e2ab47f-d7b4-486a-8de1-323b8afa43f3
+      version: -1
+      name: Determine whether the IP address is internal or external
+      description: Returns yes if the IP is in one of the ranges provided, returns
+        no otherwise.
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '119'
+    scriptarguments:
+      ip:
+        simple: ${Splunk.DetectedIPs}
+      ipRanges:
+        simple: ${inputs.InternalRange}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '119':
+    id: '119'
+    taskid: 66c11991-c44b-407c-86b5-bf0f88ad385b
+    type: regular
+    task:
+      id: 66c11991-c44b-407c-86b5-bf0f88ad385b
+      version: -1
+      name: Set detected IP addresses as internal
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '120'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedInternalIPs
+      stringify: {}
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: 'yes'
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 3350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '120':
+    id: '120'
+    taskid: ab721c94-cabf-4c81-8d4d-53c1b0aa9a52
+    type: regular
+    task:
+      id: ab721c94-cabf-4c81-8d4d-53c1b0aa9a52
+      version: -1
+      name: Set detected IP addresses as external
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context, otherwise no value will be set it context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '121'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Splunk.DetectedExternalIPs
+      stringify: {}
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: 'no'
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 3530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '121':
+    id: '121'
+    taskid: cfb4fa28-3bee-4479-884c-c217b3fed88d
+    type: title
+    task:
+      id: cfb4fa28-3bee-4479-884c-c217b3fed88d
+      version: -1
+      name: Done sorting IP addresses
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 3700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '122':
+    id: '122'
+    taskid: 07cbfcea-1459-43af-88c0-1b80d3af4f9c
+    type: regular
+    task:
+      id: 07cbfcea-1459-43af-88c0-1b80d3af4f9c
+      version: -1
+      name: Splunk search with custom fields
+      description: Searches Splunk for events.
+      script: '|||splunk-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '91'
+    scriptarguments:
+      batch_limit: {}
+      earliest_time:
+        simple: ${inputs.earliest_time}
+      event_limit:
+        simple: ${inputs.event_limit}
+      latest_time:
+        simple: ${inputs.latest_time}
+      query:
+        complex:
+          root: inputs.SplunkMD5Field
+          transformers:
+          - operator: ProductJoin
+            args:
+              join:
+                value:
+                  simple: '='
+              list2:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ')  | table '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.SelectFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.InvestigationInternalHostFields
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' ('
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.IndexNames
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: index=
+              suffix: {}
+      update_context: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2190,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2355,
-        "width": 5840,
-        "x": -2590,
-        "y": -290
+        "height": 4045,
+        "width": 5930,
+        "x": -2630,
+        "y": -280
       }
     }
   }
@@ -1804,18 +3669,11 @@ inputs:
   required: false
   description: |
     Domain or Url can be single or an array of domain/urls to search. By default the LIKE clause is used.
-- key: URLDomainField
+- key: SplunkURLDomainField
   value: {}
   required: false
   description: URL/Domain field to search in Splunk. If non are specified the search
     will use quick filter. Only one field can be used in this parameter.
-- key: SelectFields
-  value:
-    simple: '*'
-  required: true
-  description: The fields to be used in the select. Use comma delimited field names
-    as they appear in Splunk. * is an acceptable value but not recommended as it creates
-    a very large ouput.
 - key: earliest_time
   value:
     simple: -1d
@@ -1852,9 +3710,65 @@ inputs:
 
     Its recommended to set a limit for the time frame.
 - key: event_limit
+  value:
+    simple: '100'
+  required: true
+  description: Limit number of events returned by query. This argument is not mandatory
+    for the command but is needed for the playbook.
+- key: InvestigationIPFields
+  value:
+    simple: dest_ip,src_ip,src,dst
+  required: true
+  description: The values of these Splunk fields will be used for the playbook IP
+    outputs.
+- key: InvestigationUserFields
+  value:
+    simple: user_identity
+  required: true
+  description: The values of these Splunk fields will be used for the playbook user
+    outputs.
+- key: InvestigationInternalHostFields
+  value:
+    simple: dest_nt_host
+  required: true
+  description: The values of these Splunk fields will be used for the playbook host
+    name outputs.
+- key: InternalRange
   value: {}
   required: false
-  description: Limit number of events returned by query.
-outputs: []
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR notation, separated by commas. An example of a list
+    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
+    If a list is not provided, will use default list provided in the IsIPInRanges
+    script (the known IPv4 private address ranges).'
+- key: IndexNames
+  value:
+    simple: '*'
+  required: false
+  description: A single Spunk index to use in the search.
+- key: SelectFields
+  value: {}
+  required: false
+  description: These fields can be used to further enrich the Splunk results.
+    Use comma delimited field names as they appear in Splunk. * is an acceptable
+    value but not recommended as it creates a very large output.
+    These fields are in addition to the investigation fields so
+    no need to provide the same fields as in the investigation fields listing.
+outputs:
+- contextPath: Splunk.DetectedUsers
+  description: Users detected based on the username field in your search.
+  type: string
+- contextPath: Splunk.DetectedInternalIPs
+  description: Internal IP addresses detected by your search.
+  type: string
+- contextPath: Splunk.DetectedExternalIPs
+  description: External IP addresses detected by your search.
+  type: string
+- contextPath: Splunk.Detected InternalHosts
+  description: Internal host names detected based on the fields in your search.
+  type: string
+- contextPath: Splunk.DetectedExternalHosts
+  description: External host names detected based on the fields in your search.
+  type: string
 tests:
 - Splunk Indicator Hunting Test
