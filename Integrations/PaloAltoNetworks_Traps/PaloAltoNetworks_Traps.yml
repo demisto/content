@@ -95,7 +95,7 @@ script:
       description: The last active user on the machine.
       type: String
     - contextPath: Traps.Endpoint.ScanStatus
-      description: The last scan status on the machine.
+      description: The status of the last scan run on the machine.
       type: String
   - arguments:
     - default: false
