@@ -1,7 +1,4 @@
-## Overview
----
-
-Use the Atlassian Jira integration to manage issues and create Demisto incidents from projects.
+Use the Atlassian Jira v2 integration to manage issues and create Demisto incidents from projects.
 
 This integration was integrated and tested with version 1001.0.0-SNAPSHOT of Jira.
 For more information about manage syntax, see the https://support.atlassian.com/
@@ -16,7 +13,7 @@ For more information about manage syntax, see the https://support.atlassian.com/
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for jira-v2.
+2. Search for Jira v2.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Jira URL, for example: https://demisto.atlassian.net/__
@@ -48,18 +45,18 @@ When you enable fetched incidents, Demisto fetches the first batch of Jira issue
 ---
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. jira-issue-query
-2. jira-get-issue
-3. jira-create-issue
-4. jira-issue-upload-file
-5. jira-issue-add-comment
-6. jira-issue-add-link
-7. jira-edit-issue
-8. jira-get-comments
-9. jira-delete-issue
-10. jira-get-id-offset
+1. Search Jira issues: jira-issue-query
+2. Fetch an issue: jira-get-issue
+3. Create an issue: jira-create-issue
+4. Upload a file to an issue: jira-issue-upload-file
+5. Add a comment to an issue: jira-issue-add-comment
+6. Create (or update) a link to an issue: jira-issue-add-link
+7. Edit an issue: jira-edit-issue
+8. Get a ticket's comments: jira-get-comments
+9. Delete an issue: jira-delete-issue
+10. Get the ID offset: jira-get-id-offset
 
-### 1. jira-issue-query
+### 1. Search Jira issues
 ---
 Queries Jira issues.
 
@@ -124,11 +121,10 @@ Queries Jira issues.
 
 
 
-### 2. jira-get-issue
+### 2. Fetch an issue
 ---
 Fetches an issue from Jira.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `jira-get-issue`
@@ -185,11 +181,10 @@ Fetches an issue from Jira.
 | null(null) |  | 2020-01-19T12:34:13.784+0200 | {creator} | lala |  | 15572 | Request for Action | DEM-5415 |  | Medium | demistodev | {assignee} | To Do | Test issue23 | https://demistodev.atlassian.net/rest/api/latest/issue/15572 |
 
 
-### 3. jira-create-issue
+### 3. Create an issue
 ---
 Creates a new issue in Jira.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `jira-create-issue`
@@ -243,11 +238,10 @@ Creates a new issue in Jira.
 | 15576 | DEM-5419 | DEM | https://demistodev.atlassian.net/rest/api/latest/issue/15576 |
 
 
-### 4. jira-issue-upload-file
+### 4. Upload a file to an issue
 ---
 Uploads a file attachment to an issue.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `jira-issue-upload-file`
@@ -267,10 +261,7 @@ There is no context output for this command.
 ##### Command Example
 ```!jira-issue-upload-file issueId=15572 upload=19@75```
 
-##### Context Example
-```
-{}
-```
+
 
 ##### Human Readable Output
 ### jira-issue-upload-file
@@ -279,11 +270,10 @@ There is no context output for this command.
 | https://demistodev.atlassian.net/rest/api/2/attachment/13456 | jira_v2_yml.yml | 13456 | 15572 |
 
 
-### 5. jira-issue-add-comment
+### 5. Add a comment to an issue
 ---
 Adds a new comment to an existing Jira issue.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `jira-issue-add-comment`
@@ -303,10 +293,6 @@ There is no context output for this command.
 ##### Command Example
 ```!jira-issue-add-comment issueId=15572 comment="test comment"```
 
-##### Context Example
-```
-{}
-```
 
 ##### Human Readable Output
 ### jira-issue-add-comment
@@ -315,11 +301,10 @@ There is no context output for this command.
 | test comment | 13779 | admin | https://demistodev.atlassian.net/rest/api/2/issue/15572/comment/13779 |
 
 
-### 6. jira-issue-add-link
+### 6. Create (or update) a link to an issue
 ---
 Creates (or updates) an issue link.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `jira-issue-add-link`
@@ -344,10 +329,7 @@ There is no context output for this command.
 ##### Command Example
 ```!jira-issue-add-link issueId=15572 title=test url=https://www.demisto.com/```
 
-##### Context Example
-```
-{}
-```
+
 
 ##### Human Readable Output
 ### jira-issue-add-link
@@ -356,11 +338,10 @@ There is no context output for this command.
 | 13722 | https://demistodev.atlassian.net/rest/api/latest/issue/DEM-5415/remotelink/13722 |
 
 
-### 7. jira-edit-issue
+### 7. Edit an issue
 ---
 Modifies an issue in JIRA.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `jira-edit-issue`
@@ -418,11 +399,10 @@ Modifies an issue in JIRA.
 | {assignee} | test_file.yml | 2020-01-19T12:34:13.784+0200 | {creator} | Just a description |  | 15572 | Request for Action | DEM-5415 |  | Medium | demistodev | {reporter} | To Do | Test issue23 | https://demistodev.atlassian.net/rest/api/latest/issue/15572 |
 Issue #15572 was updated successfully
 
-### 8. jira-get-comments
+### 8. Get a ticket's comments
 ---
 Returns the comments added to a ticket.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `jira-get-comments`
@@ -468,11 +448,10 @@ Returns the comments added to a ticket.
 | test comment | 2020-01-19T12:35:49.194+0200 | admin |
 
 
-### 9. jira-delete-issue
+### 9. Delete an issue
 ---
 Deletes an issue in Jira.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `jira-delete-issue`
@@ -493,11 +472,10 @@ There is no context output for this command.
 ##### Human Readable Output
 Issue deleted successfully.
 
-### 10. jira-get-id-offset
+### 10. Get the ID offset
 ---
 Returns the ID offset, for example, the first issue ID.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `jira-get-id-offset`
