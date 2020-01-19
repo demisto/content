@@ -484,6 +484,10 @@ class Client(BaseClient):
 
 
 def download_file_command(client, args):
+    """
+    This function runs download file command
+    :return: FileResult object
+    """
     object_type = args.get("object_type")
     object_type_id = args.get("object_type_id")
     item_id = args.get("item_id")
@@ -496,6 +500,10 @@ def download_file_command(client, args):
 
 
 def list_drive_children_command(client, args):
+    """
+    This function runs list drive children command
+    :return: human_readable, context, result
+    """
     object_type = args.get("object_type")
     object_type_id = args.get("object_type_id")
     item_id = args.get("item_id")
@@ -535,6 +543,10 @@ def list_drive_children_command(client, args):
 
 
 def list_tenant_sites_command(client, args):
+    """
+    This function runs list tenant site command
+    :return: human_readable, context, result
+    """
     result = client.list_tenant_sites()
 
     parsed_sites_items = [parse_key_to_context(item) for item in result["value"]]
@@ -554,6 +566,10 @@ def list_tenant_sites_command(client, args):
 
 
 def list_drives_in_site_command(client, args):
+    """
+    This function run the list drives in site command
+    :return: human_readable, context, result
+    """
     site_id = args.get("site_id")
     limit = args.get("limit")
     next_page_url = args.get("next_page_url")
@@ -584,6 +600,10 @@ def list_drives_in_site_command(client, args):
 
 
 def replace_an_existing_file_command(client, args):
+    """
+    This function runs the replace existing file command
+    :return: human_readable, context, result
+    """
     object_type = args.get("object_type")
     item_id = args.get("item_id")
     entry_id = args.get("entry_id")
@@ -607,6 +627,10 @@ def replace_an_existing_file_command(client, args):
 
 
 def upload_new_file_command(client, args):
+    """
+    This function uploads new file to graph api
+    :return: human_readable, context, result
+    """
     object_type = args.get("object_type")
     object_type_id = args.get("object_type_id")
     parent_id = args.get("parent_id")
@@ -628,6 +652,10 @@ def upload_new_file_command(client, args):
 
 
 def create_new_folder_command(client, args):
+    """
+    This function runs create new folder command
+    :return: human_readable, context, result
+    """
     object_type = args.get("object_type")
     parent_id = args.get("parent_id")
     folder_name = args.get("folder_name")
@@ -652,6 +680,10 @@ def create_new_folder_command(client, args):
 
 
 def delete_file_command(client, args):
+    """
+    runs delete file command
+    :return: raw response and action result test
+    """
     object_type = args.get("object_type")
     item_id = args.get("item_id")
     object_type_id = args.get("object_type_id")
