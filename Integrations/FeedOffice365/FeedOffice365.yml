@@ -34,6 +34,12 @@ configuration:
   defaultvalue: "240"
   type: 19
   required: true
+- display: Bypass exclusion list
+  name: bypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list will be ignored for this feed.
 - defaultvalue: IPS
   display: JSON attribute to use as an indicator
   name: indicator
