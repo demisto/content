@@ -1,7 +1,10 @@
+from CommonServerPython import *
+
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
 
-    feed_types = {
+    feed_url_to_config = {
+        # TODO: Add this sub feed once we have an indicator type of ASN
         'https://www.spamhaus.org/drop/asndrop.txt': {
             'indicator_type': 'ASN',
             'indicator': {
@@ -23,20 +26,20 @@ def main():
             ]
         },
         'https://www.spamhaus.org/drop/drop.txt': {
-            'indicator_type': 'IP',
+            'indicator_type': FeedIndicatorType.IP,
             'indicator': {
                 'regex': r'^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}'
             }
         },
         'https://www.spamhaus.org/drop/edrop.txt': {
-            'indicator_type': 'IP',
+            'indicator_type': FeedIndicatorType.IP,
             'indicator': {
                 'regex': r'^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}'
             }
         }
     }
 
-    params['feed_types'] = feed_types
+    params['feed_types'] = feed_url_to_config
 
     # Call the main execution of the HTTP API module.
     feed_main('Spamhaus Feed', params)

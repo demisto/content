@@ -3,6 +3,14 @@ commonfields:
   id: SpamhausFeed
   version: -1
 configuration:
+- defaultvalue: https://www.spamhaus.org/drop/drop.txt
+  display: Sub-Feeds
+  name: url
+  options:
+  - https://www.spamhaus.org/drop/edrop.txt
+  - https://www.spamhaus.org/drop/drop.txt
+  required: false
+  type: 16
 - display: Fetch indicators
   name: feed
   required: false
@@ -76,23 +84,9 @@ configuration:
   name: ignore_regex
   required: false
   type: 0
-- defaultvalue: https://www.spamhaus.org/drop/drop.txt
-  display: Sub-Feeds
-  name: url
-  options:
-  - https://www.spamhaus.org/drop/asndrop.txt
-  - https://www.spamhaus.org/drop/edrop.txt
-  - https://www.spamhaus.org/drop/drop.txt
-  required: false
-  type: 16
 - additionalinfo: Encoding of the feed (UTF-8 by default).
   display: Encoding
   name: encoding
-  required: false
-  type: 0
-- additionalinfo: Optional User Agent header.
-  display: User Agent
-  name: user_agent
   required: false
   type: 0
 description: Use the Spamhaus feed integration to fetch indicators from the feed.
