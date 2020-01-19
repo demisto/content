@@ -890,7 +890,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.IndexNames
+                  simple: inputs.IndexName
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1021,7 +1021,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.IndexNames
+                  simple: inputs.IndexName
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1260,7 +1260,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.IndexNames
+                  simple: inputs.IndexName
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1383,7 +1383,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.IndexNames
+                  simple: inputs.IndexName
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1513,7 +1513,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.IndexNames
+                  simple: inputs.IndexName
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1644,7 +1644,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.IndexNames
+                  simple: inputs.IndexName
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1775,7 +1775,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.IndexNames
+                  simple: inputs.IndexName
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -1898,7 +1898,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.IndexNames
+                  simple: inputs.IndexName
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -3611,7 +3611,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.IndexNames
+                  simple: inputs.IndexName
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -3759,7 +3759,7 @@ inputs:
     of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
     If a list is not provided, will use default list provided in the IsIPInRanges
     script (the known IPv4 private address ranges).'
-- key: IndexNames
+- key: IndexName
   value:
     simple: '*'
   required: false
