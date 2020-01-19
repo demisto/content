@@ -2124,6 +2124,12 @@
             "integrations": "BPA",
             "playbookID": "Test-BPA_Integration",
             "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "FeedRecordedFuture",
+            "playbookID": "RecordedFutureFeed - Test",
+            "timeout": 1000,
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
