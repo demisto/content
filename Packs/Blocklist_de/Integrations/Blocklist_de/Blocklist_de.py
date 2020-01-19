@@ -1,42 +1,28 @@
+from CommonServerPython import *
+
+
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
 
-    feed_types = {
-        '': {
-            'indicator_type': 'ASN',
+    subfeeds = ['all', 'ssh', 'mail', 'apache', 'imap', 'ftp', 'sip', 'bots', 'strongips', 'ircbot', 'bruteforcelogin']
+
+    feed_types = dict()
+
+    for subfeed in subfeeds:
+        feed_types[F'https://lists.blocklist.de/lists/{subfeed}.txt'] = {
+            'indicator_type': FeedIndicatorType.IP,
             'indicator': {
-                'regex': r'^AS[0-9]+'
-            },
-            'fields': [
-                {
-                    'asndrop_country': {
-                        'regex': r'^.*;\W([a-zA-Z]+)\W+',
-                        'transform': r'\1'
-                    }
-                },
-                {
-                    'asndrop_org': {
-                        'regex': r'^.*\|\W+(.*)',
-                        'transform': r'\1'
-                    }
-                }
-            ]
-        },
-        '': {
-            'indicator_type': 'IP',
-            'indicator': {
-                'regex': r'^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}'
-            }
-        },
-        '': {
-            'indicator_type': 'IP',
-            'indicator': {
-                'regex': r'^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}'
+                'regex': r''
             }
         }
-    }
 
     params['feed_types'] = feed_types
+
+    chosen_subfeeds = list()
+    for subfeed in argToList(demisto.params().get('subfeeds', [])):
+        chosen_subfeeds.append(F'https://lists.blocklist.de/lists/{subfeed}.txt')
+
+    params['url'] = chosen_subfeeds
 
     # Call the main execution of the HTTP API module.
     feed_main('Blocklist_de Feed', params)
