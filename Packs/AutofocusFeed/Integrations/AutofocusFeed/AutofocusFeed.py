@@ -223,7 +223,7 @@ def main():
     # Switch case
     commands = {
         'test-module': module_test_command,
-        'get-indicators': get_indicators_command
+        'autofocus-get-indicators': get_indicators_command
     }
     try:
         if demisto.command() == 'fetch-indicators':
