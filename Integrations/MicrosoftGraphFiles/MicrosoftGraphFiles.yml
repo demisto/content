@@ -612,6 +612,36 @@ script:
     outputs:
     - contextPath: MsGraph.File
       type: Unknown
+    - contextPath: File.Size
+      description: File's size
+      type: String
+    - contextPath: File.SHA1
+      description: File's SHA1
+      type: String
+    - contextPath: File.SHA256
+      description: File's SHA256
+      type: String
+    - contextPath: File.SHA512
+      description: File's SHA512
+      type: String
+    - contextPath: File.Name
+      description: File name
+      type: String
+    - contextPath: File.SSDeep
+      description: File's SSDeep
+      type: String
+    - contextPath: File.EntryID
+      description: Demisto file ID
+      type: Unknown
+    - contextPath: File.Info
+      description: File information
+      type: String
+    - contextPath: File.Type
+      description: File type
+      type: String
+    - contextPath: File.MD5
+      description: File's MD5
+      type: String
   dockerimage: demisto/python_pancloud:1.0.0.286
   feed: false
   isfetch: false
