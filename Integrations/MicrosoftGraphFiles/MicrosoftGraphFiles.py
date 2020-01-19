@@ -17,12 +17,7 @@ requests.packages.urllib3.disable_warnings()
 """ GLOBALS/PARAMS """
 
 # Service base URL
-
-
-# Headers to be sent in requests
-VERSION = "v1.0"
 NETLOC = "graph.microsoft.com"
-BASE_URL = f"https://{NETLOC}/{VERSION}"
 
 INTEGRATION_NAME = "MsGraphFiles"
 
@@ -39,6 +34,16 @@ EXCLUDE_LIST = ["eTag", "cTag", "quota"]
 
 
 def parse_key_to_context(obj):
+    """Parse graph api data as received from Microsoft Graph API into Demisto's conventions
+
+    Args:
+        item object: a dictionary containing the item data
+
+    Returns:
+        A Camel Cased dictionary with the relevant fields.
+        groups_readable: for the human readable
+        groups_outputs: for the entry context
+    """
     parsed_obj = {}
     for key, value in obj.items():
         if key in EXCLUDE_LIST:
@@ -64,6 +69,12 @@ def parse_key_to_context(obj):
 
 
 def remove_identity_key(source):
+    """
+    this function removes identity key (application, device or user) from LastModifiedBy and CreatedBy keys and
+    convert it to "type" key.
+    :param source: LastModifiedBy and CreatedBy dictionaries
+    :return: camel case dictionary with identity key as type.
+    """
     if not isinstance(source, dict):
         LOG("Input is not dictionary. Exist function.")
         return source
@@ -127,28 +138,11 @@ def get_encrypted(content: str, key: str) -> str:
     encrypted = encrypt(f"{now}:{content}", key).decode("utf-8")
     return encrypted
 
-
-def validate_url_netloc(url):
-    try:
-        parsed_url = urlparse(url)
-        if NETLOC not in parsed_url.netloc:
-            raise DemistoException(
-                f"Url: {url} is not valid. Please provide another one."
-            )
-    except ValueError:
-        raise DemistoException(
-            f"Value Error has occurred.\n Url: {url} is not valid. Please provide another one."
-        )
-    else:
-        return parsed_url
-
-
 def url_validation(url):
     # test if netloc
-    parsed_url = validate_url_netloc(url)
 
     # test if exits $skiptoken
-    url_parameters = parse_qs(parsed_url.query)
+    url_parameters = parse_qs(url.query)
     if not url_parameters.get("$skiptoken") or not url_parameters["$skiptoken"]:
         raise DemistoException(
             f"Url: {url} is not valid. Please provide another one. missing $skiptoken"
@@ -169,7 +163,7 @@ class Client(BaseClient):
             token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
         else:
             token_retrieval_url = auth_and_token_url[1]
-
+        self.base_url = kwargs["base_url"]
         self.auth_id = auth_and_token_url[0]
         self.tenant_id = demisto.params().get("tenant_id")
         self.enc_key = demisto.params().get("enc_key")
@@ -266,7 +260,7 @@ class Client(BaseClient):
         if next_page_url:
             url = url_validation(next_page_url)
         else:
-            url = f"{BASE_URL}/sites/{site_id}/drives"
+            url = f"{self.base_url}/sites/{site_id}/drives"
 
         return self.http_call(
             "GET", full_url=url, params=params, headers=self.headers, url_suffix=""
@@ -286,7 +280,7 @@ class Client(BaseClient):
             elif object_type in ["groups", "sites", "users"]:
                 url = f"{object_type}/{object_type_id}/drive/items/{item_id}/children"
 
-            url = BASE_URL + f"/{url}"
+            url = self.base_url + f"/{url}"
 
         if limit:
             params = urlencode({"$top": limit})
@@ -316,7 +310,7 @@ class Client(BaseClient):
             url = f"{object_type}/{object_type_id}/drive/items/{item_id}/content"
 
         # send request
-        url = BASE_URL + f"/{url}"
+        url = self.base_url + f"/{url}"
         with open(file_path, "rb") as file:
             self.headers["Content-Type"] = "application/octet-stream"
             return self.http_call(
@@ -331,7 +325,7 @@ class Client(BaseClient):
             url = f"{object_type}/{object_type_id}/drive/items/{item_id}"
 
         # send request
-        url = BASE_URL + f"/{url}"
+        url = self.base_url + f"/{url}"
         self.headers[
             "Content-Type"
         ] = "text/plain"  # request returned empty and can not decoded to json
@@ -365,7 +359,7 @@ class Client(BaseClient):
         elif object_type in ["groups", "users", "sites"]:
             url = f"{object_type}/{object_type_id}/drive/items/{parent_id}:/{file_name}:/content"
             # for sites, groups, users
-        url = BASE_URL + f"/{url}"
+        url = self.base_url + f"/{url}"
         with open(file_path, "rb") as file:
             self.headers["Content-Type"] = "application/octet-stream"
             return self.http_call(
@@ -380,7 +374,7 @@ class Client(BaseClient):
             url = f"{object_type}/{object_type_id}/drive/items/{item_id}/content"
 
         # send request
-        url = BASE_URL + f"/{url}"
+        url = self.base_url + f"/{url}"
         res = self.http_call(
             "GET", full_url=url, headers=self.headers, url_suffix="", resp_type=""
         )  # it needs
@@ -396,7 +390,7 @@ class Client(BaseClient):
             url = f"{object_type}/{object_type_id}/drive/items/{parent_id}/children"
 
         # send request
-        url = BASE_URL + f"/{url}"
+        url = self.base_url + f"/{url}"
 
         payload = {
             "name": folder_name,
