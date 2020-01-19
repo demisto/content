@@ -268,7 +268,7 @@ def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
     entry_result = camelize(indicators_list[:limit])
     indicator_context = indicator_context[:limit]
     hr = tableToMarkdown('Indicators from RecordedFuture Feed:', entry_result, headers=['Value', 'Type'])
-    result_dict = None  # type: ignore
+    result_dict = None
     if client.indicator_type == 'hash':
         sha256_context, md5_context, sha1_context = split_hash_context(entry_result)
         result_dict = {'RecordedFutureFeed.Indicator': entry_result,
