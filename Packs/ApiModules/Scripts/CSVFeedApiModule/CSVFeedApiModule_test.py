@@ -4,6 +4,10 @@ import requests_mock
 
 def test_get_indicators_1():
     """Test with 1 fieldname"""
+    url_to_fieldnames = {
+        'https://ipstack.com': ['indicator']
+    }
+
     with open('test_data/ip_ranges.txt') as ip_ranges_txt:
         ip_ranges = ip_ranges_txt.read().encode('utf8')
 
@@ -16,7 +20,7 @@ def test_get_indicators_1():
         m.get('https://ipstack.com', content=ip_ranges)
         client = Client(
             url="https://ipstack.com",
-            fieldnames='indicator',
+            url_to_fieldnames=url_to_fieldnames,
         )
         hr, indicators_ec, raw_json = get_indicators_command(client, args)
         indicators_ec = indicators_ec.get('CSV.Indicator')
@@ -33,6 +37,10 @@ def test_get_indicators_1():
 
 def test_get_indicators_2():
     """Test with 1 fieldname that's not called indicator"""
+    url_to_fieldnames = {
+        'https://ipstack.com': ['special_ind']
+    }
+
     with open('test_data/ip_ranges.txt') as ip_ranges_txt:
         ip_ranges = ip_ranges_txt.read().encode('utf8')
 
@@ -45,7 +53,7 @@ def test_get_indicators_2():
         m.get('https://ipstack.com', content=ip_ranges)
         client = Client(
             url="https://ipstack.com",
-            fieldnames='special_ind',
+            url_to_fieldnames=url_to_fieldnames,
         )
         hr, indicators_ec, raw_json = get_indicators_command(client, args)
         indicators_ec = indicators_ec.get('CSV.Indicator')
