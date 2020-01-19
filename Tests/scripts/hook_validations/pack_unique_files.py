@@ -112,14 +112,14 @@ class PackUniqueFilesValidator():
 
     # pack metadata validation
     def validate_pack_meta_file(self):
-        """Validate everything related to pack-metadata.json file"""
+        """Validate everything related to pack-pack-metadata.json file"""
         if self._is_pack_file_exists(self.pack_meta_file) and all([self._is_pack_meta_file_structure_valid()]):
             return True
 
         return False
 
     def _is_pack_meta_file_structure_valid(self):
-        """Check if pack-metadata.json structure is json parse-able"""
+        """Check if pack-pack-metadata.json structure is json parse-able"""
         try:
             pack_meta_file_content = self._read_file_content(self.pack_meta_file)
             if pack_meta_file_content and json.loads(pack_meta_file_content):
