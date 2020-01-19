@@ -1,2 +1,2 @@
 ## [Unreleased]
-Associated to 'AWS IAM Policy Misconfiguration' incident type.
+New incident type 'AWS IAM Policy Misconfiguration.
