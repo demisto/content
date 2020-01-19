@@ -503,6 +503,7 @@ def get_activation_status_command(client: Client, network_list_ids: Union[str, l
                 raws.append(raw_response)
                 ecs.append({
                     "UniqueID": raw_response.get('uniqueId'),
+                    "Enviorment": env,
                     "Status": raw_response.get('activationStatus')
                 })
                 human_readable += f"{INTEGRATION_NAME} - network list **{network_list_id}** is **{raw_response.get('activationStatus')}** in **{env}**\n"

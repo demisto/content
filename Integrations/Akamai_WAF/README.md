@@ -453,7 +453,11 @@ Gets the activation status of the specified network list
 
 ##### Context Output
 
-There are no context output for this command.
+|**Path**|**Type**|**Description**|
+|--- |--- |--- |
+|Akamai.NetworkLists.ActivationStatus.UniqueID|String|The network list name.|
+|Akamai.NetworkLists.ActivationStatus.Status|String|The network list enviorment activation status.|
+|Akamai.NetworkLists.ActivationStatus.Enviorment|String|TThe network list enviorment.|
 
 ##### Command Example
 
