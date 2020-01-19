@@ -4,14 +4,14 @@ commonfields:
 name: Devo_v2
 display: Devo_v2
 category: Analytics & SIEM
-description: Devo Integration with enhanced functionality and data structures.
+description: Use the Devo v2 integration to query Devo for alerts, lookup tables, and to write to lookup tables.
 configuration:
 - display: Query Server Endpoint (e.g. https://apiv2-us.devo.com/search/query)
   name: reader_endpoint
   defaultvalue: https://apiv2-us.devo.com/search/query
   type: 0
   required: true
-- display: Oauth Token (Preferred method)
+- display: OAuth Token (Preferred method)
   name: reader_oauth_token
   defaultvalue: ""
   type: 4
@@ -46,7 +46,7 @@ configuration:
   defaultvalue: ""
   type: 12
   required: false
-- display: Deduplication parameters JSON if required.
+- display: Deduplication parameters JSON if required
   name: fetch_incidents_deduplication
   defaultvalue: ""
   type: 12
@@ -69,101 +69,101 @@ script:
     arguments:
     - name: query
       required: true
-      description: A LINQ Query to run
+      description: A LINQ query to run in Devo.
     - name: from
       required: true
-      description: Start datetime for specified query. Allows for date range i.e. 2 day, 3 week. Unix timestamps, python
-        datetime objects, str datetime.
+      description: Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python
+        datetime objects, and string datetimes.
     - name: to
-      description: End datetime for specified query. If provided must be in same format as from (ignored in date range)
+      description: End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range.
     - name: writeToContext
-      description: Whether to write results to context or not
+      description: Whether to write results to context. Can be "true" or "false". The default value is "true".
       defaultValue: "true"
     outputs:
     - contextPath: Devo.QueryResults
-      description: List of dictionary of results
+      description: List of dictionary alerts from the specified time range.
       type: unknown
     - contextPath: Devo.QueryLink
-      description: Link back to Devo table for executed query
-    description: Queries Devo based on linq query
+      description: The link to the Devo table for executed query.
+    description: Queries Devo based on the specified LINQ query.
   - name: devo-get-alerts
     arguments:
     - name: from
       required: true
-      description: Start datetime for alerts to fetch
+      description: Start datetime for alerts to fetch.
     - name: to
-      description: End datetime for alerts to fetch
+      description: End datetime for alerts to fetch.
     - name: filters
-      description: key value filter to apply to retrieve specified alerts. refer to
-        docs
+      description: Key value filter to apply to retrieve the specified alerts. For more information, see the Devo documentation.
       isArray: true
     - name: writeToContext
-      description: write results to context or not
+      description: Whether to write results to context. Can be "true" or "false". The default value is "true".
       defaultValue: "true"
     outputs:
     - contextPath: Devo.AlertsResults
-      description: List of dictionary alerts in specified time range
+      description: List of dictionary alerts from the specified time range.
     - contextPath: Devo.QueryLink
-      description: Link back to Devo table for executed query
-    description: Queries alerts in the specified timeframe
+      description: The link to the Devo table for the executed query.
+    description: Queries alerts in the specified timeframe.
   - name: devo-multi-table-query
     arguments:
     - name: tables
       required: true
-      description: List of table names to check for searchToken
+      description: A list of table names to check for the searchToken.
       isArray: true
     - name: searchToken
       required: true
-      description: String that you wish to search for in given tables in any column
+      description: A string to search for in the specified tables (in any column).
     - name: from
       required: true
-      description: Start time
+      description: Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python
+        datetime objects, and string datetimes
     - name: to
-      description: End time
+      description: End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range.
     - name: writeToContext
-      description: write results to context or not
+      description: Whether to write results to context. Can be "true" or "false". The default value is "true".
       defaultValue: "true"
     outputs:
     - contextPath: Devo.MultiResults
-      description: List of dictionary results
-    description: Queries multiple tables for a given token and returns relevant results
+      description: A list of dictionary results.
+    description: Queries multiple tables for a given token and returns relevant results.
   - name: devo-write-to-table
     arguments:
     - name: tableName
       required: true
-      description: Table name to write to
+      description: The name of the table to write to.
     - name: records
       required: true
-      description: Records to write to given tableName
+      description: Records to write to the specified table.
       isArray: true
     outputs:
     - contextPath: Devo.RecordsWritten
-      description: Records written to specified Devo table
+      description: Records written to specified Devo table.
       type: unknown
     - contextPath: Devo.LinqQuery
-      description: Linq query that is to be used to see your data in Devo
+      description: The LINQ query to use to see your data in Devo.
     - contextPath: Devo.QueryLink
-      description: Link back to Devo table for executed query
-    description: Write records to a specified Devo table
+      description: The link to the Devo table for the executed query.
+    description: Writes records to a specified Devo table.
     execution: true
   - name: devo-write-to-lookup-table
     arguments:
     - name: lookupTableName
       required: true
-      description: Lookup table name to write to
+      description: The lookup table name to write to.
     - name: headers
       required: true
-      description: Headers for lookup table control
+      description: Headers for lookup table control.
       isArray: true
     - name: records
       required: true
-      description: Records to write to given tableName
+      description: Records to write to the specified table.
       isArray: true
     outputs:
     - contextPath: Devo.RecordsWritten
-      description: Lookup records written to lookup table
+      description: Lookup records written to the lookup table.
       type: unknown
-    description: Write lookup table entry records to a specified Devo table
+    description: Writes lookup table entry records to a specified Devo table.
     execution: true
   dockerimage: demisto/devo:1.0.0.1978
   isfetch: true
