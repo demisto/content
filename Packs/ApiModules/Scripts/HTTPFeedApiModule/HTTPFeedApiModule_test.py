@@ -40,7 +40,7 @@ def test_get_indicators():
             source_name='spamhaus',
             fieldnames='indicator',
             ignore_regex='^;.*',
-            feed_types=feed_type
+            feed_url_to_config=feed_type
         )
         args['indicator_type'] = 'ASN'
         hr, indicators_ec, raw_json = get_indicators_command(client, args)
