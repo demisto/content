@@ -102,7 +102,7 @@ script:
     deprecated: false
     description: Gets the indicators from AutoFocus.
     execution: false
-    name: get-indicators
+    name: autofocus-get-indicators
     outputs:
     - contextPath: AutoFocusFeed.Indicator.Type
       description: The type of the indicator.
