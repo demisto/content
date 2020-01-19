@@ -43,7 +43,6 @@ class Client(BaseClient):
              insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
              polling_timeout: timeout of the polling request in seconds. Default: 20
              proxy: Sets whether use proxy when sending requests
-             kwargs:
         """
 
         super().__init__(BASE_URL, proxy=proxy, verify=not insecure)
