@@ -45,7 +45,7 @@ tasks:
     scriptarguments:
       IPAddress:
         simple: 1.1.1.1
-      IndexNames:
+      IndexName:
         simple: '*'
       InternalRange: {}
       InvestigationHostFields:
