@@ -169,8 +169,8 @@ def get_indicators_command(client: Client, args: dict):
         str, dict, list. the markdown table, context JSON and list of indicators
     """
     indicators = client.build_iterator()
-    if args.get('page'):
-        indicators = indicators[int(str(args.get('page'))):]
+    if args.get('offset'):
+        indicators = indicators[int(str(args.get('offset'))):]
 
     if args.get('limit'):
         indicators = indicators[:int(str(args.get('limit')))]
@@ -187,10 +187,10 @@ def get_indicators_command(client: Client, args: dict):
 
     if args.get('limit'):
         human_readable = human_readable + f"\nTo bring the next batch of indicators run:\n!get-indicators " \
-            f"limit={args.get('limit')} page={int(str(args.get('limit'))) + int(str(args.get('page')))}"
+            f"limit={args.get('limit')} offset={int(str(args.get('limit'))) + int(str(args.get('offset')))}"
 
     return human_readable, {
-        f"{SOURCE_NAME}.Indicator(val.Value == obj.Value && val.Type == obj.Type)": hr_indicators
+        f"{SOURCE_NAME}.Indicator(val.Value === obj.Value && val.Type === obj.Type)": hr_indicators
     }, indicators
 
 
@@ -209,7 +209,7 @@ def fetch_indicators_command(client: Client):
 
 
 def main():
-    params = {k: v for k, v in demisto.params().items() if v is not None}
+    params = demisto.params()
 
     client = Client(params.get('api_key'),
                     params.get('insecure'),
