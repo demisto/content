@@ -12,12 +12,19 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, url: str, fieldnames: str, insecure: bool = False, credentials: dict = None,
-                 ignore_regex: str = None, delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
+    def __init__(self, url: str, url_to_fieldnames: dict, fieldnames: str = '', insecure: bool = False,
+                 credentials: dict = None, ignore_regex: str = None,
+                 delimiter: str = ',', doublequote: bool = True, escapechar: str = '',
                  quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
                  **kwargs):
         """
         :param url: URL of the feed.
+        :param url_to_fieldnames: for each URL, a list of field names in the file.
+         If *null* the values in the first row of the file are used as names. Default: *null*
+         Example:
+         url_to_fieldnames = {
+            'https://ipstack.com': ['indicator']
+         }
         :param fieldnames: list of field names in the file. If *null* the values in the first row of the file are
             used as names. Default: *null*
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
@@ -35,7 +42,6 @@ class Client(BaseClient):
             <https://docs.python.org/2/library/csv.html#dialects-and-formatting-parameters>`. Default False
         :param polling_timeout: timeout of the polling request in seconds. Default: 20
         :param proxy: Sets whether use proxy when sending requests
-        :param kwargs:
         """
         if not credentials:
             credentials = {}
@@ -55,8 +61,8 @@ class Client(BaseClient):
         self.ignore_regex: Optional[Pattern] = None
         if ignore_regex is not None:
             self.ignore_regex = re.compile(ignore_regex)
+        self.url_to_fieldnames: Dict[str, list] = url_to_fieldnames
         self.fieldnames = argToList(fieldnames)
-
         self.dialect: Dict[str, Any] = {
             'delimiter': delimiter,
             'doublequote': doublequote,
@@ -105,22 +111,22 @@ class Client(BaseClient):
                 raise
 
             response = r.content.decode('latin-1').split('\n')
+            fieldnames = self.url_to_fieldnames.get(url, []) or self.fieldnames
             if self.ignore_regex is not None:
                 response = filter(
                     lambda x: self.ignore_regex.match(x) is None,  # type: ignore[union-attr]
                     response
                 )
 
-            results.append(response)
+            csvreader = csv.DictReader(
+                response,
+                fieldnames=fieldnames,
+                **self.dialect
+            )
 
-        csvreader = csv.DictReader(
-            # flatten the results
-            [r for result in results for r in result],
-            fieldnames=self.fieldnames,
-            **self.dialect
-        )
+            results.append(csvreader)
 
-        return csvreader
+        return results
 
 
 def module_test_command(client, args):
@@ -134,19 +140,20 @@ def module_test_command(client, args):
 def fetch_indicators_command(client, itype, **kwargs):
     iterator = client.build_iterator(**kwargs)
     indicators = []
-    for item in iterator:
-        raw_json = dict(item)
-        value = item.get('indicator')
-        if not value and len(item) == 1:
-            value = next(iter(item.values()))
-        if value:
-            raw_json['value'] = value
-            raw_json['type'] = itype
-            indicators.append({
-                "value": value,
-                "type": itype,
-                "rawJSON": raw_json,
-            })
+    for reader in iterator:
+        for item in reader:
+            raw_json = dict(item)
+            value = item.get('indicator')
+            if not value and len(item) == 1:
+                value = next(iter(item.values()))
+            if value:
+                raw_json['value'] = value
+                raw_json['type'] = itype
+                indicators.append({
+                    "value": value,
+                    "type": itype,
+                    "rawJSON": raw_json,
+                })
     return indicators
 
 
@@ -187,7 +194,4 @@ def feed_main(feed_name, params=None):
     except Exception as e:
         err_msg = f'Error in {feed_name} Integration - Encountered an issue with createIndicators' if \
             'failed to create' in str(e) else f'Error in {feed_name} Integration [{e}]'
-        if command == 'fetch-indicators':
-            raise Exception(err_msg)
-        else:
-            return_error(err_msg)
+        return_error(err_msg)
