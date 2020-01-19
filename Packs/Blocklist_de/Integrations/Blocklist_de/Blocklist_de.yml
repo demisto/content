@@ -12,11 +12,13 @@ configuration:
   name: feedFetchInterval
   required: true
   type: 19
-- additionalinfo: Type of the indicator in the feed.
+- defaultvalue: IP
   display: Indicator Type
   name: indicator_type
+  options:
+  - IP
   required: true
-  type: 0
+  type: 15
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
   name: feedInstanceReliability
@@ -32,13 +34,14 @@ configuration:
 - name: expiration
   required: false
   type: 17
-- additionalinfo: When selected, the exclusion list will be ignored for this feed.
-  display: Bypass exclusion list
+- display: Bypass exclusion list
   name: skipExclusionList
   required: false
   type: 8
-- defaultvalue: feedInstanceReputationNotSet
-  display: Mark as reputation
+- additionalInfo: Indicators from this integration instance will be marked with this
+    reputation.
+  defaultvalue: feedInstanceReputationNotSet
+  display: Indicator reputation
   name: feedInstanceReputation
   options:
   - None
@@ -64,30 +67,36 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Timeout of the polling request in seconds.
-  defaultvalue: '20'
+- defaultvalue: '20'
   display: Request Timeout
   name: polling_timeout
   required: false
   type: 0
-- additionalinfo: Regular expression for lines that should be ignored.
-  display: Ignore Regex
+- display: Ignore Regex
   name: ignore_regex
   required: false
   type: 0
-- defaultvalue:
-  display: Sub-Feeds
-  name: url
+- display: Sub-Feeds
+  name: subfeeds
   options:
+  - all
+  - ssh
+  - mail
+  - apache
+  - imap
+  - ftp
+  - sip
+  - bots
+  - strongips
+  - ircbot
+  - bruteforcelogin
   required: false
   type: 16
-- additionalinfo: Encoding of the feed (UTF-8 by default).
-  display: Encoding
+- display: Encoding
   name: encoding
   required: false
   type: 0
-- additionalinfo: Optional User Agent header.
-  display: User Agent
+- display: User Agent
   name: user_agent
   required: false
   type: 0
