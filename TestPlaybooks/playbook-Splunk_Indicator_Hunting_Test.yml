@@ -48,7 +48,7 @@ tasks:
       IndexName:
         simple: '*'
       InternalRange: {}
-      InvestigationHostFields:
+      InvestigationInternalHostFields:
         simple: dest_nt_host
       InvestigationIPFields:
         simple: dest_ip,src_ip,src,dst
