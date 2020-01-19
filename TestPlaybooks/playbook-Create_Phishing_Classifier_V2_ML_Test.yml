@@ -47,7 +47,7 @@ tasks:
       historicListName:
         simple: test_phishing_historic_data
       numberOfIncidents:
-        simple: "20"
+        simple: "100"
     separatecontext: false
     view: |-
       {
@@ -203,6 +203,7 @@ tasks:
       description: Create a phishing classifier using machine learning technique,
         based on email content
       playbookName: DBot Create Phishing Classifier V2
+      playbookId: DBot Create Phishing Classifier V2
       type: playbook
       iscommand: false
       brand: ""
@@ -271,7 +272,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: DBotPhishingClassifier.EvaluationScores.micro_avg
+              simple: DBotPhishingClassifier.EvaluationScores.Precision.All
             iscontext: true
     view: |-
       {

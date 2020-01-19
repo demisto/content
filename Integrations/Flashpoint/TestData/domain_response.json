@@ -1,0 +1,37 @@
+[
+  {
+    "Attribute": {
+      "Event": {
+        "RelatedEvent": [],
+        "Tags": [
+          "Tags1",
+          "Tags2"
+        ],
+        "attack_ids": [
+          "AT1",
+          "AT2",
+          "AT3",
+          "AT4",
+          "AT5",
+          "AT6"
+        ],
+        "fpid": "aaaaaaaaaaabbbbbbbbbbb",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/aaaaaaaaaaabbbbbbbbbbb",
+        "info": "Gorgon Group actor profile",
+        "reports": [],
+        "timestamp": "1569441099"
+      },
+      "category": "category1",
+      "fpid": "aaaaaaaaaaabbbbbbbbbbb",
+      "href": "http://123-fake-api.com/api/v4/indicators/attribute/aaaaaaaaaaabbbbbbbbbbb",
+      "timestamp": "1569436997",
+      "to_ids": true,
+      "type": "domain",
+      "uuid": "5d8bb545-3eds-2222-1111-aaaaaaaaaaaa",
+      "value": {
+        "comment": "",
+        "domain": "fakedomain.com"
+      }
+    }
+  }
+]

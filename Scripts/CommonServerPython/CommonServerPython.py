@@ -24,6 +24,8 @@ try:
 except Exception:
     pass
 
+CONTENT_RELEASE_VERSION = '0.0.0'
+CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
@@ -76,6 +78,7 @@ thresholds = {
     'vtPositives': 10,
     'vtPositiveUrlsForIP': 30
 }
+# The dictionary below does not represent DBot Scores correctly, and should not be used
 dbotscores = {
     'Critical': 4,
     'High': 3,
@@ -99,6 +102,52 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ctph': 'file',
     'ssdeep': 'file'
 }
+
+
+class FeedIndicatorType(object):
+    """Type of Indicator (Reputations), used in TIP integrations"""
+    Account = "Account"
+    CVE = "CVE"
+    Domain = "Domain"
+    Email = "Email"
+    File = "File"
+    FQDN = "Domain"
+    MD5 = "File MD5"
+    SHA1 = "File SHA-1"
+    SHA256 = "File SHA-256"
+    Host = "Host"
+    IP = "IP"
+    CIDR = "CIDR"
+    IPv6 = "IPv6"
+    IPv6CIDR = "IPv6CIDR"
+    Registry = "Registry Key"
+    SSDeep = "ssdeep"
+    URL = "URL"
+
+    @staticmethod
+    def is_valid_type(_type):
+        return _type in (
+            FeedIndicatorType.Account,
+            FeedIndicatorType.CVE,
+            FeedIndicatorType.Domain,
+            FeedIndicatorType.Email,
+            FeedIndicatorType.File,
+            FeedIndicatorType.MD5,
+            FeedIndicatorType.SHA1,
+            FeedIndicatorType.SHA256,
+            FeedIndicatorType.Host,
+            FeedIndicatorType.IP,
+            FeedIndicatorType.CIDR,
+            FeedIndicatorType.IPv6,
+            FeedIndicatorType.IPv6CIDR,
+            FeedIndicatorType.Registry,
+            FeedIndicatorType.SSDeep,
+            FeedIndicatorType.URL
+        )
+
+
+
+
 # ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
 try:
@@ -838,6 +887,31 @@ def argToList(arg, separator=','):
     return arg
 
 
+def argToBoolean(value):
+    """
+        Boolean-ish arguments that are passed through demisto.args() could be type bool or type string.
+        This command removes the guesswork and returns a value of type bool, regardless of the input value's type.
+        It will also return True for 'yes' and False for 'no'.
+
+        :param value: the value to evaluate
+        :type value: ``string|bool``
+
+        :return: a boolean representatation of 'value'
+        :rtype: ``bool``
+    """
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, STRING_OBJ_TYPES):
+        if value.lower() in ['true', 'yes']:
+            return True
+        elif value.lower() in ['false', 'no']:
+            return False
+        else:
+            raise ValueError('Argument does not contain a valid boolean-like value')
+    else:
+        raise ValueError('Argument is neither a string nor a boolean')
+
+
 def appendContext(key, data, dedup=False):
     """
        Append data to the investigation context
@@ -1522,7 +1596,8 @@ def return_error(message, error='', outputs=None):
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
 
-    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution'):
+    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution',
+                                                             'fetch-indicators'):
         raise Exception(message)
     else:
         demisto.results({
@@ -1645,6 +1720,9 @@ regexFlags = re.M  # Multi line matching
 # else, use re.match({regex_format},str)
 
 ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
+ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'
+ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'
+ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'
 emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
@@ -2234,10 +2312,8 @@ if 'requests' in sys.modules:
             self._headers = headers
             self._auth = auth
             self._session = requests.Session()
-            if proxy:
-                self._proxies = handle_proxy()
-            else:
-                self._proxies = None
+            if not proxy:
+                self._session.trust_env = False
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, json_data=None, params=None, data=None, files=None,
@@ -2276,10 +2352,11 @@ if 'requests' in sys.modules:
             :type files: ``dict``
             :param files: The file data to send in a 'POST' request.
 
-            :type timeout: ``float``
+            :type timeout: ``float`` or ``tuple``
             :param timeout:
                 The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
+                can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
 
             :type resp_type: ``str``
             :param resp_type:
@@ -2297,7 +2374,7 @@ if 'requests' in sys.modules:
             """
             try:
                 # Replace params if supplied
-                address = full_url if full_url else self._base_url + url_suffix
+                address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
                 # Execute
@@ -2312,7 +2389,6 @@ if 'requests' in sys.modules:
                     headers=headers,
                     auth=auth,
                     timeout=timeout,
-                    proxies=self._proxies,
                     **kwargs
                 )
                 # Handle error responses gracefully
@@ -2386,3 +2462,22 @@ if 'requests' in sys.modules:
 
 class DemistoException(Exception):
     pass
+
+def batch(iterable, batch_size=1):
+    """Gets an iterable and yields slices of it.
+
+    :type iterable: ``list``
+    :param iterable: list or other iterable object.
+
+    :type batch_size: ``int``
+    :param batch_size: the size of batches to fetch
+
+    :rtype: ``list``
+    :return:: Iterable slices of given
+    """
+    current_batch = iterable[:batch_size]
+    not_batched = iterable[batch_size:]
+    while current_batch:
+        yield current_batch
+        current_batch = not_batched[:batch_size]
+        not_batched = not_batched[batch_size:]

@@ -12,7 +12,8 @@ import yaml
 from Tests.scripts.constants import INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, \
     WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
 from Tests.test_utils import print_error, print_warning, get_last_release_version, filter_packagify_changes, \
-    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text, get_remote_file
+    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text, get_remote_file, \
+    is_file_path_in_pack
 from Tests.scripts.validate_files import FilesValidator
 
 CONTENT_LIB_PATH = "./"
@@ -510,7 +511,11 @@ def create_file_release_notes(change_type, full_file_name):
     if isinstance(full_file_name, tuple):
         _, full_file_name = full_file_name
 
-    file_type = full_file_name.split("/")[0]
+    is_pack = is_file_path_in_pack(full_file_name)
+    if is_pack:
+        file_type = full_file_name.split("/")[2]
+    else:
+        file_type = full_file_name.split("/")[0]
     base_name = os.path.basename(full_file_name)
     file_suffix = os.path.splitext(base_name)[-1]
     file_type_mapping = RELEASE_NOTE_GENERATOR.get(file_type)
