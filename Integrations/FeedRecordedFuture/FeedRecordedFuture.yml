@@ -34,8 +34,10 @@ configuration:
 - name: skipExclusionList
   required: false
   type: 8
-- defaultvalue: feedInstanceReputationNotSet
-  display: Mark as reputation
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation.
+  defaultvalue: feedInstanceReputationNotSet
+  display: Indicator reputation
   name: feedInstanceReputation
   options:
   - None
@@ -57,7 +59,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: indicator type
+- additionalinfo: Type of the indicator in the feed.
+  display: indicator type
   hidden: false
   name: indicator_type
   options:
@@ -81,17 +84,25 @@ configuration:
   - fusion
   required: false
   type: 16
-- display: risk rule
+- additionalinfo: |-
+    Limit the indicators list to a specific risk rule.
+    To see available risk rules please use the get-risk-rules command.
+    This parameter will be used only for connectApi sub feed.
+  display: risk rule
   hidden: false
   name: risk_rule
   required: false
   type: 0
-- display: fusion file path
+- additionalinfo: |-
+    The path for the fusion file.
+    This parameter will be used only for fusion sub feed
+  display: fusion file path
   hidden: false
   name: fusion_file_path
   required: false
   type: 0
-- defaultvalue: '20'
+- additionalinfo: Time in seconds before http requests timeout.
+  defaultvalue: '20'
   display: Request Timeout
   hidden: false
   name: polling_timeout
@@ -144,7 +155,7 @@ script:
       - domain
       - hash
       - url
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Get a list of the risk rules available for an indicator
@@ -169,3 +180,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+  - RecordedFutureFeed - Test
