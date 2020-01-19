@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 class Client(BaseClient):
     def __init__(self, url: str, feed_name: str = 'http', insecure: bool = False, credentials: dict = None,
                  ignore_regex: str = None, encoding: str = None, indicator_type: str = '',
-                 feed_types: dict = None, polling_timeout: int = 20,
+                 feed_url_to_config: dict = None, polling_timeout: int = 20,
                  user_agent: str = None, proxy: bool = False, **kwargs):
         """Implements class for miners of plain text feeds over HTTP.
         **Config parameters**
@@ -35,7 +35,9 @@ class Client(BaseClient):
         For example, ASN feed:
         'https://www.spamhaus.org/drop/asndrop.txt': {
             'indicator_type': ASN,
-            'regex': r'^AS[0-9]+',
+            'indicator': {
+                'regex': r'^AS[0-9]+',
+            },
             'fields': {
                 'asndrop_country': {
                     'regex': '^.*;\\W([a-zA-Z]+)\\W+',
@@ -97,7 +99,7 @@ class Client(BaseClient):
         self.username = credentials.get('identifier', None)
         self.password = credentials.get('password', None)
         self.indicator_type = indicator_type
-        self.feed_types = feed_types if feed_types else {}
+        self.feed_types = feed_url_to_config if feed_url_to_config else {}
         self.ignore_regex: Optional[Pattern] = None
         if ignore_regex is not None:
             self.ignore_regex = re.compile(ignore_regex)
@@ -121,7 +123,7 @@ class Client(BaseClient):
             kwargs['auth'] = (self.username, self.password)
         try:
             urls = self._base_url
-            rs: List[dict] = []
+            url_to_response_list: List[dict] = []
             if not isinstance(urls, list):
                 urls = [urls]
             for url in urls:
@@ -135,12 +137,12 @@ class Client(BaseClient):
                     LOG(f'{self.feed_name} - exception in request:'  # type: ignore[str-bytes-safe]
                         f' {r.status_code} {r.content}')
                     raise
-                rs.append({url: r})
+                url_to_response_list.append({url: r})
         except requests.ConnectionError:
             raise requests.ConnectionError('Failed to establish a new connection. Please make sure your URL is valid.')
 
         results = []
-        for url_to_response in rs:
+        for url_to_response in url_to_response_list:
             for url, lines in url_to_response.items():
                 result = lines.iter_lines()
                 if self.encoding is not None:
