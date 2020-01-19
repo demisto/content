@@ -41,8 +41,9 @@ configuration:
   name: skipExclusionList
   required: false
   type: 8
-- defaultvalue: feedInstanceReputationNotSet
-  display: Mark as reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  defaultvalue: feedInstanceReputationNotSet
+  display: Indicator reputation
   name: feedInstanceReputation
   options:
   - None
