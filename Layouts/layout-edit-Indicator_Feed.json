@@ -2,14 +2,11 @@
 	"kind": "edit",
 	"fromVersion": "5.5.0",
 	"layout": {
-		"commitMessage": "",
+		"version": -1,
 		"id": "Indicator Feed",
 		"kind": "edit",
 		"modified": "2020-01-12T17:29:56.083609+02:00",
 		"name": "",
-		"prevKind": "edit",
-		"prevTypeId": "Indicator Feed",
-		"propagationLabels": null,
 		"sections": [
 			{
 				"description": "",
@@ -19,7 +16,6 @@
 						"id": "",
 						"isVisible": true,
 						"modified": "0001-01-01T00:00:00Z",
-						"sortValues": null,
 						"version": 0
 					},
 					{
@@ -27,7 +23,6 @@
 						"id": "",
 						"isVisible": true,
 						"modified": "0001-01-01T00:00:00Z",
-						"sortValues": null,
 						"version": 0
 					}
 				],
@@ -38,18 +33,12 @@
 				"query": null,
 				"queryType": "",
 				"readOnly": false,
-				"sortValues": null,
 				"type": "",
 				"version": 0
 			}
 		],
-		"shouldCommit": false,
-		"sortValues": null,
 		"system": false,
-		"typeId": "Indicator Feed",
-		"vcShouldIgnore": false,
-		"version": 1
+		"typeId": "Indicator Feed"
 	},
-	"typeId": "Indicator Feed",
-	"version": -1
+	"typeId": "Indicator Feed"
 }
