@@ -23,98 +23,69 @@ incidents_list = [{'alert_name': 'someSecretAlert2', 'content': '', 'date': '201
                    'read': False, 'severity': 10, 'threat_level': 'imminent',
                    'threats': ['Data Leak', 'Phishing'], 'title': 'someSecretAlert1', 'user_id': '123'}]
 
-iocs_list = [{"alert_id": "None",
-              "alert_name": "AllIpsUndergroundFeedRule",
-              "consumer": "random",
-              "consumer_specific_info": {
-                  "fields": {
-                      "itype": "suspicious_ip",
-                      "tags": [
-                          "DarkWeb"
-                      ],
-                      "threat_type": None,
-                      "value": "1.1.1.1"
-                  },
-                  "type": "indicator"
-              },
-              "doc_id": "123456789",
-              "feed_owner_id": "123456",
-              "importance": 1,
-              "source_id": "c-1231",
-              "source_item": {
-                  "access": "Dark Web",
-                  "creator": "theworker",
-                  "date": "2019-03-29T19:59:00",
-                  "ip": "1.1.1.1",
-                  "site": "dread",
-                  "tags": [
-                      "IP",
-                      "IP_v4",
-                      "IP_global"
-                  ]
-              },
-              "source_type": "ES",
-              "update_time": "2019-05-12 13:33:05"}, {"alert_id": "None",
-                                                      "alert_name": "AllIpsUndergroundFeedRule",
-                                                      "consumer": "random",
-                                                      "consumer_specific_info": {
-                                                          "fields": {
-                                                              "itype": "suspicious_ip",
-                                                              "tags": [
-                                                                  "DarkWeb"
-                                                              ],
-                                                              "threat_type": None,
-                                                              "value": "2.2.2.2"
-                                                          },
-                                                          "type": "indicator"
-                                                      },
-                                                      "doc_id": "123456789",
-                                                      "feed_owner_id": "123456",
-                                                      "importance": 1,
-                                                      "source_id": "c-1231",
-                                                      "source_item": {
-                                                          "access": "Dark Web",
-                                                          "creator": "theworker",
-                                                          "date": "2019-03-29T19:59:00",
-                                                          "ip": "2.2.2.2",
-                                                          "site": "dread",
-                                                          "tags": [
-                                                              "IP",
-                                                              "IP_v4",
-                                                              "IP_global"
-                                                          ]
-                                                      },
-                                                      "source_type": "ES",
-                                                      "update_time": "2019-05-12 13:33:05"},
-             {"alert_id": "None",
-              "alert_name": "HashesFeedRule",
-              "consumer": "random",
-              "consumer_specific_info": {
-                  "fields": {
-                      "itype": "mal_md5",
-                      "tags": [
-                          "DarkWeb",
-                          "MD5"
-                      ],
-                      "threat_type": None,
-                      "value": "abafbadfbafbafb"
-                  },
-                  "type": "indicator"
-              },
-              "doc_id": "123456789",
-              "feed_owner_id": "123456",
-              "importance": 1,
-              "source_id": "c-1231",
-              "source_item": {
-                  "access": "Dark Web",
-                  "creator": "theworker",
-                  "date": "2019-03-29T19:59:00",
-                  "ip": "abafbadfbafbafb",
-                  "site": "dread",
-                  "tags": [
-                      "MD5"
-                  ]
-              }}]
+iocs_bundle = {"id": "bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa",
+               "objects": [
+                    {"created": "2017-01-20T00:00:00.000Z", "definition": {"tlp": "amber"}, "definition_type": "tlp",
+                     "id": "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82", "type": "marking-definition"},
+                    {"created": "2019-12-26T00:00:00Z",
+                     "definition": {"statement": "Copyright Sixgill 2020. All rights reserved."},
+                     "definition_type": "statement", "id": "marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+                     "type": "marking-definition"},
+                    {"created": "2020-01-09T07:31:16.708Z",
+                     "description": "Shell access to this domain is being sold on dark web markets",
+                     "id": "indicator--7fc19d6d-2d58-45d6-a410-85554b12aea9", "kill_chain_phases": [
+                        {"kill_chain_name": "lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],
+                     "labels": ["compromised", "shell", "webshell"], "lang": "en", "modified": "2020-01-09T07:31:16.708Z",
+                     "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+                                             "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"],
+                     "pattern": "[domain-name:value = 'somewebsite.com']", "sixgill_actor": "some_actor",
+                     "sixgill_confidence": 90, "sixgill_feedid": "darkfeed_1", "sixgill_feedname": "compromised_sites",
+                     "sixgill_postid": "6e407c41fe6591d591cd8bbf0d105f7c15ed8991",
+                     "sixgill_posttitle": "Credit Card Debt Help,       somewebsite.com",
+                     "sixgill_severity": 70, "sixgill_source": "market_magbo", "spec_version": "2.0", "type": "indicator",
+                     "valid_from": "2019-12-07T00:57:04Z"},
+                    {"created": "2020-01-09T07:31:16.824Z",
+                     "description": "Shell access to this domain is being sold on dark web markets",
+                     "id": "indicator--67b2378f-cbdd-4263-b1c4-668014d376f2", "kill_chain_phases": [
+                        {"kill_chain_name": "lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],
+                     "labels": ["compromised", "shell", "webshell"], "lang": "ru", "modified": "2020-01-09T07:31:16.824Z",
+                     "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+                                             "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"],
+                     "pattern": "[domain-name:value = 'somewebsite.com']", "sixgill_actor": "some_actor",
+                     "sixgill_confidence": 90, "sixgill_feedid": "darkfeed_1", "sixgill_feedname": "compromised_sites",
+                     "sixgill_postid": "59f08fbf692f84f15353a5e946d2a1cebab92418",
+                     "sixgill_posttitle": "somewebsite.com",
+                     "sixgill_severity": 70, "sixgill_source": "market_magbo", "spec_version": "2.0", "type": "indicator",
+                     "valid_from": "2019-12-06T17:10:04Z"},
+                    {"created": "2020-01-09T07:31:16.757Z",
+                     "description": "Shell access to this domain is being sold on dark web markets",
+                     "id": "indicator--6e8b5f57-3ee2-4c4a-9283-8547754dfa09", "kill_chain_phases": [
+                        {"kill_chain_name": "lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],
+                     "labels": ["compromised", "shell", "webshell"], "lang": "en", "modified": "2020-01-09T07:31:16.757Z",
+                     "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+                                             "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"],
+                     "pattern": "[domain-name:value = 'somewebsite.com']", "sixgill_actor": "some_actor",
+                     "sixgill_confidence": 90, "sixgill_feedid": "darkfeed_1", "sixgill_feedname": "compromised_sites",
+                     "sixgill_postid": "f46cdfc3332d9a04aa63078d82c1e453fd76ba50",
+                     "sixgill_posttitle": "somewebsite.com", "sixgill_severity": 70,
+                     "sixgill_source": "market_magbo", "spec_version": "2.0", "type": "indicator",
+                     "valid_from": "2019-12-06T23:24:51Z"},
+                    {"created": "2020-01-09T07:31:16.834Z",
+                     "description": "Shell access to this domain is being sold on dark web markets",
+                     "id": "indicator--85d3d87b-76ed-4cab-b709-a43dfbdc5d8d", "kill_chain_phases": [
+                        {"kill_chain_name": "lockheed-martin-cyber-kill-chain", "phase_name": "weaponization"}],
+                     "labels": ["compromised", "shell", "webshell"], "lang": "en", "modified": "2020-01-09T07:31:16.834Z",
+                     "object_marking_refs": ["marking-definition--41eaaf7c-0bc0-4c56-abdf-d89a7f096ac4",
+                                             "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82"],
+                     "pattern": "[domain-name:value = 'somewebsite.com']", "sixgill_actor": "some_actor",
+                     "sixgill_confidence": 90, "sixgill_feedid": "darkfeed_1", "sixgill_feedname": "compromised_sites",
+                     "sixgill_postid": "c3f266e67f163e1a6181c0789e225baba89212a2",
+                     "sixgill_posttitle": "somewebsite.com",
+                     "sixgill_severity": 70, "sixgill_source": "market_magbo", "spec_version": "2.0", "type": "indicator",
+                     "valid_from": "2019-12-06T14:37:16Z"}
+               ],
+               "spec_version": "2.0",
+               "type": "bundle"}
 
 
 expected_alert_output = [{'name': 'someSecretAlert2', 'occurred': '2019-08-06T23:20:35.000000Z', 'details': '', 'severity': 2,
@@ -148,33 +119,6 @@ expected_alert_output = [{'name': 'someSecretAlert2', 'occurred': '2019-08-06T23
                                      '"read": false, "threat_level": "imminent", "threats": ["Data Leak", "Phishing"], '
                                      '"title": "someSecretAlert1"}'}]
 
-expected_raw_output = [{'alert_id': 'None', 'alert_name': 'AllIpsUndergroundFeedRule', 'consumer': 'random',
-                        'consumer_specific_info': {
-                            'fields': {'itype': 'suspicious_ip', 'tags': ['DarkWeb'], 'threat_type': None,
-                                       'value': '1.1.1.1'}, 'type': 'indicator'}, 'doc_id': '123456789',
-                        'feed_owner_id': '123456', 'importance': 1, 'source_id': 'c-1231',
-                        'source_item': {'access': 'Dark Web', 'creator': 'theworker', 'date': '2019-03-29T19:59:00',
-                                        'ip': '1.1.1.1', 'site': 'dread', 'tags': ['IP', 'IP_v4', 'IP_global']},
-                        'source_type': 'ES', 'update_time': '2019-05-12 13:33:05', 'id': '123456789'},
-                       {'alert_id': 'None', 'alert_name': 'AllIpsUndergroundFeedRule', 'consumer': 'random',
-                        'consumer_specific_info': {
-                            'fields': {'itype': 'suspicious_ip', 'tags': ['DarkWeb'], 'threat_type': None,
-                                       'value': '2.2.2.2'}, 'type': 'indicator'}, 'doc_id': '123456789',
-                        'feed_owner_id': '123456', 'importance': 1, 'source_id': 'c-1231',
-                        'source_item': {'access': 'Dark Web', 'creator': 'theworker', 'date': '2019-03-29T19:59:00',
-                                        'ip': '2.2.2.2', 'site': 'dread', 'tags': ['IP', 'IP_v4', 'IP_global']},
-                        'source_type': 'ES', 'update_time': '2019-05-12 13:33:05', 'id': '123456789'},
-                       {'alert_id': 'None', 'alert_name': 'HashesFeedRule', 'consumer': 'random',
-                        'consumer_specific_info': {
-                            'fields': {'itype': 'mal_md5', 'tags': ['DarkWeb', 'MD5'], 'threat_type': None,
-                                       'value': 'abafbadfbafbafb'}, 'type': 'indicator'}, 'doc_id': '123456789',
-                        'feed_owner_id': '123456', 'importance': 1, 'source_id': 'c-1231',
-                        'source_item': {'access': 'Dark Web', 'creator': 'theworker', 'date': '2019-03-29T19:59:00',
-                                        'ip': 'abafbadfbafbafb', 'site': 'dread', 'tags': ['MD5']}, 'id': '123456789'}]
-
-expected_iocs = {'IP(val.Address == obj.Address)': [{'Address': '1.1.1.1'}, {'Address': '2.2.2.2'}],
-                 'File(val.MD5 == obj.MD5)': [{'MD5': 'abafbadfbafbafb', 'Tags': 'DarkWeb, MD5'}]}
-
 
 class MockedResponse(object):
     def __init__(self, status_code):
@@ -187,23 +131,6 @@ def init_params():
         'client_id': 'WRONG_CLIENT_ID_TEST',
         'client_secret': 'CLIENT_SECRET_TEST',
     }
-
-
-def test_handle_indicator():
-    from Sixgill import handle_indicator
-
-    indicator = {}
-    readable_iocs = []
-
-    output = handle_indicator(indicator, readable_iocs, incidents_list[0])
-    assert output is False
-    assert indicator == {}
-    assert readable_iocs == []
-
-    output = handle_indicator(indicator, readable_iocs, iocs_list[0])
-    assert output is True
-    assert indicator == {'IP(val.Address == obj.Address)': [{'Address': '1.1.1.1'}]}
-    assert readable_iocs == [{'ID': '123456789', 'Type': 'IP', 'Indicator Value': '1.1.1.1', 'Tags': 'DarkWeb'}]
 
 
 def test_test_module_raise_exception(mocker):
@@ -250,21 +177,20 @@ def test_fetch_incidents(mocker):
 
 def test_get_indicators(mocker):
     mocker.patch.object(demisto, 'params', return_value=init_params())
+    mocker.patch.object(demisto, 'results')
 
     from sixgill.sixgill_darkfeed_client import SixgillDarkFeedClient
 
-    mocker.patch.object(SixgillDarkFeedClient, 'get_incidents', return_value=iocs_list)
-    mocker.patch.object(SixgillDarkFeedClient, 'mark_digested_item', return_value=None)
+    mocker.patch.object(SixgillDarkFeedClient, 'get_bundle', return_value=iocs_bundle)
+    mocker.patch.object(SixgillDarkFeedClient, 'commit_indicators', return_value=None)
 
     from Sixgill import get_indicators
-    readable_output, outputs, raw_response = get_indicators()
+    get_indicators()
 
-    assert readable_output == "### Sixgill's DarkFeed indicators:\n|ID|Type|Indicator Value|Tags|\n|---|---|---|---|" \
-                              "\n| 123456789 | IP | 1.1.1.1 | DarkWeb |\n| 123456789 | " \
-                              "IP | 2.2.2.2 | DarkWeb |\n| 123456789 | " \
-                              "File | abafbadfbafbafb | DarkWeb, MD5 |\n"
-    assert outputs == expected_iocs
-    assert raw_response == expected_raw_output
+    assert demisto.results.call_count == 1
+    results = demisto.results.call_args_list[0][0]
+
+    assert results == iocs_bundle
 
 
 def test_item_to_incident():
