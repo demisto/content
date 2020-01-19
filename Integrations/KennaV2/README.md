@@ -1,10 +1,10 @@
 Use the Kenna v2 integration to search and update vulnerabilities, schedule a run connector, and manage tags and attributes.
 
-## Configure KennaV2 on Demisto
+## Configure Kenna v2 on Demisto
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for KennaV2.
+2. Search for Kenna v2.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Server URL (e.g.  https://api.kennasecurity.com)__

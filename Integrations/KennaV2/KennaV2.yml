@@ -1,6 +1,6 @@
 category: Vulnerability Management
 commonfields:
-  id: KennaV2
+  id: Kennav2
   version: -1
 configuration:
 - defaultvalue: https://api.kennasecurity.com
@@ -24,7 +24,7 @@ configuration:
   type: 8
 description: Use the Kenna v2 integration to search and update vulnerabilities, schedule a run connector, and manage tags and attributes.
 display: Kenna v2
-name: KennaV2
+name: Kennav2
 script:
   commands:
   - arguments:

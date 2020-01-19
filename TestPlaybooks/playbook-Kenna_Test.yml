@@ -230,10 +230,10 @@ tasks:
       version: -1
       name: kenna-get-asset-vulnerabilities
       description: Get Vulenerabilities of specific asset
-      script: KennaV2|||kenna-get-asset-vulnerabilities
+      script: kennav2|||kenna-get-asset-vulnerabilities
       type: regular
       iscommand: true
-      brand: KennaV2
+      brand: kennav2
     nexttasks:
       '#none#':
       - "31"
@@ -844,10 +844,10 @@ tasks:
       name: Kenna-search-fixes
       description: Filters fixes by a given set of vulnerability and asset parameters
         and returns the filtered fixes
-      script: KennaV2|||kenna-search-fixes
+      script: kennav2|||kenna-search-fixes
       type: regular
       iscommand: true
-      brand: KennaV2
+      brand: kennav2
     nexttasks:
       '#none#':
       - "12"

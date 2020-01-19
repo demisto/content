@@ -94,7 +94,7 @@ class Client(BaseClient):
 
 def test_module(client: Client, *_):
     """
-    Performs basic get request from KennaV2
+    Performs basic get request from Kenna v2
     """
     res_vulnerabilities = client.http_request('GET', '/vulnerabilities')
     res_assets = client.http_request('GET', '/assets')
@@ -499,10 +499,10 @@ def main():
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:
-            raise NotImplementedError(f'{command} is not an existing KennaV2 command')
+            raise NotImplementedError(f'{command} is not an existing Kenna v2 command')
 
     except Exception as err:
-        return_error(f'Error from KennaV2 Integration \n\n {err} \n', err)
+        return_error(f'Error from Kenna v2 Integration \n\n {err} \n', err)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
