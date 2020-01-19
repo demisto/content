@@ -2117,6 +2117,10 @@
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "GetValuesOfMultipleFIelds Test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "BPA",
             "playbookID": "Test-BPA_Integration",
             "fromversion": "4.5.0"
