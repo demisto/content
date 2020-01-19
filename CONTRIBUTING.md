@@ -7,15 +7,15 @@ Welcome to Demisto content repo! Contributions are welcome and appreciated.
 ## How to contribute
 Please read the following guidelines. Following these guidelines will maximize the chances for a fast, easy and effective review process for everyone involved. If something is not clear, please don't hesitate to reach out to us via GitHub, [Slack](http://go.demisto.com/join-our-slack-community), or [email](mailto:info@demisto.com).
 
-* Setup a development environment by following the [Getting Started Guide](docs/getting_started).
-* Use the [Package Directory Structure](docs/package_directory_structure) for all Python code. If working on existing code, beyond trivial changes, we require converting to this structure as it allows running linting, unit tests and provides a clearer review process.
-* Make sure to read and follow [code conventions](docs/code_conventions).
-* Run and verify that the various linters we support pass as detailed [here](docs/linting).
-* For Scripts/Integrations written in Python, make sure to create unit tests as documented [here](docs/tests/unit-testing)
-* Create a test playbook as documented [here](docs/tests). **Note**: for simple Scripts that have unit tests, a test playbook is optional.
-* Validate that our validation hooks pass. If you used `.hooks/bootstrap` as documented in [Getting Started](docs/getting_started) the validation hook will run automatically upon commit. You can also run the validation hooks manually by running `.hooks/pre-commit`.
-* Document your integration as detailed [here](docs/integration_documentation).
-* Document your changes in the relevant changelog file as detailed [here](docs/release_notes).
+* Setup a development environment by following the [Dev Setup Guide](https://demisto.pan.dev/docs/dev-setup).
+* Use the [Package Directory Structure](https://demisto.pan.dev/docs/package-dir) for all Python code. If working on existing code, beyond trivial changes, we require converting to this structure as it allows running linting, unit tests and provides a clearer review process.
+* Make sure to read and follow [code conventions](https://demisto.pan.dev/docs/code-conventions).
+* Run and verify that the various linters we support pass as detailed [here](https://demisto.pan.dev/docs/linting).
+* For Scripts/Integrations written in Python, make sure to create unit tests as documented [here](https://demisto.pan.dev/docs/unit-testing)
+* Create a test playbook as documented [here](https://demisto.pan.dev/docs/testing). **Note**: for simple Scripts that have unit tests, a test playbook is optional.
+* Validate that our validation hooks pass. If you used `.hooks/bootstrap` as documented in the [Dev Setup Guide](https://demisto.pan.dev/docs/dev-setup) the validation hook will run automatically upon commit. You can also run the validation hooks manually by running `.hooks/pre-commit`.
+* Document your integration as detailed [here](https://demisto.pan.dev/docs/integration-docs).
+* Document your changes in the relevant changelog file as detailed [here](https://demisto.pan.dev/docs/changelog).
 
 You should now be ready to create a pull request.
 
@@ -32,7 +32,7 @@ Once you open a pull request we have a bot (`@content-bot`) that will assist you
 
 You will see a few [GitHub Status Checks](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-status-checks) that help validate that your pull request is according to our standards:
 
-* **ci/circleci: build**: We use [CircleCI](https://circleci.com/gh/demisto/content) to run a full build on each commit of your pull request. The build will run our content validation hooks, linting and unit test. We require that the build pass (green build). If it is failing our content-bot will also add instructive comments about what sections are failing in the build. Follow the `details` link of the status to see the full build UI of CircleCI. More details about our build flow of CircleCI is available [here](docs/tests/circleci).
+* **ci/circleci: build**: We use [CircleCI](https://circleci.com/gh/demisto/content) to run a full build on each commit of your pull request. The build will run our content validation hooks, linting and unit test. We require that the build pass (green build). If it is failing our content-bot will also add instructive comments about what sections are failing in the build. Follow the `details` link of the status to see the full build UI of CircleCI. More details about our build flow of CircleCI is available [here](https://demisto.pan.dev/docs/circleci).
 * **demisto/pull-check**: Status check that validates that included documentation and release notes are approved. Once the documentation has been reviewed and approved, this status check will pass.
 * **LGTM analysis: Python**: We use [LGMT](https://lgtm.com) for continues code analysis. If your PR introduces new LGTM alerts, the LGTM bot will add a comment with links for more details. Usually, these alerts are valid and you should try to fix them. If the alert is a false positive, specify this in a comment of the PR.
 * **guardrails/scan**: We use [Guardrails](https://www.guardrails.io/) for continuous security feedback. If the alert generated by Guardrails is a false positive, specify this in a comment of the PR.

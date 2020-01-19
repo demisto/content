@@ -3293,6 +3293,7 @@ def save_attachments(attachments, root_email_file_name, max_depth):
     for attachment in attachments:
         if attachment.data is not None:
             display_name = attachment.DisplayName if attachment.DisplayName else attachment.AttachFilename
+            display_name = display_name if display_name else ''
             demisto.results(fileResult(display_name, attachment.data))
             name_lower = display_name.lower()
             if max_depth > 0 and (name_lower.endswith(".eml") or name_lower.endswith('.p7m')):
@@ -3639,7 +3640,7 @@ def main():
         if is_error(result):
             return_error(get_error(result))
 
-        file_type = result[0]['FileMetadata']['info']
+        file_type = result[0]['FileMetadata'].get('info', '')
 
     except Exception as ex:
         return_error(
@@ -3664,14 +3665,14 @@ def main():
                 with open(file_path, 'rb') as f:
                     file_contents = f.read()
 
-                if 'Content-Type:'.lower() in file_contents.lower():
+                if file_contents and 'Content-Type:'.lower() in file_contents.lower():
                     email_data, attached_emails = handle_eml(file_path, b64=False, file_name=file_name,
                                                              parse_only_headers=parse_only_headers, max_depth=max_depth)
                     output = create_email_output(email_data, attached_emails)
                 else:
                     # Try a base64 decode
                     b64decode(file_contents)
-                    if 'Content-Type:'.lower() in file_contents.lower():
+                    if file_contents and 'Content-Type:'.lower() in file_contents.lower():
                         email_data, attached_emails = handle_eml(file_path, b64=True, file_name=file_name,
                                                                  parse_only_headers=parse_only_headers,
                                                                  max_depth=max_depth)

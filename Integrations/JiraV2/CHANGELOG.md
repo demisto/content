@@ -1,4 +1,7 @@
 ## [Unreleased]
+Fixed an issue where trying to fetch incidents when the idOffset was not configured would raise an error.
+
+## [19.12.0] - 2019-12-10
 - API token parameter is now encrypted.
 - Improved authentication methods support - Basic, OAuth 1.0 (only from 5.0) 
 

@@ -968,10 +968,10 @@ EXECUTION
 
 def main():
     global TOKEN
-    TOKEN = get_token()
     command = demisto.command()
     try:
         handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+        TOKEN = get_token()
         if command == 'test-module':
             demisto.results(test_module())
         elif command == 'fetch-incidents':

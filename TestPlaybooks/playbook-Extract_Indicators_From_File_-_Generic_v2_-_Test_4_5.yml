@@ -153,7 +153,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://tpb.crushus.com/www.paperstreetcash.com
+              simple: http://www.desktop-style.de
       - - operator: isExists
           left:
             value:
