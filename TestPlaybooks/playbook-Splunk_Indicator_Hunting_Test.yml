@@ -1,22 +1,23 @@
 id: Splunk Indicator Hunting Test
 version: -1
+fromversion: 5.0.0
 name: Splunk Indicator Hunting Test
-fromversion: 4.5.0
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: fbdee7b8-76eb-4c1b-8a52-34227516bc62
     type: start
     task:
       id: fbdee7b8-76eb-4c1b-8a52-34227516bc62
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     separatecontext: false
     view: |-
       {
@@ -28,47 +29,56 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: c3342bc1-af72-4734-886e-546692376d73
+  '1':
+    id: '1'
+    taskid: 6f31f267-b262-45c1-841f-9cf722326750
     type: playbook
     task:
-      id: c3342bc1-af72-4734-886e-546692376d73
+      id: 6f31f267-b262-45c1-841f-9cf722326750
       version: -1
       name: Splunk Indicator Hunting
+      description: ''
       playbookName: Splunk Indicator Hunting
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       IPAddress:
         simple: 1.1.1.1
+      IndexNames:
+        simple: '*'
+      InternalRange: {}
+      InvestigationHostFields:
+        simple: dest_nt_host
+      InvestigationIPFields:
+        simple: dest_ip,src_ip,src,dst
+      InvestigationUserFields:
+        simple: user_identity
       MD5:
         simple: xxxxxx8920ba0ddebaf5ea68ff97a93c
       SHA1:
         simple: xxxxxx8920ba0ddebaf5ea68ff97a93c,xxxxxx8920ba0ddebaf5ea234987592834759834275
       SHA256:
         simple: xxxxxx8920ba0ddebaf5ea68ff97a93c
-      SelectFields:
-        simple: '*'
+      SelectFields: {}
       SplunkIPField:
         simple: ip
       SplunkMD5Field:
-        simple: Caller_MD5
-      SplunkSHA1Field:
         simple: Caller_MD5,file_hash
+      SplunkSHA1Field: {}
       SplunkSHA256Field:
-        simple: Caller_MD5,file_hash
-      TimeFrame:
-        simple: daysago=1
+        simple: file_hash
+      SplunkURLDomainField: {}
       URLDomain:
         simple: goo,wall
-      URLDomainField:
-        simple: url,other_url
+      earliest_time:
+        simple: -1d
+      event_limit: {}
+      latest_time: {}
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {
@@ -80,8 +90,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: c4ed11c5-ff85-4e72-80db-2f85581a67f6
     type: regular
     task:
@@ -92,13 +102,13 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
