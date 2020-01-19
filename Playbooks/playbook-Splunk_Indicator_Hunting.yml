@@ -117,6 +117,7 @@ tasks:
     task:
       id: 70780084-0b31-4b12-866f-125352d4ddf2
       version: -1
+      description: ''
       name: Is there an IP to search?
       type: condition
       iscommand: false
@@ -152,6 +153,7 @@ tasks:
     task:
       id: 45687543-bac0-47cd-858d-19e2268ed132
       version: -1
+      description: ''
       name: Is there a hash to search?
       type: condition
       iscommand: false
@@ -199,6 +201,7 @@ tasks:
     task:
       id: 0c440cf7-d657-4778-830b-6a85b01e8370
       version: -1
+      description: ''
       name: Is there an Domain/Url to search?
       type: condition
       iscommand: false
@@ -260,6 +263,7 @@ tasks:
     task:
       id: ea5cc6c2-a8fc-423d-8f79-fa0c335e207e
       version: -1
+      description: ''
       name: Was there a custom domain/url field?
       type: condition
       iscommand: false
@@ -336,6 +340,7 @@ tasks:
     task:
       id: 8d394926-0f4e-4d5d-8d0c-7f31d935a6c3
       version: -1
+      description: ''
       name: Was there a custom MD5 field?
       type: condition
       iscommand: false
@@ -371,6 +376,7 @@ tasks:
     task:
       id: a9d31dda-dd5a-49ad-8a4e-f9b118462a46
       version: -1
+      description: ''
       name: Is there an MD5 to search
       type: condition
       iscommand: false
@@ -484,6 +490,7 @@ tasks:
     task:
       id: 219caccb-356b-4f28-8598-3a2b208c75c1
       version: -1
+      description: ''
       name: Is there an SHA1 to search
       type: condition
       iscommand: false
@@ -519,6 +526,7 @@ tasks:
     task:
       id: 15b68e09-d066-4d44-8ff4-8e3f9e91f215
       version: -1
+      description: ''
       name: Was there a custom SHA1 field?
       type: condition
       iscommand: false
@@ -581,6 +589,7 @@ tasks:
     task:
       id: 30cf6a20-efcf-48d0-80d5-31523a3e284e
       version: -1
+      description: ''
       name: Is there an SHA256 to search
       type: condition
       iscommand: false
@@ -616,6 +625,7 @@ tasks:
     task:
       id: 4619958a-880f-4406-86e8-45a9f7155fb0
       version: -1
+      description: ''
       name: Was there a custom SHA256 field?
       type: condition
       iscommand: false
@@ -678,6 +688,7 @@ tasks:
     task:
       id: c8f395df-f676-4d66-858d-037fec1bd956
       version: -1
+      description: ''
       name: Was there a custom IP field?
       type: condition
       iscommand: false
@@ -714,6 +725,7 @@ tasks:
     task:
       id: 3a34151e-f6ba-4406-82aa-137d5968b47d
       version: -1
+      description: ''
       name: Is Splunk enabled
       type: condition
       iscommand: false
@@ -2174,6 +2186,7 @@ tasks:
     task:
       id: 8d981267-254f-4feb-8267-8ad20a93a8e9
       version: -1
+      description: ''
       name: Is MD5 file hash detected by Splunk?
       type: condition
       iscommand: false
@@ -2361,6 +2374,7 @@ tasks:
     task:
       id: 92ef76c6-1a0b-439b-8819-35b0c062c6c4
       version: -1
+      description: ''
       name: Is SHA1 file hash detected by Splunk?
       type: condition
       iscommand: false
@@ -2548,6 +2562,7 @@ tasks:
     task:
       id: 8669c6d1-b8cf-4b20-8360-08f82c40e17c
       version: -1
+      description: ''
       name: Is SHA256 file hash detected by Splunk?
       type: condition
       iscommand: false
@@ -2735,6 +2750,7 @@ tasks:
     task:
       id: 71e0cc33-a934-44a2-825b-c946df97daf8
       version: -1
+      description: ''
       name: Is ip detected by Splunk?
       type: condition
       iscommand: false
@@ -2922,6 +2938,7 @@ tasks:
     task:
       id: 48e88921-e6e6-4982-84ce-22ef329a6b02
       version: -1
+      description: ''
       name: Is domain or url detected by Splunk?
       type: condition
       iscommand: false
@@ -3301,6 +3318,7 @@ tasks:
     task:
       id: c307d82f-5918-4a15-8a01-8e9f56ad6ec6
       version: -1
+      description: ''
       name: Are there detected IP addresses?
       type: condition
       iscommand: false
