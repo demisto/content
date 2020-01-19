@@ -24,27 +24,6 @@ ENTRY_TYPE_ERROR = 4
 
 # ----- Functions ----- #
 
-# TODO: remove this function
-def get_open_fds():
-    '''
-    return the number of open file descriptors for current process
-
-    .. warning: will only work on UNIX-like os-es.
-    '''
-    import subprocess
-    import os
-
-    pid = os.getpid()
-    procs = subprocess.check_output(
-        [ "lsof", '-w', '-Ff', "-p", str( pid ) ] )
-
-    nprocs = len(
-        filter(
-            lambda s: s and s[ 0 ] == 'f' and s[1: ].isdigit(),
-            procs.split( '\n' ) )
-        )
-    return nprocs
-
 # get integration configuration
 def __get_integration_config(client, integration_name, thread_index=0, prints_manager=None):
     body = {
@@ -84,7 +63,6 @@ def __get_integration_config(client, integration_name, thread_index=0, prints_ma
 
 # __test_integration_instance
 def __test_integration_instance(client, module_instance, thread_index=0, prints_manager=None):
-    print("\nOpen files: {}".format(get_open_fds()))
     connection_retries = 3
     response_code = 0
     prints_manager.add_print_job("trying to connect.", print_warning, thread_index)
