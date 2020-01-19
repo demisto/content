@@ -2411,6 +2411,7 @@ tasks:
     type: condition
     task:
       id: 00e1d579-b406-4db4-8af2-27369eee70f3
+      description: ''
       version: -1
       name: Are there detected IP addresses?
       type: condition
