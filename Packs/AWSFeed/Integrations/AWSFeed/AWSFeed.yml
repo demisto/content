@@ -46,7 +46,9 @@ configuration:
 - name: expiration
   required: false
   type: 17
-- name: skipExclusionList
+- additionalinfo: When selected, the exclusion list will be ignored for this feed.
+  display: Bypass exclusion list
+  name: skipExclusionList
   required: false
   type: 8
 - defaultvalue: feedInstanceReputationNotSet
