@@ -140,7 +140,21 @@ def module_test_command(client: Client, args: dict):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    client.build_iterator()
+    indicator_feeds = client.indicator_feeds
+    if 'Daily Threat Feed' in indicator_feeds:
+        client.indicator_feeds = ['Daily Threat Feed']
+        try:
+            client.build_iterator()
+        except Exception:
+            raise Exception("Could not fetch Daily Threat Feed\n\nCheck your API key and your connection AutoFocus.")
+
+    if 'URL Feed' in indicator_feeds:
+        client.indicator_feeds = ['URL Feed']
+        try:
+            client.build_iterator()
+        except Exception:
+            raise Exception(f"Could not fetch URL Feed {client.url_feed_suffix}\n\n"
+                            f"Check your API key the URL Feed ID and Name and Check if they are Enabled in AutoFocus.")
     return 'ok', {}, {}
 
 
