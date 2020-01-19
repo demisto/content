@@ -2,27 +2,34 @@ import json
 import os
 import sys
 import argparse
-from zipfile import ZipFile, ZIP_DEFLATED
-from Tests.test_utils import run_command, print_error
-from google.cloud import storage
+import shutil
 import google.auth
+from google.cloud import storage
+from distutils.util import strtobool
+from datetime import datetime
+from zipfile import ZipFile, ZIP_DEFLATED
+from Tests.test_utils import run_command, print_error, collect_pack_script_tags, collect_content_items_data
 
-
-def option_handler():
-    parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
-    parser.add_argument('-a', '--artifactsPath', help="The full path of packs artifacts", required=True)
-    parser.add_argument('-e', '--extractPath', help="Full path of folder to extract wanted packs", required=True)
-    parser.add_argument('-c', '--circleCi', help="Whether run script locally or in circleCi", default=False)
-    parser.add_argument('-p', '--packName', help="Use only in local mode, the target pack name to store.",
-                        required=False, default="")
-    parser.add_argument('-b', '--bucketName', help="Storage bucket name", required=True)
-
-    return parser.parse_args()
+DIR_NAME_TO_CONTENT_TYPE = {
+    "Scripts": "Automations",
+    "IncidentFields": "Incident Fields",
+    "Playbooks": "Playbooks",
+    "Integrations": "Integrations",
+    "IncidentTypes": "Incident Types",
+    "Layouts": "Incident Layouts",
+    "Reports": "Reports",
+    "Dashboards": "Dashboards"
+}
+PACK_ROOT_FILES = {
+    "CHANGELOG": "changelog.json",
+    "README": "README.md",
+    "METADATA": "metadata.json"
+}
 
 
 class Pack:
-    CHANGELOG = "changelog.json"
     PACK_INITIAL_VERSION = "1.0.0"
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
     def __init__(self, pack_name, pack_path, storage_bucket):
         self.pack_name = pack_name
@@ -34,10 +41,10 @@ class Pack:
         return self._get_latest_version()
 
     def _get_latest_version(self):
-        if self.CHANGELOG not in os.listdir(self.pack_path):
+        if PACK_ROOT_FILES["CHANGELOG"] not in os.listdir(self.pack_path):
             return self.PACK_INITIAL_VERSION
 
-        changelog_path = os.path.join(self.pack_path, self.CHANGELOG)
+        changelog_path = os.path.join(self.pack_path, PACK_ROOT_FILES["CHANGELOG"])
 
         with open(changelog_path, "r") as changelog:
             changelog_json = json.load(changelog)
@@ -47,6 +54,45 @@ class Pack:
                                reverse=True)
 
             return pack_versions[0]
+
+    def _parse_pack_metadata(self, user_metadata):
+        pack_metadata = {}
+        pack_metadata['displayName'] = user_metadata.get('name', '')
+        pack_metadata['description'] = user_metadata.get('description', '')
+        pack_metadata['updated'] = datetime.utcnow().strftime(Pack.DATE_FORMAT)
+        pack_metadata['support'] = user_metadata.get('support', '')
+        pack_metadata['beta'] = bool(strtobool(user_metadata.get('beta')))
+        pack_metadata['deprecated'] = bool(strtobool(user_metadata.get('deprecated')))
+        pack_metadata['certification'] = user_metadata.get('certification', '')
+        pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion', '')
+        pack_metadata['serverLicense'] = user_metadata.get('serverLicense', '')
+        pack_metadata['currentVersion'] = user_metadata.get('currentVersion', '')
+
+        pack_metadata['supportDetails'] = {}
+        pack_metadata['supportDetails']['author'] = user_metadata.get('author', '')
+        support_url = user_metadata.get('url')
+
+        if support_url:
+            pack_metadata['supportDetails']['url'] = support_url
+        support_email = user_metadata.get('email')
+
+        if support_email:
+            pack_metadata['supportDetails']['email'] = support_email
+
+        pack_metadata['general'] = user_metadata.get('general', [])
+        pack_metadata['tags'] = collect_pack_script_tags(self.pack_path)
+        pack_metadata['categories'] = user_metadata.get('categories', [])
+        content_items_data = {DIR_NAME_TO_CONTENT_TYPE[k]: v for (k, v) in
+                              collect_content_items_data(self.pack_path).items() if k in DIR_NAME_TO_CONTENT_TYPE}
+        pack_metadata['contentItems'] = content_items_data
+        pack_metadata["contentItemTypes"] = list(content_items_data.keys())
+        # todo collect all integrations display name
+        # pack_metadata["integrations"] = collect_integration_display_names(self.pack_path)
+        pack_metadata["useCases"] = user_metadata.get('useCases', [])
+        pack_metadata["keywords"] = user_metadata.get('keywords', [])
+        # pack_metadata["dependencies"] = {}  # TODO: build dependencies tree
+
+        return pack_metadata
 
     def zip_pack(self):
         zip_pack_path = f"{self.pack_path}.zip"
@@ -76,6 +122,33 @@ class Pack:
             blob.upload_from_file(pack_zip)
 
         print(f"Uploaded {self.pack_name} pack to {pack_full_path} path.")
+
+    def format_metadata_file(self):
+        if PACK_ROOT_FILES['METADATA'] not in os.listdir(self.pack_path):
+            print_error(f"{self.pack_name} pack is missing {PACK_ROOT_FILES['METADATA']} file.")
+            sys.exit(1)
+
+        metadata_path = os.path.join(self.pack_path, PACK_ROOT_FILES['METADATA'])
+
+        with open(metadata_path, "r+") as metadata_file:
+            user_metadata = json.load(metadata_file)
+            formatted_metadata = self._parse_pack_metadata(user_metadata)
+            metadata_file.seek(0)
+            json.dump(formatted_metadata, metadata_file, indent=4)
+
+    def prepare_for_index_upload(self):
+        files_to_leave = PACK_ROOT_FILES.values()
+
+        for file_or_folder in os.listdir(self.pack_path):
+            files_or_folder_path = os.path.join(self.pack_path, file_or_folder)
+
+            if file_or_folder in files_to_leave:
+                continue
+
+            if os.path.isdir(files_or_folder_path):
+                shutil.rmtree(files_or_folder_path)
+            else:
+                os.remove(files_or_folder_path)
 
 
 def get_modified_packs(is_circle=False, specific_pack=None):
@@ -112,6 +185,18 @@ def init_storage_client(is_circle=False, service_account_key_file=None):
         return storage.Client(credentials=credentials, project=project)
 
 
+def option_handler():
+    parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
+    parser.add_argument('-a', '--artifactsPath', help="The full path of packs artifacts", required=True)
+    parser.add_argument('-e', '--extractPath', help="Full path of folder to extract wanted packs", required=True)
+    parser.add_argument('-c', '--circleCi', help="Whether run script locally or in circleCi", default=False)
+    parser.add_argument('-p', '--packName', help="Use only in local mode, the target pack name to store.",
+                        required=False, default="")
+    parser.add_argument('-b', '--bucketName', help="Storage bucket name", required=True)
+
+    return parser.parse_args()
+
+
 def main():
     option = option_handler()
     packs_artifacts_path = option.artifactsPath
@@ -130,8 +215,11 @@ def main():
 
     for pack in packs_list:
         latest_version = pack.latest_version
+        pack.format_metadata_file()
         zip_pack_path = pack.zip_pack()
         pack.upload_to_storage(zip_pack_path, latest_version)
+        os.remove(zip_pack_path)
+        pack.prepare_for_index_upload()
 
 
 if __name__ == '__main__':
