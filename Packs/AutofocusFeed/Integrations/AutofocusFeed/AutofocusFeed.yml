@@ -30,6 +30,12 @@ configuration:
   name: output_feed_name
   required: false
   type: 0
+- display: Bypass exclusion list
+  name: bypassExclusionList
+  defaultvalue: ""
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list will be ignored for this feed.
 - defaultvalue: F - Reliability cannot be judged
   display: Reliability
   name: feedInstanceReliability
