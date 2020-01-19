@@ -3776,4 +3776,4 @@ outputs:
     that the data accuracy depends on how the Asset mapping is configured in QRadar.
   type: string
 tests:
-- Qradar Indicator Hunting Test
+- QRadar Indicator Hunting Test
