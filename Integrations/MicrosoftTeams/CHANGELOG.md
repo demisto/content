@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added the ability to mention users in the ***send-notification*** command.
 Added 2 commands.
   - ***add-user-to-channel***
   - ***create-channel***
