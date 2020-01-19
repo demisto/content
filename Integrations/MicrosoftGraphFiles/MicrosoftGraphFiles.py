@@ -175,7 +175,6 @@ class Client(BaseClient):
         self.enc_key = demisto.params().get("enc_key")
         self.host = demisto.params().get("host")
         self.auto_url = token_retrieval_url
-        self.tenant_domain = demisto.params().get("share_point_domain")
         self.access_token = self.get_access_token()
         self.headers = {"Authorization": f"Bearer {self.access_token}"}
 
