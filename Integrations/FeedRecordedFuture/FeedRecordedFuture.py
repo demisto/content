@@ -316,12 +316,12 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators, _ = fetch_indicators_command(client, {})
+            indicators, _ = fetch_indicators_command(client, client.indicator_type)
             # we submit the indicators in batches
             for b in old_batch(indicators, batch_size=2000):  # TODO change to commonserverpython batch
                 demisto.createIndicators(b)
         else:
-            readable_output, outputs, raw_response = commands[command](client, client.indicator_type)  # type:ignore
+            readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type:ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
