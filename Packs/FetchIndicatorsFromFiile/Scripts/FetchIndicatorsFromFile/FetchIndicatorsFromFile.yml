@@ -1,0 +1,86 @@
+args:
+- default: false
+  description: The file entry_id from which to fetch the indicators.
+  isArray: false
+  name: entry_id
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'True'
+  description: Whether to auto detect the indicator type from the file.
+  isArray: false
+  name: auto_detect
+  predefined:
+  - 'True'
+  - 'False'
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: None
+  description: Set a default indicator type.
+  isArray: false
+  name: default_type
+  predefined:
+  - CVE
+  - Domain
+  - Email
+  - File
+  - FQDN
+  - File MD5
+  - File SHA-1
+  - File SHA-256
+  - Host
+  - IP
+  - CIDR
+  - IPv6
+  - IPv6CIDR
+  - Registry Key
+  - ssdeep
+  - URL
+  - None
+  - Account
+  required: false
+  secret: false
+- default: false
+  description: Limit how many indicators are fetched.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0'
+  description: The index for the first indicator to fetch.
+  isArray: false
+  name: offset
+  required: false
+  secret: false
+- default: false
+  description: The column number in spreadsheet which contains the indicators. The
+    first column number is 1.
+  isArray: false
+  name: column_number
+  required: false
+  secret: false
+comment: Fetch indicators from a file.
+commonfields:
+  id: Fetch Indicators From File
+  version: -1
+enabled: false
+name: Fetch Indicators From File
+outputs:
+- contextPath: Indicator.Value
+  description: The value of the indicator.
+  type: String
+- contextPath: Indicator.Type
+  description: The type of the indicator.
+  type: String
+script: '-'
+system: false
+tags:
+- indicators
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.4.2245
+subtype: python3
