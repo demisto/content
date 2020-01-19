@@ -19,6 +19,8 @@ from Tests.test_utils import print_error, print_color, LOG_COLORS
 urllib3.disable_warnings()
 
 MAX_TRIES = 30
+PRINT_INTERVAL_IN_SECONDS = 30
+SETUP_TIMEOUT = 30 * 60
 SLEEP_TIME = 45
 
 
@@ -93,8 +95,7 @@ def is_correct_content_installed(ips, content_version, api_key):
 
 def exit_if_timed_out(loop_start_time, current_time):
     time_since_started = current_time - loop_start_time
-    half_hour_in_seconds = 30 * 60
-    if time_since_started > half_hour_in_seconds:
+    if time_since_started > SETUP_TIMEOUT:
         print_error("Timed out while trying to set up instances.")
         sys.exit(1)
 
@@ -124,11 +125,12 @@ def main():
                     print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
                     # ready_ami_list.append(ami_instance_name)
                     instance_ips_not_created.remove(ami_instance_ip)
-                elif current_time - last_update_time > 30:  # printing the message every 30 seconds
+                elif current_time - last_update_time > PRINT_INTERVAL_IN_SECONDS:  # printing the message every 30 seconds
                     print("{} at ip {} is not ready yet - waiting for it to start".format(ami_instance_name,
                                                                                           ami_instance_ip))
 
-        if current_time - last_update_time > 30:
+        if current_time - last_update_time > PRINT_INTERVAL_IN_SECONDS:
+            # The interval has passed, which means we printed a status update.
             last_update_time = current_time
         if len(instance_ips) > len(ready_ami_list):
             sleep(1)

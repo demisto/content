@@ -6,6 +6,10 @@ SECRET_CONF_PATH=$(cat secret_conf_path)
 CONF_PATH="./Tests/conf.json"
 DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq '.temp_apikey')
 
+temp="${DEMISTO_API_KEY%\"}"
+temp="${temp#\"}"
+DEMISTO_API_KEY=$temp
+
 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 
 echo "Starts tests with server url - $SERVER_URL"
