@@ -95,14 +95,14 @@ def remove_identity_key(source):
     return new_source
 
 
-def epoch_seconds() -> int:
+def epoch_seconds():
     """
     Return the number of seconds for return current date.
     """
     return int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds())
 
 
-def get_encrypted(content: str, key: str) -> str:
+def get_encrypted(content, key):
     """
     Args:
         content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
@@ -112,16 +112,18 @@ def get_encrypted(content: str, key: str) -> str:
         encrypted timestamp:content
     """
 
-    def create_nonce() -> bytes:
+    def create_nonce():
         return os.urandom(12)
 
-    def encrypt(string: str, enc_key: str) -> bytes:
+    def encrypt(string, enc_key):
         """
         Args:
-            enc_key (str):
-            string (str):
+            string: content to encrypt. For a request to Demistobot for a new access token, content should be
+                the tenant id
+            key encryption key from Demistobot
+
         Returns:
-            bytes:
+            encrypted timestamp:content
         """
         # String to bytes
         enc_key = base64.b64decode(enc_key)
@@ -140,7 +142,11 @@ def get_encrypted(content: str, key: str) -> str:
 
 
 def url_validation(url):
-
+    """
+    this function tests if a user provided a valid next link url
+    :param url: next_link_url from graph api
+    :return: checked url if url is valid. demisto error if not.
+    """
     parsed_url = urlparse(url)
     # test if exits $skiptoken
     url_parameters = parse_qs(parsed_url.query)
@@ -176,6 +182,12 @@ class Client(BaseClient):
         self.headers = {"Authorization": f"Bearer {self.access_token}"}
 
     def http_call(self, *args, **kwargs):
+        """
+        this function performs http requests
+        :param args: http requests parameters
+        :param kwargs: http requests parameters
+        :return: raw response from api
+        """
         demisto.log(f"Sending: ")
         res = self._http_request(*args, **kwargs)
         if "status_code" in res and res.status_code == 401:
