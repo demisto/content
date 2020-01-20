@@ -703,7 +703,7 @@ def validate_playbook_dependencies(id_set_list):
                 if dependency not in playbook_names:
                     failed = True
                     print_error(
-                        "Playbook `{}` is missing a playbook dependency: `{}`".format(dependency, playbook_obj["name"]))
+                        "Playbook `{}` is missing a playbook dependency: `{}`".format(playbook_obj["name"], dependency))
     if failed:
         sys.exit(1)
 
