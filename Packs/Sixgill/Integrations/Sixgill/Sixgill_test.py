@@ -115,10 +115,15 @@ expected_alert_output = [
                 '"title": "someSecretAlert1", "user_id": "123", "sixgill_severity": 10}'}]
 
 expected_ioc_output = {'Contents': '',
-                       'ContentsFormat': 'text',
+                       'ContentsFormat': 'markdown',
                        'Type': 3,
                        'File': 'bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa.json',
-                       'FileID': ''}
+                       'FileID': '',
+                       'HumanReadable': '# Fetched 4 DarkFeed indicators',
+                       'EntryContext': {'Sixgill.Bundle(val.BundleID == obj.BundleID)':
+                                        {'BundleID': 'bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa',
+                                         'FileID': '',
+                                         'FileName': 'bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa.json'}}}
 
 
 class MockedResponse(object):
@@ -194,7 +199,8 @@ def test_get_indicators(mocker):
 
     assert demisto.results.call_count == 1
     results = demisto.results.call_args_list[0][0][0]
-    results["FileID"] = ''
+    results['FileID'] = ''
+    results['EntryContext']['Sixgill.Bundle(val.BundleID == obj.BundleID)']['FileID'] = ''
     assert results == expected_ioc_output
 
 

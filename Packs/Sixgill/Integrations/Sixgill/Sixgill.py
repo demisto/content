@@ -29,7 +29,7 @@ THREAT_LEVEL_TO_SEVERITY = {
 }
 SCORE_LIST = ["Low", "Medium", "High"]
 MAX_SIXGILL_SEVERITY = 100
-SEVERITY_RATIO = MAX_SIXGILL_SEVERITY + 1 // len(SCORE_LIST)
+SEVERITY_RATIO = (MAX_SIXGILL_SEVERITY + 1) // len(SCORE_LIST)
 
 ''' HELPER FUNCTIONS '''
 
@@ -122,7 +122,7 @@ def sixgill_get_indicators_command():
     human_readable = f"# Fetched {num_of_indicators} DarkFeed indicators"
     bundle_id = bundle.get("id", "bundle")
     entry = fileResult(f'{bundle_id}.json', json.dumps(bundle))
-    context_data = {"BundleID": bundle_id, "FileId": entry.get("FileID"), "FileName": entry.get("File")}
+    context_data = {"BundleID": bundle_id, "FileID": entry.get("FileID"), "FileName": entry.get("File")}
 
     entry["HumanReadable"] = human_readable
     entry["ContentsFormat"] = formats["markdown"]
