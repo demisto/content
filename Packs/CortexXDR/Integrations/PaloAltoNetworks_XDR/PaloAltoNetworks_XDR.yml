@@ -11,7 +11,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Server URL (copy url from XDR - press ? to see more info)
+- display: Server URL (copy URL from XDR - click ? to see more info.)
   name: url
   required: true
   type: 0
@@ -129,8 +129,8 @@ script:
       secret: false
     deprecated: false
     description: |-
-      Returns a list of incidents, which you can filter by a list of incident IDs (max 100), the time the incident was last modified, and the time the incident was created.
-      If you pass multiple filtering argument, they will be concatenated using the AND condition. The OR condition is not supported.
+      Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
+      If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
     execution: false
     name: xdr-get-incidents
     outputs:
@@ -139,7 +139,7 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_severity
       description: Incident severity assigned by the user. This does not affect the
-        calculated severity "low","medium","high"
+        calculated severity.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_description
       description: Incident description provided by the user.
@@ -178,7 +178,7 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.status
       description: |
-        Current status of the incident: "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_other"
+        Current status of the incident. Can be "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive", or "resolved_other".
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.description
       description: Dynamic calculated description of the incident.
@@ -656,44 +656,44 @@ script:
     name: xdr-insert-cef-alerts
   - arguments:
     - default: false
-      description: String that identifies the endpoint. You can it from xdr-get-endpoints
+      description: The endpoint ID (string) to isolate. You can retrieve the string from the xdr-get-endpoints
         command.
       isArray: false
       name: endpoint_id
       required: true
       secret: false
     deprecated: false
-    description: Isolate a specific endpoint
+    description: Isolates the specified endpoint.
     execution: true
     name: xdr-isolate-endpoint
   - arguments:
     - default: false
-      description: String that identifies the endpoint. You can it from xdr-get-endpoints
+      description: The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints
         command.
       isArray: false
       name: endpoint_id
       required: true
       secret: false
     deprecated: false
-    description: Reverse an endpoint isolation.
+    description: Reverses the isolation of an endpoint.
     execution: true
     name: xdr-unisolate-endpoint
   - arguments:
     - default: false
-      description: Endpoint IDs
+      description: A comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_id_list
       required: false
       secret: false
     - default: false
-      description: "Distribution / Installation Package name. \nExample: dist_name1,dist_name2"
+      description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
       isArray: true
       name: dist_name
       required: false
       secret: false
     - default: false
       description: |-
-        List of IPs
+        A comma-separated list of IP addresses.
         Example: 8.8.8.8,1.1.1.1
       isArray: true
       name: ip_list
@@ -701,7 +701,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Group name the agent belongs to.
+        The group name to which the agent belongs.
         Example: group_name1,group_name2
       isArray: true
       name: group_name
@@ -709,7 +709,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Platform: windows,linux,macos,android'
+      description: 'The endpoint platform. Can be "windows", "linux", "macos", or "android". '
       isArray: true
       name: platform
       predefined:
@@ -721,7 +721,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Alias name
+        A comma-separated list of alias names.
         Examples: alias_name1,alias_name2
       isArray: true
       name: alias_name
@@ -729,7 +729,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "If the endpoint was isolated. Choose of the options \nisolated,unisolated"
+      description: "Specifies whether the endpoint was isolated or unisolated. Can be "isolated" or "unisolated".
       isArray: false
       name: isolate
       predefined:
@@ -806,7 +806,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sort endpoints by first_seen or last_seen
+      description: Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen".
       isArray: false
       name: sort_by
       predefined:
@@ -817,8 +817,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: asc
-      description: Sort order asc (ascending) or desc( descending). Default set to
-        asc
+      description: The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to
+        asc.
       isArray: false
       name: sort_order
       predefined:
@@ -827,7 +827,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets a list of filtered endpoints. Filtering by multiple fields will
+    description: Gets a list of endpoints, according to the passed filters. Filtering by multiple fields will
       be concatenated using AND condition (OR is not supported). Maximum result set
       size is 100. Offset is the zero-based number of endpoint from the start of the
       result set (start by counting from 0).
@@ -835,74 +835,73 @@ script:
     name: xdr-get-endpoints
     outputs:
     - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
-      description: Endpoint ID
+      description: The endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_name
-      description: Endpoint name
+      description: The endpoint name.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_type
-      description: 'Possible values: AGENT_TYPE_SERVER'
+      description: 'The endpoint type.'
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
-      description: 'Possible values: CONNECTED, DISCONNECTED'
+      description: The status of the endpoint'
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.os_type
-      description: 'Possible values: AGENT_OS_LINUX, AGENT_OS_MACOS, AGENT_OS_WINDOWS'
+      description: 'The endpoint OS type.'
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.ip
-      description: List of IPs
+      description: A list of IP addresses.
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.Endpoint.users
-      description: List of users
+      description: A list of users.
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.Endpoint.domain
-      description: Endpoint Domain
+      description: The endpoint domain.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.alias
-      description: Alias
+      description: The endpoint's aliases.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.first_seen
-      description: First seen in epoch (milliseconds)
+      description: First seen date/time in Epoch (milliseconds).
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.Endpoint.last_seen
-      description: Last seen in epoch (milliseconds)
+      description: Last seen date/time in Epoch (milliseconds).
       type: Date
     - contextPath: PaloAltoNetworksXDR.Endpoint.content_version
-      description: Content version
+      description: Content version.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.installation_package
-      description: Installation package
+      description: Installation package.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.active_directory
-      description: Active directory
+      description: Active directory.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.install_date
-      description: Install date in epoch (milliseconds)
+      description: Install date in Epoch (milliseconds).
       type: Date
     - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_version
-      description: Endpoint version (e.g. 7.0.0.1915)
+      description: Endpoint version.
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.is_isolated
-      description: 'Possible values: AGENT_ISOLATED, AGENT_UNISOLATED, null (also
-        indicates that endpoint is NOT isolated)'
+      description: 'Whether the endpoint is isolated.'
       type: String
     - contextPath: PaloAltoNetworksXDR.Endpoint.group_name
-      description: Group name
+      description: The name of the group to which the endpoint belongs.
       type: String
   - deprecated: false
-    description: Get a list of all the agent versions to use for creating a distribution
+    description: Gets a list of all the agent versions to use for creating a distribution
       list.
     execution: false
     name: xdr-get-distribution-versions
     outputs:
     - contextPath: PaloAltoNetworksXDR.DistributionVersions.windows
-      description: String list of Windows agent versions.
+      description: A list of Windows agent versions.
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.DistributionVersions.linux
-      description: String list of Linux agent versions.
+      description: A list of Linux agent versions.
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.DistributionVersions.macos
-      description: String list of Mac agent versions.
+      description: A list of Mac agent versions.
       type: Unknown
   - arguments:
     - default: false
@@ -944,15 +943,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: String representing information about the package.
+      description: Information about the package.
       isArray: false
       name: description
       required: false
       secret: false
     deprecated: false
-    description: Create an installation package. This is an async call that returns
-      the distribution ID, it does not mean that the creation succeeded. To confirm
-      the package has been created, check the status of the distribution by running
+    description: Creates an installation package. This is an asynchronous call that returns
+      the distribution ID. This does not mean that the creation succeeded. To confirm
+      that the package has been created, check the status of the distribution by running
       the Get Distribution Status API.
     execution: false
     name: xdr-create-distribution
@@ -961,22 +960,22 @@ script:
       description: The installation package ID.
       type: String
     - contextPath: PaloAltoNetworksXDR.Distribution.name
-      description: A string representing the name of the installation package.
+      description: The name of the installation package.
       type: String
     - contextPath: PaloAltoNetworksXDR.Distribution.platform
-      description: windows,linux,macos,android
+      description: The installation OS.
       type: String
     - contextPath: PaloAltoNetworksXDR.Distribution.agent_version
-      description: Agent version
+      description: Agent version.
       type: String
     - contextPath: PaloAltoNetworksXDR.Distribution.description
-      description: String representing information about the package.
+      description: Information about the package.
       type: String
   - arguments:
     - default: false
       description: |-
-        A string representing the ID of the installation package.
-        distribution_id can be copied from Endpoints -> Agent Installation page. Copy from `id` field
+        The ID of the installation package.
+        Copy the distribution_id from the "id" field on Endpoints > Agent Installation page.
       isArray: false
       name: distribution_id
       required: true
@@ -984,7 +983,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: |-
-        A string representing the type of installation package. Valid
+        The installation package type. Valid
         values are:
         • upgrade
         • sh - For Linux
@@ -1006,45 +1005,44 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get the distribution URL for downloading the installation package.
+    description: Gets the distribution URL for downloading the installation package.
     execution: false
     name: xdr-get-distribution-url
     outputs:
     - contextPath: PaloAltoNetworksXDR.Distribution.id
-      description: Distribution ID
+      description: Distribution ID.
       type: String
     - contextPath: PaloAltoNetworksXDR.Distribution.url
       description: URL for downloading the installation package.
       type: String
   - arguments:
     - default: false
-      description: List of distribution IDs
+      description: A comma-separated list of distribution IDs to get the status of.
       isArray: true
       name: distribution_ids
       required: true
       secret: false
     deprecated: false
-    description: Check the status of the installation package.
+    description: Gets the status of the installation package.
     execution: false
     name: xdr-get-create-distribution-status
     outputs:
     - contextPath: PaloAltoNetworksXDR.Distribution.id
-      description: Distribution ID
+      description: Distribution ID.
       type: String
     - contextPath: PaloAltoNetworksXDR.Distribution.status
-      description: A string representing the status of installation package. "Completed","In
-        Progress"
+      description: The status of installation package.
       type: String
   - arguments:
     - default: false
-      description: User’s email address
+      description: User’s email address.
       isArray: false
       name: email
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of audit log
+      description: The audit log type.
       isArray: false
       name: type
       predefined:
@@ -1073,7 +1071,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Subtype of audit log
+      description: The audit log subtype.
       isArray: false
       name: sub_type
       required: false
@@ -1091,7 +1089,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Return logs that their timestamp is greater than 'log_time_after'.
+        Return logs for which the timestamp is after 'log_time_after'.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
@@ -1102,7 +1100,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Return logs that their timestamp is lesser than 'log_time_after'.
+        Return logs for which the timestamp is before the 'log_time_after'.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
@@ -1128,8 +1126,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Identifies the sort order for the result set. By default the sort
-        is defined as creation-time and DESC.
+      description: Specifies the field by which to sort the results. By default the sort
+        is defined as creation-time and DESC. Can be "type", "sub_type", "result", or "timestamp".
       isArray: false
       name: sort_by
       predefined:
@@ -1142,7 +1140,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: desc
-      description: 'Default set to DESC. '
+      description: 'The sort order. Can be "asc" (ascending) or "desc" (descending). Default set to "desc". '
       isArray: false
       name: sort_order
       predefined:
@@ -1151,7 +1149,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get management logs. Filtering by multiple fields will be concatenated
+    description: Gets management logs. You can filter by multiple fields, which will be concatenated
       using AND condition (OR is not supported). Maximum result set size is 100. Offset
       is the zero-based number of management logs from the start of the result set
       (start by counting from 0).
@@ -1159,60 +1157,60 @@ script:
     name: xdr-get-audit-management-logs
     outputs:
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ID
-      description: Audit Log ID
+      description: Audit log ID.
       type: Number
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_OWNER_NAME
-      description: Audit owner name
+      description: Audit owner name.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_OWNER_EMAIL
-      description: Audit owner email
+      description: Audit owner email address.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ASSET_JSON
-      description: Asset JSON
+      description: Asset JSON.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ASSET_NAMES
-      description: Audit asset names
+      description: Audit asset names.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_HOSTNAME
-      description: hostname
+      description: Host name.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_RESULT
-      description: Audit result
+      description: Audit result.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_REASON
-      description: Audit reason
+      description: Audit reason.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_DESCRIPTION
-      description: Description
+      description: Description of the audit.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY
-      description: Audit entity (e.g. AUTH, DISTRIBUTIONS)
+      description: Audit entity (e.g., AUTH, DISTRIBUTIONS).
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE
-      description: Entity subtype (e.g Login, Create)
+      description: Entity subtype (e.g., Login, Create).
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_CASE_ID
-      description: Audit case id
+      description: Audit case ID.
       type: Number
     - contextPath: PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_INSERT_TIME
-      description: Insert time of the log
+      description: Log's insert time.
       type: Date
   - arguments:
     - default: false
-      description: list of endpoint ids (could be comma separated)
+      description: A comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_ids
       required: false
       secret: false
     - default: false
-      description: list of endpoint names (could be comma separated)
+      description: A comma-separated list of endpoint names.
       isArray: true
       name: endpoint_names
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of report
+      description: The report type. Can be "Installation", "Policy", "Action", "Agent Service", "Agent Modules", or "Agent Status".
       isArray: true
       name: type
       predefined:
@@ -1226,7 +1224,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Subtype of report
+      description: The report subtype.
       isArray: true
       name: sub_type
       predefined:
@@ -1266,7 +1264,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Result type. If not passed, the returns all
+      description: The result type. Can be "Success" or "Fail". If not passed, returns all event reports.
       isArray: true
       name: result
       predefined:
@@ -1287,7 +1285,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Return logs that their timestamp is lesser than 'timestamp_lte'.
+        Return logs for which the timestamp is before the 'timestamp_lte'.
 
         Supported values:
         1579039377301 (time in milliseconds)
@@ -1306,15 +1304,15 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Limit the number of reports returned. Default set to 30.
+      description: The maximum number of reports to return. Default and maximum is 30.
       isArray: false
       name: limit
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Sort by one of the following fields (type, subtype, trapsversion,
-        timestamp, domain)
+      description: The field by which to sort results. Can be "type", "category", "trapsversion",
+        "timestamp", or "domain").
       isArray: false
       name: sort_by
       predefined:
@@ -1328,7 +1326,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: asc
-      description: 'A string, either asc (ascending order) or desc (descending order). '
+      description: 'The sort order. Can be "asc" (ascending) or "desc" (descending). Default is "asc". '
       isArray: false
       name: sort_order
       predefined:
@@ -1337,7 +1335,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get agent event reports. Filtering by multiple fields will be concatenated
+    description: Gets agent event reports. You can filter by multiple fields, which will be concatenated
       using AND condition (OR is not supported). Maximum result set size is 100. Offset
       is the zero-based number of reports from the start of the result set (start
       by counting from 0).
@@ -1345,40 +1343,40 @@ script:
     name: xdr-get-audit-agent-reports
     outputs:
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTID
-      description: Endpoint ID
+      description: Endpoint ID.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTNAME
-      description: Endpoint name
+      description: Endpoint name.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.DOMAIN
-      description: Agent domain
+      description: Agent domain.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.TRAPSVERSION
-      description: Traps version
+      description: Traps version.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.RECEIVEDTIME
-      description: Received time in epoch time
+      description: Received time in Epoch time.
       type: Date
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.TIMESTAMP
-      description: Timestamp in epoch time
+      description: Timestamp in Epoch time.
       type: Date
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.CATEGORY
-      description: Report category (e.g Audit)
+      description: Report category (e.g., Audit).
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.TYPE
-      description: Report type (e.g Action, Policy)
+      description: Report type (e.g., Action, Policy).
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.SUBTYPE
-      description: Subtype (e.g Fully Protected,Policy Update,Cancel Isolation)
+      description: Report subtype (e.g., Fully Protected,Policy Update,Cancel Isolation).
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.RESULT
-      description: Report Result
+      description: Report result.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.REASON
-      description: Reason
+      description: Report reason.
       type: String
     - contextPath: PaloAltoNetworksXDR.AuditAgentReports.DESCRIPTION
-      description: Agent report description
+      description: Agent report description.
       type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true

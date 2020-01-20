@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Updated outputs - added more alert outputs 
+- Updated outputs and added additional alert outputs.

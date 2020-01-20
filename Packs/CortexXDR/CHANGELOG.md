@@ -1,5 +1,6 @@
 ## [Unreleased]
-- Implemented the new XDR API v2. Added the following Traps commands.
+  - Implemented the Cortex XDR API v2. 
+  -  Added 11 Traps commands.
     - ***xdr-isolate-endpoint***
     - ***xdr-unisolate-endpoint***
     - ***xdr-get-endpoints***
