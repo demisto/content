@@ -700,7 +700,9 @@ def validate_playbook_dependencies(id_set_list):
         for _, playbook_obj in playbook.items():
             for dependency in playbook_obj.get('implementing_playbooks', []):
                 if dependency not in playbook_names:
-                    raise KeyError("Could not find playbook ID: `{}` in playbooks.".format(dependency))
+                    print_error("Could not find playbook ID: `{}` in playbooks. Make sure the playbook exists"
+                                "".format(dependency))
+                    raise
 
 
 if __name__ == '__main__':
