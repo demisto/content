@@ -101,7 +101,7 @@ tasks:
       version: -1
       name: Parse STIX Bundle
       description: ''
-      scriptName: StixParser_v2
+      scriptName: StixParser
       type: regular
       iscommand: false
       brand: ''
