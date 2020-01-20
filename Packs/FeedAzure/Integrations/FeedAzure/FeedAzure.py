@@ -1,6 +1,5 @@
 import re
 import urllib3
-import ipaddress
 from typing import Dict, List, Tuple
 
 from CommonServerPython import *
@@ -47,26 +46,20 @@ class Client(BaseClient):
         Returns:
             Dict. IP data object.
         """
-        is_CIDR = False
+        if re.match(ipv4cidrRegex, azure_ip_address):
+            type_ = FeedIndicatorType.CIDR
 
-        try:
-            address_type = ipaddress.ip_address(azure_ip_address)
+        elif re.match(ipv4Regex, azure_ip_address):
+            type_ = FeedIndicatorType.IP
 
-        except Exception:
-            try:
-                address_type = ipaddress.ip_network(azure_ip_address)
-                is_CIDR = True
+        elif re.match(ipv6cidrRegex, azure_ip_address):
+            type_ = FeedIndicatorType.IPv6CIDR
 
-            except Exception:
-                demisto.debug(F'{INTEGRATION_NAME} - Invalid ip range: {azure_ip_address}')
-                return {}
+        elif re.match(ipv6Regex, azure_ip_address):
+            type_ = FeedIndicatorType.IPv6
 
-        if address_type.version == 4:
-            type_ = 'CIDR' if is_CIDR else 'IP'
-        elif address_type.version == 6:
-            type_ = 'IPv6CIDR' if is_CIDR else 'IPv6'
         else:
-            LOG(F'{INTEGRATION_NAME} - Unknown IP version: {address_type.version}')
+            LOG(F'{INTEGRATION_NAME} - Unknown IP version: {azure_ip_address}')
             return {}
 
         ip_object = {

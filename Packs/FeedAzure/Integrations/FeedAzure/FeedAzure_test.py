@@ -35,7 +35,7 @@ BUILD_IP_PACK = [
             'service': 'some service',
         },
     ),
-    (['All'], ['All'], '8.8.8.8/10', 'global', 'some service', {}),
+    (['All'], ['All'], '8.8.8/10', 'global', 'some service', {}),
 ]
 
 
