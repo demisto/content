@@ -2315,7 +2315,7 @@ if 'requests' in sys.modules:
             if not proxy:
                 self._session.trust_env = False
 
-        def _http_request(self, method, url_suffix, full_url=None, headers=None,
+        def _http_request(self, method, url_suffix='', full_url=None, headers=None,
                           auth=None, json_data=None, params=None, data=None, files=None,
                           timeout=10, resp_type='json', ok_codes=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
