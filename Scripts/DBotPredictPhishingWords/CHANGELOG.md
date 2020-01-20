@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Add email body html field
+Added the *emailBodyHTML* argument, which enables you to pass the raw HTML of the email body.
 
 ## [20.1.0] - 2020-01-07
     -
