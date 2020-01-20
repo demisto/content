@@ -19,6 +19,7 @@ tags:
 - ioc
 timeout: 0s
 type: python
+subtype: python2
 dockerimage: demisto/stix
 tests:
 - STIXParserTest
