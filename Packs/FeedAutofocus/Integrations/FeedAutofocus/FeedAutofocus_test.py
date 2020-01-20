@@ -1,4 +1,4 @@
-from AutofocusFeed import Client
+from FeedAutofocus import Client
 
 INDICATORS = [
     "d4da1b2d5554587136f2bcbdf0a6a1e29ab83f1d64a4b2049f9787479ad02fad",
