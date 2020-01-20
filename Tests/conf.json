@@ -2019,7 +2019,7 @@
         },
         {
             "playbookID": "PANW - Hunting and threat detection by indicator type Test",
-            "fromversion": "4.5.0",
+            "fromversion": "5.0.0",
             "timeout": 1200,
             "integrations": ["Panorama","Palo Alto Networks Cortex","AutoFocus V2","VirusTotal"],
             "instance_names": ["palo_alto_panorama","virus_total_general"]
@@ -2151,7 +2151,6 @@
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
-        "PANW - Hunting and threat detection by indicator type Test": "Issue 20952",
         "ssdeepreputationtest": "Issue #20953"
     },
     "skipped_integrations": {
