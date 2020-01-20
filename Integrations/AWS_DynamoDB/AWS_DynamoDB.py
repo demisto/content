@@ -10,8 +10,10 @@ from botocore.config import Config
 from botocore.parsers import ResponseParserError
 import urllib3.util
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
+
 
 """PARAMETERS"""
 AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
@@ -31,18 +33,19 @@ config = Config(
     proxies=proxies
 )
 
+
 """HELPER FUNCTIONS"""
 
 
 def safe_load_json(o):
     kwargs = None
-    ## Here we are checking the length of the entry to decide if it's a entry ID or json string.
+    # Here we are checking the length of the entry to decide if it's a entry ID or json string.
     if len(o) > 40:
         try:
             kwargs = json.loads(o)
         except json.decoder.JSONDecodeError as e:
             return_error(
-                'Unable to parse JSON string. Please verify the JSON is valid. - ' + str(e))
+                'Unable to parse JSON string. Please verify the JSON is valid. - '+str(e))
     else:
         try:
             path = demisto.getFilePath(o)
@@ -53,7 +56,7 @@ def safe_load_json(o):
                     kwargs = json.loads(data.read())
         except Exception as e:
             return_error('Unable to parse JSON file. Please verify the JSON is valid or the Entry'
-                         'ID is correct. - ' + str(e))
+                         'ID is correct. - '+str(e))
     return kwargs
 
 
@@ -73,31 +76,24 @@ def remove_empty_elements(d):
     elif isinstance(d, list):
         return [v for v in (remove_empty_elements(v) for v in d) if not empty(v)]
     else:
-        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if
-                not empty(v)}
-
-
-def parse_resource_ids(resource_id):
-    id_list = resource_id.replace(" ", "")
-    resourceIds = id_list.split(",")
-    return resourceIds
+        return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
 
 
 def aws_table_to_markdown(response, table_header):
     if isinstance(response, dict):
         if len(response) == 1:
-            if isinstance(response[list(response.keys())[0]], dict) or isinstance(
-                    response[list(response.keys())[0]], list):
+            if isinstance(response[list(response.keys())[0]], dict) or isinstance(response[list(response.keys())[0]], list):
                 if isinstance(response[list(response.keys())[0]], list):
                     list_response = response[list(response.keys())[0]]
                     if isinstance(list_response[0], str):
-                        human_readable = tableToMarkdown(table_header, response)
+                        human_readable = tableToMarkdown(
+                            table_header, response)
                     else:
-                        human_readable = tableToMarkdown(table_header,
-                                                         response[list(response.keys())[0]])
+                        human_readable = tableToMarkdown(
+                            table_header, response[list(response.keys())[0]])
                 else:
-                    human_readable = tableToMarkdown(table_header,
-                                                     response[list(response.keys())[0]])
+                    human_readable = tableToMarkdown(
+                        table_header, response[list(response.keys())[0]])
             else:
                 human_readable = tableToMarkdown(table_header, response)
         else:
@@ -107,9 +103,16 @@ def aws_table_to_markdown(response, table_header):
     return human_readable
 
 
+def parse_resource_ids(resource_id):
+    id_list = resource_id.replace(" ", "")
+    resourceIds = id_list.split(",")
+    return resourceIds
+
+
 def parse_tag_field(tags_str):
     tags = []
-    regex = re.compile(r'key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)', flags=re.I)
+    regex = re.compile(
+        r'key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)', flags=re.I)
     if demisto.args().get('tag_key') and demisto.args().get('tag_value'):
         if demisto.args().get('tags'):
             return_error(
@@ -160,7 +163,8 @@ def aws_session(service='dynamodb', region=None, roleArn=None, roleSessionName=N
     if kwargs and AWS_ACCESS_KEY_ID is None:
 
         if AWS_ACCESS_KEY_ID is None:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
+            sts_client = boto3.client(
+                'sts', config=config, verify=VERIFY_CERTIFICATE)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
                 client = boto3.client(
@@ -303,9 +307,7 @@ def create_backup_command(args):
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.BackupDetails(val.BackupName && val.BackupName === obj.BackupName)':
-            response.get(
-            'BackupDetails')}
+        'AWS-DynamoDB.BackupDetails(val.BackupName && val.BackupName === obj.BackupName)': response.get('BackupDetails')}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB CreateBackup'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -337,9 +339,7 @@ def create_global_table_command(args):
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn === '
-        'obj.GlobalTableArn)': response.get(
-            'GlobalTableDescription')}
+        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn === obj.GlobalTableArn)': response.get('GlobalTableDescription')}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB CreateGlobalTable'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -374,8 +374,7 @@ def create_table_command(args):
             }],
             "Projection": {
                 "ProjectionType": args.get("projection_projection_type", None),
-                "NonKeyAttributes": [
-                    parse_resource_ids(args.get("projection_non_key_attributes", ""))],
+                "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
 
@@ -389,8 +388,7 @@ def create_table_command(args):
             }],
             "Projection": {
                 "ProjectionType": args.get("projection_projection_type", None),
-                "NonKeyAttributes": [
-                    parse_resource_ids(args.get("projection_non_key_attributes", ""))],
+                "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
             "ProvisionedThroughput": {
@@ -407,8 +405,7 @@ def create_table_command(args):
 
         },
         "StreamSpecification": {
-            "StreamEnabled": True if args.get("stream_specification_stream_enabled",
-                                              "") == "true" else None,
+            "StreamEnabled": True if args.get("stream_specification_stream_enabled", "") == "true" else None,
             "StreamViewType": args.get("stream_specification_stream_view_type", None),
 
         },
@@ -431,9 +428,7 @@ def create_table_command(args):
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)':
-            response.get(
-            'TableDescription')}
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)': response.get('TableDescription')}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB CreateTable'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -460,9 +455,7 @@ def delete_backup_command(args):
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.BackupDetails(val.BackupName && val.BackupName === obj.BackupName)':
-            response.get(
-            'BackupDetails')}
+        'AWS-DynamoDB.BackupDetails(val.BackupName && val.BackupName === obj.BackupName)': response.get('BackupDetails')}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB DeleteBackup'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -524,9 +517,7 @@ def delete_table_command(args):
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)':
-            response.get(
-            'TableDescription')}
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)': response.get('TableDescription')}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB DeleteTable'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -552,7 +543,7 @@ def describe_backup_command(args):
     response = client.describe_backup(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB': response}
+    outputs = {'AWS-DynamoDB.BackupDescription': response['BackupDescription']}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB DescribeBackup'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -578,7 +569,8 @@ def describe_continuous_backups_command(args):
     response = client.describe_continuous_backups(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB': response}
+    outputs = {
+        'AWS-DynamoDB.ContinuousBackupsDescription': response['ContinuousBackupsDescription']}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB DescribeContinuousBackups'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -604,7 +596,7 @@ def describe_endpoints_command(args):
     response = client.describe_endpoints(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB': response}
+    outputs = {'AWS-DynamoDB.Endpoints': response['Endpoints']}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB DescribeEndpoints'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -631,9 +623,7 @@ def describe_global_table_command(args):
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn === '
-        'obj.GlobalTableArn)': response.get(
-            'GlobalTableDescription')}
+        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn === obj.GlobalTableArn)': response.get('GlobalTableDescription')}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB DescribeGlobalTable'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -660,8 +650,7 @@ def describe_global_table_settings_command(args):
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB(val.GlobalTableName && val.GlobalTableName === obj.GlobalTableName)':
-            response}
+        'AWS-DynamoDB(val.GlobalTableName && val.GlobalTableName === obj.GlobalTableName)': response}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB DescribeGlobalTableSettings'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -740,7 +729,8 @@ def describe_time_to_live_command(args):
     response = client.describe_time_to_live(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB': response}
+    outputs = {
+        'AWS-DynamoDB.TimeToLiveDescription': response['TimeToLiveDescription']}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB DescribeTimeToLive'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -801,9 +791,7 @@ def list_backups_command(args):
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.BackupSummaries(val.BackupArn && val.BackupArn === obj.BackupArn)':
-            response.get(
-            'BackupSummaries')}
+        'AWS-DynamoDB.BackupSummaries(val.BackupArn && val.BackupArn === obj.BackupArn)': response.get('BackupSummaries')}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB ListBackups'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -830,7 +818,7 @@ def list_global_tables_command(args):
     response = client.list_global_tables(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB': response}
+    outputs = {'AWS-DynamoDB.GlobalTables': response['GlobalTables']}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB ListGlobalTables'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -857,7 +845,7 @@ def list_tables_command(args):
     response = client.list_tables(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB': response}
+    outputs = {'AWS-DynamoDB.TableNames': response['TableNames']}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB ListTables'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -987,8 +975,7 @@ def restore_table_from_backup_command(args):
             }],
             "Projection": {
                 "ProjectionType": args.get("projection_projection_type", None),
-                "NonKeyAttributes": [
-                    parse_resource_ids(args.get("projection_non_key_attributes", ""))],
+                "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
             "ProvisionedThroughput": {
@@ -1007,17 +994,14 @@ def restore_table_from_backup_command(args):
             }],
             "Projection": {
                 "ProjectionType": args.get("projection_projection_type", None),
-                "NonKeyAttributes": [
-                    parse_resource_ids(args.get("projection_non_key_attributes", ""))],
+                "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
 
         }],
         "ProvisionedThroughputOverride": {
-            "ReadCapacityUnits": args.get("provisioned_throughput_override_read_capacity_units",
-                                          None),
-            "WriteCapacityUnits": args.get("provisioned_throughput_override_write_capacity_units",
-                                           None),
+            "ReadCapacityUnits": args.get("provisioned_throughput_override_read_capacity_units", None),
+            "WriteCapacityUnits": args.get("provisioned_throughput_override_write_capacity_units", None),
 
         }
 
@@ -1032,9 +1016,7 @@ def restore_table_from_backup_command(args):
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)':
-            response.get(
-            'TableDescription')}
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)': response.get('TableDescription')}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB RestoreTableFromBackup'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -1051,8 +1033,7 @@ def restore_table_to_point_in_time_command(args):
     kwargs = {
         "SourceTableName": args.get("source_table_name", None),
         "TargetTableName": args.get("target_table_name", None),
-        "UseLatestRestorableTime": True if args.get("use_latest_restorable_time",
-                                                    "") == "true" else None,
+        "UseLatestRestorableTime": True if args.get("use_latest_restorable_time", "") == "true" else None,
         "BillingModeOverride": args.get("billing_mode_override", None),
         "GlobalSecondaryIndexOverride": [{
             "IndexName": args.get("global_secondary_index_override_index_name", None),
@@ -1063,8 +1044,7 @@ def restore_table_to_point_in_time_command(args):
             }],
             "Projection": {
                 "ProjectionType": args.get("projection_projection_type", None),
-                "NonKeyAttributes": [
-                    parse_resource_ids(args.get("projection_non_key_attributes", ""))],
+                "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
             "ProvisionedThroughput": {
@@ -1083,17 +1063,14 @@ def restore_table_to_point_in_time_command(args):
             }],
             "Projection": {
                 "ProjectionType": args.get("projection_projection_type", None),
-                "NonKeyAttributes": [
-                    parse_resource_ids(args.get("projection_non_key_attributes", ""))],
+                "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
 
         }],
         "ProvisionedThroughputOverride": {
-            "ReadCapacityUnits": args.get("provisioned_throughput_override_read_capacity_units",
-                                          None),
-            "WriteCapacityUnits": args.get("provisioned_throughput_override_write_capacity_units",
-                                           None),
+            "ReadCapacityUnits": args.get("provisioned_throughput_override_read_capacity_units", None),
+            "WriteCapacityUnits": args.get("provisioned_throughput_override_write_capacity_units", None),
 
         }
 
@@ -1108,9 +1085,7 @@ def restore_table_to_point_in_time_command(args):
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)':
-            response.get(
-            'TableDescription')}
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)': response.get('TableDescription')}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB RestoreTableToPointInTime'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -1196,8 +1171,7 @@ def transact_get_items_command(args):
                 "Key": json.loads(args.get("get_key", "{}")),
                 "TableName": args.get("get_table_name", None),
                 "ProjectionExpression": args.get("get_projection_expression", None),
-                "ExpressionAttributeNames": json.loads(
-                    args.get("get_expression_attribute_names", "{}")),
+                "ExpressionAttributeNames": json.loads(args.get("get_expression_attribute_names", "{}")),
 
             },
 
@@ -1213,7 +1187,7 @@ def transact_get_items_command(args):
     response = client.transact_get_items(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB': response}
+    outputs = {'AWS-DynamoDB.ConsumedCapacity': response['ConsumedCapacity']}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB TransactGetItems'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -1233,36 +1207,27 @@ def transact_write_items_command(args):
                 "Key": json.loads(args.get("condition_check_key", "{}")),
                 "TableName": args.get("condition_check_table_name", None),
                 "ConditionExpression": args.get("condition_check_condition_expression", None),
-                "ExpressionAttributeNames": json.loads(
-                    args.get("condition_check_expression_attribute_names", "{}")),
-                "ExpressionAttributeValues": json.loads(
-                    args.get("condition_check_expression_attribute_values", "{}")),
-                "ReturnValuesOnConditionCheckFailure": args.get(
-                    "condition_check_return_values_on_condition_check_failure", None),
+                "ExpressionAttributeNames": json.loads(args.get("condition_check_expression_attribute_names", "{}")),
+                "ExpressionAttributeValues": json.loads(args.get("condition_check_expression_attribute_values", "{}")),
+                "ReturnValuesOnConditionCheckFailure": args.get("condition_check_return_values_on_condition_check_failure", None),
 
             },
             "Put": {
                 "Item": json.loads(args.get("put_item", "{}")),
                 "TableName": args.get("put_table_name", None),
                 "ConditionExpression": args.get("put_condition_expression", None),
-                "ExpressionAttributeNames": json.loads(
-                    args.get("put_expression_attribute_names", "{}")),
-                "ExpressionAttributeValues": json.loads(
-                    args.get("put_expression_attribute_values", "{}")),
-                "ReturnValuesOnConditionCheckFailure": args.get(
-                    "put_return_values_on_condition_check_failure", None),
+                "ExpressionAttributeNames": json.loads(args.get("put_expression_attribute_names", "{}")),
+                "ExpressionAttributeValues": json.loads(args.get("put_expression_attribute_values", "{}")),
+                "ReturnValuesOnConditionCheckFailure": args.get("put_return_values_on_condition_check_failure", None),
 
             },
             "Delete": {
                 "Key": json.loads(args.get("delete_key", "{}")),
                 "TableName": args.get("delete_table_name", None),
                 "ConditionExpression": args.get("delete_condition_expression", None),
-                "ExpressionAttributeNames": json.loads(
-                    args.get("delete_expression_attribute_names", "{}")),
-                "ExpressionAttributeValues": json.loads(
-                    args.get("delete_expression_attribute_values", "{}")),
-                "ReturnValuesOnConditionCheckFailure": args.get(
-                    "delete_return_values_on_condition_check_failure", None),
+                "ExpressionAttributeNames": json.loads(args.get("delete_expression_attribute_names", "{}")),
+                "ExpressionAttributeValues": json.loads(args.get("delete_expression_attribute_values", "{}")),
+                "ReturnValuesOnConditionCheckFailure": args.get("delete_return_values_on_condition_check_failure", None),
 
             },
             "Update": {
@@ -1270,12 +1235,9 @@ def transact_write_items_command(args):
                 "UpdateExpression": args.get("update_update_expression", None),
                 "TableName": args.get("update_table_name", None),
                 "ConditionExpression": args.get("update_condition_expression", None),
-                "ExpressionAttributeNames": json.loads(
-                    args.get("update_expression_attribute_names", "{}")),
-                "ExpressionAttributeValues": json.loads(
-                    args.get("update_expression_attribute_values", "{}")),
-                "ReturnValuesOnConditionCheckFailure": args.get(
-                    "update_return_values_on_condition_check_failure", None),
+                "ExpressionAttributeNames": json.loads(args.get("update_expression_attribute_names", "{}")),
+                "ExpressionAttributeValues": json.loads(args.get("update_expression_attribute_values", "{}")),
+                "ReturnValuesOnConditionCheckFailure": args.get("update_return_values_on_condition_check_failure", None),
 
             },
 
@@ -1293,7 +1255,7 @@ def transact_write_items_command(args):
     response = client.transact_write_items(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB': response}
+    outputs = {'AWS-DynamoDB.ConsumedCapacity': response['ConsumedCapacity']}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB TransactWriteItems'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -1320,7 +1282,7 @@ def untag_resource_command(args):
     response = client.untag_resource(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB': response}
+    outputs = {'AWS-DynamoDB.ConsumedCapacity': response['ConsumedCapacity']}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB UntagResource'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -1337,9 +1299,7 @@ def update_continuous_backups_command(args):
     kwargs = {
         "TableName": args.get("table_name", None),
         "PointInTimeRecoverySpecification": {
-            "PointInTimeRecoveryEnabled": True if args.get(
-                "point_in_time_recovery_specification_point_in_time_recovery_enabled",
-                "") == "true" else None,
+            "PointInTimeRecoveryEnabled": True if args.get("point_in_time_recovery_specification_point_in_time_recovery_enabled", "") == "true" else None,
 
         }
 
@@ -1353,7 +1313,8 @@ def update_continuous_backups_command(args):
     response = client.update_continuous_backups(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB': response}
+    outputs = {
+        'AWS-DynamoDB.ContinuousBackupsDescription': response['ContinuousBackupsDescription']}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB UpdateContinuousBackups'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -1392,9 +1353,7 @@ def update_global_table_command(args):
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn === '
-        'obj.GlobalTableArn)': response.get(
-            'GlobalTableDescription')}
+        'AWS-DynamoDB.GlobalTableDescription(val.GlobalTableArn && val.GlobalTableArn === obj.GlobalTableArn)': response.get('GlobalTableDescription')}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB UpdateGlobalTable'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -1411,27 +1370,16 @@ def update_global_table_settings_command(args):
     kwargs = {
         "GlobalTableName": args.get("global_table_name", None),
         "GlobalTableBillingMode": args.get("global_table_billing_mode", None),
-        "GlobalTableProvisionedWriteCapacityUnits": args.get(
-            "global_table_provisioned_write_capacity_units", None),
+        "GlobalTableProvisionedWriteCapacityUnits": args.get("global_table_provisioned_write_capacity_units", None),
         "GlobalTableProvisionedWriteCapacityAutoScalingSettingsUpdate": {
-            "MinimumUnits": args.get(
-                "global_table_provisioned_write_capacity_auto_scaling_settings_update_minimum_units",
-                None),
-            "MaximumUnits": args.get(
-                "global_table_provisioned_write_capacity_auto_scaling_settings_update_maximum_units",
-                None),
-            "AutoScalingDisabled": True if args.get(
-                "global_table_provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_disabled",
-                "") == "true" else None,
-            "AutoScalingRoleArn": args.get(
-                "global_table_provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
-                None),
+            "MinimumUnits": args.get("global_table_provisioned_write_capacity_auto_scaling_settings_update_minimum_units", None),
+            "MaximumUnits": args.get("global_table_provisioned_write_capacity_auto_scaling_settings_update_maximum_units", None),
+            "AutoScalingDisabled": True if args.get("global_table_provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_disabled", "") == "true" else None,
+            "AutoScalingRoleArn": args.get("global_table_provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_role_arn", None),
             "ScalingPolicyUpdate": {
                 "PolicyName": args.get("scaling_policy_update_policy_name", None),
                 "TargetTrackingScalingPolicyConfiguration": {
-                    "DisableScaleIn": True if args.get(
-                        "target_tracking_scaling_policy_configuration_disable_scale_in",
-                        "") == "true" else None,
+                    "DisableScaleIn": True if args.get("target_tracking_scaling_policy_configuration_disable_scale_in", "") == "true" else None,
 
                 },
 
@@ -1441,22 +1389,14 @@ def update_global_table_settings_command(args):
         "IndexName": args.get("index_name", None),
         "ProvisionedWriteCapacityUnits": args.get("provisioned_write_capacity_units", None),
         "ProvisionedWriteCapacityAutoScalingSettingsUpdate": {
-            "MinimumUnits": args.get(
-                "provisioned_write_capacity_auto_scaling_settings_update_minimum_units", None),
-            "MaximumUnits": args.get(
-                "provisioned_write_capacity_auto_scaling_settings_update_maximum_units", None),
-            "AutoScalingDisabled": True if args.get(
-                "provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_disabled",
-                "") == "true" else None,
-            "AutoScalingRoleArn": args.get(
-                "provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_role_arn",
-                None),
+            "MinimumUnits": args.get("provisioned_write_capacity_auto_scaling_settings_update_minimum_units", None),
+            "MaximumUnits": args.get("provisioned_write_capacity_auto_scaling_settings_update_maximum_units", None),
+            "AutoScalingDisabled": True if args.get("provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_disabled", "") == "true" else None,
+            "AutoScalingRoleArn": args.get("provisioned_write_capacity_auto_scaling_settings_update_auto_scaling_role_arn", None),
             "ScalingPolicyUpdate": {
                 "PolicyName": args.get("scaling_policy_update_policy_name", None),
                 "TargetTrackingScalingPolicyConfiguration": {
-                    "DisableScaleIn": True if args.get(
-                        "target_tracking_scaling_policy_configuration_disable_scale_in",
-                        "") == "true" else None,
+                    "DisableScaleIn": True if args.get("target_tracking_scaling_policy_configuration_disable_scale_in", "") == "true" else None,
 
                 },
 
@@ -1542,10 +1482,8 @@ def update_table_command(args):
             "Update": {
                 "IndexName": args.get("update_index_name", None),
                 "ProvisionedThroughput": {
-                    "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
-                                                  None),
-                    "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units",
-                                                   None),
+                    "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units", None),
+                    "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units", None),
 
                 },
 
@@ -1559,15 +1497,12 @@ def update_table_command(args):
                 }],
                 "Projection": {
                     "ProjectionType": args.get("projection_projection_type", None),
-                    "NonKeyAttributes": [
-                        parse_resource_ids(args.get("projection_non_key_attributes", ""))],
+                    "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
                 },
                 "ProvisionedThroughput": {
-                    "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units",
-                                                  None),
-                    "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units",
-                                                   None),
+                    "ReadCapacityUnits": args.get("provisioned_throughput_read_capacity_units", None),
+                    "WriteCapacityUnits": args.get("provisioned_throughput_write_capacity_units", None),
 
                 },
 
@@ -1579,8 +1514,7 @@ def update_table_command(args):
 
         }],
         "StreamSpecification": {
-            "StreamEnabled": True if args.get("stream_specification_stream_enabled",
-                                              "") == "true" else None,
+            "StreamEnabled": True if args.get("stream_specification_stream_enabled", "") == "true" else None,
             "StreamViewType": args.get("stream_specification_stream_view_type", None),
 
         },
@@ -1602,9 +1536,7 @@ def update_table_command(args):
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
     outputs = {
-        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)':
-            response.get(
-            'TableDescription')}
+        'AWS-DynamoDB.TableDescription(val.TableArn && val.TableArn === obj.TableArn)': response.get('TableDescription')}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB UpdateTable'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -1621,8 +1553,7 @@ def update_time_to_live_command(args):
     kwargs = {
         "TableName": args.get("table_name", None),
         "TimeToLiveSpecification": {
-            "Enabled": True if args.get("time_to_live_specification_enabled",
-                                        "") == "true" else None,
+            "Enabled": True if args.get("time_to_live_specification_enabled", "") == "true" else None,
             "AttributeName": args.get("time_to_live_specification_attribute_name", None),
 
         }
@@ -1637,7 +1568,8 @@ def update_time_to_live_command(args):
     response = client.update_time_to_live(**kwargs)
     response = json.dumps(response, default=myconverter)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB': response}
+    outputs = {
+        'AWS-DynamoDB.TimeToLiveSpecification': response['TimeToLiveSpecification']}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB UpdateTimeToLive'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -1652,7 +1584,8 @@ def main():  # pragma: no cover
     human_readable = None
     outputs = None
     try:
-        LOG('Command being called is {command}'.format(command=demisto.command()))
+        LOG('Command being called is {command}'.format(
+            command=demisto.command()))
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             client = aws_session()
@@ -1667,7 +1600,8 @@ def main():  # pragma: no cover
         elif demisto.command() == 'aws-dynamodb-create-backup':
             human_readable, outputs, response = create_backup_command(args)
         elif demisto.command() == 'aws-dynamodb-create-global-table':
-            human_readable, outputs, response = create_global_table_command(args)
+            human_readable, outputs, response = create_global_table_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-create-table':
             human_readable, outputs, response = create_table_command(args)
         elif demisto.command() == 'aws-dynamodb-delete-backup':
@@ -1679,65 +1613,79 @@ def main():  # pragma: no cover
         elif demisto.command() == 'aws-dynamodb-describe-backup':
             human_readable, outputs, response = describe_backup_command(args)
         elif demisto.command() == 'aws-dynamodb-describe-continuous-backups':
-            human_readable, outputs, response = describe_continuous_backups_command(args)
+            human_readable, outputs, response = describe_continuous_backups_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-describe-endpoints':
-            human_readable, outputs, response = describe_endpoints_command(args)
+            human_readable, outputs, response = describe_endpoints_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-describe-global-table':
-            human_readable, outputs, response = describe_global_table_command(args)
+            human_readable, outputs, response = describe_global_table_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-describe-global-table-settings':
-            human_readable, outputs, response = describe_global_table_settings_command(args)
+            human_readable, outputs, response = describe_global_table_settings_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-describe-limits':
             human_readable, outputs, response = describe_limits_command(args)
         elif demisto.command() == 'aws-dynamodb-describe-table':
             human_readable, outputs, response = describe_table_command(args)
         elif demisto.command() == 'aws-dynamodb-describe-time-to-live':
-            human_readable, outputs, response = describe_time_to_live_command(args)
+            human_readable, outputs, response = describe_time_to_live_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-get-item':
             human_readable, outputs, response = get_item_command(args)
         elif demisto.command() == 'aws-dynamodb-list-backups':
             human_readable, outputs, response = list_backups_command(args)
         elif demisto.command() == 'aws-dynamodb-list-global-tables':
-            human_readable, outputs, response = list_global_tables_command(args)
+            human_readable, outputs, response = list_global_tables_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-list-tables':
             human_readable, outputs, response = list_tables_command(args)
         elif demisto.command() == 'aws-dynamodb-list-tags-of-resource':
-            human_readable, outputs, response = list_tags_of_resource_command(args)
+            human_readable, outputs, response = list_tags_of_resource_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-put-item':
             human_readable, outputs, response = put_item_command(args)
         elif demisto.command() == 'aws-dynamodb-query':
             human_readable, outputs, response = query_command(args)
         elif demisto.command() == 'aws-dynamodb-restore-table-from-backup':
-            human_readable, outputs, response = restore_table_from_backup_command(args)
+            human_readable, outputs, response = restore_table_from_backup_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-restore-table-to-point-in-time':
-            human_readable, outputs, response = restore_table_to_point_in_time_command(args)
+            human_readable, outputs, response = restore_table_to_point_in_time_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-scan':
             human_readable, outputs, response = scan_command(args)
         elif demisto.command() == 'aws-dynamodb-tag-resource':
             human_readable, outputs, response = tag_resource_command(args)
         elif demisto.command() == 'aws-dynamodb-transact-get-items':
-            human_readable, outputs, response = transact_get_items_command(args)
+            human_readable, outputs, response = transact_get_items_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-transact-write-items':
-            human_readable, outputs, response = transact_write_items_command(args)
+            human_readable, outputs, response = transact_write_items_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-untag-resource':
             human_readable, outputs, response = untag_resource_command(args)
         elif demisto.command() == 'aws-dynamodb-update-continuous-backups':
-            human_readable, outputs, response = update_continuous_backups_command(args)
+            human_readable, outputs, response = update_continuous_backups_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-update-global-table':
-            human_readable, outputs, response = update_global_table_command(args)
+            human_readable, outputs, response = update_global_table_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-update-global-table-settings':
-            human_readable, outputs, response = update_global_table_settings_command(args)
+            human_readable, outputs, response = update_global_table_settings_command(
+                args)
         elif demisto.command() == 'aws-dynamodb-update-item':
             human_readable, outputs, response = update_item_command(args)
         elif demisto.command() == 'aws-dynamodb-update-table':
             human_readable, outputs, response = update_table_command(args)
         elif demisto.command() == 'aws-dynamodb-update-time-to-live':
-            human_readable, outputs, response = update_time_to_live_command(args)
+            human_readable, outputs, response = update_time_to_live_command(
+                args)
         return_outputs(human_readable, outputs, response)
 
     except ResponseParserError as e:
-        return_error(
-            'Could not connect to the AWS endpoint. Please check that the region is valid. {error}'.format(
-                error=type(e)))
+        return_error('Could not connect to the AWS endpoint. Please check that the region is valid. {error}'.format(
+            error=type(e)))
         LOG(e)
     except Exception as e:
         LOG(e)
