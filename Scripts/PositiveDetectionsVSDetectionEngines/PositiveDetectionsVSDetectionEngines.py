@@ -41,17 +41,17 @@ def create_pie(unknown_detections, positive_detections):
                     "groups": None,
                     "name": "Positive Detections",
                     "label": "Positive Detections",
-                    "color": "rgb(255, 23, 68)",
+                    "color": "rgb(255, 23, 68)"
                 },
                 {
                     "data": [unknown_detections],
                     "groups": None,
                     "name": "Unknown",
                     "label": "Unknown",
-                    "color": "rgb(255, 144, 0)",
-                },
+                    "color": "rgb(255, 144, 0)"
+                }
             ],
-            "params": {"layout": "vertical"},
+            "params": {"layout": "vertical"}
         },
     }
     return data
