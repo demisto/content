@@ -132,6 +132,7 @@
       "details": "CVE CVSS Score",
       "contextValue": "ID",
       "contextPath": "CVE(val.ID && val.ID === obj.ID)",
+      "disabled": true,
       "enhancementScriptNames": [
         "cveSearch"
       ]
