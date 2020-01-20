@@ -1,5 +1,4 @@
 from __future__ import print_function
-from CommonServerPython import DemistoException
 import pytest
 from PositiveDetectionsVSDetectionEngines import extract_engines_data_from_indicator
 
@@ -123,9 +122,15 @@ positive_missing = {
     }
 }
 
-detectengines_missing = {
+detectengines_missing_1 = {
     'CustomFields': {
         'positivedetections': 71,
+    }
+}
+
+detectengines_missing_2 = {
+    'CustomFields': {
+        'positivedetections': 0,
     }
 }
 
@@ -182,11 +187,24 @@ def test_no_engines_data(indicator_data):
     assert stats[1]['data'][0] == 0
 
 
-@pytest.mark.parametrize('indicator_data', [positive_missing, detectengines_missing])
-def test_missing_fields(indicator_data):
+def test_missing_fields_detection_engines():
+    res = extract_engines_data_from_indicator(detectengines_missing_2)
+    stats = res['Contents']['stats']
+    assert stats[0]['data'][0] == 0
+    assert stats[1]['data'][0] == 0
+
+
+def test_missing_fields_positive_detections():
+    res = extract_engines_data_from_indicator(positive_missing)
+    stats = res['Contents']['stats']
+    assert stats[0]['data'][0] == 0
+    assert stats[1]['data'][0] == 71
+
+
+def test_detection_engines_greater_than_positive_detections():
     err_raised = False
     try:
-        extract_engines_data_from_indicator(indicator_data)
-    except DemistoException:
+        extract_engines_data_from_indicator(detectengines_missing_1)
+    except ValueError:
         err_raised = True
     assert err_raised
