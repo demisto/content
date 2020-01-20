@@ -187,9 +187,6 @@
             "playbookID": "TestAwsEC2GetPublicSGRules-Test"
         },
         {
-            "playbookID": "TestParseEmailHeaders"
-        },
-        {
             "playbookID": "TestParseEmailFile-deprecated-script"
         },
         {
@@ -2059,7 +2056,7 @@
             "playbookID": "PolySwarm-Test"
         },
         {
-            "integrations": "Kenna",
+            "integrations": "Kennav2",
             "playbookID": "Kenna Test"
         },
         {
@@ -2114,6 +2111,10 @@
         {
             "integrations": "BPA",
             "playbookID": "Test-BPA",
+            "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "GetValuesOfMultipleFIelds Test",
             "fromversion": "4.5.0"
         },
         {
@@ -2288,6 +2289,7 @@
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
-        "GoogleCloudTranslate": "google translate sdk does not support proxy"
+        "GoogleCloudTranslate": "google translate sdk does not support proxy",
+        "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233"
     }
 }
