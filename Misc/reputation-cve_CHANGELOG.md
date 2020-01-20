@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added regex to our new default CVE indicator.
+Added regex and context path to our new default CVE indicator.
