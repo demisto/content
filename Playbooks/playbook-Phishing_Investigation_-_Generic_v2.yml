@@ -1950,7 +1950,12 @@ tasks:
           accessor: Probability
           transformers:
           - operator: uniq
-      dbottextsuggestionhighlighted: {}
+      dbottextsuggestionhighlighted:
+        complex:
+          root: DBotPredictPhishingWords
+          accessor: TextTokensHighlighted
+          transformers:
+            - operator: uniq
       deleteEmptyField: {}
       dest: {}
       destinationip: {}
