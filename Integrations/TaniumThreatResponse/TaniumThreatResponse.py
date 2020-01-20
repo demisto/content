@@ -336,8 +336,9 @@ class Client(BaseClient):
                     events_in_current_date = category['details'][current_date]
                     events_for_date_i = self.parse_events_by_category(events_in_current_date, category_name)
                     timeline_item.append({
-                        'date': sorted_timeline_dates[i],
-                        'events': events_for_date_i
+                        'Date': sorted_timeline_dates[i],
+                        'Category': category_name,
+                        'Event': events_for_date_i
                     })
 
         return timeline_item
@@ -946,12 +947,12 @@ def get_process_timeline(client, data_args):
     limit = int(data_args.get('limit'))
     offset = int(data_args.get('offset'))
 
-    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_id}/eprocessestimelines/{ptid}')
+    raw_response = client.do_request('GET', f'/plugin/products/trace/conns/{con_id}/eprocesstimelines/{ptid}')
     timeline = client.get_process_timeline_item(raw_response, category, limit, offset)
 
     context = createContext(timeline, removeNull=True)
-    outputs = {'Tanium.File(val.ID && val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown(f'Timeline for process `{ptid}`', timeline)
+    outputs = {'Tanium.ProcessTimeline(val.ProcessTableID && val.ProcessTableID === obj.ProcessTableID)': context}
+    human_readable = tableToMarkdown(f'Timeline data for process with PTID `{ptid}`', timeline)
     return human_readable, outputs, raw_response
 
 

@@ -640,6 +640,7 @@ script:
       description: The file hash.
       type: String
     - contextPath: Tanium.FileDownload.SPath
+      description: The file SPath.
       type: String
     - contextPath: Tanium.FileDownload.ID
       description: The downloaded file ID.
@@ -816,6 +817,7 @@ script:
       description: The hash value of the process.
       type: String
     - contextPath: Tanium.Event.SID
+      description: The process SID.
       type: Number
     - contextPath: Tanium.Event.Hashes
       description: The hashes of the driver.
@@ -890,6 +892,7 @@ script:
       description: The file hash.
       type: String
     - contextPath: Tanium.FileDownload.SPath
+      description: The file SPath.
       type: String
     - contextPath: Tanium.FileDownload.ID
       description: The downloaded file ID.
@@ -989,6 +992,7 @@ script:
       description: The ID of the event.
       type: Number
     - contextPath: Tanium.ProcessEvent.Detail
+      description: The event details.
       type: Unknown
     - contextPath: Tanium.ProcessEvent.Operation
       description: The event operation.
@@ -1018,11 +1022,13 @@ script:
     name: tanium-tr-get-process-children
     outputs:
     - contextPath: Tanium.ProcessChildren.ID
+      description: The ID of the process.
       type: Number
     - contextPath: Tanium.ProcessChildren.Name
       description: File of the process.
       type: String
     - contextPath: Tanium.ProcessChildren.PID
+      description: The PID of the process.
       type: Number
     - contextPath: Tanium.ProcessChildren.PTID
       description: The process instance ID.
@@ -1094,11 +1100,13 @@ script:
     name: tanium-tr-get-parent-process-tree
     outputs:
     - contextPath: Tanium.ParentProcessTree.ID
+      description: The parent process ID.
       type: Number
     - contextPath: Tanium.ParentProcessTree.Name
       description: File of the parent process.
       type: String
     - contextPath: Tanium.ParentProcessTree.PID
+      description: The parent process PID.
       type: Number
     - contextPath: Tanium.ParentProcessTree.PTID
       description: The parent process instance ID.
@@ -1128,11 +1136,13 @@ script:
     name: tanium-tr-get-process-tree
     outputs:
     - contextPath: Tanium.ProcessTree.ID
+      description: The process ID.
       type: Number
     - contextPath: Tanium.ProcessTree.Name
       description: File of the process.
       type: String
     - contextPath: Tanium.ProcessTree.PID
+      description: The process PID.
       type: Number
     - contextPath: Tanium.ProcessTree.PTID
       description: The process instance ID.
@@ -1346,7 +1356,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset to start getting files
+      description: Offset to start getting files.
       isArray: false
       name: offset
       required: false
@@ -1429,15 +1439,59 @@ script:
       required: true
       secret: false
     - default: false
-      description: Process instance ID.
+      description: Process table ID.
       isArray: false
       name: ptid
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Select category of events to retrieve.
+      isArray: false
+      name: category
+      predefined:
+      - File
+      - DNS
+      - Registry
+      - Network
+      - Image
+      - Process
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Max number of events to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Offset to start getting events.
+      isArray: false
+      name: offset
+      required: false
       secret: false
     deprecated: false
     description: Get process timeline.
     execution: false
     name: tanium-tr-get-process-timeline
+    outputs:
+    - contextPath: Tanium.ProcessTimeline.ProcessTableID
+      description: The process instance ID.
+      type: Number
+    - contextPath: Tanium.ProcessTimeline.ConnectionID
+      description: The connection ID of the process.
+      type: String
+    - contextPath: Tanium.ProcessTimeline.Date
+      description: Events date of the process.
+      type: Date
+    - contextPath: Tanium.ProcessTimeline.Event
+      description: Event of the process
+      type: String
+    - contextPath: Tanium.ProcessTimeline.Category
+      description: The event category of the process
+      type: String
   - arguments:
     - default: false
       description: Date of the download file request
