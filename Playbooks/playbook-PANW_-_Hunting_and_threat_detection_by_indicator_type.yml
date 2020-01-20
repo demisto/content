@@ -3,7 +3,7 @@ version: -1
 name: PANW - Hunting and threat detection by indicator type
 fromversion: 4.5.0
 description: |-
-  Deprecated. Use the "PANW - Hunting and threat detection by indicator type V2" command instead.
+  Deprecated. Use the "PANW - Hunting and threat detection by indicator type V2" playbook instead.
 starttaskid: "0"
 tasks:
   "0":
