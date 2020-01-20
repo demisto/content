@@ -3,15 +3,14 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import re
-import csv
 
 
 def xls_file_to_indicator_list(file_path, col_num):
     indicator_list = []
 
-    with open(file_path, newline='') as fp:
-        csv_reader = csv.reader(fp)
-        for row in csv_reader:
+    with open(file_path, 'r') as fp:
+        file_data = fp.read()
+        for row in file_data:
             indicator_list.append(row[col_num])
 
     return indicator_list
@@ -21,7 +20,7 @@ def txt_file_to_indicator_list(file_path):
     with open(file_path, "r") as fp:
         file_data = fp.read()
 
-    indicator_list = re.split(";,| \n", file_data)
+    indicator_list = re.split('\n|,|, ', file_data)
     return indicator_list
 
 
@@ -66,12 +65,12 @@ def detect_type(indicator):
 def fetch_indicators_from_file(args):
     file = demisto.getFilePath(args.get('entry_id'))
     file_path = file['path']
+    file_name = file['name']
     auto_detect = True if args.get('auto_detect') == 'True' else False
     default_type = args.get('default_type')
     limit = args.get("limit")
     offset = int(str(args.get("offset"))) if args.get('offset') else 0
-
-    if str(file_path).endswith('xls') or str(file_path).endswith('csv') or str(file_path).endswith('xlsx'):
+    if file_name.endswith('xls') or file_name.endswith('csv') or file_name.endswith('xlsx'):
         col_num = int(str(args.get('column_number')))
         indicator_list = xls_file_to_indicator_list(file_path, col_num - 1)
 
@@ -99,8 +98,8 @@ def fetch_indicators_from_file(args):
                                      headers=['Value', 'Type'], removeNull=True)
 
     if limit:
-        human_readable = human_readable + f"\nTo bring the next batch of indicators run:\n!get-indicators " \
-            f"limit={limit} offset={int(limit) + int(offset)}"
+        human_readable = human_readable + f"\nTo bring the next batch of indicators run:\n!FetchIndicatorsFromFile " \
+            f"limit={limit} offset={int(limit) + int(offset)} entry_id={args.get('entry_id')}"
 
     return human_readable, {
         f"Indicator(val.Value == obj.Value && val.Type == obj.Type)": parsed_indicators
