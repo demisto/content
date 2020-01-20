@@ -18,9 +18,9 @@ PARAMS = {'output_format': 'csv/splunk'}
 HEADERS = {'X-RF-User-Agent': 'Demisto',
            'content-type': 'application/json'}
 HASH_DT = {
-    'MD5': 'File.MD5(val.MD5 && obj.MD5 == val.MD5)',
-    'SHA256': 'File.SHA256(val.SHA256 && obj.SHA256 == val.SHA256)',
-    'SHA1': 'File.SHA1(val.SHA1 && obj.SHA1 == val.SHA1)'
+    'MD5': 'File.MD5(val.MD5 && obj.MD5 === val.MD5)',
+    'SHA256': 'File.SHA256(val.SHA256 && obj.SHA256 === val.SHA256)',
+    'SHA1': 'File.SHA1(val.SHA1 && obj.SHA1 === val.SHA1)'
 }
 
 
@@ -106,18 +106,18 @@ class Client(BaseClient):
         rkwargs['timeout'] = self.polling_timeout
 
         try:
-            r = _session.send(prepreq, **rkwargs)
+            response = _session.send(prepreq, **rkwargs)
         except requests.ConnectionError:
             raise requests.ConnectionError('Failed to establish a new connection. Please make sure your URL is valid.')
         try:
-            r.raise_for_status()
+            response.raise_for_status()
         except Exception:
-            return_error('{} - exception in request: {} {}'.format(SOURCE_NAME, r.status_code, r.content))
+            return_error('{} - exception in request: {} {}'.format(SOURCE_NAME, response.status_code, response.content))
             raise
 
-        response = r.content.decode('latin-1').split('\n')
+        data = r.content.decode('latin-1').split('\n')
 
-        csvreader = csv.DictReader(response)
+        csvreader = csv.DictReader(data)
 
         return csvreader
 
@@ -187,9 +187,9 @@ def get_indicator_type(indicator_type, item):
     elif indicator_type == 'hash':
         return 'File ' + item.get('Algorithm')
     elif indicator_type == 'domain':
-        return 'Domain'
+        return FeedIndicatorType.Domain
     elif indicator_type == 'url':
-        return 'URL'
+        return FeedIndicatorType.URL
 
 
 def fetch_indicators_command(client, indicator_type):
