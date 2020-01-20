@@ -206,6 +206,7 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None):
         try:
             res = send_request_no_error_handling(headers, method, params, url)
         except ConnectionError:
+            # single try to immediate recover if encountered a connection error (could happen due to load on qradar)
             res = send_request_no_error_handling(headers, method, params, url)
     except HTTPError:
         err_json = res.json()
@@ -221,6 +222,9 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None):
 
 
 def send_request_no_error_handling(headers, method, params, url):
+    """
+        Send request with no error handling, so the error handling can be done via wrapper function
+    """
     log_hdr = deepcopy(headers)
     log_hdr.pop('SEC', None)
     LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
