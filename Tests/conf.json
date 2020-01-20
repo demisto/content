@@ -3,6 +3,18 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Digital Defense FrontlineVM",
+            "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
+        },
+        {
+            "integrations": "Digital Defense FrontlineVM",
+            "playbookID": "Digital Defense FrontlineVM - Test Playbook"
+        },
+        {
+            "integrations": "CSVFeed",
+            "playbookID": "CSV_Feed_Test"
+        },
+        {
             "integrations": "Digital Shadows",
             "playbookID": "Digital Shadows - Test"
         },
@@ -173,9 +185,6 @@
         },
         {
             "playbookID": "TestAwsEC2GetPublicSGRules-Test"
-        },
-        {
-            "playbookID": "TestParseEmailHeaders"
         },
         {
             "playbookID": "TestParseEmailFile-deprecated-script"
@@ -472,7 +481,11 @@
             "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test",
             "integrations": "palo_alto_networks_pan_os_edl_management",
             "fromversion": "4.0.0"
-
+        },
+        {
+            "playbookID": "Test_EDL",
+            "integrations": "EDL",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
@@ -1647,6 +1660,10 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
+            "integrations": "TAXIIFeed",
+            "playbookID": "TAXII_Feed_Test"
+        },
+        {
             "integrations": "Traps",
             "playbookID": "Traps test",
             "timeout": 600
@@ -2039,7 +2056,7 @@
             "playbookID": "PolySwarm-Test"
         },
         {
-            "integrations": "Kenna",
+            "integrations": "Kennav2",
             "playbookID": "Kenna Test"
         },
         {
@@ -2079,20 +2096,40 @@
             "playbookID": "Tanium v2 - Test"
         },
         {
+          "integrations": "FeedOffice365",
+          "playbookID": "Office365_Feed_Test",
+          "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "GoogleCloudTranslate",
+            "playbookID": "GoogleCloudTranslate-Test"
+        },
+        {
             "integrations": "Infoblox",
             "playbookID": "Infoblox Test"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA",
+            "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "GetValuesOfMultipleFIelds Test",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA_Integration",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
-        "Phishing - Core - Test": "Issue 20983",
-        "Phishing v2 Test - Attachment": "Issue 20983",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
-        "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
@@ -2175,6 +2212,7 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
+        "QRadar Indicator Hunting Test": "Issue 21150",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2246,8 +2284,11 @@
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
+        "FeedOffice365": "SSl Issues. issue: 21181",
         "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
-        "Gmail": "googleclient sdk has time based challenge exchange"
+        "Gmail": "googleclient sdk has time based challenge exchange",
+        "GoogleCloudTranslate": "google translate sdk does not support proxy",
+        "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233"
     }
 }
