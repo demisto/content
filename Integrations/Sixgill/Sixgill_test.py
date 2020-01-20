@@ -119,6 +119,12 @@ expected_alert_output = [{'name': 'someSecretAlert2', 'occurred': '2019-08-06T23
                                      '"read": false, "threat_level": "imminent", "threats": ["Data Leak", "Phishing"], '
                                      '"title": "someSecretAlert1"}'}]
 
+expected_ioc_output = {'Contents': '',
+                       'ContentsFormat': 'text',
+                       'Type': 3,
+                       'File': 'bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa.json',
+                       'FileID': ''}
+
 
 class MockedResponse(object):
     def __init__(self, status_code):
@@ -188,9 +194,9 @@ def test_get_indicators(mocker):
     get_indicators()
 
     assert demisto.results.call_count == 1
-    results = demisto.results.call_args_list[0][0]
-
-    assert results == iocs_bundle
+    results = demisto.results.call_args_list[0][0][0]
+    results["FileID"] = ''
+    assert results == expected_ioc_output
 
 
 def test_item_to_incident():
