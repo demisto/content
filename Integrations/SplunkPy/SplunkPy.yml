@@ -85,7 +85,7 @@ configuration:
   name: hec_token
   required: false
   type: 4
-- display: 'HEC URL (e.g: https://localhost:8088)'
+- display: 'HEC URL (e.g: https://localhost:8088).'
   name: hec_url
   required: false
   type: 0
