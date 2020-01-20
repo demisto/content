@@ -10,7 +10,7 @@
   "regex": "CVE-\\d{4}-\\d{4,7}",
   "details": "CVE",
   "prevDetails": "CVE",
-  "reputationScriptName": "",
+  "reputationScriptName": "cveReputation",
   "reputationCommand": "cve",
   "enhancementScriptNames": [],
   "system": false,

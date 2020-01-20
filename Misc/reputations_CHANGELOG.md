@@ -1,5 +1,5 @@
 ## [Unreleased]
-Removed the deprecated **CVE CVSS Score** indicator type.
+The **CVE CVSS Score** indicator type is now only until server version **4.9.9**.
 
 ## [19.11.1] - 2019-11-26
 Added support to identify URLs and domains prefixed with 'http:' or 'http:\\'.

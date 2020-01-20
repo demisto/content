@@ -135,7 +135,8 @@
       "disabled": true,
       "enhancementScriptNames": [
         "cveSearch"
-      ]
+      ],
+      "toVersion": "4.9.9"
     },
     {
       "id": "hostnameRep",
