@@ -1,6 +1,6 @@
 commonfields:
-  id: d98506ea-fd06-49d6-8f1e-bb29ab06766e
-  version: 16
+  id: VerifyContext
+  version: -1
 name: VerifyContext
 script: |-
   var path = args.path;
