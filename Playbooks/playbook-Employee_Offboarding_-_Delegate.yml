@@ -1,0 +1,934 @@
+id: Employee Offboarding - Delegate
+version: -1
+fromversion: 5.0.0
+name: Employee Offboarding - Delegate
+description: This playbook delegates user resources and permissions as part of the
+  IT - Employee Offboarding playbook.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: a99d2982-2041-46a5-876a-d2eab2ebb4ac
+    type: start
+    task:
+      id: a99d2982-2041-46a5-876a-d2eab2ebb4ac
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '33'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1445,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: dfcc886c-049c-4cca-804d-3ade1b565314
+    type: regular
+    task:
+      id: dfcc886c-049c-4cca-804d-3ade1b565314
+      version: -1
+      name: Set auto-reply email for user
+      description: Configures the auto-reply message sent from the user.
+      script: '|||gmail-set-autoreply'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments:
+      enable-autoReply: {}
+      response-body:
+        complex:
+          root: inputs.AutoreplyMessage
+      response-subject:
+        simple: Inactive user
+      user-id:
+        complex:
+          root: inputs.OffboardingUserEmail
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 515,
+          "y": 945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Email Auto-reply
+      output:
+        simple: Set
+  '7':
+    id: '7'
+    taskid: 4c220485-3aff-4c21-8223-60df46080c46
+    type: regular
+    task:
+      id: 4c220485-3aff-4c21-8223-60df46080c46
+      version: -1
+      name: Delegate mailbox to manager
+      description: Adds a delegate with its verification status set directly to accepted,
+        without sending any verification email. The delegate user must be a member
+        of the same G Suite organization as the delegator user. Note that a delegate
+        user must be referred to by their primary email address, and not an email
+        alias.
+      script: '|||gmail-delegate-user-mailbox'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '59'
+    scriptarguments:
+      delegate-email:
+        complex:
+          root: UserManagerEmail
+          transformers:
+          - operator: uniq
+      user-id:
+        complex:
+          root: inputs.OffboardingUserEmail
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 965,
+          "y": 1125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Mailbox Delegation
+      output:
+        simple: Delegated
+  '8':
+    id: '8'
+    taskid: 4925fc21-90a2-4baa-868a-a74e40f9b477
+    type: regular
+    task:
+      id: 4925fc21-90a2-4baa-868a-a74e40f9b477
+      version: -1
+      name: Send email to manager stating the mailbox is delegated
+      description: Sends an email to the user's manager, saying the mailbox was delegated
+        to them.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: User ${inputs.OffboardingUserEmail} mailbox has been delegated to
+          you.
+      cc: {}
+      from: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: Mailbox delegation of ${inputs.OffboardingUserEmail}
+      templateParams: {}
+      to:
+        complex:
+          root: UserManagerEmail
+          transformers:
+          - operator: uniq
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 965,
+          "y": 1465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '12':
+    id: '12'
+    taskid: b9ea9961-4637-4ea0-877f-07730b7b1716
+    type: regular
+    task:
+      id: b9ea9961-4637-4ea0-877f-07730b7b1716
+      version: -1
+      name: Transfer ownership of groups to manager
+      description: |-
+        Use the 'patch' API call to update the manager and make them owner. The 'patch' call updates the membership properties of a user in the specified group.
+        https://developers.google.com/admin-sdk/directory/v1/reference/members/patch
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '13':
+    id: '13'
+    taskid: cc652250-534a-4343-82d7-88ee37544333
+    type: regular
+    task:
+      id: cc652250-534a-4343-82d7-88ee37544333
+      version: -1
+      name: Transfer ownership of Google Drive files to the user's manager
+      description: Transfers ownership of Google Drive files to the user's manager.
+        See https://developers.google.com/drive/api/v2/reference/permissions/update
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '127'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2510,
+          "y": 795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: 4c8c3da8-d763-47de-8921-3874b752c74b
+    type: regular
+    task:
+      id: 4c8c3da8-d763-47de-8921-3874b752c74b
+      version: -1
+      name: Transfer ownership of primary & secondary calendars to manager
+      description: Please transfer ownership of calendars that the user has, to their
+        manager.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1690,
+          "y": 795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '16':
+    id: '16'
+    taskid: bacf4dad-268c-4318-8eaa-b67ec6623849
+    type: regular
+    task:
+      id: bacf4dad-268c-4318-8eaa-b67ec6623849
+      version: -1
+      name: Remove user from groups
+      description: Remove user membership from all groups to which they belong.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '127'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '17':
+    id: '17'
+    taskid: e1fba250-4e8a-4429-893b-287fc7a2ea29
+    type: regular
+    task:
+      id: e1fba250-4e8a-4429-893b-287fc7a2ea29
+      version: -1
+      name: Remove user from shared calendars
+      description: Remove all calendars from the user's calendar list.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '127'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1690,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '33':
+    id: '33'
+    taskid: 2d9c2bcf-af99-4384-84fa-0207cbebdb53
+    type: title
+    task:
+      id: 2d9c2bcf-af99-4384-84fa-0207cbebdb53
+      version: -1
+      name: Delegation
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '116'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1445,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '34':
+    id: '34'
+    taskid: bbf30108-ca7b-4003-89b2-3ab18520b2b3
+    type: title
+    task:
+      id: bbf30108-ca7b-4003-89b2-3ab18520b2b3
+      version: -1
+      name: Proceed to Next Stage
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1445,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '35':
+    id: '35'
+    taskid: 77f2cbf4-58af-4b15-8c4c-295f6bbdc07a
+    type: condition
+    task:
+      id: 77f2cbf4-58af-4b15-8c4c-295f6bbdc07a
+      version: -1
+      name: Is the manager email configured?
+      description: Checks whether the email of the manager of the user you are offboarding
+        was configured in the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '34'
+      'yes':
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: UserManagerEmail
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 965,
+          "y": 945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '59':
+    id: '59'
+    taskid: 3f910896-24c1-4b14-8487-8ff607c91367
+    type: condition
+    task:
+      id: 3f910896-24c1-4b14-8487-8ff607c91367
+      version: -1
+      name: Is a mail sender integration enabled?
+      description: Checks whether any mail sender integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '34'
+      'yes':
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Mail Sender (New)
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EWS Mail Sender
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Gmail
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 965,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '74':
+    id: '74'
+    taskid: dbe292e1-6bb9-4b4d-83fa-39f2e0717924
+    type: condition
+    task:
+      id: dbe292e1-6bb9-4b4d-83fa-39f2e0717924
+      version: -1
+      name: Is Gmail enabled?
+      description: Checks whether the Gmail integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '34'
+      'yes':
+      - '6'
+      - '35'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Gmail
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '75':
+    id: '75'
+    taskid: e2c41437-7f01-4050-819e-10a4cf1cfd61
+    type: title
+    task:
+      id: e2c41437-7f01-4050-819e-10a4cf1cfd61
+      version: -1
+      name: Gmail
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '74'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '76':
+    id: '76'
+    taskid: 45ea8f88-b506-48ac-8bd9-e063d40ec94e
+    type: title
+    task:
+      id: 45ea8f88-b506-48ac-8bd9-e063d40ec94e
+      version: -1
+      name: Manual Ownership Transferal
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '14'
+      - '12'
+      - '13'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '116':
+    id: '116'
+    taskid: fcf4aee1-45bc-4cea-8b89-fc6d3f7dffb2
+    type: regular
+    task:
+      id: fcf4aee1-45bc-4cea-8b89-fc6d3f7dffb2
+      version: -1
+      name: Update offboarding stage
+      description: Updates the stage of the offboarding process in the incident details.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '75'
+      - '76'
+    scriptarguments:
+      account: {}
+      accountid: {}
+      activedirectoryaccountstatus: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicegsuiteaccountstatus: {}
+      devicename: {}
+      dpoemailaddress: {}
+      duoaccountstatus: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      hostname: {}
+      id: {}
+      infectedhosts: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name: {}
+      niststage: {}
+      occurred: {}
+      offboardingstage:
+        simple: Delegation
+      oktaaccountstatus: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourceip: {}
+      src: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      systemdefault: {}
+      systems: {}
+      telephoneno: {}
+      terminatedaction: {}
+      threatactor: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1445,
+          "y": 455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '127':
+    id: '127'
+    taskid: 392288ae-6b4f-4a6c-8dbd-390d969b25b1
+    type: title
+    task:
+      id: 392288ae-6b4f-4a6c-8dbd-390d969b25b1
+      version: -1
+      name: Manual Ownership Transferal - Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "35_34_#default#": 0.33,
+      "35_7_yes": 0.49,
+      "59_34_#default#": 0.36,
+      "74_34_#default#": 0.41,
+      "74_35_yes": 0.43,
+      "74_6_yes": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1705,
+        "width": 2375,
+        "x": 515,
+        "y": 160
+      }
+    }
+  }
+inputs:
+- key: UserManagerEmail
+  value:
+    complex:
+      root: incident
+      accessor: employeemanageremail
+  required: false
+  description: The email of the manager of the user you are offboarding.
+- key: OffboardingUserEmail
+  value:
+    complex:
+      root: incident
+      accessor: employeeemail
+  required: true
+  description: The email address of the user that you are offboarding.
+- key: AutoreplyMessage
+  value:
+    simple: This employee is no longer with our company.
+  required: false
+  description: The automatic message that is sent as reply from the user you are offboarding
+    once they lose access to their email account.
+outputs: []
+sourceplaybookid: IT - Employee Offboarding
+tests:
+  - no test
