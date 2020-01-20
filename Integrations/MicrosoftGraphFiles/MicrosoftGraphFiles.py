@@ -772,12 +772,12 @@ def module_test(client, args=None):
     """
     result = client.get_access_token()
     if result:
-        try:
-            list_drives_site_for_test_module(result)
-        except Exception:
-            raise DemistoException("Test failed. please check if Server Url is correct")
-        else:
-            return "ok"
+        # try:
+        list_drives_site_for_test_module(result)
+        # except Exception:
+        #     raise DemistoException("Test failed. please check if Server Url is correct")
+        # else:
+        return "ok"
     else:
         return "Test failed because could not get access token"
 
