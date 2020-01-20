@@ -15,12 +15,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -42,7 +42,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "4"
     scriptarguments:
       all:
         simple: "yes"
@@ -55,45 +55,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 190
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 26f0db56-b9c3-4c1b-8165-0b9a745c70a4
-    type: regular
-    task:
-      id: 26f0db56-b9c3-4c1b-8165-0b9a745c70a4
-      version: -1
-      name: fetch-incidents
-      description: Get bulk of Sixgill alerts
-      tags:
-      - Sixgill
-      - Alerts
-      script: Sixgill|||fetch-incidents
-      type: regular
-      iscommand: true
-      brand: Sixgill
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      execution-timeout:
-        simple: "3600"
-      include_delivered_items:
-        simple: ' false'
-      using:
-        simple: Sixgill_instance_1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 350
+          "x": 50,
+          "y": 340
         }
       }
     note: false
@@ -101,10 +64,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: e9c2b4fd-582f-4716-874e-e7d6eed50527
+    taskid: 0d82e6e5-9701-4685-8d2d-3945bf21c0e1
     type: regular
     task:
-      id: e9c2b4fd-582f-4716-874e-e7d6eed50527
+      id: 0d82e6e5-9701-4685-8d2d-3945bf21c0e1
       version: -1
       name: closeInvestigation
       description: Close the current incident
@@ -124,8 +87,195 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 540
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 3c738c62-9b0a-475a-8f7c-ed4a6ac1bf80
+    type: regular
+    task:
+      id: 3c738c62-9b0a-475a-8f7c-ed4a6ac1bf80
+      version: -1
+      name: sixgill-get-indicators
+      description: Fetching Sixgill's DarkFeed Threat Intelligence indicators
+      script: Sixgill|||sixgill-get-indicators
+      type: regular
+      iscommand: true
+      brand: Sixgill
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      fetch_indicators_limit:
+        simple: "10"
+      include_delivered_items:
+        simple: "false"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 5d74b0a9-8370-406d-8c8e-dd169adc661c
+    type: condition
+    task:
+      id: 5d74b0a9-8370-406d-8c8e-dd169adc661c
+      version: -1
+      name: File present?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      File present:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: File present
+      condition:
+      - - operator: endWith
+          left:
+            value:
+              simple: Sixgill.Bundle.FileName
+            iscontext: true
+          right:
+            value:
+              simple: .json
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 0392bbac-6916-4c60-8cce-7e044738f79a
+    type: title
+    task:
+      id: 0392bbac-6916-4c60-8cce-7e044738f79a
+      version: -1
+      name: Sixgill-get-indicators
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: f6a5bef2-7273-46e4-8893-88c5d720f72a
+    type: title
+    task:
+      id: f6a5bef2-7273-46e4-8893-88c5d720f72a
+      version: -1
+      name: Sixgill-fetch-incidents
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 1ab285c2-e017-474c-8085-760b27b6bd82
+    type: regular
+    task:
+      id: 1ab285c2-e017-474c-8085-760b27b6bd82
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 450ae601-dccd-49dd-86c4-8db00dcf13d1
+    type: regular
+    task:
+      id: 450ae601-dccd-49dd-86c4-8db00dcf13d1
+      version: -1
+      name: Sixgill-fetch-incidents
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      add_to_context: {}
+      brand_name:
+        simple: Sixgill
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
         }
       }
     note: false
@@ -136,9 +286,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 585,
+        "height": 1405,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
