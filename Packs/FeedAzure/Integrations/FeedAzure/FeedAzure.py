@@ -288,11 +288,11 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     regions_list = argToList(demisto.params().get('regions', ''))
-    if regions_list in [None, []]:
+    if not regions_list:
         regions_list = ['All']
 
     services_list = argToList(demisto.params().get('services', ''))
-    if services_list in [None, []]:
+    if not services_list:
         services_list = ['All']
 
     polling_arg = demisto.params().get('polling_timeout', '')
