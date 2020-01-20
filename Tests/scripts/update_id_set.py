@@ -435,6 +435,7 @@ def get_playbooks_paths():
 def get_test_playbooks_paths():
     path_list = [
         ['TestPlaybooks', '*'],
+        ['TestPlaybooks', 'NonCircleTests', '*'],
         ['Packs', '*', 'TestPlaybooks', '*.yml']
     ]
     test_playbook_files = list()
