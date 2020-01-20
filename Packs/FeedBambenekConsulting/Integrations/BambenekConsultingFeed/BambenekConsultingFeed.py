@@ -20,6 +20,8 @@ def main():
 
     params = {k: v for k, v in demisto.params().items() if v is not None}
     params['url_to_fieldnames'] = url_to_fieldnames
+    params['ignore_regex'] = r'^#'
+    params['delimiter'] = ','
 
     # Main execution of the CSV API Module.
     # This function allows to add to or override this execution.

@@ -3,6 +3,15 @@ commonfields:
   id: Bambenek Consulting Feed
   version: -1
 configuration:
+- display: Sub-Feeds
+  name: url
+  options:
+  - http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt
+  - http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt
+  - http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt
+  - http://osint.bambenekconsulting.com/feeds/c2-dommasterlist-high.txt
+  required: true
+  type: 16
 - display: Fetch indicators
   name: feed
   required: false
@@ -41,7 +50,8 @@ configuration:
   name: skipExclusionList
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation.
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator reputation
   name: feedInstanceReputation
@@ -63,19 +73,6 @@ configuration:
   name: expirationInterval
   required: false
   type: 1
-- display: Sub-Feeds
-  name: url
-  options:
-  - http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt
-  - http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt
-  - http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt
-  - http://osint.bambenekconsulting.com/feeds/c2-dommasterlist-high.txt
-  required: true
-  type: 16
-- display: Username
-  name: credentials
-  required: false
-  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -90,48 +87,6 @@ configuration:
   name: polling_timeout
   required: true
   type: 0
-- additionalinfo: Python regular expression for lines that should be ignored.
-  defaultvalue: ^#
-  display: Ignore Regex
-  name: ignore_regex
-  required: false
-  type: 0
-- additionalinfo: Name of the field names in the CSV feed. If several are given, will
-    use "indicator" as the default indicator value field.
-  defaultvalue: indicator
-  display: Field Names
-  name: fieldnames
-  required: false
-  type: 0
-- additionalinfo: A one-character string used to separate fields. For example, a comma
-    ",".
-  defaultvalue: ','
-  display: Delimiter
-  name: delimiter
-  required: false
-  type: 0
-- additionalinfo: Controls how instances of quotechar in a field should themselves
-    be quoted. When True, the character is doubled.
-  display: Doublequote
-  name: doublequote
-  required: false
-  type: 8
-- additionalinfo: A one-character string used by the writer to escape the delimiter.
-  display: Escape character
-  name: escapechar
-  required: false
-  type: 0
-- additionalinfo: A one-character string used to quote fields containing special characters.
-  defaultvalue: '"'
-  display: Quote Character
-  name: quotechar
-  required: false
-  type: 0
-- additionalinfo: When True, whitespace immediately following the delimiter is ignored.
-  display: Skip Initial Space
-  name: skipinitialspace
-  required: false
-  type: 8
 description: Use the Bambenek Consulting feed integration to fetch indicators from
   the feed.
 display: Bambenek Consulting Feed
