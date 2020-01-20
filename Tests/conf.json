@@ -2127,7 +2127,7 @@
         },
         {
             "integrations": "AutoFocus Feed",
-            "playbookID": "playbook-AutofocusFeedTest",
+            "playbookID": "playbook-FeedAutofocus_test",
             "fromversion": "5.5.0"
         }
     ],
