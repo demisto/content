@@ -51,13 +51,13 @@ def detect_type(indicator):
         return FeedIndicatorType.URL
 
     if re.match(md5Regex, indicator):
-        return FeedIndicator.MD5
+        return FeedIndicatorType.MD5
 
     if re.match(sha1Regex, indicator):
-        return FeedIndicator.SHA1
+        return FeedIndicatorType.SHA1
 
     if re.match(emailRegex, indicator):
-        return FeedIndicator.Account
+        return FeedIndicatorType.Account
 
     else:
         return FeedIndicatorType.Domain
