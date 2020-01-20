@@ -4,9 +4,10 @@ Sixgill’s cyber threat intelligence solution focuses on customers’ intellige
 Automatic monitoring of cybercrime, providing actionable intelligence from exclusive clear, deep and dark web forums and markets. Detect, analyze and mitigate financial fraud in near real-time.
 
 Integration:
-Retrieving Sixgill's DarkFeed Threat Intelligence indicators (IOC)
-Retrieving Sixgill's Actionable Alerts as incidents
-
+<ul>
+<li>Retrieving Sixgill's DarkFeed Threat Intelligence indicators (IOC)</li>
+<li>Retrieving Sixgill's Actionable Alerts as incidents</li>
+</ul>
 This integration was integrated and tested with version 0.1.0 of Sixgill
 </p>
 <h2>Sixgill Playbook</h2>
