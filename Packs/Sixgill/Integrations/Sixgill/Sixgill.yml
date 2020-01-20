@@ -12,32 +12,9 @@ configuration:
   required: true
   type: 4
 - display: Max number of incidents that can be fetched
-  name: fetch_incidents_limit
+  name: maxIncidents
   required: false
   type: 0
-- display: Sort alerts by field
-  name: sort_by
-  options:
-  - date
-  - alert_name
-  - severity
-  - threat_level
-  required: false
-  type: 15
-- display: Alerts sort order
-  name: sort_order
-  options:
-  - asc
-  - desc
-  required: false
-  type: 15
-- display: Filter alerts by field read
-  name: is_read
-  options:
-  - read
-  - unread
-  required: false
-  type: 15
 - display: Filter by alert template severity
   name: severity
   options:
@@ -64,10 +41,10 @@ script:
   commands:
   - arguments:
     - default: false
-      defaultValue: '1000'
+      defaultValue: '100'
       description: Max number of indicators that can be fetched
       isArray: false
-      name: fetch_indicators_limit
+      name: maxIndicators
       required: false
       secret: false
     deprecated: false
@@ -75,8 +52,15 @@ script:
     execution: false
     name: sixgill-get-indicators
     outputs:
-    - contextPath: File.EntryID
+    - contextPath: Sixgill.Bundle.BundleID
+      description: STIX bundle ID returned from Sixgill's API
       type: String
+    - contextPath: Sixgill.Bundle.FileID
+      description: FileID of dumped JSON file
+      type: Unknown
+    - contextPath: Sixgill.Bundle.FileName
+      description: File name of dumped JSON file
+      type: Unknown
   dockerimage: demisto/sixgill:1.0.0.5676
   isfetch: false
   longRunning: false

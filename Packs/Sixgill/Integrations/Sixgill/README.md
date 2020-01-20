@@ -7,7 +7,7 @@ Integration:
 Retrieving Sixgill's DarkFeed Threat Intelligence indicators (IOC)
 Retrieving Sixgill's Actionable Alerts as incidents
 
-This integration was integrated and tested with version 0.0.4 of Sixgill
+This integration was integrated and tested with version 0.1.0 of Sixgill
 
 </p>
 <h2>Sixgill Playbook</h2>

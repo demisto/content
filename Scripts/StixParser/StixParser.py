@@ -50,9 +50,12 @@ def convert_to_json(string):
         False if failed
     """
     try:
+        demisto.log("to parse {}".format(string))
         js = json.loads(string)
+        demisto.log("parsed json")
         return js
     except ValueError:
+        demisto.log("error parsing")
         return None
 
 

@@ -1,4 +1,5 @@
 import pytest
+import copy
 import demistomock as demisto
 
 
@@ -87,37 +88,31 @@ iocs_bundle = {"id": "bundle--716fd67b-ba74-44db-8d4c-2efde05ddbaa",
                "spec_version": "2.0",
                "type": "bundle"}
 
-
-expected_alert_output = [{'name': 'someSecretAlert2', 'occurred': '2019-08-06T23:20:35.000000Z', 'details': '', 'severity': 2,
-                          'type': 'SixgillAlert',
-                          'rawJSON': '{"alert_name": "someSecretAlert2", "content": "", "date": "2019-08-06 23:20:35", '
-                                     '"lang": "English", "langcode": "en", "read": false, "threat_level": "emerging", '
-                                     '"threats": ["Phishing"], "title": "someSecretAlert2"}'},
-                         {'name': 'someSecretAlert4', 'occurred': '2019-08-18T09:58:10.000000Z', 'details': '', 'severity': 3,
-                          'type': 'SixgillAlert',
-                          'rawJSON': '{"alert_name": "someSecretAlert4", "content": "", "date": "2019-08-18 09:58:10", '
-                                     '"read": false, "threat_level": "imminent", "threats": ["Data Leak", "Phishing"], '
-                                     '"title": "someSecretAlert4"}'},
-                         {'name': 'someSecretAlert1', 'occurred': '2019-08-18T22:58:23.000000Z', 'details': '', 'severity': 3,
-                          'type': 'SixgillAlert',
-                          'rawJSON': '{"alert_name": "someSecretAlert1", "content": "", "date": "2019-08-18 22:58:23", '
-                                     '"read": false, "threat_level": "imminent", "threats": ["Data Leak", "Phishing"], '
-                                     '"title": "someSecretAlert1"}'},
-                         {'name': 'someSecretAlert2', 'occurred': '2019-08-19T19:27:24.000000Z', 'details': '', 'severity': 2,
-                          'type': 'SixgillAlert',
-                          'rawJSON': '{"alert_name": "someSecretAlert2", "content": "", "date": "2019-08-19 19:27:24", '
-                                     '"lang": "English", "langcode": "en", "read": false, "threat_level": "emerging", '
-                                     '"threats": ["Phishing"], "title": "someSecretAlert2"}'},
-                         {'name': 'someSecretAlert3', 'occurred': '2019-08-22T08:27:19.000000Z', 'details': '', 'severity': 3,
-                          'type': 'SixgillAlert',
-                          'rawJSON': '{"alert_name": "someSecretAlert3", "content": "", "date": "2019-08-22 08:27:19", '
-                                     '"read": false, "threat_level": "imminent", "threats": ["Data Leak", "Phishing"], '
-                                     '"title": "someSecretAlert3"}'},
-                         {'name': 'someSecretAlert1', 'occurred': '2019-08-22T08:43:15.000000Z', 'details': '', 'severity': 3,
-                          'type': 'SixgillAlert',
-                          'rawJSON': '{"alert_name": "someSecretAlert1", "content": "", "date": "2019-08-22 08:43:15", '
-                                     '"read": false, "threat_level": "imminent", "threats": ["Data Leak", "Phishing"], '
-                                     '"title": "someSecretAlert1"}'}]
+expected_alert_output = [
+    {'name': 'someSecretAlert2', 'occurred': '2019-08-06T23:20:35.000000Z', 'details': '', 'severity': 2,
+     'rawJSON': '{"alert_name": "someSecretAlert2", "content": "", "date": "2019-08-06 23:20:35", '
+                '"id": "1", "lang": "English", "langcode": "en", "read": false, "threat_level": "emerging", '
+                '"threats": ["Phishing"], "title": "someSecretAlert2", "user_id": "123", "sixgill_severity": 10}'},
+    {'name': 'someSecretAlert4', 'occurred': '2019-08-18T09:58:10.000000Z', 'details': '', 'severity': 3,
+     'rawJSON': '{"alert_name": "someSecretAlert4", "content": "", "date": "2019-08-18 09:58:10", '
+                '"id": "2", "read": false, "threat_level": "imminent", "threats": ["Data Leak", "Phishing"], '
+                '"title": "someSecretAlert4", "user_id": "132", "sixgill_severity": 10}'},
+    {'name': 'someSecretAlert1', 'occurred': '2019-08-18T22:58:23.000000Z', 'details': '', 'severity': 3,
+     'rawJSON': '{"alert_name": "someSecretAlert1", "content": "", "date": "2019-08-18 22:58:23", '
+                '"id": "3", "read": false, "threat_level": "imminent", "threats": ["Data Leak", "Phishing"], '
+                '"title": "someSecretAlert1", "user_id": "123", "sixgill_severity": 10}'},
+    {'name': 'someSecretAlert2', 'occurred': '2019-08-19T19:27:24.000000Z', 'details': '', 'severity': 2,
+     'rawJSON': '{"alert_name": "someSecretAlert2", "content": "", "date": "2019-08-19 19:27:24", '
+                '"id": "4", "lang": "English", "langcode": "en", "read": false, "threat_level": "emerging", '
+                '"threats": ["Phishing"], "title": "someSecretAlert2", "user_id": "123", "sixgill_severity": 10}'},
+    {'name': 'someSecretAlert3', 'occurred': '2019-08-22T08:27:19.000000Z', 'details': '', 'severity': 3,
+     'rawJSON': '{"alert_name": "someSecretAlert3", "content": "", "date": "2019-08-22 08:27:19", '
+                '"id": "5", "read": false, "threat_level": "imminent", "threats": ["Data Leak", "Phishing"], '
+                '"title": "someSecretAlert3", "user_id": "123", "sixgill_severity": 10}'},
+    {'name': 'someSecretAlert1', 'occurred': '2019-08-22T08:43:15.000000Z', 'details': '', 'severity': 3,
+     'rawJSON': '{"alert_name": "someSecretAlert1", "content": "", "date": "2019-08-22 08:43:15", '
+                '"id": "6", "read": false, "threat_level": "imminent", "threats": ["Data Leak", "Phishing"], '
+                '"title": "someSecretAlert1", "user_id": "123", "sixgill_severity": 10}'}]
 
 expected_ioc_output = {'Contents': '',
                        'ContentsFormat': 'text',
@@ -130,6 +125,10 @@ class MockedResponse(object):
     def __init__(self, status_code):
         self.status_code = status_code
         self.ok = True if self.status_code == 200 else False
+
+
+def get_incidents_list():
+    return copy.deepcopy(incidents_list)
 
 
 def init_params():
@@ -168,7 +167,7 @@ def test_fetch_incidents(mocker):
 
     from sixgill.sixgill_alert_client import SixgillAlertClient
 
-    mocker.patch.object(SixgillAlertClient, 'get_alert', return_value=incidents_list)
+    mocker.patch.object(SixgillAlertClient, 'get_alert', return_value=get_incidents_list())
     mocker.patch.object(SixgillAlertClient, 'mark_digested_item', return_value=None)
 
     from Sixgill import fetch_incidents
@@ -190,8 +189,8 @@ def test_get_indicators(mocker):
     mocker.patch.object(SixgillDarkFeedClient, 'get_bundle', return_value=iocs_bundle)
     mocker.patch.object(SixgillDarkFeedClient, 'commit_indicators', return_value=None)
 
-    from Sixgill import get_indicators
-    get_indicators()
+    from Sixgill import sixgill_get_indicators_command
+    sixgill_get_indicators_command()
 
     assert demisto.results.call_count == 1
     results = demisto.results.call_args_list[0][0][0]
@@ -201,5 +200,5 @@ def test_get_indicators(mocker):
 
 def test_item_to_incident():
     from Sixgill import item_to_incident
-    output = item_to_incident(incidents_list[0])
+    output = item_to_incident(get_incidents_list()[0])
     assert output == expected_alert_output[0]

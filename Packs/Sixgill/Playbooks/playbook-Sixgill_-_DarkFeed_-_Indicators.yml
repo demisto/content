@@ -1,0 +1,150 @@
+fromversion: 4.0.0
+id: Sixgill - DarkFeed - Indicators
+version: -1
+name: Sixgill - DarkFeed - Indicators
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: ee6a2320-9bb6-4ec3-8588-cab46abee2a5
+    type: start
+    task:
+      id: ee6a2320-9bb6-4ec3-8588-cab46abee2a5
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 973551ba-7998-48b3-8b58-76911281de1c
+    type: regular
+    task:
+      id: 973551ba-7998-48b3-8b58-76911281de1c
+      version: -1
+      name: DeleteContext
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 9e63819a-6e2f-4067-8c1e-a0f7500a42e4
+    type: regular
+    task:
+      id: 9e63819a-6e2f-4067-8c1e-a0f7500a42e4
+      version: -1
+      name: sixgill-get-indicators
+      description: ''
+      script: Sixgill|||sixgill-get-indicators
+      type: regular
+      iscommand: true
+      brand: Sixgill
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      fetch_indicators_limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 58b4987e-ba10-4a8e-8c7c-a0fb14a42bec
+    type: regular
+    task:
+      id: 58b4987e-ba10-4a8e-8c7c-a0fb14a42bec
+      version: -1
+      name: Parse STIX Bundle
+      description: ''
+      scriptName: StixParser_v2
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      entry_id:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: Sixgill.Bundle.FileName
+                iscontext: true
+          accessor: EntryID
+      iocXml: {}
+      to_context: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: ''
