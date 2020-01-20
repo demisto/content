@@ -24,7 +24,7 @@ class TestFetchIncidents:
         mocker.patch.object(demisto, "setLastRun")
         mocker.patch.object(demisto, "getLastRun", return_value=lastRun)
         mocker.patch.object(
-            RedCanary, "get_unacknowledge_detections", return_value=data["data"]
+            RedCanary, "get_unacknowledged_detections", return_value=data["data"]
         )
         mocker.patch.object(RedCanary, "get_full_timeline", return_value=None)
         RedCanary.fetch_incidents()

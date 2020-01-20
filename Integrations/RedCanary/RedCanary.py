@@ -302,23 +302,17 @@ def detections_to_entry(detections, show_timeline=False):
     }
 
 
-def get_unacknowledge_detections(t, per_page=50):
+def get_unacknowledged_detections(t, per_page=50):
     ''' iterate over all unacknowledged detections later then time t'''
     page = 1
     res = list_detections(page=page, per_page=per_page, since=t)
     while res:
         for detection in res:
-            """Here was a unexplained piece of code.
-
-            ```
             attributes = detection.get('attributes', {})
-            if attributes.get('last_acknowledged_at') and attributes.get('last_acknowledged_at'):
+            # If 'last_acknowledged_at' and 'last_acknowledged_by' are in attributes,
+            # the detection is acknowledged and should not create a new incident.
+            if attributes.get('last_acknowledged_at') and attributes.get('last_acknowledged_by'):
                 yield detection
-            ```
-            it may should yield only detection that never seen in RedCanary, but the current customer is
-            looking for all detections.
-            """
-            yield detection
 
         page += 1
         res = list_detections(page=page, per_page=per_page, since=t)
@@ -526,7 +520,7 @@ def fetch_incidents():
 
     LOG('iterating on detections, looking for more recent than {}'.format(last_fetch))
     incidents = []
-    for raw_detection in get_unacknowledge_detections(last_fetch, per_page=2):
+    for raw_detection in get_unacknowledged_detections(last_fetch, per_page=2):
         LOG('found detection #{}'.format(raw_detection['id']))
         incident = detection_to_incident(raw_detection)
 
