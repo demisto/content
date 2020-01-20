@@ -1,3 +1,4 @@
+### see also https://m2crypto.readthedocs.io/en/latest/howto.smime.html#howto-smime
 ##  Configure rsa key and certificate
 - run command `openssl req -newkey rsa:1024 -nodes -x509 -days 365 -out CERTIFICATE -keyout PRIVATE`
 
