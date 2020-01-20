@@ -1791,13 +1791,13 @@ tasks:
     ignoreworker: false
   '87':
     id: '87'
-    taskid: 3edc5548-9984-4835-8eb2-74625ea04b08
+    taskid: bf7ea13b-64cd-46fb-8563-825432a1c808
     type: regular
     task:
-      id: 3edc5548-9984-4835-8eb2-74625ea04b08
+      id: bf7ea13b-64cd-46fb-8563-825432a1c808
       version: -1
       name: Predict phishing type using pre-trained phishing model
-      description: Predicts the specific type of phishing mail using a pre-trained machine learning 
+      description: Predicts the specific type of phishing mail using a pre-trained machine learning
         model, and highlights the most important words used in the classification decision.
       scriptName: DBotPredictPhishingWords
       type: regular
@@ -1812,15 +1812,12 @@ tasks:
           root: Email
           accessor: Text
           transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty:
-                value:
-                  simple: 'true'
-              defaultValue:
-                value:
-                  simple: Email.HTML
-                iscontext: true
+          - operator: uniq
+      emailBodyHTML:
+        complex:
+          root: Email
+          accessor: HTML
+          transformers:
           - operator: uniq
       emailSubject:
         complex:
@@ -1839,6 +1836,7 @@ tasks:
       topWordsLimit: {}
       wordThreshold: {}
     reputationcalc: 1
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -1878,10 +1876,10 @@ tasks:
     ignoreworker: false
   '89':
     id: '89'
-    taskid: 0c971c71-a6a2-449c-8c5a-661b818dbb81
+    taskid: 40fe8e89-4a2c-470f-8bd6-6bae51b4794e
     type: regular
     task:
-      id: 0c971c71-a6a2-449c-8c5a-661b818dbb81
+      id: 40fe8e89-4a2c-470f-8bd6-6bae51b4794e
       version: -1
       name: Update incident with predictions
       description: Updates incident fields with the predictions of the machine-learning
@@ -1896,7 +1894,9 @@ tasks:
     scriptarguments:
       account: {}
       accountid: {}
+      accountname: {}
       activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
       activedirectorypasswordstatus: {}
       addLabels: {}
       affecteddata: {}
@@ -2005,6 +2005,7 @@ tasks:
       globaldirectoryvisibility: {}
       googleaccountstatus: {}
       googleadminrolesstatus: {}
+      googledisplayname: {}
       googledrivestatus: {}
       googlemailstatus: {}
       googlepasswordstatus: {}
@@ -2022,6 +2023,7 @@ tasks:
       maliciousbehavior: {}
       maliciouscauseifthecauseisamaliciousattack: {}
       malwarefamily: {}
+      markdowntest: {}
       measurestomitigate: {}
       name: {}
       niststage: {}
@@ -2141,10 +2143,10 @@ tasks:
     ignoreworker: false
   '90':
     id: '90'
-    taskid: 0fbe9223-2940-4db4-822e-3b094bc2cf88
+    taskid: 585dd252-1010-44ae-8c8d-1331c6d907ab
     type: condition
     task:
-      id: 0fbe9223-2940-4db4-822e-3b094bc2cf88
+      id: 585dd252-1010-44ae-8c8d-1331c6d907ab
       version: -1
       name: Did the model predict the phishing type?
       description: Checks whether the model predicted the phishing type.
