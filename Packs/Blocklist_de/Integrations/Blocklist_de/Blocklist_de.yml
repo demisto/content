@@ -72,8 +72,7 @@ configuration:
   name: polling_timeout
   required: false
   type: 0
-- defaultvalue: all
-  display: Sub-Feeds
+- display: Sub-Feeds
   name: subfeeds
   options:
   - all
