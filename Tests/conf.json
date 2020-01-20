@@ -3,6 +3,18 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Digital Defense FrontlineVM",
+            "playbookID": "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test"
+        },
+        {
+            "integrations": "Digital Defense FrontlineVM",
+            "playbookID": "Digital Defense FrontlineVM - Test Playbook"
+        },
+        {
+            "integrations": "CSVFeed",
+            "playbookID": "CSV_Feed_Test"
+        },
+        {
             "integrations": "Digital Shadows",
             "playbookID": "Digital Shadows - Test"
         },
@@ -47,6 +59,11 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev_no_oproxy"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
             "instance_names": "ms_graph_mail_prod"
         },
         {
@@ -66,7 +83,8 @@
         },
         {
             "integrations": "ThreatQ v2",
-            "playbookID": "ThreatQ - Test"
+            "playbookID": "ThreatQ - Test",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "AttackIQFireDrill",
@@ -167,9 +185,6 @@
         },
         {
             "playbookID": "TestAwsEC2GetPublicSGRules-Test"
-        },
-        {
-            "playbookID": "TestParseEmailHeaders"
         },
         {
             "playbookID": "TestParseEmailFile-deprecated-script"
@@ -466,7 +481,11 @@
             "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test",
             "integrations": "palo_alto_networks_pan_os_edl_management",
             "fromversion": "4.0.0"
-
+        },
+        {
+            "playbookID": "Test_EDL",
+            "integrations": "EDL",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
@@ -723,7 +742,12 @@
             "integrations": "Gmail"
         },
         {
-            "playbookID": "reputations.json Test"
+            "playbookID": "reputations.json Test",
+            "toversion": "5.0.0"
+        },
+        {
+            "playbookID": "Indicators reputation-.json Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "Test IP Indicator Fields",
@@ -756,6 +780,9 @@
         },
         {
             "playbookID": "exporttocsv_script_test"
+        },
+        {
+            "playbookID": "Set - Test"
         },
         {
             "integrations": "Intezer v2",
@@ -1504,6 +1531,12 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "Docker Hardening Test",
+            "_comment": "Not testing on 5.5 yet. Waiting for #20951",
+            "fromversion": "5.0.0",
+            "toversion": "5.4.9"
+        },
+        {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory Query V2 configuration with port"
@@ -1625,6 +1658,10 @@
 
             "integrations": "DUO Admin",
             "playbookID": "DuoAdmin API test playbook"
+        },
+        {
+            "integrations": "TAXIIFeed",
+            "playbookID": "TAXII_Feed_Test"
         },
         {
             "integrations": "Traps",
@@ -1990,6 +2027,7 @@
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
             "fromversion": "4.5.0",
+            "timeout": 600,
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama"
         },
@@ -2018,7 +2056,7 @@
             "playbookID": "PolySwarm-Test"
         },
         {
-            "integrations": "Kenna",
+            "integrations": "Kennav2",
             "playbookID": "Kenna Test"
         },
         {
@@ -2050,24 +2088,48 @@
           "fromversion": "4.5.0"
         },
         {
+            "playbookID": "SetAndHandleEmpty test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
         },
         {
+          "integrations": "FeedOffice365",
+          "playbookID": "Office365_Feed_Test",
+          "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "GoogleCloudTranslate",
+            "playbookID": "GoogleCloudTranslate-Test"
+        },
+        {
             "integrations": "Infoblox",
             "playbookID": "Infoblox Test"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA",
+            "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "GetValuesOfMultipleFIelds Test",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "BPA",
+            "playbookID": "Test-BPA_Integration",
+            "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
-        "Test-Shodan_v2": "Skipping to chack if related to shodan",
-        "Endpoint Malware Investigation - Generic - Test": "Issue 20867",
         "Test-Detonate URL - Crowdstrike": "Issue 19439",
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
-        "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
@@ -2075,7 +2137,6 @@
         "ArcSight Logger test": "Issue 19117",
         "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
-        "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "Carbon Black Enterprise Protection V2 Test": "Issue 19838",
@@ -2089,7 +2150,9 @@
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "PAN-OS DAG Configuration Test": "Issue #19205",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
-        "Test Playbook TrendMicroDDA": "Manual test"
+        "Test Playbook TrendMicroDDA": "Issue 16501",
+        "PANW - Hunting and threat detection by indicator type Test": "Issue 20952",
+        "ssdeepreputationtest": "Issue #20953"
     },
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE ~~~",
@@ -2114,9 +2177,7 @@
         "ProtectWise": "Issue 20486",
         "ThreatMiner": "Issue 20469",
         "DomainTools Iris": "Issue 20433",
-        "ThreatQ v2": "Issue 19468",
         "Check Point": "Issue 18643",
-        "RSA Archer": "Issue 20335",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "Joe Security": "Issue 17996",
@@ -2152,6 +2213,7 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
         "McAfee ESM-v10": "Issue 20225",
+        "QRadar Indicator Hunting Test": "Issue 21150",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2223,7 +2285,11 @@
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Microsoft Graph Groups": "Test direct access to oproxy",
         "SafeBreach": "SSL Issues",
+        "FeedOffice365": "SSl Issues. issue: 21181",
+        "AWS - CloudWatchLogs": "Issue 20958",
         "Gmail Single User" : "googleclient sdk has time based challenge exchange",
-        "Gmail": "googleclient sdk has time based challenge exchange"
+        "Gmail": "googleclient sdk has time based challenge exchange",
+        "GoogleCloudTranslate": "google translate sdk does not support proxy",
+        "Kennav2": "HTTPSConnectionPool(host='api.kennasecurity.com', port=443), issue:21233"
     }
 }
