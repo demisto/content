@@ -62,6 +62,7 @@ SCRIPT_JS_REGEX = r'{}/([^\\/]+)/\1.js$'.format(SCRIPTS_DIR)
 SCRIPT_PS_REGEX = r'{}/([^\\/]+)/\1.ps1$'.format(SCRIPTS_DIR)
 SCRIPT_YML_REGEX = r'{}/([^\\/]+)/\1.yml$'.format(SCRIPTS_DIR)
 TEST_SCRIPT_REGEX = r'{}.*script-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
+NON_CIRCLE_TESTS_REGEX = r'{}/NonCircleTests/.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
 SCRIPT_REGEX = r'{}/(script-[^\\/]+)\.yml$'.format(SCRIPTS_DIR)
 
 INTEGRATION_PY_REGEX = r'{}/([^\\/]+)/\1.py$'.format(INTEGRATIONS_DIR)  # Ignores tests

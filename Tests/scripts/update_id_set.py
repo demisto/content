@@ -382,7 +382,8 @@ def process_test_playbook_path(file_path):
     print("adding {0} to id_set".format(file_path))
     script = None
     playbook = None
-    if checked_type(file_path, (TEST_SCRIPT_REGEX, PACKS_TEST_PLAYBOOKS_REGEX, TEST_PLAYBOOK_REGEX)):
+    if checked_type(file_path,
+                    (NON_CIRCLE_TESTS_REGEX, TEST_SCRIPT_REGEX, PACKS_TEST_PLAYBOOKS_REGEX, TEST_PLAYBOOK_REGEX)):
         yml_data = get_yaml(file_path)
         if 'commonfields' in yml_data:
             # script files contain this key
@@ -459,13 +460,13 @@ def re_create_id_set():
     for arr in pool.map(process_integration, get_integrations_paths()):
         integration_list.extend(arr)
 
-    print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
-    for arr in pool.map(process_playbook, get_playbooks_paths()):
-        playbooks_list.extend(arr)
-
     print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
     for arr in pool.map(process_script, get_scripts_paths()):
         scripts_list.extend(arr)
+
+    print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
+    for arr in pool.map(process_playbook, get_playbooks_paths()):
+        playbooks_list.extend(arr)
 
     print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
     for pair in pool.map(process_test_playbook_path, get_test_playbooks_paths()):
