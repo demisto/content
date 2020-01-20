@@ -924,7 +924,7 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_types: s
             'rawJSON': json.dumps(incident)
         } for incident in incidents_items if incident.get('incidentId') > last_incident_id]
         if demisto_incidents:
-            last_incident_id = securonix_incidents[-1].get('incidentId')
+            last_incident_id = incidents_items[-1].get('incidentId')
             new_last_run.update({'id': last_incident_id})
 
     demisto.setLastRun(new_last_run)
@@ -975,7 +975,7 @@ def main():
             'securonix-list-watchlists': list_watchlists,
             'securonix-get-watchlist': get_watchlist
         }
-        if command == 'fetch-incidents':
+        if command == 'fetch-incidents' or command == 'securonix-list-workflows':
             fetch_time = params.get('fetch_time')
             incident_types = params.get('incident_types') if 'incident_types' in params else 'opened'
             incidents = fetch_incidents(client, fetch_time, incident_types, last_run=demisto.getLastRun())
