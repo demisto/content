@@ -205,7 +205,7 @@ def http_request(uri: str, method: str, headers: Dict = {},
     return json_result
 
 
-def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any: Optional[bool] = False) -> str:
+def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: Optional[bool] = False) -> str:
     member_stringify_list = ''
     if arg:
         for item in arg:
@@ -216,7 +216,7 @@ def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any: Op
             return '<' + field_name + '>' + member_stringify_list + '</' + field_name + '>'
         else:
             return '<' + field_name + '>' + arg + '</' + field_name + '>'
-    if any:
+    if any_:
         if member:
             return '<' + field_name + '><member>any</member></' + field_name + '>'
         else:
@@ -307,7 +307,7 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
                 + add_argument_open(source_user, 'source-user', True)
                 + add_argument_open(from_, 'from', True)  # default from will always be any
                 + add_argument_open(to, 'to', True)  # default to will always be any
-                + add_argument_list(service, 'service', True)
+                + add_argument_list(service, 'service', True, True)
                 + add_argument_yes_no(negate_source, 'negate-source')
                 + add_argument_yes_no(negate_destination, 'negate-destination')
                 + add_argument_yes_no(disable, 'disabled')
