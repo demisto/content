@@ -329,8 +329,46 @@ def stix2_to_demisto(stx_obj):
                     data.extend(entry)
                 else:
                     data.append(entry)
-    dumped = json.dumps(data)
-    demisto.results(dumped)
+    return data
+
+
+def build_dbot(entry):
+    # type: (dict) -> Optional[dict]
+    indicator = entry.get("value")
+    type_ = entry.get("indicator_type", "").lower()  # type: str
+    vendor = entry.get("CustomFields", {}).get("stixPackageId")
+    vendor = "STIX: {}".format(vendor)
+    score = entry.get("score")
+    dbot_data = {
+        'Indicator': indicator,
+        'Type': type_,
+        'Vendor': vendor,
+        'Score': score
+    }
+    return dbot_data
+
+
+def create_scores(data):
+    dbot_path = outputPaths["dbotscore"]
+    # Create dict of dbot scores
+    dbot_scores_dict = {output_path: list() for output_path in outputPaths.values()}
+    # Remove DBotScore value
+    dbot_scores_dict.pop(dbot_path)
+    # Create scores from each indicator
+    dbot_scores = [build_dbot(entry) for entry in data]
+    # Filter out empty values
+    dbot_scores = [entry for entry in dbot_scores if entry]
+    dbot_scores_dict = {dbot_path: dbot_scores}
+    malicious_dbot_entries = [
+        build_malicious_dbot_entry(
+            entry.get("Indicator"),
+            entry.get("Type"),
+            entry.get("Vendor")
+        )
+        for entry in dbot_scores_dict if entry.get("Score", 0) == 3
+    ]
+    indicator, indicator_type, vendor
+    return dbot_scores_dict
 
 
 """ STIX 1 """
@@ -348,7 +386,28 @@ def main():
     txt = demisto.args().get("iocXml").encode("utf-8")
     stx = convert_to_json(txt)
     if stx:
-        stix2_to_demisto(stx)
+        data = stix2_to_demisto(stx)
+        if hasattr(demisto, "args"):
+            to_context = demisto.args().get("to_context")
+            to_context_bool = argToBoolean(to_context) if to_context else False
+        else:
+            to_context_bool = False
+        if to_context_bool:
+            human_readable = tableToMarkdown(
+                "Parsed STIX file output:",
+                data
+            )
+            dbot_scores_dict = create_scores(data)
+
+            entry_context = {
+                "STIX": data,
+            }
+            entry_context.update(dbot_scores_dict)
+
+            return_outputs(human_readable, entry_context, stx)
+        else:
+            dumped = json.dumps(data)
+            demisto.results(dumped)
     else:
         with tempfile.NamedTemporaryFile() as temp:
             temp.write(demisto.args()["iocXml"].encode("utf-8"))

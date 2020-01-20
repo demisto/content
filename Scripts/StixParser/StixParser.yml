@@ -5,6 +5,13 @@ args:
   name: iocXml
   required: true
   secret: false
+- default: false
+  defaultValue: 'false'
+  description: Send output to context (true or false)
+  isArray: false
+  name: to_context
+  required: false
+  secret: false
 comment: Parse Stix files to Demisto indicators
 commonfields:
   id: StixParser
@@ -18,7 +25,6 @@ tags:
 - ioc
 timeout: 0s
 type: python
-subtype: python2
 dockerimage: demisto/stix
 tests:
 - STIXParserTest

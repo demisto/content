@@ -39,11 +39,11 @@ def _get_stix_little():
     )
 
 
-def _get_results_from_demisto(entry, func, mocker):
+def _get_results_from_demisto(entry, func, mocker, return_data=False):
     mock_demisto(mocker)
     try:
-        func(entry)
-        return demisto.results.call_args[0][0]
+        data = func(entry)
+        return data if return_data else demisto.results.call_args[0][0]
     except IndexError:
         pytest.fail(
             "Couldn't find results returned from Demisto", pytrace=True
@@ -79,14 +79,8 @@ class TestSTIX2ToDemisto:
     def test_stix2_to_demisto(self, mocker):
         from StixParser import stix2_to_demisto
         stix_input, expected_output = _get_stix()
-        try:
-            d_results = _get_results_from_demisto(stix_input, stix2_to_demisto, mocker)
-            d_results = json.loads(d_results)
-            assert isinstance(d_results, list)
-        except ValueError:
-            pytest.fail(
-                "Couldn't parse output as JSON", pytrace=True
-            )
+        d_results = _get_results_from_demisto(stix_input, stix2_to_demisto, mocker, return_data=True)
+        assert isinstance(d_results, list), "Couldn't parse output as JSON"
         expected_output = expected_output[2]
         results_length = len(expected_output)
         result_counter = 0
@@ -101,8 +95,8 @@ class TestSTIX2ToDemisto:
     def test_stix2_to_json_empty_case(self, mocker):
         from StixParser import stix2_to_demisto
         # Empty case
-        res = _get_results_from_demisto([], stix2_to_demisto, mocker)
-        assert res, "Sent empty JSON but got a response"
+        res = _get_results_from_demisto([], stix2_to_demisto, mocker, return_data=True)
+        assert not res, "Sent empty JSON but got a response"
 
 
 class TestHelperFunctions:
