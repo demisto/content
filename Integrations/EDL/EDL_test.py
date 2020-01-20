@@ -203,38 +203,6 @@ class TestHelperFunctions:
 
     @pytest.mark.create_values_out_dict
     def test_create_values_out_dict_1(self):
-        """Test CSV out"""
-        from EDL import create_values_out_dict, FORMAT_CSV
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.loads(iocs_json_f.read())
-            csv_out = create_values_out_dict(iocs_json, FORMAT_CSV)
-            # assert len(csv_out) == IOC_RES_LEN + 1
-            with open('EDL_test/TestHelperFunctions/iocs_out_csv.txt', 'r') as iocs_out_f:
-                expected_csv_out = iocs_out_f.read()
-                for csv_line in csv_out.values():
-                    assert csv_line in expected_csv_out
-
-    @pytest.mark.create_values_out_dict
-    def test_create_values_out_dict_2(self):
-        """Test JSON out"""
-        from EDL import create_values_out_dict, FORMAT_JSON, EDL_VALUES_KEY
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.load(iocs_json_f)
-            json_out = json.loads(create_values_out_dict(iocs_json, FORMAT_JSON).get(EDL_VALUES_KEY))
-            assert json_out == iocs_json
-
-    @pytest.mark.create_values_out_dict
-    def test_create_values_out_dict_3(self):
-        """Test JSON_SEQ out"""
-        from EDL import create_values_out_dict, FORMAT_JSON_SEQ, EDL_VALUES_KEY
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.loads(iocs_json_f.read())
-            json_seq_out = create_values_out_dict(iocs_json, FORMAT_JSON_SEQ).get(EDL_VALUES_KEY)
-            for seq_line in json_seq_out.split('\n'):
-                assert json.loads(seq_line) in iocs_json
-
-    @pytest.mark.create_values_out_dict
-    def test_create_values_out_dict_4(self):
         """Test TEXT out"""
         from EDL import create_values_out_dict, FORMAT_TEXT, EDL_VALUES_KEY
         with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:

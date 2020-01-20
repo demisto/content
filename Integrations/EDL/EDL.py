@@ -131,12 +131,11 @@ def get_edl_mimetype() -> str:
     return ctx.get(EDL_MIMETYPE_KEY, 'text/plain')
 
 
-def get_edl_ioc_values(on_demand, edl_size, indicator_query='', out_format='text', last_run=None,
+def get_edl_ioc_values(on_demand, limit, indicator_query='', out_format=FORMAT_TEXT, last_run=None,
                        cache_refresh_rate=None) -> str:
     """
     Get the ioc list to return in the edl
     """
-    limit = try_parse_integer(edl_size, EDL_LIMIT_ERR_MSG)
     # on_demand ignores cache
     if on_demand:
         values_str = get_ioc_values_str_from_context()
@@ -181,9 +180,9 @@ def route_edl_values() -> Response:
     """
     params = demisto.params()
     values = get_edl_ioc_values(
-        out_format=params.get('format'),
+        out_format=FORMAT_TEXT,
         on_demand=params.get('on_demand'),
-        edl_size=params.get('edl_size'),
+        limit=try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG),
         last_run=demisto.getLastRun().get('last_run'),
         indicator_query=params.get('indicators_query'),
         cache_refresh_rate=params.get('cache_refresh_rate')
@@ -277,7 +276,7 @@ def update_edl_command(args, params):
     limit = try_parse_integer(args.get('edl_size', params.get('edl_size')), EDL_LIMIT_ERR_MSG)
     print_indicators = args.get('print_indicators')
     query = args.get('query')
-    out_format = args.get('format')
+    out_format = FORMAT_TEXT
     indicators = refresh_edl_context(query, out_format, limit=limit)
     hr = tableToMarkdown('EDL was updated successfully with the following values', indicators,
                          ['Indicators']) if print_indicators == 'true' else 'EDL was updated successfully'
