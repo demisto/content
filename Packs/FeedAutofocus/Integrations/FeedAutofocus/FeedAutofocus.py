@@ -10,7 +10,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
-SOURCE_NAME = "AutoFocusFeed"
+SOURCE_NAME = "AutoFocus Feed"
 
 
 class Client(BaseClient):
