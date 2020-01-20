@@ -1,0 +1,23 @@
+<stix:STIX_Package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:stix="http://stix.mitre.org/stix-1" xmlns:stixCommon="http://stix.mitre.org/common-1" xmlns:indicator="http://stix.mitre.org/Indicator-2" xmlns:ttp="http://stix.mitre.org/TTP-1" xmlns:cybox="http://cybox.mitre.org/cybox-2" xmlns:AddressObject="http://cybox.mitre.org/objects#AddressObject-2" xmlns:stixVocabs="http://stix.mitre.org/default_vocabularies-1" xmlns:example="http://example.com/" xsi:schemaLocation=" http://stix.mitre.org/stix-1 http://stix.mitre.org/XMLSchema/core/1.2/stix_core.xsd http://stix.mitre.org/Indicator-2 http://stix.mitre.org/XMLSchema/indicator/2.2/indicator.xsd http://stix.mitre.org/TTP-2 http://stix.mitre.org/XMLSchema/ttp/1.2/ttp.xsd http://stix.mitre.org/default_vocabularies-1 http://stix.mitre.org/XMLSchema/default_vocabularies/1.2.0/stix_default_vocabularies.xsd http://cybox.mitre.org/objects#AddressObject-2 http://cybox.mitre.org/XMLSchema/objects/Address/2.1/Address_Object.xsd" id="example:STIXPackage-33fe3b22-0201-47cf-85d0-97c02164528d" version="1.2">
+    <stix:Indicators>
+        <stix:Indicator xsi:type="indicator:IndicatorType" id="example:Indicator-33fe3b22-0201-47cf-85d0-97c02164528d" timestamp="2014-05-08T09:00:00.000000Z">
+            <indicator:Title>Email Address</indicator:Title>
+            <indicator:Type xsi:type="stixVocabs:IndicatorTypeVocab-1.1">IP Watchlist</indicator:Type>
+            <indicator:Observable id="example:Observable-1c798262-a4cd-434d-a958-884d6980c459">
+                <cybox:Object id="example:Object-1980ce43-8e03-490b-863a-ea404d12242e">
+                    <cybox:Properties xsi:type="AddressObject:AddressObjectType" category="e-mail">
+                        <AddressObject:Address_Value condition="Equals">not@domain.com</AddressObject:Address_Value>
+                    </cybox:Properties>
+                </cybox:Object>
+            </indicator:Observable>
+            <indicator:Indicated_TTP>
+                <stixCommon:TTP idref="example:TTP-bc66360d-a7d1-4d8c-ad1a-ea3a13d62da9"/>
+            </indicator:Indicated_TTP>
+        </stix:Indicator>
+    </stix:Indicators>
+    <stix:TTPs>
+        <stix:TTP xsi:type="ttp:TTPType" id="example:TTP-bc66360d-a7d1-4d8c-ad1a-ea3a13d62da9" timestamp="2014-05-08T09:00:00.000000Z">
+            <ttp:Title>C2 Behavior</ttp:Title>
+        </stix:TTP>
+    </stix:TTPs>
+</stix:STIX_Package>
