@@ -293,10 +293,10 @@ tasks:
     ignoreworker: false
   '17':
     id: '17'
-    taskid: 553eb3d8-a4dc-4e2b-8d8e-1c6f1abf3241
+    taskid: 42cd9701-e6b9-426f-8be5-9f7cbcb84e24
     type: playbook
     task:
-      id: 553eb3d8-a4dc-4e2b-8d8e-1c6f1abf3241
+      id: 42cd9701-e6b9-426f-8be5-9f7cbcb84e24
       version: -1
       name: QRadarFullSearch
       description: ''
@@ -364,8 +364,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.SelectFields
-                iscontext: true
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
               suffix:
                 value:
                   simple: ' '
@@ -781,111 +780,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '53':
-    id: '53'
-    taskid: 925ec9c5-5ecb-4bdc-83cf-453d3ef63610
-    type: playbook
-    task:
-      id: 925ec9c5-5ecb-4bdc-83cf-453d3ef63610
-      version: -1
-      name: QRadarFullSearch
-      description: ''
-      playbookName: QRadarFullSearch
-      type: playbook
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '88'
-    scriptarguments:
-      headers: {}
-      interval:
-        simple: '1'
-      query_expression:
-        complex:
-          root: IP
-          transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: UTF8(payload) LIKE  '$1'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
-      range: {}
-      timeout:
-        simple: '600'
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ''
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 1060,
-          "y": 1450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   '55':
     id: '55'
     taskid: 194afa46-a209-42dd-830c-d4952a4327c5
@@ -1188,7 +1082,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '154'
+      - '156'
     separatecontext: false
     view: |-
       {
@@ -1611,10 +1505,10 @@ tasks:
     ignoreworker: false
   '88':
     id: '88'
-    taskid: 790dab8b-e930-413a-8ca9-c08d7b509ec8
+    taskid: 624752ad-a1a1-4e37-8689-207e1fd0c643
     type: condition
     task:
-      id: 790dab8b-e930-413a-8ca9-c08d7b509ec8
+      id: 624752ad-a1a1-4e37-8689-207e1fd0c643
       version: -1
       name: Is IP detected by QRadar?
       description: Is ip detected by QRadar?
@@ -1816,10 +1710,10 @@ tasks:
     ignoreworker: false
   '96':
     id: '96'
-    taskid: 0aa60b22-4f0d-4932-81bb-5d0288948176
+    taskid: c1461fb2-0801-41c3-8749-356ecfaa9d52
     type: playbook
     task:
-      id: 0aa60b22-4f0d-4932-81bb-5d0288948176
+      id: c1461fb2-0801-41c3-8749-356ecfaa9d52
       version: -1
       name: QRadarFullSearch
       description: ''
@@ -1870,8 +1764,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.SelectFields
-                iscontext: true
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
               suffix: {}
           - operator: concat
             args:
@@ -1934,10 +1827,10 @@ tasks:
     ignoreworker: false
   '97':
     id: '97'
-    taskid: 2eb79dc1-722f-4b4b-83b9-f23a24b1ce96
+    taskid: dbfdacb6-49c1-4f39-8dbb-4c699f95d52c
     type: playbook
     task:
-      id: 2eb79dc1-722f-4b4b-83b9-f23a24b1ce96
+      id: dbfdacb6-49c1-4f39-8dbb-4c699f95d52c
       version: -1
       name: QRadarFullSearch
       description: ''
@@ -1988,8 +1881,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.SelectFields
-                iscontext: true
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
               suffix: {}
           - operator: concat
             args:
@@ -2069,7 +1961,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '155'
+      - '159'
     scriptarguments:
       append:
         simple: 'true'
@@ -2110,7 +2002,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '153'
+      - '158'
     scriptarguments:
       append:
         simple: 'true'
@@ -2138,10 +2030,10 @@ tasks:
     ignoreworker: false
   '100':
     id: '100'
-    taskid: 47740cf5-6b4a-489b-82f8-69c35e1c53e3
+    taskid: f86deb33-6fff-4b29-8a0c-ab2c3300a105
     type: regular
     task:
-      id: 47740cf5-6b4a-489b-82f8-69c35e1c53e3
+      id: f86deb33-6fff-4b29-8a0c-ab2c3300a105
       version: -1
       name: Set SHA256 to array
       description: Sets a value into the context with the given context key
@@ -2157,6 +2049,7 @@ tasks:
         simple: 'true'
       key:
         simple: File.SHA256
+      stringify: {}
       value:
         complex:
           root: inputs.SHA256
@@ -2179,10 +2072,10 @@ tasks:
     ignoreworker: false
   '101':
     id: '101'
-    taskid: dc2e371c-0e00-465f-885c-843aa53c6c5e
+    taskid: 0bf852b5-219c-4b68-8bda-7d122d465999
     type: regular
     task:
-      id: dc2e371c-0e00-465f-885c-843aa53c6c5e
+      id: 0bf852b5-219c-4b68-8bda-7d122d465999
       version: -1
       name: Set IP to array
       description: Sets a value into the context with the given context key
@@ -2192,12 +2085,13 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '53'
+      - '157'
     scriptarguments:
       append:
         simple: 'true'
       key:
         simple: IP
+      stringify: {}
       value:
         complex:
           root: inputs.IPAddress
@@ -2411,7 +2305,6 @@ tasks:
     type: condition
     task:
       id: 00e1d579-b406-4db4-8af2-27369eee70f3
-      description: ''
       version: -1
       name: Are there detected IP addresses?
       type: condition
@@ -2991,10 +2884,10 @@ tasks:
     ignoreworker: false
   '149':
     id: '149'
-    taskid: da1a15fa-db89-4595-8d2e-76dfb83b0979
+    taskid: bd196beb-4161-4e07-83fa-76ef26cac916
     type: playbook
     task:
-      id: da1a15fa-db89-4595-8d2e-76dfb83b0979
+      id: bd196beb-4161-4e07-83fa-76ef26cac916
       version: -1
       name: QRadarFullSearch
       description: ''
@@ -3045,8 +2938,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.SelectFields
-                iscontext: true
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
               suffix: {}
           - operator: concat
             args:
@@ -3109,10 +3001,10 @@ tasks:
     ignoreworker: false
   '151':
     id: '151'
-    taskid: c5bc85ea-4ed5-4266-8462-2bb65a3250c2
+    taskid: d2db9183-bbb1-4911-870f-0db9cdd672d8
     type: playbook
     task:
-      id: c5bc85ea-4ed5-4266-8462-2bb65a3250c2
+      id: d2db9183-bbb1-4911-870f-0db9cdd672d8
       version: -1
       name: QRadarFullSearch
       description: ''
@@ -3129,7 +3021,8 @@ tasks:
         simple: '1'
       query_expression:
         complex:
-          root: inputs.SHA256
+          root: File
+          accessor: SHA256
           transformers:
           - operator: replaceMatch
             args:
@@ -3174,14 +3067,11 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: ','
+                  simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),
               suffix: {}
           - operator: concat
             args:
-              prefix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
+              prefix: {}
               suffix:
                 value:
                   simple: ' '
@@ -3214,10 +3104,10 @@ tasks:
     ignoreworker: false
   '152':
     id: '152'
-    taskid: 57fd16a4-586e-4200-8a44-e71d7c647866
+    taskid: 3fc13679-3e1a-400e-841b-7b32a8ece629
     type: playbook
     task:
-      id: 57fd16a4-586e-4200-8a44-e71d7c647866
+      id: 3fc13679-3e1a-400e-841b-7b32a8ece629
       version: -1
       name: QRadarFullSearch
       description: ''
@@ -3268,8 +3158,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.SelectFields
-                iscontext: true
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
               suffix: {}
           - operator: concat
             args:
@@ -3330,117 +3219,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '153':
-    id: '153'
-    taskid: 9f959863-a00d-45c8-87ee-3b193ac2a347
+  '156':
+    id: '156'
+    taskid: 4242307b-70a2-4c69-8aee-1e63f06b4195
     type: playbook
     task:
-      id: 9f959863-a00d-45c8-87ee-3b193ac2a347
-      version: -1
-      name: QRadarFullSearch
-      description: ''
-      playbookName: QRadarFullSearch
-      type: playbook
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '91'
-    scriptarguments:
-      headers: {}
-      interval:
-        simple: '1'
-      query_expression:
-        complex:
-          root: inputs.SHA1
-          transformers:
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: UTF8(payload) LIKE  '$1'
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ' OR '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ' from events where '
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.SelectFields
-                iscontext: true
-              suffix:
-                value:
-                  simple: ' '
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'select '
-              suffix:
-                value:
-                  simple: inputs.TimeFrame
-                iscontext: true
-      range: {}
-      timeout:
-        simple: '600'
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ''
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": -1290,
-          "y": 1650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '154':
-    id: '154'
-    taskid: 779d718f-b923-4bed-825c-ffac0d4a6561
-    type: playbook
-    task:
-      id: 779d718f-b923-4bed-825c-ffac0d4a6561
+      id: 4242307b-70a2-4c69-8aee-1e63f06b4195
       version: -1
       name: QRadarFullSearch
       description: ''
@@ -3491,8 +3275,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.SelectFields
-                iscontext: true
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
               suffix: {}
           - operator: concat
             args:
@@ -3553,12 +3336,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '155':
-    id: '155'
-    taskid: d0ab036c-22e9-4ff8-84ff-47373e172ec9
+  '157':
+    id: '157'
+    taskid: 795ff301-9c85-4ea5-8a51-07dc451f8d35
     type: playbook
     task:
-      id: d0ab036c-22e9-4ff8-84ff-47373e172ec9
+      id: 795ff301-9c85-4ea5-8a51-07dc451f8d35
       version: -1
       name: QRadarFullSearch
       description: ''
@@ -3568,14 +3351,14 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '93'
+      - '88'
     scriptarguments:
       headers: {}
       interval:
         simple: '1'
       query_expression:
         complex:
-          root: inputs.MD5
+          root: IP
           transformers:
           - operator: replaceMatch
             args:
@@ -3620,14 +3403,217 @@ tasks:
             args:
               prefix:
                 value:
+                  simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+      range: {}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '158':
+    id: '158'
+    taskid: 4c9de8df-a0fe-46a1-870c-b039bbd32526
+    type: playbook
+    task:
+      id: 4c9de8df-a0fe-46a1-870c-b039bbd32526
+      version: -1
+      name: QRadarFullSearch
+      description: ''
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '91'
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: '1'
+      query_expression:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: UTF8(payload) LIKE  '$1'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
                   simple: ','
               suffix: {}
           - operator: concat
             args:
               prefix:
                 value:
-                  simple: inputs.SelectFields
+                  simple: inputs.InvestigationUserFields
                 iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+      range: {}
+      timeout:
+        simple: '600'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -1290,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '159':
+    id: '159'
+    taskid: 43bc08f7-955a-45d6-879b-af62e9061114
+    type: playbook
+    task:
+      id: 43bc08f7-955a-45d6-879b-af62e9061114
+      version: -1
+      name: QRadarFullSearch
+      description: ''
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '93'
+    scriptarguments:
+      headers: {}
+      interval:
+        simple: '1'
+      query_expression:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: UTF8(payload) LIKE  '$1'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' OR '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: DATEFORMAT(devicetime,'dd-MM-yyyy hh:mm'),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid),
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
               suffix:
                 value:
                   simple: ' '
@@ -3719,14 +3705,6 @@ inputs:
   required: false
   description: 'URL/Domain field to search in QRadar. If none are specified, the search
     will use a payload contains filter. '
-- key: SelectFields
-  value:
-    simple: '*'
-  required: false
-  description: The fields to be used in the select. Use comma delimited field names
-    as they appear in AQL. * is an acceptable value but not recommended as it creates
-    a very large output. This fields are in addition to the investigation fields so
-    no need to provide the same fields as in the investigation fields listing.
 - key: TimeFrame
   value:
     simple: LAST 7 DAYS
@@ -3750,13 +3728,13 @@ inputs:
     simple: sourceip,destinationip
   required: true
   description: The values of these QRadar fields will be used for the playbook IP
-    outputs.
+    addresses outputs.
 - key: InvestigationUserFields
   value:
     simple: username
   required: true
   description: The values of these QRadar fields will be used for the playbook user
-    outputs.
+    name outputs.
 outputs:
 - contextPath: QRadar.DetectedUsers
   description: Users detected based on the username field in your search.
@@ -3775,5 +3753,6 @@ outputs:
   description: External host names detected based on hosts in your assets table. Note
     that the data accuracy depends on how the Asset mapping is configured in QRadar.
   type: string
+
 tests:
 - QRadar Indicator Hunting Test
