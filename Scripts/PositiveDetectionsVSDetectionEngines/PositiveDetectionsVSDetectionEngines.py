@@ -5,15 +5,15 @@ from CommonServerUserPython import *
 
 def extract_engines_data_from_indicator(indicator_data):
     if not indicator_data:
-        exit_with_message("No indicator found")
+        raise DemistoException("No indicator found")
     cstm_fields = indicator_data.get("CustomFields")
     if not cstm_fields:
         # No content, so will display 0/0
         return create_pie(0, 0)
     elif "detectionengines" not in cstm_fields:
-        exit_with_message('Please provide  Custom Field "Detection Engines"')
+        raise DemistoException('Please provide Custom Field "Detection Engines"')
     elif "positivedetections" not in cstm_fields:
-        exit_with_message('Please provide  Custom Field "Positive Detections"')
+        raise DemistoException('Please provide Custom Field "Positive Detections"')
 
     detection_engines = try_parse_int(
         cstm_fields["detectionengines"], '"detectionengines" must be an integer'
@@ -52,12 +52,6 @@ def create_pie(detection_engines, positive_detections):
     return data
 
 
-def exit_with_message(msg="Failed to load"):
-    msg = f"Could not load widget:\n{msg}"
-    demisto.results(msg)
-    sys.exit(0)
-
-
 def try_parse_int(num, err_msg):
     try:
         return int(num)
@@ -70,8 +64,9 @@ def main():
         indicator_data = demisto.args().get("indicator")
         demisto.results(extract_engines_data_from_indicator(indicator_data))
     except Exception as e:
-        demisto.debug(f"PostiveDetectionsVSDetectiongEngines failed with [{e}]")
-        exit_with_message(str(e))
+        demisto.error(f"PostiveDetectionsVSDetectiongEngines failed with [{e}]")
+        msg = f"Could not load widget:\n{e}"
+        demisto.results(msg)
 
 
 # python2 uses __builtin__ python3 uses builtins

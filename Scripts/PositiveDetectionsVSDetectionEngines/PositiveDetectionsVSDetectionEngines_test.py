@@ -1,4 +1,5 @@
 from __future__ import print_function
+from CommonServerPython import DemistoException
 import pytest
 from PositiveDetectionsVSDetectionEngines import extract_engines_data_from_indicator
 
@@ -183,6 +184,9 @@ def test_no_engines_data(indicator_data):
 
 @pytest.mark.parametrize('indicator_data', [positive_missing, detectengines_missing])
 def test_missing_fields(indicator_data):
-    with pytest.raises(SystemExit) as exc:
+    err_raised = False
+    try:
         extract_engines_data_from_indicator(indicator_data)
-        assert exc.value.code == 0
+    except DemistoException:
+        err_raised = True
+    assert err_raised
