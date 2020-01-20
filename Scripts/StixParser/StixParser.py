@@ -349,9 +349,12 @@ def build_dbot(entry):
 
 
 def create_scores(data):
+    # type: (list) -> dict
     dbot_path = outputPaths["dbotscore"]
     # Create dict of dbot scores
-    dbot_scores_dict = {output_path: list() for output_path in outputPaths.values()}
+    dbot_scores_dict = {
+        output_path: list() for output_path in outputPaths.values()
+    }  # type: Dict[str, list]
     # Remove DBotScore value
     dbot_scores_dict.pop(dbot_path)
     # Create scores from each indicator
@@ -365,13 +368,16 @@ def create_scores(data):
             entry.get("Type"),
             entry.get("Vendor")
         )
-        for entry in dbot_scores_dict if entry.get("Score", 0) == 3
+        for entry in dbot_scores
+        if entry.get("Score", 0) == 3 and entry.get("Type", "") not in ('username',)
     ]
-    indicator, indicator_type, vendor
+    for entry in malicious_dbot_entries:
+        for key, value in entry.items():
+            if key not in dbot_scores_dict:
+                dbot_scores_dict[key] = list()
+            dbot_scores_dict[key].append(value)
+
     return dbot_scores_dict
-
-
-""" STIX 1 """
 
 
 def create_new_ioc(data, i, timestamp, pkg_id, ind_id):
@@ -382,38 +388,49 @@ def create_new_ioc(data, i, timestamp, pkg_id, ind_id):
         data[i]["timestamp"] = timestamp.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
 
+def build_context_entries(data):
+    # type: (list) -> Tuple[str, dict]
+    human_readable = tableToMarkdown(
+        "Parsed STIX file output:",
+        data
+    )
+    dbot_scores_dict = create_scores(data)
+
+    entry_context = {
+        "STIX": data,
+    }
+    entry_context.update(dbot_scores_dict)
+    return human_readable, entry_context
+
+
 def main():
-    txt = demisto.args().get("iocXml").encode("utf-8")
+    args = demisto.args()
+    txt = args.get("iocXml", "").encode("utf-8")
+    if not txt:
+        entry_id = args.get("entry_id")
+        # get file from entry_id
+        file_path = demisto.getFilePath(entry_id).get('path')
+        if not file_path:
+            return_error("StixParser: No entry_id provided.")
+        with open(file_path) as f:
+            txt = f.read()
     stx = convert_to_json(txt)
+    data = list()
     if stx:
         data = stix2_to_demisto(stx)
-        if hasattr(demisto, "args"):
-            to_context = demisto.args().get("to_context")
-            to_context_bool = argToBoolean(to_context) if to_context else False
-        else:
-            to_context_bool = False
+        to_context = demisto.args().get("to_context")
+        to_context_bool = argToBoolean(to_context) if to_context else False
         if to_context_bool:
-            human_readable = tableToMarkdown(
-                "Parsed STIX file output:",
-                data
-            )
-            dbot_scores_dict = create_scores(data)
-
-            entry_context = {
-                "STIX": data,
-            }
-            entry_context.update(dbot_scores_dict)
-
-            return_outputs(human_readable, entry_context, stx)
+            readable_output, context = build_context_entries(data)
+            return_outputs(readable_output, context, stx)
         else:
             dumped = json.dumps(data)
             demisto.results(dumped)
-    else:
+    else:  # STIX 1 flow
         with tempfile.NamedTemporaryFile() as temp:
             temp.write(demisto.args()["iocXml"].encode("utf-8"))
             temp.flush()
             stix_package = STIXPackage.from_xml(temp.name)
-        data = list()  # type: list
         i = 0
 
         stix_id = stix_package.id_

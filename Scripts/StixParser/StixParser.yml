@@ -3,13 +3,19 @@ args:
   description: ioc xml in stix format
   isArray: false
   name: iocXml
-  required: true
+  required: false
   secret: false
 - default: false
-  defaultValue: 'false'
-  description: Send output to context (true or false)
+  defaultValue: 'true'
+  description: Send output to context (true or false). Supports STIX2 format only.
   isArray: false
   name: to_context
+  required: false
+  secret: false
+- default: false
+  description: Entry ID of STIX2 file in incident.
+  isArray: false
+  name: entry_id
   required: false
   secret: false
 comment: Parse Stix files to Demisto indicators
@@ -19,6 +25,7 @@ commonfields:
 enabled: true
 name: StixParser
 script: '-'
+subtype: python3
 system: true
 tags:
 - stix

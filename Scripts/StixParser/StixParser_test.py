@@ -42,7 +42,7 @@ def _get_stix_little():
 def _get_results_from_demisto(entry, func, mocker, return_data=False):
     mock_demisto(mocker)
     try:
-        data = func(entry)
+        data = func() if entry is None else func(entry)
         return data if return_data else demisto.results.call_args[0][0]
     except IndexError:
         pytest.fail(
@@ -229,7 +229,23 @@ def test_dict_no_stix(mocker):
             pytest.fail("System error not thrown!")
 
 
-def test_missing_firstSeen(mocker):
+def test_missing_first_seen(mocker):
     from StixParser import main
     TestStix1.mock_demisto_with_file("./TestData/missing_firstSeen.json", mocker)
     main()
+
+
+files_list = [
+    "./TestData/missing_firstSeen.json",
+    "./TestData/stix2.json",
+    "./TestData/little_stix2.json"
+]
+
+
+@pytest.mark.parametrize("file_path", files_list)
+def test_entry_id(mocker, file_path):
+    from StixParser import main
+    mocker.patch.object(demisto, "args", return_value={"entry_id": file_path})
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": file_path})
+    res = _get_results_from_demisto(None, main, mocker)
+    assert res
