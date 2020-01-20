@@ -70,9 +70,9 @@ tasks:
     task:
       id: b5ee7da2-7d43-426f-8870-f8dffc2f3b24
       version: -1
-      name: QRadar Indicator Hunting
+      name: QRadar Indicator Hunting V2
       description: ''
-      playbookName: QRadar Indicator Hunting
+      playbookName: QRadar Indicator Hunting V2
       type: playbook
       iscommand: false
       brand: ''
