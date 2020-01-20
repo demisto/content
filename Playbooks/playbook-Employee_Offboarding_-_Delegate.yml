@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 2070
+          "x": 1445,
+          "y": 160
         }
       }
     note: false
@@ -64,8 +64,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -225,
-          "y": 2855
+          "x": 515,
+          "y": 945
         }
       }
     note: false
@@ -112,8 +112,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 225,
-          "y": 3035
+          "x": 965,
+          "y": 1125
         }
       }
     note: false
@@ -131,7 +131,8 @@ tasks:
       id: 4925fc21-90a2-4baa-868a-a74e40f9b477
       version: -1
       name: Send email to manager stating the mailbox is delegated
-      description: "Sends an email to the user's manager, saying the mailbox was delegated to them."
+      description: Sends an email to the user's manager, saying the mailbox was delegated
+        to them.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -168,8 +169,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 225,
-          "y": 3375
+          "x": 965,
+          "y": 1465
         }
       }
     note: false
@@ -196,8 +197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 2705
+          "x": 2100,
+          "y": 795
         }
       }
     note: false
@@ -223,8 +224,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 2705
+          "x": 2510,
+          "y": 795
         }
       }
     note: false
@@ -238,7 +239,8 @@ tasks:
       id: 4c8c3da8-d763-47de-8921-3874b752c74b
       version: -1
       name: Transfer ownership of primary & secondary calendars to manager
-      description: Please transfer ownership of calendars that the user has, to their manager.
+      description: Please transfer ownership of calendars that the user has, to their
+        manager.
       type: regular
       iscommand: false
       brand: ''
@@ -249,8 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 2705
+          "x": 1690,
+          "y": 795
         }
       }
     note: false
@@ -275,8 +277,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 2885
+          "x": 2100,
+          "y": 975
         }
       }
     note: false
@@ -301,8 +303,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 2885
+          "x": 1690,
+          "y": 975
         }
       }
     note: false
@@ -327,8 +329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 2240
+          "x": 1445,
+          "y": 330
         }
       }
     note: false
@@ -350,8 +352,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 3710
+          "x": 1445,
+          "y": 1800
         }
       }
     note: false
@@ -390,8 +392,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 225,
-          "y": 2855
+          "x": 965,
+          "y": 945
         }
       }
     note: false
@@ -405,7 +407,7 @@ tasks:
       id: 3f910896-24c1-4b14-8487-8ff607c91367
       version: -1
       name: Is a mail sender integration enabled?
-      description: "Checks whether any mail sender integration is enabled."
+      description: Checks whether any mail sender integration is enabled.
       type: condition
       iscommand: false
       brand: ''
@@ -490,8 +492,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 225,
-          "y": 3190
+          "x": 965,
+          "y": 1280
         }
       }
     note: false
@@ -545,8 +547,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 2680
+          "x": 730,
+          "y": 770
         }
       }
     note: false
@@ -571,8 +573,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 2555
+          "x": 730,
+          "y": 645
         }
       }
     note: false
@@ -599,8 +601,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 2555
+          "x": 2100,
+          "y": 645
         }
       }
     note: false
@@ -852,8 +854,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 2365
+          "x": 1445,
+          "y": 455
         }
       }
     note: false
@@ -878,13 +880,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 3090
+          "x": 2100,
+          "y": 1180
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -899,8 +902,8 @@ view: |-
       "dimensions": {
         "height": 1705,
         "width": 2375,
-        "x": -225,
-        "y": 2070
+        "x": 515,
+        "y": 160
       }
     }
   }

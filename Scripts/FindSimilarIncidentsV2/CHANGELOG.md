@@ -1,5 +1,5 @@
 ## [Unreleased]
-Shortened the query time range to improve index usage.
+
 
 ## [19.9.1] - 2019-09-18
 Added support for list values in context keys and incident fields.
