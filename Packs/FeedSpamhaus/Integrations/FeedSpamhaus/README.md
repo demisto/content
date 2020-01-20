@@ -11,19 +11,16 @@ Use the Spamhaus feed integration to fetch indicators from the feed.
 2. Search for SpamhausFeed.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
+    * __Sub-Feeds__
     * __Fetch indicators__
     * __Fetch Interval__
     * __Indicator Type__
     * __Reliability__ 
     * __Skip Exclusion List__
-    * __Mark as reputation__
+    * __Indicator reputation__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
     * __Request Timeout__
-    * __Ignore Regex__
-    * __Sub-Feeds__
-    * __Encoding__
-    * __User Agent__
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
